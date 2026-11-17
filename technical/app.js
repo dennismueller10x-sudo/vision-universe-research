@@ -164,6 +164,16 @@
   function loadStockSummary(ticker) {
     return fetchJSON("/technical/data/stock/" + global.VUCore.Identity.shardKey(ticker) + ".json").then(function (d) { return d && d.stocks && d.stocks[ticker] || null; }).catch(function () { return null; });
   }
+  /* Veroeffentlichter Schlusskurs (discover-series, dieselbe Reihe wie Quant product-services#publishedPriceAsOf). */
+  function loadPublishedClose(ticker) {
+    var id = global.VUCore.Identity.securityIdForTicker(ticker);
+    return fetchJSON("/quant/data/market/discover-series/" + id + ".json").then(function (s) {
+      var pts = s && s.status === "CALCULATED" && s.ticker === ticker && s.securityId === id && Array.isArray(s.points) ? s.points.filter(function (p) { return p && typeof p[0] === "string" && isNum(p[1]); }) : [];
+      if (!pts.length) return null;
+      var last = pts[pts.length - 1], prev = pts.length > 1 ? pts[pts.length - 2] : null;
+      return { value: last[1], date: last[0].slice(0, 10), changePct: prev && prev[1] > 0 ? (last[1] / prev[1] - 1) * 100 : null };
+    }).catch(function () { return null; });
+  }
   function loadWeekly(ticker) { return fetchJSON(M.LONG_DIR + global.VUCore.Identity.securityIdForTicker(ticker) + ".json"); }
 
   /* Engines fuer das Chart Studio: erst bei Bedarf, in Abhaengigkeitsreihenfolge. */
@@ -172,7 +182,7 @@
     "/quant/engines/technical/ti/context.js", "/quant/engines/technical/ti/chart-patterns.js", "/quant/engines/technical/ti/levels.js",
     "/quant/engines/technical/ti/dow-trend.js", "/quant/engines/technical/indicators.js", "/quant/engines/technical/formations.js", "/quant/engines/technical/candlesticks.js",
     "/quant/engines/technical/timeframe.js", "/quant/engines/technical/multi-timeframe.js", "/core/listing-staleness.js",
-    "/technical/engine/chart-explain.js"];
+    "/quant/engines/technical/ema-cluster.js", "/technical/engine/chart-explain.js"];
   var enginesReady = null;
   function loadEngines() {
     if (enginesReady) return enginesReady;
@@ -1371,7 +1381,7 @@
 
   /* T06: Aktienseite, Perspektive „Chart“. Einsteiger: der eine Chart mit Zonen, drei Saetze, Preise, Signale.
      Chart Studio (Kerzen, alle Schichten) ist die PRO-Ansicht unter #/chart/<T>/studio. */
-  var simple = { range: "1J", zones: true, trend: false, avg: false, stage: false, fib: false };
+  var simple = { range: "1J", zones: true, trend: false, avg: false, stage: false, fib: false, ema: false };
   function stockHeadMount(host, T, name) {
     var SN = global.VUStockNavigator, SCX = global.VUCore && global.VUCore.StockContext, api = null;
     try { if (SN && SCX) api = SN.head(host, { ctx: SCX.fromUs(T, name ? { name: name } : undefined), current: "technical", name: name || null, pendingPrice: true, back: { href: "#/", label: "Technical" } }); } catch (e) { api = null; }
@@ -1388,13 +1398,15 @@
     if (tplPanel && route.tab === "studio") templateLayers(route.params);
     put(main, [headHost, tplPanel, body]);
 
-    var instrumentP = loadInstrument(T);
-    // The validated instrument already carries the exact close displayed here.
-    // Paint it before chart engines/history and preserve the shared head node.
-    var headP = instrumentP.then(function (r) {
+    var instrumentP = loadInstrument(T), publishedP = loadPublishedClose(T);
+    /* Kopfkurs = veroeffentlichter Schlusskurs der Tagesreihe, dieselbe Zahl wie in Quant und Discover
+       (ADR-002, scripts/quality/chart-worlds-qa.mjs). Die Analyse behaelt ihren eigenen Stichtag; nur ohne
+       gueltige Tagesreihe oder wenn sie aelter ist, zeigt der Kopf den letzten Analysebalken. */
+    var headP = Promise.all([instrumentP, publishedP]).then(function (r) {
       if (!headHost.isConnected) return;
-      var b = r.inst.bars, t = b.close.length - 1, chg = b.close[t] / b.close[t - 1] - 1;
-      head.setPrice({ value: b.close[t], currency: "USD", changePct: isNum(chg) ? chg * 100 : null, kind: "close", at: M.dateDe(b.timestamps[t]) });
+      var b = r[0].inst.bars, t = b.close.length - 1, pub = r[1], bar = String(b.timestamps[t]).slice(0, 10);
+      if (pub && pub.date >= bar) head.setPrice({ value: pub.value, currency: "USD", changePct: isNum(pub.changePct) ? pub.changePct : null, kind: "close", at: M.dateDe(pub.date) });
+      else { var chg = b.close[t] / b.close[t - 1] - 1; head.setPrice({ value: b.close[t], currency: "USD", changePct: isNum(chg) ? chg * 100 : null, kind: "close", at: M.dateDe(b.timestamps[t]) }); }
       if (typeof global.requestAnimationFrame === "function") return new Promise(function (done) { global.requestAnimationFrame(function () { global.requestAnimationFrame(done); }); });
     });
     Promise.all([instrumentP, loadEngines(), loadIndex().catch(function () { return null; }), loadEvidence(), headP]).then(function (r) {
@@ -1571,6 +1583,72 @@
     var host = el("div", { class: "tc-chart-host tc-simple-chart" }), legend = el("p", { class: "tc-note tc-chart-note" });
     var widget = null, VT = global.VUTechnical, s150Cache = null, fibCache;
     function sma150() { if (!s150Cache && VT.Indicators) s150Cache = VT.Indicators.compute(S, "sma", { period: 150 }).values; return s150Cache; }
+    var emaCache;
+    /* EMA-Cluster (quant/engines/technical/ema-cluster.js) auf den Tagesbalken der Analyse; ohne gueltige OHLC nur Schluesse. */
+    function emaData() {
+      if (emaCache !== undefined) return emaCache;
+      emaCache = null;
+      if (!VT.EmaCluster || !S.dates.length) return emaCache;
+      var asOf = String(S.dates[t]).slice(0, 10);
+      function run(withHL) {
+        return VT.EmaCluster.calculate({ asOf: asOf, bars: S.dates.map(function (d, i) {
+          var b = { date: String(d).slice(0, 10), close: S.close[i] };
+          if (withHL) { b.high = S.high[i]; b.low = S.low[i]; }
+          return b;
+        }) });
+      }
+      try { emaCache = run(true); } catch (e1) { try { emaCache = run(false); } catch (e2) { emaCache = null; } }
+      return emaCache;
+    }
+    /* Baender je Datum: [min, max] des schnellen und des langsamen Buendels.
+       Tag: chartSeries.emaFastMin/-Max/emaSlowMin/-Max der Materialisierung (volle Historie, ueber die ganze Breite),
+       sonst die Engine auf den 270 Tagesbalken (nach Anlaufzeit). Woche: Engine im Zeitrahmen 1W auf der langen Wochenreihe. */
+    function bandsFrom(rows) {
+      var byDate = {}, from = null;
+      rows.forEach(function (r) { if (r.fast && r.slow) { byDate[r.date] = { fast: [r.fast.min, r.fast.max], slow: [r.slow.min, r.slow.max] }; if (!from) from = r.date; } });
+      return from ? { byDate: byDate, from: from } : null;
+    }
+    var emaDailyCache;
+    function emaBandsDaily() {
+      if (emaDailyCache !== undefined) return emaDailyCache;
+      var cs = X.cs || {}, k = ["emaFastMin", "emaFastMax", "emaSlowMin", "emaSlowMax"];
+      if (k.every(function (x) { return Array.isArray(cs[x]) && cs[x].length === S.dates.length; })) {
+        var byDate = {}, from = null;
+        S.dates.forEach(function (d, i) {
+          var v = k.map(function (x) { return cs[x][i]; });
+          if (v.every(isNum)) { byDate[String(d).slice(0, 10)] = { fast: [v[0], v[1]], slow: [v[2], v[3]] }; if (!from) from = String(d).slice(0, 10); }
+        });
+        emaDailyCache = from ? { byDate: byDate, from: from } : null;
+      } else { var ec = emaData(); emaDailyCache = ec ? bandsFrom(ec.rows) : null; }
+      return emaDailyCache;
+    }
+    var emaWeekly;
+    function loadEmaWeekly() {
+      emaWeekly = null;
+      loadWeekly(X.T).then(function (w) {
+        var pts = (w && w.status === "CALCULATED" && Array.isArray(w.points) ? w.points : []).filter(function (p) { return p && typeof p[0] === "string" && isNum(p[1]) && p[1] > 0; });
+        if (pts.length < 2 || !VT.EmaCluster) return;
+        try { emaWeekly = bandsFrom(VT.EmaCluster.calculate({ timeframe: "1W", asOf: pts[pts.length - 1][0].slice(0, 10), bars: pts.map(function (p) { return { date: p[0].slice(0, 10), close: p[1] }; }) }).rows); } catch (e) { emaWeekly = null; }
+        if (emaWeekly) draw();
+      }).catch(function () {});
+    }
+    function emaBandsWeekly() { return emaWeekly || null; }
+    /* Tagesverlauf (1T): die Baender des letzten Tagesschlusses als waagrechte Zonen ueber den ganzen Tag. */
+    function paintEmaIntraday(svg, g) {
+      var old = svg.querySelector(".tc-layers"); if (old) old.parentNode.removeChild(old);
+      var bands = simple.ema ? emaBandsDaily() : null, last = null;
+      if (bands) Object.keys(bands.byDate).forEach(function (d) { if (!last || d > last) last = d; });
+      if (!last || !g.y) { put(legend, ""); return; }
+      var r = bands.byDate[last], right = g.w - g.padR, bottom = g.h - g.padBottom, layer = svgEl("g", { class: "tc-layers" }), outside = [];
+      ["slow", "fast"].forEach(function (k) {
+        var y1 = Math.max(0, Math.min(g.y(r[k][1]), g.y(r[k][0]))), y2 = Math.min(bottom, Math.max(g.y(r[k][1]), g.y(r[k][0])));
+        if (y2 <= 0 || y1 >= bottom) { outside.push((k === "fast" ? "schnell " : "langsam ") + de(r[k][0]) + "–" + de(r[k][1]) + " $"); return; }
+        layer.appendChild(svgEl("rect", { class: "tc-ema tc-ema--" + k, x: 2, y: y1.toFixed(1), width: Math.max(0, right - 2), height: Math.max(2, y2 - y1).toFixed(1) }));
+      });
+      var line = svg.querySelector(".vu-chart-line"); if (layer.childNodes.length) svg.insertBefore(layer, line || null);
+      put(legend, "Bänder: EMAs des letzten Tagesschlusses (" + M.dateDe(last) + "), schnelle 3–15 Tage kräftig, langsame 30–60 Tage blass" +
+        (outside.length ? "; außerhalb der heutigen Spanne: " + outside.join(", ") : "") + ".");
+    }
     function fibData() { if (fibCache === undefined) fibCache = VT.ChartExplain && X.ctx ? VT.ChartExplain.fibSwing(X.ctx, VT.TILevels) : null; return fibCache; }
     /* Ebenen der Technical-Welt auf DEM Chart (kein zweiter Zeichner): Zonen, Trendlinie, 200-Tage-Linie.
        Sie gelten fuer die Tagesansicht; im Tagesverlauf (1T) und in Wochenraster-Zeitraeumen bleibt die Kurslinie allein. */
@@ -1583,7 +1661,8 @@
       return null;
     }
     function paintLayers(svg, g, rangeId) {
-      if (!svg || !g || !g.pts || g.intraday) { put(legend, ""); return; }
+      if (!svg || !g || !g.pts) { put(legend, ""); return; }
+      if (g.intraday) { paintEmaIntraday(svg, g); return; }
       var dailyGrain = svg.parentNode && svg.parentNode.dataset && svg.parentNode.dataset.grain === "daily";
       var plotBottom = g.h - g.padBottom, right = g.w - g.padR, note = [];
       var layer = svgEl("g", { class: "tc-layers" }), top = svgEl("g", { class: "tc-layers tc-layers--top" });
@@ -1617,6 +1696,19 @@
         g.pts.forEach(function (p) { var i = S.dates.indexOf(p.t.slice(0, 10)), v = i >= 0 && s150 ? s150[i] : null; if (isNum(v)) d2 += (d2 ? "L" : "M") + p.x.toFixed(1) + " " + g.y(v).toFixed(1) + " "; });
         if (d2) layer.appendChild(svgEl("path", { class: "tc-avg tc-avg--stage", d: d2.trim(), fill: "none" }));
         note.push("durchgezogen: 150-Tage-Linie");
+      }
+      if (simple.ema) {
+        var bands = dailyGrain ? emaBandsDaily() : emaBandsWeekly();
+        if (bands) {
+          ["slow", "fast"].forEach(function (k) {
+            var up = [], lo = [];
+            var cy = function (v) { return Math.max(0, Math.min(plotBottom, g.y(v))).toFixed(1); };
+            g.pts.forEach(function (p) { var r = bands.byDate[p.t.slice(0, 10)]; if (r) { up.push(p.x.toFixed(1) + " " + cy(r[k][1])); lo.push(p.x.toFixed(1) + " " + cy(r[k][0])); } });
+            if (up.length > 1) layer.appendChild(svgEl("path", { class: "tc-ema tc-ema--" + k, d: "M" + up.join("L") + "L" + lo.reverse().join("L") + "Z" }));
+          });
+          note.push(dailyGrain ? "Bänder: schnelle EMAs 3–15 Tage kräftig, langsame 30–60 Tage blass" + (bands.from && g.pts[0].t.slice(0, 10) < bands.from ? ", ab " + M.dateDe(bands.from) + " nach Anlaufzeit" : "")
+            : "Bänder im Wochenchart: schnelle EMAs 3–15 Wochen kräftig, langsame 30–60 Wochen blass");
+        } else if (!dailyGrain && emaWeekly === undefined) loadEmaWeekly();
       }
       var fb = simple.fib && dailyGrain ? fibData() : null;
       if (fb) {
@@ -1652,10 +1744,10 @@
       put(host, widget.node);
     });
     function tog(key, label) { return el("button", { type: "button", class: "vu-chip", "data-layer": key, "aria-pressed": String(simple[key]), text: label, onclick: function (ev) { simple[key] = !simple[key]; ev.currentTarget.setAttribute("aria-pressed", String(simple[key])); draw(); } }); }
-    var togs = el("div", { class: "vu-chips tc-togs" }, [tog("zones", "Zonen"), tog("trend", "Trendlinie"), tog("avg", "200-Tage-Linie"), tog("stage", "150-Tage-Linie"), tog("fib", "Fibonacci")]);
+    var togs = el("div", { class: "vu-chips tc-togs" }, [tog("zones", "Zonen"), tog("trend", "Trendlinie"), tog("avg", "200-Tage-Linie"), tog("stage", "150-Tage-Linie"), tog("ema", "EMA-Bänder"), tog("fib", "Fibonacci")]);
     function syncTogs() { Array.prototype.forEach.call(togs.querySelectorAll("[data-layer]"), function (b) { b.setAttribute("aria-pressed", String(!!simple[b.getAttribute("data-layer")])); }); }
     /* „Chart erklären“ (engine/chart-explain.js): sieben Schritte, je Schritt nur die passende Ebene im Chart. */
-    var LAYER_KEYS = ["zones", "trend", "avg", "stage", "fib"], guide = { data: null, i: 0, saved: null };
+    var LAYER_KEYS = ["zones", "trend", "avg", "stage", "ema", "fib"], guide = { data: null, i: 0, saved: null };
     var guideHost = el("section", { class: "tc-guide", "aria-live": "polite", "aria-label": "Chart erklären" });
     function setLayers(only) { LAYER_KEYS.forEach(function (k) { simple[k] = k === only; }); syncTogs(); draw(); }
     function activeFormation() {
@@ -1666,7 +1758,7 @@
     function buildGuide(stock) {
       var lv2 = X.levels || {}, cs200 = X.cs.sma200 || [];
       return VT.ChartExplain.explain({ close: S.close[t], sma200: F.sma200, sma200Past: t >= 21 ? cs200[t - 21] : null,
-        stage: VT.TIDowTrend && X.ctx ? VT.TIDowTrend.weinsteinStage(X.ctx) : null, rsRank: stock && isNum(stock.rsRank) ? stock.rsRank : null,
+        stage: VT.TIDowTrend && X.ctx ? VT.TIDowTrend.weinsteinStage(X.ctx) : null, ema: VT.ChartExplain.emaSummary(emaData()), rsRank: stock && isNum(stock.rsRank) ? stock.rsRank : null,
         support: lv2.nearestSupport || null, resistance: lv2.nearestResistance || null, fib: fibData(), rsi: F.rsi14, formation: activeFormation() });
     }
     function guideStep(i) {
@@ -1683,7 +1775,7 @@
     }
     function guideSummary() {
       var d = guide.data;
-      simple.zones = true; simple.avg = true; simple.trend = true; simple.stage = false; simple.fib = !!fibData(); syncTogs(); draw();
+      simple.zones = true; simple.avg = true; simple.trend = true; simple.stage = false; simple.ema = false; simple.fib = !!fibData(); syncTogs(); draw();
       put(guideHost, [el("div", { class: "tc-guide-h" }, [el("span", { class: "vu-ltag tc-ltag", text: "Kurz gesagt" }),
           el("button", { type: "button", class: "tc-guide-x", "aria-label": "Erklärung beenden", text: "×", onclick: endGuide })]),
         d.headline ? el("h3", { class: "tc-guide-head", text: d.headline }) : null,
@@ -1708,7 +1800,7 @@
       put(guideHost, ""); syncTogs(); draw();
     }
     var explainBtn = X.st.frozenSince || !VT.ChartExplain ? null : el("button", { type: "button", class: "tc-explain-btn", onclick: startGuide }, [el("span", { "aria-hidden": "true", text: "▶" }),
-      el("span", {}, [el("b", { text: "Chart erklären" }), el("small", { text: "In 7 einfachen Schritten, ohne Vorwissen" })])]);
+      el("span", {}, [el("b", { text: "Chart erklären" }), el("small", { text: "In 8 einfachen Schritten, ohne Vorwissen" })])]);
     var RSI_HELP = "Schwung: wie stark der Kurs zuletzt gestiegen oder gefallen ist. Fachleute messen das mit dem RSI (0 bis 100); über 70 gilt als „überkauft“, unter 30 als „überverkauft“.";
     var story = el("div", { class: "tc-story" }, [el("div", { class: "tc-story-h" }, [el("p", { class: "vu-ltag tc-ltag", text: "Der Chart in drei Sätzen" }),
       infoBtn("Schwung erklärt", function () { pop("tc-help-pop", "Schwung", [el("p", { class: "tc-sheet-lead", text: RSI_HELP })]); })])].concat(threeSentences(X).map(function (s) {

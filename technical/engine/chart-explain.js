@@ -1,15 +1,17 @@
 /* =========================================================================
    VISION UNIVERSE TECHNICAL — engine/chart-explain.js
-   „CHART ERKLÄREN“: DER CHART IN SIEBEN EINFACHEN SCHRITTEN
+   „CHART ERKLÄREN“: DER CHART IN ACHT EINFACHEN SCHRITTEN
 
    Fuer Menschen ohne Chartwissen: Ein Tipp, und die Chart-Seite geht Schritt
-   fuer Schritt durch Richtung, Phase, Staerke im Vergleich, Boden und Decke,
-   Fibonacci, Schwung und Chartmuster. Je Schritt ein Satz in Alltagssprache,
+   fuer Schritt durch Richtung, Phase, EMA-Linienbuendel, Staerke im Vergleich,
+   Boden und Decke, Fibonacci, Schwung und Chartmuster. Je Schritt ein Satz in Alltagssprache,
    ein „Was heißt das?“ und die passende Ebene im Chart.
 
    Diese Datei rechnet NICHTS Neues. Sie formuliert Werte, die schon da sind:
      Richtung     featuresAtCutoff.sma200 und chartSeries.sma200 (Steigung ueber 21 Handelstage)
      Phase        ti/dow-trend.js#weinsteinStage (Vier-Phasen-Modell, 150-Tage-Linie)
+     Linien       ema-cluster.js#calculate (GMMA 3–15 / 30–60, docs/technical/EMA_CLUSTER.md):
+                  letzte Zeile (Trend, Anordnung, Dynamik) und juengstes Ereignis der letzten 5 Balken
      Staerke      rsRank der Aktien-Scherbe (screen-row.js#rankRs, 6 Monate)
      Boden/Decke  ti/levels.js#supportResistance (naechste Zonen)
      Fibonacci    ti/levels.js#fibOfSwing am letzten grossen Schwung (Regel unten)
@@ -25,7 +27,8 @@
 (function (global) {
   "use strict";
   var isNode = (typeof module !== "undefined" && module.exports);
-  var VERSION = "technical-chart-explain-1.0.0";
+  var VERSION = "technical-chart-explain-1.1.0";
+  var EMA_EVENT_BARS = 5;
   var FIB_RATIOS = [0.382, 0.5, 0.618];
   var FIB_SCALES = ["scale-3", "scale-2"];
   var MONTHS = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"];
@@ -87,7 +90,45 @@
     return step("phase", "In welcher Phase steckt sie?", p[0], meaning, p[1], "stage", p[2]);
   }
 
-  /* 3 · Staerke im Vergleich: RS-Rang 0..100 ueber 6 Monate. */
+  /* 3 · Linienbuendel: EMA-Cluster (schnell 3–15, langsam 30–60 Tage). */
+  function dayMonth(iso) { return iso ? +iso.slice(8, 10) + "." + +iso.slice(5, 7) + "." : ""; }
+  var EMA_EVENT = {
+    PULLBACK_FAST: function (e) { return "Am " + dayMonth(e.date) + " ist der Kurs in das schnelle Bündel " + (e.direction === "DOWN" ? "hochgelaufen." : "zurückgefallen."); },
+    PULLBACK_SLOW: function (e) { return "Am " + dayMonth(e.date) + " ist der Kurs bis in das langsame Bündel " + (e.direction === "DOWN" ? "hochgelaufen." : "zurückgefallen."); },
+    RESUME_UP: function (e) { return "Am " + dayMonth(e.date) + " hat er sich wieder nach oben abgesetzt."; },
+    RESUME_DOWN: function (e) { return "Am " + dayMonth(e.date) + " hat er sich wieder nach unten abgesetzt."; },
+    COMPRESSION_BREAKOUT_UP: function (e) { return "Am " + dayMonth(e.date) + " ist der Kurs aus der engen Phase nach oben ausgebrochen."; },
+    COMPRESSION_BREAKOUT_DOWN: function (e) { return "Am " + dayMonth(e.date) + " ist der Kurs aus der engen Phase nach unten ausgebrochen."; },
+    DOWN_TO_UP: function (e) { return "Am " + dayMonth(e.date) + " haben die Bündel von abwärts auf aufwärts gedreht."; },
+    UP_TO_DOWN: function (e) { return "Am " + dayMonth(e.date) + " haben die Bündel von aufwärts auf abwärts gedreht."; }
+  };
+  function linien(X) {
+    var meaning = "Zwölf gleitende Durchschnitte (EMA) in zwei Bündeln: Die sechs schnellen (3 bis 15 Tage) zeigen, was kurzfristige Trader tun, die sechs langsamen (30 bis 60 Tage) zeigen die Anleger mit längerem Atem. Liegen alle schnellen über allen langsamen und steigen beide, sind sich beide Gruppen einig. Eng beieinander heißt: unentschlossen. Auffächern heißt: Die Bewegung nimmt Fahrt auf. Wie gut diese Lesart in der Vergangenheit war, wertet Vision Universe in einer eigenen Studie aus.";
+    var e = X.ema, title = "Ziehen kurze und lange Linien an einem Strang?";
+    if (!e || !e.trend) return step("linien", title, "Für die Linienbündel ist die Kurshistorie noch zu kurz.", meaning, "none", "ema");
+    var text, tone, short = null;
+    if (e.trend === "UP") { text = "Alle schnellen Linien liegen über allen langsamen, und beide Bündel steigen. Kurz- und langfristige Anleger ziehen an einem Strang nach oben."; tone = "strong"; short = "Linien einig nach oben"; }
+    else if (e.trend === "DOWN") { text = "Alle schnellen Linien liegen unter allen langsamen, und beide Bündel fallen. Kurz- und langfristige Anleger ziehen an einem Strang nach unten."; tone = "weak"; short = "Linien einig nach unten"; }
+    else if (e.trend === "SIDEWAYS") { text = "Alle Linien liegen eng beieinander und laufen flach. Der Markt ist unentschlossen; danach kann eine größere Bewegung folgen, die Richtung ist offen."; tone = "mid"; }
+    else if (e.arrangement === "BULLISH") { text = "Die schnellen Linien liegen noch über den langsamen, aber nicht beide Bündel steigen. Der Aufwärtstrend verliert an Tempo."; tone = "mid"; }
+    else if (e.arrangement === "BEARISH") { text = "Die schnellen Linien liegen noch unter den langsamen, aber nicht beide Bündel fallen. Der Abwärtsdruck lässt nach."; tone = "mid"; }
+    else { text = "Schnelle und langsame Linien laufen durcheinander. Der Trend ist im Wechsel, eine klare Richtung fehlt."; tone = "mid"; }
+    if (e.dynamics === "EXPANSION" && (e.trend === "UP" || e.trend === "DOWN")) text += " Die Bündel fächern gerade auf: Die Bewegung nimmt Fahrt auf.";
+    else if (e.dynamics === "COMPRESSION" && e.trend !== "SIDEWAYS") text += " Die Bündel ziehen sich gerade eng zusammen.";
+    if (e.event && EMA_EVENT[e.event.type]) text += " " + EMA_EVENT[e.event.type](e.event);
+    return step("linien", title, text, meaning, tone, "ema", short);
+  }
+
+  /* Juengstes erklaertes Ereignis der letzten EMA_EVENT_BARS Balken aus einem ema-cluster.js-Ergebnis. */
+  function emaSummary(result) {
+    var rows = result && result.rows || [], last = rows[rows.length - 1];
+    if (!last || last.quality !== "READY") return null;
+    var since = rows.length > EMA_EVENT_BARS ? rows[rows.length - EMA_EVENT_BARS].date : rows[0].date;
+    var ev = (result.events || []).filter(function (x) { return x.date >= since && EMA_EVENT[x.type]; });
+    return { trend: last.trend, arrangement: last.arrangement, dynamics: last.dynamics, event: ev.length ? { type: ev[ev.length - 1].type, direction: ev[ev.length - 1].direction, date: ev[ev.length - 1].date } : null };
+  }
+
+  /* 4 · Staerke im Vergleich: RS-Rang 0..100 ueber 6 Monate. */
   function staerke(X) {
     var meaning = "Wir vergleichen die Kursentwicklung der letzten 6 Monate mit allen aktuellen US-Aktien in Vision Universe. 100 heißt: die stärkste, 0: die schwächste. Viele Trader schauen bevorzugt auf Aktien, die stärker laufen als der Rest.";
     var r = X.rsRank;
@@ -97,7 +138,7 @@
     return step("staerke", "Stärker oder schwächer als andere?", "In den letzten 6 Monaten lief die Aktie schlechter als " + (100 - k) + " von 100 Aktien.", meaning, k < 30 ? "weak" : "mid", null, "schlechter als " + (100 - k) + " von 100 Aktien");
   }
 
-  /* 4 · Boden und Decke: naechste Unterstuetzungs- und Widerstandszone. */
+  /* 5 · Boden und Decke: naechste Unterstuetzungs- und Widerstandszone. */
   function zonen(X) {
     var meaning = "Boden (Unterstützung) und Decke (Widerstand) sind Preisbereiche, an denen der Kurs früher gedreht hat. Viele Anleger merken sich solche Preise, deshalb reagiert der Kurs dort öfter erneut, muss er aber nicht. Bricht er durch, wird aus einer Decke oft ein neuer Boden.";
     var c = X.close, S = X.support, R = X.resistance, parts = [], short = null;
@@ -111,7 +152,7 @@
     return step("zonen", "Wo ist der Boden, wo die Decke?", parts.join(" "), meaning, "none", "zones", short);
   }
 
-  /* 5 · Fibonacci am letzten grossen Schwung. */
+  /* 6 · Fibonacci am letzten grossen Schwung. */
   function fibonacci(X) {
     var meaning = "Fibonacci ist bei Tradern sehr beliebt: Man misst eine große Bewegung und teilt sie bei 38,2 %, 50 % und 61,8 %. Ehrlich gesagt: In unserer Auswertung von über 300.000 Gegenbewegungen drehte der Kurs an diesen Marken nicht öfter als knapp daneben. Nimm sie als grobe Orientierung, nicht als Zauberlinie.";
     var f = X.fib, c = X.close;
@@ -128,7 +169,7 @@
     return step("fibonacci", "Wie weit geht ein Rücksetzer? (Fibonacci)", text, meaning, "none", "fib");
   }
 
-  /* 6 · Schwung: RSI 14 in Worten. */
+  /* 7 · Schwung: RSI 14 in Worten. */
   function schwung(X) {
     var meaning = "Schwung heißt: wie kräftig der Kurs zuletzt gestiegen oder gefallen ist. Fachleute messen das mit dem RSI von 0 bis 100. Über 70 gilt als „überkauft“ (sehr schnell gestiegen), unter 30 als „überverkauft“ (sehr schnell gefallen).";
     var r = X.rsi;
@@ -141,7 +182,7 @@
     return step("schwung", "Wie viel Schwung hat die Aktie?", "Die Aktie ist zuletzt sehr schnell gefallen" + t + ", sie gilt als „überverkauft“. Danach kann eine Gegenbewegung folgen, muss aber nicht.", meaning, "weak", null, "„überverkauft“");
   }
 
-  /* 7 · Chartmuster: juengste aktive Formation (Name und Satz liefert die Ansicht). */
+  /* 8 · Chartmuster: juengste aktive Formation (Name und Satz liefert die Ansicht). */
   function muster(X) {
     var meaning = "Chartmuster sind wiederkehrende Formen im Kursverlauf, zum Beispiel Dreiecke, Flaggen oder Doppelböden. Unsere Regeln erkennen sie automatisch und zeichnen sie ein. Auf der Seite „Muster“ steht, welche Muster sich in der Vergangenheit messbar abgehoben haben und welche nicht.";
     var f = X.formation;
@@ -152,13 +193,14 @@
   }
 
   /**
-   * X: { close, sma200, sma200Past, stage, rsRank, support, resistance, fib, rsi, formation }
+   * X: { close, sma200, sma200Past, stage, ema, rsRank, support, resistance, fib, rsi, formation }
+   *   ema: emaSummary(ema-cluster.js#calculate(...)) oder null
    *   formation: { name, sentence, direction (-1|0|1), confirmed } oder null
    * Rueckgabe: { version, headline, steps[], note }
    */
   function explain(X) {
     X = X || {};
-    var steps = [richtung(X), phase(X), staerke(X), zonen(X), fibonacci(X), schwung(X), muster(X)];
+    var steps = [richtung(X), phase(X), linien(X), staerke(X), zonen(X), fibonacci(X), schwung(X), muster(X)];
     steps.forEach(function (s, i) { s.n = i + 1; });
     var shorts = ["richtung", "staerke", "zonen"].map(function (id) { return steps.filter(function (s) { return s.id === id; })[0].short; }).filter(Boolean);
     var headline = shorts.length ? shorts.join(" · ") : null;
@@ -166,7 +208,7 @@
       note: "Das ist eine Beschreibung des Charts, keine Vorhersage und keine Handlungsempfehlung." };
   }
 
-  var api = { VERSION: VERSION, FIB_RATIOS: FIB_RATIOS, FIB_SCALES: FIB_SCALES, explain: explain, fibSwing: fibSwing };
+  var api = { VERSION: VERSION, FIB_RATIOS: FIB_RATIOS, FIB_SCALES: FIB_SCALES, EMA_EVENT_BARS: EMA_EVENT_BARS, explain: explain, fibSwing: fibSwing, emaSummary: emaSummary };
   if (isNode) module.exports = api;
   else { global.VUTechnical = global.VUTechnical || {}; global.VUTechnical.ChartExplain = api; }
 })(typeof window !== "undefined" ? window : globalThis);

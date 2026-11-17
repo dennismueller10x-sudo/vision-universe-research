@@ -19,18 +19,18 @@ function aaplCtx() {
   const prep = Ctx.prepare(s), t = s.length - 1;
   return { s, t, ctx: Ctx.at(prep, t) };
 }
-const base = { close: 100, sma200: 90, sma200Past: 88, stage: { stage: 2 }, rsRank: 82.4,
+const base = { close: 100, sma200: 90, sma200Past: 88, stage: { stage: 2 }, ema: { trend: "UP", arrangement: "BULLISH", dynamics: "NEUTRAL", event: null }, rsRank: 82.4,
   support: { zoneLow: 95, zoneHigh: 97, kinds: ["SWING_LOW"], touches: 2 }, resistance: { zoneLow: 103, zoneHigh: 104, kinds: ["HIGH_52W"], touches: 0 },
   fib: { up: true, developing: true, from: { price: 80, time: "2026-07-01" }, to: { price: 110, time: "2026-10-15" }, levels: [{ ratio: 0.382, price: 98.54 }, { ratio: 0.5, price: 95 }, { ratio: 0.618, price: 91.46 }] },
   rsi: 63.2, formation: { name: "Dreieck aufsteigend", sentence: "Steigende Tiefs laufen gegen ein flaches Hoch.", direction: 1, confirmed: false } };
 const by = (out) => Object.fromEntries(out.steps.map((s) => [s.id, { ...s, text: s.text.replace(/\u00a0/g, " ") }]));
 const byRaw = (out) => Object.fromEntries(out.steps.map((s) => [s.id, s]));
 
-test("sieben Schritte in fester Reihenfolge, je mit Titel, Satz, Erklärung, Ampel und Ebene", () => {
+test("acht Schritte in fester Reihenfolge, je mit Titel, Satz, Erklärung, Ampel und Ebene", () => {
   const out = CE.explain(base);
-  assert.deepEqual(out.steps.map((s) => s.id), ["richtung", "phase", "staerke", "zonen", "fibonacci", "schwung", "muster"]);
-  assert.deepEqual(out.steps.map((s) => s.n), [1, 2, 3, 4, 5, 6, 7]);
-  assert.deepEqual(out.steps.map((s) => s.layer), ["avg", "stage", null, "zones", "fib", null, "trend"]);
+  assert.deepEqual(out.steps.map((s) => s.id), ["richtung", "phase", "linien", "staerke", "zonen", "fibonacci", "schwung", "muster"]);
+  assert.deepEqual(out.steps.map((s) => s.n), [1, 2, 3, 4, 5, 6, 7, 8]);
+  assert.deepEqual(out.steps.map((s) => s.layer), ["avg", "stage", "ema", null, "zones", "fib", null, "trend"]);
   for (const s of out.steps) {
     assert.ok(s.title && s.text && s.meaning, s.id);
     assert.ok(["strong", "mid", "weak", "none"].includes(s.tone), s.id);
@@ -118,4 +118,30 @@ test("Wortwahl: keine Empfehlung, kein Kursziel, kein Score, du-Form", () => {
       assert.doesNotMatch(t, /[\p{Ll},]\s+(Sie|Ihnen|Ihr|Ihre)\b/u, s.id + ": " + t);
     }
   }
+});
+
+test("Linienbündel: Zustand der EMA-Cluster-Engine in Worten, jüngstes Ereignis mit Datum", () => {
+  const L = (ema) => by(CE.explain({ ...base, ema })).linien;
+  assert.equal(L(base.ema).tone, "strong"); assert.match(L(base.ema).text, /an einem Strang nach oben/);
+  assert.equal(L({ trend: "DOWN", arrangement: "BEARISH", dynamics: "EXPANSION" }).tone, "weak");
+  assert.match(L({ trend: "DOWN", arrangement: "BEARISH", dynamics: "EXPANSION" }).text, /nach unten\. Die Bündel fächern gerade auf/);
+  assert.match(L({ trend: "SIDEWAYS", arrangement: "OVERLAPPING", dynamics: "COMPRESSION" }).text, /eng beieinander/);
+  assert.match(L({ trend: "TRANSITION", arrangement: "BULLISH" }).text, /verliert an Tempo/);
+  assert.match(L({ trend: "TRANSITION", arrangement: "BEARISH" }).text, /Abwärtsdruck lässt nach/);
+  assert.match(L({ trend: "TRANSITION", arrangement: "OVERLAPPING" }).text, /durcheinander/);
+  assert.match(L({ ...base.ema, event: { type: "PULLBACK_FAST", direction: "UP", date: "2026-11-13" } }).text, /Am 13\.11\. ist der Kurs in das schnelle Bündel zurückgefallen\./);
+  assert.equal(L(null).tone, "none");
+});
+
+test("Linienbündel an echten AAPL-Bars: emaSummary liest nur ema-cluster.js#calculate", () => {
+  const EC = require("../../quant/engines/technical/ema-cluster.js");
+  const bars = AAPL.date.map((d, i) => ({ date: d.slice(0, 10), close: AAPL.close[i], high: AAPL.high[i], low: AAPL.low[i] }));
+  const r = EC.calculate({ bars, asOf: bars.at(-1).date });
+  const sum = CE.emaSummary(r), last = r.rows.at(-1);
+  assert.equal(last.quality, "READY");
+  assert.deepEqual([sum.trend, sum.arrangement, sum.dynamics], [last.trend, last.arrangement, last.dynamics]);
+  const since = r.rows.at(-CE.EMA_EVENT_BARS).date;
+  if (sum.event) assert.ok(sum.event.date >= since && r.events.some((e) => e.type === sum.event.type && e.date === sum.event.date));
+  assert.equal(CE.emaSummary({ rows: [{ quality: "WARMUP" }], events: [] }), null);
+  assert.equal(CE.emaSummary(null), null);
 });
