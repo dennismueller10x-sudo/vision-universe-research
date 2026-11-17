@@ -86,7 +86,10 @@ jobs:
           for f in us-security-master.json summary.json reconciliation.json company-names.json; do git show "HEAD:$N/$f" > "$X/prev/$f"; done
           node scripts/market/security-master-refresh-gate.mjs --prev "$X/prev" --next "$X/next1" \
             --prev-names "$X/prev/company-names.json" --next-names "$N/company-names.json" --today "$heute" --out "$X/sm-gate.json"
-          echo "ELIG_UNIVERSE=$X/scale/universe-FULL_UNIVERSE.json" >> "$GITHUB_ENV"
+          # In den Repo-Pfad: die Eignung speichert den Pfad der Mitgliedsdatei (nonDestructive.universeFile), und
+          # verify-company-master prueft ihn relativ zum Repository (Lauf 44083852257: Runner-Pfad, Pruefung rot).
+          cp "$X/scale/universe-FULL_UNIVERSE.json" quant/data/market/scale/universe-FULL_UNIVERSE.json
+          echo "ELIG_UNIVERSE=quant/data/market/scale/universe-FULL_UNIVERSE.json" >> "$GITHUB_ENV"
           echo "ELIG_MASTER=$X/next1/us-security-master.json" >> "$GITHUB_ENV"
 
       - name: Neuer Stand (bestehender Erzeuger, nach RUNNER_TEMP)
@@ -156,7 +159,6 @@ jobs:
           cp "$RUNNER_TEMP/elig/scale/universe-ELIGIBLE_US_EQUITY.json" quant/data/market/scale/
           if [ -n "${ELIG_UNIVERSE:-}" ]; then
             # Erweiterung: Mitgliedschaft und Wertpapierstamm desselben Laufs (Stamm-Gate oben bestanden)
-            cp "$ELIG_UNIVERSE" quant/data/market/scale/universe-FULL_UNIVERSE.json
             for f in us-security-master.json summary.json reconciliation.json backfill-estimate.json; do cp "$RUNNER_TEMP/erw/next1/$f" quant/data/market/security-master/; done
             PUSH_OWNED_PATHS="$PUSH_OWNED_PATHS quant/data/market/scale/universe-FULL_UNIVERSE.json quant/data/market/security-master/us-security-master.json quant/data/market/security-master/summary.json quant/data/market/security-master/reconciliation.json quant/data/market/security-master/backfill-estimate.json"
           fi
