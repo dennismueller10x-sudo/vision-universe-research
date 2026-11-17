@@ -1,0 +1,30 @@
+{
+ "schemaVersion": "listing-ended-evidence-1.0.0",
+ "purpose": "Beendete Notierungen, die der Wertpapierstamm noch ACTIVE fuehrt (Uebernahme abgeschlossen). Gelesen von scripts/market/apply-ended-listings.mjs (Regel B): ein Eintrag wirkt nur, wenn die Tagesreihe spaetestens 7 Tage nach effectiveDate endet und mehr als 2 Sitzungen hinter dem Datenbestand liegt. Nur mit Quelle; nichts ohne Beleg.",
+ "decidedBy": "Steuerung 17.11.2026 (Universum-Bereinigung nach dem Faktordeckungs-Befund vom 16.11.2026)",
+ "records": [
+  { "securityId": "ref_KVUE", "ticker": "KVUE", "event": "ACQUISITION", "effectiveDate": "2026-11-02", "counterparty": "Kimberly-Clark (KMB)",
+    "consideration": "0,14625 KMB-Aktien + 3,50 USD je Aktie",
+    "sources": ["https://finviz.com/news/413289/kimberly-clark-completes-acquisition-of-kenvue-creating-the-preeminent-global-consumer-health-and-wellness-leader",
+                "https://www.ibtimes.com.au/kenvue-shares-stop-trading-kimberly-clark-acquisition-1877985"] },
+  { "securityId": "ref_RAMP", "ticker": "RAMP", "event": "ACQUISITION", "effectiveDate": "2026-11-02", "counterparty": "Publicis Groupe",
+    "consideration": "38,50 USD je Aktie in bar",
+    "sources": ["https://www.exchange4media.com/announcements-news/publicis-groupe-completes-217-billion-liveramp-acquisition-launches-ai-growth-engine-159806.html",
+                "https://www.tipranks.com/news/company-announcements/liveramp-to-be-acquired-by-publicis-in-cash-deal"] },
+  { "securityId": "ref_LXP", "ticker": "LXP", "event": "ACQUISITION", "effectiveDate": "2026-11-02", "counterparty": "Brookfield Asset Management und CPP Investments",
+    "consideration": "61,20 USD je Aktie in bar",
+    "sources": ["https://bam.brookfield.com/press-releases/brookfield-and-cpp-investments-complete-acquisition-lxp-industrial-trust",
+                "https://finviz.com/news/412967/brookfield-and-cpp-investments-complete-acquisition-of-lxp-industrial-trust"] },
+  { "securityId": "ref_CBZ", "ticker": "CBZ", "event": "ACQUISITION", "effectiveDate": "2026-11-02", "counterparty": "Grant Thornton Advisors",
+    "consideration": "55,00 USD je Aktie in bar",
+    "sources": ["https://www.panabee.com/news/grant-thornton-completes-5-billion-acquisition-of-cbiz",
+                "https://insidepublicaccounting.com/2026/07/29/grant-thornton-to-acquire-cbiz-in-5-billion-deal/"] },
+  { "securityId": "ref_ROKU", "ticker": "ROKU", "event": "ACQUISITION", "effectiveDate": "2026-11-06", "counterparty": "Fox Corporation",
+    "consideration": "FOX-Aktien plus Barzahlung je Aktie (Endkonditionen laut Meldungen abweichend)",
+    "sources": ["https://www.thewrap.com/industry-news/deals-ma/fox-completes-22-billion-roku-acquisition/",
+                "https://thedesk.net/2026/11/fox-completes-acquisition-of-roku/"] },
+  { "securityId": "ref_BWMN", "ticker": "BWMN", "event": "ACQUISITION", "effectiveDate": "2026-11-06", "counterparty": "Bernhard Capital Partners",
+    "consideration": "43,00 USD je Aktie in bar",
+    "sources": ["https://finviz.com/news/418377/bernhard-capital-partners-and-bowman-consulting-group-announce-completion-of-approximately-1-billion-acquisition"] }
+ ]
+}
