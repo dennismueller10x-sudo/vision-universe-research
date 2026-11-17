@@ -369,8 +369,24 @@ function create(options){
   })();
   return profilesPromise;
  }
- async function getStrategyMatch(ticker){
+ async function getStrategyMatch(ticker,evidence){
   ticker=String(ticker||'').toUpperCase();
+  /* Ein Titel braucht keine Universumstabelle. Dieselben veroeffentlichten
+     Faktoren wie im Screening, derselbe Katalog-Namensraum, dieselbe Engine.
+     Der alte Leseweg bleibt fuer fehlende/alte Einzelartefakte erhalten. */
+  const factors=await (evidence||getFactorEvidence(ticker)).catch(()=>null);
+  if(factors?.state==='AVAILABLE'){
+   const profiles=await getStrategyProfiles();
+   if(profiles.state!=='AVAILABLE')return {state:'UNAVAILABLE',reason:profiles.reason||'PROFILES_UNAVAILABLE',profiles:[]};
+   const fields=FactorEvidence.FACTOR_ORDER.map(id=>FactorEvidence.NAMESPACE+'.'+id);
+   const values=FactorEvidence.FACTOR_ORDER.map(id=>{
+    const f=factors.factors.find(f=>f.id===id);
+    return f?.state==='AVAILABLE'?f.score:null;
+   });
+   fields.push(FactorEvidence.NAMESPACE+'.availableFactors');
+   values.push(values.filter(value=>value!==null).length);
+   return {...StrategyMatch.evaluate(profiles.contract,FactorEvidence.screeningRow(ticker,values,fields)),ticker,asOf:factors.asOf};
+  }
   const [profiles,screening]=await Promise.all([getStrategyProfiles(),getFactorEvidenceScreening()]);
   if(profiles.state!=='AVAILABLE')return {state:'UNAVAILABLE',reason:profiles.reason||'PROFILES_UNAVAILABLE',profiles:[]};
   if(screening.state!=='AVAILABLE')return {state:'UNAVAILABLE',reason:screening.reason||'EVIDENCE_UNAVAILABLE',profiles:[]};
@@ -1481,12 +1497,13 @@ function create(options){
  async function getIntelligenceBrief(ticker){
   ticker=String(ticker||'').toUpperCase();
   if(!IntelligenceBrief||!/^[A-Z0-9.-]{1,12}$/.test(ticker))return {state:'UNAVAILABLE',reason:'INVALID_IDENTITY'};
+  const factorEvidence=getFactorEvidence(ticker).catch(()=>({state:'UNAVAILABLE',reason:'SOURCE_MISSING'}));
   const [stock,factors,setup,patterns,match,technical]=await Promise.all([
    sharedStockIntelligence(ticker).catch(()=>null),
-   getFactorEvidence(ticker).catch(()=>({state:'UNAVAILABLE',reason:'SOURCE_MISSING'})),
+   factorEvidence,
    getSetupObservation(ticker).catch(()=>({state:'UNAVAILABLE',reason:'SOURCE_MISSING'})),
    getPatternMatch(ticker).catch(()=>({state:'UNAVAILABLE',reason:'SOURCE_MISSING'})),
-   getStrategyMatch(ticker).catch(()=>({state:'UNAVAILABLE',reason:'SOURCE_MISSING'})),
+   getStrategyMatch(ticker,factorEvidence).catch(()=>({state:'UNAVAILABLE',reason:'SOURCE_MISSING'})),
    getTechnicalIntelligence(ticker).catch(()=>({state:'UNAVAILABLE',reason:'SOURCE_MISSING'}))]);
   return {state:'AVAILABLE',ticker,...IntelligenceBrief.build({stock,factors,setup,patterns,match,technical}),
    sources:{stock,factors,setup,patterns,match,technical}};

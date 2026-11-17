@@ -19,6 +19,57 @@ const technicalSource=JSON.parse(await readFile(new URL('quant/data/technical/in
 const technicalSummary=JSON.parse(await readFile(new URL('quant/data/product/technical-signals-v1/summary.json',root),'utf8'));
 const signals20=JSON.parse(gunzipSync(await readFile(new URL('quant/data/product/technical-signals-v1/signals-20.json.gz',root))));
 const capability=JSON.parse(await readFile(new URL('quant/data/universe/market-capability.json',root),'utf8'));
+
+/* Der Einzelaktien-Leseweg muss exakt dieselben Zuordnungen wie die
+   bisherige Screening-Zeile liefern, ohne die Universumstabelle zu laden. */
+test('single-stock strategy matches equal published screening matches without eager screening',async()=>{
+ const StrategyMatch=require('../engines/strategy-match.js');
+ const screening=await materializedApi.getFactorEvidenceScreening();
+ const profiles=await materializedApi.getStrategyProfiles();
+ assert.equal(screening.state,'AVAILABLE');assert.equal(profiles.state,'AVAILABLE');
+ for(const ticker of ['NVDA','AAPL','MSFT','JPM','XOM','BRK-B','A','F']){
+  const paths=[];
+  const single=Service.create({loadJSON:async p=>JSON.parse(await readFile(new URL(p.slice(1),root),'utf8')),
+   loadCompressedJSON:async p=>{paths.push(p);return JSON.parse(gunzipSync(await readFile(new URL(p.slice(1),root))));},displayPolicy:Policy,queryEngine:Query});
+  const row=screening.rows.find(r=>r.ticker===ticker);
+  assert.ok(row,ticker+' is represented in the fixed published sample');
+  assert.deepEqual(await single.getStrategyMatch(ticker),{...StrategyMatch.evaluate(profiles.contract,row),ticker,asOf:screening.asOf},ticker);
+  assert.ok(!paths.some(p=>p.endsWith('/screening.json.gz')),ticker+' does not load the screening table');
+ }
+});
+
+test('stock brief retains its factor view without a redundant universe distribution',async()=>{
+ const paths=[];
+ const single=Service.create({loadJSON:async p=>JSON.parse(await readFile(new URL(p.slice(1),root),'utf8')),
+  loadCompressedJSON:async p=>{paths.push(p);return JSON.parse(gunzipSync(await readFile(new URL(p.slice(1),root))));},displayPolicy:Policy,queryEngine:Query});
+ const brief=await single.getIntelligenceBrief('NVDA');
+ assert.equal(brief.sources.factors.state,'AVAILABLE');assert.equal(brief.sources.match.state,'AVAILABLE');
+ assert.ok(!paths.some(p=>p.endsWith('/screening.json.gz')));
+ assert.equal(paths.filter(p=>p.endsWith('/factor-evidence-v1/NV.json.gz')).length,1,'brief shares the pending factor evidence');
+ const ViewModel=require('../app/view-model.js'),FactorEvidence=require('../engines/factor-evidence.js');
+ const screening=await materializedApi.getFactorEvidenceScreening();
+ const distribution=Object.fromEntries(FactorEvidence.FACTOR_ORDER.map(id=>[id,screening.rows.map(r=>r[FactorEvidence.NAMESPACE+'.'+id]).filter(v=>typeof v==='number'&&Number.isFinite(v)).sort((a,b)=>a-b)]));
+ const source={ticker:'NVDA',...brief.sources,brief};
+ assert.deepEqual(ViewModel.stock(source),ViewModel.stock({...source,distribution}));
+});
+
+test('single-stock strategy preserves screening fallback and old band-position counting',async()=>{
+ for(const oldPositions of [true,false]){
+  const paths=[];
+  const single=Service.create({loadJSON:async p=>JSON.parse(await readFile(new URL(p.slice(1),root),'utf8')),
+   loadCompressedJSON:async p=>{
+    paths.push(p);const x=JSON.parse(gunzipSync(await readFile(new URL(p.slice(1),root))));
+    if(p.endsWith('/factor-evidence-v1/NV.json.gz')){
+     if(oldPositions){for(const f of Object.values(x.securities.NVDA.factors))delete f.position;}
+     else x.schemaVersion='old-or-invalid';
+    }
+    return x;
+   },displayPolicy:Policy,queryEngine:Query});
+  assert.deepEqual(await single.getStrategyMatch('NVDA'),await materializedApi.getStrategyMatch('NVDA'));
+  assert.ok(paths.some(p=>p.endsWith('/screening.json.gz')),'legacy fallback remains available');
+  if(oldPositions)assert.deepEqual((await single.getFactorEvidence('NVDA')).factors,(await materializedApi.getFactorEvidence('NVDA')).factors);
+ }
+});
 /* Faktordeckung (17.11.2026): Hier stand "mindestens 97 % des Produktuniversums". Am 16.11. lieferte Tiingo fuer 234
  * Titel keine eingefrorenen Kurse mehr nach (222 davon im Wertpapierstamm laengst INACTIVE); die Faktordatei fuehrt sie
  * zu Recht nicht mehr, und der Test war rot, obwohl der Dienst richtig meldete. Der Test prueft den Vertrag (der Dienst
