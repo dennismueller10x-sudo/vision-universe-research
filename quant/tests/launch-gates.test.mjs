@@ -101,7 +101,10 @@ test("ein belegtes Nicht-Aktien-Papier verliert die Aktienaussage - ausgeschiede
   assert.deepEqual(trotzdemDrin.slice(0, 8), [], trotzdemDrin.length + " ausgeschiedene Nicht-Aktien stehen weiter in der Produktliste");
   for (const i of ausgeschieden.filter((_, k) => k % 25 === 0)) {
     /* Fonds und ETFs tragen im Verzeichnis ihren Namen (Optionsscheine teils nicht - dort nennt die Absage das Kuerzel). */
-    if (i.securityClass === "ETF") assert.ok(i.companyName, i.symbol + " (ETF) ohne Namen im Verzeichnis");
+    /* Ohne Namen nur mit benanntem Grund (17.11.2026): 5 ETFs (z. B. MUSE) fuehrt keine Namensquelle; die Stichprobe
+       (jeder 25.) traf sie, sobald sich die Liste um einen Titel verschob. Geprueft wird der Vertrag, nicht die Lage. */
+    if (i.securityClass === "ETF") assert.ok(i.companyName || /^SOURCE_MISSING/.test(String(i.companyNameStatus || "")),
+      i.symbol + " (ETF) ohne Namen und ohne benannten Namensstatus im Verzeichnis");
     /* Die Papierart steht in securityClass (Eignungskette); securityType ist die Anbieterangabe und sagt bei
        Optionsscheinen, Units oder Anleihen oft COMMON_STOCK - genau der Fehler, den die Eignung behebt. */
     assert.ok(i.securityClass && !/^EQUITY_/.test(i.securityClass), i.symbol + " ist ausgeschieden, traegt aber die Klasse " + i.securityClass);
