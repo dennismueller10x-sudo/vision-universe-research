@@ -210,10 +210,11 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
   const imInhalt=await page.evaluate(()=>document.documentElement.getAttribute('data-vu-tabs')==='inhalt');
   /* Klickentwurf Modul-Aktienseiten (Owner 17.11.2026): die Aktienseite hat keine Reiter, weder im Rahmen noch im Inhalt;
      am Seitenende stehen die Pillen „Diese Aktie in anderen Modulen“ (.vu-sothers, assets/stock-navigator.js). */
-  const modulAktie=await page.locator('.vu-shead--k2').count()>0;
+  const modulAktie=/^aktie/.test(view)||await page.locator('.vu-shead--k2').count()>0;
   if(imInhalt&&modulAktie){
    if(await page.locator('main nav.qp-tabs').count())befund(view,width,'Reiter auf der Modul-Aktienseite (Klickentwurf: keine)');
-   if(await page.locator('.vu-sothers').count()!==1)befund(view,width,'„Diese Aktie in anderen Modulen“ fehlt');
+   /* Ohne Aktienkopf (unbekanntes oder nicht gefuehrtes Kuerzel) gibt es auch keine Pillen. */
+   if(await page.locator('.vu-shead--k2').count()&&await page.locator('.vu-sothers').count()!==1)befund(view,width,'„Diese Aktie in anderen Modulen“ fehlt');
   }
   else if(imInhalt){
    const inhalt=page.locator('main nav.qp-tabs');
@@ -767,8 +768,11 @@ Object.defineProperty(window,'QXPages',{configurable:true,set(pages){
   if(!await dialog.evaluate(d=>d.open))befund('keyboard-navigation',width,'Strg+K oeffnet die Suche nicht');
   await searchInput.fill('TSLA');await dialog.locator('#qx-search-list a.qx-hit').filter({hasText:'TSLA'}).first().waitFor();
   await page.keyboard.press('ArrowDown');await page.keyboard.press('Enter');
-  await page.waitForFunction(()=>location.hash==='#/aktie/TSLA');await bereit(page,'aktie');
-  if(await dialog.evaluate(d=>d.open))befund('keyboard-navigation',width,'Dialog bleibt nach der Auswahl offen');
+  /* App-Konzept 2 (Owner 16./17.11.2026): Enter wirkt wie ein Tipp auf die Aktie - die Suche schliesst und die Aktien-Vorschau
+     des Rahmens oeffnet („Ganz öffnen“ fuehrt auf /aktie/#/TSLA); ohne Vorschau-Daten geht der Link selbst auf. */
+  await page.waitForFunction(()=>!document.querySelector('dialog.qx-dialog[open]')&&(document.querySelector('a[data-vsk-open]')||/TSLA/.test(location.pathname+location.hash)),null,{timeout:30000});
+  if(await dialog.evaluate(d=>d.open).catch(()=>false))befund('keyboard-navigation',width,'Dialog bleibt nach der Auswahl offen');
+  await frisch(page,'#/aktie/TSLA','aktie');
   await page.locator('.qx-stock-hero h1').filter({hasText:'Tesla'}).waitFor();
   await auditAccessibility(page,'canonical-stock-tsla',width);
   checks.push({view:'keyboard-navigation',width,pass:true});
