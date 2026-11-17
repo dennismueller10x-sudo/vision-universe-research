@@ -1,19 +1,19 @@
 {
- "generatedAt": "2026-11-11T07:43:37.195Z",
+ "generatedAt": "2026-11-17T12:35:13.392Z",
  "version": "us-security-master-1.3.0",
  "classificationRuleVersion": "us-security-master-rules-1.3.3",
  "coverageEngine": "coverage-metrics-1.0.0",
- "today": "2026-11-11",
+ "today": "2026-11-17",
  "phase": "POST_BACKFILL_CLEANUP_NO_PRICE_REQUESTS",
  "tiingoPriceRequests": 0,
  "scope": "US_LISTED_EQUITIES_PRODUCT_ELIGIBILITY",
  "rootEvidence": "PROVIDER_SUPPORTED_TICKERS",
  "securityMasterRejected": null,
  "securityMasterRejudged": {
-  "file": "quant/data/market/security-master/us-security-master.json",
+  "file": "/home/runner/work/_temp/erw/next1/us-security-master.json",
   "found": "us-security-master-1.3.0",
   "expected": "us-security-master-1.3.0",
-  "rows": 8057,
+  "rows": 8063,
   "foundRules": null,
   "expectedRules": "us-security-master-rules-1.3.3"
  },
@@ -22,13 +22,13 @@
   "sha256": "2ca5f39f0997f44c05cc853ec603fbf9f325492f7ea737d844645d97421c7eab",
   "records": 130
  },
- "listedRootCount": 6260,
+ "listedRootCount": 6264,
  "nameLayer": {
   "file": "quant/data/market/security-master/company-names.json",
   "present": true,
   "version": "company-names-1.0.0",
-  "generatedAt": "2026-11-11T07:22:00.698Z",
-  "sha256": "eb0b4532a40c1ad2b87a486380e548045f89926f4f6faa1dd6d815f89fb3bd8f",
+  "generatedAt": "2026-11-11T07:43:43.041Z",
+  "sha256": "31560294d4c5bde7c6e7a557427e71cf03d7a10324f504217591b9eb6509fb9d",
   "names": 7549,
   "reclassified": {
    "EQUITY_COMMON->TRUST": 117,
@@ -50,24 +50,24 @@
   "skippedTickerReuse": 13
  },
  "nonDestructive": {
-  "universeFile": "quant/data/market/scale/universe-FULL_UNIVERSE.json",
-  "universeMembersBefore": 7803,
-  "universeMembersAfter": 7803,
-  "universeSha256": "8d4f64c6c750ee44f3d39569047469fcdd66183bc15d846973f71e3a9be69741",
+  "universeFile": "/home/runner/work/_temp/erw/scale/universe-FULL_UNIVERSE.json",
+  "universeMembersBefore": 7807,
+  "universeMembersAfter": 7807,
+  "universeSha256": "86a8085ef771d04012527e3297bbafd70c9cff3b055c077d33214f00f920eb9d",
   "membersRemoved": 0,
   "r2ObjectsDeleted": 0,
   "note": "Die Mitgliedschaft wird nicht angetastet. Eignung ist eine zweite Schicht daneben, kein Eingriff in den Bestand."
  },
  "counts": {
-  "universeMembers": 7803,
-  "ELIGIBLE": 5213,
+  "universeMembers": 7807,
+  "ELIGIBLE": 5212,
   "SEPARATE_CLASS": 787,
-  "EXCLUDED": 1494,
-  "REVIEW": 309,
-  "productUniverse": 6309
+  "EXCLUDED": 1493,
+  "REVIEW": 315,
+  "productUniverse": 6314
  },
  "excludedByClass": {
-  "ETF": 397,
+  "ETF": 396,
   "DEBT": 147,
   "TEST_SECURITY": 44,
   "WARRANT": 461,
@@ -84,9 +84,9 @@
   "PREFERRED": 450
  },
  "reviewByReason": {
-  "UNCONFIRMED:LISTING_INACTIVE": 304,
+  "UNCONFIRMED:LISTING_INACTIVE": 314,
   "UNCONFIRMED:CLASS_PREFERRED_SEPARATE_FROM_PRIMARY_COMMON_EQUITY": 35,
-  "UNCONFIRMED:OTC_VENUE_OUT_OF_CURRENT_POLICY": 7,
+  "UNCONFIRMED:OTC_VENUE_OUT_OF_CURRENT_POLICY": 6,
   "UNCONFIRMED:CLASS_WARRANT_NOT_AN_EQUITY": 13,
   "UNCONFIRMED:CLASS_RIGHT_NOT_AN_EQUITY": 9,
   "UNCONFIRMED:CLASS_UNIT_NOT_AN_EQUITY": 7
@@ -5895,11 +5895,10 @@
    "active_status": "ACTIVE",
    "product_eligibility": "ELIGIBLE",
    "product_eligibility_reason": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
-   "evidence_source": "SECURITY_MASTER_REJUDGED+EXCHANGE_DIRECTORY",
+   "evidence_source": "SECURITY_MASTER_REJUDGED",
    "review_flags": [
     "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED",
-    "MASTER_REJUDGED:EQUITY_COMMON",
-    "EXCHANGE_DIRECTORY_LISTED_ACTIVE"
+    "MASTER_REJUDGED:EQUITY_COMMON"
    ],
    "start_date": "1987-04-23"
   },
@@ -33176,9 +33175,9 @@
    "instrument_type": "EQUITY_COMMON",
    "classification_status": "CLASSIFIED",
    "classification_confidence": "HIGH",
-   "active_status": "ACTIVE",
-   "product_eligibility": "ELIGIBLE",
-   "product_eligibility_reason": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "active_status": "INACTIVE",
+   "product_eligibility": "REVIEW",
+   "product_eligibility_reason": "UNCONFIRMED:LISTING_INACTIVE",
    "evidence_source": "SECURITY_MASTER_REJUDGED",
    "review_flags": [
     "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED",
@@ -49421,8 +49420,8 @@
    "classification_status": "CLASSIFIED",
    "classification_confidence": "HIGH",
    "active_status": "ACTIVE",
-   "product_eligibility": "REVIEW",
-   "product_eligibility_reason": "UNCONFIRMED:OTC_VENUE_OUT_OF_CURRENT_POLICY",
+   "product_eligibility": "ELIGIBLE",
+   "product_eligibility_reason": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
    "evidence_source": "SECURITY_MASTER_REJUDGED",
    "review_flags": [
     "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED",
@@ -53368,9 +53367,9 @@
    "instrument_type": "EQUITY_COMMON",
    "classification_status": "CLASSIFIED",
    "classification_confidence": "HIGH",
-   "active_status": "ACTIVE",
-   "product_eligibility": "ELIGIBLE",
-   "product_eligibility_reason": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "active_status": "INACTIVE",
+   "product_eligibility": "REVIEW",
+   "product_eligibility_reason": "UNCONFIRMED:LISTING_INACTIVE",
    "evidence_source": "SECURITY_MASTER_REJUDGED",
    "review_flags": [
     "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED",
@@ -60130,10 +60129,11 @@
    "active_status": "ACTIVE",
    "product_eligibility": "ELIGIBLE",
    "product_eligibility_reason": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
-   "evidence_source": "SECURITY_MASTER_REJUDGED",
+   "evidence_source": "SECURITY_MASTER_REJUDGED+EXCHANGE_DIRECTORY",
    "review_flags": [
     "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED",
-    "MASTER_REJUDGED:EQUITY_COMMON"
+    "MASTER_REJUDGED:EQUITY_COMMON",
+    "EXCHANGE_DIRECTORY_LISTED_ACTIVE"
    ],
    "start_date": "2018-03-08"
   },
@@ -65010,9 +65010,9 @@
    "instrument_type": "EQUITY_COMMON",
    "classification_status": "CLASSIFIED",
    "classification_confidence": "HIGH",
-   "active_status": "ACTIVE",
-   "product_eligibility": "ELIGIBLE",
-   "product_eligibility_reason": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "active_status": "INACTIVE",
+   "product_eligibility": "REVIEW",
+   "product_eligibility_reason": "UNCONFIRMED:LISTING_INACTIVE",
    "evidence_source": "SECURITY_MASTER_REJUDGED",
    "review_flags": [
     "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED",
@@ -72630,7 +72630,7 @@
    "instrument_type": "WARRANT",
    "classification_status": "CLASSIFIED",
    "classification_confidence": "HIGH",
-   "active_status": "ACTIVE",
+   "active_status": "INACTIVE",
    "product_eligibility": "EXCLUDED",
    "product_eligibility_reason": "CONFIRMED_NON_EQUITY:WARRANT",
    "evidence_source": "SECURITY_MASTER_REJUDGED",
@@ -76767,10 +76767,9 @@
    "active_status": "ACTIVE",
    "product_eligibility": "ELIGIBLE",
    "product_eligibility_reason": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
-   "evidence_source": "SECURITY_MASTER_REJUDGED",
+   "evidence_source": "UNIVERSE_ROW_CLASSIFIED",
    "review_flags": [
-    "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED",
-    "MASTER_REJUDGED:EQUITY_COMMON"
+    "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED"
    ],
    "start_date": "2021-03-10"
   },
@@ -84639,10 +84638,11 @@
    "active_status": "ACTIVE",
    "product_eligibility": "ELIGIBLE",
    "product_eligibility_reason": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
-   "evidence_source": "SECURITY_MASTER_REJUDGED",
+   "evidence_source": "SECURITY_MASTER_REJUDGED+EXCHANGE_DIRECTORY",
    "review_flags": [
     "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED",
-    "MASTER_REJUDGED:EQUITY_COMMON"
+    "MASTER_REJUDGED:EQUITY_COMMON",
+    "EXCHANGE_DIRECTORY_LISTED_ACTIVE"
    ],
    "start_date": "2021-10-08"
   },
@@ -84687,7 +84687,7 @@
    "instrument_type": "WARRANT",
    "classification_status": "CLASSIFIED",
    "classification_confidence": "HIGH",
-   "active_status": "ACTIVE",
+   "active_status": "INACTIVE",
    "product_eligibility": "EXCLUDED",
    "product_eligibility_reason": "CONFIRMED_NON_EQUITY:WARRANT",
    "evidence_source": "SECURITY_MASTER_REJUDGED",
@@ -84738,9 +84738,9 @@
    "instrument_type": "EQUITY_COMMON",
    "classification_status": "CLASSIFIED",
    "classification_confidence": "HIGH",
-   "active_status": "ACTIVE",
-   "product_eligibility": "ELIGIBLE",
-   "product_eligibility_reason": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "active_status": "INACTIVE",
+   "product_eligibility": "REVIEW",
+   "product_eligibility_reason": "UNCONFIRMED:LISTING_INACTIVE",
    "evidence_source": "SECURITY_MASTER_REJUDGED",
    "review_flags": [
     "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED",
@@ -89540,7 +89540,7 @@
    "instrument_type": "PREFERRED",
    "classification_status": "CLASSIFIED",
    "classification_confidence": "MEDIUM",
-   "active_status": "ACTIVE",
+   "active_status": "INACTIVE",
    "product_eligibility": "SEPARATE_CLASS",
    "product_eligibility_reason": "CONFIRMED_SEPARATE_CLASS:PREFERRED",
    "evidence_source": "SECURITY_MASTER_REJUDGED",
@@ -93105,10 +93105,11 @@
    "active_status": "ACTIVE",
    "product_eligibility": "ELIGIBLE",
    "product_eligibility_reason": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
-   "evidence_source": "SECURITY_MASTER_REJUDGED",
+   "evidence_source": "SECURITY_MASTER_REJUDGED+EXCHANGE_DIRECTORY",
    "review_flags": [
     "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED",
-    "MASTER_REJUDGED:EQUITY_COMMON"
+    "MASTER_REJUDGED:EQUITY_COMMON",
+    "EXCHANGE_DIRECTORY_LISTED_ACTIVE"
    ],
    "start_date": "2022-12-01"
   },
@@ -96942,9 +96943,9 @@
    "instrument_type": "EQUITY_COMMON",
    "classification_status": "CLASSIFIED",
    "classification_confidence": "HIGH",
-   "active_status": "ACTIVE",
-   "product_eligibility": "ELIGIBLE",
-   "product_eligibility_reason": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "active_status": "INACTIVE",
+   "product_eligibility": "REVIEW",
+   "product_eligibility_reason": "UNCONFIRMED:LISTING_INACTIVE",
    "evidence_source": "SECURITY_MASTER_REJUDGED",
    "review_flags": [
     "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED",
@@ -102180,7 +102181,7 @@
    "instrument_type": "ETF",
    "classification_status": "CLASSIFIED",
    "classification_confidence": "HIGH",
-   "active_status": "ACTIVE",
+   "active_status": "INACTIVE",
    "product_eligibility": "EXCLUDED",
    "product_eligibility_reason": "CONFIRMED_NON_EQUITY:ETF",
    "evidence_source": "SECURITY_MASTER_REJUDGED+NAME_LAYER",
@@ -106313,10 +106314,11 @@
    "active_status": "ACTIVE",
    "product_eligibility": "ELIGIBLE",
    "product_eligibility_reason": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
-   "evidence_source": "SECURITY_MASTER_REJUDGED",
+   "evidence_source": "SECURITY_MASTER_REJUDGED+EXCHANGE_DIRECTORY",
    "review_flags": [
     "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED",
-    "MASTER_REJUDGED:EQUITY_COMMON"
+    "MASTER_REJUDGED:EQUITY_COMMON",
+    "EXCHANGE_DIRECTORY_LISTED_ACTIVE"
    ],
    "start_date": "2025-08-08"
   },
@@ -116390,16 +116392,16 @@
    "ticker": "MEMY",
    "securityId": "ref_MEMY",
    "exchange": "BATS",
-   "instrument_type": "ETF",
+   "instrument_type": "EQUITY_COMMON",
    "classification_status": "CLASSIFIED",
    "classification_confidence": "HIGH",
    "active_status": "ACTIVE",
-   "product_eligibility": "EXCLUDED",
-   "product_eligibility_reason": "CONFIRMED_NON_EQUITY:ETF",
-   "evidence_source": "SECURITY_MASTER_REJUDGED+EXCHANGE_DIRECTORY",
+   "product_eligibility": "ELIGIBLE",
+   "product_eligibility_reason": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "evidence_source": "SECURITY_MASTER_REJUDGED",
    "review_flags": [
-    "MASTER_REJUDGED:EQUITY_COMMON",
-    "EXCHANGE_DIRECTORY_RECLASSIFIED:EQUITY_COMMON"
+    "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED",
+    "MASTER_REJUDGED:EQUITY_COMMON"
    ],
    "start_date": "2026-01-20"
   },
@@ -116864,9 +116866,9 @@
    "instrument_type": "EQUITY_COMMON",
    "classification_status": "CLASSIFIED",
    "classification_confidence": "HIGH",
-   "active_status": "ACTIVE",
-   "product_eligibility": "ELIGIBLE",
-   "product_eligibility_reason": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "active_status": "INACTIVE",
+   "product_eligibility": "REVIEW",
+   "product_eligibility_reason": "UNCONFIRMED:LISTING_INACTIVE",
    "evidence_source": "SECURITY_MASTER_REJUDGED",
    "review_flags": [
     "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED",
@@ -119177,9 +119179,9 @@
    "instrument_type": "EQUITY_COMMON",
    "classification_status": "CLASSIFIED",
    "classification_confidence": "HIGH",
-   "active_status": "ACTIVE",
-   "product_eligibility": "ELIGIBLE",
-   "product_eligibility_reason": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "active_status": "INACTIVE",
+   "product_eligibility": "REVIEW",
+   "product_eligibility_reason": "UNCONFIRMED:LISTING_INACTIVE",
    "evidence_source": "SECURITY_MASTER_REJUDGED",
    "review_flags": [
     "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED",
@@ -119194,7 +119196,7 @@
    "instrument_type": "WARRANT",
    "classification_status": "REVIEW",
    "classification_confidence": "LOW",
-   "active_status": "ACTIVE",
+   "active_status": "INACTIVE",
    "product_eligibility": "REVIEW",
    "product_eligibility_reason": "UNCONFIRMED:CLASS_WARRANT_NOT_AN_EQUITY",
    "evidence_source": "SECURITY_MASTER_REJUDGED",
@@ -125748,7 +125750,7 @@
    "instrument_type": "SPAC",
    "classification_status": "CLASSIFIED",
    "classification_confidence": "HIGH",
-   "active_status": "ACTIVE",
+   "active_status": "INACTIVE",
    "product_eligibility": "SEPARATE_CLASS",
    "product_eligibility_reason": "CONFIRMED_SEPARATE_CLASS:SPAC",
    "evidence_source": "SECURITY_MASTER_REJUDGED+NAME_LAYER",
@@ -125764,7 +125766,7 @@
    "instrument_type": "UNIT",
    "classification_status": "REVIEW",
    "classification_confidence": "LOW",
-   "active_status": "ACTIVE",
+   "active_status": "INACTIVE",
    "product_eligibility": "REVIEW",
    "product_eligibility_reason": "UNCONFIRMED:CLASS_UNIT_NOT_AN_EQUITY",
    "evidence_source": "SECURITY_MASTER_REJUDGED",
@@ -125782,7 +125784,7 @@
    "instrument_type": "WARRANT",
    "classification_status": "REVIEW",
    "classification_confidence": "LOW",
-   "active_status": "ACTIVE",
+   "active_status": "INACTIVE",
    "product_eligibility": "REVIEW",
    "product_eligibility_reason": "UNCONFIRMED:CLASS_WARRANT_NOT_AN_EQUITY",
    "evidence_source": "SECURITY_MASTER_REJUDGED",
@@ -131070,7 +131072,7 @@
    "instrument_type": "UNIT",
    "classification_status": "CLASSIFIED",
    "classification_confidence": "HIGH",
-   "active_status": "ACTIVE",
+   "active_status": "INACTIVE",
    "product_eligibility": "EXCLUDED",
    "product_eligibility_reason": "CONFIRMED_NON_EQUITY:UNIT",
    "evidence_source": "SECURITY_MASTER_REJUDGED",
@@ -132058,13 +132060,81 @@
     "MASTER_REJUDGED:EQUITY_COMMON"
    ],
    "start_date": "2025-01-07"
+  },
+  {
+   "ticker": "AZR",
+   "securityId": "ref_AZR",
+   "exchange": "NASDAQ",
+   "instrument_type": "EQUITY_COMMON",
+   "classification_status": "CLASSIFIED",
+   "classification_confidence": "HIGH",
+   "active_status": "ACTIVE",
+   "product_eligibility": "ELIGIBLE",
+   "product_eligibility_reason": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "evidence_source": "SECURITY_MASTER_REJUDGED",
+   "review_flags": [
+    "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED",
+    "MASTER_REJUDGED:EQUITY_COMMON"
+   ],
+   "start_date": "2018-07-27"
+  },
+  {
+   "ticker": "FGC",
+   "securityId": "ref_FGC",
+   "exchange": "NASDAQ",
+   "instrument_type": "EQUITY_COMMON",
+   "classification_status": "CLASSIFIED",
+   "classification_confidence": "HIGH",
+   "active_status": "ACTIVE",
+   "product_eligibility": "ELIGIBLE",
+   "product_eligibility_reason": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "evidence_source": "SECURITY_MASTER_REJUDGED",
+   "review_flags": [
+    "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED",
+    "MASTER_REJUDGED:EQUITY_COMMON"
+   ],
+   "start_date": "2014-04-01"
+  },
+  {
+   "ticker": "IRLA",
+   "securityId": "ref_IRLA",
+   "exchange": "NASDAQ",
+   "instrument_type": "EQUITY_COMMON",
+   "classification_status": "CLASSIFIED",
+   "classification_confidence": "HIGH",
+   "active_status": "ACTIVE",
+   "product_eligibility": "ELIGIBLE",
+   "product_eligibility_reason": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "evidence_source": "SECURITY_MASTER_REJUDGED",
+   "review_flags": [
+    "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED",
+    "MASTER_REJUDGED:EQUITY_COMMON"
+   ],
+   "start_date": "2019-05-09"
+  },
+  {
+   "ticker": "SRTM",
+   "securityId": "ref_SRTM",
+   "exchange": "NASDAQ",
+   "instrument_type": "EQUITY_COMMON",
+   "classification_status": "CLASSIFIED",
+   "classification_confidence": "HIGH",
+   "active_status": "ACTIVE",
+   "product_eligibility": "ELIGIBLE",
+   "product_eligibility_reason": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "evidence_source": "SECURITY_MASTER_REJUDGED",
+   "review_flags": [
+    "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED",
+    "MASTER_REJUDGED:EQUITY_COMMON"
+   ],
+   "start_date": "2023-10-09"
   }
  ],
  "exchangeDirectoryApplied": {
-  "at": "2026-11-11T07:43:38.334Z",
+  "at": "2026-11-17T12:35:14.983Z",
   "ruleVersion": "exchange-directory-class-1.0.0",
   "source": "NASDAQ_TRADER_SYMBOL_DIRECTORY",
-  "directoryAsOf": "2026-11-10",
+  "directoryAsOf": "2026-11-17",
   "classes": [
    "DEBT",
    "ETN",
@@ -132074,11 +132144,11 @@
    "UNIT",
    "ETF"
   ],
-  "changed": 508,
+  "changed": 510,
   "skippedTickerReuse": 13,
   "byTransition": {
-   "EQUITY_COMMON/REVIEW -> EQUITY_COMMON/ELIGIBLE": 30,
-   "EQUITY_COMMON/ELIGIBLE -> ETF/EXCLUDED": 249,
+   "EQUITY_COMMON/REVIEW -> EQUITY_COMMON/ELIGIBLE": 33,
+   "EQUITY_COMMON/ELIGIBLE -> ETF/EXCLUDED": 248,
    "EQUITY_COMMON/REVIEW -> ETF/EXCLUDED": 2,
    "PREFERRED/REVIEW -> PREFERRED/SEPARATE_CLASS": 25,
    "EQUITY_COMMON/ELIGIBLE -> DEBT/EXCLUDED": 110,
@@ -132094,12 +132164,12 @@
    "RIGHT/REVIEW -> RIGHT/EXCLUDED": 5
   },
   "countsBefore": {
-   "universeMembers": 7803,
-   "ELIGIBLE": 5590,
+   "universeMembers": 7807,
+   "ELIGIBLE": 5585,
    "SEPARATE_CLASS": 778,
    "EXCLUDED": 1060,
-   "REVIEW": 375,
-   "productUniverse": 6743
+   "REVIEW": 384,
+   "productUniverse": 6747
   },
   "script": "scripts/market/apply-exchange-directory.mjs"
  }

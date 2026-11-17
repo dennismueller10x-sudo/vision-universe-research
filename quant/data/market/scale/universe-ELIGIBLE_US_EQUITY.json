@@ -1,18 +1,18 @@
 {
- "generatedAt": "2026-11-11T07:43:37.195Z",
+ "generatedAt": "2026-11-17T12:35:13.392Z",
  "gate": "ELIGIBLE_US_EQUITY",
- "derivedFrom": "quant/data/market/scale/universe-FULL_UNIVERSE.json",
- "derivedFromSha256": "8d4f64c6c750ee44f3d39569047469fcdd66183bc15d846973f71e3a9be69741",
+ "derivedFrom": "/home/runner/work/_temp/erw/scale/universe-FULL_UNIVERSE.json",
+ "derivedFromSha256": "86a8085ef771d04012527e3297bbafd70c9cff3b055c077d33214f00f920eb9d",
  "version": "us-security-master-1.3.0",
- "today": "2026-11-11",
+ "today": "2026-11-17",
  "method": "PRODUCT_ELIGIBILITY_LAYER",
  "provider": "tiingo",
- "actualSize": 6309,
+ "actualSize": 6314,
  "counts": {
-  "ELIGIBLE": 5213,
+  "ELIGIBLE": 5212,
   "SEPARATE_CLASS": 787,
-  "REVIEW": 309,
-  "EXCLUDED_NOT_LISTED_HERE": 1494
+  "REVIEW": 315,
+  "EXCLUDED_NOT_LISTED_HERE": 1493
  },
  "note": "Abgeleitet, nicht gepflegt. Die Mitgliedschaft steht in universe-FULL_UNIVERSE.json und bleibt dort vollstaendig. Verdachtsfaelle (REVIEW) sind enthalten und markiert.",
  "securities": [
@@ -38774,7 +38774,7 @@
    "industryStatus": "SOURCE_MISSING",
    "startDate": "2005-11-14",
    "selection": "inheritedFrom:GATE_2000",
-   "productEligibility": "ELIGIBLE"
+   "productEligibility": "REVIEW"
   },
   {
    "securityId": "ref_BEP",
@@ -57534,7 +57534,7 @@
    "industryStatus": "SOURCE_MISSING",
    "startDate": "2015-02-02",
    "selection": "ruleBased",
-   "productEligibility": "REVIEW"
+   "productEligibility": "ELIGIBLE"
   },
   {
    "securityId": "ref_ATEX",
@@ -62034,7 +62034,7 @@
    "industryStatus": "SOURCE_MISSING",
    "startDate": "2016-06-10",
    "selection": "ruleBased",
-   "productEligibility": "ELIGIBLE"
+   "productEligibility": "REVIEW"
   },
   {
    "securityId": "ref_COE",
@@ -74954,7 +74954,7 @@
    "industryStatus": "SOURCE_MISSING",
    "startDate": "2019-05-09",
    "selection": "ruleBased",
-   "productEligibility": "ELIGIBLE"
+   "productEligibility": "REVIEW"
   },
   {
    "securityId": "ref_SPFI",
@@ -94834,7 +94834,7 @@
    "industryStatus": "SOURCE_MISSING",
    "startDate": "2021-10-14",
    "selection": "ruleBased",
-   "productEligibility": "ELIGIBLE"
+   "productEligibility": "REVIEW"
   },
   {
    "securityId": "ref_GTLB",
@@ -104714,7 +104714,7 @@
    "industryStatus": "SOURCE_MISSING",
    "startDate": "2026-02-06",
    "selection": "appendedFrom:US_SECURITY_MASTER",
-   "productEligibility": "ELIGIBLE"
+   "productEligibility": "REVIEW"
   },
   {
    "securityId": "ref_ADAMO",
@@ -116397,6 +116397,26 @@
    "productEligibility": "ELIGIBLE"
   },
   {
+   "securityId": "ref_MEMY",
+   "ticker": "MEMY",
+   "company": null,
+   "exchange": "BATS",
+   "country": "US",
+   "currency": "USD",
+   "assetType": "Stock",
+   "instrumentType": "COMMON_STOCK",
+   "active": true,
+   "providerSymbol": "MEMY",
+   "provider": "tiingo",
+   "sector": null,
+   "sectorStatus": "SOURCE_MISSING",
+   "industry": null,
+   "industryStatus": "SOURCE_MISSING",
+   "startDate": "2026-01-20",
+   "selection": "appendedFrom:US_SECURITY_MASTER",
+   "productEligibility": "ELIGIBLE"
+  },
+  {
    "securityId": "ref_MENS",
    "ticker": "MENS",
    "company": null,
@@ -116694,7 +116714,7 @@
    "industryStatus": "SOURCE_MISSING",
    "startDate": "2025-01-10",
    "selection": "appendedFrom:US_SECURITY_MASTER",
-   "productEligibility": "ELIGIBLE"
+   "productEligibility": "REVIEW"
   },
   {
    "securityId": "ref_MKDW",
@@ -118094,7 +118114,7 @@
    "industryStatus": "SOURCE_MISSING",
    "startDate": "2023-09-29",
    "selection": "appendedFrom:US_SECURITY_MASTER",
-   "productEligibility": "ELIGIBLE"
+   "productEligibility": "REVIEW"
   },
   {
    "securityId": "ref_NVNIW",
@@ -126193,6 +126213,86 @@
    "industry": null,
    "industryStatus": "SOURCE_MISSING",
    "startDate": "2025-01-07",
+   "selection": "appendedFrom:US_SECURITY_MASTER",
+   "productEligibility": "ELIGIBLE"
+  },
+  {
+   "securityId": "ref_AZR",
+   "ticker": "AZR",
+   "company": null,
+   "exchange": "NASDAQ",
+   "country": "US",
+   "currency": "USD",
+   "assetType": "Stock",
+   "instrumentType": "COMMON_STOCK",
+   "active": true,
+   "providerSymbol": "AZR",
+   "provider": "tiingo",
+   "sector": null,
+   "sectorStatus": "SOURCE_MISSING",
+   "industry": null,
+   "industryStatus": "SOURCE_MISSING",
+   "startDate": "2018-07-27",
+   "selection": "appendedFrom:US_SECURITY_MASTER",
+   "productEligibility": "ELIGIBLE"
+  },
+  {
+   "securityId": "ref_FGC",
+   "ticker": "FGC",
+   "company": null,
+   "exchange": "NASDAQ",
+   "country": "US",
+   "currency": "USD",
+   "assetType": "Stock",
+   "instrumentType": "COMMON_STOCK",
+   "active": true,
+   "providerSymbol": "FGC",
+   "provider": "tiingo",
+   "sector": null,
+   "sectorStatus": "SOURCE_MISSING",
+   "industry": null,
+   "industryStatus": "SOURCE_MISSING",
+   "startDate": "2014-04-01",
+   "selection": "appendedFrom:US_SECURITY_MASTER",
+   "productEligibility": "ELIGIBLE"
+  },
+  {
+   "securityId": "ref_IRLA",
+   "ticker": "IRLA",
+   "company": null,
+   "exchange": "NASDAQ",
+   "country": "US",
+   "currency": "USD",
+   "assetType": "Stock",
+   "instrumentType": "COMMON_STOCK",
+   "active": true,
+   "providerSymbol": "IRLA",
+   "provider": "tiingo",
+   "sector": null,
+   "sectorStatus": "SOURCE_MISSING",
+   "industry": null,
+   "industryStatus": "SOURCE_MISSING",
+   "startDate": "2019-05-09",
+   "selection": "appendedFrom:US_SECURITY_MASTER",
+   "productEligibility": "ELIGIBLE"
+  },
+  {
+   "securityId": "ref_SRTM",
+   "ticker": "SRTM",
+   "company": null,
+   "exchange": "NASDAQ",
+   "country": "US",
+   "currency": "USD",
+   "assetType": "Stock",
+   "instrumentType": "COMMON_STOCK",
+   "active": true,
+   "providerSymbol": "SRTM",
+   "provider": "tiingo",
+   "sector": null,
+   "sectorStatus": "SOURCE_MISSING",
+   "industry": null,
+   "industryStatus": "SOURCE_MISSING",
+   "startDate": "2023-10-09",
    "selection": "appendedFrom:US_SECURITY_MASTER",
    "productEligibility": "ELIGIBLE"
   }
