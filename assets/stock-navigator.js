@@ -28,7 +28,7 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function (SC, root) {
   "use strict";
 
-  var VERSION = "stock-navigator-4.1.0";
+  var VERSION = "stock-navigator-5.0.0";
   var SPRITE = "/assets/product-icons.svg#";
   /* Reihenfolge = StockContext.PRODUCTS. icon: Symbol im Sprite. "technik" ist das Chartbild (/elliott/#/<T>), "technical" die Produktwelt Technical. */
   var MODULES = {
@@ -158,69 +158,184 @@
     return function () { alive = false; if (nav.parentNode) nav.parentNode.removeChild(nav); };
   }
 
-  /* ------------------------------------------------------------ Aktienkopf */
+  /* ------------------------------------------------------------ Aktienkopf
+     Klickentwurf „Modul-Aktienseiten“ (Owner 17.11.2026): Zurück-Pfeil zur Aktienseite + Modul-Etikett, großes Logo,
+     Kurzname als Überschrift, darunter der Rest des Namens · Kürzel · Börse, Herz bzw. die Knöpfe der Seite, großer Kurs
+     mit Pille zum Vortag, darunter die Schlusskurs-Zeile. Keine Reiterleiste mehr: am Seitenende steht
+     „Diese Aktie in anderen Modulen“ (others) – nur Module mit Nachweis, dazu die Pille „Aktienseite“. */
   var KIND = { live: "Live", delayed: "Verzögert", close: "Schlusskurs", intraday: "Letzter Kurs" };
   function num(v, d) { return Number(v).toLocaleString("de-DE", { minimumFractionDigits: d, maximumFractionDigits: d }); }
   var CUR = { USD: "$", EUR: "€", GBP: "£", CHF: "CHF" };
   /** Kurs als Text: 197,61 $ (Waehrungszeichen wie in Discover nachgestellt). */
-  function money(v, cur) { var c = CUR[cur] || cur || ""; return num(v, Math.abs(v) >= 1000 ? 0 : 2) + (c ? "\u00a0" + c : ""); }
-  /** Kursblock: Wert, Veraenderung, Art und Zeitbezug. Ohne Wert kein Block (keine erfundene Zahl). */
+  function money(v, cur) { var c = CUR[cur] || cur || ""; return num(v, Math.abs(v) >= 1000 ? 0 : 2) + (c ? " " + c : ""); }
+  /** Kursblock: großer Wert mit Pille zum Vortag, darunter Art, Zeitbezug und Bezug der Pille („Schlusskurs 13.11.2026 · zum Vortag“).
+   *  Ohne Wert kein Block (keine erfundene Zahl). Klassen bleiben (vu-shead-value/-change/-when/-alt): Seiten lesen und ersetzen sie. */
   function priceHtml(p) {
     if (!p || typeof p.value !== "number" || !isFinite(p.value)) return "";
     var ch = typeof p.changePct === "number" && isFinite(p.changePct) ? p.changePct : null;
     var dir = ch == null ? "flat" : ch > 0 ? "up" : ch < 0 ? "down" : "flat";
-    var arrow = dir === "up" ? "▲" : dir === "down" ? "▼" : "";
-    var when = [KIND[p.kind] || p.kind || "", p.at || ""].filter(Boolean).join(" · ");
-    return '<div class="vu-shead-price" data-direction="' + dir + '"><b class="vu-shead-value">' + esc(money(p.value, p.currency)) + "</b>" +
-      (ch == null ? "" : '<span role="img" aria-label="' + esc((ch > 0 ? 'Plus ' : ch < 0 ? 'Minus ' : 'Unverändert ') + num(Math.abs(ch), 2) + ' Prozent' + (p.changeLabel ? ' ' + p.changeLabel : '')) + '" class="vu-shead-change">' + arrow + "\u00a0" + esc((ch > 0 ? "+" : "") + num(ch, 2).replace("-", "−")) + "\u00a0%" +
-        (p.changeLabel ? '<small> ' + esc(p.changeLabel) + "</small>" : "") + "</span>") +
-      (when || p.alt ? '<span class="vu-shead-when">' + (p.kind === "live" ? '<i class="vu-shead-live" aria-hidden="true"></i>' : "") + esc(when) +
+    var arrow = dir === "up" ? "▲" : dir === "down" ? "▼" : "◆";
+    var when = [[KIND[p.kind] || p.kind || "", p.at || ""].filter(Boolean).join(" "), ch == null ? "" : p.changeLabel || ""].filter(Boolean).join(" · ");
+    return '<div class="vu-shead-price" data-direction="' + dir + '"><div class="vu-shead-row"><b class="vu-shead-value">' + esc(money(p.value, p.currency)) + "</b>" +
+      (ch == null ? "" : '<span role="img" aria-label="' + esc((ch > 0 ? "Plus " : ch < 0 ? "Minus " : "Unverändert ") + num(Math.abs(ch), 2) + " Prozent" + (p.changeLabel ? " " + p.changeLabel : "")) + '" class="vu-shead-change">' + arrow + " " + esc((ch > 0 ? "+" : "") + num(ch, 2).replace("-", "−")) + " %</span>") + "</div>" +
+      (when || p.alt ? '<p class="vu-shead-when">' + (p.kind === "live" ? '<i class="vu-shead-live" aria-hidden="true"></i>' : "") + esc(when) +
         /* p.alt: derselbe Kurs in einer zweiten Waehrung, klein (Quant: Dollar gross, Euro daneben; Konzept Quant 2026-11). */
-        (p.alt ? '<span class="vu-shead-alt">≈\u00a0' + esc(p.alt) + "</span>" : "") + "</span>" : "") + "</div>";
+        (p.alt ? '<span class="vu-shead-alt">≈ ' + esc(p.alt) + "</span>" : "") + "</p>" : "") + "</div>";
   }
   function logoHtml(o) {
     var t = esc(o.ctx.displaySymbol), mono = esc((o.name || o.ctx.displaySymbol || "?").replace(/[^A-Za-z0-9ÄÖÜäöü]/g, "").slice(0, 1).toUpperCase());
+    void t;
     var src = o.logo === false ? null : o.logo || (o.ctx.region === "US" ? "/discover/logos/files/" + encodeURIComponent(o.ctx.ticker) + ".png" : null);
-    return '<span class="vu-shead-logo" data-mono="' + mono + '">' + (src ? '<img src="' + esc(src) + '" alt="" width="48" height="48" loading="lazy" decoding="async">' : "") + "</span>";
+    return '<span class="vu-shead-logo" data-mono="' + mono + '">' + (src ? '<img src="' + esc(src) + '" alt="" width="76" height="76" loading="lazy" decoding="async">' : "") + "</span>";
   }
   /** Anzeigename aus dem Manifest-Ausschnitt. Der Ausschnitt fuehrt US-Namen unter dem Kuerzel (wie seine Modullisten),
    *  nicht unter dem Kontext-Schluessel (US:ref_<T>); Europa traegt noch keine Namen. */
   function shardName(ctx, m) {
     return ctx && ctx.region === "US" && m && m.names && typeof m.names[ctx.ticker] === "string" ? m.names[ctx.ticker] : null;
   }
+
+  /* Kurzname der Überschrift (nur Darstellung): Rechtsform, Aktiengattung und allgemeine Zusätze am Ende fallen weg,
+     solange ein Wort bleibt („Take-Two Interactive Software Inc“ → „Take-Two“, „Meta Platforms Class A“ → „Meta“).
+     Der volle Name steht darunter. */
+  var LEGAL = /,?\s+(Inc\.?|Incorporated|Corp\.?|Corporation|Co\.?|Company|Ltd\.?|Limited|plc|PLC|N\.V\.|S\.A\.|SE|AG|LP|L\.P\.|Holdings?|Group|Class [A-Z]|Cl [A-Z]|Ordinary Shares?|Common Stock|ADR|\(The\)|The)$/i;
+  var GENERIC = /\s+(Interactive|Software|Technologies|Technology|Platforms|Systems|International|Enterprises|Industries)$/i;
+  function shortName(name) {
+    var s = String(name || "").replace(/\s+/g, " ").trim(), prev;
+    do { prev = s; s = s.replace(LEGAL, "").trim(); } while (s !== prev && s);
+    do { prev = s; if (s.indexOf(" ") > 0) s = s.replace(GENERIC, "").trim(); } while (s !== prev && s.indexOf(" ") > 0);
+    return s || String(name || "").trim();
+  }
+  /** Zeile unter der Überschrift: der Rest des vollen Namens (ohne Rechtsform) · Kürzel · Börse. */
+  function subLine(full, short, ticker, exchange) {
+    var f = String(full || "").replace(/\s+/g, " ").trim(), prev;
+    do { prev = f; f = f.replace(LEGAL, "").trim(); } while (f !== prev && f);
+    var rest = f && f !== short ? (f.indexOf(short + " ") === 0 ? f.slice(short.length + 1) : f) : "";
+    return [rest, ticker, exchange].filter(Boolean);
+  }
+
+  /* Merken (Herz): dieselbe lokale Liste wie Discover und die Aktien-Vorschau (assets/vu-stock-sheet.js#watchStore),
+     angemeldet über assets/watchlist-button.js#couple an die Konto-Watchlist gekoppelt. Nur, wenn die Seite keine eigenen
+     Knöpfe mitgibt (o.actions). */
+  var WATCH_KEY = "vu-discover-watchlist-v1";
+  function localList() { try { var a = JSON.parse(root.localStorage.getItem(WATCH_KEY) || "[]"); return Array.isArray(a) ? a.filter(function (s) { return /^[A-Z0-9.\-]{1,24}$/.test(s); }).slice(0, 100) : []; } catch (e) { return []; } }
+  var localWatch = {
+    has: function (t) { return localList().indexOf(t) >= 0; },
+    toggle: function (t) { var l = localList(), i = l.indexOf(t); if (i < 0) l.unshift(t); else l.splice(i, 1); try { root.localStorage.setItem(WATCH_KEY, JSON.stringify(l)); } catch (e) { /* nur diese Sitzung */ } return i < 0; }
+  };
+  function watchStore() { var W = root.VUWatchButton; return W && W.couple ? W.couple(localWatch) : localWatch; }
+  var HEART = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.3-9.4C1.4 8 3.6 4.5 7 4.5c2 0 3.7 1.1 5 3 1.3-1.9 3-3 5-3 3.4 0 5.6 3.5 4.3 7.1C19.5 16.4 12 21 12 21z"/></svg>';
+  function heart(doc, t) {
+    var b = doc.createElement("button");
+    b.type = "button"; b.className = "vu-shead-heart"; b.innerHTML = HEART;
+    var paint = function () { var on = watchStore().has(t); b.setAttribute("aria-pressed", String(on)); b.setAttribute("aria-label", t + (on ? " von der Watchlist entfernen" : " auf die Watchlist")); };
+    b.addEventListener("click", function () { watchStore().toggle(t); paint(); });
+    paint();
+    if (root.addEventListener) ["vu-watchlist-ready", "vu-watchlist-change"].forEach(function (e) { root.addEventListener(e, function () { if (b.isConnected) paint(); }); });
+    return b;
+  }
+
+  /* ------------------------------------------- Diese Aktie in anderen Modulen
+     Pillen am Seitenende, Reihenfolge wie im Klickentwurf. „Elliott“ ist das Bild unter /elliott/#/<T> (Modul technik).
+     Nur Module mit Nachweis im Verfuegbarkeits-Ausschnitt (state "available"); ohne Ausschnitt nur „Aktienseite“. */
+  var OTHERS = ["discover", "quant", "technical", "fundamental", "hedgefonds", "technik", "supertrader"];
+  function aktieHref(ctx) { return ctx.region === "US" ? "/aktie/#/" + encodeURIComponent(ctx.ticker) : SC.href(ctx, "discover"); }
+  function othersHtml(ctx, states, current) {
+    var cur = perspectiveOf(current), by = {};
+    (states || []).forEach(function (s) { by[s.product] = s; });
+    var pills = OTHERS.filter(function (p) { return p !== cur && by[p] && by[p].state === "available" && by[p].href; }).map(function (p) {
+      var m = MODULES[p];
+      return '<a class="vu-sothers-pill" href="' + esc(by[p].href) + '" data-module="' + esc(p) + '"><span class="vu-sothers-hud"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="' + SPRITE + esc(m.icon) + '"/></svg></span>' + esc(m.plain || m.label) + "</a>";
+    });
+    pills.push('<a class="vu-sothers-pill vu-sothers-pill--aktie" href="' + esc(aktieHref(ctx)) + '" data-module="aktie"><svg class="vu-sothers-ic" viewBox="0 0 24 24" aria-hidden="true"><use href="' + SPRITE + 'chartbild"/></svg>Aktienseite</a>');
+    return '<h2 class="vu-sothers-h">Diese Aktie in anderen Modulen</h2><div class="vu-sothers-list">' + pills.join("") + "</div>";
+  }
   /**
-   * Einheitlicher Aktienkopf. o: {ctx, current, name, exchange, logo, price:{value,currency,changePct,changeLabel,kind,at}, back:{href,label}, actions: Node}
-   * Zeichnet Kopf + Navigator in host. @returns {{setPrice:function, dispose:function, el:Element}}
+   * Pillen „Diese Aktie in anderen Modulen“ in host zeichnen (sofort mit „Aktienseite“, nach dem Ausschnitt vollständig).
+   * @returns {{el: Element, dispose: function}}
+   */
+  function others(host, ctx, current, opts) {
+    if (!host || !ctx) return { el: null, dispose: function () {} };
+    var o = opts || {}, alive = true, doc = host.ownerDocument, box = doc.createElement("nav");
+    box.className = "vu-sothers"; box.setAttribute("aria-label", "Diese Aktie in anderen Modulen"); box.setAttribute("data-key", SC.key(ctx));
+    box.innerHTML = othersHtml(ctx, [], current);
+    host.appendChild(box);
+    loadShard(ctx, o.fetch).then(function (m) { if (alive && m) box.innerHTML = othersHtml(ctx, SC.availability(ctx, m), current); });
+    return { el: box, dispose: function () { alive = false; if (box.parentNode) box.parentNode.removeChild(box); } };
+  }
+
+  /**
+   * Einheitlicher Aktienkopf der Modul-Aktienseiten. o: {ctx, current, name, exchange, logo, price:{value,currency,changePct,changeLabel,kind,at},
+   * actions: Node (ersetzt das Herz), others: false | Element (Ort der Pillen; Standard: Ende des umgebenden <main>, bleibt dort am Ende)}.
+   * o.back wird nicht mehr gezeigt: der Zurück-Pfeil führt immer zur Aktienseite /aktie/#/<T>.
+   * @returns {{setPrice:function, dispose:function, el:Element, others:{el:Element, place:function}}}
    */
   function head(host, o) {
-    if (!host || !o || !o.ctx) return { setPrice: function () {}, dispose: function () {}, el: null };
-    var doc = host.ownerDocument, wrap = doc.createElement("header");
-    wrap.className = "vu-shead" + (o.compact ? " vu-shead--compact" : "");
+    if (!host || !o || !o.ctx) return { setPrice: function () {}, dispose: function () {}, el: null, others: { el: null, place: function () {} } };
+    var doc = host.ownerDocument, wrap = doc.createElement("header"), ctx = o.ctx, m = MODULES[o.current] || null;
+    var full = o.name || ctx.name || ctx.displaySymbol, short = shortName(full);
+    wrap.className = "vu-shead vu-shead--k2" + (o.compact ? " vu-shead--compact" : "");
     /* Aktie der Seite für den Atlas-Knopf der Kopfzeile (assets/atlas-sheet.js). */
-    wrap.setAttribute("data-vu-stock", o.ctx.displaySymbol || ""); wrap.setAttribute("data-vu-stock-name", o.name || o.ctx.displaySymbol || "");
-    var meta = [o.ctx.displaySymbol, o.exchange].filter(Boolean).map(esc).join(" · ");
-    wrap.innerHTML = (o.back ? '<a class="vu-shead-back" href="' + esc(o.back.href) + '" aria-label="' + esc(o.back.label) + '"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span class="vu-shead-backtext">' + esc(o.back.label) + "</span></a>" : "") +
-      '<div class="vu-shead-id">' + logoHtml(o) + '<div class="vu-shead-names"><h1 class="vu-shead-name">' + esc(o.name || o.ctx.displaySymbol) + "</h1>" +
+    wrap.setAttribute("data-vu-stock", o.ctx.displaySymbol || ""); wrap.setAttribute("data-vu-stock-name", full || o.ctx.displaySymbol || "");
+    if (o.current) wrap.setAttribute("data-module", o.current);
+    var meta = subLine(full, short, ctx.displaySymbol, o.exchange).map(esc).join(" · ");
+    wrap.innerHTML = '<div class="vu-shead-top"><a class="vu-shead-back" href="' + esc(aktieHref(ctx)) + '" aria-label="Zurück zur Aktienseite"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></a>' +
+      (m ? '<span class="vu-shead-mod"><span class="vu-shead-mod-hud"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="' + SPRITE + esc(m.icon) + '"/></svg></span>' + esc(m.plain || m.label) + "</span>" : "") + "</div>" +
+      '<div class="vu-shead-id">' + logoHtml(o) + '<div class="vu-shead-names"><h1 class="vu-shead-name">' + esc(short || ctx.displaySymbol) + "</h1>" +
       '<p class="vu-shead-meta">' + meta + "</p></div>" + '<div class="vu-shead-actions"></div></div>' +
-      '<div class="vu-shead-pricebox"' + (o.pendingPrice ? ' data-price-pending="true" aria-busy="true"' : '') + '>' + priceHtml(o.price) + "</div>" + '<div class="vu-shead-nav"></div>';
+      '<div class="vu-shead-pricebox"' + (o.pendingPrice ? ' data-price-pending="true" aria-busy="true"' : "") + ">" + priceHtml(o.price) + "</div>";
     var img = wrap.querySelector(".vu-shead-logo img");
     if (img) img.addEventListener("error", function () { img.remove(); });
     /* App-Konzept 2 (Owner 14.11.2026, „Logos nicht gequetscht“): Wortmarken (deutlich breiter als hoch) bekommen weniger Rand. */
     function wide() { if (img.naturalWidth > img.naturalHeight * 1.6) img.parentNode.setAttribute("data-wide", ""); }
     if (img) { if (img.complete && img.naturalWidth) wide(); else img.addEventListener("load", wide); }
-    if (o.actions) wrap.querySelector(".vu-shead-actions").appendChild(o.actions);
+    var acts = wrap.querySelector(".vu-shead-actions");
+    if (o.actions) acts.appendChild(o.actions);
+    else if (ctx.region === "US") acts.appendChild(heart(doc, ctx.ticker));
     host.replaceChildren(wrap);
-    var dispose = mount(wrap.querySelector(".vu-shead-nav"), o.ctx, o.current, o), alive = true;
+
+    /* Pillen am Seitenende: in o.others, sonst am Ende des umgebenden <main>. Inhalt, den die Seite später anhängt,
+       schiebt sie nicht nach oben (Beobachter hält sie am Ende); ersetzt die Seite ihren Inhalt, endet der Beobachter. */
+    var oth = o.others === false ? { el: null, dispose: function () {} } : others(doc.createElement("div"), ctx, o.current, o), keeper = null, alive = true;
+    function keepLast(main) {
+      if (!root.MutationObserver || !main) return;
+      keeper = new root.MutationObserver(function () {
+        if (!alive || !oth.el.isConnected || !wrap.isConnected) { keeper.disconnect(); keeper = null; return; }
+        if (oth.el.parentNode === main && main.lastElementChild !== oth.el) main.appendChild(oth.el);
+      });
+      keeper.observe(main, { childList: true });
+    }
+    function place(target, before) {
+      if (!oth.el) return;
+      if (keeper) { keeper.disconnect(); keeper = null; }
+      if (target) target.insertBefore(oth.el, before || null);
+    }
+    if (oth.el) {
+      if (o.others && o.others.appendChild) place(o.others);
+      else {
+        var tries = 0, settle = function () {
+          if (!alive || oth.el.isConnected) return;
+          var main = wrap.isConnected ? (wrap.closest("main") || doc.querySelector("main")) : null;
+          if (main) { main.appendChild(oth.el); keepLast(main); return; }
+          if (++tries < 40) (root.requestAnimationFrame || setTimeout)(settle);
+        };
+        if (typeof Promise === "function") Promise.resolve().then(settle); else settle();
+      }
+    }
     /* VU3-Finalisierung: ein Name je Aktie in allen Welten. Der Manifest-Ausschnitt traegt den Anzeigenamen des
        Security-Masters (company-names.json#displayName, derselbe Name wie in Discover); er ersetzt den Namen der Welt. */
-    loadShard(o.ctx, o.fetch).then(function (m) {
-      var n = shardName(o.ctx, m), h = wrap.querySelector(".vu-shead-name");
-      if (alive && n && h && h.textContent !== n) { h.textContent = n; wrap.setAttribute("data-vu-stock-name", n); }
+    loadShard(ctx, o.fetch).then(function (mf) {
+      var n = shardName(ctx, mf), h = wrap.querySelector(".vu-shead-name"), mt = wrap.querySelector(".vu-shead-meta");
+      if (!alive || !n || !h) return;
+      var s = shortName(n);
+      if (h.textContent !== s) h.textContent = s;
+      if (mt && !mt.children.length) mt.textContent = subLine(n, s, ctx.displaySymbol, o.exchange).join(" · ");
+      wrap.setAttribute("data-vu-stock-name", n);
     });
     return {
       el: wrap,
       setPrice: function (p) { var box = wrap.querySelector(".vu-shead-pricebox"); box.removeAttribute("data-price-pending"); box.setAttribute("aria-busy", "false"); box.innerHTML = priceHtml(p); },
-      dispose: function () { alive = false; dispose(); if (wrap.parentNode) wrap.parentNode.removeChild(wrap); }
+      others: { el: oth.el, place: place },
+      dispose: function () { alive = false; if (keeper) keeper.disconnect(); oth.dispose(); if (wrap.parentNode) wrap.parentNode.removeChild(wrap); }
     };
   }
 
@@ -231,5 +346,5 @@
     return hit ? mount(host, hit.ctx, hit.product, opts) : null;
   }
 
-  return Object.freeze({ VERSION: VERSION, MODULES: MODULES, PERSPECTIVE: PERSPECTIVE, ORDER: ORDER, html: html, mount: mount, loadShard: loadShard, head: head, auto: auto, priceHtml: priceHtml, money: money, shardName: shardName });
+  return Object.freeze({ VERSION: VERSION, MODULES: MODULES, PERSPECTIVE: PERSPECTIVE, ORDER: ORDER, OTHERS: OTHERS, html: html, mount: mount, loadShard: loadShard, head: head, others: others, othersHtml: othersHtml, shortName: shortName, subLine: subLine, auto: auto, priceHtml: priceHtml, money: money, shardName: shardName });
 });

@@ -27,7 +27,7 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function (root) {
   "use strict";
 
-  var VERSION = "vu-stock-sheet-1.0.0";
+  var VERSION = "vu-stock-sheet-2.0.0";
   var SPRITE = "/assets/product-icons.svg#";
   var US_TICKER = /^[A-Z0-9][A-Z0-9-]{0,11}$/;
   var WATCH_KEY = "vu-discover-watchlist-v1"; /* dieselbe lokale Liste wie Discover (discover/app.js) */
@@ -123,6 +123,84 @@
   var STRONG = 75; /* assets/vu-ui.js#profileStrong */
   var TRACKS = [["revenue", "Umsatz"], ["net_income", "Gewinn"], ["free_cash_flow", "Cashflow"]];
 
+  /* ---------------------------------------------- Lesarten der Module (Klickentwurf 17.11.2026)
+     Kachel, Fenster, „In drei Sätzen“ und Modulseite sagen dasselbe: jede Aussage kommt aus derselben Quelle und mit
+     derselben Regel wie auf der Modulseite. Die Tabellen sind Abschriften; products/aktie/tests/stock-sheet.test.mjs
+     liest die Regeln aus den Moduldateien und hält sie gleich. */
+  /* Fundamental: „Das Geschäft in einem Satz“ (fundamental/app.js#business) – zwei Stufen der Discover-Fundamentaldaten
+     (Wachstum, Profitabilität), es zählt die schwächere. */
+  var F_GRADE = { "Sehr stark": "strong", "Stark": "strong", "Sehr solide": "strong", "Solide": "mid", "Flach": "mid", "Knapp": "mid", "Belastet": "mid", "Rückläufig": "weak", "Negativ": "weak", "Angespannt": "weak" };
+  var F_GROW = { "Sehr stark": "Wächst stark", "Stark": "Wächst", "Solide": "Wächst langsam", "Flach": "Wächst kaum", "Rückläufig": "Schrumpft" };
+  var F_PROF = { "Sehr stark": "verdient sehr gut", "Stark": "verdient gut", "Solide": "verdient solide", "Knapp": "verdient knapp", "Negativ": "macht Verlust" };
+  function businessVerdict(d) {
+    var h = d && d.fundamentals && d.fundamentals.health;
+    if (!h || !h.available || !Array.isArray(h.categories)) return null;
+    var by = {}; h.categories.forEach(function (c) { if (c && c.id) by[c.id] = c; });
+    var g = by.growth, p = by.profitability;
+    if (!g || !p || !F_GROW[g.grade] || !F_PROF[p.grade]) return null;
+    var rank = { strong: 2, mid: 1, weak: 0 }, kg = F_GRADE[g.grade], kp = F_GRADE[p.grade], worse = rank[kg] <= rank[kp] ? g : p;
+    return { text: F_GROW[g.grade] + " und " + F_PROF[p.grade], kind: F_GRADE[worse.grade], label: worse.grade };
+  }
+  /* Technical: Urteil der Aktienseite /technical/#/chart/<T> (technical/app.js#chartSummary): Kurs über SMA 50 und 200.
+     Gelesen aus dem Technical-Stand je Aktie (technical/data/stock/<Schlüssel>.json, Felder trend[0] = aboveSma50,
+     trend[1] = aboveSma200; technical/engine/stock-summary.js#TREND). Steht der Kurs still (frozenSince), keine Aussage. */
+  function chartSummary(aboveSma50, aboveSma200) {
+    if (typeof aboveSma50 !== "boolean" || typeof aboveSma200 !== "boolean") return ["Keine Aussage zum Trend", "none"];
+    if (aboveSma200 && aboveSma50) return ["Aufwärtstrend intakt", "strong"];
+    if (aboveSma200) return ["Rücksetzer im Aufwärtstrend", "mid"];
+    if (aboveSma50) return ["Erholung im Abwärtstrend", "mid"];
+    return ["Abwärtstrend", "weak"];
+  }
+  function techVerdict(t) {
+    if (!t || !Array.isArray(t.trend)) return null;
+    if (t.frozenSince) return ["Keine Aussage zum Trend", "none"];
+    return chartSummary(t.trend[0], t.trend[1]);
+  }
+  /* Supertrader: „Supertrader in drei Sätzen“ der Aktienseite (supertrader/assets/st-redesign.js#stock) aus
+     sf-candidates/ticker/<Schlüssel>.json – je Methode die höchste Stufe; Namen aus supertrader/assets/st-names.js. */
+  var ST_STAGES = ["CHART_CANDIDATE", "CONFIRMED_RESEARCH_SETUP", "MODELED_TRADE_PLAN"];
+  var ST_STAGE_TXT = { CHART_CANDIDATE: "Muster erkannt", CONFIRMED_RESEARCH_SETUP: "Regel erfüllt", MODELED_TRADE_PLAN: "Plan fertig" };
+  function supertraderOf(sf, names, ticker) {
+    if (!sf || !Array.isArray(sf.views)) return null;
+    var hit = {}, views = {};
+    sf.views.forEach(function (v) { if (!v || v.ticker !== ticker || !v.candidateId) return; if (!hit[v.candidateId] || ST_STAGES.indexOf(v.stage) > ST_STAGES.indexOf(hit[v.candidateId])) { hit[v.candidateId] = v.stage; views[v.candidateId] = v; } });
+    var total = names && Array.isArray(names.ORDER) ? names.ORDER.length : null;
+    var ids = Object.keys(hit).sort(function (a, b) { return ST_STAGES.indexOf(hit[b]) - ST_STAGES.indexOf(hit[a]) || (names && names.ORDER ? names.ORDER.indexOf(a) - names.ORDER.indexOf(b) : a < b ? -1 : 1); });
+    return { count: ids.length, total: total, asOf: sf.asOf || null,
+      entries: ids.map(function (c) { return { id: c, name: names && names.name ? names.name(c, c) : c, stage: hit[c], stageText: ST_STAGE_TXT[hit[c]] || "", met: views[c].met || [], notMet: views[c].notMet || [], pending: views[c].pending || [] }; }) };
+  }
+  /* Elliott: „Zählbar“ wie die Aktienseite /elliott/#/<T> (quant/app/page-chartbild.js#ewCountable) – dieselbe Einstufung
+     wie „Heute anwendbar“ im Wellen-Index (elliott-home.json, applicable.rows). Ohne Eintrag: „Keine Zählung“. */
+  function elliottOf(ew, ticker, model) {
+    var a = ew && ew.applicable;
+    if (!a || !Array.isArray(a.rows)) return null;
+    var row = a.rows.filter(function (r) { return r && r.t === ticker; })[0] || null, share = { count: a.count, n: a.n, asOf: a.asOf || null };
+    if (!row) return { countable: false, word: "Keine Zählung", share: share };
+    var parts = String(row.el || "").split(":"), done = parts[1] === "done";
+    var pattern = model && model.patternDe ? model.patternDe(row.el) : parts[0];
+    return { countable: true, wave: done ? null : parts[1] || null, done: done, pattern: pattern, line: model && model.countLine ? model.countLine(row) : pattern,
+      direction: row.dir === "BULLISH" ? "UP" : row.dir === "BEARISH" ? "DOWN" : null, invalid: model && model.invalidLine ? model.invalidLine(row) : null,
+      word: done ? pattern + " abgeschlossen" : "Welle " + (parts[1] || "–"), share: share };
+  }
+  /* Kurzname der Überschrift (nur Darstellung) – dieselbe Regel wie der Modul-Aktienkopf (assets/stock-navigator.js#shortName;
+     der Test hält beide gleich): Rechtsform, Aktiengattung und allgemeine Zusätze am Ende fallen weg, solange ein Wort bleibt. */
+  var LEGAL = /,?\s+(Inc\.?|Incorporated|Corp\.?|Corporation|Co\.?|Company|Ltd\.?|Limited|plc|PLC|N\.V\.|S\.A\.|SE|AG|LP|L\.P\.|Holdings?|Group|Class [A-Z]|Cl [A-Z]|Ordinary Shares?|Common Stock|ADR|\(The\)|The)$/i;
+  var GENERIC = /\s+(Interactive|Software|Technologies|Technology|Platforms|Systems|International|Enterprises|Industries)$/i;
+  function stripLegal(name) { var s = String(name || "").replace(/\s+/g, " ").trim(), prev; do { prev = s; s = s.replace(LEGAL, "").trim(); } while (s !== prev && s); return s; }
+  function shortName(name) {
+    var s = stripLegal(name), prev;
+    do { prev = s; if (s.indexOf(" ") > 0) s = s.replace(GENERIC, "").trim(); } while (s !== prev && s.indexOf(" ") > 0);
+    return s || String(name || "").trim();
+  }
+  /** Rest des vollen Namens nach dem Kurznamen („Interactive Software“), leer, wenn nichts bleibt. */
+  function nameRest(name, short) { var f = stripLegal(name); return f && f !== short ? (f.indexOf(short + " ") === 0 ? f.slice(short.length + 1) : f) : ""; }
+  /** Zustand eines Moduls im Verfügbarkeits-Ausschnitt (core/stock-context.js#moduleState) oder null ohne Ausschnitt. */
+  function availState(avail, product, ticker) {
+    var SC = root.VUCore && root.VUCore.StockContext;
+    if (!avail || !SC) return null;
+    try { return SC.moduleState(SC.fromUs(ticker), product, avail).state; } catch (e) { return null; }
+  }
+
   /** Bewertung gegen den Marktmedian (discover/ui/overview.js#bewertungsUrteil; Regel in valuation.context.rule). */
   function valuationWord(v) {
     var r = v && v.relative;
@@ -151,7 +229,9 @@
   }
 
   /**
-   * Ansicht einer Aktie. src: {ticker, name?, detail (Discover-Aktiendatei), watch (WatchlistView.view), strategies (Zahl der Methoden),
+   * Ansicht einer Aktie. src: {ticker, name?, detail (Discover-Aktiendatei), watch (WatchlistView.view),
+   * tech (Eintrag aus technical/data/stock/<Schlüssel>.json), sf (supertrader/data/sf-candidates/ticker/<Schlüssel>.json), stNames (STNames),
+   * ew (quant/data/technical-intelligence/v3/elliott-home.json), ewModel (VUElliottHome), avail (core/data/stock-availability/<Schlüssel>.json),
    * hedge (Eintrag aus hedgefonds/data/stocks), articles (insights/artikel.json#artikel)}.
    */
   function summarize(src) {
@@ -159,6 +239,7 @@
     var f = (d && d.fundamentals) || {}, m = (d && d.metrics) || {};
     var out = { ticker: t, name: (d && d.companyName) || (w && w.name) || s.name || t, what: (d && d.was) || "", asOf: {} };
     var enc = encodeURIComponent(t);
+    out.short = shortName(out.name); out.rest = nameRest(out.name, out.short);
     out.href = "/aktie/#/" + enc;
 
     /* Kurs: veröffentlichter Schluss der Übersicht (published-close.js, ADR-002); sonst der Kurs der Discover-Datei. */
@@ -167,19 +248,20 @@
     if (out.price && out.price.date) out.asOf.kurs = out.price.date;
 
     /* Urteil Geschäft */
-    var growth = f.health && f.health.available && (f.health.categories || []).filter(function (c) { return c.id === "growth"; })[0];
-    var rev = track(d, "revenue"), g = (d && d.geschaeftszahlen) || {};
-    if (growth && growth.grade) {
-      out.business = { word: growth.grade, tone: GRADE[growth.grade] || "mid", series: rev.slice(-10).map(function (x) { return x.v; }),
-        sentence: isNum(g.umsatzWachstum) ? "Umsatz " + pct(g.umsatzWachstum * 100, 0) + " in zwölf Monaten." : String(growth.detail || "") + "." };
+    /* Urteil Geschäft = Urteil der Fundamental-Seite (businessVerdict), Satz dazu wie dort („Wächst und macht Verlust.“). */
+    var bz = businessVerdict(d), rev = track(d, "revenue"), g = (d && d.geschaeftszahlen) || {};
+    if (bz) {
+      out.business = { word: bz.label, tone: bz.kind, text: bz.text, series: rev.slice(-10).map(function (x) { return x.v; }),
+        sentence: bz.text + "." + (isNum(g.umsatzWachstum) ? " Umsatz " + pct(g.umsatzWachstum * 100, 0) + " in zwölf Monaten." : "") };
       if (f.asOf) out.asOf.zahlen = f.asOf;
     }
     /* Urteil Chart/Kurs: Trend aus der Technik-Übersicht; sonst die Marktstruktur der Discover-Datei (dieselbe Technik-Quelle). */
+    /* Urteil Kurs = Urteil der Technical-Seite (techVerdict aus dem Technical-Stand je Aktie). */
     var ti = d && d.technicalIntelligence && d.technicalIntelligence.available && d.technicalIntelligence.layers || {};
-    var structure = w && w.trend && w.trend.state === "AVAILABLE" && w.trend.structure || (ti.marketStructure && ti.marketStructure.status === "available" && ti.marketStructure.state && ti.marketStructure.state.regime) || null;
-    if (TREND[structure]) {
-      var js = d && d.jahresspanne, dist = isNum(m.distanceTo52wHigh) ? m.distanceTo52wHigh : w && w.high52 && isNum(w.high52.distance) ? w.high52.distance : null;
-      out.chart = { word: TREND[structure][0], tone: TREND[structure][1],
+    var tv = techVerdict(s.tech), js = d && d.jahresspanne;
+    if (tv) {
+      var dist = isNum(m.distanceTo52wHigh) ? m.distanceTo52wHigh : w && w.high52 && isNum(w.high52.distance) ? w.high52.distance : null;
+      out.chart = { word: tv[0], tone: tv[1],
         sentence: w && w.high52 && w.high52.signal === "NEW_HIGH" ? "Neues Hoch der letzten zwölf Monate." : isNum(dist) ? num(Math.abs(dist) * 100, 0) + " % unter dem Jahreshoch." : js && js.satz ? js.satz : "" };
     }
     /* Urteil Bewertung */
@@ -190,26 +272,29 @@
         sentence: "KGV " + num(f.valuation.pe.value, 1) + (isNum(med) ? ", Markt " + num(med, 1) + "." : ".") };
     }
 
-    /* Module */
+    /* Module. Eine Kachel nur, wenn die Quelle der Modulseite vorliegt; das Wort ist das Urteil der Modulseite. */
     var mod = out.modules = {};
-    if (out.business) mod.fundamental = { word: out.business.word, tone: out.business.tone, series: out.business.series, href: "/fundamental/#/" + enc };
+    if (bz || (f.health && f.health.available) || rev.length) mod.fundamental = { word: bz ? bz.label : "Kein Urteil", tone: bz ? bz.kind : "none", text: bz ? bz.text : null, series: rev.slice(-10).map(function (x) { return x.v; }), href: "/fundamental/#/" + enc };
     var profile = profileOf(w);
     if (profile) {
       var have = PROFILE_KEYS.filter(function (k) { return profile[k] != null; }), strong = have.filter(function (k) { return profile[k] >= STRONG; }).length;
       mod.quant = { profile: profile, strong: strong, of: have.length, word: strong + " von " + have.length + " stark", href: "/quant/#/aktie/" + enc };
       if (w.quant.asOf) out.asOf.quant = w.quant.asOf;
     }
-    if (out.chart) {
+    if (tv) {
       var sr = ti.supportResistance && ti.supportResistance.status === "available" ? ti.supportResistance : null, zone = function (z, tone) { return z && isNum(z.zoneLow) && isNum(z.zoneHigh) ? { lo: z.zoneLow, hi: z.zoneHigh, tone: tone } : null; };
-      mod.technical = { word: out.chart.word, tone: out.chart.tone, support: zone(sr && sr.nearestSupport, "up"), resistance: zone(sr && sr.nearestResistance, "down"),
+      mod.technical = { word: tv[0], tone: tv[1], support: zone(sr && sr.nearestSupport, "up"), resistance: zone(sr && sr.nearestResistance, "down"),
         sma200: d && d.rawValues && isNum(d.rawValues.distanceToSMA200) ? d.rawValues.distanceToSMA200 : null, rsi: w && w.trend && isNum(w.trend.rsi14) ? w.trend.rsi14 : null,
-        high: w && w.high52 && w.high52.state === "AVAILABLE" ? w.high52.signal : null, href: "/technical/#/chart/" + enc };
+        high: w && w.high52 && w.high52.state === "AVAILABLE" ? w.high52.signal : null, asOf: s.tech && s.tech.asOf || null, href: "/technical/#/chart/" + enc };
     }
-    if (w && w.supertrader && w.supertrader.state === "AVAILABLE") {
-      var en = w.supertrader.entries || [], total = isNum(s.strategies) && s.strategies > 0 ? s.strategies : null;
-      mod.supertrader = { count: en.length, total: total, word: en.length + (total ? " von " + total : "") + (en.length === 1 && !total ? " Methode" : " Methoden"),
-        entries: en.map(function (e) { return { name: e.name, state: e.stateLabel || e.state, released: !!e.released }; }), href: "/supertrader/stock/" + enc + "/" };
-      if (w.supertrader.asOf) out.asOf.supertrader = w.supertrader.asOf;
+    /* Supertrader: die 13 Methoden der Aktienseite; eine Kachel bei Treffern oder belegter Seite (auch „Keine der 13“). */
+    var stv = supertraderOf(s.sf, s.stNames, t), stState = availState(s.avail, "supertrader", t);
+    if (stv && (stv.count > 0 || stState === "available")) {
+      var tot = stv.total;
+      mod.supertrader = { count: stv.count, total: tot, entries: stv.entries, asOf: stv.asOf,
+        word: stv.count ? stv.count + (tot ? " von " + tot : "") + (stv.count === 1 && !tot ? " Methode" : " Methoden") : tot ? "Keine der " + tot : "Keine Methode",
+        href: stState === "available" ? "/supertrader/stock/" + enc + "/" : "/supertrader/stock/?s=" + enc };
+      if (stv.asOf) out.asOf.supertrader = stv.asOf;
     }
     var h = s.hedge || null, funds = w && w.funds13f && w.funds13f.state === "AVAILABLE" ? w.funds13f : null;
     if (h || funds) {
@@ -220,17 +305,23 @@
       if (mod.hedgefonds.funds == null) delete mod.hedgefonds;
       else if (funds && funds.period) out.asOf.fonds = funds.period;
     }
-    /* Elliott: Hauptlesart des Chartbild-Produkts (experimentelles Strukturmodell); ohne Lesart „Nicht zählbar“. */
-    var el = w && w.elliott;
-    if (el) mod.elliott = el.state === "AVAILABLE" && el.pattern ? { countable: true, wave: el.wave || null, pattern: el.pattern, direction: el.direction || null, word: el.wave ? "Welle " + el.wave : "Zählbar", href: "/elliott/#/" + enc }
-      : { countable: false, word: "Nicht zählbar", href: "/elliott/#/" + enc };
+    /* Elliott: „Zählbar“ wie die Aktienseite; „Keine Zählung“ nur für Aktien, die das Wellenbild führt. */
+    var ev = elliottOf(s.ew, t, s.ewModel), ewState = availState(s.avail, "technik", t);
+    if (ev && (ev.countable || ewState === "available")) { ev.href = "/elliott/#/" + enc; mod.elliott = ev; }
     var ranks = ((d && d.memberships) || []).filter(function (x) { return isNum(x.rank) && isNum(x.of) && x.rowId !== "sector-leaders"; }).sort(function (a, b) { return a.rank - b.rank || a.rank / a.of - b.rank / b.of; });
-    if (d) mod.discover = { rows: ranks.length, best: ranks[0] ? { rank: ranks[0].rank, title: ranks[0].title } : null, href: "/discover/#/s/US_REAL/" + enc };
+    if (d) {
+      /* Discover-Fenster: die Story der Discover-Seite (discover/ui/overview.js#story, #hochUrteil) – Discovers eigene Wörter. */
+      var dg = f.health && f.health.available && (f.health.categories || []).filter(function (c) { return c.id === "growth"; })[0], dst = f.story && f.story.available && (f.story.statements || [])[0];
+      var dk = isNum(m.distanceTo52wHigh) ? (m.distanceTo52wHigh <= -0.20 ? ["weak", "Schwächer"] : m.distanceTo52wHigh >= -0.05 ? ["strong", "Nah am Hoch"] : ["mid", "Dazwischen"]) : null;
+      mod.discover = { rows: ranks.length, best: ranks[0] ? { rank: ranks[0].rank, title: ranks[0].title } : null, ranks: ranks.slice(0, 4).map(function (x) { return { rank: x.rank, of: x.of, title: x.title }; }),
+        story: { business: dg && dst && dst.text ? { word: dg.grade, text: dst.text } : null, price: dk && js && js.zumHoch ? { word: dk[1], text: "Der Kurs liegt " + String(js.zumHoch).replace(/^[−-]/, "") + " unter dem Hoch der letzten 12 Monate." } : null },
+        href: "/discover/#/s/US_REAL/" + enc };
+    }
 
     /* Pillen „In diesen Modulen“: nur, was es für die Aktie gibt. */
     var pills = out.pills = [];
     if (mod.quant) pills.push({ icon: "quant", text: mod.quant.word, href: mod.quant.href });
-    if (mod.supertrader && mod.supertrader.count > 0) pills.push({ icon: "supertrader", text: mod.supertrader.count + (mod.supertrader.count === 1 ? " Methode" : " Methoden"), href: mod.supertrader.href });
+    if (mod.supertrader && mod.supertrader.count > 0) pills.push({ icon: "supertrader", text: mod.supertrader.word, href: mod.supertrader.href });
     if (mod.technical && mod.technical.high === "NEW_HIGH") pills.push({ icon: "technical", text: "Jahreshoch", href: mod.technical.href });
     else if (mod.technical && mod.technical.high === "NEAR_HIGH") pills.push({ icon: "technical", text: "Nah am Jahreshoch", href: mod.technical.href });
     if (mod.hedgefonds) pills.push({ icon: "hedgefonds", text: mod.hedgefonds.buyers != null ? num(mod.hedgefonds.buyers, 0) + " Käufe" : mod.hedgefonds.fresh ? mod.hedgefonds.fresh + (mod.hedgefonds.fresh === 1 ? " neue Position" : " neue Positionen") : num(mod.hedgefonds.funds, 0) + " Fonds", href: mod.hedgefonds.href });
@@ -245,9 +336,10 @@
     }).filter(Boolean);
     /* Kennzahlen des Fensters Fundamental */
     out.facts = [];
+    if (g.status === "CALCULATED" && isNum(g.umsatzTTM) && g.einheit === "usd_m") out.facts.push({ label: "Umsatz 12 Monate", value: compact(g.umsatzTTM * 1e6, "USD"), grade: "", tone: "mid" });
     ((f.health && f.health.available && f.health.categories) || []).forEach(function (c) {
       var yrs = f.health.horizon && f.health.horizon.years, label = { growth: "Umsatzwachstum pro Jahr" + (yrs ? " (" + yrs + " Jahre)" : ""), profitability: "Nettomarge", cashflow: "Free-Cashflow-Marge", balance: "Bilanz" }[c.id] || c.label;
-      out.facts.push({ label: label, value: isNum(c.value) && c.id !== "balance" ? (c.id === "growth" ? pct(c.value * 100, 1) : num(c.value * 100, 1) + " %") : "", grade: c.grade, tone: GRADE[c.grade] || "mid" });
+      out.facts.push({ label: label, value: isNum(c.value) && c.id !== "balance" ? (c.id === "growth" ? pct(c.value * 100, 1) : num(c.value * 100, 1) + " %") : "", grade: c.grade, tone: F_GRADE[c.grade] || GRADE[c.grade] || "mid" });
     });
     if (out.valuation) out.facts.push({ label: "KGV", value: num(out.valuation.pe, 1), grade: out.valuation.word, tone: out.valuation.tone });
     if (f.valuation && f.valuation.ps && isNum(f.valuation.ps.value)) out.facts.push({ label: "KUV", value: num(f.valuation.ps.value, 1), grade: "", tone: "mid" });
@@ -357,12 +449,20 @@
     });
   }
   function loadDetail(ticker) { return getJSON("/discover/data/stocks/US_REAL/" + encodeURIComponent(ticker) + ".json"); }
-  /** Alles für die Vorschau. */
+  /* Quellen der Modulseiten (dieselben Dateien, die die Module lesen; je Aktie ein kleiner Ausschnitt, der Wellen-Index einmal). */
+  var EW_INDEX = "/quant/data/technical-intelligence/v3/elliott-home.json";
+  function shard(ticker) { var I = ident(); return I ? I.shardKey(ticker) : String(ticker).slice(0, 2); }
+  function loadTech(ticker) { return getJSON("/technical/data/stock/" + shard(ticker) + ".json").then(function (j) { var x = j && j.stocks && j.stocks[ticker]; return x || null; }); }
+  function loadSf(ticker) { return Promise.all([getJSON("/supertrader/data/sf-candidates/ticker/" + shard(ticker) + ".json"), root.STNames ? null : script("/supertrader/assets/st-names.js")]).then(function (r) { return r[0] ? { views: (r[0].views || []).filter(function (v) { return v && v.ticker === ticker; }), asOf: r[0].asOf || null } : null; }); }
+  function loadEw() { return Promise.all([getJSON(EW_INDEX), root.VUElliottHome ? null : script("/elliott/engine/home-model.js")]).then(function (r) { return r[0]; }); }
+  function loadAvail(ticker) { var SC = root.VUCore && root.VUCore.StockContext; try { return SC ? getJSON(SC.availabilityUrl(SC.fromUs(ticker))) : Promise.resolve(null); } catch (e) { return Promise.resolve(null); } }
+  /** Alles für die Vorschau und die Aktienseite. */
   function load(ticker, o) {
     return ready().then(function () {
-      return Promise.all([loadDetail(ticker), loadWatch(ticker)]);
+      return Promise.all([loadDetail(ticker), loadWatch(ticker), loadTech(ticker), loadSf(ticker), loadEw(), loadAvail(ticker)]);
     }).then(function (r) {
-      return { ticker: ticker, name: o && o.name, detail: r[0], watch: r[1] && r[1].view, strategies: r[1] && r[1].strategies, meta: r[1] && r[1].meta };
+      return { ticker: ticker, name: o && o.name, detail: r[0], watch: r[1] && r[1].view, strategies: r[1] && r[1].strategies, meta: r[1] && r[1].meta,
+        tech: r[2], sf: r[3], stNames: root.STNames || null, ew: r[4], ewModel: root.VUElliottHome || null, avail: r[5] };
     });
   }
 
@@ -413,6 +513,19 @@
   /** Erster ähnlicher Titel mit Profil (für „Vergleichen“). */
   function comparePartner(v) { return v.modules.quant && v.similar.length ? v.similar[0] : null; }
 
+  /* Modul-Kontext (Klickentwurf 17.11.2026): wird die Vorschau in einem Modul geöffnet, führt „Ganz öffnen“ auf
+     /aktie/#/<T>/<modul> – die Aktienseite öffnet dann gleich das Fenster dieses Moduls. Das Modul kommt aus der Zuordnung
+     des Rahmens (VUNavigation.product, dieselbe wie Menü und Reiter); Home, Discover, Suche, News, Ich und KI geben keinen
+     Kontext (Discover ist der Einstieg der Aktienseite und hat kein eigenes Fenster-Ziel). */
+  var CONTEXT_MODULES = ["quant", "technical", "fundamental", "hedgefonds", "elliott", "supertrader"];
+  function moduleContext() {
+    var N = root.VUNavigation, id = null;
+    try { id = N && typeof N.product === "function" ? N.product() : null; } catch (e) { id = null; }
+    return CONTEXT_MODULES.indexOf(id) >= 0 ? id : null;
+  }
+  /** Adresse der Aktienseite, mit Modul-Kontext: /aktie/#/<T> bzw. /aktie/#/<T>/<modul>. */
+  function aktieHref(ticker, mod) { return "/aktie/#/" + encodeURIComponent(String(ticker).toUpperCase()) + (CONTEXT_MODULES.indexOf(mod) >= 0 ? "/" + mod : ""); }
+
   /**
    * Vorschau öffnen. Liefert Promise<boolean>: false, wenn das Kürzel keine US-Aktie ist oder nichts vorliegt
    * (der Aufrufer folgt dann seinem Link).
@@ -430,8 +543,9 @@
       loadSeries(t).then(function (p) { if (el.isConnected) drawPreviewChart(el, p); });
       var cmp = el.querySelector("[data-vsk-compare]");
       if (cmp) cmp.addEventListener("click", function () { openCompare(v, partner.ticker, partner.name); });
-      /* „Ganz öffnen“ auf der Aktienseite derselben Aktie: nur schließen. */
-      var go = el.querySelector("[data-vsk-open]");
+      /* „Ganz öffnen“ mit Modul-Kontext; auf der Aktienseite derselben Aktie: nur schließen. */
+      var go = el.querySelector("[data-vsk-open]"), ctxMod = moduleContext();
+      if (go && ctxMod) go.setAttribute("href", aktieHref(t, ctxMod));
       if (go) go.addEventListener("click", function () { if (root.VUUI) root.VUUI.closeSheet(el); });
       return true;
     });
@@ -453,12 +567,13 @@
   }
 
   return Object.freeze({
-    VERSION: VERSION, open: open, bind: bind,
-    model: Object.freeze({ summarize: summarize, compare: compare, balance: balance, valuationWord: valuationWord, PROFILE_KEYS: PROFILE_KEYS, PROFILE_LABEL: PROFILE_LABEL, STRONG: STRONG, GRADE: GRADE, TREND: TREND }),
+    VERSION: VERSION, open: open, bind: bind, moduleContext: moduleContext, aktieHref: aktieHref, CONTEXT_MODULES: CONTEXT_MODULES,
+    model: Object.freeze({ summarize: summarize, shortName: shortName, nameRest: nameRest, compare: compare, balance: balance, valuationWord: valuationWord, businessVerdict: businessVerdict, chartSummary: chartSummary, techVerdict: techVerdict, supertraderOf: supertraderOf, elliottOf: elliottOf,
+      PROFILE_KEYS: PROFILE_KEYS, PROFILE_LABEL: PROFILE_LABEL, STRONG: STRONG, GRADE: GRADE, TREND: TREND, F_GRADE: F_GRADE, F_GROW: F_GROW, F_PROF: F_PROF, ST_STAGES: ST_STAGES, ST_STAGE_TXT: ST_STAGE_TXT }),
     draw: Object.freeze({ line: line, bars: bars, radar: radar, ring: ring, move: move, icon: icon, logo: logo, HEART: HEART, CHEV: CHEV }),
     fmt: Object.freeze({ num: num, pct: pct, money: money, compact: compact, dateShort: dateShort, esc: esc }),
     html: Object.freeze({ preview: previewHtml, compare: compareHtml }),
-    data: Object.freeze({ ready: ready, getJSON: getJSON, load: load, loadWatch: loadWatch, loadSeries: loadSeries, loadDetail: loadDetail, seriesPath: seriesPath }),
+    data: Object.freeze({ ready: ready, getJSON: getJSON, load: load, loadWatch: loadWatch, loadSeries: loadSeries, loadDetail: loadDetail, seriesPath: seriesPath, script: script }),
     ui: Object.freeze({ popup: popup, bindHearts: bindHearts, toast: toast, watchStore: watchStore, openCompare: openCompare, comparePartner: comparePartner })
   });
 });

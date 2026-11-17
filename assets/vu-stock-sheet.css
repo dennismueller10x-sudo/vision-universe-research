@@ -100,3 +100,5 @@
 .vsk-toast.on{opacity:1;transform:translate(-50%,0)}
 .vsk :focus-visible{outline:2px solid var(--k-lc);outline-offset:2px}
 @media(prefers-reduced-motion:reduce){.vsk .k-tile,.vsk .k-tap,.vsk-toast{transition:none}}
+/* Klickentwurf 17.11.2026: Schließen-Knopf der Fenster (34 px sichtbar, Tippfläche 44 px über transparenten Rand). */
+.vsk .k-x{width:34px;height:34px;box-sizing:content-box;border:5px solid transparent;margin:-5px;background:var(--k-track);background-clip:padding-box;color:var(--k-hi);cursor:pointer;padding:0}

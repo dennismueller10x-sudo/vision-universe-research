@@ -10,7 +10,8 @@
      quant            product/universe-list-v1.json.gz entries[].s               (Aktienliste der Quant-Seite)
      technik/elliott  technical-intelligence/v3/index.json.gz rows[].t           (Chartbild /elliott/#/<T>)
      technical        technical/data/screener-v1.json cols.s                      (Chart Studio /technical/#/chart/<T>)
-     supertrader      data/build.json slices.stock  UND  stock/<SYM>/index.html   (Seite und Daten)
+     supertrader      (data/build.json slices.stock  ODER  data/sf-candidates/ticker/*.json views[].ticker)
+                      UND  stock/<SYM>/index.html                                  (Seite und Daten)
      fundamental      fundamental/index.html  UND  discover stocks/US_REAL/<SYM>.json fundamentals.available
                       (fundamental/engine/model.js liest genau diesen Block; ohne ihn zeigt die Seite nur den Leerzustand)
      hedgefonds       hedgefonds/data/stocks/index.json rows[].ticker               (hedgefonds/app.js#stockByTicker: Kuerzel -> CUSIP-Seite)
@@ -62,7 +63,13 @@ export function collectEvidence(root){
  });
  tryModule('supertrader.US',()=>{
   const build=readJson(root,'supertrader/data/build.json');if(!build||!build.slices||!Array.isArray(build.slices.stock))throw Error('SUPERTRADER_BUILD_MISSING');
-  put('supertrader','US',build.slices.stock.filter(s=>valid(()=>SC.fromUs(s))&&existsSync(join(root,'supertrader/stock',s,'index.html'))&&existsSync(join(root,'supertrader/data/stock',s+'.json'))));
+  const page=s=>valid(()=>SC.fromUs(s))&&existsSync(join(root,'supertrader/stock',s,'index.html'));
+  const keys=build.slices.stock.filter(s=>page(s)&&existsSync(join(root,'supertrader/data/stock',s+'.json')));
+  /* Die Aktienseite der 13 Methoden (supertrader/assets/st-redesign.js#stock) liest sf-candidates/ticker/<Schluessel>.json:
+     jedes Kuerzel mit einem Eintrag dort hat Seite und Daten (Klickentwurf 17.11.2026: TTWO 1/13 fehlte im Navigator). */
+  const sfDir=join(root,'supertrader/data/sf-candidates/ticker');
+  if(existsSync(sfDir))for(const f of readdirSync(sfDir).filter(f=>f.endsWith('.json'))){const t=readJson(root,'supertrader/data/sf-candidates/ticker/'+f);for(const v of (t&&t.views)||[])if(v&&typeof v.ticker==='string'&&page(v.ticker))keys.push(v.ticker);}
+  put('supertrader','US',keys);
  });
  tryModule('fundamental.US',()=>{
   if(!existsSync(join(root,'fundamental/index.html')))throw Error('FUNDAMENTAL_PAGE_MISSING');

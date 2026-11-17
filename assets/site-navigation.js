@@ -457,6 +457,9 @@
          (Musterseite /status/bausteine/, Tests). */
       products: () => PRODUCTS.map(p => ({id: p.id, label: p.label, items: p.items.map(([id, label, href, icon]) => ({id, label, href, icon})), tabs: tabEntries(p).map(({id, label, href}) => ({id, label, href}))})),
       places: () => DOCK.map(([id, label, href, icon]) => ({id, label, href, icon})),
+      /* Nur lesend: Kennung der Welt der aktuellen Seite (dieselbe Zuordnung wie Menü und Reiter), sonst null.
+         Die Aktien-Vorschau (assets/vu-stock-sheet.js) hängt damit den Modul-Kontext an „Ganz öffnen“. */
+      product: () => { const p = PRODUCTS.find(x => x.match(location.pathname, location)); return p ? p.id : null; },
       /* Datenstand der Seite fuer das Fenster „Datenstand“: {datum: 'JJJJ-MM-TT', zeilen: [[Bereich, Text, vorhanden?], ...]}.
          Ersetzt den Kursstand, den der Rahmen sonst beim Oeffnen selbst liest. */
       datenstand: o => { o = o || {}; dataBus.own = true; dataBus.datum = isoDate(o.datum) ? o.datum : null; dataBus.zeilen = Array.isArray(o.zeilen) ? o.zeilen.filter(z => z && z[0] && z[1]) : []; dataBus.listeners.forEach(fn => fn()); },
