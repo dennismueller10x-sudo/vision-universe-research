@@ -1,6 +1,6 @@
 {
   "version": "company-names-1.0.0",
-  "generatedAt": "2026-11-17T12:38:30.499Z",
+  "generatedAt": "2026-11-17T13:58:15.205Z",
   "master": {
     "file": "quant/data/market/security-master/eligibility.json",
     "version": "us-security-master-1.3.0",
@@ -11,19 +11,19 @@
     "companyMasterTotal": 7807,
     "productUniverse": 6314,
     "activeEquities": 5212,
-    "withName": 6283,
-    "withoutName": 31,
-    "pct": 99.51,
-    "activeWithName": 5202,
-    "activePct": 99.81,
+    "withName": 6287,
+    "withoutName": 27,
+    "pct": 99.57,
+    "activeWithName": 5206,
+    "activePct": 99.88,
     "bySource": {
-      "TIINGO_METADATA": 6082,
-      "SEC_COMPANY_TICKERS": 201
+      "TIINGO_METADATA": 6083,
+      "SEC_COMPANY_TICKERS": 204
     },
-    "conflicts": 187,
+    "conflicts": 186,
     "unresolvedReasons": {
-      "PROVIDER_NOT_QUERIED_YET": 16,
-      "PROVIDER_HAS_NO_NAME": 15
+      "PROVIDER_HAS_NO_NAME": 15,
+      "PROVIDER_NOT_QUERIED_YET": 12
     },
     "rejectedRules": {
       "VU_CURATED:TICKER_AS_NAME": 1,
@@ -33,7 +33,14 @@
     }
   },
   "stats": {
-    "sec": null,
+    "sec": {
+      "entries": 10400,
+      "matched": 6284,
+      "unmatched": 1523,
+      "nyseAmericanAsNyse": 213,
+      "asOf": "2026-11-17",
+      "source": "https://www.sec.gov/files/company_tickers_exchange.json"
+    },
     "tiingo": null
   },
   "spotCheck": [
