@@ -51,7 +51,7 @@
    "scripts/quant/research/research-population.cjs": "699173804bddf7e3aae88523cff22f471dbb0f96276ce62fe9e949879a109a82",
    "quant/engines/research-studies.cjs": "474422373eeac509b043d2a5e95c17dcfecfcb8ff0f651020696bbaf027be418",
    "quant/engines/research-portfolio.cjs": "0cc42852cefca4d484935feb430f6f1b8199a7263f07b87bb0a615c1fd3f4e5e",
-   "quant/engines/research-validation.cjs": "1152970a14fca40e246c6515de2a7ab468e2be80e4e2f3c19fb7fe072a9525f7",
+   "quant/engines/research-validation.cjs": "dfb9182fd8f2b819ed2d0aee966c8d511c804b66d98095363188ed6af17dc968",
    "quant/engines/research-monte-carlo.cjs": "d68c62047da805bd5bbcd21a64f5334545b8150fce7ee0d35d6dc1c34798ecba",
    "quant/engines/backtest-metrics.cjs": "fcc74d3a74d392430c45cf420794f3c3a698fffb31e1055b30c4530064e074f4",
    "quant/engines/backtest-result-adapters.cjs": "043011853234dd0872d0f2c587b20a8842eecac01bdffdbc7639911bf695e9dd",
@@ -130,7 +130,7 @@
    "trRegister": "ddd1678fd212c6bf8012dc65f5145edb3d675ab692b40eb1292f862a351297c8"
   }
  },
- "inputHash": "442afacbf1335ff823bcda6c82df4be0f9c91de8c01c1a029499b0d974f34e8b",
+ "inputHash": "65b53792b5a39d0307df50d148fea8c0cb4525ce8b0e1371c7fa69469c56dec7",
  "kindPath": {
   "kind": "STRATEGY_BACKTEST",
   "engine": "research-portfolio.runPortfolio + buildSchedule(sessions,10000)",
@@ -215,7 +215,7 @@
       "scripts/quant/research/research-population.cjs": "699173804bddf7e3aae88523cff22f471dbb0f96276ce62fe9e949879a109a82",
       "quant/engines/research-studies.cjs": "474422373eeac509b043d2a5e95c17dcfecfcb8ff0f651020696bbaf027be418",
       "quant/engines/research-portfolio.cjs": "0cc42852cefca4d484935feb430f6f1b8199a7263f07b87bb0a615c1fd3f4e5e",
-      "quant/engines/research-validation.cjs": "1152970a14fca40e246c6515de2a7ab468e2be80e4e2f3c19fb7fe072a9525f7",
+      "quant/engines/research-validation.cjs": "dfb9182fd8f2b819ed2d0aee966c8d511c804b66d98095363188ed6af17dc968",
       "quant/engines/research-monte-carlo.cjs": "d68c62047da805bd5bbcd21a64f5334545b8150fce7ee0d35d6dc1c34798ecba",
       "quant/engines/backtest-metrics.cjs": "fcc74d3a74d392430c45cf420794f3c3a698fffb31e1055b30c4530064e074f4",
       "quant/engines/backtest-result-adapters.cjs": "043011853234dd0872d0f2c587b20a8842eecac01bdffdbc7639911bf695e9dd",
@@ -294,7 +294,7 @@
       "trRegister": "ddd1678fd212c6bf8012dc65f5145edb3d675ab692b40eb1292f862a351297c8"
      }
     },
-    "inputHash": "eec6a358483ecfa9c0ccf7290b904161cf8e72817240af9942c20d5ed8e57cda",
+    "inputHash": "172fc4388640a01cb7abc05ae2b353f6d0807a035e9219032d5d5d6507688df1",
     "kindPath": {
      "kind": "STRATEGY_BACKTEST",
      "engine": "research-portfolio.runPortfolio + buildSchedule(sessions,10000)",
@@ -315,7 +315,7 @@
      "specHash": "a02d59f825f0564559ed7450ede20a44459b47b03e7423e042b615ee0447fd23"
     }
    },
-   "specHash": "ca1ec8d8d534e0823d2de57b9312b1cfbb1fea8345d23210f16b74537bd64698"
+   "specHash": "73d4f55a1864257f1d43132121f1a77e2d43079476863c56ae7f1d73832f9e6f"
   },
   "events": {
    "form": "TRADES",
@@ -1351,9 +1351,9 @@
    "productionApproved": false,
    "evidenceKind": "SIMULATED_LEDGER"
   },
-  "envelopeHash": "23322394c975311afe614f4a55129f92526219761f5324fc6647f6464cec20e0"
+  "envelopeHash": "5deeb7cb571e00fe5dc363590d99a83f0dcbd9334898b96150a04b0ce64e9707"
  },
- "envelopeHash": "23322394c975311afe614f4a55129f92526219761f5324fc6647f6464cec20e0",
+ "envelopeHash": "5deeb7cb571e00fe5dc363590d99a83f0dcbd9334898b96150a04b0ce64e9707",
  "population": {
   "profile": "V10_PRIMARY",
   "populationHash": "ea3949077a7eef02f8f4c9777ed1fa55e29306c2658fe7f8b21f954f30a43509",
@@ -1604,5 +1604,5 @@
   "inputsAfterAsOf": 0
  },
  "qa": null,
- "resultHash": "4c9ed3c708d0472f037d9e2ad665be7dc2e3a0b22f948aa3f0d3f7b8544c7b10"
+ "resultHash": "d3d5bb121dc4ba08df5ff65759f3130361c4c9fb2b0972e2c9a5d2640bdf018d"
 }

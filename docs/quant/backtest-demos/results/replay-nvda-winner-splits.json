@@ -73,7 +73,7 @@
    "scripts/quant/research/research-population.cjs": "699173804bddf7e3aae88523cff22f471dbb0f96276ce62fe9e949879a109a82",
    "quant/engines/research-studies.cjs": "474422373eeac509b043d2a5e95c17dcfecfcb8ff0f651020696bbaf027be418",
    "quant/engines/research-portfolio.cjs": "0cc42852cefca4d484935feb430f6f1b8199a7263f07b87bb0a615c1fd3f4e5e",
-   "quant/engines/research-validation.cjs": "1152970a14fca40e246c6515de2a7ab468e2be80e4e2f3c19fb7fe072a9525f7",
+   "quant/engines/research-validation.cjs": "dfb9182fd8f2b819ed2d0aee966c8d511c804b66d98095363188ed6af17dc968",
    "quant/engines/research-monte-carlo.cjs": "d68c62047da805bd5bbcd21a64f5334545b8150fce7ee0d35d6dc1c34798ecba",
    "quant/engines/backtest-metrics.cjs": "fcc74d3a74d392430c45cf420794f3c3a698fffb31e1055b30c4530064e074f4",
    "quant/engines/backtest-result-adapters.cjs": "043011853234dd0872d0f2c587b20a8842eecac01bdffdbc7639911bf695e9dd",
@@ -134,7 +134,7 @@
   },
   "private": {}
  },
- "inputHash": "64ee557ce46bd09f57739c91de0e34092f3175152775f18c2b9662f8183c5ff9",
+ "inputHash": "8097e308fd428b2fec81a367313d1415834fc3eed4ad0ba2e01660c38fbc9edb",
  "kindPath": {
   "kind": "SAME_STOCK_REPLAY",
   "engine": "research-studies.runReplayValidation",
@@ -241,7 +241,7 @@
       "scripts/quant/research/research-population.cjs": "699173804bddf7e3aae88523cff22f471dbb0f96276ce62fe9e949879a109a82",
       "quant/engines/research-studies.cjs": "474422373eeac509b043d2a5e95c17dcfecfcb8ff0f651020696bbaf027be418",
       "quant/engines/research-portfolio.cjs": "0cc42852cefca4d484935feb430f6f1b8199a7263f07b87bb0a615c1fd3f4e5e",
-      "quant/engines/research-validation.cjs": "1152970a14fca40e246c6515de2a7ab468e2be80e4e2f3c19fb7fe072a9525f7",
+      "quant/engines/research-validation.cjs": "dfb9182fd8f2b819ed2d0aee966c8d511c804b66d98095363188ed6af17dc968",
       "quant/engines/research-monte-carlo.cjs": "d68c62047da805bd5bbcd21a64f5334545b8150fce7ee0d35d6dc1c34798ecba",
       "quant/engines/backtest-metrics.cjs": "fcc74d3a74d392430c45cf420794f3c3a698fffb31e1055b30c4530064e074f4",
       "quant/engines/backtest-result-adapters.cjs": "043011853234dd0872d0f2c587b20a8842eecac01bdffdbc7639911bf695e9dd",
@@ -302,7 +302,7 @@
      },
      "private": {}
     },
-    "inputHash": "64ee557ce46bd09f57739c91de0e34092f3175152775f18c2b9662f8183c5ff9",
+    "inputHash": "8097e308fd428b2fec81a367313d1415834fc3eed4ad0ba2e01660c38fbc9edb",
     "kindPath": {
      "kind": "SAME_STOCK_REPLAY",
      "engine": "research-studies.runReplayValidation",
@@ -341,7 +341,7 @@
      "specHash": "fa43586e33eb09df1a84cd8657654ab6e9208c920f1e008aed5ac1c65fb9e33a"
     }
    },
-   "specHash": "c2afdcc352a5bf27ba550204796015e2433f5aaee098a99b3e242fa676d42e6b"
+   "specHash": "42272e9e3ed71289695272d16eb004a5fd55c24145ab0b00e8a53aad84471cc5"
   },
   "events": {
    "form": "EVENTS",
@@ -666,8 +666,8 @@
       "maxEstimate": 0.7176501863970329
      },
      "multiplicity": "HOLM_WITHIN_REGISTERED_GRID_ONLY",
-     "registrationHash": "778a711c1e159cecb12617f4ae6cc6b9f36324eb3d3abb03f56944c4bad725b4",
-     "resultHash": "a1eaa559599c9b51c00404b57a552e35ed73c5d7b7123e964cad770fda0ed572",
+     "registrationHash": "9180bb519b6a1a81d954aeef4423c7a26bc303b9cbd3f2bf200240b05e477916",
+     "resultHash": "20d710e399b336352fc16a8c0f2a0b05c0652d988ad402fb37600ed18cfe6ee3",
      "note": "EXPLORATORY_ROBUSTNESS_NO_PARAMETER_SELECTED"
     }
    },
@@ -707,9 +707,9 @@
    "productionApproved": false,
    "evidenceKind": "OBSERVED"
   },
-  "envelopeHash": "97dfa1fe3e85646a4f22f704990207fad9cfac795ba0757bcd99afbcc2e368f9"
+  "envelopeHash": "7e78671f38dcfa43eb0a1396bd44d0b334369fde15b44c981d547bf6a20e9017"
  },
- "envelopeHash": "97dfa1fe3e85646a4f22f704990207fad9cfac795ba0757bcd99afbcc2e368f9",
+ "envelopeHash": "7e78671f38dcfa43eb0a1396bd44d0b334369fde15b44c981d547bf6a20e9017",
  "population": {
   "profile": "V10_PRIMARY",
   "populationHash": "ea3949077a7eef02f8f4c9777ed1fa55e29306c2658fe7f8b21f954f30a43509",
@@ -763,5 +763,5 @@
   "signalsAfterWindow": 0
  },
  "qa": null,
- "resultHash": "3feb10b4d31895896818c6da7adaa456ec5e0f8129e8c17de96f329a35ae5f31"
+ "resultHash": "28256ba716e1b14d9a9e4537c0f3f5f419cc19141a596306a4ac57685cdd9158"
 }
