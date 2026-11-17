@@ -1,6 +1,6 @@
 {
  "schemaVersion": "return-basis-input-audit-1.0.0",
- "generatedAt": "2026-11-17T07:33:51.000Z",
+ "generatedAt": "2026-11-17T12:57:04.000Z",
  "versions": {
   "audit_logic": "1.0.0"
  },
@@ -9,25 +9,25 @@
  "scope": "CANONICAL_HISTORY",
  "scopeNote": "Gelesen wurde der wiederhergestellte kanonische Barstore.",
  "counters": {
-  "CANONICAL_PRODUCT_UNIVERSE": 6309,
-  "CANONICAL_HISTORY_UNIVERSE": 6308,
-  "RAW_CLOSE_AVAILABLE": 6308,
-  "SPLIT_FACTOR_AVAILABLE": 6308,
-  "DIVIDEND_COLUMN_AVAILABLE": 6308,
-  "DIVIDEND_EVENTS_AVAILABLE": 3019,
-  "ADJUSTED_CLOSE_AVAILABLE": 6308,
-  "TRADING_DATES_AVAILABLE": 6308,
-  "ADJUSTMENT_STATUS_PRESENT": 6308,
-  "RETURN_BASIS_IDENTIFIABLE_UNIVERSE": 6308
+  "CANONICAL_PRODUCT_UNIVERSE": 6314,
+  "CANONICAL_HISTORY_UNIVERSE": 6309,
+  "RAW_CLOSE_AVAILABLE": 6309,
+  "SPLIT_FACTOR_AVAILABLE": 6309,
+  "DIVIDEND_COLUMN_AVAILABLE": 6309,
+  "DIVIDEND_EVENTS_AVAILABLE": 3020,
+  "ADJUSTED_CLOSE_AVAILABLE": 6309,
+  "TRADING_DATES_AVAILABLE": 6309,
+  "ADJUSTMENT_STATUS_PRESENT": 6309,
+  "RETURN_BASIS_IDENTIFIABLE_UNIVERSE": 6309
  },
  "bySource": {
-  "CANONICAL_STORE": 6308
+  "CANONICAL_STORE": 6309
  },
  "byAdjustmentStatus": {
-  "adjusted": 6308
+  "adjusted": 6309
  },
  "exclusions": {
-  "NO_SERIES": 1
+  "NO_SERIES": 5
  },
  "identifiableBySector": {
   "Technology": 18,
@@ -39,7 +39,7 @@
   "Energy": 8,
   "Utilities": 7,
   "Real Estate": 8,
-  "(unclassified)": 6208
+  "(unclassified)": 6209
  },
  "series": [
   {
@@ -69855,6 +69855,18 @@
    "to": "2026-11-16",
    "dividendEvents": 0,
    "splitEvents": 2,
+   "adjustmentStatus": "adjusted",
+   "source": "CANONICAL_STORE"
+  },
+  {
+   "securityId": "ref_MEMY",
+   "ticker": "MEMY",
+   "sector": "(unclassified)",
+   "bars": 202,
+   "from": "2026-01-20",
+   "to": "2026-11-05",
+   "dividendEvents": 40,
+   "splitEvents": 0,
    "adjustmentStatus": "adjusted",
    "source": "CANONICAL_STORE"
   },
