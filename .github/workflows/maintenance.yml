@@ -8,6 +8,7 @@ name: Wartung (Buendel maintenance)
 #   r2-audit                     vormals r2-audit.yml
 #   cloudflare-audit             vormals landing-cloudflare-audit.yml
 #   tiingo-scale                 vormals tiingo-scale.yml
+#   tiingo-abruf                 neu (17.11.2026): Fuehrt Tiingo diese Ticker? Nur Metadaten und Zaehlungen, keine Kurse
 # Der Job `auswahl` bildet die Ausloeser der Quellen nach (Dispatch `teil`, Zeitplan am Cron, Push nach
 # Zweig/Pfad, workflow_run nach Name/Typ/Zweig, repository_dispatch nach Typ). Generiert, siehe A-Doc.
 
@@ -22,9 +23,12 @@ on:
           - r2-audit
           - cloudflare-audit
           - tiingo-scale
+          - tiingo-abruf
       gate: {description: 'tiingo-scale: Welches Gate (CANARY, GATE_100, GATE_500, GATE_2000, FULL_UNIVERSE)', type: string, default: GATE_100}
       realtime: {description: 'tiingo-scale: Strom- und Live-Kerzen-Nachweis mitlaufen lassen', type: boolean, default: false}
       realtimeSeconds: {description: 'tiingo-scale: Messdauer je Stromlauf in Sekunden', type: string, default: '90'}
+      ticker: {description: 'tiingo-abruf: Ticker, komma-getrennt (hoechstens 25)', type: string, default: ''}
+      seit: {description: 'tiingo-abruf: Kerzen ab Datum JJJJ-MM-TT (leer = 30 Tage)', type: string, default: ''}
   push:
     branches:
       - 'claude/**'
@@ -58,6 +62,7 @@ jobs:
       r2_audit: ${{ steps.wahl.outputs.r2_audit }}
       cloudflare_audit: ${{ steps.wahl.outputs.cloudflare_audit }}
       tiingo_scale: ${{ steps.wahl.outputs.tiingo_scale }}
+      tiingo_abruf: ${{ steps.wahl.outputs.tiingo_abruf }}
     steps:
       - name: Teil waehlen
         id: wahl
@@ -92,7 +97,7 @@ jobs:
           export PUSH_FILES PUSH_FILES_UNKNOWN
           python3 - <<'PY'
           import fnmatch, json, os, re
-          SPEC = json.loads(r"""{"cloudflare-audit": {"crons": [], "dispatch": true, "required": []}, "r2-audit": {"crons": [], "dispatch": true, "required": []}, "tiingo-scale": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"], "paths": ["scripts/market/build-market-universe.mjs", "scripts/market/select-gate-universe.mjs", "scripts/market/run-scale-gate.mjs", "scripts/market/build-market-factors.mjs", "scripts/market/build-health-report.mjs", "scripts/market/verify-tiingo-commercial.mjs", "scripts/market/verify-live-candle.mjs", "scripts/market/verify-dynamic-subscribe.mjs", "scripts/market/verify-vu-live-e2e.mjs", "worker/src/vu-live.mjs", "scripts/technical/run-technical-scale.mjs", "quant/config/tiingo-scale.json", "quant/config/gate-100-seed.json", "quant/engines/instrument-classification.js", "quant/engines/market-factors.js", ".github/workflows/maintenance.yml"]}, "required": []}}""")
+          SPEC = json.loads(r"""{"cloudflare-audit": {"crons": [], "dispatch": true, "required": []}, "r2-audit": {"crons": [], "dispatch": true, "required": []}, "tiingo-abruf": {"crons": [], "dispatch": true, "required": ["ticker"]}, "tiingo-scale": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"], "paths": ["scripts/market/build-market-universe.mjs", "scripts/market/select-gate-universe.mjs", "scripts/market/run-scale-gate.mjs", "scripts/market/build-market-factors.mjs", "scripts/market/build-health-report.mjs", "scripts/market/verify-tiingo-commercial.mjs", "scripts/market/verify-live-candle.mjs", "scripts/market/verify-dynamic-subscribe.mjs", "scripts/market/verify-vu-live-e2e.mjs", "worker/src/vu-live.mjs", "scripts/technical/run-technical-scale.mjs", "quant/config/tiingo-scale.json", "quant/config/gate-100-seed.json", "quant/engines/instrument-classification.js", "quant/engines/market-factors.js", ".github/workflows/maintenance.yml"]}, "required": []}}""")
           ev, ref = os.environ.get("EVENT", ""), os.environ.get("REF", "")
           def glob_re(p):
               # GitHub-Filtermuster: ** beliebig, * ohne '/', ? ein Zeichen, [..] Klasse; Praefix '!' = Ausschluss
@@ -966,3 +971,37 @@ jobs:
           fi
         env:
           GATE: ${{ steps.gate.outputs.gate }}
+
+  # --- tiingo-abruf: neu (17.11.2026, Steuerung): Fuehrt Tiingo diese Ticker, an welcher Boerse, seit wann? Fuer Tickerwechsel
+  # (TCBI -> TXCP, ADIL -> AZR ...) und Anbieterluecken. Nur Metadaten und Zaehlungen im Log und im Artefakt, keine Kurse.
+  tiingo-abruf:
+    needs: [auswahl]
+    if: needs.auswahl.outputs.tiingo_abruf == 'true'
+    permissions: {contents: read}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Ticker bei Tiingo abfragen
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          TICKERS: ${{ inputs.ticker }}
+          SEIT: ${{ inputs.seit }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/tiingo-abruf"
+          args=(--out "$RUNNER_TEMP/tiingo-abruf/bericht.json")
+          if [ -n "${SEIT:-}" ]; then args+=(--since "$SEIT"); fi
+          node scripts/market/probe-tiingo-tickers.mjs "${args[@]}"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: tiingo-abruf-${{ github.run_id }}
+          path: ${{ runner.temp }}/tiingo-abruf
+          retention-days: 14
+          if-no-files-found: warn
