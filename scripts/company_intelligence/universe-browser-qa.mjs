@@ -10,7 +10,7 @@ import {accessStateFor,STORAGE_KEY} from '../access-gate/build.mjs';
 import {eligibilityRollout} from './eligibility-rollout.mjs';
 import {eligibilityValid} from './universe-approval.mjs';
 import {objectPool} from './bounded-objects.mjs';
-import {readLiveAsset} from './live-asset-read.mjs';
+import {readLiveAsset,isTransientNetworkError,networkError} from './live-asset-read.mjs';
 import {waitForHydratedConsumer} from './hydrated-consumer-review.mjs';
 import {expectsEstimatedWindow,mustShowEstimatedWindow} from './estimated-window-expectation.mjs';
 // Wartezeit je Seite: Runner mit hoher Last brauchten ueber 30 s (Laeufe 43256989488, 43298776094: TimeoutError, Kandidaten-QA rot).
@@ -19,18 +19,20 @@ const require=createRequire(import.meta.url),{chromium}=require('playwright');
 const args=process.argv.slice(2),arg=k=>args[args.indexOf(k)+1],live=args.includes('--live'),directory=arg('--consumer'),out=arg('--out');
 const origin='https://research.visionuniverse.de';mkdirSync(dirname(out),{recursive:true});
 const sample=JSON.parse(readFileSync(arg('--sample')));
-const proof=live?await(await fetch(origin+'/company-intelligence-refresh.json?qa='+Date.now())).json():null;
+// Transienter Netzfehler beim Lesen der Live-Auslieferung: Bericht mit typisiertem Fehler statt Absturz ohne Bericht (die Live-Verifikation darf nur diesen Fall wiederholen).
+const transientExit=e=>{if(!live||!isTransientNetworkError(e))throw e;const t=networkError('live read',e);writeFileSync(out,JSON.stringify({status:'FAIL',mode:'ACTUAL_PRODUCTION',error:{name:t.name,code:t.code}},null,2)+'\n');console.error(t.message);process.exit(1);};
+const proof=live?await(async()=>(await fetch(origin+'/company-intelligence-refresh.json?qa='+Date.now())).json())().catch(transientExit):null;
 const m=live?proof.manifest:JSON.parse(readFileSync(join(directory,'manifest.json')));assert(eligibilityValid(m));assert.equal(m.generation,sample.generation);
 const payloads=new Map();
 await objectPool(Object.entries(m.assets),async ([path,meta])=>{
  const b=live?await readLiveAsset(origin+'/company-intelligence/data/'+path,meta,{onRetry:r=>console.log(JSON.stringify({hostingRetry:path,...r}))}):readFileSync(join(directory,path));
  assert.equal(b.length,meta.bytes,path);assert.equal(createHash('sha256').update(b).digest('hex'),meta.sha256,path);payloads.set(path,b);
-},live?4:12);
+},live?4:12).catch(transientExit);
 const browser=await chromium.launch({headless:true,args:['--no-sandbox']}),cases=[];
 const state=accessStateFor(process.env.RESEARCH_ACCESS_PASSWORD),ui=readFileSync('company-intelligence/ui/stock-section.js'),contract=readFileSync('company-intelligence/api/contract.js');
 const detail=readFileSync('discover/ui/detail.js');
 const rollout=live?null:eligibilityRollout(readFileSync('company-intelligence/config/rollout.js','utf8'),m,{canary:true});
-const release=await(await fetch(origin+'/release-delivery.json?qa='+Date.now())).json();
+const release=await(async()=>(await fetch(origin+'/release-delivery.json?qa='+Date.now())).json())().catch(transientExit);
 const tickers=sample.stocks,matrices=[...new Set([...sample.groups.HIGH_PROFILE,...sample.groups.SPARSE.slice(0,3),...sample.groups.INTERNATIONAL_ADR.slice(0,2),...(sample.groups.MASTER_DETAIL||[]).slice(0,2)])];
 const work=[...tickers.map(ticker=>({ticker,width:390,theme:'dark'})),...matrices.flatMap(ticker=>[390,430,768,1440].flatMap(width=>['dark','light'].filter(theme=>width!==390||theme!=='dark').map(theme=>({ticker,width,theme}))))];
 let failure=null;
