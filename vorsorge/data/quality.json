@@ -7,40 +7,40 @@
   "report": {
    "schemaVersion": "vu-vorsorge-ingest-report-1.0.0",
    "ingest": "vorsorge-ingest-2.0.0",
-   "activeTickers": 401,
+   "activeTickers": 388,
    "extraEtfs": 386,
    "onlyExtra": true,
    "universeRows": 7547,
-   "keptFromPreviousRuns": 7148,
-   "processedOk": 399,
+   "keptFromPreviousRuns": 7162,
+   "processedOk": 385,
    "notFound": 0,
-   "noPrices": 2,
-   "failed": 2,
+   "noPrices": 3,
+   "failed": 3,
    "pending": 0,
    "complete": true,
    "stoppedBecause": null,
    "thisRun": {
-    "requests": 803,
+    "requests": 3,
     "rateLimited": 0,
-    "minutes": 11,
-    "newlyAttempted": 401
+    "minutes": 0,
+    "newlyAttempted": 1
    }
   },
   "catalog": {
    "schemaVersion": "vu-vorsorge-catalog-stats-1.0.0",
    "source": "https://apimedia.tiingo.com/docs/tiingo/daily/supported_tickers.zip",
-   "catalogRows": 109306,
-   "etfRows": 9936,
+   "catalogRows": 109307,
+   "etfRows": 9937,
    "malformedRows": 161,
-   "activeRows": 7163,
+   "activeRows": 7164,
    "inactiveRows": 2612,
    "rowsWithoutPriceDates": 0,
-   "uniqueTickers": 9558,
+   "uniqueTickers": 9559,
    "tickersWithMultipleRows": 213,
-   "activeUniqueTickers": 7163,
+   "activeUniqueTickers": 7164,
    "byExchange": {
     "SHE": 426,
-    "SHG": 425,
+    "SHG": 426,
     "NYSE": 2943,
     "BATS": 1814,
     "NASDAQ": 1634,
@@ -58,13 +58,13 @@
     "OTCCE": 1
    },
    "byCurrency": {
-    "USD": 9019,
+    "USD": 9020,
     "CNY": 754,
     "AUD": 2
    },
    "activeByExchange": {
     "SHE": 398,
-    "SHG": 425,
+    "SHG": 426,
     "NYSE": 2637,
     "BATS": 1479,
     "NASDAQ": 1319,
@@ -83,13 +83,13 @@
     "Stock": 49488,
     "Mutual Fund": 49882
    },
-   "staleBefore": "2026-10-17",
-   "maxEndDate": "2026-11-16"
+   "staleBefore": "2026-10-18",
+   "maxEndDate": "2026-11-17"
   },
-  "failedCount": 2
+  "failedCount": 3
  },
  "layers": {
-  "raw": 9936,
+  "raw": 9937,
   "canonical": 7540,
   "listings": 7557,
   "publicAnalysis": 3962,
@@ -98,7 +98,7 @@
   "review": 1460
  },
  "counts": {
-  "rowsRead": 15382,
+  "rowsRead": 15386,
   "listings": 7557,
   "canonicalFunds": 7540,
   "shareClasses": 7540,

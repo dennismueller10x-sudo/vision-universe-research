@@ -1,11 +1,11 @@
 {
  "version": "company-names-1.0.0",
- "generatedAt": "2026-11-11T07:43:43.041Z",
+ "generatedAt": "2026-11-17T12:38:30.499Z",
  "master": {
   "file": "quant/data/market/security-master/eligibility.json",
   "version": "us-security-master-1.3.0",
-  "sha256": "8f7ddd4117343dd4bfebdba1ac7d1e8f2f61cf4e0ef1c9e7553f211846222415",
-  "productUniverse": 6309
+  "sha256": "3eb825015f074bdade95b21aca2dd456713a87f71654d2bd1fa842500ae7d7a1",
+  "productUniverse": 6314
  },
  "sourcePriority": [
   "TIINGO_METADATA",
@@ -23,18 +23,18 @@
   "tiingo": null
  },
  "counts": {
-  "rows": 7803,
-  "productRows": 6309,
-  "resolved": 6282,
-  "unresolved": 27,
+  "rows": 7807,
+  "productRows": 6314,
+  "resolved": 6283,
+  "unresolved": 31,
   "bySource": {
-   "TIINGO_METADATA": 6081,
+   "TIINGO_METADATA": 6082,
    "SEC_COMPANY_TICKERS": 201
   },
   "conflicts": 187,
   "unresolvedReasons": {
-   "PROVIDER_HAS_NO_NAME": 15,
-   "PROVIDER_NOT_QUERIED_YET": 12
+   "PROVIDER_NOT_QUERIED_YET": 16,
+   "PROVIDER_HAS_NO_NAME": 15
   },
   "rejectedRules": {
    "VU_CURATED:TICKER_AS_NAME": 1,
@@ -23007,6 +23007,23 @@
      "asOf": "2026-09-14"
     }
    }
+  },
+  {
+   "securityId": "ref_AZR",
+   "ticker": "AZR",
+   "exchange": "NASDAQ",
+   "providerSymbol": "AZR",
+   "inProductUniverse": true,
+   "companyName": null,
+   "displayName": null,
+   "nameSource": null,
+   "nameAsOf": null,
+   "cik": null,
+   "status": "UNRESOLVED",
+   "reason": "PROVIDER_NOT_QUERIED_YET",
+   "nameConflict": null,
+   "confirmedBy": null,
+   "candidates": {}
   },
   {
    "securityId": "ref_AZTA",
@@ -77353,6 +77370,23 @@
    }
   },
   {
+   "securityId": "ref_FGC",
+   "ticker": "FGC",
+   "exchange": "NASDAQ",
+   "providerSymbol": "FGC",
+   "inProductUniverse": true,
+   "companyName": null,
+   "displayName": null,
+   "nameSource": null,
+   "nameAsOf": null,
+   "cik": null,
+   "status": "UNRESOLVED",
+   "reason": "PROVIDER_NOT_QUERIED_YET",
+   "nameConflict": null,
+   "confirmedBy": null,
+   "candidates": {}
+  },
+  {
    "securityId": "ref_FGI",
    "ticker": "FGI",
    "exchange": "NASDAQ",
@@ -109166,6 +109200,23 @@
    }
   },
   {
+   "securityId": "ref_IRLA",
+   "ticker": "IRLA",
+   "exchange": "NASDAQ",
+   "providerSymbol": "IRLA",
+   "inProductUniverse": true,
+   "companyName": null,
+   "displayName": null,
+   "nameSource": null,
+   "nameAsOf": null,
+   "cik": null,
+   "status": "UNRESOLVED",
+   "reason": "PROVIDER_NOT_QUERIED_YET",
+   "nameConflict": null,
+   "confirmedBy": null,
+   "candidates": {}
+  },
+  {
    "securityId": "ref_IRM",
    "ticker": "IRM",
    "exchange": "NYSE",
@@ -130217,13 +130268,13 @@
    "ticker": "MEMY",
    "exchange": "BATS",
    "providerSymbol": "MEMY",
-   "inProductUniverse": false,
+   "inProductUniverse": true,
    "companyName": "MEMORY PHARMACEUTICALS CORP",
    "displayName": "Memory Pharmaceuticals",
    "nameSource": "TIINGO_METADATA",
    "nameAsOf": "2026-09-14",
    "cik": null,
-   "status": "RESOLVED_OUTSIDE_PRODUCT",
+   "status": "RESOLVED",
    "reason": null,
    "nameConflict": null,
    "confirmedBy": null,
@@ -193642,6 +193693,23 @@
      "asOf": "2026-09-14"
     }
    }
+  },
+  {
+   "securityId": "ref_SRTM",
+   "ticker": "SRTM",
+   "exchange": "NASDAQ",
+   "providerSymbol": "SRTM",
+   "inProductUniverse": true,
+   "companyName": null,
+   "displayName": null,
+   "nameSource": null,
+   "nameAsOf": null,
+   "cik": null,
+   "status": "UNRESOLVED",
+   "reason": "PROVIDER_NOT_QUERIED_YET",
+   "nameConflict": null,
+   "confirmedBy": null,
+   "candidates": {}
   },
   {
    "securityId": "ref_SRTS",

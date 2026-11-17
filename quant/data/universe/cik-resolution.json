@@ -1,6 +1,6 @@
 {
   "version": "company-master-1.0.0",
-  "generatedAt": "2026-11-16T06:28:38.564Z",
+  "generatedAt": "2026-11-17T12:38:31.950Z",
   "source": {
     "cikMap": "OK",
     "config": "quant/config/sec-universe.json"
@@ -8,15 +8,15 @@
   "note": "Drei Zustaende, nicht zwei. AMBIGUOUS heisst: es gaebe eine Wahl, und sie wird nicht getroffen (§3). Keine geratene CIK.",
   "totals": {
     "CIK_RESOLVED": 6461,
-    "CIK_UNRESOLVED": 1348,
+    "CIK_UNRESOLVED": 1352,
     "CIK_AMBIGUOUS": 0,
-    "instruments": 7809
+    "instruments": 7813
   },
   "unresolvedByEligibility": {
-    "EXCLUDED": 611,
-    "REVIEW": 261,
+    "EXCLUDED": 610,
+    "REVIEW": 262,
     "SEPARATE_CLASS": 386,
-    "ELIGIBLE": 90
+    "ELIGIBLE": 94
   },
   "resolved": [
     {
@@ -16272,7 +16272,7 @@
       "symbol": "ACV-A",
       "exchange": "NYSE",
       "securityClass": "EQUITY_COMMON",
-      "productEligibility": "ELIGIBLE",
+      "productEligibility": "REVIEW",
       "reason": "Kuerzel steht nicht in den SEC-Verzeichnissen."
     },
     {
@@ -17311,6 +17311,15 @@
       "reason": "Kuerzel steht nicht in den SEC-Verzeichnissen."
     },
     {
+      "member": "ref_AZR",
+      "instrumentId": "vu_3b667148f2f973",
+      "symbol": "AZR",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "Kuerzel steht nicht in den SEC-Verzeichnissen."
+    },
+    {
       "member": "ref_BAC_P_B",
       "instrumentId": "vu_f822c54e23a307",
       "symbol": "BAC-P-B",
@@ -17811,15 +17820,6 @@
       "symbol": "BLEUR",
       "exchange": "NASDAQ",
       "securityClass": "RIGHT",
-      "productEligibility": "EXCLUDED",
-      "reason": "Kuerzel steht nicht in den SEC-Verzeichnissen."
-    },
-    {
-      "member": "ref_BLEUU",
-      "instrumentId": "vu_7def28643a8920",
-      "symbol": "BLEUU",
-      "exchange": "NASDAQ",
-      "securityClass": "UNIT",
       "productEligibility": "EXCLUDED",
       "reason": "Kuerzel steht nicht in den SEC-Verzeichnissen."
     }

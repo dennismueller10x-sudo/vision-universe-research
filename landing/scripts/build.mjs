@@ -87,7 +87,7 @@ export async function build({output = resolve(root,'dist'), config = {}, product
     html=html.replace(`${attribute}="./${asset}"`,`${attribute}="./${asset}?v=${version}"`);
   }
   // Story-Website: Stil und Skript mit inhaltsabhängigen Adressen auf allen Seiten.
-  const stamp={};for(const asset of ['web/site.css','web/site.js','web/consent.js','newsletter.js'])stamp[asset]=createHash('sha256').update(await readFile(resolve(output,asset))).digest('hex').slice(0,16);
+  const stamp={};for(const asset of ['web/site.css','web/site.js','web/consent.js','web/liste.css','newsletter.js'])stamp[asset]=createHash('sha256').update(await readFile(resolve(output,asset))).digest('hex').slice(0,16);
   const stampPage=(page,prefix)=>{for(const asset of Object.keys(stamp))page=page.replaceAll(`"${prefix}${asset}"`,`"${prefix}${asset}?v=${stamp[asset]}"`);return page;};
   html=stampPage(html,'./').replace('<meta name="vu-ga" content="">',`<meta name="vu-ga" content="${ga}">`);
   await writeFile(resolve(output,'index.html'),html);
@@ -116,6 +116,8 @@ export async function build({output = resolve(root,'dist'), config = {}, product
       const ref=from.startsWith('.')?from:'./'+from;
       html=html.replaceAll(`"${ref}"`,`"${ref}?v=${version}"`);
     }
+    // Listen im Stil der Story-Website laden web/site.css, web/site.js und web/liste.css.
+    html=stampPage(html,'../'.repeat(page.split('/').length-1));
     await writeFile(resolve(output,page),html);
   }
   await writeFile(resolve(output,'_headers'),`/*\n  Content-Security-Policy: ${csp}\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: no-referrer\n  X-Frame-Options: DENY\n  Permissions-Policy: camera=(), microphone=(), geolocation=()\n${production?'':'  X-Robots-Tag: noindex, nofollow\n'}`);
