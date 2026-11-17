@@ -1062,3 +1062,54 @@ main,.story,.steps,.step{overflow-x:clip}
 .nh-art .pill{display:inline-block;padding:5px 12px;border-radius:99px;background:var(--lime);color:#000;font-weight:900;font-size:13.5px}
 .nh-art i{display:block;height:12px;margin-top:10px;border-radius:8px;background:currentColor;opacity:.85}.nh-art .w1{width:90%}.nh-art .w2{width:68%;opacity:.35}.nh-art .w3{width:50%;opacity:.35}
 .ntiles.nall{margin-top:16px}
+
+/* News-Seite v2 (Owner 17.11.2026): schwarzer Kopfbalken mit zwei iPhones (echte App-Ansichten der News) */
+.nband{position:relative;display:grid;gap:28px;align-items:center;margin:0 calc(50% - 50vw);padding:44px calc(50vw - 50% + 0px) 0;background:#000;color:#fff;overflow:hidden}
+.nband::before{content:"";position:absolute;right:-10%;top:-30%;width:70%;height:140%;background:radial-gradient(closest-side,rgba(205,255,0,.28),rgba(205,255,0,0));pointer-events:none}
+.nband .nb-t{position:relative;padding:0 0 4px}
+.nb-k{font-size:12.5px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--lime)}
+.nband h1{margin-top:10px;font-size:clamp(56px,9vw,120px);font-weight:900;letter-spacing:-.06em;line-height:.9;color:#fff}
+.nband .sub{margin-top:14px;max-width:34ch;color:#d4d4d4;font-size:clamp(17px,1.6vw,21px);font-weight:600}
+.nb-r{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.nb-r li{padding:8px 14px;border-radius:99px;box-shadow:inset 0 0 0 1.5px var(--lime);color:var(--lime);font-weight:800;font-size:14px}
+.nb-art{position:relative;height:360px;max-width:520px;width:100%;margin:0 auto}
+.nph{position:absolute;bottom:-60px;width:210px;aspect-ratio:390/844;margin:0;padding:7px;border-radius:38px;background:#111;box-shadow:0 0 0 1.5px #2a2a2a,0 40px 70px -30px rgba(0,0,0,.9)}
+.nph img{width:100%;height:100%;object-fit:cover;object-position:top;border-radius:31px}
+.nph.p1{left:4%;transform:rotate(-6deg)}
+.nph.p2{right:4%;bottom:-90px;transform:rotate(5deg)}
+@media(min-width:900px){
+  .nband{grid-template-columns:1.05fr .95fr;padding-top:64px;min-height:470px}
+  .nband .nb-t{padding-bottom:60px}
+  .nb-art{height:470px;align-self:end}
+  .nph{width:250px;bottom:-70px}.nph.p2{bottom:-110px}
+}
+.nband+*,.nband ~ .full.nfirst{padding-top:44px}
+.lp2 .lpst1{grid-area:stores}.lp2 .lpst1 .b{margin:0}
+.lp2 .lpa-in{grid-template-areas:"t t" "caps phone" "stores stores" "next next"}
+@media(min-width:1000px){.lp2 .lpa-in{grid-template-areas:"t phone" "caps phone" "stores phone" "next phone"}}
+/* News-Kopf als abgerundete schwarze Karte im Inhaltsbereich */
+.nband{margin:16px 0 0;padding:36px 24px 0;border-radius:32px}
+@media(min-width:900px){.nband{padding:56px 56px 0;margin-top:24px}}
+/* Landingpage am Handy: Store-Logos über dem Knopf, Bildschirm 1 bleibt in einem Fenster */
+@media(max-width:759px){
+  .lp2 .lpa-t .apptag{display:none}
+  .lp2 h1{margin-top:0}
+  .lp2 .lpa-in{row-gap:10px}
+  .lpcaps{gap:5px}
+  .lp2 .lpst1 img{height:34px}
+}
+@media(min-width:1000px) and (max-height:760px){.lp2 .lpa-t .apptag{display:none}.lp2 h1{margin-top:0}.lpcaps li{padding:8px 10px}.lpcaps{gap:8px}.lp2 .lpst1 img{height:34px}.lp2 .lpa-in{row-gap:12px}}
+
+/* Startseite „Heute neu“ (Owner 17.11.2026): schwarzer Balken, damit News, Magazin und Report nicht untergehen */
+.hlband{margin-top:14px;padding:16px;border-radius:24px;background:#000;color:#fff}
+.hlband .kap{display:flex;align-items:center;gap:8px;color:#fff;font-size:13px}
+.hlband .kap a{margin-left:auto;color:var(--lime);font-size:12px;letter-spacing:.06em}
+.hlband .live-dot{width:9px;height:9px;border-radius:50%;background:var(--lime);box-shadow:0 0 0 4px rgba(205,255,0,.2)}
+.hlband .hlc{background:#141414;box-shadow:none;color:#fff}
+.hlband .hlc:hover{box-shadow:inset 0 0 0 2px var(--lime)}
+.hlband .hlc small{color:#9a9a9a}
+.hlband .hlfix .hlm{background:#1d1d1d;color:#fff;box-shadow:none}
+.hlband .hlfix .hlm:nth-child(2){background:var(--lime);color:#000}
+.hlband .hlfix .hlm:nth-child(2) small{color:#000;opacity:.7}
+.hlband .hlfix{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.hlband .hlm>span{min-width:0}.hlband .hlm small{overflow-wrap:anywhere}
+@media(max-width:560px){.hlband .hlm small{overflow-wrap:normal;-webkit-hyphens:auto;hyphens:auto;font-size:10px;letter-spacing:.02em}.hlband .hlm img{width:44px;height:62px}.hlband .hlm{gap:8px;padding:8px}}
