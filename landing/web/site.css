@@ -927,3 +927,20 @@ main,.story,.steps,.step{overflow-x:clip}
 @media(min-width:760px){.ntiles{grid-template-columns:repeat(4,minmax(0,1fr))}}
 .nfix .hlm>span{min-width:0}.nfix .hlm small{white-space:normal}
 .nfix .hlm small{font-size:10px;letter-spacing:.03em;overflow-wrap:anywhere}
+
+/* Desktop: das mitlaufende iPhone passt immer ganz ins Fenster (Laptop 13"), damit der Wechsel je Kapitel sichtbar ist */
+@media(min-width:1000px){
+  .stick .stage{height:min(640px,calc(100vh - 119px - 70px))}
+  .stick .aphone,.stick .stage .aphone{--pw:min(290px,26vw,calc((100vh - 119px - 120px) / 2.164))}
+  .stick .lbl{bottom:14px}
+}
+/* Filme-Fächer: kompakter, auf schmalen Desktops enger gefächert */
+@media(min-width:1000px){
+  .fan{height:440px}
+}
+@media(min-width:1000px) and (max-width:1439px){
+  .fan button{width:160px;margin-left:-80px;transform:translateX(calc(var(--i) * 74px)) translateY(calc(var(--i) * var(--i) * 4px)) rotate(calc(var(--i) * 4deg))}
+  .fan button:hover,.fan button:focus-visible{transform:translateX(calc(var(--i) * 80px)) translateY(-36px) rotate(0deg) scale(1.08)}
+  .fan{height:350px}
+}
+@media(min-width:1000px) and (max-width:1439px){.fan:hover button{transform:translateX(calc(var(--i) * 80px)) translateY(calc(var(--i) * var(--i) * 4px)) rotate(calc(var(--i) * 4.5deg))}}
