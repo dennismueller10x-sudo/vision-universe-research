@@ -102,3 +102,12 @@ test('PQ-9: Total-Return-Messung besteht bei passendem Urteil; falsches Urteil, 
   assert.match(Q.totalReturnMeasurement(m).samples.join(), /unter der Toleranz/);
   assert.match(Q.totalReturnMeasurement({ ...ok(), worstRelativeError: 0.01 }).samples.join(), /worstRelativeError/);
 });
+
+test('PQ-10: Faktordeckung ab 97 % besteht; darunter faellt sie mit Gruenden; ohne Artefakt nichts geprueft', () => {
+  const art = (computed, requested = 6309) => ({ coverage: { requested, computed, skipped: requested - computed, skippedByReason: { FAIL: requested - computed } } });
+  assert.equal(Q.factorCoverage(art(6169)).status, 'PASS');
+  const low = Q.factorCoverage(art(5935));
+  assert.equal(low.status, 'FAIL');
+  assert.match(low.samples.join(), /5935 von 6309 \(94\.1 %\).*FAIL/);
+  assert.equal(Q.factorCoverage(null).checked, 0);
+});
