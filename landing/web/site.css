@@ -944,3 +944,8 @@ main,.story,.steps,.step{overflow-x:clip}
   .fan{height:350px}
 }
 @media(min-width:1000px) and (max-width:1439px){.fan:hover button{transform:translateX(calc(var(--i) * 80px)) translateY(calc(var(--i) * var(--i) * 4px)) rotate(calc(var(--i) * 4.5deg))}}
+.newsgrid.nonly{grid-template-columns:1fr}.newsgrid.nonly .lead-n{min-height:420px}
+/* Menü mit News, Magazin, Aktienreports: darf umbrechen statt seitlich überzulaufen (200 % Text, schmale Desktops) */
+.nav .w{flex-wrap:wrap;height:auto;min-height:66px;row-gap:6px}
+.nav .links{flex-wrap:wrap;min-width:0}
+@media(min-width:960px) and (max-width:1279px){.nav .appchip{display:none !important}.nav .links a{padding:9px 10px}}
