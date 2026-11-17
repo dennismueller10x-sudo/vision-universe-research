@@ -263,3 +263,10 @@ test("AK-14 · Kurzname: Aktienseite und Modul-Aktienkopf benutzen dieselbe Rege
   assert.equal(M.shortName("Take-Two Interactive Software"), "Take-Two"); assert.equal(M.nameRest("Take-Two Interactive Software", "Take-Two"), "Interactive Software");
   assert.deepEqual(N.subLine("Take-Two Interactive Software", "Take-Two", "TTWO", "NASDAQ"), ["Interactive Software", "TTWO", "NASDAQ"]);
 });
+
+test("AK-15 Supertrader-Fenster: Pille nur „Regel erfüllt laut Methode“, die Stufe steht als „Stand im Ablauf“ (Owner-Wortwahl)", () => {
+  const app = readFileSync(new URL("../../../aktie/app.js", import.meta.url), "utf8");
+  assert.ok(app.includes("Regel erfüllt laut Methode</span>"), "feste Pille");
+  assert.ok(!/stageText\) \+ " laut Methode/.test(app), "keine Stufe mit „laut Methode“ als Urteil");
+  assert.ok(app.includes("Stand im Ablauf: "), "Stufe als Stand im Ablauf");
+});

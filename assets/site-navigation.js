@@ -387,8 +387,8 @@
     if (p.startsWith('/willkommen/')) return {label: 'Home', icon: 'layers'};
     if (p.startsWith('/mein-dashboard/')) return {label: 'Ich', icon: 'layers'};
     if (p.startsWith('/insights/')) return {label: 'News', icon: 'insights'};
-    /* Aktienseite (Quant-SPA #/aktie/<T>): im Prototyp die eigene Welt „Aktie“. */
-    if (p === '/quant/' && /^#\/aktie\/[^/?]+/.test(loc.hash || '')) return {label: 'Aktie', icon: 'chartbild'};
+    /* Die Quant-Aktienseite #/aktie/<T> ist seit dem Klickentwurf (Owner 17.11.2026) eine Modulseite und traegt „Quant“;
+       die Welt „Aktie“ ist nur die gemeinsame Aktienseite. */
     /* Gemeinsame Aktienseite /aktie/#/<T> (Prototyp #v-aktie). */
     if (p === '/aktie/' || p === '/aktie/index.html') return {label: 'Aktie', icon: 'chartbild'};
     const product = PRODUCTS.find(x => x.match(p, loc));
