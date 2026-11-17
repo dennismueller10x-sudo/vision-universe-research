@@ -54,7 +54,17 @@ test("eine Faktorbewertung wird behauptet, wenn es eine Faktorzeile gibt - nicht
   }
   assert.deepEqual(luegen.slice(0, 10), [],
     luegen.length + " Zeilen behaupten eine Faktorbewertung, die die Aktienseite verneint");
-  assert.ok(behauptet.length > 6000, "die Liste behauptet fast nichts mehr - das waere der Gegenfehler");
+  /* Gegenfehler: die Liste verneint Titel, fuer die es eine Faktorzeile gibt. Hier stand "> 6000"; am 16.11.2026 fielen
+     234 nicht mehr gehandelte Titel zu Recht aus der Faktordatei, und die feste Zahl machte den Test rot. Geprueft wird
+     jetzt gegen die Faktordatei selbst; die Quote meldet DQ-PQ-10 (scripts/core/data-quality.mjs). */
+  const faktoren = JSON.parse(readFileSync(join(ROOT, existsSync(join(ROOT, "quant/data/market/factors/factors-FULL_UNIVERSE-product.json"))
+    ? "quant/data/market/factors/factors-FULL_UNIVERSE-product.json" : "quant/data/market/factors/factors-FULL_UNIVERSE.json"), "utf8"));
+  const zeilen = new Set((Array.isArray(faktoren.securities) ? faktoren.securities : Object.values(faktoren.securities || {}))
+    .flatMap((f) => [f.ticker, f.securityId]).filter(Boolean));
+  /* Nicht-Aktien (Fonds, ETFs im Index als `ne`) verneint der Dienst trotz Zeile, mit eigenem Grund. */
+  const mitZeile = universe.stocks.filter((s) => (zeilen.has(s.ticker) || zeilen.has(s.securityId)) && s.factorReason !== "NOT_AN_EQUITY_LISTING");
+  assert.ok(mitZeile.length > 0, "keine Faktorzeile im Produktuniversum - die Pruefung greift ins Leere");
+  assert.equal(behauptet.length, mitZeile.length, "die Liste behauptet weniger, als Faktorzeilen existieren - das waere der Gegenfehler");
 });
 
 test("ein belegtes Nicht-Aktien-Papier verliert die Aktienaussage - ausgeschieden mit benannter Absage, sonst ohne Faktoren", async () => {

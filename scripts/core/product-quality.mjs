@@ -42,5 +42,6 @@ export function productRules({ root = REPO_ROOT, now = new Date() } = {}) {
       [['NVIDIA', 'US'], ['Palantir', 'US'], ['Rheinmetall', 'EUROPE'], ['Allianz', 'EUROPE'], ['SAP', 'EUROPE'], ['2G Energy', 'EUROPE']]));
   } else rules.push(PQ.requiredSearchTitles(null));
   rules.push(PQ.totalReturnMeasurement(maybe('quant/data/providers/total-return-verification.json')));
+  rules.push(PQ.factorCoverage(maybe('quant/data/market/factors/factors-FULL_UNIVERSE.json')));
   return rules;
 }
