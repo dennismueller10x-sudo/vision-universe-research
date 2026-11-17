@@ -94,6 +94,9 @@ export async function build({output = resolve(root,'dist'), config = {}, product
   for(const path of SITE_PAGES){
     let page=await readFile(resolve(output,path),'utf8');
     if(path==='start/index.html')page=formState(page);
+    // Der Sync-Lauf („Integrate shared navigation on new pages“) fügt die research-Navigation in neue Seiten ein. Auf www gibt
+    // es /assets/site-navigation.* nicht (404); die Story-Seiten haben ihr eigenes Menü. Wie bei index.html hier entfernen.
+    page=page.replace('<link rel="stylesheet" href="/assets/site-navigation.css">','').replace('<vu-navigation></vu-navigation>','').replace('<script src="/assets/site-navigation.js"></script>','');
     page=page.replace('<head>','<head>\n  <meta http-equiv="Content-Security-Policy" content="'+esc(csp)+'">\n  <meta name="referrer" content="no-referrer">');
     if (production) page = page.replace('content="noindex, nofollow"','content="index, follow"');
     await writeFile(resolve(output,path),stampPage(page,'../'.repeat(path.split('/').length-1)).replace('<meta name="vu-ga" content="">',`<meta name="vu-ga" content="${ga}">`));
