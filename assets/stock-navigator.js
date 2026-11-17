@@ -328,7 +328,8 @@
       if (!alive || !n || !h) return;
       var s = shortName(n);
       if (h.textContent !== s) h.textContent = s;
-      if (mt && !mt.children.length) mt.textContent = subLine(n, s, ctx.displaySymbol, o.exchange).join(" · ");
+      var ex = o.exchange || (mf && mf.exchanges && typeof mf.exchanges[ctx.ticker] === "string" ? mf.exchanges[ctx.ticker] : null);
+      if (mt && !mt.children.length) mt.textContent = subLine(n, s, ctx.displaySymbol, ex).join(" · ");
       wrap.setAttribute("data-vu-stock-name", n);
     });
     return {

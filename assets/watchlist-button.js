@@ -271,6 +271,8 @@
         var t = tickerOfPage();
         Array.prototype.forEach.call(doc.querySelectorAll(".vu-shead .vu-shead-actions"), function (actions) {
           var slot = actions.querySelector(".vu-shead-watch");
+          /* Kopf nach App-Konzept 2: ein Herz (an die Konto-Watchlist gekoppelt, couple) – kein zweites Lesezeichen daneben. */
+          if (actions.querySelector(".vu-shead-heart, .v2-watch-button")) { if (slot) slot.remove(); return; }
           if (slot && slot.getAttribute("data-ticker") === t) return;
           if (slot) slot.remove();
           if (!t) return;

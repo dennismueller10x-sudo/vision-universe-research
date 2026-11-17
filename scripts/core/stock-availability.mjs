@@ -117,11 +117,14 @@ export function addNames(shards,root){
  const doc=readJson(root,'quant/data/market/security-master/company-names.json');
  if(!doc||!Array.isArray(doc.rows))return 0;
  const names=new Map(doc.rows.filter(r=>r&&r.ticker&&r.displayName&&r.inProductUniverse).map(r=>[r.ticker,r.displayName]));
+ /* App-Konzept 2: Boerse fuer die Meta-Zeile des Aktienkopfs („TTWO · NASDAQ“), aus derselben Zeile des Security-Masters. */
+ const exch=new Map(doc.rows.filter(r=>r&&r.ticker&&r.inProductUniverse&&typeof r.exchange==='string'&&/^[A-Z][A-Z ]{1,15}$/.test(r.exchange)).map(r=>[r.ticker,r.exchange]));
  let n=0;
  for(const doc of Object.values(shards)){
   const tickers=new Set(Object.values(doc.modules).flatMap(m=>m.US||[]));
-  const out={};for(const t of [...tickers].sort())if(names.has(t)){out[t]=names.get(t);n++;}
+  const out={},ex={};for(const t of [...tickers].sort()){if(names.has(t)){out[t]=names.get(t);n++;}if(exch.has(t))ex[t]=exch.get(t);}
   if(Object.keys(out).length)doc.names=out;
+  if(Object.keys(ex).length)doc.exchanges=ex;
  }
  return n;
 }
