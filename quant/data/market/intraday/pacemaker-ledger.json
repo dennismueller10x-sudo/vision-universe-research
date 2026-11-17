@@ -10,7 +10,7 @@
     "blockMaxMs": 20700000,
     "branch": "main"
   },
-  "updatedAt": "2026-11-17T20:50:19.911Z",
+  "updatedAt": "2026-11-17T20:54:28.864Z",
   "cycles": [
     {
       "cycle": 10,
@@ -1994,10 +1994,10 @@
       "written": 1330,
       "requests": 1432,
       "notPublishable": 52,
-      "addAt": "2026-11-17T20:46:13.306Z",
-      "commitAt": "2026-11-17T20:46:13.709Z",
-      "pushAt": "2026-11-17T20:46:16.659Z",
-      "sha": "39f37cee7c",
+      "addAt": "2026-11-17T20:50:19.911Z",
+      "commitAt": "2026-11-17T20:50:20.307Z",
+      "pushAt": "2026-11-17T20:50:23.173Z",
+      "sha": "d63cf8304e",
       "changed": true,
       "ok": true,
       "reason": null,
@@ -2033,11 +2033,53 @@
           "fetchEndAt": "2026-11-17T20:50:19.910Z",
           "ok": true,
           "written": 444,
-          "requests": 477
+          "requests": 477,
+          "sha": "d63cf8304e",
+          "pushAt": "2026-11-17T20:50:23.173Z",
+          "changed": true
         }
       ],
       "snapshotAt": "2026-11-17T20:50:19.883Z",
-      "pushed": true
+      "pushed": true,
+      "watchdog": {
+        "verdict": "FAIL",
+        "codes": [
+          "auslieferungZuWeitHinterher",
+          "seiteStandZuAlt"
+        ]
+      }
+    },
+    {
+      "cycle": 11,
+      "runId": "44151212512",
+      "triggerAt": "2026-11-17T20:50:23.627Z",
+      "marketStateAtTrigger": "OPEN",
+      "localTimeAtTrigger": "15:50:23",
+      "fetchStartAt": "2026-11-17T20:50:23.627Z",
+      "fetchEndAt": "2026-11-17T20:54:28.863Z",
+      "session": "2026-11-17",
+      "written": 449,
+      "requests": 478,
+      "notPublishable": 19,
+      "addAt": null,
+      "commitAt": null,
+      "pushAt": null,
+      "sha": null,
+      "changed": false,
+      "ok": true,
+      "reason": null,
+      "parts": [
+        {
+          "part": 1,
+          "of": 3,
+          "fetchStartAt": "2026-11-17T20:50:23.627Z",
+          "fetchEndAt": "2026-11-17T20:54:28.863Z",
+          "ok": true,
+          "written": 449,
+          "requests": 478
+        }
+      ],
+      "snapshotAt": "2026-11-17T20:54:28.850Z"
     }
   ]
 }
