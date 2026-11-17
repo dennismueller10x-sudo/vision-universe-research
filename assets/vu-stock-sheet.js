@@ -310,11 +310,13 @@
     if (ev && (ev.countable || ewState === "available")) { ev.href = "/elliott/#/" + enc; mod.elliott = ev; }
     var ranks = ((d && d.memberships) || []).filter(function (x) { return isNum(x.rank) && isNum(x.of) && x.rowId !== "sector-leaders"; }).sort(function (a, b) { return a.rank - b.rank || a.rank / a.of - b.rank / b.of; });
     if (d) {
-      /* Discover-Fenster: die Story der Discover-Seite (discover/ui/overview.js#story, #hochUrteil) – Discovers eigene Wörter. */
+      /* Discover-Fenster: die Story der Discover-Seite. „Geschäft“ ist wie dort (discover/ui/overview.js#businessVerdict) das
+         Fundamental-Urteil, „Kurs“ bleibt Discovers hochUrteil. */
       var dg = f.health && f.health.available && (f.health.categories || []).filter(function (c) { return c.id === "growth"; })[0], dst = f.story && f.story.available && (f.story.statements || [])[0];
+      var bz0 = businessVerdict(d);
       var dk = isNum(m.distanceTo52wHigh) ? (m.distanceTo52wHigh <= -0.20 ? ["weak", "Schwächer"] : m.distanceTo52wHigh >= -0.05 ? ["strong", "Nah am Hoch"] : ["mid", "Dazwischen"]) : null;
       mod.discover = { rows: ranks.length, best: ranks[0] ? { rank: ranks[0].rank, title: ranks[0].title } : null, ranks: ranks.slice(0, 4).map(function (x) { return { rank: x.rank, of: x.of, title: x.title }; }),
-        story: { business: dg && dst && dst.text ? { word: dg.grade, text: dst.text } : null, price: dk && js && js.zumHoch ? { word: dk[1], text: "Der Kurs liegt " + String(js.zumHoch).replace(/^[−-]/, "") + " unter dem Hoch der letzten 12 Monate." } : null },
+        story: { business: (bz0 || (dg && dst && dst.text)) ? { word: bz0 ? bz0.label : dg.grade, tone: bz0 ? bz0.kind : null, text: [bz0 ? bz0.text + "." : "", (dst && dst.text) || ""].filter(Boolean).join(" ") } : null, price: dk && js && js.zumHoch ? { word: dk[1], text: "Der Kurs liegt " + String(js.zumHoch).replace(/^[−-]/, "") + " unter dem Hoch der letzten 12 Monate." } : null },
         href: "/discover/#/s/US_REAL/" + enc };
     }
 

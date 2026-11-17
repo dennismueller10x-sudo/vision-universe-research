@@ -63,7 +63,7 @@ test("AK-1 · Modell: drei Urteile, Kurs und Module aus den Quellen der Modulsei
   assert.deepEqual(v.modules.technical.support, { lo: 80, hi: 85, tone: "up" });
   assert.deepEqual([v.modules.elliott.word, v.modules.elliott.countable, v.modules.elliott.share.count], ["Keine Zählung", false, 40], "wie die Elliott-Seite: nicht im Wellen-Index „Heute anwendbar“");
   assert.deepEqual(v.modules.discover.best, { rank: 2, title: "LANGFRISTIGE COMPOUNDER" }); assert.equal(v.modules.discover.rows, 2);
-  assert.equal(v.modules.discover.story.business, null, "ohne Story-Satz der Discover-Datei kein Geschäfts-Wort im Discover-Fenster");
+  assert.equal(v.modules.discover.story.business && v.modules.discover.story.business.word, v.modules.fundamental.word, "Discover-Fenster „Geschäft“ = Fundamental-Urteil (wie discover/ui/overview.js#businessVerdict)");
   assert.deepEqual(v.tracks.map((t) => [t.id, t.value, Math.round(t.growthPct)]), [["revenue", 400, 33], ["net_income", 5, -50]], "Cashflow mit einem Jahr entfällt");
   assert.deepEqual(v.similar.map((x) => x.ticker), ["AAA"], "nur US-Kürzel");
   assert.deepEqual(v.pills.map((p) => p.text), ["3 von 6 stark", "1 von 13 Methoden", "Jahreshoch", "1 neue Position"]);
