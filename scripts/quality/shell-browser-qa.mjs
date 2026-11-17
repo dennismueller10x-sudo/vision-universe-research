@@ -160,7 +160,8 @@ for (const [vpName, width, height] of VIEWPORTS) {
           const place = DOCK_ACTIVE(new URL(page.url()).pathname);
           if ((inhalt.place[0] || null) !== place || inhalt.place.length > 1) fail(where, `Dock: aktiv ${inhalt.place.join('|') || '-'} statt ${place || '-'}`);
           if (!inhalt.stripHidden) fail(where, 'Reiterzeile des Rahmens doppelt zu den Reitern im Inhalt');
-          if (inhalt.tabs < 3) fail(where, 'Reiter im Inhalt fehlen: ' + inhalt.tabs);
+          // Aktienseiten der Module (Klickentwurf, Owner 17.11.2026; erwartet null = nur Produktkontext) zeigen gar keine Reiterzeile.
+          if (expected !== null && inhalt.tabs < 3) fail(where, 'Reiter im Inhalt fehlen: ' + inhalt.tabs);
           if (inhalt.overflow > 1) fail(where, 'horizontaler Ueberlauf ' + inhalt.overflow + ' px');
           if (inhaltExpected && (inhalt.current[0] !== inhaltExpected || inhalt.current.length > 1)) fail(where, `${pass}: Reiter im Inhalt aktiv ${inhalt.current.join('|') || '-'} statt ${inhaltExpected}`);
           // Vorsorge traegt ihre Bereiche als Reiter im Inhalt (.vsp-tabs): genau einer aktiv, Pille 36 px, Tippflaeche 44 px.

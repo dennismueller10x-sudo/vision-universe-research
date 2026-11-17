@@ -1101,6 +1101,42 @@
 
   function step(n, t, s) { return '<div class="st-r-stp"><span class="st-r-num">' + esc(n) + '</span><div><b>' + esc(t) + '</b>' + (s ? '<span>' + esc(s) + '</span>' : '') + '</div></div>'; }
 
+  /* ------------------------------------------------ Aktie nach dem Klickentwurf: Karte je erkannter Methode */
+  function checkDot(ok) { return '<span class="st-k2-dot' + (ok ? ' is-ok' : '') + '" aria-label="' + (ok ? 'ja' : 'nein') + '">' + (ok ? '<svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg>' : '') + '</span>'; }
+  /* Muster der Methode in Worten (Feld pattern der Datei); fehlt eines, steht der Satz der Methode aus summary.json (recognises). */
+  var PATTERN_TXT = {
+    TURTLE_S1_20D_BREAKOUT: 'Ausbruch über das 20-Tage-Hoch', TURTLE_S1_FAILSAFE_55D_BREAKOUT: 'Ausbruch über das 55-Tage-Hoch (Failsafe)', TURTLE_S2_55D_BREAKOUT: 'Ausbruch über das 55-Tage-Hoch',
+    DARVAS_COMPLETE_BOX_AT_WINDOW_HIGH: 'Vollständige Box am Hoch', WEINSTEIN_STAGE2_BASE_BREAKOUT_WEEK: 'Stufe 2 · Ausbruch aus der Basis', WEINSTEIN_STAGE2_CONTINUATION_BREAKOUT_WEEK: 'Stufe 2 · Fortsetzung',
+    MINERVINI_TREND_TEMPLATE_1_7: 'Trend-Vorlage, Punkte 1 bis 7', MINERVINI_POWER_PLAY_FLAG: 'Flagge nach starkem Anstieg', KK_DAILY_BREAKOUT_SETUP_PROXY_CONSOLIDATION_10: 'Enge Pause nach starkem Lauf',
+    KK_EP_CHART_GAP_10PCT: 'Kurslücke von mindestens 10 %', MOKA_POCKET_PIVOT_VOLUME_SIGNATURE: 'Aufwärtstag mit hohem Volumen', MOKA_BUYABLE_GAP_UP: 'Kurslücke nach oben mit hohem Volumen',
+    RASCHKE_HOLY_GRAIL_EMA20_PULLBACK: 'Rücksetzer an die 20-Tage-Linie'
+  };
+  /* Kennwerte als Haken: Weinstein (C04, C05) aus features wie im Entwurf; sonst die Regeln der Methode (met/pending/notMet, Namen aus ruleLabels). */
+  function methodChecks(v, L) {
+    var f = v.features || {}, out = [];
+    if (v.candidateId === 'C04' || v.candidateId === 'C05') {
+      if (isNum(f.closeVsMa30w)) out.push([f.closeVsMa30w > 0, 'Kurs ' + U.num(Math.abs(f.closeVsMa30w) * 100, 1) + ' % ' + (f.closeVsMa30w > 0 ? 'über' : 'unter') + ' der 30-Wochen-Linie' + (isNum(f.ma30w) ? ' (' + usd(f.ma30w) + ')' : '')]);
+      if (isNum(f.ma30wSlope4w)) out.push([f.ma30wSlope4w > 0, '30-Wochen-Linie ' + (f.ma30wSlope4w > 0 ? 'steigt' : f.ma30wSlope4w < 0 ? 'fällt' : 'flach') + ' (' + U.pct(f.ma30wSlope4w * 100, 1) + ' in 4 Wochen)']);
+      if (typeof f.rsImproving === 'boolean') out.push([f.rsImproving, 'Relative Stärke verbessert sich']);
+      if (typeof f.volumeConfirmedAny === 'boolean') out.push([f.volumeConfirmedAny, 'Höherer Handel bestätigt den Ausbruch']);
+      if (out.length) return out;
+    }
+    var lab = function (id) { return (L && L[id]) || id; };
+    (v.met || []).forEach(function (id) { out.push([true, lab(id)]); });
+    (v.pending || []).forEach(function (id) { out.push([false, lab(id) + ' (offen)']); });
+    (v.notMet || []).forEach(function (id) { out.push([false, lab(id)]); });
+    return out;
+  }
+  function methodCard(v, name, strat, sum) {
+    if (!v) return '';
+    var f = v.features || {}, wk = /W(\d+)$/.exec(f.breakoutWeek || ''), st = sum.stageLabels && sum.stageLabels[v.stage];
+    var sub = wk ? 'Ausbruchswoche ' + (+wk[1]) + (f.breakoutDay ? ' · ' + dDe(f.breakoutDay) : '') : 'Stand ' + dDe(v.asOf);
+    var checks = methodChecks(v, sum.ruleLabels);
+    return sh(name) + '<div class="st-k2-mcard"><div class="st-k2-mh"><div><b>' + esc(PATTERN_TXT[v.pattern] || (strat && strat.recognises) || name) + '</b><span>' + esc(sub) + '</span></div><span class="st-k2-tag">Forschung</span></div>' +
+      checks.map(function (c) { return '<div class="st-k2-chk' + (c[0] ? ' is-ok' : '') + '">' + checkDot(c[0]) + '<span>' + esc(c[1]) + '</span></div>'; }).join('') +
+      '<p class="st-k2-mf">' + esc((st ? 'Stand im Ablauf: ' + st.name + '. ' : '') + (v.plan ? '' : 'Kein fertiger Plan, ') + 'Forschung, nicht zertifiziert.') + '</p></div>';
+  }
+
   /* ============================================================ ST08 Aktie, Perspektive „Methoden“ */
   function stock(D, X) {
     var sig = D.signals, reg = D.registry, S = X.stratMap(reg), sym = X.SYM, main = page(X.main, X);
@@ -1112,7 +1148,10 @@
     headHost.innerHTML = '<header class="vu-shead"><h1 class="vu-shead-name">' + esc(name || sym || '–') + '</h1><p class="vu-shead-meta">' + esc(sym) + '</p></header>';
     if (!sym) { append(main, '<div class="st-emptybox">' + U.blank('Keine Aktie gewählt.') + '</div>'); foot(main, X, sig); return; }
     var kit = X.stockKit();
-    var headApi = kit.then(function () { var ctx = window.VUCore.StockContext.fromUs(sym); return window.VUStockNavigator.head(headHost, { ctx: ctx, current: 'supertrader', name: name || sym, pendingPrice: true, back: { href: '/supertrader/treffer/', label: 'Treffer' } }); }).catch(function () { return null; });
+    /* Klickentwurf (Owner 17.11.2026): Pillen „Diese Aktie in anderen Modulen“ zwischen Daten & Methodik und dem Rechtssatz. */
+    var othersSlot = document.createElement('div'); othersSlot.className = 'st-k2-others';
+    var exchange = null, headOpts = null;
+    var headApi = kit.then(function () { var ctx = window.VUCore.StockContext.fromUs(sym); return window.VUStockNavigator.head(headHost, headOpts = { ctx: ctx, current: 'supertrader', name: name || sym, pendingPrice: true, back: { href: '/supertrader/treffer/', label: 'Treffer' }, others: othersSlot }); }).catch(function () { return null; });
     /* Kurse nur für Aktien, die eine Methode führt oder erkennt (keine vergebliche Anfrage für unbekannte Kürzel) */
     var serP = null, ser = function () { return serP || (serP = kit.catch(function () {}).then(function () { return identity(X); }).then(function () { return series(sym); })); };
     var priced = function () { setPrice(); };
@@ -1161,8 +1200,10 @@
     var pcs = [];
     ['CANSLIM', 'PIOTROSKI_F'].forEach(function (id) { var pc = sig.partialChecks && sig.partialChecks[id]; if (pc) (pc.candidates.concat(pc.near || [])).forEach(function (r) { if (r.symbol === sym && pcs.indexOf(nm(S, id)) < 0) pcs.push(nm(S, id)); }); });
     if (pcs.length) append(rest, '<div class="st-k-card st-k-gap st-critlist">' + U.verdict('none', 'Teiltreffer') + ' <span class="vu-sm">' + esc(pcs.join(', ')) + ': ein Teil der prüfbaren Kriterien ist erfüllt.</span></div>');
-    append(rest, U.next({ title: 'Treffer', sub: 'Wo steht welche Aktie im Ablauf?', href: '/supertrader/treffer/' }));
+    append(rest, U.next({ title: 'Treffer: Wo steht welche Aktie im Ablauf?', href: '/supertrader/treffer/' }));
     foot(rest, X, sig);
+    var legal = rest.querySelector('.st-foot .st-legal');
+    if (legal) legal.parentNode.insertBefore(othersSlot, legal); else rest.appendChild(othersSlot);
 
     var MON = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
     var NUM = ['keinem', 'einem', 'zwei', 'drei', 'vier', 'fünf'];
@@ -1185,17 +1226,33 @@
         var lastRes = null; entries.forEach(function (e) { var c = cycle(e.s); if (c && c.out && c.out.date === cyc.out.date) { var rr = tradeRes(e.s); if (isNum(rr)) lastRes = rr; } });
         lastV = isNum(lastRes) ? U.chg(lastRes * 100) : '';
       } else lastT = 'Noch kein abgeschlossener Durchgang in einem Musterdepot.';
-      answer.innerHTML = '<div class="st-x-story st-r-answer st-k-story"><div class="st-k-story-h vu-night">' + U.ring(nHit ? nHit / nAll * 100 : null, { size: 64, stroke: 7, text: nHit + '/' + nAll, label: nHit + ' von ' + nAll + ' Methoden erkennen ' + label }) + '<div><div class="vu-ltag">Supertrader in drei Sätzen · ' + dShort(sum.asOf) + '</div><b>' + (nHit ? nHit + ' von ' + nAll + ' Methoden' : 'Keine der ' + nAll + ' Methoden') + '</b></div></div>' + [
-        ['target', 'Heute', today, nHit ? U.verdict('strong', STAGE_TXT[top1]) : U.verdict('none', 'Kein Muster')],
-        ['grid', 'Musterdepot', depT, depV],
-        ['book', 'Zuletzt', lastT, lastV]].map(function (x) { return '<div class="st-x-story-r"><span class="vu-hud">' + U.glyph(x[0], 17) + '</span><div><span class="vu-ltag">' + esc(x[1]) + '</span><p>' + esc(x[2]) + '</p></div>' + x[3] + '</div>'; }).join('') + '</div>';
+      /* Klickentwurf (Owner 17.11.2026): Ring-Karte, „Supertrader in drei Sätzen“ als Schiene, je erkannter Methode eine Karte
+         mit Haken, „Alle 13 Methoden“ als Zeilen. Wortwahl nur „Regel erfüllt laut Methode“; die Stufe der Methode steht sachlich
+         als „Stand im Ablauf“ (Stufenname aus summary.json), nie als Urteil. */
+      var RULE = 'Regel erfüllt laut Methode';
+      var ringT = nHit ? nHit + ' von ' + nAll + ' Methoden' : 'Keine der ' + nAll + ' Methoden';
+      var heute = nHit ? nHit + ' von ' + nAll + ' Methoden ' + (nHit === 1 ? 'erkennt ' : 'erkennen ') + label + ': ' + (names.length <= 2 ? names.join(' und ') : names.slice(0, 2).join(', ') + ' und ' + (names.length - 2) + ' weitere') + ' (' + RULE + ').' : today;
+      var card3 = function (tag, big, text, cls) { return '<div class="st-k2-c3' + (cls ? ' ' + cls : '') + '"><span class="vu-ltag">' + esc(tag) + '</span><b class="st-k2-big">' + big + '</b><p>' + esc(text) + '</p></div>'; };
+      var depWord = held.length ? 'Im Musterdepot' : waiting.length ? (F ? F.wordOfState(waiting[0].s.state) : 'Wartet') : '○ Nicht dabei';
+      answer.innerHTML = '<div class="st-k2-ringcard st-r-answer">' + U.ring(nHit ? nHit / nAll * 100 : null, { size: 96, stroke: 11, text: nHit + '/' + nAll, label: nHit + ' von ' + nAll + ' Methoden: ' + RULE }) +
+        '<div><div class="vu-ltag">Supertrader · ' + dShort(sum.asOf) + '</div><b>' + esc(ringT) + '</b><p>' + esc(nHit ? RULE + ' bei ' + names.join(', ') : 'Heute ist bei keiner Methode eine Regel erfüllt.') + '</p></div></div>' +
+        sh('Supertrader in drei Sätzen') +
+        U.rail([card3('Heute', esc(nHit ? 'Regel erfüllt' : 'Keine Regel erfüllt'), heute, nHit ? 'is-lime' : ''),
+          card3('Musterdepot', esc(depWord), depT),
+          card3('Zuletzt', lastV ? '<span class="st-k2-res">' + lastV + '</span>' : esc(cyc ? 'Abgegeben' : 'Noch offen'), lastT)], { label: 'Supertrader in drei Sätzen', width: 250 });
       if (nHit && !entries.length) priced();
       if (!nHit && !entries.length && !t52) headApi.then(function (h) { if (h) h.setPrice(null); headHost.classList.remove('st-r-pending-head'); });
-      /* Alle Methoden als Raster: jede Methode ein Feld, erkannte zuerst und neongrün markiert */
+      /* Je erkannter Methode: Muster der Methode, Kennwerte als Haken (aus der Datei der Aktie, sf-candidates/ticker/), Stand im Ablauf. */
+      var best = {}; vs.forEach(function (v) { if (!best[v.candidateId] || STAGES.indexOf(v.stage) > STAGES.indexOf(best[v.candidateId].stage)) best[v.candidateId] = v; });
+      var detail = hitIds.map(function (c) { return methodCard(best[c], cnId(SM, c), SM[c], sum); }).join('');
+      /* Börse für die Kopfzeile (Entwurf: „… · TTWO · NASDAQ“) aus derselben Datei der Aktie */
+      vs.some(function (v) { if (typeof v.exchange === 'string' && /^[A-Za-z][A-Za-z .-]{1,20}$/.test(v.exchange)) { exchange = v.exchange; return true; } return false; });
+      if (exchange) headApi.then(function (h) { if (headOpts) headOpts.exchange = exchange; var mt = h && h.el && h.el.querySelector('.vu-shead-meta'); if (mt && !mt.children.length && mt.textContent.split(' · ').indexOf(exchange) < 0) mt.textContent += ' · ' + exchange; });
+      /* Alle Methoden als Zeilen: erkannte zuerst, mit Haken und „Regel erfüllt laut Methode“ */
       var list = sum.strategies.slice().sort(function (a, b) { return (hit[b.candidateId] ? 1 : 0) - (hit[a.candidateId] ? 1 : 0) || STAGES.indexOf(hit[b.candidateId]) - STAGES.indexOf(hit[a.candidateId]) || b.counts.published - a.counts.published; });
-      var cell = function (s) { var h = hit[s.candidateId]; return '<a class="st-x-kv st-k-cell' + (h ? ' is-hit' : '') + '" href="' + esc(N ? N.href(s.candidateId) : '/supertrader/strategies/?sf=' + s.candidateId) + '"><span>' + esc(cn(s)) + '</span><span class="st-x-kv-r">' + (F ? F.miniStage(h) : '') + '<span class="' + (h ? '' : 'vu-mu') + '">' + esc(h ? STAGE_TXT[h] : 'nein') + '</span></span></a>'; };
-      allHost.innerHTML = sh('Alle ' + list.length + ' Methoden', { right: nHit ? nHit + ' erkenn' + (nHit === 1 ? 't' : 'en') : 'keine erkennt' }) + '<div class="st-k-grid13">' + list.map(cell).join('') + '</div>' +
-        note('Erkennung auf Schlusskursen vom ' + dDe(sum.asOf) + '. Keine Anlageberatung.');
+      var row = function (s) { var h = hit[s.candidateId]; return '<a class="st-k2-mrow' + (h ? ' is-hit' : '') + '" href="' + esc(N ? N.href(s.candidateId) : '/supertrader/strategies/?sf=' + s.candidateId) + '">' + checkDot(!!h) + '<span class="st-k2-mn">' + esc(cn(s)) + '</span>' + (h ? '<span class="st-k2-pill">' + RULE + '</span>' : '<span class="st-k2-no">nein</span>') + '</a>'; };
+      allHost.innerHTML = detail + sh('Alle ' + list.length + ' Methoden', { right: nHit ? nHit + ' erkenn' + (nHit === 1 ? 't' : 'en') : 'keine erkennt' }) + '<div class="st-k2-list">' + list.map(row).join('') + '</div>' +
+        note('Erkennung auf Schlusskursen vom ' + dDe(sum.asOf) + '.');
     }).catch(function () { answer.classList.remove('st-r-pending-answer'); answer.setAttribute('aria-busy', 'false'); headHost.classList.remove('st-r-pending-head'); answer.innerHTML = U.blank('Die 13 Methoden sind für ' + sym + ' gerade nicht erreichbar.'); });
   }
 

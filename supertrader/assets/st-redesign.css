@@ -870,3 +870,53 @@ html[data-theme="dark"] .st-x-today,html[data-theme="dark"] .st-x-hero{backgroun
 .stp-sheet .stp-bell-note{margin:8px 0 0;line-height:1.4}
 .stp-sheet .stp-bell-note .stp-lk{display:flex;justify-content:center;width:max-content;margin:0 auto;min-height:44px;align-items:center;padding:0 4px;font-weight:700}
 .stp-sheet .stp-c:not(.stp-bell-note)>.stp-lk{display:inline-flex;align-items:center;min-height:44px;padding:0 4px;font-weight:700}
+
+/* ------------------------------------------------ Aktie /supertrader/stock/<T>/ nach dem Klickentwurf (Owner 17.11.2026)
+   Ring-Karte, „Supertrader in drei Sätzen“ als Schiene, Karte je erkannter Methode mit Haken, „Alle 13 Methoden“ als Zeilen,
+   „Weiter“, Daten & Methodik, Pillen „Diese Aktie in anderen Modulen“, Rechtssatz zentriert. Nur Darstellung. */
+body[data-page=stock] .st-k{--k2-card:#151516;--k2-dk:#232325;--k2-track:#2a2a2d;--k2-ink:#f4f5f1;--k2-hi:#fff;--k2-on-hi:#000;--k2-mut:#a1a7af;--k2-sec:#c3c7cc;--k2-line:rgba(255,255,255,.09);--k2-lime:#c8f531;--k2-lc:#c8f531}
+:root:not([data-theme=dark]) body[data-page=stock] .st-k{--k2-card:#f4f4f4;--k2-dk:#e4e4e4;--k2-track:#dcdcdc;--k2-ink:#0d0f12;--k2-hi:#000;--k2-on-hi:#fff;--k2-mut:#5f646b;--k2-sec:#3a3d42;--k2-line:rgba(0,0,0,.09);--k2-lc:#4f6b00}
+body[data-page=stock] .st-k .st-k-sh{margin:26px 0 10px}
+body[data-page=stock] .st-k .st-k-sh h2{font-size:22px;color:var(--k2-hi)}
+body[data-page=stock] .st-k .st-k-sh>span{color:var(--k2-mut)}
+.st-k2-ringcard{display:flex;align-items:center;gap:16px;margin-top:16px;padding:16px;border-radius:22px;background:var(--k2-card);color:var(--k2-ink);box-shadow:0 0 0 1px rgba(200,245,49,.5),0 0 28px rgba(200,245,49,.18)}
+:root:not([data-theme=dark]) .st-k2-ringcard{box-shadow:0 0 0 1px rgba(79,107,0,.45)}
+.st-k2-ringcard .vu-ring{width:96px;height:96px}
+.st-k2-ringcard .vu-ring b,.st-k2-ringcard .vu-ring span{font-size:26px;font-weight:900;letter-spacing:-.03em}
+.st-k2-ringcard>div{min-width:0}
+.st-k2-ringcard .vu-ltag{font-size:10.5px;font-weight:800;letter-spacing:.12em;color:var(--k2-lc)}
+.st-k2-ringcard b{display:block;margin-top:4px;font-size:22px;line-height:1.1;font-weight:800;letter-spacing:-.025em;color:var(--k2-hi)}
+.st-k2-ringcard p{margin:4px 0 0;font-size:12.5px;line-height:1.35;color:var(--k2-mut)}
+.st-k2-c3{display:block;width:100%;padding:14px;border-radius:22px;background:var(--k2-card);color:var(--k2-ink)}
+.st-k2-c3 .vu-ltag{display:block;font-size:10.5px;font-weight:800;letter-spacing:.12em;color:var(--k2-mut)}
+.st-k2-big{display:block;margin-top:4px;font-size:28px;line-height:1;font-weight:900;letter-spacing:-.045em;color:var(--k2-hi)}
+.st-k2-big .vu-chg{font-size:16px;height:auto;padding:5px 12px}
+.st-k2-c3 p{margin:8px 0 0;font-size:12.5px;font-weight:700;line-height:1.35;color:var(--k2-sec)}
+.st-k2-c3.is-lime{background:#c8f531;color:#101318}
+.st-k2-c3.is-lime .vu-ltag,.st-k2-c3.is-lime .st-k2-big,.st-k2-c3.is-lime p{color:#101318}
+/* Karte je erkannter Methode */
+.st-k2-mcard{padding:14px;border-radius:22px;background:var(--k2-card);color:var(--k2-ink)}
+.st-k2-mh{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.st-k2-mh b{display:block;font-size:15px;font-weight:800;color:var(--k2-hi)}
+.st-k2-mh span:not(.st-k2-tag){display:block;font-size:11px;color:var(--k2-mut)}
+.st-k2-tag{flex:none;display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:999px;border:1px solid var(--k2-lc);color:var(--k2-lc);font-size:12.5px;font-weight:800;white-space:nowrap}
+.st-k2-chk{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:12.5px;color:var(--k2-mut)}
+.st-k2-chk.is-ok{font-weight:700;color:var(--k2-ink)}
+.st-k2-dot{flex:none;display:grid;place-items:center;width:20px;height:20px;border-radius:99px;background:#3a3a3d;color:#101318}
+:root:not([data-theme=dark]) .st-k2-dot:not(.is-ok){background:#d6d8db}
+.st-k2-dot.is-ok{background:#c8f531}
+.st-k2-mf{margin:12px 0 0;font-size:11px;line-height:1.4;color:var(--k2-mut)}
+/* Alle 13 Methoden */
+.st-k2-list{padding:4px 14px;border-radius:22px;background:var(--k2-card)}
+.st-k2-mrow{display:flex;align-items:center;gap:12px;min-height:44px;padding:9px 0;border-bottom:1px solid var(--k2-line);color:var(--k2-sec);text-decoration:none}
+.st-k2-mrow:last-child{border-bottom:0}
+.st-k2-mrow .st-k2-dot{width:22px;height:22px;background:var(--k2-track)}
+.st-k2-mrow.is-hit .st-k2-dot{background:#c8f531}
+.st-k2-mn{flex:1;min-width:0;font-size:12.5px}
+.st-k2-mrow.is-hit .st-k2-mn{font-weight:800;color:var(--k2-hi)}
+.st-k2-pill{flex:none;display:inline-flex;align-items:center;height:22px;padding:0 10px;border-radius:999px;background:#c8f531;color:#101318;font-size:11px;font-weight:800;white-space:nowrap}
+.st-k2-no{flex:none;font-size:11px;font-weight:700;color:var(--k2-mut)}
+@media (max-width:370px){.st-k2-pill{font-size:10px;padding:0 8px}.st-k2-mrow{gap:9px}}
+body[data-page=stock] .st-k .vu-rail{--vu-rail-w:250px}
+body[data-page=stock] .st-foot .st-k2-others .vu-sothers{margin:26px 0 0}
+body[data-page=stock] .st-foot .st-legal{margin-top:28px;font-size:11px;line-height:1.45;text-align:center}

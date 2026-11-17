@@ -508,3 +508,73 @@ main.hf-main:has(>.hp){padding-bottom:20px}
 :root:not([data-theme=dark]) .hf-story .vu-stats b{color:#000}
 :root:not([data-theme=dark]) .hf-story .vu-stats .is-lime b{color:#4f6b00}
 :root:not([data-theme=dark]) .hf-story .vu-stats span{color:#5d636b}
+
+/* ------------------------------------------------------------ Aktie #/aktie/<T> nach dem Klickentwurf (Owner 17.11.2026)
+   Meldezeitraum als Karte, vier Zahlen als 2×2-Kacheln, Schiene Fonds · Bewegung · Insider mit großem Urteil,
+   Star-Investoren und ausgestiegene Fonds als Zeilen in einer Karte, „Mehr dazu“ als Zeilen, Fuß zentriert. Nur Darstellung. */
+.hf-k2{--k2-card:#151516;--k2-dk:#232325;--k2-track:#3a3a3d;--k2-ink:#f4f5f1;--k2-hi:#fff;--k2-on-hi:#000;--k2-mut:#a1a7af;--k2-sec:#c3c7cc;--k2-line:rgba(255,255,255,.09);--k2-lime:#c8f531;--k2-lc:#c8f531}
+:root:not([data-theme=dark]) .hf-k2{--k2-card:#f4f4f4;--k2-dk:#e4e4e4;--k2-track:#c9ccd0;--k2-ink:#0d0f12;--k2-hi:#000;--k2-on-hi:#fff;--k2-mut:#5f646b;--k2-sec:#3a3d42;--k2-line:rgba(0,0,0,.09);--k2-lc:#4f6b00}
+.hf-k2 .vu-sect.hf-k2-sh,.hf-k2>.vu-sect{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:26px 0 10px}
+.hf-k2 .vu-sect h2{margin:0;font-size:22px;line-height:1.1;font-weight:800;letter-spacing:-.025em;color:var(--k2-hi)}
+.hf-k2 .hf-k2-sh>span,.hf-k2 .vu-sect .hf-link{font-size:13px;font-weight:700;color:var(--k2-mut);white-space:nowrap}
+/* Meldezeitraum */
+.hf-k2 .hf-qb{margin:0;padding:16px;border-radius:22px;background:var(--k2-card);color:var(--k2-ink)}
+.hf-k2 .hf-qb .vu-ltag{font-size:9.5px;color:var(--k2-mut)}
+.hf-k2 .hf-qb b{font-size:22px;letter-spacing:-.045em;color:var(--k2-hi)}
+.hf-k2 .hf-qb span:not(.vu-ltag){font-size:11px;font-weight:500;color:var(--k2-mut)}
+.hf-k2 .hf-qb>div.is-next .hf-qb-dot{border:2px solid #55595f;background:var(--k2-on-hi)}
+.hf-k2 .hf-qb>div:before{height:2px;top:7px;background:var(--k2-track)}
+:root:not([data-theme=dark]) .hf-k2 .hf-qb-dot{background:#000}
+:root:not([data-theme=dark]) .hf-k2 .hf-qb>div.is-on:has(+.is-on):before{background:#000}
+/* Vier Zahlen */
+.hf-k2>.vu-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.hf-k2>.vu-stats>div{padding:13px;border:0;border-radius:22px;background:var(--k2-card)}
+.hf-k2>.vu-stats>div:first-child{padding-left:13px}
+.hf-k2>.vu-stats b{font-size:40px;line-height:1;letter-spacing:-.045em;color:var(--k2-hi)}
+.hf-k2>.vu-stats .is-lime b{color:var(--k2-lc)}
+.hf-k2>.vu-stats span{margin-top:4px;font-size:12.5px;color:var(--k2-mut)}
+/* Schiene Fonds · Bewegung · Insider */
+.hf-k2>.vu-rail{margin-top:12px;--vu-rail-w:250px}
+.hf-k2-card{display:block;padding:14px;border-radius:22px;background:var(--k2-card);color:var(--k2-ink)}
+.hf-k2-card .vu-ltag{display:block;font-size:10.5px;font-weight:800;letter-spacing:.12em;color:var(--k2-mut)}
+.hf-k2-w{margin-top:4px}
+.hf-k2-w .vu-verdict{padding:0;border:0;border-radius:0;background:none;color:var(--k2-hi);font-size:30px;line-height:1;font-weight:900;letter-spacing:-.045em;white-space:normal}
+.hf-k2-w .vu-verdict>span[aria-hidden]{font-size:.75em}
+.hf-k2-w .vu-verdict--mid>span[aria-hidden],.hf-k2-w .vu-verdict--none>span[aria-hidden]{display:none}
+.hf-k2-t{margin:8px 0 0;font-size:12.5px;font-weight:700;line-height:1.35;color:var(--k2-sec)}
+.hf-k2-n{margin:8px 0 0;font-size:11px;line-height:1.35;color:var(--k2-mut)}
+.hf-k2-card .hf-split{margin-top:12px}
+.hf-k2-card .hf-split-b{height:16px;gap:2px}
+.hf-k2-card .hf-split-b i{border-radius:4px}
+.hf-k2-card .hf-split-b .s{background:var(--k2-hi)}
+.hf-k2-card .hf-split-l{margin-top:8px;font-size:11px}
+.hf-k2-card .hf-split-l b:first-child{color:var(--k2-lc)}
+.hf-k2-ib{display:flex;justify-content:space-between;margin-top:12px}
+.hf-k2-ib div:last-child{text-align:right}
+.hf-k2-ib b{display:block;font-size:30px;line-height:1;font-weight:900;letter-spacing:-.045em;color:var(--k2-hi)}
+.hf-k2-ib span{font-size:11px;font-weight:700;color:var(--k2-mut)}
+/* Zeilen-Karten */
+.hf-k2 .hf-mvl{margin-top:0;padding:4px 14px;border-radius:22px;background:var(--k2-card)}
+.hf-k2 .hf-mvr{padding:11px 0}
+.hf-k2 .hf-mvr+.hf-mvr{border-top-color:var(--k2-line)}
+.hf-k2 .hf-mvr-b b{font-size:12.5px;font-weight:800}
+.hf-k2 .hf-mvr-b small{font-size:11px;color:var(--k2-mut)}
+.hf-k2 .hf-inv-v b{font-size:12.5px}
+.hf-k2 .hf-k2-out .hf-inv{min-height:0;padding:8px 0;border-top:1px solid var(--k2-line)}
+.hf-k2 .hf-k2-out .hf-inv:first-child{border-top:0}
+.hf-k2 .hf-k2-out .hf-av{width:32px;height:32px;font-size:11px;background:#2a2a2d;color:#fff}
+:root:not([data-theme=dark]) .hf-k2 .hf-k2-out .hf-av{background:#dcdcdc;color:#000}
+.hf-k2 .hf-k2-out .hf-inv-n b{font-size:12.5px}
+.hf-k2 .hf-k2-out .vu-verdict{font-size:10.5px;padding:3px 8px}
+.hf-k2-note{margin:8px 0 0;font-size:11px;line-height:1.4;color:var(--k2-mut)}
+/* Mehr dazu: Kapitel als Zeilen */
+.hf-k2 .hf-eps.hf-k2-list{display:block;margin:0;padding:4px 14px;border-radius:22px;background:var(--k2-card)}
+.hf-k2 .hf-k2-list .hf-ep{position:relative;display:flex;flex-direction:row;align-items:center;width:100%;min-height:56px;padding:11px 26px 11px 0;border-radius:0;background:none;border-bottom:1px solid var(--k2-line)}
+.hf-k2 .hf-k2-list .hf-ep:last-child{border-bottom:0}
+.hf-k2 .hf-k2-list .hf-ep:after{content:"";position:absolute;right:4px;top:50%;width:8px;height:8px;border:solid var(--k2-mut);border-width:2.4px 2.4px 0 0;transform:translateY(-50%) rotate(45deg)}
+.hf-k2 .hf-k2-list .hf-hud{display:none}
+.hf-k2 .hf-k2-list .hf-ep-t b{font-size:14px;color:var(--k2-hi)}
+.hf-k2 .hf-k2-list .hf-ep-t>span{font-size:11px;color:var(--k2-mut)}
+.hf-k2 .hf-dm{margin-top:16px}
+.hf-k2 .vu-sothers{margin-top:26px}
+.hf-k2>.hf-legal{margin:28px 0 0;font-size:11px;line-height:1.45;text-align:center;color:var(--k2-mut)}

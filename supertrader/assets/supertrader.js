@@ -10,6 +10,8 @@
   var body = document.body;
   var page = body.getAttribute('data-page');
   var main = document.getElementById('st-main');
+  /* Aktienseite (Klickentwurf, Owner 17.11.2026): ohne Reiterzeile des Rahmens; die übrigen Seiten behalten sie. */
+  if (page === 'stock') { if (window.VUNavigation && window.VUNavigation.rahmen) window.VUNavigation.rahmen({ tabs: 'inhalt' }); else document.documentElement.setAttribute('data-vu-tabs', 'inhalt'); }
 
   /* ------------------------------------------------------------ Helfer */
   function h(tag, attrs, kids) {

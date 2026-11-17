@@ -96,6 +96,15 @@ Elliott (`elliott/aktie.js` ordnet um, `elliott/wellen.css`): ohne Zählung Kach
 durch Hoch/Tief von sechs Abschnitten), Ring „N von M“ aus dem Satz der Seite, „Folgeschritte“, „Melden, wenn zählbar“ (VUPush, Art
 ELLIOTT_CHANGE), Daten & Methodik mit „Zur Elliott-Übersicht“; mit Zählung drei Sätze als Karussell, der Balken „Kurs gegen Ungültig-Marke“
 bleibt direkt danach. Hell ist auf beiden Seiten hell.
+**Fundamental, Hedgefonds, Supertrader (Stufe 2, Klickentwurf).** Alle drei Aktienseiten ohne Reiterzeile des Rahmens
+(`VUNavigation.rahmen({tabs:'inhalt'})` nur auf der Aktien-Route), Pillen über `head(..., {others: <Ort>})` vor dem Fußsatz.
+Fundamental `#/<T>`: Satz-Karte (dunkel weiß), „Kennzahlen“ 2×3, „Finanzen“ mit Zeitraum über der Karte, drei Ring-Kacheln,
+„Kapitel“ als Zeilen (Branche mit Balken = Anteil aus dem Satz), Fuß mit Datenstand. Hedgefonds `#/aktie/<T>`: Meldezeitraum,
+vier Zahlen, Schiene Fonds · Bewegung · Insider, bis zu sechs Star-Investoren, ausgestiegene Fonds direkt auf der Seite, „Mehr dazu“;
+Börse aus der Discover-Datei. Supertrader `/supertrader/stock/<T>/`: Ring-Karte, Schiene in drei Sätzen, je erkannter Methode
+eine Karte mit Haken (Weinstein aus `features`, sonst `met/pending/notMet` mit `ruleLabels`; nur die Datei der Aktie
+`sf-candidates/ticker/<Schlüssel>.json` und die ohnehin geladene `summary.json`), „Alle 13 Methoden“ als Zeilen. Wortwahl nur
+„Regel erfüllt laut Methode“; die Stufe steht sachlich als „Stand im Ablauf: <Name aus stageLabels>“. `ST_ALERTS_UI` bleibt `false`.
 
 ## Bekannte Lücken (aus den Abschlussberichten)
 - Home: Fundamental, Hedgefonds, Screener ohne Zahl (keine kleine Zusammenfassungsdatei); DAX fehlt in den Daten (Euro Stoxx).
