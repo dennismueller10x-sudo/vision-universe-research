@@ -10,7 +10,7 @@ import {accessStateFor,STORAGE_KEY} from '../access-gate/build.mjs';
 import {eligibilityRollout} from './eligibility-rollout.mjs';
 import {eligibilityValid} from './universe-approval.mjs';
 import {objectPool} from './bounded-objects.mjs';
-import {readLiveAsset,isTransientNetworkError,networkError} from './live-asset-read.mjs';
+import {readLiveAsset,isTransientNetworkError,networkError,LIVE_SETTLE_MS,LIVE_READ_CONCURRENCY} from './live-asset-read.mjs';
 import {waitForHydratedConsumer} from './hydrated-consumer-review.mjs';
 import {expectsEstimatedWindow,mustShowEstimatedWindow} from './estimated-window-expectation.mjs';
 // Wartezeit je Seite: Runner mit hoher Last brauchten ueber 30 s (Laeufe 43256989488, 43298776094: TimeoutError, Kandidaten-QA rot).
@@ -24,10 +24,11 @@ const transientExit=e=>{if(!live||!isTransientNetworkError(e))throw e;const t=ne
 const proof=live?await(async()=>(await fetch(origin+'/company-intelligence-refresh.json?qa='+Date.now())).json())().catch(transientExit):null;
 const m=live?proof.manifest:JSON.parse(readFileSync(join(directory,'manifest.json')));assert(eligibilityValid(m));assert.equal(m.generation,sample.generation);
 const payloads=new Map();
+if(live)await new Promise(r=>setTimeout(r,Number(process.env.VU_LIVE_SETTLE_MS??LIVE_SETTLE_MS))); // Hosting nach dem Deploy setzen lassen
 await objectPool(Object.entries(m.assets),async ([path,meta])=>{
  const b=live?await readLiveAsset(origin+'/company-intelligence/data/'+path,meta,{onRetry:r=>console.log(JSON.stringify({hostingRetry:path,...r}))}):readFileSync(join(directory,path));
  assert.equal(b.length,meta.bytes,path);assert.equal(createHash('sha256').update(b).digest('hex'),meta.sha256,path);payloads.set(path,b);
-},live?4:12).catch(transientExit);
+},live?LIVE_READ_CONCURRENCY:12).catch(transientExit);
 const browser=await chromium.launch({headless:true,args:['--no-sandbox']}),cases=[];
 const state=accessStateFor(process.env.RESEARCH_ACCESS_PASSWORD),ui=readFileSync('company-intelligence/ui/stock-section.js'),contract=readFileSync('company-intelligence/api/contract.js');
 const detail=readFileSync('discover/ui/detail.js');
