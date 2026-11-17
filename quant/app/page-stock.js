@@ -1095,11 +1095,17 @@
       src.technical || api.getTechnicalIntelligence(ticker).catch(function () { return null; }),
       src.patterns || api.getPatternMatch(ticker).catch(function () { return null; }),
       api.getHistoricalCases(ticker).catch(function () { return null; }),
-      ctx.distribution().catch(function () { return null; }),
       ctx.patternWords().catch(function () { return {}; }),
       ctx.hubReady().catch(function () { return false; })
     ]);
-    var factors = results[0], setup = results[1], match = results[2], assignment = results[3], technical = results[4], patterns = results[5], cases = results[6], dist = results[7], words = results[8] || {};
+    var factors = results[0], setup = results[1], match = results[2], assignment = results[3], technical = results[4], patterns = results[5], cases = results[6], words = results[7] || {};
+    /* Aktuelle Shards tragen Position UND Nenner. Die Universumsverteilung
+       ist nur der bestehende Rueckfall fuer aeltere Positionsangaben;
+       Aehnliche Profile laden ihre Tabelle weiterhin bei Sichtbarkeit. */
+    var needsDistribution = factors && factors.state === "AVAILABLE" && factors.factors.some(function (f) {
+      return f.state === "AVAILABLE" && typeof f.position === "number" && isFinite(f.position) && !(typeof f.positionUniverse === "number" && isFinite(f.positionUniverse));
+    });
+    var dist = needsDistribution ? await ctx.distribution().catch(function () { return null; }) : null;
     var vm = VM.stock({ ticker: ticker, factors: factors, brief: brief, setup: setup, match: match, cases: cases, patterns: patterns, technical: technical, distribution: dist });
     await cssReady;
     bodyHost.replaceChildren();
