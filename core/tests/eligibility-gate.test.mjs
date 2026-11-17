@@ -100,3 +100,11 @@ test("EG-8 · Erweiterung rechnet die Eignung gegen die Mitgliedsdatei im Repo-P
   assert.match(wf, /echo "ELIG_UNIVERSE=quant\/data\/market\/scale\/universe-FULL_UNIVERSE\.json"/);
   assert.doesNotMatch(wf, /ELIG_UNIVERSE=\$X\//, "kein Runner-Pfad als Mitgliedsdatei");
 });
+
+test("EG-9 · Erweiterung baut den Stamm mit dem Standard-Bestand im Repo (kein --baseline auf einen Runner-Pfad)", () => {
+  const wf = readFileSync(join(ROOT, ".github/workflows/security-master-eligibility.yml"), "utf8");
+  assert.doesNotMatch(wf, /--baseline "\$X\//, "Stamm-Abgleich speichert sonst den Runner-Pfad (SM60/SM62)");
+  const cp = wf.indexOf('cp "$X/scale/universe-FULL_UNIVERSE.json" quant/data/market/scale/universe-FULL_UNIVERSE.json');
+  const build1 = wf.indexOf('--out "$X/next1"');
+  assert.ok(cp > 0 && build1 > cp, "erst in den Repo-Pfad kopieren, dann den Stamm bauen");
+});

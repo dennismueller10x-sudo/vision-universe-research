@@ -271,3 +271,9 @@ test("SMW-11 · Zählabgleich 138 / 127 / 133 aus den committeten Eingaben repro
   // die frühere Angabe 133 ist aus keiner dieser Zählungen reproduzierbar; ihre eigene Herleitung ergibt 137
   assert.equal(rec.claim133.reproducibleFromCommittedInputs, false); assert.equal(rec.claim133.derivationArithmetic, 137);
 });
+
+test("SMW-11 · Metadaten-Korrektur nur von Hand mit commit, nie geplant, nur bei bestandenem Gate (SKIP)", () => {
+  const c = code();
+  assert.match(c, /metadaten_korrektur:\n\s+description:[^\n]*\n\s+type: boolean\n\s+default: false/);
+  assert.match(c, /if: inputs\.zeitplan == '' && inputs\.commit == true && inputs\.metadaten_korrektur == true && steps\.gate\.outputs\.decision == 'SKIP_NO_MATERIAL_CHANGE'/);
+});

@@ -81,14 +81,14 @@ jobs:
           cp quant/data/market/scale/universe-FULL_UNIVERSE.json "$X/scale/"
           node scripts/market/expand-us-universe.mjs --only "$IN_ERWEITERUNG" --master "$X/work0/us-security-master.json" \
             --scale-dir "$X/scale" --out "$X/out" --today "$heute"
+          # Erst in den Repo-Pfad, dann den Stamm mit dem Standard-Bestand bauen: Stamm (reconciliation.baselineFile) und
+          # Eignung speichern den Pfad der Bestandsdatei; ein Runner-Pfad macht SM60/SM62 und verify-company-master rot.
+          cp "$X/scale/universe-FULL_UNIVERSE.json" quant/data/market/scale/universe-FULL_UNIVERSE.json
           node scripts/market/build-us-security-master.mjs --require-provider --today "$heute" --stamp "${heute}T00:00:00Z" \
-            --baseline "$X/scale/universe-FULL_UNIVERSE.json" --out "$X/next1" --work-dir "$X/work1"
+            --out "$X/next1" --work-dir "$X/work1"
           for f in us-security-master.json summary.json reconciliation.json company-names.json; do git show "HEAD:$N/$f" > "$X/prev/$f"; done
           node scripts/market/security-master-refresh-gate.mjs --prev "$X/prev" --next "$X/next1" \
             --prev-names "$X/prev/company-names.json" --next-names "$N/company-names.json" --today "$heute" --out "$X/sm-gate.json"
-          # In den Repo-Pfad: die Eignung speichert den Pfad der Mitgliedsdatei (nonDestructive.universeFile), und
-          # verify-company-master prueft ihn relativ zum Repository (Lauf 44083852257: Runner-Pfad, Pruefung rot).
-          cp "$X/scale/universe-FULL_UNIVERSE.json" quant/data/market/scale/universe-FULL_UNIVERSE.json
           echo "ELIG_UNIVERSE=quant/data/market/scale/universe-FULL_UNIVERSE.json" >> "$GITHUB_ENV"
           echo "ELIG_MASTER=$X/next1/us-security-master.json" >> "$GITHUB_ENV"
 
