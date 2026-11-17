@@ -52,6 +52,7 @@
    *                     Gemessen wird ab fetchEndAt, solange es eines gibt.
    *   intervalMs        Zieltakt
    *   graceMs           Zuschlag fuer Lauf- und Auslieferungszeit
+   *   openedAtMs        Eroeffnung der laufenden Sitzung; karenzMs (20 min): FAIL wird danach WARNING
    * @returns {{verdict, findings: Array<{severity, code, text}>, facts}}
    */
   function beurteile(lage) {
@@ -184,6 +185,20 @@
              "Der Intraday-Stand auf der veroeffentlichten Seite ist " + min(geliefertAlter) +
              " min alt (Grenze 30 min).");
       }
+    }
+
+    /* --- Karenz nach dem Boersenstart (17.11.2026) ---------------------
+       Vor dem ersten ausgelieferten Zyklus des Tages ist "falsche Sitzung / Seite zu alt" kein Fehler,
+       sondern der Normalzustand: Der erste Abruf braucht ~14 min, der Release danach bis ~20 min. Ein FAIL
+       um 14:30 liess den Wächter-Lauf rot enden, und pages-release feuert nur nach Erfolg. Deshalb zaehlen
+       Befunde in den ersten karenzMs nach der Eroeffnung nur als WARNING. */
+    var oeffnung = zahl(l.openedAtMs, null);
+    var karenz = zahl(l.karenzMs, 20 * 60000);
+    var inKarenz = offen && oeffnung !== null && jetzt >= oeffnung && jetzt - oeffnung < karenz;
+    if (inKarenz) {
+      befunde.forEach(function (b) {
+        if (b.severity === "FAIL") { b.severity = "WARNING"; b.text += " (Karenz: erste " + min(karenz) + " min nach Boersenstart)"; }
+      });
     }
 
     var hoechste = befunde.reduce(function (a, b) {

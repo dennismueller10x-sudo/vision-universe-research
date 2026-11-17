@@ -100,3 +100,31 @@ test("EG-8 · Erweiterung rechnet die Eignung gegen die Mitgliedsdatei im Repo-P
   assert.match(wf, /echo "ELIG_UNIVERSE=quant\/data\/market\/scale\/universe-FULL_UNIVERSE\.json"/);
   assert.doesNotMatch(wf, /ELIG_UNIVERSE=\$X\//, "kein Runner-Pfad als Mitgliedsdatei");
 });
+
+test("EG-9 · Erweiterung baut den Stamm mit dem Standard-Bestand im Repo (kein --baseline auf einen Runner-Pfad)", () => {
+  const wf = readFileSync(join(ROOT, ".github/workflows/security-master-eligibility.yml"), "utf8");
+  assert.doesNotMatch(wf, /--baseline "\$X\//, "Stamm-Abgleich speichert sonst den Runner-Pfad (SM60/SM62)");
+  const cp = wf.indexOf('cp "$X/scale/universe-FULL_UNIVERSE.json" quant/data/market/scale/universe-FULL_UNIVERSE.json');
+  const build1 = wf.indexOf('--out "$X/next1"');
+  assert.ok(cp > 0 && build1 > cp, "erst in den Repo-Pfad kopieren, dann den Stamm bauen");
+});
+
+test("EG-10 · Tickerwechsel (ADR-009): registrierter Austausch Vorgaenger -> Nachfolger zaehlt nicht, jeder andere Wechsel schon", () => {
+  const succ = { ref_T0: { from: "ref_T0", fromTicker: "T0", to: "ref_NEU", toTicker: "NEU", cik: "0000000007" } };
+  const ciks = { T0: { cik: "0000000007" }, NEU: { cik: "0000000007" } };
+  const swapped = base.map(([id, s]) => [id === "ref_T0" ? "ref_NEU" : id, s]);
+  const r = evaluate({ prev: doc(base), next: doc(swapped), prevUniverse: uni(900), nextUniverse: uni(900), limits: LIMITS, successions: succ, cikByTicker: ciks });
+  assert.equal(r.decision, "COMMIT"); assert.equal(r.counted.universeMembersChanged, 0);
+  assert.deepEqual(r.successionReplacements, [{ from: "ref_T0", to: "ref_NEU" }]);
+  // Ohne Register ist derselbe Austausch ein Abgang plus Zugang.
+  assert.equal(evaluate({ prev: doc(base), next: doc(swapped), prevUniverse: uni(900), nextUniverse: uni(900), limits: LIMITS }).decision, "BLOCKED");
+  // Ein fremder Zugang neben dem Austausch zaehlt weiter.
+  const plus = [...swapped, ["ref_ANDERS", "EXCLUDED"]];
+  const r2 = evaluate({ prev: doc(base), next: doc(plus), prevUniverse: uni(900), nextUniverse: uni(900), limits: LIMITS, successions: succ, cikByTicker: ciks });
+  assert.equal(r2.counted.universeMembersChanged, 1); assert.equal(r2.decision, "BLOCKED");
+  // Regel "gleiche CIK": fuehrt die CIK-Karte den neuen Ticker unter einer anderen oder keiner CIK, ist das Gate rot.
+  const r3 = evaluate({ prev: doc(base), next: doc(swapped), prevUniverse: uni(900), nextUniverse: uni(900), limits: LIMITS, successions: succ,
+                        cikByTicker: { T0: { cik: "0000000007" }, NEU: { cik: "0000000008" } } });
+  assert.equal(r3.decision, "BLOCKED"); assert.match(r3.failures.join(" "), /CIK von NEU ist 0000000008/);
+  assert.equal(evaluate({ prev: doc(base), next: doc(swapped), prevUniverse: uni(900), nextUniverse: uni(900), limits: LIMITS, successions: succ }).decision, "BLOCKED");
+});

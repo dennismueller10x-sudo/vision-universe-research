@@ -8,8 +8,8 @@
   "phase": "DISCOVERY_ONLY_NO_BACKFILL",
   "run": {
     "source": "github-actions",
-    "runId": "44083852257",
-    "commit": "b53034279de82f762d84590d605ea6fb43b1ddc9"
+    "runId": "44097824499",
+    "commit": "8d73df149e23756c89913a769de52942c1a4fc59"
   },
   "providerFetch": {
     "status": "FETCHED",
@@ -17,8 +17,8 @@
     "url": "https://apimedia.tiingo.com/docs/tiingo/daily/supported_tickers.zip",
     "entry": "supported_tickers.csv",
     "bytes": 807203,
-    "latencyMs": 151,
-    "fetchedAt": "2026-11-17T12:35:04.571Z",
+    "latencyMs": 280,
+    "fetchedAt": "2026-11-17T13:58:07.146Z",
     "columns": [
       "ticker",
       "exchange",
@@ -389,12 +389,12 @@
     ]
   },
   "nonDestructive": {
-    "baselineFile": "/home/runner/work/_temp/erw/scale/universe-FULL_UNIVERSE.json",
+    "baselineFile": "quant/data/market/scale/universe-FULL_UNIVERSE.json",
     "baselineCount": 7807,
     "baselinePreserved": 7807,
     "baselineRemoved": 0,
     "writesOutsideThisTree": 0,
-    "note": "Dieser Lauf schreibt ausschliesslich nach /home/runner/work/_temp/erw/next1 und in die Arbeitsablage. Kein Bestandsartefakt wird angefasst. Titel mit REVIEW behalten ihre gelieferten Daten; eine Bereinigung ist eine eigene, ausdruecklich freizugebende Migration."
+    "note": "Dieser Lauf schreibt ausschliesslich nach /home/runner/work/_temp/sm-next und in die Arbeitsablage. Kein Bestandsartefakt wird angefasst. Titel mit REVIEW behalten ihre gelieferten Daten; eine Bereinigung ist eine eigene, ausdruecklich freizugebende Migration."
   },
   "duplicates": [
     {

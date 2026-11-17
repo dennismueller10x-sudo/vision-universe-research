@@ -8,6 +8,7 @@ import {resolve,extname,sep} from 'node:path';
 import {build,root} from '../scripts/build.mjs';
 import {checkIphonePreview} from './iphone-preview-checks.mjs';
 import {checkConsentDisclosure} from './consent-disclosure-checks.mjs';
+import {withoutConsentBanner} from './consent-banner-helper.mjs';
 
 const output=resolve(root,'tests/output/public-browser');
 const policy='tests/output/public-browser-policy.html';
@@ -50,7 +51,7 @@ const server=createServer(async(req,res)=>{
 await new Promise(r=>server.listen(0,'127.0.0.1',r));origin='http://127.0.0.1:'+server.address().port;
 try{
   for(const [name,engine] of [['Chromium',chromium],['WebKit',webkit]]){
-    const browser=await engine.launch(name==='Chromium'?{executablePath:process.env.CHROMIUM_PATH||(existsSync('/usr/bin/chromium')?'/usr/bin/chromium':undefined),args:['--no-sandbox']}:{});
+    const browser=await engine.launch(name==='Chromium'?{executablePath:process.env.CHROMIUM_PATH||(existsSync('/usr/bin/chromium')?'/usr/bin/chromium':undefined),args:['--no-sandbox']}:{});withoutConsentBanner(browser);
     try{
       // No request routing here: Playwright routes disable the HTTP cache.
       // Reproduce a visitor who cached styles before the new module shipped.

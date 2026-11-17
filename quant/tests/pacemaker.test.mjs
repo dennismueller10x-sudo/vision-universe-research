@@ -249,3 +249,15 @@ test("PM-19 der Lauf ohne Zugang steigt sauber aus, statt abzustuerzen", () => {
             "temporale Totzone: " + (r.stderr || "").slice(0, 200));
   assert.match(r.stdout || "", /Kein TIINGO_API_KEY/);
 });
+
+test("PM-RN Release-Anstoss (17.11.2026): nur bei offener Boerse, wenn die Seite die laufende Sitzung noch nicht zeigt, hoechstens alle 25 min", () => {
+  const MIN = 60000, JETZT = Date.parse("2026-11-17T14:45:00Z");
+  const l = { offen: true, zyklusSession: "2026-11-17", geliefertSession: "2026-11-16", nowMs: JETZT };
+  assert.equal(Pacemaker.releaseNoetig(l), true, "Seite zeigt die Vorsitzung");
+  assert.equal(Pacemaker.releaseNoetig(Object.assign({}, l, { geliefertSession: "2026-11-17" })), false, "Seite zeigt schon heute");
+  assert.equal(Pacemaker.releaseNoetig(Object.assign({}, l, { geliefertSession: null })), false, "nicht gemessen: kein Blindflug");
+  assert.equal(Pacemaker.releaseNoetig(Object.assign({}, l, { offen: false })), false, "Boerse zu");
+  assert.equal(Pacemaker.releaseNoetig(Object.assign({}, l, { zyklusSession: null })), false, "kein Zyklus mit Daten");
+  assert.equal(Pacemaker.releaseNoetig(Object.assign({}, l, { letzterAnstossMs: JETZT - 10 * MIN })), false, "Pause laeuft");
+  assert.equal(Pacemaker.releaseNoetig(Object.assign({}, l, { letzterAnstossMs: JETZT - 26 * MIN })), true, "Pause vorbei, Seite weiter alt");
+});

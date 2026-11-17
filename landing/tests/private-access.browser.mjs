@@ -6,6 +6,7 @@ import {existsSync} from 'node:fs';
 import {resolve,extname} from 'node:path';
 import {createServer} from 'node:http';
 import {build,root} from '../scripts/build.mjs';
+import {withoutConsentBanner} from './consent-banner-helper.mjs';
 const output=resolve(root,'tests/output/private-browser');
 await build({output,config:{mode:'controlled',privacyReviewed:true,privacyHtmlPath:'legal-drafts/newsletter-release-2026-10-14.html'}});
 const token='a'.repeat(43);
@@ -31,7 +32,7 @@ await new Promise(r=>server.listen(0,'127.0.0.1',r));
 www='http://127.0.0.1:'+server.address().port;apex='http://localhost:'+server.address().port;
 try{
 for(const [name,engine] of [['Chromium',chromium],['WebKit',webkit]]){
-  const browser=await engine.launch(name==='Chromium'?{executablePath:process.env.CHROMIUM_PATH||(existsSync('/usr/bin/chromium')?'/usr/bin/chromium':undefined),args:['--no-sandbox']}:{});
+  const browser=await engine.launch(name==='Chromium'?{executablePath:process.env.CHROMIUM_PATH||(existsSync('/usr/bin/chromium')?'/usr/bin/chromium':undefined),args:['--no-sandbox']}:{});withoutConsentBanner(browser);
   try{
     // iPhone device/UA also exercises a webview-style UA without Safari suffix.
     for(const inApp of [false,true]){

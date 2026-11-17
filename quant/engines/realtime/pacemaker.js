@@ -146,7 +146,31 @@
     return Math.max(0, naechsterTakt(fertigMs, i) - fertigMs);
   }
 
+  /**
+   * Muss der Taktgeber die Auslieferung selbst anstossen? (17.11.2026)
+   *
+   * Zum Boersenstart zeigt die Seite noch die Vorsitzung. Der Lauf "Pipeline
+   * intraday" von 14:30 endete rot (Waechter: noch nichts ausgeliefert) und
+   * pages-release feuert per workflow_run nur bei Erfolg. Fuenf Takt-Commits
+   * lagen in main, kein Release lief. Deshalb stoesst der Taktgeber nach einem
+   * Zyklus mit Daten der laufenden Sitzung selbst einen Release an, solange
+   * die Seite diese Sitzung noch nicht zeigt - hoechstens einmal je pauseMs.
+   *
+   * @param {object} l  offen, zyklusSession, geliefertSession (null = nicht
+   *   gemessen), letzterAnstossMs, nowMs, pauseMs (Standard 25 min)
+   */
+  function releaseNoetig(l) {
+    l = l || {};
+    if (!l.offen || !l.zyklusSession) return false;
+    if (!l.geliefertSession) return false;            /* nicht gemessen: kein Blindflug */
+    if (l.geliefertSession === l.zyklusSession) return false;
+    var pause = zahl(l.pauseMs, 25 * 60000);
+    var letzter = zahl(l.letzterAnstossMs, 0);
+    return !(letzter && zahl(l.nowMs, Date.now()) - letzter < pause);
+  }
+
   var API = {
+    releaseNoetig: releaseNoetig,
     BLOCK_MAX_MS: BLOCK_MAX_MS,
     MAX_FEHLER_IN_FOLGE: MAX_FEHLER_IN_FOLGE,
     naechsterTakt: naechsterTakt,

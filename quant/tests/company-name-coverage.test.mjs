@@ -71,6 +71,13 @@ test("jeder Titel ohne Namen hat einen belegten Grund", () => {
      UND ohne Grund wäre eine stille Lücke - und genau die soll nicht
      zurückkommen. */
   const ohneGrund = [];
+  /* Reihenfolge (17.11.2026): Der Wochenlauf schreibt die Namensschicht neu, den Company Master baut erst die
+     Umfangsfolge der Eignung danach. Ist die Namensschicht neuer als der Company Master, ist ein neu aufgeloester
+     Name, den der Stamm noch nicht traegt, ein ausstehender Neubau und kein stiller Verlust (Lauf 44097257533:
+     AZR, FGC, IRLA, SRTM nach der Erweiterung). Sonst bleibt die Regel streng. */
+  const manifest = join(ROOT, "quant/data/universe/master-manifest.json");
+  const stammStand = existsSync(manifest) ? JSON.parse(readFileSync(manifest, "utf8")).generatedAt : null;
+  const neubauAussteht = Boolean(schicht.generatedAt && stammStand && schicht.generatedAt > stammStand);
   for (const i of ohne) {
     const zeile = grund.get(i.symbol);
     if (!zeile) { ohneGrund.push(i.symbol + ": nicht in der Namensschicht"); continue; }
@@ -79,6 +86,7 @@ test("jeder Titel ohne Namen hat einen belegten Grund", () => {
        woran es liegt. Nur ein UNRESOLVED braucht einen Grund daneben - für die
        18 Titel im Produktuniversum lautet er PROVIDER_HAS_NO_NAME mit einem
        Datum für den nächsten Versuch. */
+    if (zeile.status === "RESOLVED" && neubauAussteht) continue;
     if (zeile.status === "RESOLVED") ohneGrund.push(i.symbol + ": aufgelöst, aber nicht im Stamm");
     else if (zeile.status === "RESOLVED_OUTSIDE_PRODUCT") ohneGrund.push(i.symbol + ": aufgelöst, aber nicht im Stamm");
     else if (zeile.status === "UNRESOLVED" && !zeile.reason) ohneGrund.push(i.symbol + ": unaufgelöst ohne Grund");

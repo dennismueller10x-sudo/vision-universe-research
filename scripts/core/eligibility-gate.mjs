@@ -14,8 +14,10 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { join, dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+const require = createRequire(import.meta.url);
 
 function statusMap(doc) {
   const m = new Map();
@@ -23,7 +25,7 @@ function statusMap(doc) {
   return m;
 }
 
-export function evaluate({ prev, next, prevUniverse, nextUniverse, limits, approval = null, prevSha256 = null }) {
+export function evaluate({ prev, next, prevUniverse, nextUniverse, limits, approval = null, prevSha256 = null, successions = null, cikByTicker = null }) {
   const a = statusMap(prev), b = statusMap(next), transitions = {}, samples = {};
   const approved = new Map((approval?.changes || []).map((c) => [c.securityId, `${c.from}->${c.to}`]));
   const used = new Set(), failures = [];
@@ -41,7 +43,22 @@ export function evaluate({ prev, next, prevUniverse, nextUniverse, limits, appro
      (approval.membersAdded); jeder nicht freigegebene Zugang und jeder Abgang zaehlt weiter gegen universeMembersChanged. */
   const membersApproved = new Set(approval?.membersAdded || []);
   const addedIds = [...b.keys()].filter((id) => !a.has(id));
-  const added = addedIds.filter((id) => !membersApproved.has(id)).length, removed = [...a.keys()].filter((id) => !b.has(id)).length;
+  /* Tickerwechsel (ADR-009, quant/config/ticker-successions.json): geht der Vorgaenger und kommt im selben Lauf
+     seine registrierte Nachfolgerin, ist das ein Austausch derselben Aktie und zaehlt nicht gegen
+     universeMembersChanged. Jeder andere Abgang und Zugang zaehlt weiter. */
+  const replacements = Object.values(successions || {}).filter((e) => a.has(e.from) && !b.has(e.from) && b.has(e.to) && !a.has(e.to))
+    .map((e) => ({ from: e.from, to: e.to }));
+  /* Regel "gleiche CIK" (ADR-009): ein Austausch gilt nur, wenn die CIK-Karte beide Ticker unter der Register-CIK fuehrt. */
+  for (const e of Object.values(successions || {})) {
+    if (!replacements.some((r) => r.from === e.from)) continue;
+    for (const t of [e.fromTicker, e.toTicker]) {
+      const cik = cikByTicker ? cikByTicker[t]?.cik : undefined;
+      if (cik !== e.cik) failures.push(`Tickernachfolge ${e.from} -> ${e.to}: CIK von ${t} ist ${cik ?? "unbekannt"}, Register ${e.cik}`);
+    }
+  }
+  const replacedFrom = new Set(replacements.map((r) => r.from)), replacedTo = new Set(replacements.map((r) => r.to));
+  const added = addedIds.filter((id) => !membersApproved.has(id) && !replacedTo.has(id)).length;
+  const removed = [...a.keys()].filter((id) => !b.has(id) && !replacedFrom.has(id)).length;
   const membersUnused = [...membersApproved].filter((id) => !addedIds.includes(id));
   const pu = prevUniverse ? prevUniverse.actualSize : prev.counts?.productUniverse;
   const nu = nextUniverse ? nextUniverse.actualSize : next.counts?.productUniverse;
@@ -56,7 +73,7 @@ export function evaluate({ prev, next, prevUniverse, nextUniverse, limits, appro
   if (membersUnused.length) failures.push(`${membersUnused.length} freigegebene Zugaenge fehlen (${membersUnused.slice(0, 5).join(", ")})`);
   if ((next.counts?.universeMembers ?? 0) !== (next.decisions || []).length) failures.push("Zaehlung im Kopf != Entscheidungen");
   return { schema: "vu-eligibility-gate-report-1", decision: failures.length ? "BLOCKED" : "COMMIT", failures, counted, limits,
-           productUniverse: { before: pu, after: nu }, transitions, samples,
+           productUniverse: { before: pu, after: nu }, transitions, samples, successionReplacements: replacements,
            approval: approval ? { id: approval.id, approved: approved.size, applied: approvedChanges, unused: unused.length,
                                   membersAdded: addedIds.filter((id) => membersApproved.has(id)).length } : null };
 }
@@ -68,8 +85,11 @@ function main(argv) {
   const j = (p) => (p ? JSON.parse(readFileSync(resolve(p), "utf8")) : null);
   const cfg = j(join(ROOT, "core/registry/eligibility-gate.json"));
   const prevSha256 = createHash("sha256").update(readFileSync(resolve(o.prev))).digest("hex");
+  const TS = require(join(ROOT, "core/ticker-succession.js"));
+  const successions = TS.tickerSuccessions(j(join(ROOT, "quant/config/ticker-successions.json")));
   const rep = evaluate({ prev: j(o.prev), next: j(o.next), prevUniverse: j(o["prev-universe"]), nextUniverse: j(o["next-universe"]),
-                         limits: cfg.limits, approval: j(o.approved), prevSha256 });
+                         limits: cfg.limits, approval: j(o.approved), prevSha256, successions,
+                         cikByTicker: j(join(ROOT, "quant/data/universe/cik-map.json")).byTicker });
   if (o.out) writeFileSync(o.out, JSON.stringify(rep, null, 2) + "\n");
   console.log(`[eignung] ${rep.decision} · ${JSON.stringify(rep.counted)} · Produktuniversum ${rep.productUniverse.before} -> ${rep.productUniverse.after}`);
   for (const f of rep.failures) console.log(`[eignung] - ${f}`);
