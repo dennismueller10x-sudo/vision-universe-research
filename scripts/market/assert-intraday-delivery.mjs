@@ -114,6 +114,7 @@ const urteil = Watchdog.beurteile({
   snapshot,
   delivered: ausgeliefert.ok ? ausgeliefert : null,
   lastCycle: letzterZyklus,
+  openedAtMs: lage.currentSession && lage.currentSession.open ? Date.parse(lage.currentSession.open) : null,
   intervalMs: INTERVAL_MS
 });
 
