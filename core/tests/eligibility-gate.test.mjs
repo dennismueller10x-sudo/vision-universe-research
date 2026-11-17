@@ -108,3 +108,17 @@ test("EG-9 · Erweiterung baut den Stamm mit dem Standard-Bestand im Repo (kein 
   const build1 = wf.indexOf('--out "$X/next1"');
   assert.ok(cp > 0 && build1 > cp, "erst in den Repo-Pfad kopieren, dann den Stamm bauen");
 });
+
+test("EG-10 · Tickerwechsel (ADR-009): registrierter Austausch Vorgaenger -> Nachfolger zaehlt nicht, jeder andere Wechsel schon", () => {
+  const succ = { ref_T0: { from: "ref_T0", to: "ref_NEU" } };
+  const swapped = base.map(([id, s]) => [id === "ref_T0" ? "ref_NEU" : id, s]);
+  const r = evaluate({ prev: doc(base), next: doc(swapped), prevUniverse: uni(900), nextUniverse: uni(900), limits: LIMITS, successions: succ });
+  assert.equal(r.decision, "COMMIT"); assert.equal(r.counted.universeMembersChanged, 0);
+  assert.deepEqual(r.successionReplacements, [{ from: "ref_T0", to: "ref_NEU" }]);
+  // Ohne Register ist derselbe Austausch ein Abgang plus Zugang.
+  assert.equal(evaluate({ prev: doc(base), next: doc(swapped), prevUniverse: uni(900), nextUniverse: uni(900), limits: LIMITS }).decision, "BLOCKED");
+  // Ein fremder Zugang neben dem Austausch zaehlt weiter.
+  const plus = [...swapped, ["ref_ANDERS", "EXCLUDED"]];
+  const r2 = evaluate({ prev: doc(base), next: doc(plus), prevUniverse: uni(900), nextUniverse: uni(900), limits: LIMITS, successions: succ });
+  assert.equal(r2.counted.universeMembersChanged, 1); assert.equal(r2.decision, "BLOCKED");
+});

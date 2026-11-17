@@ -1,0 +1,23 @@
+{
+  "schema": "vu-ticker-successions-1.0.0",
+  "purpose": "Tickerwechsel derselben Aktie (ADR-009): Die alte securityId bleibt die ID der Kurse bis zum Stichtag, die neue fuehrt die Notierung weiter. Verbraucher verbinden die Reihen ueber core/ticker-succession.js. Regel: gleiche CIK in beiden Zeilen und ein zitierter Beleg (SEC-8-K oder Boersenmeldung), eingereicht vor dem Stichtag. Nur belegte Faelle.",
+  "successions": [
+    {
+      "from": "ref_TCBI",
+      "fromTicker": "TCBI",
+      "to": "ref_TXCP",
+      "toTicker": "TXCP",
+      "effective": "2026-11-09",
+      "cik": "0001077428",
+      "issuer": "Texas Capital Bancshares, Inc.",
+      "source": {
+        "type": "SEC_8K",
+        "accession": "0001077428-26-000061",
+        "filed": "2026-09-14",
+        "item": "3.01",
+        "quote": "On November 9, 2026, the Common Stock and the Preferred Stock are expected to begin trading under the new ticker symbols \"TXCP\" and \"TXCP PRB\", respectively."
+      },
+      "note": "Boersenwechsel Nasdaq -> TXSE am 08.10.2026 (dasselbe 8-K; 8-A12B 0001077428-26-000068, Form 25 0001077428-26-000070), Kuerzel TCBI bis 06.11.2026. Tiingo fuehrt TCBI nicht mehr (404) und TXCP erst ab 11.11.2026 ohne Boersenangabe (Abruf 44079372359); die Historie bis 06.11. liegt nur in der eigenen Ablage unter ref_TCBI."
+    }
+  ]
+}

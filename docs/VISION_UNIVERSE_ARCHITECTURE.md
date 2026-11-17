@@ -55,6 +55,7 @@ Wichtige Grundsatzentscheidungen sind als ADRs festgehalten (`docs/architecture/
 | [ADR-004](architecture/ADR-004-mobile-architecture.md) | App-Weg: zuerst PWA, dann Expo/React Native gegen dieselbe API |
 | [ADR-005](architecture/ADR-005-pipeline-commit-protocol.md) | Datenläufe: Spitze auschecken, `push-with-retry.sh`, Erzeugerhoheit |
 | [ADR-006](architecture/ADR-006-accounts-and-billing.md) | Konten: Supabase Auth + Worker `vu-account` (BFF), Abos anbieterunabhängig, Stripe zuerst; gebaut, ausgeschaltet ([docs/accounts/](accounts/ACCOUNTS_AND_SUBSCRIPTIONS.md)) |
+| [ADR-009](architecture/ADR-009-tickernachfolge.md) | Tickernachfolge: alte `securityId` bleibt die ID der Historie, `core/ticker-succession.js` verbindet (gleiche CIK + Beleg Pflicht) |
 
 ---
 
@@ -118,7 +119,7 @@ Die vollständige Kette **Quelle → Ingestion → Normalisierung → Speicher �
 
 | Kennung | Form | Bedeutung |
 |---|---|---|
-| `securityId` | `ref_<TICKER>`; jedes Zeichen außer A–Z/0–9 wird `_` | Schlüssel aller ausgelieferten Kursartefakte. Aus dem Ticker abgeleitet, also **nicht stabil** bei einer Tickeränderung. |
+| `securityId` | `ref_<TICKER>`; jedes Zeichen außer A–Z/0–9 wird `_` | Schlüssel aller ausgelieferten Kursartefakte. Aus dem Ticker abgeleitet, also **nicht stabil** bei einer Tickeränderung; die Verbindung über einen Wechsel regelt ADR-009. |
 | `instrumentId` | `vu_<hash>` | Company Master: Anbieter + Börse + Symbol + Generation |
 | `issuerId` | `iss_cik_<CIK>` | Emittent (Unternehmen) |
 
