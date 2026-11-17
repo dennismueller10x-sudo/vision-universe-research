@@ -3,27 +3,34 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {createHash} from 'node:crypto';
-import {build,root} from '../scripts/build.mjs';
-import {modules,presentationSymbols,timelessHero} from '../scripts/module-preview.mjs';
+import {build,root,SITE_PAGES} from '../scripts/build.mjs';
 
-test('Geräteansichten und erneute Research-Übernahme bleiben ohne Finanzdaten',async()=>{
-  const reference=await readFile(resolve(root,'reference/index.html'),'utf8');
+// Story-Website (Owner 17.11.2026). Bis dahin zeigte www eine zeitlose Vorschau ohne Finanzdaten; jetzt zeigt die
+// Seite Beispiele aus der App. Jede Zahl trägt dann ihren Datenstand, nichts lädt von fremden Adressen.
+const PRODUCTS=['discover','fundamental','technical','supertrader','vorsorge','screener','atlas','quant','hedgefonds','elliott','portfolios'];
+
+test('Story-Website: alle Produkte, Originalsymbole, Datenstand, keine fremden Quellen oder Inline-Skripte',async()=>{
   const icons=JSON.parse(await readFile(resolve(root,'reference/product-icons-source.json'),'utf8'));
   assert.equal(createHash('sha256').update(await readFile(resolve(root,'assets/product-icons.svg'))).digest('hex'),icons.sha256);
-  const hero=reference.match(/<section class="hero"[\s\S]*?<\/section>/)?.[0];
-  assert.match(hero,/NVIDIA/); // Original snapshot really contains the data to remove.
   const output=resolve(root,'tests/output/modules');
   await build({output});
-  for(const html of [timelessHero(hero)+presentationSymbols(reference),await readFile(resolve(output,'index.html'),'utf8')]){
-    assert.doesNotMatch(html,/NVIDIA|NVDA|chart-nvda|data-count|Jahreshoch|12 Geschäftsjahre/);
-    assert.equal((html.match(/class="module-launch-grid"/g)||[]).length,1);
-    assert.equal((html.match(/class="phone"/g)||[]).length,1);
-    assert.equal(modules.length,10);
-    assert.match(html,/>App bald verfügbar</);
-    assert.doesNotMatch(html,/Konzeptansicht|App in Entwicklung|discover-deck|product-track|class="browser"/);
-    for(const [icon,label] of modules){
-      assert.ok(html.includes(`href="${icon==='atlas'?'#h-atlas':'./assets/product-icons.svg#'+icon}"`),`Original-Icon: ${icon}`);
-      assert.ok(html.includes(`>${label}</span>`),`Modulname: ${label}`);
-    }
+  const index=await readFile(resolve(output,'index.html'),'utf8');
+  for(const id of PRODUCTS){
+    assert.ok(index.includes(`id="k-${id}"`),`Kapitel ${id} auf der Startseite`);
+    assert.ok(index.includes(`href="./produkte/${id}/"`),`Link zur Produktseite ${id}`);
+    assert.ok(SITE_PAGES.includes(`produkte/${id}/index.html`),`Produktseite ${id} wird gebaut`);
+  }
+  assert.match(index,/Bald im App Store und bei Google Play/);
+  assert.match(index,/Stand \d{2}\.\d{2}\.\d{4}/,'Beispielwerte nennen ihren Datenstand');
+  assert.match(index,/<!--NEWS:hero-->[\s\S]+<!--\/NEWS:hero-->/);
+  for(const path of ['index.html',...SITE_PAGES]){
+    const html=await readFile(resolve(output,path),'utf8');
+    assert.doesNotMatch(html,/<style\b|<script(?![^>]*\bsrc=)[^>]*>/,`${path}: kein Inline-Stil oder -Skript (CSP)`);
+    assert.doesNotMatch(html,/(?:src|poster)="https?:/,`${path}: keine fremden Bilder oder Filme`);
+    assert.doesNotMatch(html,/href="#"/,`${path}: keine Platzhalter-Links`);
+    assert.doesNotMatch(html.replace(/keine (?:Anlage)?[Ee]mpfehlung/g,''),/Empfehlung|Kaufsignal|Kursziel|\bSignal/,`${path}: Wortwahl`);
+    assert.match(html,/Content-Security-Policy/,`${path}: CSP`);
+    for(const m of html.matchAll(/(?:src|href|data-img|data-vid)="(\.{1,2}\/[^"?#]*\.(?:css|js|png|jpg|svg|mp4|woff2))(?:\?v=[0-9a-f]{16})?"/g))
+      await readFile(resolve(output,path,'..',m[1]));
   }
 });

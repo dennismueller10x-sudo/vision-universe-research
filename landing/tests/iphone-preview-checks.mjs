@@ -1,25 +1,20 @@
 import assert from 'node:assert/strict';
-import {modules} from '../scripts/module-preview.mjs';
+// Story-Website (Owner 17.11.2026): ersetzt die frühere Einzel-iPhone-Vorschau.
+// Oben sofort als App erkennbar, darunter „Heute neu“; alle Produkte als Kapitel; die Anmeldung am Ende.
 export async function checkIphonePreview(page){
-  assert.deepEqual(await page.locator('main>section').evaluateAll(es=>es.map(e=>e.id)),['hero','newsletter']);
-  assert.equal(await page.locator('.phone').count(),1);
-  assert.equal(await page.locator('.browser,#product-track,.discover-preview,iframe').count(),0);
-  assert.equal(await page.locator('.hero-badge').innerText(),'App bald verfügbar');
-  assert.deepEqual(await page.locator('.module-tile>span').allTextContents(),modules.map(([,label])=>label));
-  assert.equal(await page.locator('.module-tile a,.module-tile button,.phone input').count(),0);
-  const layout=await page.locator('.module-launch-grid').evaluate(e=>({columns:getComputedStyle(e).gridTemplateColumns.split(' ').length}));
-  assert.equal(layout.columns,2);
-  for(const label of await page.locator('.module-tile>span').all()){
-    const fits=await label.evaluate(e=>{
-      const range=document.createRange();range.selectNodeContents(e);
-      const box=range.getBoundingClientRect(),tile=e.parentElement.getBoundingClientRect(),screen=e.closest('.screen').getBoundingClientRect();
-      return e.scrollWidth<=e.clientWidth+1&&box.left>=tile.left&&box.right<=tile.right+1&&box.top>=screen.top&&box.bottom<=screen.bottom;
-    });
-    assert.ok(fits,'Product name must be complete inside its tile and screen: '+await label.textContent());
-  }
-  const phone=await page.locator('.phone').boundingBox(),newsletter=await page.locator('#newsletter .nl-box').boundingBox();
   const viewport=page.viewportSize();
-  assert.ok(Math.abs(phone.x+phone.width/2-viewport.width/2)<=1,'iPhone centered on every viewport');
-  assert.ok(newsletter.y>=phone.y+phone.height&&newsletter.y-phone.y-phone.height<50,'Signup directly below the iPhone');
+  assert.match(await page.locator('h1').innerText(),/Aktien und Finanzen/);
+  assert.match(await page.locator('.apptag').first().innerText(),/App für iPhone und Android/);
+  const stores=page.locator('#start .stores img');assert.ok(await stores.count()>=2,'App Store und Google Play im ersten Abschnitt');
+  const first=await stores.first().boundingBox();assert.ok(first&&first.y<viewport.height*2.2,'Store-Logos weit oben');
+  assert.equal(await page.locator('.hlfix .hlm').count(),2,'Aktienmagazin und Aktienreport fest unter den Tagesnews');
+  assert.ok(await page.locator('.hlnews .hlc').count()>=3,'mindestens drei Tagesnews');
+  for(const id of ['discover','fundamental','technical','supertrader','vorsorge','screener','atlas','quant','hedgefonds','elliott','portfolios'])
+    assert.equal(await page.locator('#k-'+id).count(),1,'Kapitel '+id);
+  assert.equal(await page.locator('.jbar a[href="#k-technical"]').count(),1,'Sprungleiste führt auf der Seite zu den Kapiteln');
+  const ids=await page.locator('main section[id]').evaluateAll(es=>es.map(e=>e.id));
+  assert.equal(ids[ids.length-1],'newsletter','Anmeldung ist der letzte Abschnitt');
+  assert.equal(await page.locator('#newsletter #newsletter-form').count(),1);
+  assert.equal(await page.locator('iframe,video').count(),0,'Filme erst beim Antippen');
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth),viewport.width);
 }

@@ -91,7 +91,7 @@ try{
         if(javaScriptEnabled)assert.deepEqual(await page.evaluate(()=>[localStorage.length,sessionStorage.length]),[0,0]);
         await context.close();
       }
-      console.log(name+': returning mobile visitor with cached old styles verified; single static iPhone and ten complete product names verified; public signup without private access, native and JS submission, one synthetic request and mobile confirmation verified; zero emails.');
+      console.log(name+': returning mobile visitor with cached old styles verified; Story-Website verified; public signup without private access, native and JS submission, one synthetic request and mobile confirmation verified; zero emails.');
     }finally{await browser.close();}
   }
 }finally{await new Promise(r=>server.close(r));}
