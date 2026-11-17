@@ -86,6 +86,8 @@ eine eigene Stelle (dann hält der Kopf sie nicht mehr am Seitenende). Klassen: 
 `.vu-shead-row`, `.vu-shead-value`, `.vu-shead-change`, `.vu-shead-when`; `.vu-sothers-h`, `.vu-sothers-list`, `.vu-sothers-pill`
 (`--aktie`). Die Dashboard-Aktienansicht nutzt weiter `mount` (alte Leiste).
 
+**Quant (`/quant/#/aktie/<T>`, Stufe 2).** Wie `#modul-quant`: Das Profil (Netz, Balken absteigend, Stufen-Pillen ▲ ● ▼), Gesamtwert als Ring, „Quant in drei Sätzen“ als Schiene, Karte „Stärken und Schwächen“, Kursverlauf, sechs Kapitel als Zeilen einer Karte, „Weiter: Vergleich“ vor den Modul-Pillen (`quant/app/ui.js#nextCard`); Beobachten ist der runde Herz-Knopf, die Reiterzeile des Rahmens fehlt nur auf `#/aktie/<T>`. Desktop: Profil links, drei Sätze und Stärken/Schwächen rechts. Quant führt keine Börse; der Kopf zeigt sie erst, wenn eine Quelle sie liefert.
+
 ## Bekannte Lücken (aus den Abschlussberichten)
 - Home: Fundamental, Hedgefonds, Screener ohne Zahl (keine kleine Zusammenfassungsdatei); DAX fehlt in den Daten (Euro Stoxx).
 - Aktie: keine Investorenzeilen im Fenster Hedgefonds, kein Branchen-Rang in Fundamental, kein „Melden, wenn …“; Europa ohne Seite.

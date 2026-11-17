@@ -315,7 +315,7 @@
     return h.split("/").filter(Boolean).map(function (x) { try { return decodeURIComponent(x); } catch (e) { return x; } }).map(function (x, i) { return i === 1 ? x.toUpperCase() : x; });
   }
   function nextCard(main) {
-    var U = global.VUUI, host = main.parentNode && main.parentNode.querySelector(":scope > .qk2-next");
+    var U = global.VUUI, host = main.parentNode && main.parentNode.querySelector(":scope > .qk2-next, :scope > main > .qk2-next");
     if (host) host.remove();
     if (!U || !U.next || global.QX_HOST) return;
     var make = NEXT[main.dataset.view], parts = hashParts();
@@ -324,7 +324,9 @@
     if (!o || main.querySelector(".v2-message")) return;
     host = el("nav", { class: "qk2-next vu-ui", "aria-label": "Weiter" });
     host.innerHTML = U.next(o);
-    main.after(host);
+    /* Klickentwurf Modul-Aktienseiten (17.11.2026): auf der Aktienseite steht „Weiter“ vor „Diese Aktie in anderen Modulen“ (am Ende von main). */
+    var others = main.dataset.view === "aktie" ? main.querySelector(":scope > .vu-sothers") : null;
+    if (others) main.insertBefore(host, others); else main.after(host);
   }
   function introDate(text) { var m = /(?:Stand|Schluss)\s+(?:[A-Za-zÄÖÜäöü]{2}\.\s*)?(\d{2}\.\d{2}\.)/.exec(text || ""); return m ? m[1] : null; }
   function compactIntro(main) {
@@ -355,7 +357,7 @@
         var t = m.target;
         if (t.id !== "qx-main" || m.attributeName !== "data-ready") return;
         if (t.dataset.ready === "true") finishPage(t);
-        else { var old = root.querySelector(":scope > .qk2-next"); if (old) old.remove(); }
+        else { var old = root.querySelector(":scope > .qk2-next, :scope > main > .qk2-next"); if (old) old.remove(); }
       });
     }).observe(root, { subtree: true, attributes: true, attributeFilter: ["data-ready"] });
   })();
