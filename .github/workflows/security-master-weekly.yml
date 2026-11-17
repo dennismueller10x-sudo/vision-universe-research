@@ -34,6 +34,10 @@ on:
         description: 'Klassifikator-Version darf wechseln (nur nach Vorher/Nachher-Pruefung durch den Owner)'
         type: boolean
         default: false
+      metadaten_korrektur:
+        description: 'Auch ohne fachliche Aenderung committen (Gate SKIP): nur fuer Metadaten-Korrekturen, z. B. einen falschen Bestandspfad'
+        type: boolean
+        default: false
       approved_changes:
         description: 'Sonderfreigabe anwenden (Datei aus freigabe; nur mit allow_version_change, gebunden an Versionen und SHA-256 des Ausgangsstamms)'
         type: boolean
@@ -164,6 +168,23 @@ jobs:
           if git diff --cached --quiet; then echo "unveraendert"; exit 0; fi
           stand=$(node -e 'const s=require("./quant/data/market/security-master/summary.json");console.log(s.today+" "+s.version)')
           git commit -q -m "Security Master + Firmennamen: Stand ${stand} (woechentliche Aktualisierung)"
+          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
+
+      # Metadaten-Korrektur (17.11.2026): Der Erweiterungslauf 44083852257 hat den Stamm mit dem Runner-Pfad als
+      # Bestandsdatei (reconciliation.baselineFile) committet; fachlich ist alles gleich, das Gate meldet deshalb SKIP und
+      # korrigiert den Pfad erst nach 21 Tagen. Nur von Hand, nur zusammen mit commit, nur bei bestandenem Gate (SKIP).
+      - name: Commit Metadaten-Korrektur (nur von Hand, Gate SKIP)
+        if: inputs.zeitplan == '' && inputs.commit == true && inputs.metadaten_korrektur == true && steps.gate.outputs.decision == 'SKIP_NO_MATERIAL_CHANGE'
+        env:
+          PUSH_OWNED_PATHS: quant/data/market/security-master/us-security-master.json quant/data/market/security-master/summary.json quant/data/market/security-master/reconciliation.json quant/data/market/security-master/backfill-estimate.json quant/data/market/security-master/company-names.json quant/data/market/security-master/company-names-summary.json
+        run: |
+          set -euo pipefail
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add $PUSH_OWNED_PATHS
+          if git diff --cached --quiet; then echo "unveraendert"; exit 0; fi
+          stand=$(node -e 'const s=require("./quant/data/market/security-master/summary.json");console.log(s.today+" "+s.version)')
+          git commit -q -m "Security Master + Firmennamen: Stand ${stand} (Metadaten-Korrektur, keine fachliche Aenderung)"
           scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
 
       - name: Zusammenfassung
