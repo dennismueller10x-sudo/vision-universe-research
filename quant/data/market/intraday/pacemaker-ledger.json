@@ -10,74 +10,8 @@
     "blockMaxMs": 20700000,
     "branch": "main"
   },
-  "updatedAt": "2026-11-17T16:47:33.600Z",
+  "updatedAt": "2026-11-17T16:51:40.084Z",
   "cycles": [
-    {
-      "cycle": 12,
-      "runId": "43871660357",
-      "triggerAt": "2026-11-16T16:48:28.933Z",
-      "marketStateAtTrigger": "OPEN",
-      "localTimeAtTrigger": "11:48:28",
-      "fetchStartAt": "2026-11-16T16:48:28.933Z",
-      "fetchEndAt": "2026-11-16T17:00:43.018Z",
-      "session": "2026-11-16",
-      "written": 1306,
-      "requests": 1443,
-      "notPublishable": 76,
-      "addAt": "2026-11-16T17:00:43.019Z",
-      "commitAt": "2026-11-16T17:00:43.326Z",
-      "pushAt": "2026-11-16T17:00:45.657Z",
-      "sha": "5940060115",
-      "changed": true,
-      "ok": true,
-      "reason": null,
-      "parts": [
-        {
-          "part": 1,
-          "of": 3,
-          "fetchStartAt": "2026-11-16T16:48:28.933Z",
-          "fetchEndAt": "2026-11-16T16:52:31.673Z",
-          "ok": true,
-          "written": 426,
-          "requests": 481,
-          "sha": "275fd18bea",
-          "pushAt": "2026-11-16T16:52:34.834Z",
-          "changed": true
-        },
-        {
-          "part": 2,
-          "of": 3,
-          "fetchStartAt": "2026-11-16T16:52:34.834Z",
-          "fetchEndAt": "2026-11-16T16:56:37.583Z",
-          "ok": true,
-          "written": 444,
-          "requests": 481,
-          "sha": "3f6bdb34c8",
-          "pushAt": "2026-11-16T16:56:40.302Z",
-          "changed": true
-        },
-        {
-          "part": 3,
-          "of": 3,
-          "fetchStartAt": "2026-11-16T16:56:40.302Z",
-          "fetchEndAt": "2026-11-16T17:00:43.018Z",
-          "ok": true,
-          "written": 436,
-          "requests": 481,
-          "sha": "5940060115",
-          "pushAt": "2026-11-16T17:00:45.657Z",
-          "changed": true
-        }
-      ],
-      "snapshotAt": "2026-11-16T17:00:43.001Z",
-      "pushed": true,
-      "watchdog": {
-        "verdict": "FAIL",
-        "codes": [
-          "auslieferungZuWeitHinterher"
-        ]
-      }
-    },
     {
       "cycle": 13,
       "runId": "43871660357",
@@ -2045,10 +1979,10 @@
       "written": 1289,
       "requests": 1432,
       "notPublishable": 79,
-      "addAt": "2026-11-17T16:43:23.250Z",
-      "commitAt": "2026-11-17T16:43:23.554Z",
-      "pushAt": "2026-11-17T16:43:30.107Z",
-      "sha": "833c90a81d",
+      "addAt": "2026-11-17T16:47:33.600Z",
+      "commitAt": "2026-11-17T16:47:33.899Z",
+      "pushAt": "2026-11-17T16:47:36.228Z",
+      "sha": "3a8a863004",
       "changed": true,
       "ok": true,
       "reason": null,
@@ -2084,11 +2018,52 @@
           "fetchEndAt": "2026-11-17T16:47:33.599Z",
           "ok": true,
           "written": 430,
-          "requests": 477
+          "requests": 477,
+          "sha": "3a8a863004",
+          "pushAt": "2026-11-17T16:47:36.228Z",
+          "changed": true
         }
       ],
       "snapshotAt": "2026-11-17T16:47:33.589Z",
-      "pushed": true
+      "pushed": true,
+      "watchdog": {
+        "verdict": "FAIL",
+        "codes": [
+          "auslieferungZuWeitHinterher"
+        ]
+      }
+    },
+    {
+      "cycle": 12,
+      "runId": "44088403401",
+      "triggerAt": "2026-11-17T16:47:36.635Z",
+      "marketStateAtTrigger": "OPEN",
+      "localTimeAtTrigger": "11:47:36",
+      "fetchStartAt": "2026-11-17T16:47:36.636Z",
+      "fetchEndAt": "2026-11-17T16:51:40.083Z",
+      "session": "2026-11-17",
+      "written": 426,
+      "requests": 478,
+      "notPublishable": 27,
+      "addAt": null,
+      "commitAt": null,
+      "pushAt": null,
+      "sha": null,
+      "changed": false,
+      "ok": true,
+      "reason": null,
+      "parts": [
+        {
+          "part": 1,
+          "of": 3,
+          "fetchStartAt": "2026-11-17T16:47:36.636Z",
+          "fetchEndAt": "2026-11-17T16:51:40.083Z",
+          "ok": true,
+          "written": 426,
+          "requests": 478
+        }
+      ],
+      "snapshotAt": "2026-11-17T16:51:40.066Z"
     }
   ]
 }
