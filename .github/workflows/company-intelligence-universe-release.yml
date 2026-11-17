@@ -23,7 +23,7 @@ concurrency:
 jobs:
   release:
     if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     # Measured full R2 readback plus two broad browser matrices and Pages wait
     # need separate rollback reserve. This changes only release headroom;
     # continuous source budgets and cadence remain unchanged.
