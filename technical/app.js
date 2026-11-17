@@ -1311,7 +1311,9 @@
     var flags = [];
     if (!row.hasVolume) flags.push(el("span", { class: "tc-flag", text: "ohne Volumen" }));
     if (row.suspectJumpAt) flags.push(jumpFlag(row));
-    return el("a", { class: "tc-hit", href: M.chartHref(row.s, null, chartQ), "data-vu-stock": row.s, "data-vu-stock-name": shortName(row.n) || row.s }, [
+    /* Vorlagen-Treffer bleiben ein Werkzeug-Weg (wie das Schnell-Research im Screener): der Tipp öffnet den Chart mit der
+       Prüfleiste der Vorlage (?v=<Vorlage>), denn sie ist der Zweck dieser Liste – keine Aktien-Vorschau. */
+    return el("a", { class: "tc-hit", href: M.chartHref(row.s, null, chartQ) }, [
       h(rowHtml(row)),
       el("div", { class: "tc-hit-foot" }, [el("span", { class: "tc-hit-score" }, [el("b", { class: "num", text: pass + "/" + e.states.length }), el("span", { text: " Regeln" })]), ticks(t, e.states)]),
       miss.length ? el("p", { class: "tc-hit-text tc-miss" }, [el("b", { text: "Nicht erfüllt: " }), miss.join(", ")]) : null,
