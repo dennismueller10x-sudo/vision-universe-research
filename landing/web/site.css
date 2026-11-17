@@ -876,3 +876,16 @@ main,.story,.steps,.step{overflow-x:clip}
 .lpfoot nav{display:flex;flex-wrap:wrap;gap:6px 16px;font-weight:700;color:#000}
 .lpfeat li{align-content:start}
 @media(min-width:1000px){.lphero .lpfeat{grid-template-columns:repeat(4,1fr)}.lptext h1{font-size:clamp(34px,3.6vw,52px)}}
+/* Landingpage: das iPhone mit der App ist überall sofort sichtbar, am Handy neben der Überschrift */
+.lptag .apptag{max-width:100%}
+@media(max-width:999px){
+  .lphero{grid-template-columns:1fr 150px;grid-template-areas:"tag tag" "text phone" "side side" "feat feat";column-gap:14px;row-gap:16px}
+  .lptag{grid-area:tag}.lptext{grid-area:text;align-self:center}.lpside{grid-area:side}.lpfeat{grid-area:feat}
+  .lptext h1{margin-top:0;font-size:clamp(28px,8vw,40px)}
+  .lptext p.t{font-size:15.5px}
+  .lpphone{display:block;grid-area:phone;align-self:start}
+  .lpphone .aphone{--pw:150px;margin:0 0 0 auto}
+}
+@media(min-width:600px) and (max-width:999px){.lphero{grid-template-columns:1fr 220px}.lpphone .aphone{--pw:220px}}
+@media(min-width:1000px){.lphero{grid-template-areas:"tag tag phone" "text side phone" "feat feat phone";row-gap:14px}.lptag{grid-area:tag;align-self:end}.lptext h1{margin-top:4px}}
+@media(min-width:1000px){.lphero{grid-template-areas:"tag side phone" "text side phone" "feat feat phone";grid-template-rows:auto auto auto}.lptag{align-self:end}.lptext{align-self:start}}
