@@ -842,7 +842,7 @@ main,.story,.steps,.step{overflow-x:clip}
 .nlpop{width:min(560px,calc(100vw - 24px));max-height:calc(100dvh - 24px);overflow:auto;padding:30px 26px 22px;border:0;border-radius:28px;background:#000;color:#fff}
 .nlpop::backdrop{background:rgba(0,0,0,.55);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
 .nlpop h2{margin-top:16px;font-size:clamp(30px,6vw,42px);font-weight:900;letter-spacing:-.045em;line-height:1}
-.nlpop h2 mark{background:var(--lime);color:#000;padding:0 .08em}
+.nlpop h2 mark{color:#000}
 .nlpop-t{margin-top:12px;color:#d4d4d4;font-weight:600;font-size:16.5px;line-height:1.45}
 .nlpop-f{margin-top:18px}
 .nlpop-tag{height:auto;padding:6px 14px;font-size:13px;margin-right:48px;white-space:normal}
@@ -859,7 +859,7 @@ main,.story,.steps,.step{overflow-x:clip}
 .lphero{display:grid;gap:22px;padding:22px 0 26px}
 @media(min-width:1000px){.lphero{grid-template-columns:1fr 1fr 290px;grid-template-areas:"text side phone" "feat feat phone";gap:22px 36px;align-items:center;min-height:calc(100vh - 62px - 64px);padding:24px 0}.lptext{grid-area:text}.lpside{grid-area:side}.lpfeat{grid-area:feat;grid-template-columns:repeat(4,1fr);margin-top:0}.lpphone{grid-area:phone}}
 .lptext h1{margin-top:16px;font-size:clamp(34px,3.9vw,56px);font-weight:900;letter-spacing:-.055em;line-height:.95}
-.lptext h1 mark{background:var(--lime);color:#000;padding:0 .06em}
+.lptext h1 mark{color:#000}
 .lptext p.t{margin-top:12px;font-size:clamp(16.5px,1.4vw,19px);font-weight:600;color:#333;max-width:40ch;line-height:1.45}
 .lpfeat{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .lpfeat li{display:grid;grid-template-columns:34px 1fr;gap:10px;align-items:start;padding:12px;border-radius:16px;background:#f5f5f5;font-size:13.5px;line-height:1.35;color:#444;font-weight:600}
@@ -869,7 +869,7 @@ main,.story,.steps,.step{overflow-x:clip}
 .lpform{padding:22px 20px;border-radius:24px;background:#000;color:#fff}
 .lpform .soon{height:auto;padding:5px 12px;font-size:12.5px}
 .lpform h2{margin-top:12px;font-size:clamp(28px,3vw,38px);font-weight:900;letter-spacing:-.045em;line-height:1}
-.lpform h2 mark{background:var(--lime);color:#000;padding:0 .06em}
+.lpform h2 mark{color:#000}
 .lpsub{margin:8px 0 14px;color:#d4d4d4;font-weight:600;font-size:15px}
 .lpside .stores{margin-top:14px}
 .lpphone{display:none}
@@ -892,3 +892,38 @@ main,.story,.steps,.step{overflow-x:clip}
 @media(min-width:600px) and (max-width:999px){.lphero{grid-template-columns:1fr 220px}.lpphone .aphone{--pw:220px}}
 @media(min-width:1000px){.lphero{grid-template-areas:"tag tag phone" "text side phone" "feat feat phone";row-gap:14px}.lptag{grid-area:tag;align-self:end}.lptext h1{margin-top:4px}}
 @media(min-width:1000px){.lphero{grid-template-areas:"tag side phone" "text side phone" "feat feat phone";grid-template-rows:auto auto auto}.lptag{align-self:end}.lptext{align-self:start}}
+
+/* News auf der Startseite (Owner 17.11.2026): kompakt, viele kleine Kacheln */
+.ncompact{margin-top:22px}
+.nfix{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.nfix .hlm img{width:64px;height:90px}
+.nfix .hlm b{font-size:15px}
+.ntiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+@media(min-width:760px){.ntiles{grid-template-columns:repeat(4,1fr);gap:14px}}
+.ntile{display:flex;flex-direction:column;gap:6px;padding:8px 8px 12px;border-radius:16px;background:#fff;box-shadow:inset 0 0 0 1.5px var(--hair);transition:transform .2s var(--ease),box-shadow .2s var(--ease)}
+.ntile:hover{transform:translateY(-2px);box-shadow:inset 0 0 0 1.5px #000}
+.ntile img,.ntile .noimg{width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:10px;background:#f2f2f2}
+.ntile .k{padding:0 4px;font-size:10.5px;font-weight:900;letter-spacing:.05em;text-transform:uppercase;color:var(--mute)}
+.ntile b{padding:0 4px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;font-size:14.5px;font-weight:900;line-height:1.2;letter-spacing:-.01em}
+.nmore{margin-top:18px}
+
+/* Social: zwei große Balken statt Reel-Kacheln */
+.sbars{display:grid;gap:12px;margin-top:28px}
+@media(min-width:900px){.sbars{grid-template-columns:1fr 1fr}}
+.sbar{display:flex;align-items:center;gap:16px;padding:20px 20px 20px 22px;border-radius:26px;background:#000;color:#fff;transition:transform .2s var(--ease)}
+.sbar.ig{background:#fff;color:#000;box-shadow:inset 0 0 0 2px #000}
+.sbar:hover{transform:translateY(-2px)}
+.sbar .logo-s{display:grid;place-items:center;width:62px;height:62px;border-radius:18px;background:#fff;color:#000;flex:none}
+.sbar.ig .logo-s{background:#000;color:#fff}
+.sbar .logo-s svg{width:34px;height:34px}
+.sbar .who{flex:1;min-width:0}
+.sbar .who b{display:block;font-size:clamp(22px,2.4vw,30px);font-weight:900;letter-spacing:-.035em}
+.sbar .who span{display:block;font-weight:700;opacity:.7;font-size:14.5px}
+.sbar .go{display:inline-flex;align-items:center;gap:10px;font-weight:900;font-size:16px}
+.sbar .go .dot{display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:var(--lime);color:#000}
+.sbar .go .dot svg{width:18px;height:18px}
+@media(max-width:480px){.sbar{padding:16px}.sbar .go{font-size:0;gap:0}.sbar .logo-s{width:52px;height:52px}}
+.nfix,.ntiles{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+@media(min-width:760px){.ntiles{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.nfix .hlm>span{min-width:0}.nfix .hlm small{white-space:normal}
+.nfix .hlm small{font-size:10px;letter-spacing:.03em;overflow-wrap:anywhere}
