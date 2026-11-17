@@ -37,7 +37,12 @@ export function evaluate({ prev, next, prevUniverse, nextUniverse, limits, appro
     const k = `${p}->${s}`; transitions[k] = (transitions[k] || 0) + 1;
     (samples[k] = samples[k] || []).length < 10 && samples[k].push(id);
   }
-  const added = [...b.keys()].filter((id) => !a.has(id)).length, removed = [...a.keys()].filter((id) => !b.has(id)).length;
+  /* Zugaenge zur Mitgliedschaft (expand-us-universe --only, Steuerung 17.11.2026): nur mit Freigabe je securityId
+     (approval.membersAdded); jeder nicht freigegebene Zugang und jeder Abgang zaehlt weiter gegen universeMembersChanged. */
+  const membersApproved = new Set(approval?.membersAdded || []);
+  const addedIds = [...b.keys()].filter((id) => !a.has(id));
+  const added = addedIds.filter((id) => !membersApproved.has(id)).length, removed = [...a.keys()].filter((id) => !b.has(id)).length;
+  const membersUnused = [...membersApproved].filter((id) => !addedIds.includes(id));
   const pu = prevUniverse ? prevUniverse.actualSize : prev.counts?.productUniverse;
   const nu = nextUniverse ? nextUniverse.actualSize : next.counts?.productUniverse;
   // Mit Freigabeliste zaehlt die Abweichung vom freigegebenen Zielumfang, sonst die vom Vorstand.
@@ -48,10 +53,12 @@ export function evaluate({ prev, next, prevUniverse, nextUniverse, limits, appro
   for (const [k, max] of Object.entries(limits)) if (counted[k] > max) failures.push(`${k} ${counted[k]} > ${max}`);
   const unused = [...approved.keys()].filter((id) => !used.has(id));
   if (unused.length) failures.push(`${unused.length} freigegebene Wechsel ungenutzt (z. B. ${unused.slice(0, 5).join(", ")})`);
+  if (membersUnused.length) failures.push(`${membersUnused.length} freigegebene Zugaenge fehlen (${membersUnused.slice(0, 5).join(", ")})`);
   if ((next.counts?.universeMembers ?? 0) !== (next.decisions || []).length) failures.push("Zaehlung im Kopf != Entscheidungen");
   return { schema: "vu-eligibility-gate-report-1", decision: failures.length ? "BLOCKED" : "COMMIT", failures, counted, limits,
            productUniverse: { before: pu, after: nu }, transitions, samples,
-           approval: approval ? { id: approval.id, approved: approved.size, applied: approvedChanges, unused: unused.length } : null };
+           approval: approval ? { id: approval.id, approved: approved.size, applied: approvedChanges, unused: unused.length,
+                                  membersAdded: addedIds.filter((id) => membersApproved.has(id)).length } : null };
 }
 
 function main(argv) {

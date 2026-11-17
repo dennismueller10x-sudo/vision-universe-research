@@ -1,0 +1,48 @@
+{
+ "schema": "vu-eligibility-catchup-1",
+ "id": "eligibility-expansion-2026-11-17",
+ "prevSha256": "8f7ddd4117343dd4bfebdba1ac7d1e8f2f61cf4e0ef1c9e7553f211846222415",
+ "sourceRun": "lokal 17.11.2026 gegen main 56db3b2 (Anbieterliste Tiingo supported_tickers, build-us-security-master, expand-us-universe --only, build-us-security-master --baseline erweitert, Eignungskette, beide Gates)",
+ "decidedBy": "Steuerung 17.11.2026: nur aufnehmen, die Stummel ADIL, LRHC, QNCX, FGNX bleiben bis Teil B (Forschung ueber R2).",
+ "productUniverseBefore": 6309,
+ "productUniverseAfter": 6314,
+ "counts": {
+  "changes": 0,
+  "leaveProduct": 0,
+  "enterProduct": 4,
+  "membersAdded": 4
+ },
+ "changes": [],
+ "membersAdded": [
+  "ref_AZR",
+  "ref_FGC",
+  "ref_IRLA",
+  "ref_SRTM"
+ ],
+ "evidence": [
+  {
+   "securityId": "ref_AZR",
+   "ticker": "AZR",
+   "predecessor": "ADIL",
+   "note": "Azora Therapeutics (vormals Adial); 8-K 0001213900-26-113337 vom 28.10.2026: neuer Name, neuer Ticker AZR ab 29.10. (V130_G7_CANONICAL_EVIDENCE.md). Tiingo: NASDAQ, Historie ab 2018-07-27 (Abruf 44079372359)."
+  },
+  {
+   "securityId": "ref_SRTM",
+   "ticker": "SRTM",
+   "predecessor": "LRHC",
+   "note": "Stratum Holdings (vormals La Rosa Holdings); 8-K Item 5.03 vom 19.10.2026. Tiingo: NASDAQ, Historie ab 2023-10-09."
+  },
+  {
+   "securityId": "ref_IRLA",
+   "ticker": "IRLA",
+   "predecessor": "QNCX",
+   "note": "IRulya Therapeutics (vormals Quince Therapeutics), CIK 0001662774. Tiingo: NASDAQ, Historie ab 2019-05-09."
+  },
+  {
+   "securityId": "ref_FGC",
+   "ticker": "FGC",
+   "predecessor": "FGNX",
+   "note": "FG Communities (vormals FG Nexus), CIK 0001591890. Tiingo: NASDAQ, Historie ab 2014-04-01. Der Vorzug FGCPP ist PREFERRED/REVIEW und bleibt aussen vor."
+  }
+ ]
+}
