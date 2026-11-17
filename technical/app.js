@@ -354,7 +354,9 @@
     else if (!row.fresh) flags.push(el("span", { class: "tc-flag", text: "Kurs vom " + M.dateDe(row.asOf) }));
     if (!row.hasVolume) flags.push(el("span", { class: "tc-flag", text: "ohne Volumen" }));
     if (row.suspectJumpAt) flags.push(jumpFlag(row));
-    return el("a", { class: "tc-hit", href: href || M.chartHref(row.s), "data-vu-stock": row.s, "data-vu-stock-name": shortName(row.n) || row.s }, [h(rowHtml(row)), el("div", { class: "tc-hit-foot" }, [befund(row, wanted)].concat(flags))]);
+    /* Screener-Treffer sind ein Werkzeug-Weg (wie das Schnell-Research im Screener-Modul und die Vorlagen): der Tipp öffnet den Chart
+       mit dem gewählten Muster bzw. dem Rückweg zur Lektion (Akademie) – keine Aktien-Vorschau. */
+    return el("a", { class: "tc-hit", href: href || M.chartHref(row.s) }, [h(rowHtml(row)), el("div", { class: "tc-hit-foot" }, [befund(row, wanted)].concat(flags))]);
   }
 
   /* ------------------------------------------------------------- Start (T01) */
