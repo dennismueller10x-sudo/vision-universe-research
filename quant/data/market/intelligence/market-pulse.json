@@ -2,7 +2,7 @@
  "schemaVersion": "vu-market-pulse-1.1.0",
  "methodVersion": "market-pulse-1.0.0",
  "configVersion": "vu-market-pulse-config-1.0.0",
- "generatedAt": "2026-11-17T12:24:44.372Z",
+ "generatedAt": "2026-11-17T15:23:06.657Z",
  "kind": "DESCRIPTIVE_MARKET_PULSE",
  "notes": {
   "quantMarketRegime": "FAIL_CLOSED - nicht verwendet, nicht imitiert",
@@ -105,7 +105,7 @@
   "disclaimer": "Einordnung des Marktumfelds aus festen Regeln – keine Anlageberatung, keine Kauf- oder Verkaufsempfehlung, keine Prognose."
  },
  "evaluation": {
-  "generatedAt": "2026-11-17T12:24:44.372Z",
+  "generatedAt": "2026-11-17T15:23:06.657Z",
   "dataAsOf": "2026-11-16",
   "previousDataAsOf": "2026-11-13",
   "schedule": {
@@ -843,13 +843,13 @@
  "instruments": {
   "N225": {
    "kind": "PRICE",
-   "asOf": "2026-11-16",
-   "last": 59662.02,
-   "observations": 19240,
+   "asOf": "2026-11-17",
+   "last": 58860.43,
+   "observations": 19241,
    "changes": {
-    "1M": -8.67,
-    "3M": -13.81,
-    "1Y": 18.43
+    "1M": -9.9,
+    "3M": -12.75,
+    "1Y": 16.96
    },
    "high52w": {
     "date": "2026-06-25",
@@ -859,18 +859,18 @@
     "date": "2025-11-19",
     "value": 48537.7
    },
-   "rangePosition": 46.7,
-   "dist50": -7.63,
-   "dist200": -4.02,
+   "rangePosition": 43.3,
+   "dist50": -8.67,
+   "dist200": -5.36,
    "trend": "NEGATIVE",
-   "drawdown52w": -17.56,
-   "vol20": 32.89,
+   "drawdown52w": -18.66,
+   "vol20": 33.04,
    "volContext": {
     "median": 18.7,
     "p25": 15.6,
     "p75": 24.1,
     "samples": 1219,
-    "from": "2021-11-17",
+    "from": "2021-11-18",
     "state": "HIGHER"
    },
    "roles": []
@@ -1412,13 +1412,13 @@
   },
   "DE2Y": {
    "kind": "YIELD",
-   "asOf": "2026-11-16",
-   "last": 3.16,
-   "observations": 7432,
+   "asOf": "2026-11-17",
+   "last": 3.11,
+   "observations": 7433,
    "changes": {
-    "1M": 8,
-    "3M": 38,
-    "1Y": 115
+    "1M": 3,
+    "3M": 30,
+    "1Y": 110
    },
    "high52w": {
     "date": "2026-09-28",
@@ -1428,20 +1428,20 @@
     "date": "2025-11-21",
     "value": 1.97
    },
-   "rangePosition": 88.1,
-   "vs200": 46.3,
-   "vs50": 4.3,
+   "rangePosition": 84.4,
+   "vs200": 40.8,
+   "vs50": -0.9,
    "roles": []
   },
   "DE10Y": {
    "kind": "YIELD",
-   "asOf": "2026-11-16",
-   "last": 3.45,
-   "observations": 7432,
+   "asOf": "2026-11-17",
+   "last": 3.42,
+   "observations": 7433,
    "changes": {
-    "1M": -3,
-    "3M": 19,
-    "1Y": 66
+    "1M": -6,
+    "3M": 10,
+    "1Y": 64
    },
    "high52w": {
     "date": "2026-09-28",
@@ -1451,20 +1451,20 @@
     "date": "2026-03-02",
     "value": 2.73
    },
-   "rangePosition": 75,
-   "vs200": 26.1,
-   "vs50": -3.7,
+   "rangePosition": 71.9,
+   "vs200": 22.8,
+   "vs50": -6.7,
    "roles": []
   },
   "DE30Y": {
    "kind": "YIELD",
-   "asOf": "2026-11-16",
-   "last": 3.83,
-   "observations": 6680,
+   "asOf": "2026-11-17",
+   "last": 3.81,
+   "observations": 6681,
    "changes": {
-    "1M": -5,
-    "3M": -1,
-    "1Y": 48
+    "1M": -7,
+    "3M": -8,
+    "1Y": 46
    },
    "high52w": {
     "date": "2026-10-01",
@@ -1474,16 +1474,16 @@
     "date": "2025-11-18",
     "value": 3.35
    },
-   "rangePosition": 70.6,
-   "vs200": 11.7,
-   "vs50": -4.5,
+   "rangePosition": 67.6,
+   "vs200": 9.6,
+   "vs50": -6.3,
    "roles": []
   },
   "US_EFFR": {
    "kind": "RATE",
-   "asOf": "2026-11-13",
+   "asOf": "2026-11-16",
    "last": 3.88,
-   "observations": 6626,
+   "observations": 6627,
    "changes": {
     "1M": 0,
     "3M": 25,
@@ -1498,8 +1498,8 @@
     "value": 3.62
    },
    "rangePosition": 96.3,
-   "vs200": 19.8,
-   "vs50": 5,
+   "vs200": 19.7,
+   "vs50": 4.5,
    "roles": []
   },
   "QQQ": {
