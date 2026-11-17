@@ -127,7 +127,8 @@ export function regions(state) {
       what: ["Die Firma und ihr Geschäft", "Umsatz, Gewinn und Bewertung über viele Jahre", "Chart und was die großen Anleger tun", "Was für die Aktie spricht und was dagegen"],
       titel: report.titel, unterzeile: report.unterzeile, cover: report.cover, coverAlt: "den ganzen Report", pages: report.preview, inhalt: report.alles }) } } : {}),
     // News-Seite (Owner 17.11.2026): nur Artikel; Magazin und Aktienreports haben eigene Seiten im Menü.
-    "news/index.html": { page: `<section class="full nfirst">${stand(a0)}<div class="newsgrid nonly">${lead("../", a0)}</div></section><section class="full"><h2>Alle Artikel</h2><div class="alist">${artikel.slice(1).map((x) => box("../", x, true)).join("")}</div></section>` }
+    // Großer gestalteter Kopf steht fest in news/index.html (kein Tagesbild oben); hier nur die Artikel als kleine Kacheln.
+    "news/index.html": { page: `<section class="full nfirst">${stand(a0)}<div class="ntiles nall">${artikel.map((x) => tile("../", x)).join("")}</div></section>` }
   };
 }
 
