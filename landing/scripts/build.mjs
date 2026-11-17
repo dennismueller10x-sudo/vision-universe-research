@@ -4,6 +4,8 @@ import {fileURLToPath} from 'node:url';
 import {createHash} from 'node:crypto';
 
 export const root = fileURLToPath(new URL('../', import.meta.url));
+// Story-Website (Owner 17.11.2026): Unterseiten neben index.html; Bilder, Stil und Skript unter web/.
+export const SITE_PAGES = ['app/index.html','news/index.html',...['discover','fundamental','technical','supertrader','vorsorge','screener','atlas','quant','hedgefonds','elliott','portfolios'].map(id=>`produkte/${id}/index.html`)];
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function validateConfig(config = {}) {
   const keys=['mode','liveFlowVerified','privacyReviewed','privacyHtmlPath'];
@@ -31,6 +33,8 @@ export async function build({output = resolve(root,'dist'), config = {}, product
     await mkdir(dirname(resolve(output,path)),{recursive:true});
     await cp(resolve(root,path),resolve(output,path));
   }
+  for (const path of SITE_PAGES) { await mkdir(dirname(resolve(output,path)),{recursive:true}); await cp(resolve(root,path),resolve(output,path)); }
+  await cp(resolve(root,'web'),resolve(output,'web'),{recursive:true});
   await cp(resolve(root,'assets'),resolve(output,'assets'),{recursive:true});
   await cp(resolve(root,'partner/media'),resolve(output,'partner/media'),{recursive:true});
   if (config.privacyHtmlPath) {
@@ -71,7 +75,17 @@ export async function build({output = resolve(root,'dist'), config = {}, product
     const version=createHash('sha256').update(await readFile(resolve(output,asset))).digest('hex').slice(0,16);
     html=html.replace(`${attribute}="./${asset}"`,`${attribute}="./${asset}?v=${version}"`);
   }
+  // Story-Website: Stil und Skript mit inhaltsabhängigen Adressen auf allen Seiten.
+  const stamp={};for(const asset of ['web/site.css','web/site.js','newsletter.js'])stamp[asset]=createHash('sha256').update(await readFile(resolve(output,asset))).digest('hex').slice(0,16);
+  const stampPage=(page,prefix)=>{for(const asset of Object.keys(stamp))page=page.replaceAll(`"${prefix}${asset}"`,`"${prefix}${asset}?v=${stamp[asset]}"`);return page;};
+  html=stampPage(html,'./');
   await writeFile(resolve(output,'index.html'),html);
+  for(const path of SITE_PAGES){
+    let page=await readFile(resolve(output,path),'utf8');
+    page=page.replace('<head>','<head>\n  <meta http-equiv="Content-Security-Policy" content="'+esc(csp)+'">\n  <meta name="referrer" content="no-referrer">');
+    if (production) page = page.replace('content="noindex, nofollow"','content="index, follow"');
+    await writeFile(resolve(output,path),stampPage(page,'../'.repeat(path.split('/').length-1)));
+  }
   // The partner presentation is shared by direct link only and stays out of search.
   let partner=await readFile(resolve(output,'partner/index.html'),'utf8');
   partner=partner.replace('<head>','<head>\n  <meta http-equiv="Content-Security-Policy" content="'+esc(csp)+'">\n  <meta name="referrer" content="no-referrer">');
@@ -102,7 +116,7 @@ export async function build({output = resolve(root,'dist'), config = {}, product
   }
   await writeFile(resolve(output,'.nojekyll'),'');
   await writeFile(resolve(output,'robots.txt'),production?'User-agent: *\nAllow: /\nSitemap: https://www.visionuniverse.de/sitemap.xml\n':'User-agent: *\nDisallow: /\n');
-  if (production) await writeFile(resolve(output,'sitemap.xml'),'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://www.visionuniverse.de/</loc></url></urlset>');
+  if (production) await writeFile(resolve(output,'sitemap.xml'),'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://www.visionuniverse.de/</loc></url>'+SITE_PAGES.map(p=>'<url><loc>https://www.visionuniverse.de/'+p.replace('index.html','')+'</loc></url>').join('')+'</urlset>');
   // Advanced-mode source contains binding names, never credential values.
   await cp(resolve(root,'server/newsletter.mjs'),resolve(output,'_worker.js'));
   await writeFile(resolve(output,'_routes.json'),JSON.stringify({version:1,include:['/api/*','/.newsletter-internal/*','/_worker*','/server/*'],exclude:[]}));

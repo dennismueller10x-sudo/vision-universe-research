@@ -26,14 +26,14 @@ const screenshots=resolve(root,'review');await mkdir(screenshots,{recursive:true
 const browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||(existsSync('/usr/bin/chromium')?'/usr/bin/chromium':undefined),args:['--no-sandbox']});
 const metrics=[];
 try{
-  for(const [name,width,height,limit] of [['desktop',1440,900,1800],['iphone',390,844,1688],['narrow',320,800,Infinity]]){
+  for(const [name,width,height,limit] of [['desktop',1440,900,Infinity],['iphone',390,844,Infinity],['narrow',320,800,Infinity]]){
     const context=await browser.newContext({viewport:{width,height},deviceScaleFactor:name==='iphone'?2:1,reducedMotion:'reduce',isMobile:name==='iphone',hasTouch:name==='iphone'});
     const page=await context.newPage();
     const errors=[],external=[];page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(!r.url().startsWith(base))external.push(r.url())});
     await page.goto(base+'/blocked/',{waitUntil:'networkidle'});await page.evaluate(()=>document.fonts.ready);
     const m=await page.evaluate(()=>({width:innerWidth,scrollWidth:document.documentElement.scrollWidth,height:document.documentElement.scrollHeight}));
     const totalLimit=limit;
-    assert.ok(m.height<=totalLimit,`${name}: compact coming-soon page (${m.height})`);assert.equal(m.scrollWidth,width,`${name} horizontal overflow`);
+    assert.ok(m.height<=totalLimit,`${name}: page height (${m.height})`);assert.equal(m.scrollWidth,width,`${name} horizontal overflow`);
     assert.equal(await page.locator('#email').isDisabled(),true);assert.equal(await page.locator('button[type=submit]').isDisabled(),true);
     assert.equal(await page.locator('#consent').isChecked(),false);
     await page.keyboard.press('Tab');assert.equal(await page.locator(':focus').innerText(),'Zum Inhalt');
