@@ -127,6 +127,9 @@ test('ST-ALERTS-5 Schalterkette: Worker, Frontend und Migration stehen gemeinsam
   const ui = read('supertrader/assets/st-redesign.js').match(/^ {2}var ST_ALERTS_UI = (true|false);$/m);
   assert.ok(ui, 'Frontend-Schalter ST_ALERTS_UI in st-redesign.js');
   const uiOn = ui[1] === 'true';
+  const konto = read('konto/supertrader-meldungen.js').match(/^ {2}var ST_ALERTS_KONTO = (true|false);$/m);
+  assert.ok(konto, 'Konto-Schalter ST_ALERTS_KONTO in konto/supertrader-meldungen.js');
+  assert.equal(konto[1] === 'true', uiOn, 'Konto-Abschnitt und Supertrader-Frontend gemeinsam');
   const migrations = fs.readdirSync(path.join(ROOT, 'supabase/migrations'));
   const rolledOut = migrations.filter(f => /create table public\.supertrader_follows/.test(read('supabase/migrations/' + f)));
   assert.equal(uiOn, prodOn, 'Frontend und Worker (Produktion) gemeinsam');

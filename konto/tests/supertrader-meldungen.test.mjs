@@ -53,12 +53,23 @@ function fakeAccount(on) {
     }};
 }
 
-test('Schalter AUS: Worker antwortet 404 -> keine Meldungsliste, nur eine Anfrage', async () => {
+test('ausgeliefert AUS: keine Anfrage an den Worker (keine 404 in der Konsole), Abschnitt verborgen', async () => {
   const prev = globalThis.VUAccount;
   try {
     const doc = fakeDoc(), A = fakeAccount(false);
     globalThis.VUAccount = A;
     assert.equal(await M.start(doc), false);
+    assert.deepEqual(A.calls, [], 'Frontend-Schalter ST_ALERTS_KONTO aus: nicht einmal die Probe');
+    assert.equal(doc.nodes['supertrader-meldungen'].hidden, true);
+  } finally { globalThis.VUAccount = prev; }
+});
+
+test('Schalter AUS: Worker antwortet 404 -> keine Meldungsliste, nur eine Anfrage', async () => {
+  const prev = globalThis.VUAccount;
+  try {
+    const doc = fakeDoc(), A = fakeAccount(false);
+    globalThis.VUAccount = A;
+    assert.equal(await M.start(doc, {enabled: true}), false);
     assert.equal(doc.nodes['supertrader-meldungen'].hidden, true, 'Abschnitt bleibt verborgen');
     assert.deepEqual(A.calls, ['/v1/supertrader/follows']);
     assert.equal(doc.nodes['st-meldungen-methods'].children.length, 0);
@@ -71,7 +82,7 @@ test('Schalter AN: Meldungsliste wie gebaut', async () => {
   try {
     const doc = fakeDoc(), A = fakeAccount(true);
     globalThis.VUAccount = A;
-    assert.equal(await M.start(doc), true);
+    assert.equal(await M.start(doc, {enabled: true}), true);
     assert.equal(doc.nodes['supertrader-meldungen'].hidden, false);
     assert.deepEqual(A.calls, ['/v1/supertrader/follows', '/v1/me', '/v1/watchlist']);
     assert.equal(doc.nodes['st-meldungen-status'].textContent, M.TEXT.on);

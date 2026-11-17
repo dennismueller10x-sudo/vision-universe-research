@@ -87,9 +87,12 @@
     });
     box.hidden = false;
   }
-  function start(doc) {
-    var A = root.VUAccount;
-    if (!doc || !A || !A.available || !A.available()) return Promise.resolve(false);
+  /* Frontend-Schalter, schaltet gemeinsam mit ST_ALERTS_UI (supertrader/assets/st-redesign.js) und dem Worker
+     (Vertragstest ST-ALERTS-5). AUS: keine Anfrage an /v1/supertrader/follows (sonst 404 in der Konsole), Abschnitt verborgen. */
+  var ST_ALERTS_KONTO = false;
+  function start(doc, opt) {
+    var A = root.VUAccount, on = opt && typeof opt.enabled === 'boolean' ? opt.enabled : ST_ALERTS_KONTO;
+    if (!on || !doc || !A || !A.available || !A.available()) return Promise.resolve(false);
     /* Zuerst die gefolgten Methoden: Solange „Folgen“/„Melden“ im Konto-Worker aus ist (VU_SUPERTRADER_ALERTS_ENABLED,
        aus bis zur Anwaltsprüfung), antwortet er 404 SUPERTRADER_ALERTS_NOT_ACTIVATED – dann bleibt der Abschnitt
        verborgen und es folgt keine weitere Anfrage. */

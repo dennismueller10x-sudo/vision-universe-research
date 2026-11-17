@@ -139,12 +139,13 @@ Prüfung durch einen Anwalt** (Owner 16.11.2026; Frage nach Anlageempfehlung/MAR
    Watchlist-Tagesübersicht bleibt wie bisher), der Datenexport liest `supertrader_follows` nicht.
 2. **Frontend:** `var ST_ALERTS_UI = false;` in `supertrader/assets/st-redesign.js`. Aus: keine Knöpfe „Folgen“/„Melden“, kein
    Hinweis, `st-follow.js` wird nicht geladen; die Fenster sehen aus wie vorher. Die Meldungsliste im Konto
-   (`/konto/einstellungen/#supertrader-meldungen`) bleibt verborgen, solange der Worker 404 antwortet.
+   (`/konto/einstellungen/#supertrader-meldungen`) fragt bei `var ST_ALERTS_KONTO = false;` (`konto/supertrader-meldungen.js`)
+   gar nicht erst an und bleibt verborgen; eingeschaltet bleibt sie verborgen, solange der Worker 404 antwortet.
 3. **Migration:** vorbereitet als `supabase/prepared/supertrader_follows.sql`, **nicht ausgerollt** (die Automatik liest nur
    `supabase/migrations/`; in der Produktion entsteht nichts). Die SQL-Tests spielen sie nur in die Testdatenbank ein.
 
 **Einschalten** (eigener PR nach der Anwaltsprüfung, Owner-Zustimmung im PR): Datei nach
 `supabase/migrations/<Zeitstempel nach der letzten Migration>_supertrader_follows.sql` verschieben (nicht destruktiv, läuft über
-`migrationen` automatisch), beide Werte von `VU_SUPERTRADER_ALERTS_ENABLED` auf `"true"` und `ST_ALERTS_UI = true` setzen,
+`migrationen` automatisch), beide Werte von `VU_SUPERTRADER_ALERTS_ENABLED` auf `"true"`, `ST_ALERTS_UI = true` und `ST_ALERTS_KONTO = true` setzen,
 `ASSET_V` in `supertrader/assets/supertrader.js` erhöhen. Zurückschalten: beide Schalter auf aus; die Tabellen dürfen bleiben.
 
