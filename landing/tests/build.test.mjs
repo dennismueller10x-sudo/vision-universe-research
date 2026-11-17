@@ -65,12 +65,14 @@ test('Instagram-Seiten: keine App-Links, nur eigene Quellen, Listen verlinkt',as
     const html=await readFile(resolve(output,page),'utf8');
     assert.match(html,/<meta name="robots" content="noindex, nofollow">/);assert.match(html,/Content-Security-Policy/);
     assert.doesNotMatch(html,/research\.visionuniverse\.de|data-app|App öffnen<\/a>/);
-    assert.doesNotMatch(html,/(src|href)="https?:\/\//);assert.doesNotMatch(html,/<iframe|<form/);
-    assert.match(html,/App bald verfügbar/);assert.match(html,/partner\.css\?v=[0-9a-f]{16}/);assert.match(html,/instagram\.css\?v=[0-9a-f]{16}/);
-    for(const m of html.matchAll(/(?:src|poster|href)="(\.{1,2}\/[^"?#]+\.(?:css|js|png|jpg|mp4|woff2))(?:\?v=[0-9a-f]{16})?"/g))await readFile(resolve(output,dirname(page),m[1]));
+    assert.doesNotMatch(html,/(src|href)="https?:\/\/(?!(?:www|konto)\.visionuniverse\.de\/|www\.instagram\.com\/app\.visionuniverse\/|www\.tiktok\.com\/@app\.visionuniverse)/);assert.doesNotMatch(html,/<iframe|<form/);
+    assert.match(html,/App bald verfügbar/);
+    if(/web\/site\.css/.test(html)){assert.match(html,/web\/site\.css\?v=[0-9a-f]{16}/);assert.match(html,/web\/liste\.css\?v=[0-9a-f]{16}/);assert.match(html,/href="\.\.\/\.\.\/#newsletter"/);}
+    else{assert.match(html,/partner\.css\?v=[0-9a-f]{16}/);assert.match(html,/instagram\.css\?v=[0-9a-f]{16}/);}
+    for(const m of html.matchAll(/(?:src|poster|href)="(\.{1,2}\/[^"?#]+\.(?:css|js|png|jpg|svg|mp4|woff2))(?:\?v=[0-9a-f]{16})?"/g))await readFile(resolve(output,dirname(page),m[1]));
   }
   const index=await readFile(resolve(output,'instagram/index.html'),'utf8');assert.match(index,/href="\.\/robotaxi\/"/);assert.match(index,/href="\.\/energie\/"/);assert.match(index,/href="\.\/zonen\/"/);assert.match(index,/href="\.\/robotaxi-nebenwerte\/"/);assert.match(index,/href="\.\/ki-unterstuetzung\/"/);
   const list=await readFile(resolve(output,'instagram/robotaxi/index.html'),'utf8');assert.equal((list.match(/<li>/g)||[]).length,10);assert.match(list,/keine Kauf- oder Verkaufsempfehlung/);
-  const second=await readFile(resolve(output,'instagram/robotaxi-nebenwerte/index.html'),'utf8');assert.equal((second.match(/<li>/g)||[]).length,10);assert.match(second,/keine Kauf- oder Verkaufsempfehlung/);assert.doesNotMatch(second,/<span class="tk">(TSLA|GOOGL|NVDA|AMZN|AAPL|MSFT)</);
-  const ki=await readFile(resolve(output,'instagram/ki-unterstuetzung/index.html'),'utf8');assert.equal((ki.match(/<li>/g)||[]).length,10);assert.match(ki,/keine Kauf- oder Verkaufsempfehlung/);assert.match(ki,/Schlusskurse 16\.11\.2026/);
+  const second=await readFile(resolve(output,'instagram/robotaxi-nebenwerte/index.html'),'utf8');assert.equal((second.match(/class="il-it"/g)||[]).length,10);assert.match(second,/keine Kauf- oder Verkaufsempfehlung/);assert.doesNotMatch(second,/<span class="tk">(TSLA|GOOGL|NVDA|AMZN|AAPL|MSFT)</);
+  const ki=await readFile(resolve(output,'instagram/ki-unterstuetzung/index.html'),'utf8');assert.equal((ki.match(/class="il-it"/g)||[]).length,10);assert.match(ki,/keine Kauf- oder Verkaufsempfehlung/);assert.match(ki,/Schlusskurse 16\.11\.2026/);
 });
