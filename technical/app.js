@@ -182,7 +182,7 @@
     "/quant/engines/technical/ti/context.js", "/quant/engines/technical/ti/chart-patterns.js", "/quant/engines/technical/ti/levels.js",
     "/quant/engines/technical/ti/dow-trend.js", "/quant/engines/technical/indicators.js", "/quant/engines/technical/formations.js", "/quant/engines/technical/candlesticks.js",
     "/quant/engines/technical/timeframe.js", "/quant/engines/technical/multi-timeframe.js", "/core/listing-staleness.js",
-    "/technical/engine/chart-explain.js"];
+    "/quant/engines/technical/ema-cluster.js", "/technical/engine/chart-explain.js"];
   var enginesReady = null;
   function loadEngines() {
     if (enginesReady) return enginesReady;
@@ -1381,7 +1381,7 @@
 
   /* T06: Aktienseite, Perspektive „Chart“. Einsteiger: der eine Chart mit Zonen, drei Saetze, Preise, Signale.
      Chart Studio (Kerzen, alle Schichten) ist die PRO-Ansicht unter #/chart/<T>/studio. */
-  var simple = { range: "1J", zones: true, trend: false, avg: false, stage: false, fib: false };
+  var simple = { range: "1J", zones: true, trend: false, avg: false, stage: false, fib: false, ema: false };
   function stockHeadMount(host, T, name) {
     var SN = global.VUStockNavigator, SCX = global.VUCore && global.VUCore.StockContext, api = null;
     try { if (SN && SCX) api = SN.head(host, { ctx: SCX.fromUs(T, name ? { name: name } : undefined), current: "technical", name: name || null, pendingPrice: true, back: { href: "#/", label: "Technical" } }); } catch (e) { api = null; }
@@ -1583,6 +1583,23 @@
     var host = el("div", { class: "tc-chart-host tc-simple-chart" }), legend = el("p", { class: "tc-note tc-chart-note" });
     var widget = null, VT = global.VUTechnical, s150Cache = null, fibCache;
     function sma150() { if (!s150Cache && VT.Indicators) s150Cache = VT.Indicators.compute(S, "sma", { period: 150 }).values; return s150Cache; }
+    var emaCache;
+    /* EMA-Cluster (quant/engines/technical/ema-cluster.js) auf den Tagesbalken der Analyse; ohne gueltige OHLC nur Schluesse. */
+    function emaData() {
+      if (emaCache !== undefined) return emaCache;
+      emaCache = null;
+      if (!VT.EmaCluster || !S.dates.length) return emaCache;
+      var asOf = String(S.dates[t]).slice(0, 10);
+      function run(withHL) {
+        return VT.EmaCluster.calculate({ asOf: asOf, bars: S.dates.map(function (d, i) {
+          var b = { date: String(d).slice(0, 10), close: S.close[i] };
+          if (withHL) { b.high = S.high[i]; b.low = S.low[i]; }
+          return b;
+        }) });
+      }
+      try { emaCache = run(true); } catch (e1) { try { emaCache = run(false); } catch (e2) { emaCache = null; } }
+      return emaCache;
+    }
     function fibData() { if (fibCache === undefined) fibCache = VT.ChartExplain && X.ctx ? VT.ChartExplain.fibSwing(X.ctx, VT.TILevels) : null; return fibCache; }
     /* Ebenen der Technical-Welt auf DEM Chart (kein zweiter Zeichner): Zonen, Trendlinie, 200-Tage-Linie.
        Sie gelten fuer die Tagesansicht; im Tagesverlauf (1T) und in Wochenraster-Zeitraeumen bleibt die Kurslinie allein. */
@@ -1630,6 +1647,17 @@
         if (d2) layer.appendChild(svgEl("path", { class: "tc-avg tc-avg--stage", d: d2.trim(), fill: "none" }));
         note.push("durchgezogen: 150-Tage-Linie");
       }
+      var ec = simple.ema && dailyGrain ? emaData() : null;
+      if (ec) {
+        var byDate = {}; ec.rows.forEach(function (r) { if (r.fast && r.slow) byDate[r.date] = r; });
+        ["slow", "fast"].forEach(function (k) {
+          var up = [], lo = [];
+          g.pts.forEach(function (p) { var r = byDate[p.t.slice(0, 10)]; if (r) { up.push(p.x.toFixed(1) + " " + g.y(r[k].max).toFixed(1)); lo.push(p.x.toFixed(1) + " " + g.y(r[k].min).toFixed(1)); } });
+          if (up.length > 1) layer.appendChild(svgEl("path", { class: "tc-ema tc-ema--" + k, d: "M" + up.join("L") + "L" + lo.reverse().join("L") + "Z" }));
+        });
+        var firstReady = ec.rows.filter(function (r) { return r.fast && r.slow; })[0];
+        note.push("Bänder: schnelle EMAs 3–15 Tage kräftig, langsame 30–60 Tage blass" + (firstReady ? ", ab " + M.dateDe(firstReady.date) + " nach Anlaufzeit" : ""));
+      }
       var fb = simple.fib && dailyGrain ? fibData() : null;
       if (fb) {
         var fx = xOf(g, fb.from.time); if (fx === null) fx = g.pts[0].x;
@@ -1664,10 +1692,10 @@
       put(host, widget.node);
     });
     function tog(key, label) { return el("button", { type: "button", class: "vu-chip", "data-layer": key, "aria-pressed": String(simple[key]), text: label, onclick: function (ev) { simple[key] = !simple[key]; ev.currentTarget.setAttribute("aria-pressed", String(simple[key])); draw(); } }); }
-    var togs = el("div", { class: "vu-chips tc-togs" }, [tog("zones", "Zonen"), tog("trend", "Trendlinie"), tog("avg", "200-Tage-Linie"), tog("stage", "150-Tage-Linie"), tog("fib", "Fibonacci")]);
+    var togs = el("div", { class: "vu-chips tc-togs" }, [tog("zones", "Zonen"), tog("trend", "Trendlinie"), tog("avg", "200-Tage-Linie"), tog("stage", "150-Tage-Linie"), tog("ema", "EMA-Bänder"), tog("fib", "Fibonacci")]);
     function syncTogs() { Array.prototype.forEach.call(togs.querySelectorAll("[data-layer]"), function (b) { b.setAttribute("aria-pressed", String(!!simple[b.getAttribute("data-layer")])); }); }
     /* „Chart erklären“ (engine/chart-explain.js): sieben Schritte, je Schritt nur die passende Ebene im Chart. */
-    var LAYER_KEYS = ["zones", "trend", "avg", "stage", "fib"], guide = { data: null, i: 0, saved: null };
+    var LAYER_KEYS = ["zones", "trend", "avg", "stage", "ema", "fib"], guide = { data: null, i: 0, saved: null };
     var guideHost = el("section", { class: "tc-guide", "aria-live": "polite", "aria-label": "Chart erklären" });
     function setLayers(only) { LAYER_KEYS.forEach(function (k) { simple[k] = k === only; }); syncTogs(); draw(); }
     function activeFormation() {
@@ -1678,7 +1706,7 @@
     function buildGuide(stock) {
       var lv2 = X.levels || {}, cs200 = X.cs.sma200 || [];
       return VT.ChartExplain.explain({ close: S.close[t], sma200: F.sma200, sma200Past: t >= 21 ? cs200[t - 21] : null,
-        stage: VT.TIDowTrend && X.ctx ? VT.TIDowTrend.weinsteinStage(X.ctx) : null, rsRank: stock && isNum(stock.rsRank) ? stock.rsRank : null,
+        stage: VT.TIDowTrend && X.ctx ? VT.TIDowTrend.weinsteinStage(X.ctx) : null, ema: VT.ChartExplain.emaSummary(emaData()), rsRank: stock && isNum(stock.rsRank) ? stock.rsRank : null,
         support: lv2.nearestSupport || null, resistance: lv2.nearestResistance || null, fib: fibData(), rsi: F.rsi14, formation: activeFormation() });
     }
     function guideStep(i) {
@@ -1695,7 +1723,7 @@
     }
     function guideSummary() {
       var d = guide.data;
-      simple.zones = true; simple.avg = true; simple.trend = true; simple.stage = false; simple.fib = !!fibData(); syncTogs(); draw();
+      simple.zones = true; simple.avg = true; simple.trend = true; simple.stage = false; simple.ema = false; simple.fib = !!fibData(); syncTogs(); draw();
       put(guideHost, [el("div", { class: "tc-guide-h" }, [el("span", { class: "vu-ltag tc-ltag", text: "Kurz gesagt" }),
           el("button", { type: "button", class: "tc-guide-x", "aria-label": "Erklärung beenden", text: "×", onclick: endGuide })]),
         d.headline ? el("h3", { class: "tc-guide-head", text: d.headline }) : null,
@@ -1720,7 +1748,7 @@
       put(guideHost, ""); syncTogs(); draw();
     }
     var explainBtn = X.st.frozenSince || !VT.ChartExplain ? null : el("button", { type: "button", class: "tc-explain-btn", onclick: startGuide }, [el("span", { "aria-hidden": "true", text: "▶" }),
-      el("span", {}, [el("b", { text: "Chart erklären" }), el("small", { text: "In 7 einfachen Schritten, ohne Vorwissen" })])]);
+      el("span", {}, [el("b", { text: "Chart erklären" }), el("small", { text: "In 8 einfachen Schritten, ohne Vorwissen" })])]);
     var RSI_HELP = "Schwung: wie stark der Kurs zuletzt gestiegen oder gefallen ist. Fachleute messen das mit dem RSI (0 bis 100); über 70 gilt als „überkauft“, unter 30 als „überverkauft“.";
     var story = el("div", { class: "tc-story" }, [el("div", { class: "tc-story-h" }, [el("p", { class: "vu-ltag tc-ltag", text: "Der Chart in drei Sätzen" }),
       infoBtn("Schwung erklärt", function () { pop("tc-help-pop", "Schwung", [el("p", { class: "tc-sheet-lead", text: RSI_HELP })]); })])].concat(threeSentences(X).map(function (s) {

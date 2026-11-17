@@ -1248,3 +1248,9 @@ div.tc-signal{grid-template-columns:44px minmax(0,1fr) auto}
 :root:not([data-theme=dark]) .vu-hud .tc-glyph{stroke:#000}
 :root:not([data-theme=dark]) .tk .tk-scr .vu-hud,:root:not([data-theme=dark]) .tk .tk-row1 .vu-hud{box-shadow:none}
 :root:not([data-theme=dark]) .tc-satz .tc-note{color:#5d636b}
+/* EMA-Bänder (ema-cluster.js): schnelles Bündel 3–15, langsames 30–60 Tage */
+.tc-layers .tc-ema{stroke:none}
+.tc-layers .tc-ema--fast{fill:#000;opacity:.32}
+.tc-layers .tc-ema--slow{fill:var(--vu-mute,#6e6e6e);opacity:.2}
+:root[data-theme=dark] .tc-layers .tc-ema--fast{fill:var(--vu-lime,#c8f531);opacity:.5}
+:root[data-theme=dark] .tc-layers .tc-ema--slow{fill:#9b9b9b;opacity:.28}
