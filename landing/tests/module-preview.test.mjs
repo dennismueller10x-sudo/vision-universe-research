@@ -30,6 +30,7 @@ test('Story-Website: alle Produkte, Originalsymbole, Datenstand, keine fremden Q
     assert.doesNotMatch(html,/href="#"/,`${path}: keine Platzhalter-Links`);
     assert.doesNotMatch(html.replace(/keine (?:Anlage)?[Ee]mpfehlung/g,''),/Empfehlung|Kaufsignal|Kursziel|\bSignal/,`${path}: Wortwahl`);
     assert.match(html,/Content-Security-Policy/,`${path}: CSP`);
+    assert.doesNotMatch(html,/site-navigation|<vu-navigation>/,`${path}: keine research-Navigation (404 auf www)`);
     for(const m of html.matchAll(/(?:src|href|data-img|data-vid)="(\.{1,2}\/[^"?#]*\.(?:css|js|png|jpg|svg|mp4|woff2))(?:\?v=[0-9a-f]{16})?"/g))
       await readFile(resolve(output,path,'..',m[1]));
   }
