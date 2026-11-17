@@ -63,7 +63,7 @@ test("eine Faktorbewertung wird behauptet, wenn es eine Faktorzeile gibt - nicht
     .flatMap((f) => [f.ticker, f.securityId]).filter(Boolean));
   /* Nicht-Aktien (Fonds, ETFs im Index als `ne`) verneint der Dienst trotz Zeile, mit eigenem Grund. */
   const mitZeile = universe.stocks.filter((s) => (zeilen.has(s.ticker) || zeilen.has(s.securityId)) && s.factorReason !== "NOT_AN_EQUITY_LISTING");
-  assert.ok(mitZeile.length > 0, "keine Faktorzeile im Produktuniversum - die Pruefung greift ins Leere");
+  assert.ok(behauptet.length >= Math.floor(universe.stocks.length * 0.90), "weniger als 90 % des Produktuniversums faktorbewertet - harte Untergrenze (Steuerung 17.11.2026), 97 % meldet DQ-PQ-10");
   assert.equal(behauptet.length, mitZeile.length, "die Liste behauptet weniger, als Faktorzeilen existieren - das waere der Gegenfehler");
 });
 
