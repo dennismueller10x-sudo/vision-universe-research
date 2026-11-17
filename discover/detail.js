@@ -54,6 +54,12 @@
       if (head) { unsubscribers.push(head.dispose); if (head.observer) observers.push(head.observer); }
       if (SH) SH.calm(page, detail);
       if (SH && SH.worlds && !(head && head.others)) SH.worlds(page, detail);
+      /* Klickentwurf 17.11.2026: „Diese Aktie in anderen Modulen“ nach „Alle Kennzahlen“ und „Daten & Methodik“, darunter der Kurshinweis. */
+      var ps = detail.priceSeries, asOf = ps && /^\d{4}-\d\d-\d\d/.test(ps.asOf || "") ? ps.asOf : null;
+      if (head && head.others && page.querySelector(".dv3-titel")) {
+        head.others.place(page);
+        if (asOf) page.appendChild(node("p", "dv2-endnote", "Tagesschlusskurse, split-bereinigt. Kursreihe bis " + asOf.slice(8, 10) + "." + asOf.slice(5, 7) + "." + asOf.slice(0, 4) + "."));
+      }
       /* app.js und ui/europe.js setzen den Watchlist-Knopf nach dem Zeichnen vor die Seite: in den Kopf holen. */
       Promise.resolve().then(function () {
         var watch = root.querySelector(":scope > .v2-watch-button"), slot = page.querySelector(".dv2-head-actions");

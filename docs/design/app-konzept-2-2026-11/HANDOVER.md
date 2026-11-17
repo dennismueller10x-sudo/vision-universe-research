@@ -63,8 +63,16 @@ liest sie aus den Moduldateien und hält sie gleich.
 - Supertrader (fehlte, Modul 1/13): /aktie las die alte Signalliste der Übersicht, das Modul die 13 Methoden aus
   `supertrader/data/sf-candidates/ticker/`; /aktie liest jetzt dieselbe Datei (Stufenwörter der Seite + „laut Methode“), und der
   Verfügbarkeits-Ausschnitt (`scripts/core/stock-availability.mjs`) belegt Supertrader auch für Kürzel mit Eintrag dort und Seite.
-- Offen (Owner/Discover): das Discover-Fenster zeigt Discovers eigene Story („Geschäft: Stark“ = Wachstumsstufe), die Fundamental-Kachel
-  das Fundamental-Urteil („Negativ“); beide stimmen mit ihrer Modulseite, aber nicht miteinander. „In drei Sätzen“ folgt den Themen-Modulen.
+- Discover („Geschäft: Stark“ gegen „Negativ“): die Story-Kachel „Geschäft“ der Discover-Aktienseite folgt seit Stufe 2 dem
+  Fundamental-Urteil (`discover/ui/overview.js#businessVerdict`, Abschrift von `fundamental/app.js#business`, Test OV15), Satz
+  „Wächst und macht Verlust.“ vor Discovers Umsatzsatz. Offen: das Discover-Fenster auf /aktie (`VUStockSheet` `mod.discover.story.business`)
+  liest noch die Wachstumsstufe. „In drei Sätzen“ folgt den Themen-Modulen.
+
+**Discover-Aktienseite (Stufe 2, Klickentwurf #modul-discover).** Ohne Reiterzeile des Rahmens (`data-vu-tabs="inhalt"` nur auf `#/s/…`);
+Kurs 52 px mit Tagespille, darunter Stand und „▼ −5,2 % seit …“ (Zeitraum), unter den Zeitraum-Knöpfen Pillen Euro/Hoch/Tief 12 Monate
+(aus der gezeichneten Tagesreihe), Platzierung als Karte mit Ring, Story-Kacheln, Kapitel als eine Karte mit Nummern, „Steht in N Reihen“,
+„Mehr wie <Kurzname>“, „Gleiches Thema“, „Alle Kennzahlen“ und „Daten & Methodik“ in einer Karte, dann „Diese Aktie in anderen Modulen“
+(`others.place` in den Artikel) und der Kurshinweis.
 
 **Gemeinsamer Modul-Aktienkopf** (`assets/stock-navigator.js#head`, Stil `assets/stock-navigator.css`, Klasse `vu-shead--k2`):
 Zurück-Pfeil → `/aktie/#/<T>`, Modul-Etikett, Logo 76 px, Kurzname (`shortName`), darunter Rest des Namens · Kürzel · Börse,

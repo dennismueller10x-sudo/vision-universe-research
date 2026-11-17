@@ -321,8 +321,9 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
    interactionEvidence.push({key,type:'stock-onward',from:'AAPL',to:href});return;}
   else await next.click();
   await page.waitForURL(url=>url.hash===href);await page.locator('.dx-chart-hero').first().waitFor();
-  /* Redesign 2027: zurück zum Entdecken über den Reiter „Swipen“ unter dem Kopf, nicht über Knöpfe am Seitenende. */
-  if(v3)assert(await page.waitForFunction(()=>!!document.getElementById('vu-dock')&&!!document.querySelector('vu-navigation')?.shadowRoot?.querySelector('nav.tabs a[href*="#/einzeln/"]'),null,{timeout:10000}).then(()=>true,()=>false),'Next stock has no return to discovery (tab)');
+  /* Klickentwurf 17.11.2026: die Aktienseite zeigt keine Reiterzeile (html[data-vu-tabs=inhalt]); zurück zum Entdecken über das Dock
+     („Discover“) und den Zurück-Pfeil des Kopfs, nicht über Knöpfe am Seitenende. */
+  if(v3)assert(await page.waitForFunction(()=>!!document.getElementById('vu-dock')&&document.documentElement.getAttribute('data-vu-tabs')==='inhalt'&&!!document.querySelector('.dv2-head .vu-shead-back'),null,{timeout:10000}).then(()=>true,()=>false),'Next stock has no return to discovery (dock, back arrow; no tab row)');
   else assert(await page.locator('.dv2-stock-next a[href^="#/einzeln/"]').first().waitFor({state:'attached',timeout:10000}).then(()=>true,()=>false),'Next stock has no return to discovery');interactionEvidence.push({key,type:'stock-onward',from:'AAPL',to:href});
  });
  if(width===390)await check(key+' stock title page: story, closed chapters, rows, onward only from a row',async()=>{
@@ -341,10 +342,12 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
   assert(await page.locator('#dv3-reihen .dv3-rk2').count()>=1,'Rows of the stock');
   assert.equal(await page.locator('.dv3-rowctx, .dv3-endcard').count(),0,'No onward bar without origin');
   assert(/\$/.test(await page.locator('.dx-chart-hero-preis > b').first().innerText()),'Head price in dollars');
-  /* App-Konzept 2 (Owner 14.11.2026): „Schluss …“ und der Euro-Wert stehen neben dem Kurs unter der Pille (keine eigene Zeile); der Chart
-     reicht auf dem Telefon bis an den Bildschirmrand; die Story sind drei Kacheln mit Grafik, ein Tipp öffnet das Kapitel als Fenster. */
-  {const k=await page.evaluate(()=>{const q=s=>{const n=document.querySelector(s);return n?n.getBoundingClientRect().toJSON():null;};return {preis:q('.dx-chart-hero-preis > b'),pille:q('.dx-chart-hero-preis > span.num'),meta:q('.dx-chart-hero-meta'),chart:q('.dx-chapter--chart svg.dx-range-chart'),w:innerWidth,sub:CSS.supports('grid-template-columns','subgrid')};});
-   if(k.sub)assert(k.meta.top<k.preis.bottom&&k.meta.left>=k.preis.right&&k.meta.top>=k.pille.bottom-1,'Close label and euro value sit beside the price under the pill: '+JSON.stringify(k));
+  /* Klickentwurf 17.11.2026: Kurs groß mit Tagespille, darunter „Schluss …“, darunter die Veränderung im Zeitraum, dann der Chart;
+     unter den Zeitraum-Knöpfen Pillen (Euro, Hoch/Tief 12 Monate). Der Chart reicht auf dem Telefon bis an den Bildschirmrand;
+     die Story sind Kacheln mit Grafik, ein Tipp öffnet das Kapitel als Fenster. */
+  {const k=await page.evaluate(()=>{const q=s=>{const n=document.querySelector(s);return n?n.getBoundingClientRect().toJSON():null;};return {preis:q('.dx-chart-hero-preis > b'),pille:q('.dx-chart-hero-preis > span.num'),meta:q('.dx-chart-hero-meta'),zr:q('.dx-chart-hero-zr'),pills:document.querySelectorAll('.dx-chart-pills .dx-chart-pill').length,platz:!!document.querySelector('.dv3-titel .dv3-platz .vu-ring'),chart:q('.dx-chapter--chart svg.dx-range-chart'),w:innerWidth};});
+   assert(k.meta.top>=k.preis.bottom-1&&k.meta.top>=k.pille.bottom-1&&k.zr&&k.zr.top>=k.meta.bottom-1&&k.chart.top>=k.zr.bottom-1,'Close label under the price, period change above the chart: '+JSON.stringify(k));
+   assert(k.pills>=2&&k.platz,'Pills under the periods and the placement ring: '+JSON.stringify(k));
    if(k.w<=760)assert(k.chart.left<=0.5&&k.chart.right>=k.w-0.5,'Stock chart reaches both screen edges: '+JSON.stringify(k.chart));
    assert.equal(await page.locator('.dv3-story .dv3-story-r :is(.dv3-sg--bars,.dv3-sg--range,.dv3-sg--pe)').count(),3,'Each story tile carries its graphic');
    const fenster=page.locator('#dv3-kapitel-fenster'),zu=async()=>{await page.keyboard.press('Escape');await page.waitForFunction(()=>{const f=document.getElementById('dv3-kapitel-fenster');return !f||f.hidden;});};
