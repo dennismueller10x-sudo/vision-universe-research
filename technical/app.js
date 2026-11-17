@@ -164,6 +164,16 @@
   function loadStockSummary(ticker) {
     return fetchJSON("/technical/data/stock/" + global.VUCore.Identity.shardKey(ticker) + ".json").then(function (d) { return d && d.stocks && d.stocks[ticker] || null; }).catch(function () { return null; });
   }
+  /* Veroeffentlichter Schlusskurs (discover-series, dieselbe Reihe wie Quant product-services#publishedPriceAsOf). */
+  function loadPublishedClose(ticker) {
+    var id = global.VUCore.Identity.securityIdForTicker(ticker);
+    return fetchJSON("/quant/data/market/discover-series/" + id + ".json").then(function (s) {
+      var pts = s && s.status === "CALCULATED" && s.ticker === ticker && s.securityId === id && Array.isArray(s.points) ? s.points.filter(function (p) { return p && typeof p[0] === "string" && isNum(p[1]); }) : [];
+      if (!pts.length) return null;
+      var last = pts[pts.length - 1], prev = pts.length > 1 ? pts[pts.length - 2] : null;
+      return { value: last[1], date: last[0].slice(0, 10), changePct: prev && prev[1] > 0 ? (last[1] / prev[1] - 1) * 100 : null };
+    }).catch(function () { return null; });
+  }
   function loadWeekly(ticker) { return fetchJSON(M.LONG_DIR + global.VUCore.Identity.securityIdForTicker(ticker) + ".json"); }
 
   /* Engines fuer das Chart Studio: erst bei Bedarf, in Abhaengigkeitsreihenfolge. */
@@ -1388,13 +1398,15 @@
     if (tplPanel && route.tab === "studio") templateLayers(route.params);
     put(main, [headHost, tplPanel, body]);
 
-    var instrumentP = loadInstrument(T);
-    // The validated instrument already carries the exact close displayed here.
-    // Paint it before chart engines/history and preserve the shared head node.
-    var headP = instrumentP.then(function (r) {
+    var instrumentP = loadInstrument(T), publishedP = loadPublishedClose(T);
+    /* Kopfkurs = veroeffentlichter Schlusskurs der Tagesreihe, dieselbe Zahl wie in Quant und Discover
+       (ADR-002, scripts/quality/chart-worlds-qa.mjs). Die Analyse behaelt ihren eigenen Stichtag; nur ohne
+       gueltige Tagesreihe oder wenn sie aelter ist, zeigt der Kopf den letzten Analysebalken. */
+    var headP = Promise.all([instrumentP, publishedP]).then(function (r) {
       if (!headHost.isConnected) return;
-      var b = r.inst.bars, t = b.close.length - 1, chg = b.close[t] / b.close[t - 1] - 1;
-      head.setPrice({ value: b.close[t], currency: "USD", changePct: isNum(chg) ? chg * 100 : null, kind: "close", at: M.dateDe(b.timestamps[t]) });
+      var b = r[0].inst.bars, t = b.close.length - 1, pub = r[1], bar = String(b.timestamps[t]).slice(0, 10);
+      if (pub && pub.date >= bar) head.setPrice({ value: pub.value, currency: "USD", changePct: isNum(pub.changePct) ? pub.changePct : null, kind: "close", at: M.dateDe(pub.date) });
+      else { var chg = b.close[t] / b.close[t - 1] - 1; head.setPrice({ value: b.close[t], currency: "USD", changePct: isNum(chg) ? chg * 100 : null, kind: "close", at: M.dateDe(b.timestamps[t]) }); }
       if (typeof global.requestAnimationFrame === "function") return new Promise(function (done) { global.requestAnimationFrame(function () { global.requestAnimationFrame(done); }); });
     });
     Promise.all([instrumentP, loadEngines(), loadIndex().catch(function () { return null; }), loadEvidence(), headP]).then(function (r) {
