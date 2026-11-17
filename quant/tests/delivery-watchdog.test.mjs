@@ -320,3 +320,21 @@ test("WD-AD Seite absolut zu alt: ausgeliefert 35 min alt (Repository gleich alt
   }));
   assert.ok(!codes(frisch).includes("seiteStandZuAlt"));
 });
+
+test("WD-AE Karenz nach Boersenstart (17.11.2026): erste 20 min nur WARNING, danach FAIL", () => {
+  const OEFFNUNG = JETZT - 10 * MIN;
+  const vorErstemZyklus = {
+    snapshot: { sessionDate: "2026-11-16", asOfMs: JETZT - 990 * MIN },
+    delivered: { sessionDate: "2026-11-16", asOfMs: JETZT - 990 * MIN },
+    lastCycle: { triggerAt: new Date(JETZT - 1041 * MIN).toISOString(), ok: true, written: 400 },
+    openedAtMs: OEFFNUNG
+  };
+  const inKarenz = Watchdog.beurteile(gesund(vorErstemZyklus));
+  assert.notEqual(inKarenz.verdict, "FAIL", JSON.stringify(inKarenz.findings));
+  assert.ok(codes(inKarenz).includes("falscheSitzung"), "der Befund bleibt sichtbar");
+  assert.ok(inKarenz.findings.every((f) => f.severity !== "FAIL"));
+  const danach = Watchdog.beurteile(gesund(Object.assign({}, vorErstemZyklus, { openedAtMs: JETZT - 21 * MIN })));
+  assert.equal(danach.verdict, "FAIL", "nach der Karenz gilt wieder FAIL");
+  const ohneOeffnung = Watchdog.beurteile(gesund(Object.assign({}, vorErstemZyklus, { openedAtMs: undefined })));
+  assert.equal(ohneOeffnung.verdict, "FAIL", "ohne Oeffnungszeit keine Karenz");
+});

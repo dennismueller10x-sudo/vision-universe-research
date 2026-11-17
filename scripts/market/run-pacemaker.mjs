@@ -169,6 +169,33 @@ function veroeffentlichen(pfade, nachricht) {
   return t;
 }
 
+/* Release anstossen (17.11.2026): zum Boersenstart zeigt die Seite noch die Vorsitzung und der
+   Wächter-Lauf endet rot, dann feuert pages-release nicht (nur bei Erfolg). Der Taktgeber stoesst
+   den Release selbst an, sobald ein Zyklus Daten der laufenden Sitzung geschrieben hat. */
+let letzterAnstossMs = 0;
+async function releaseAnstossen(zyklus, lage) {
+  try {
+    const token = process.env.GITHUB_TOKEN, repo = process.env.GITHUB_REPOSITORY;
+    if (!PUSH || BRANCH !== "main" || !token || !repo) return;
+    if (lage.marketState !== "OPEN" || !zyklus.session || !zyklus.changed) return;
+    const site = (process.env.SITE_URL || "https://research.visionuniverse.de").replace(/\/$/, "");
+    const r = await fetch(site + "/quant/data/market/intraday/index.json?n=" + jetzt(), { headers: { "cache-control": "no-cache" } });
+    const geliefert = r.ok ? ((await r.json()).dataSession || {}).sessionDate || null : null;
+    if (!Pacemaker.releaseNoetig({ offen: true, zyklusSession: zyklus.session, geliefertSession: geliefert,
+                                    letzterAnstossMs, nowMs: jetzt() })) return;
+    const d = await fetch("https://api.github.com/repos/" + repo + "/actions/workflows/pages-release.yml/dispatches", {
+      method: "POST",
+      headers: { authorization: "Bearer " + token, accept: "application/vnd.github+json", "content-type": "application/json" },
+      body: JSON.stringify({ ref: BRANCH })
+    });
+    letzterAnstossMs = jetzt();
+    zyklus.releaseAnstoss = { at: iso(letzterAnstossMs), status: d.status, seite: geliefert };
+    console.log("  Release angestossen (Seite zeigt " + geliefert + ", Zyklus " + zyklus.session + "): HTTP " + d.status);
+  } catch (e) {
+    console.log("  Release nicht angestossen: " + String(e && e.message || e).slice(0, 120));
+  }
+}
+
 /* ------------------------------------------------------------------ Lauf */
 
 const blockStart = jetzt();
@@ -292,6 +319,8 @@ while (nummer < MAX_CYCLES) {
     fehlerInFolge = 0;
     if (teileOk < TEILE) zyklus.reason = "teilweise (" + teileOk + "/" + TEILE + ")";
   }
+
+  await releaseAnstossen(zyklus, lage);
 
   /* Der Waechter im eigenen Takt. Das ist der Kontrollpfad, der NICHT am
      GitHub-Zeitplan haengt: solange ein Block laeuft, prueft er sich

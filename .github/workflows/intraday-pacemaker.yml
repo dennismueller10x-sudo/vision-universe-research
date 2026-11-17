@@ -68,6 +68,7 @@ on:
 
 permissions:
   contents: write
+  actions: write   # nur fuer den Release-Anstoss nach dem ersten Zyklus der Sitzung (pages-release per workflow_dispatch)
 
 concurrency:
   # cancel-in-progress: false ist hier die ganze Idee. Ein neuer Block
@@ -108,6 +109,7 @@ jobs:
       - name: Takt halten
         env:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           node scripts/market/run-pacemaker.mjs \
             --interval-ms=$(( ${{ github.event_name == 'workflow_dispatch' && inputs.intervalSeconds || '300' }} * 1000 )) \
