@@ -116,12 +116,14 @@ for (const vp of VIEWPORTS) {
     if (await w3.count()) {
       const symbol = await w3.getAttribute('data-symbol');
       const gapOnTile = await w3.evaluate((a) => ((a.querySelector('.ek-gap-t') || {}).textContent || '').replace(/^Abstand (\S+ %).*$/, '$1'));
-      await w3.click();
+      /* App-Konzept 2: ein Tipp auf die Karte öffnet die Vorschau (assets/vu-stock-sheet.js); das Aktienbild direkt über seine Adresse. */
+      await page.evaluate((t) => { location.hash = '#/' + t; }, symbol);
       await page.waitForURL(/\/elliott\/#\/[A-Z]/);
       await page.waitForSelector('main#qx-main[data-ready="true"]', { timeout: 30000 });
       check(new URL(page.url()).pathname === '/elliott/' && page.url().includes('#/' + symbol), 'Karte oeffnet ' + symbol + ' unter /elliott/#/' + symbol + ' (nativ, kein /quant/)');
       check(await page.locator('.cb-crumbs').count() === 1, 'Elliott-Kopfzeile statt Quant-Rueckweg');
-      check(await page.locator('vu-navigation nav.tabs').evaluate((n) => n.getAttribute('aria-label') === 'Elliott' && n.querySelector('a').textContent.trim() === 'Elliott' && !n.querySelector('a[aria-current]')).catch(() => false), 'Reiter im Detail: Elliott, kein Bereich aktiv');
+      /* Klickentwurf 17.11.2026: das Aktienbild hat keine Reiterzeile des Rahmens (data-vu-tabs="inhalt", Zeile ausgeblendet). */
+      check(await page.evaluate(() => document.documentElement.getAttribute('data-vu-tabs') === 'inhalt' && document.querySelector('vu-navigation').shadowRoot.querySelector('nav.tabs').hidden), 'Detail ohne Reiterzeile des Rahmens');
       check(await page.locator('vu-navigation').evaluate((n) => n.getAttribute('dock')) === 'elliott', 'Shell-Produkt im Detail: elliott');
       await layout(page, 'Detail');
       await page.screenshot({ path: `${OUT}/${vp.name}-${scheme}-detail.png` });
@@ -143,12 +145,12 @@ for (const vp of VIEWPORTS) {
         await sheet.waitFor({ state: 'detached', timeout: 5000 }).catch(() => {});
       }
       check(await page.locator('#el-detail .cb-eps > details.cb-ep > .cb-ep-body').count() === 3 && !(await page.evaluate(() => document.documentElement.classList.contains('vu-sheet-open'))), 'Aktie: nach dem Schließen liegt jeder Kapitelinhalt wieder im Kapitel, die Seite rollt wieder');
-      await page.locator('#el-detail .cb > details.cb-foot > summary').click();
+      await page.locator('#el-detail .ew-end .ew-dm > details.cb-foot > summary').click();
       await sheet.waitFor({ timeout: 5000 }).catch(() => {});
       check(/keine Vorhersage, keine Empfehlung, keine Order/.test(await sheet.count() ? await sheet.innerText() : '') && await sheet.locator('a[href="/quant/#/methodik/chartbild"]').count() === 1, 'Aktie: Daten & Methodik als Fenster, Hinweis und Methodik-Link (nach /quant/) erhalten');
       await page.keyboard.press('Escape');
       await sheet.waitFor({ state: 'detached', timeout: 5000 }).catch(() => {});
-      check(await page.locator('#el-detail .ew-end a.vu-next[href="/technical/#/chart/' + encodeURIComponent(symbol) + '"]').count() === 1 && await page.locator('#el-detail .ew-end .cb-crumbs a').count() === 2, 'Aktie: „Weiter“-Karte zur Chart-Lage in Technical, Rückweg und Frag VU am Seitenende');
+      check(await page.locator('#el-detail .ew-end a.vu-next[href="/technical/#/chart/' + encodeURIComponent(symbol) + '"]').count() === 1 && await page.locator('#el-detail .ew-end .cb-crumbs a.ew-ask').count() === 1 && await page.locator('#el-detail .ew-end .ew-dm a.ew-home[href="/elliott/#/"]').count() === 1 && /Folgeschritte/.test(await page.locator('#el-detail .ew-end').innerText()), 'Aktie: Folgeschritte mit „Weiter“-Karte zur Chart-Lage in Technical und Frag VU, Daten & Methodik mit Rückweg zur Übersicht');
       check(/Ungültig/.test(await page.locator('#el-detail .cb').innerText()), 'Aktie: Ungültig-Marke steht auf der Seite');
       // Balken „Kurs gegen Ungültig-Marke“ nach „Die Lesart in drei Sätzen“: derselbe Abstand wie auf der Karte, genau eine h1, Kontrast ≥ 4,5 : 1
       if (gapOnTile) {
@@ -180,7 +182,9 @@ for (const vp of VIEWPORTS) {
     const downs = await page.locator('.el-grid .el-card .el-dir.is-up').count();
     check(downs === 0, 'Filter Abwaerts zeigt nur Abwaertslesarten');
     await page.screenshot({ path: `${OUT}/${vp.name}-${scheme}-filter.png` });
-    await page.locator('.el-grid .el-card').first().click();
+    /* App-Konzept 2: der Tipp öffnet die Vorschau; das Aktienbild der ersten Karte über seine Adresse (neuer Verlaufseintrag wie ein Link). */
+    const firstSym = await page.locator('.el-grid .el-card').first().getAttribute('data-symbol');
+    await page.evaluate((t) => { location.hash = '#/' + t; }, firstSym);
     await page.waitForURL(/\/elliott\/#\/[A-Z]/);
     await page.waitForSelector('main#qx-main[data-ready="true"]', { timeout: 30000 });
     check(true, 'Filter -> Karte -> Detail');

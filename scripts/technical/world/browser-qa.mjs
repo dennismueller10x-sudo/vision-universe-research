@@ -283,17 +283,21 @@ async function main() {
 
     await check(key + " Chart einfach", async () => {
       await navigate(page,base + "#/chart/NVDA");
-      await page.waitForSelector(".tc-sayrow [data-verdict]", { timeout: 45000 });
+      await page.waitForSelector(".tk-ak .tk-say [data-verdict]", { timeout: 45000 });
       /* Seit 13.11.2026 zeichnet die Einsteigeransicht den gemeinsamen Aktienchart (quant/app/chart.js, assets/vu-chart.js). */
       await page.waitForSelector(".tc-simple-chart .qc-chart svg .vu-chart-line", { timeout: 45000 });
       assert(await page.locator(".tc-chart .tc-up rect, .tc-chart .tc-down rect").count() === 0, "Kerzen in der Einsteigeransicht");
       const leiste = await page.locator(".tc-simple-chart .qc-ranges button:not([hidden])").allInnerTexts();
       assert(leiste.join(",") === "1T,1W,1M,1J,5J,Max,Mehr", "Zeitraumleiste nicht 1T 1W 1M 1J 5J Max: " + leiste.join(","));
-      assert(await page.locator(".vu-shead .vu-snav, .vu-shead-nav").count() >= 1, "Aktienkopf mit Perspektiven fehlt");
-      assert(await page.locator(".tc-story-r [data-verdict]").count() === 3, "drei Saetze mit Urteil fehlen");
-      assert(await page.locator(".tc-zt").count() === 2, "Zonen-Kacheln fehlen");
-      assert(await page.locator(".tc-ep").count() === 3, "Kapitel fehlen");
-      assert(await page.locator(".tc-story-r .tc-sg").count() >= 2, "Grafik zu den Sätzen fehlt");
+      /* Klickentwurf Modul-Aktienseiten (Owner 17.11.2026): gemeinsamer Kopf ohne Reiterzeile, Pillen der anderen Module vor der Fußzeile. */
+      assert(await page.locator(".vu-shead.vu-shead--k2").count() === 1, "gemeinsamer Aktienkopf fehlt");
+      assert(await page.evaluate(() => document.documentElement.getAttribute("data-vu-tabs") === "inhalt" && document.querySelector("vu-navigation").shadowRoot.querySelector("nav.tabs").hidden), "Aktienseite zeigt die Reiterzeile des Rahmens");
+      assert(await page.evaluate(() => { const o = document.querySelector("#tc-main .vu-sothers"), f = document.querySelector("#tc-main .tc-foot"); return !!o && !!f && !!(o.compareDocumentPosition(f) & Node.DOCUMENT_POSITION_FOLLOWING); }), "Pillen der anderen Module nicht vor der Fußzeile");
+      assert(await page.locator(".tk-story .tk-story-c [data-verdict]").count() === 3, "drei Saetze (Karussell) mit Urteil fehlen");
+      assert(await page.locator(".tk-zc .tk-zc-s").count() === 2, "Zonen-Karte fehlt");
+      assert(await page.locator(".tk-kap .tk-krow").count() === 4, "Kapitel-Liste (drei Kapitel und Datenqualität) fehlt");
+      assert(await page.locator(".tk-story-c .tk-num").count() === 3 && await page.locator(".tk-story-c .vu-ring").count() === 1, "Zahl je Satz und Ring zum Schwung fehlen");
+      await page.waitForSelector(".tk-verlauf .tk-tl li, .tk-verlauf:empty", { timeout: 15000 }).catch(() => {});
       await page.locator(".tc-dqbtn").click(); await page.waitForSelector("#tc-dq-pop:not([hidden])");
       assert(/Kursreihe/.test(await page.locator("#tc-dq-pop").innerText()), "Datenqualität im Fenster fehlt");
       await page.keyboard.press("Escape"); await page.waitForFunction(() => !document.getElementById("tc-dq-pop"));

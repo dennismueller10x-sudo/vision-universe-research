@@ -556,8 +556,15 @@ test("EHV-6 · Aktie nach App-Konzept 2: aktie.js lädt nur mit dem Aktienbild, 
   /* Nur Darstellung: keine Datenanfrage, keine Engine, kein Speicher. Einzige Ausnahme (Owner 16.11.2026, Balken „Kurs gegen
      Ungültig-Marke“): die Analyse, die das Aktienbild schon geladen hat, aus dem Speicher von VUTechnicalIntelligence.getAnalysis –
      gerechnet wird in VUElliottHome.gapOfAnalysis, nicht hier (EHV-7). */
-  const noGap = code.replace(/function abstand\(cb, t\) \{[^]*?\n  \}\n/, "");
-  assert.notEqual(noGap, code, "abstand() vorhanden");
+  /* Klickentwurf 17.11.2026: dasselbe gilt für das Kurvenbild der Kachel ohne Zählung (kurve: nur die Wochenschlüsse chart.close
+     derselben Analyse, gezeichnet, nicht bewertet). */
+  const noKurve = code.replace(/function kurve\(none, t\) \{[^]*?\n  \}\n/, "");
+  assert.notEqual(noKurve, code, "kurve() vorhanden");
+  const kurve = code.slice(code.indexOf("function kurve(none, t) {"), code.indexOf("function melden() {"));
+  assert.match(kurve, /r\.analysis\.chart && r\.analysis\.chart\.close/);
+  assert.doesNotMatch(kurve, /scenarios|elliott|applicab|outlook|price/i, "kurve liest nur die Kursreihe");
+  const noGap = noKurve.replace(/function abstand\(cb, t\) \{[^]*?\n  \}\n/, "");
+  assert.notEqual(noGap, noKurve, "abstand() vorhanden");
   assert.doesNotMatch(noGap, /fetch\(|XMLHttpRequest|VUTechnicalIntelligence|getAnalysis|VUTechnical\b|localStorage|sessionStorage/, "liest außerhalb von abstand() keine Analyse und speichert nichts");
   assert.doesNotMatch(code, /fetch\(|XMLHttpRequest|VUTechnical\b|localStorage|sessionStorage/, "keine Anfrage, kein Speicher");
   assert.doesNotMatch(code, /Signal|Empfehlung|Kursziel|Zielbereich|Ziel\s*[12]|für dich|Wahrscheinlich|Prognose/i, "Wortwahl");
@@ -573,7 +580,7 @@ test("EHV-6 · Aktie nach App-Konzept 2: aktie.js lädt nur mit dem Aktienbild, 
   assert.doesNotMatch(code, /cloneNode|outerHTML|insertAdjacentHTML/, "kein Kopieren von Inhalt");
   /* HTML entsteht nur aus den gemeinsamen Bausteinen (VUUI.sheet, .meter, .q, .next), nie aus Seiteninhalt. */
   assert.deepEqual(code.match(/innerHTML = [^;]+;/g), ["innerHTML = html;", 'innerHTML = U.sheet("ew-pop", titel, "");']);
-  assert.deepEqual([...code.matchAll(/[^.\w]node\((\w+\.\w+)/g)].map((m) => m[1]).sort(), ["U.meter", "U.next", "U.q"]);
+  assert.deepEqual([...code.matchAll(/[^.\w]node\((\w+\.\w+)/g)].map((m) => m[1]).sort(), ["U.meter", "U.next", "U.q", "U.ring"]);
   /* Die Zeile unter dem Kapiteltitel („Forschung, nicht zertifiziert“) steht im Fenster über dem Inhalt. */
   assert.match(code, /if \(dach\) body\.appendChild\(make\("p", "vu-ltag ew-pop-k", dach\)\);\s*body\.appendChild\(inhalt\);/);
   /* Einzige neue Karte: „Weiter“ mit Wortlaut und Ziel der bestehenden Karte der Aktie ohne Zählung. */
@@ -686,4 +693,21 @@ test("EHV-8 · Anzeige: Balken im Elliott-Bild nach den drei Sätzen, auf den Ka
   assert.match(wellen, /:root\[data-theme=dark\] #el-detail \.ew-gap\{/);
   assert.match(css, /:root\[data-theme=dark\] \.ek \.ek-gap\{/);
   assert.match(wellen, /#el-detail \.ew-gap\.is-above \.ew-gap-mk\{left:auto;right:0\}/, "Abwärtszählung: Marke rechts");
+});
+
+/* Klickentwurf Modul-Aktienseiten (#modul-elliott, Owner 17.11.2026): Aktienbild ohne Reiterzeile, Kachel ohne Zählung mit Kurvenbild,
+   Ring „N von M“ aus dem Satz der Seite, Folgeschritte, „Melden, wenn zählbar“ über die Konto-Benachrichtigungen, Daten-Kachel. */
+test("EHV-9 · Klickentwurf: Aufbau des Aktienbilds, Ring aus dem Satz der Seite, Melden über VUPush, ohne Reiterzeile", () => {
+  const js = read("elliott/aktie.js").replace(/\/\*[\s\S]*?\*\//g, ""), app = read("elliott/app.js"), html = read("elliott/index.html"), css = read("elliott/wellen.css");
+  assert.match(app, /state\.view = "detail"; tabsMode\(!\/ansicht=profi\/\.test\(s\.detailQuery \|\| ""\)\);/, "Aktienbild ohne Reiterzeile, Profi mit");
+  assert.match(html, /!\/\[\?&\]ansicht=profi\/\.test\(location\.hash\)\)\)h\.setAttribute\("data-vu-tabs","inhalt"\)/, "schon vor dem ersten Bild");
+  assert.ok(js.includes("/nur ([\\d.]+) von ([\\d.]+) Aktien sind heute zählbar/.exec(all)"), "Zahlen des Rings stehen im Satz der Seite");
+  assert.match(js, /new global\.MutationObserver\(paint\)\.observe\(p,/, "kommt der Anteil später, zieht der Ring nach");
+  assert.match(js, /global\.VUPush\.open\(\{ focus: \["ELLIOTT_CHANGE"\] \}\)/);
+  assert.match(js, /if \(none\) end\.appendChild\(melden\(\)\);/, "Melden nur ohne Zählung");
+  for (const t of ["Folgeschritte", "Kapitel", "Zur Elliott-Übersicht", "Vision Universe KI erklärt den Stand", "keine saubere Struktur", "Aktien sind heute zählbar."]) assert.ok(js.includes(t), t);
+  assert.match(js, /story\.classList\.add\("ew-rail"\)/, "drei Sätze als Karussell");
+  /* Der Balken „Kurs gegen Ungültig-Marke“ bleibt direkt nach den drei Sätzen. */
+  assert.match(css, /#el-detail \.is-ak2 \.cb-story\.ew-rail\+\.ew-gap\{/);
+  for (const x of [":root[data-theme=dark] #el-detail .cb,:root[data-theme=dark] #el-detail .ew-end{--ew-tile:#151515", "#el-detail .cb,#el-detail .ew-end{--ew-tile:#f4f4f4"]) assert.ok(css.includes(x), "hell und dunkel: " + x);
 });

@@ -58,13 +58,13 @@
   function loadStack() {
     if (!stackPromise) {
       global.QX_HOST = "elliott";     // vor dem Buendel: app.js startet dann keinen eigenen Router
-      document.head.append(el("script", { src: "/elliott/aktie.js?v=ak2-4" }));   // Aktienbild, App-Konzept 2
+      document.head.append(el("script", { src: "/elliott/aktie.js?v=ak2-5" }));   // Aktienbild, App-Konzept 2
       stackPromise = fetchRes("/quant/index.html").then(function (r) { return r.text(); }).then(function (html) {
         var gate = new DOMParser().parseFromString(html, "text/html").querySelector("script[data-content]");
         return gate ? fetchRes(gate.getAttribute("data-content")).then(function (r) { return r.text(); }) : html;
       }).then(function (html) {
         var doc = new DOMParser().parseFromString(html, "text/html"), loads = [];
-        Array.prototype.slice.call(doc.querySelectorAll('link[rel="stylesheet"]')).concat([{ getAttribute: function () { return "/elliott/wellen.css?v=ak2-4"; } }]).forEach(function (l) {
+        Array.prototype.slice.call(doc.querySelectorAll('link[rel="stylesheet"]')).concat([{ getAttribute: function () { return "/elliott/wellen.css?v=ak2-5"; } }]).forEach(function (l) {
           var href = l.getAttribute("href");
           if (!href || /site-navigation\.css/.test(href)) return;
           var link = el("link", { rel: "stylesheet", href: href, media: "not all", dataset: { qxHost: "1" } });
@@ -113,7 +113,8 @@
   function showDetail(s) {
     ensureDetailHost();
     if (state.view !== "detail") { state.homeScroll = global.scrollY; }
-    state.view = "detail"; tabsMode(false);
+    /* 17.11.: Aktienbild ohne Reiterzeile, Profi mit */
+    state.view = "detail"; tabsMode(!/ansicht=profi/.test(s.detailQuery || ""));
     root.hidden = true; detail.hidden = false;
     var q = new URLSearchParams(s.detailQuery || "");
     document.title = s.ticker + " · Elliott · Vision Universe®";

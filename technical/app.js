@@ -1377,7 +1377,8 @@
 
   /* T06: Aktienseite, Perspektive „Chart“. Einsteiger: der eine Chart mit Zonen, drei Saetze, Preise, Signale.
      Chart Studio (Kerzen, alle Schichten) ist die PRO-Ansicht unter #/chart/<T>/studio. */
-  var simple = { range: "1J", zones: true, trend: false, avg: false, stage: false, fib: false };
+  /* Klickentwurf Modul-Aktienseiten (Owner 17.11.2026): Zonen und 200-Tage-Linie sind zu Beginn eingeschaltet. */
+  var simple = { range: "1J", zones: true, trend: false, avg: true, stage: false, fib: false };
   function stockHeadMount(host, T, name) {
     var SN = global.VUStockNavigator, SCX = global.VUCore && global.VUCore.StockContext, api = null;
     try { if (SN && SCX) api = SN.head(host, { ctx: SCX.fromUs(T, name ? { name: name } : undefined), current: "technical", name: name || null, pendingPrice: true, back: { href: "#/", label: "Technical" } }); } catch (e) { api = null; }
@@ -1400,7 +1401,7 @@
     var headP = instrumentP.then(function (r) {
       if (!headHost.isConnected) return;
       var b = r.inst.bars, t = b.close.length - 1, chg = b.close[t] / b.close[t - 1] - 1;
-      head.setPrice({ value: b.close[t], currency: "USD", changePct: isNum(chg) ? chg * 100 : null, kind: "close", at: M.dateDe(b.timestamps[t]) });
+      head.setPrice({ value: b.close[t], currency: "USD", changePct: isNum(chg) ? chg * 100 : null, changeLabel: "zum Vortag", kind: "close", at: M.dateDe(b.timestamps[t]) });
       if (typeof global.requestAnimationFrame === "function") return new Promise(function (done) { global.requestAnimationFrame(function () { global.requestAnimationFrame(done); }); });
     });
     Promise.all([instrumentP, loadEngines(), loadIndex().catch(function () { return null; }), loadEvidence(), headP]).then(function (r) {
@@ -1658,7 +1659,7 @@
       put(host, widget.node);
     });
     function tog(key, label) { return el("button", { type: "button", class: "vu-chip", "data-layer": key, "aria-pressed": String(simple[key]), text: label, onclick: function (ev) { simple[key] = !simple[key]; ev.currentTarget.setAttribute("aria-pressed", String(simple[key])); draw(); } }); }
-    var togs = el("div", { class: "vu-chips tc-togs" }, [tog("zones", "Zonen"), tog("trend", "Trendlinie"), tog("avg", "200-Tage-Linie"), tog("stage", "150-Tage-Linie"), tog("fib", "Fibonacci")]);
+    var togs = el("div", { class: "vu-chips tc-togs" }, [tog("zones", "Zonen"), tog("avg", "200-Tage-Linie"), tog("trend", "Trendlinie"), tog("stage", "150-Tage-Linie"), tog("fib", "Fibonacci")]);
     function syncTogs() { Array.prototype.forEach.call(togs.querySelectorAll("[data-layer]"), function (b) { b.setAttribute("aria-pressed", String(!!simple[b.getAttribute("data-layer")])); }); }
     /* „Chart erklären“ (engine/chart-explain.js): sieben Schritte, je Schritt nur die passende Ebene im Chart. */
     var LAYER_KEYS = ["zones", "trend", "avg", "stage", "fib"], guide = { data: null, i: 0, saved: null };
@@ -1716,23 +1717,69 @@
     var explainBtn = X.st.frozenSince || !VT.ChartExplain ? null : el("button", { type: "button", class: "tc-explain-btn", onclick: startGuide }, [el("span", { "aria-hidden": "true", text: "▶" }),
       el("span", {}, [el("b", { text: "Chart erklären" }), el("small", { text: "In 7 einfachen Schritten, ohne Vorwissen" })])]);
     var RSI_HELP = "Schwung: wie stark der Kurs zuletzt gestiegen oder gefallen ist. Fachleute messen das mit dem RSI (0 bis 100); über 70 gilt als „überkauft“, unter 30 als „überverkauft“.";
-    var story = el("div", { class: "tc-story" }, [el("div", { class: "tc-story-h" }, [el("p", { class: "vu-ltag tc-ltag", text: "Der Chart in drei Sätzen" }),
-      infoBtn("Schwung erklärt", function () { pop("tc-help-pop", "Schwung", [el("p", { class: "tc-sheet-lead", text: RSI_HELP })]); })])].concat(threeSentences(X).map(function (s) {
-      return el("div", { class: "tc-story-r" }, [hudGlyph(s[0], 34), el("div", {}, [el("span", { class: "vu-ltag tc-ltag", text: s[1] }), storyGraphic(s[4]), el("p", { text: s[2] })]), h(U.verdict(s[3]))]);
-    })));
-    var bh = befundeHeute(X, 3), nAll = bh[2];
+    /* Klickentwurf Modul-Aktienseiten (#modul-technical, Owner 17.11.2026): Urteilskachel, Kursverlauf, drei Sätze als Karussell,
+       Zonen-Karte, Befunde als Karten, Verlauf der letzten 12 Monate, Kapitel-Liste, Pillen der anderen Module vor der Fußzeile.
+       Nur Darstellung: dieselben Werte und Sätze wie bisher (chartSummary, threeSentences, levels, findings, Formations.history). */
+    var sh = function (title, right, sub) { return el("div", { class: "tk-shb" }, [el("div", { class: "tk-sh" }, [el("h2", { text: title })].concat(right || [])), sub ? el("p", { class: "tk-xs tk-mut tk-shsub", text: sub }) : null]); };
+    var storyInfo = infoBtn("Schwung erklärt", function () { pop("tc-help-pop", "Schwung", [el("p", { class: "tc-sheet-lead", text: RSI_HELP })]); });
+    var story = el("div", { class: "tk-rail tk-story", role: "list", "aria-label": "Der Chart in drei Sätzen" }, threeSentences(X).map(function (s) {
+      var g = s[4], big;
+      if (s[0] === "pulse" && g) big = el("div", { class: "tk-story-v" }, [h(U.ring(g.value, { size: 54, stroke: 6, text: M.num(g.value, 0), label: "RSI" })), el("span", { class: "tk-num", text: g.text })]);
+      else big = el("div", { class: "tk-story-v" }, [el("span", { class: "tk-num tk-story-n tk-story-n--" + s[0] + (s[0] === "trend" && g && g.value > 0 ? " tk-lc" : ""), text: g ? g.text : "–" })]);
+      return el("div", { class: "tk-tile tk-story-c", role: "listitem" }, [el("p", { class: "tk-eb", text: s[1] }), big, el("p", { class: "tk-sm tk-sec tk-b7", text: s[2] }), el("div", { class: "tk-story-p" }, [h(U.verdict(s[3]))])]);
+    }));
+    var bh = befundeHeute(X, 6), nAll = bh[2];
     var from = X.fromDate ? MONTHS[+X.fromDate.slice(5, 7) - 1] + " " + X.fromDate.slice(0, 4) : null;
-    var ep = function (i, href, icon, title, sub) { return el("a", { class: "tc-ep", href: href }, [el("span", { class: "tc-ep-h" }, [hudGlyph(icon, 40), el("b", { class: "tc-ep-n num", text: String(i) })]), el("span", { class: "tc-ep-t" }, [el("b", {}, title), el("span", { text: sub })])]); };
-    var chapters = el("nav", { class: "tc-eps", "aria-label": "Kapitel" }, [
-      ep(1, M.chartHref(X.T, "signals"), "search", "Alle " + nAll + " Befunde mit Regel", "je Befund: was er bedeutet, wann ungültig"),
-      ep(2, M.chartHref(X.T, "signals", "teil=verlauf"), "book", "Verlauf der letzten 12 Monate", "jeder Befund" + (from ? " seit " + from : "") + ", mit heutigem Zustand"),
-      ep(3, M.chartHref(X.T, "studio"), "trend", "Chart Studio", "Kerzen, Linien, RSI, MACD · PRO")]);
+    var kRow = function (i, href, title, sub) { return el("a", { class: "tk-krow", href: href }, [el("b", { class: "tk-kn", text: String(i) }), el("span", { class: "tk-f1" }, [el("b", { text: title }), el("span", { class: "tk-xs tk-mut", text: sub })]), h(U.glyph("next", 15))]); };
+    var dq = dataQuality(X.inst, X.D, false); dq.classList.add("tk-krow");
+    var chapters = el("nav", { class: "tk-tile tk-kap", "aria-label": "Kapitel" }, [
+      kRow(1, M.chartHref(X.T, "signals"), "Alle " + nAll + " Befunde mit Regel", "je Befund: was er bedeutet, wann ungültig"),
+      kRow(2, M.chartHref(X.T, "signals", "teil=verlauf"), "Verlauf der letzten 12 Monate", "jeder Befund" + (from ? " seit " + from : "") + ", mit heutigem Zustand"),
+      kRow(3, M.chartHref(X.T, "studio"), "Chart Studio", "Kerzen, Linien, RSI, MACD · PRO"), dq]);
+    /* Verlauf der letzten 12 Monate: dieselbe Rechnung wie im Kapitel, erst nach dem ersten Bild (sie kostet Zeit). */
+    var verlauf = X.st.frozenSince ? null : el("section", { class: "tk-verlauf", "aria-label": "Verlauf der letzten 12 Monate" });
+    if (verlauf) (global.requestIdleCallback || function (f) { return setTimeout(f, 60); })(function () {
+      if (!verlauf.isConnected) return;
+      var list = X.histOf().slice().reverse();
+      if (!list.length) { verlauf.remove(); return; }
+      var shown = list.slice(0, 14);
+      put(verlauf, [sh("Verlauf der letzten 12 Monate", list.length > shown.length ? [el("a", { class: "tk-more", href: M.chartHref(X.T, "signals", "teil=verlauf"), text: "Alle " + list.length })] : null),
+        el("div", { class: "tk-tile" }, [el("p", { class: "tk-xs tk-mut", text: "Was am Tag des Befunds erkennbar war, und der heutige Zustand." }),
+          el("ol", { class: "tk-tl" }, shown.map(function (x) {
+            var on = x.stateNow === "CONFIRMED" || x.stateNow === "DETECTED";
+            return el("li", { class: on ? "is-on" : "" }, [el("i", { "aria-hidden": "true" }), el("span", { class: "tk-xs tk-mut tk-b7 tk-tl-d", text: dShort(x.detectedAt) }),
+              el("span", { class: "tk-sm tk-f1 " + (on ? "tk-b8" : "tk-sec"), text: M.plain(x.name) }),
+              on ? el("span", { class: "tk-pill tk-pill--xs", text: HIST_STATE[x.stateNow] }) : el("span", { class: "tk-xs tk-mut", text: x.stateNow ? HIST_STATE[x.stateNow] : "nicht mehr aktiv" })]);
+          }))])]);
+    });
+    var foot = footNote(X.D && (X.D.meta && X.D.meta.asOf));
     put(body, [seriesNote(X.st),
-      el("div", { class: "tc-sayrow" }, [el("div", {}, [el("p", { class: "vu-ltag", text: "Was der Chart sagt" }), el("h2", { class: "vu-mt", text: sum[0] })]), h(U.verdict(sum[1]))]),
-      explainBtn, host, guideHost, legend, togs,
-      story,
-      X.st.frozenSince ? null : zoneTiles(lv, S.close[t]), bh[0], bh[1], rh("Kapitel"), chapters,
-      dataQuality(X.inst, X.D, false), footNote(X.D && (X.D.meta && X.D.meta.asOf), "Quant und Supertrader zur selben Aktie: oben in der Leiste. ")]);
+      el("div", { class: "tk-tile tk-gl tk-say" }, [el("p", { class: "tk-eb tk-eb--l", text: "Was der Chart sagt" }), el("h2", { class: "tk-say-t", text: sum[0] }), el("div", { class: "tk-say-p" }, [h(U.verdict(sum[1]))])]),
+      explainBtn, sh("Kursverlauf"), host, guideHost, legend, togs,
+      sh("Der Chart in drei Sätzen", [storyInfo]), story,
+      X.st.frozenSince ? null : zoneCard(lv, S.close[t], sh), bh[0], bh[1], verlauf, sh("Kapitel"), chapters, foot]);
+    /* „Diese Aktie in anderen Modulen“ steht wie im Entwurf vor der Fußzeile. */
+    if (X.head && X.head.others && X.head.others.place) X.head.others.place(body, foot);
+  }
+  /** Zonen-Karte (Entwurf): Widerstand oben, Unterstützung unten, dazwischen die Zonen und der Kurs auf derselben Skala. */
+  function zoneCard(lv, close, sh) {
+    var R = lv && lv.nearestResistance, Su = lv && lv.nearestSupport;
+    if (!R && !Su) return null;
+    var dist = function (z) { return close >= z.zoneLow && close <= z.zoneHigh ? "am Kurs" : (z.center >= close ? "+" : "−") + M.num(Math.abs(z.center / close - 1) * 100, 1) + " %"; };
+    var side = function (z, label, word, cls) {
+      return el("div", { class: "tk-zc-s" }, [el("div", { class: "tk-f1" }, [el("p", { class: "tk-eb", text: label }), el("b", { class: "tk-num tk-zc-n", text: z ? money$(z.center) : "–" }),
+        el("span", { class: "tk-xs tk-mut tk-b7", text: z ? "Zone " + de(z.zoneLow) + "–" + de(z.zoneHigh) + " $ · " + z.touches + "-mal " + word : (cls ? "Keine Unterstützung unter dem Kurs" : "Kein Widerstand über dem Kurs") })]),
+        z ? el("span", { class: "tk-pill" + (cls ? "" : " tk-pill--wh"), text: dist(z) }) : null]);
+    };
+    var mid = null;
+    if (R && Su && isNum(close) && R.zoneHigh > Su.zoneLow) {
+      var lo = Su.zoneLow, span = R.zoneHigh - lo, y = function (v) { return Math.max(0, Math.min(100, (R.zoneHigh - v) / span * 100)); };
+      mid = el("div", { class: "tk-zc-m", role: "img", "aria-label": "Kurs " + money$(close) + " zwischen Unterstützung " + de(Su.zoneLow) + "–" + de(Su.zoneHigh) + " $ und Widerstand " + de(R.zoneLow) + "–" + de(R.zoneHigh) + " $" }, [
+        el("i", { class: "tk-zc-r", style: "top:0;height:max(12px," + y(R.zoneLow).toFixed(1) + "%)" }),
+        el("i", { class: "tk-zc-u", style: "bottom:0;height:max(12px," + (100 - y(Su.zoneHigh)).toFixed(1) + "%)" }),
+        el("em", { style: "top:" + y(close).toFixed(1) + "%" }, [el("span", { class: "tk-pill tk-pill--k", text: "Kurs " + money$(close) })])]);
+    }
+    return el("section", { class: "tk-zc", "aria-label": "Zonen" }, [sh("Zonen"), el("div", { class: "tk-tile tk-zc-t" }, [side(R, "Widerstand ▲", "gestoppt", false), mid, side(Su, "Unterstützung ▼", "gehalten", true)])]);
   }
 
   var benchP = null;
@@ -2223,8 +2270,13 @@
     main.classList.toggle("vu-ui", route.view !== "academy");
     main.classList.toggle("is-home", route.view === "home");
     /* App-Konzept 2: nur der Start trägt seine Reiter im Inhalt (Prototyp tabs2); jede andere Ansicht zeigt die Reiterzeile des Rahmens. */
-    main.classList.toggle("tk", route.view === "home");
-    if (route.view !== "home") tkTabsMode(false);
+    /* Klickentwurf Modul-Aktienseiten (Owner 17.11.2026): die Aktienseite #/chart/<T> (mit Befunden und Studio) zeigt keine Reiterzeile;
+       die Chart-Seite selbst trägt die Bausteine des Entwurfs (main.tk.tk-ak). */
+    var stockView = route.view === "chart" && !!route.ticker, akView = stockView && route.tab === "chart";
+    main.classList.toggle("tk", route.view === "home" || akView);
+    main.classList.toggle("tk-ak", akView);
+    if (stockView) tkTabsMode(true);
+    else if (route.view !== "home") tkTabsMode(false);
     /* Entscheidung 8: die Übersichten von Akademie und Assistent leiten auf „Lernen“; Lektionen und Fragen behalten ihre Adresse. */
     if (redirectOf(location.hash)) { redirected = true; location.replace(redirectOf(location.hash)); return; }
     if (route.view === "home") { doc.title = "Technical · Vision Universe®"; viewHome(main); }

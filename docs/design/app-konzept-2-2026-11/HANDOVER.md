@@ -87,6 +87,15 @@ eine eigene Stelle (dann hält der Kopf sie nicht mehr am Seitenende). Klassen: 
 (`--aktie`). Die Dashboard-Aktienansicht nutzt weiter `mount` (alte Leiste).
 
 **Quant (`/quant/#/aktie/<T>`, Stufe 2).** Wie `#modul-quant`: Das Profil (Netz, Balken absteigend, Stufen-Pillen ▲ ● ▼), Gesamtwert als Ring, „Quant in drei Sätzen“ als Schiene, Karte „Stärken und Schwächen“, Kursverlauf, sechs Kapitel als Zeilen einer Karte, „Weiter: Vergleich“ vor den Modul-Pillen (`quant/app/ui.js#nextCard`); Beobachten ist der runde Herz-Knopf, die Reiterzeile des Rahmens fehlt nur auf `#/aktie/<T>`. Desktop: Profil links, drei Sätze und Stärken/Schwächen rechts. Quant führt keine Börse; der Kopf zeigt sie erst, wenn eine Quelle sie liefert.
+**Technical und Elliott (Stufe 2, Klickentwurf #modul-technical / #modul-elliott).** `/technical/#/chart/<T>` (auch `/signale`, `/studio`)
+und `/elliott/#/<T>` (nicht `?ansicht=profi`) zeigen keine Reiterzeile des Rahmens (`data-vu-tabs="inhalt"`, schon im Kopf der index.html).
+Technical: Chart-Seite als `main.tk.tk-ak` – Urteilskachel, „Chart erklären“, „Kursverlauf“, Ebenen-Chips (Zonen und 200-Tage-Linie zu Beginn an),
+drei Sätze als Karussell (Ring zum RSI), Zonen-Karte, alle Befunde als Karten, „Verlauf der letzten 12 Monate“ (dieselbe `Formations.history`
+wie das Kapitel, nach dem ersten Bild gerechnet), Kapitel-Liste mit Datenqualität, Pillen vor der Fußzeile; am Schreibtisch eine Spalte (760 px).
+Elliott (`elliott/aktie.js` ordnet um, `elliott/wellen.css`): ohne Zählung Kachel mit Kurvenbild der Wochenschlüsse (gestrichelt die Zickzack-Linie
+durch Hoch/Tief von sechs Abschnitten), Ring „N von M“ aus dem Satz der Seite, „Folgeschritte“, „Melden, wenn zählbar“ (VUPush, Art
+ELLIOTT_CHANGE), Daten & Methodik mit „Zur Elliott-Übersicht“; mit Zählung drei Sätze als Karussell, der Balken „Kurs gegen Ungültig-Marke“
+bleibt direkt danach. Hell ist auf beiden Seiten hell.
 
 ## Bekannte Lücken (aus den Abschlussberichten)
 - Home: Fundamental, Hedgefonds, Screener ohne Zahl (keine kleine Zusammenfassungsdatei); DAX fehlt in den Daten (Euro Stoxx).
