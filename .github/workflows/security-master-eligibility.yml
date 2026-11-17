@@ -79,6 +79,10 @@ jobs:
           node scripts/market/apply-exchange-directory.mjs --classes DEBT,ETN,PREFERRED,WARRANT,RIGHT,UNIT,ETF \
             --dir "$E/exchange-directory" --eligibility "$E/out/eligibility.json" \
             --reconciliation "$E/out/eligibility-reconciliation.json" --product-universe "$E/scale/universe-ELIGIBLE_US_EQUITY.json"
+          # Beendete Notierungen (17.11.2026): Stamm INACTIVE und Tagesreihe zu Ende, oder belegte Uebernahme
+          # (quant/config/listing-ended-evidence.json) -> EXCLUDED. Kursabfragen: 0.
+          node scripts/market/apply-ended-listings.mjs --eligibility "$E/out/eligibility.json" \
+            --reconciliation "$E/out/eligibility-reconciliation.json" --product-universe "$E/scale/universe-ELIGIBLE_US_EQUITY.json"
 
       - name: Gate (fail closed)
         id: gate
