@@ -48,7 +48,7 @@ document.documentElement.classList.add("js");
     if (jb) {
       var id = c.id || (c.querySelector("[id]") || {}).id || "", hit = null;
       jb.querySelectorAll("a").forEach(function (a) { var on = a.getAttribute("href") === "#" + id; a.classList.toggle("cur", on); if (on) hit = a; });
-      if (hit) { var box = jb.querySelector(".jin"); box.scrollTo({ left: hit.offsetLeft - box.clientWidth / 2 + hit.clientWidth / 2, behavior: reduce ? "auto" : "smooth" }); }
+      if (hit) { var jin = jb.querySelector(".jin"); jin.scrollTo({ left: hit.offsetLeft - jin.clientWidth / 2 + hit.clientWidth / 2, behavior: reduce ? "auto" : "smooth" }); }
     }
     var stk = document.querySelector(".stick"); if (stk) stk.classList.toggle("hero-on", i === 0);
   }

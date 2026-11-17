@@ -5,7 +5,7 @@ import {createHash} from 'node:crypto';
 
 export const root = fileURLToPath(new URL('../', import.meta.url));
 // Story-Website (Owner 17.11.2026): Unterseiten neben index.html; Bilder, Stil und Skript unter web/.
-export const SITE_PAGES = ['app/index.html','news/index.html',...['discover','fundamental','technical','supertrader','vorsorge','screener','atlas','quant','hedgefonds','elliott','portfolios'].map(id=>`produkte/${id}/index.html`)];
+export const SITE_PAGES = ['app/index.html','news/index.html','magazin/index.html','report/index.html',...['discover','fundamental','technical','supertrader','vorsorge','screener','atlas','quant','hedgefonds','elliott','portfolios'].map(id=>`produkte/${id}/index.html`)];
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function validateConfig(config = {}) {
   const keys=['mode','liveFlowVerified','privacyReviewed','privacyHtmlPath'];
@@ -19,8 +19,17 @@ export function validateConfig(config = {}) {
   return mode!=='closed';
 }
 
-export async function build({output = resolve(root,'dist'), config = {}, production = false} = {}) {
+// Google Analytics (Owner 17.11.2026): lädt nur nach Zustimmung im Cookie-Banner (web/consent.js).
+// Die Mess-ID kommt aus LANDING_GA_ID; ohne ID bleibt die CSP ohne Google und es wird nichts geladen.
+export function analyticsId(id = '') {
+  if (!id) return '';
+  if (!/^G-[A-Z0-9]{4,16}$/.test(id)) throw new Error('LANDING_GA_ID muss eine GA4-Mess-ID sein (G-…).');
+  return id;
+}
+
+export async function build({output = resolve(root,'dist'), config = {}, production = false, gaId = ''} = {}) {
   const ready = validateConfig(config);
+  const ga = analyticsId(gaId);
   if (production && config.mode === 'test') throw new Error('Testmodus darf nicht öffentlich veröffentlicht werden.');
   if (production && config.privacyReviewed !== true) throw new Error('Öffentliche Veröffentlichung blockiert: Datenschutzhinweise für Hosting/Brevo fehlen.');
   output = resolve(output);
@@ -66,7 +75,8 @@ export async function build({output = resolve(root,'dist'), config = {}, product
 
   if (production) html = html.replace('content="noindex, nofollow"','content="index, follow"');
   const formPolicy=ready?"'self'":"'none'";
-  const csp = `default-src 'none'; script-src 'self'; style-src 'self'; style-src-attr 'unsafe-inline'; img-src 'self'; media-src 'self'; font-src 'self'; connect-src 'self'; form-action ${formPolicy}; frame-src 'none'; base-uri 'none'; object-src 'none'`;
+  const gaHosts = ga ? {script:' https://www.googletagmanager.com', img:' https://*.google-analytics.com https://*.googletagmanager.com', connect:' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com'} : {script:'',img:'',connect:''};
+  const csp = `default-src 'none'; script-src 'self'${gaHosts.script}; style-src 'self'; style-src-attr 'unsafe-inline'; img-src 'self'${gaHosts.img}; media-src 'self'; font-src 'self'; connect-src 'self'${gaHosts.connect}; form-action ${formPolicy}; frame-src 'none'; base-uri 'none'; object-src 'none'`;
   // GitHub Pages does not apply _headers. Enforce supported CSP in HTML too.
   html=html.replace('<head>','<head>\n  <meta http-equiv="Content-Security-Policy" content="'+esc(csp)+'">\n  <meta name="referrer" content="no-referrer">');
   // Returning browsers must not combine new preview markup with old cached
@@ -76,15 +86,15 @@ export async function build({output = resolve(root,'dist'), config = {}, product
     html=html.replace(`${attribute}="./${asset}"`,`${attribute}="./${asset}?v=${version}"`);
   }
   // Story-Website: Stil und Skript mit inhaltsabhängigen Adressen auf allen Seiten.
-  const stamp={};for(const asset of ['web/site.css','web/site.js','newsletter.js'])stamp[asset]=createHash('sha256').update(await readFile(resolve(output,asset))).digest('hex').slice(0,16);
+  const stamp={};for(const asset of ['web/site.css','web/site.js','web/consent.js','newsletter.js'])stamp[asset]=createHash('sha256').update(await readFile(resolve(output,asset))).digest('hex').slice(0,16);
   const stampPage=(page,prefix)=>{for(const asset of Object.keys(stamp))page=page.replaceAll(`"${prefix}${asset}"`,`"${prefix}${asset}?v=${stamp[asset]}"`);return page;};
-  html=stampPage(html,'./');
+  html=stampPage(html,'./').replace('<meta name="vu-ga" content="">',`<meta name="vu-ga" content="${ga}">`);
   await writeFile(resolve(output,'index.html'),html);
   for(const path of SITE_PAGES){
     let page=await readFile(resolve(output,path),'utf8');
     page=page.replace('<head>','<head>\n  <meta http-equiv="Content-Security-Policy" content="'+esc(csp)+'">\n  <meta name="referrer" content="no-referrer">');
     if (production) page = page.replace('content="noindex, nofollow"','content="index, follow"');
-    await writeFile(resolve(output,path),stampPage(page,'../'.repeat(path.split('/').length-1)));
+    await writeFile(resolve(output,path),stampPage(page,'../'.repeat(path.split('/').length-1)).replace('<meta name="vu-ga" content="">',`<meta name="vu-ga" content="${ga}">`));
   }
   // The partner presentation is shared by direct link only and stays out of search.
   let partner=await readFile(resolve(output,'partner/index.html'),'utf8');
@@ -138,6 +148,6 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
       privacyHtmlPath:process.env.LANDING_PRIVACY_HTML_PATH||''
     }:{};
     if(config.mode==='test'&&process.env.CF_PAGES_BRANCH==='main')throw new Error('Testformular auf main gesperrt.');
-    console.log(JSON.stringify(await build({config,output:outputArg,production:args.includes('--production')||publicationMode==='production'})));
+    console.log(JSON.stringify(await build({config,output:outputArg,gaId:process.env.LANDING_GA_ID||'',production:args.includes('--production')||publicationMode==='production'})));
   } catch (error) { console.error(error instanceof SyntaxError ? 'Konfiguration ist kein gültiges JSON/keine gültige URL.' : error.message); process.exitCode=1; }
 }

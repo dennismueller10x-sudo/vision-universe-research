@@ -13,6 +13,7 @@ import {createHash} from 'node:crypto';
 import {root,build} from './build.mjs';
 import {checkIphonePreview} from '../tests/iphone-preview-checks.mjs';
 import {checkConsentDisclosure} from '../tests/consent-disclosure-checks.mjs';
+import {withoutConsentBanner} from '../tests/consent-banner-helper.mjs';
 
 const baseline='11bda0c1a2a0d8add32ea0338a1ec32dfd8e3f49';
 const provenance=JSON.parse(await readFile(resolve(root,'reference/source.json'),'utf8'));
@@ -46,7 +47,7 @@ const server=createServer(async(req,res)=>{
   }catch{res.writeHead(404);res.end();}
 });
 await new Promise(r=>server.listen(0,'127.0.0.1',r));const base=`http://127.0.0.1:${server.address().port}`;
-const browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||(existsSync('/usr/bin/chromium')?'/usr/bin/chromium':undefined),args:['--no-sandbox']});
+const browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||(existsSync('/usr/bin/chromium')?'/usr/bin/chromium':undefined),args:['--no-sandbox']});withoutConsentBanner(browser);
 const review=resolve(root,'review/redesign');await mkdir(review,{recursive:true});
 const results=[];
 try{
