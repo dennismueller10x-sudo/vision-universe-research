@@ -61,7 +61,7 @@ test('Instagram-Teilnahmebedingungen: eigene Rechtsseite ohne Fremdlinks',async(
 });
 test('Instagram-Seiten: keine App-Links, nur eigene Quellen, Listen verlinkt',async()=>{
   const output=resolve(root,'tests/output/instagram');await build({output});
-  for(const page of ['instagram/index.html','instagram/robotaxi/index.html','instagram/energie/index.html','instagram/zonen/index.html']){
+  for(const page of ['instagram/index.html','instagram/robotaxi/index.html','instagram/energie/index.html','instagram/zonen/index.html','instagram/robotaxi-nebenwerte/index.html']){
     const html=await readFile(resolve(output,page),'utf8');
     assert.match(html,/<meta name="robots" content="noindex, nofollow">/);assert.match(html,/Content-Security-Policy/);
     assert.doesNotMatch(html,/research\.visionuniverse\.de|data-app|App öffnen<\/a>/);
@@ -69,6 +69,7 @@ test('Instagram-Seiten: keine App-Links, nur eigene Quellen, Listen verlinkt',as
     assert.match(html,/App bald verfügbar/);assert.match(html,/partner\.css\?v=[0-9a-f]{16}/);assert.match(html,/instagram\.css\?v=[0-9a-f]{16}/);
     for(const m of html.matchAll(/(?:src|poster|href)="(\.{1,2}\/[^"?#]+\.(?:css|js|png|jpg|mp4|woff2))(?:\?v=[0-9a-f]{16})?"/g))await readFile(resolve(output,dirname(page),m[1]));
   }
-  const index=await readFile(resolve(output,'instagram/index.html'),'utf8');assert.match(index,/href="\.\/robotaxi\/"/);assert.match(index,/href="\.\/energie\/"/);assert.match(index,/href="\.\/zonen\/"/);
+  const index=await readFile(resolve(output,'instagram/index.html'),'utf8');assert.match(index,/href="\.\/robotaxi\/"/);assert.match(index,/href="\.\/energie\/"/);assert.match(index,/href="\.\/zonen\/"/);assert.match(index,/href="\.\/robotaxi-nebenwerte\/"/);
   const list=await readFile(resolve(output,'instagram/robotaxi/index.html'),'utf8');assert.equal((list.match(/<li>/g)||[]).length,10);assert.match(list,/keine Kauf- oder Verkaufsempfehlung/);
+  const second=await readFile(resolve(output,'instagram/robotaxi-nebenwerte/index.html'),'utf8');assert.equal((second.match(/<li>/g)||[]).length,10);assert.match(second,/keine Kauf- oder Verkaufsempfehlung/);assert.doesNotMatch(second,/<span class="tk">(TSLA|GOOGL|NVDA|AMZN|AAPL|MSFT)</);
 });
