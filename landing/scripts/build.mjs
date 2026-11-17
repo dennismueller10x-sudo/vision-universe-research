@@ -5,7 +5,7 @@ import {createHash} from 'node:crypto';
 
 export const root = fileURLToPath(new URL('../', import.meta.url));
 // Story-Website (Owner 17.11.2026): Unterseiten neben index.html; Bilder, Stil und Skript unter web/.
-export const SITE_PAGES = ['app/index.html','news/index.html','magazin/index.html','report/index.html',...['discover','fundamental','technical','supertrader','vorsorge','screener','atlas','quant','hedgefonds','elliott','portfolios'].map(id=>`produkte/${id}/index.html`)];
+export const SITE_PAGES = ['start/index.html','app/index.html','news/index.html','magazin/index.html','report/index.html',...['discover','fundamental','technical','supertrader','vorsorge','screener','atlas','quant','hedgefonds','elliott','portfolios'].map(id=>`produkte/${id}/index.html`)];
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function validateConfig(config = {}) {
   const keys=['mode','liveFlowVerified','privacyReviewed','privacyHtmlPath'];
@@ -53,15 +53,16 @@ export async function build({output = resolve(root,'dist'), config = {}, product
     if (config.mode === 'public' && /data-newsletter-release-scope=["']controlled["']/i.test(privacy)) throw new Error('Datenschutzfreigabe gilt ausschließlich für den kontrollierten Test.');
     await writeFile(resolve(output,'datenschutz/index.html'),privacy);
   }
-  let html = await readFile(resolve(output,'index.html'),'utf8');
-  if(config.mode==='controlled'){
-    html=html.replace('data-ready="false"','data-ready="false" data-controlled="true"');
-  }else if(ready){
-    html=html.replace('data-ready="false"','data-ready="true" action="/api/newsletter/subscribe"').replace('<fieldset disabled>','<fieldset>')
+  // Dasselbe Formular steht auf der Startseite und auf der Landingpage /start/ (Owner 17.11.2026); beide schalten gleich.
+  const formState = page => {
+    if(config.mode==='controlled')return page.replace('data-ready="false"','data-ready="false" data-controlled="true"');
+    if(!ready)return page;
+    return page.replace('data-ready="false"','data-ready="true" action="/api/newsletter/subscribe"').replace('<fieldset disabled>','<fieldset>')
       .replace('Aktuell können wir deine E-Mail-Adresse noch nicht entgegennehmen.','Anmeldung mit E-Mail-Bestätigung.')
       .replace('Die Anmeldung ist derzeit noch nicht freigeschaltet.','Nach dem Absenden prüfe dein Postfach und bestätige deine neue Anmeldung.')
       .replace(' aria-describedby="signup-status" novalidate',' aria-describedby="signup-status"');
-  }
+  };
+  let html = formState(await readFile(resolve(output,'index.html'),'utf8'));
   // Remove upstream Research-only navigation from the isolated static output.
   for (const path of ['index.html','impressum/index.html','datenschutz/index.html','newsletter/bestaetigen/index.html','newsletter/bestaetigt/index.html','newsletter/fehler/index.html','instagram/teilnahmebedingungen/index.html']) {
     let page = path === 'index.html' ? html : await readFile(resolve(output,path),'utf8');
@@ -92,6 +93,7 @@ export async function build({output = resolve(root,'dist'), config = {}, product
   await writeFile(resolve(output,'index.html'),html);
   for(const path of SITE_PAGES){
     let page=await readFile(resolve(output,path),'utf8');
+    if(path==='start/index.html')page=formState(page);
     page=page.replace('<head>','<head>\n  <meta http-equiv="Content-Security-Policy" content="'+esc(csp)+'">\n  <meta name="referrer" content="no-referrer">');
     if (production) page = page.replace('content="noindex, nofollow"','content="index, follow"');
     await writeFile(resolve(output,path),stampPage(page,'../'.repeat(path.split('/').length-1)).replace('<meta name="vu-ga" content="">',`<meta name="vu-ga" content="${ga}">`));

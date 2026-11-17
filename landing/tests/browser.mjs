@@ -9,6 +9,7 @@ import {build,root} from '../scripts/build.mjs';
 import {checkIphonePreview} from './iphone-preview-checks.mjs';
 import {checkConsentDisclosure} from './consent-disclosure-checks.mjs';
 import {checkConsent} from './consent-checks.mjs';
+import {checkStart} from './start-checks.mjs';
 import {withoutConsentBanner} from './consent-banner-helper.mjs';
 
 const output=resolve(root,'tests/output/browser');
@@ -134,5 +135,6 @@ try{
   await native.goto(base+'/ready/');await native.locator('#email').fill('qa@example.test');await native.locator('#consent').check();await native.locator('button[type=submit]').click();await native.waitForURL('**/newsletter/bestaetigen/');assert.match(await native.locator('main').innerText(),/Bestätigungsmail/);await nojs.close();
   await writeFile(resolve(screenshots,'metrics.json'),JSON.stringify({metrics,newsletter:'Eigene Formularoberfläche und gleiche Herkunft mit synthetischen API-Antworten geprüft. Kein echter Postfach-/Klick-/Abmeldetest.',browser:'Chromium',testedAt:new Date().toISOString()},null,2)+'\n');
   await checkConsent(consentContext,base);
-  console.log(JSON.stringify({metrics,consentChecks:'banner first visit, nothing stored before click, reject, settings, GA only after consent with id, withdraw deletes cookies, popup once with existing form, axe',formChecks:'own design, validation, consent, honeypot, offline, one same-origin request, uncertain outcome, no-JS branded fallback, no iframe',controlledChecks:'ordinary visitors disabled, private fragment removed, bearer only in header, owner types address, same-document activation, no local storage, mobile reflow',liveBrevo:'BLOCKED'},null,2));
+  await checkStart(consentContext,base+'/ready');
+  console.log(JSON.stringify({metrics,startChecks:'one screen desktop, short scroll phone, form in first screen, same form ready, no popup, axe',consentChecks:'banner first visit, nothing stored before click, reject, settings, GA only after consent with id, withdraw deletes cookies, popup once with existing form, axe',formChecks:'own design, validation, consent, honeypot, offline, one same-origin request, uncertain outcome, no-JS branded fallback, no iframe',controlledChecks:'ordinary visitors disabled, private fragment removed, bearer only in header, owner types address, same-document activation, no local storage, mobile reflow',liveBrevo:'BLOCKED'},null,2));
 }finally{await browser.close();await new Promise(r=>server.close(r));}

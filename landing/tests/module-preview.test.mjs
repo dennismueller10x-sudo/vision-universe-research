@@ -34,3 +34,21 @@ test('Story-Website: alle Produkte, Originalsymbole, Datenstand, keine fremden Q
       await readFile(resolve(output,path,'..',m[1]));
   }
 });
+
+// Landingpage /start/ (Owner 17.11.2026): kurz, ein Ziel. Das Formular ist Zeichen für Zeichen das der Startseite
+// (nur der Datenschutz-Link zeigt eine Ebene höher) und wird beim Bau genauso freigeschaltet.
+test('Landingpage /start/: dasselbe Anmeldeformular wie die Startseite, gleich freigeschaltet',async()=>{
+  const form=html=>html.slice(html.indexOf('<form class="nl-form" id="newsletter-form"'),html.indexOf('</form>',html.indexOf('id="newsletter-form"'))+7);
+  const src=await readFile(resolve(root,'index.html'),'utf8'),start=await readFile(resolve(root,'start/index.html'),'utf8');
+  assert.equal(form(start),form(src).replace('href="./datenschutz/"','href="../datenschutz/"'));
+  assert.ok(start.includes('src="../newsletter.js"'),'Formular-Skript');
+  assert.ok(!start.includes('id="newsletter"'),'kein Newsletter-Fenster auf der Landingpage');
+  const privacy=resolve(root,'tests/output/privacy-fixture.html');
+  await (await import('node:fs/promises')).writeFile(privacy,'<!doctype html><html lang="de"><head><title>T</title></head><body>T</body></html>');
+  const output=resolve(root,'tests/output/start-ready');
+  await build({output,config:{mode:'public',liveFlowVerified:true,privacyReviewed:true,privacyHtmlPath:'tests/output/privacy-fixture.html'}});
+  const built=await readFile(resolve(output,'start/index.html'),'utf8'),home=await readFile(resolve(output,'index.html'),'utf8');
+  assert.match(built,/data-ready="true" action="\/api\/newsletter\/subscribe"/);
+  assert.equal(form(built),form(home).replace('href="./datenschutz/"','href="../datenschutz/"'));
+});
+
