@@ -94,3 +94,9 @@ test("EG-7 · Zugaenge zur Mitgliedschaft nur mit Freigabe je securityId; fehlen
     limits: LIMITS, approval: { ...approval, productUniverseAfter: 901 }, prevSha256: "x" });
   assert.match(weg.failures.join(), /universeMembersChanged 1 > 0/, "ein Abgang bleibt rot, auch mit freigegebenen Zugaengen");
 });
+
+test("EG-8 · Erweiterung rechnet die Eignung gegen die Mitgliedsdatei im Repo-Pfad (verify-company-master prueft den gespeicherten Pfad)", () => {
+  const wf = readFileSync(join(ROOT, ".github/workflows/security-master-eligibility.yml"), "utf8");
+  assert.match(wf, /echo "ELIG_UNIVERSE=quant\/data\/market\/scale\/universe-FULL_UNIVERSE\.json"/);
+  assert.doesNotMatch(wf, /ELIG_UNIVERSE=\$X\//, "kein Runner-Pfad als Mitgliedsdatei");
+});
