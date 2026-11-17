@@ -1,19 +1,24 @@
 import assert from 'node:assert/strict';
 import AxeBuilder from '@axe-core/playwright';
-// Landingpage /start/ (Owner 17.11.2026): kurz und schlüssig, man darf nur kurz scrollen.
-// Owner 17.11.2026: kein Scrollen. Auf dem Handy (iPhone-Safari-Fläche 390 × 660), am Desktop und am flachen Laptop
-// steht alles auf einem Bildschirm, das ganze Anmeldeformular eingeschlossen.
+// Owner 17.11.2026: zwei Bildschirme. Bildschirm 1 zeigt, was die App kann (ohne Mengenangaben), Bildschirm 2 sammelt die
+// Anmeldung. Jeder passt ganz ins Fenster: Handy (iPhone-Safari 390 × 660, Android 412 × 700), Desktop, flacher Laptop.
 export async function checkStart(newContext, base) {
-  for (const [name, width, height, maxScreens] of [['desktop', 1440, 900, 1.01], ['laptop', 1366, 620, 1.01], ['iphone', 390, 660, 1.01], ['android', 412, 700, 1.01]]) {
-    const context = await newContext({ viewport: { width, height }, isMobile: /iphone|android/.test(name), hasTouch: /iphone|android/.test(name) });
+  for (const [name, width, height] of [['desktop', 1440, 900], ['laptop', 1366, 620], ['iphone', 390, 660], ['android', 412, 700]]) {
+    const mobile = /iphone|android/.test(name);
+    const context = await newContext({ viewport: { width, height }, isMobile: mobile, hasTouch: mobile });
     await context.addInitScript(() => localStorage.setItem('vu-consent', JSON.stringify({ v: 1, stats: false, t: '2026-11-17' })));
     const page = await context.newPage();
     await page.goto(base + '/start/', { waitUntil: 'networkidle' });
-    const m = await page.evaluate(() => ({ h: document.documentElement.scrollHeight, w: document.documentElement.scrollWidth, form: document.querySelector('#newsletter-form').getBoundingClientRect().bottom }));
-    assert.ok(m.h <= height * maxScreens, `${name}: Seite ${m.h}px, höchstens ${maxScreens} Bildschirme`);
-    assert.equal(m.w, width, `${name}: kein seitliches Scrollen`);
-    assert.ok(m.form <= height, `${name}: ganzes Formular im ersten Bildschirm`);
-    assert.equal(await page.locator('#newsletter-form').getAttribute('data-ready'), 'true');
+    const a = await page.evaluate(() => ({ w: document.documentElement.scrollWidth, end: document.querySelector('.lpa').getBoundingClientRect().bottom, caps: document.querySelectorAll('.lpcaps li').length, text: document.querySelector('.lpa').innerText }));
+    assert.equal(a.w, width, `${name}: kein seitliches Scrollen`);
+    assert.ok(a.end <= height + 1, `${name}: Bildschirm 1 passt ins Fenster (${Math.round(a.end)} px)`);
+    assert.ok(a.caps >= 4, `${name}: Bildschirm 1 zeigt, was die App kann`);
+    assert.doesNotMatch(a.text, /\d\.\d{3}|1990|20 Jahre/, `${name}: keine Mengen- oder Historienangaben`);
+    await page.locator('.lpnext a[href="#anmelden"]').click();
+    await page.waitForFunction(() => Math.abs(document.getElementById('anmelden').getBoundingClientRect().top) <= 2, null, { timeout: 4000 }); // sanftes Scrollen
+    const b = await page.evaluate(() => { const s = document.getElementById('anmelden').getBoundingClientRect(), f = document.querySelector('#newsletter-form').getBoundingClientRect(); return { top: s.top, formEnd: f.bottom }; });
+    assert.ok(Math.abs(b.top) <= 2 && b.formEnd <= height, `${name}: Bildschirm 2 zeigt die ganze Anmeldung (${Math.round(b.formEnd)} px)`);
+    assert.equal(await page.locator('#anmelden #newsletter-form').getAttribute('data-ready'), 'true');
     for (const href of ['../impressum/', '../datenschutz/']) assert.equal(await page.locator(`footer a[href="${href}"]`).count(), 1);
     await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
     await page.waitForTimeout(600);
