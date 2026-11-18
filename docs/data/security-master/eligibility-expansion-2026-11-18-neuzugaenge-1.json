@@ -1,0 +1,296 @@
+{
+ "schema": "vu-eligibility-catchup-1",
+ "id": "eligibility-expansion-2026-11-18-neuzugaenge-1",
+ "prevSha256": "3396408054b5d6d49bf4b130d9c068043df59ebd3ff5636e4cb00f34105ca8b6",
+ "sourceRun": "lokal 18.11.2026 gegen main 88d7f933a17 (Tiingo supported_tickers 18.11., SEC company_tickers_exchange 18.11., expand-us-universe --auto 25: 106 Kandidaten, 74 mit SEC-Abgleich, die 25 aeltesten Notierungen; Stamm-Gate COMMIT, Eignungs-Gate COMMIT 6315 -> 6340, Umfangsfolge 0 Reihen entfernt)",
+ "decidedBy": "Steuerung 17./18.11.2026: 1b, Neuemissionen gehoeren ins Produkt; erste Tranche der Dauerregel (hoechstens 25 je Lauf), ueber die Positivliste, weil der Lauf ohne Secret SEC_USER_AGENT keine SEC-Liste abruft.",
+ "productUniverseBefore": 6315,
+ "productUniverseAfter": 6340,
+ "counts": {
+  "changes": 0,
+  "leaveProduct": 0,
+  "enterProduct": 25,
+  "membersAdded": 25
+ },
+ "changes": [],
+ "membersAdded": [
+  "ref_AUXX",
+  "ref_AXNX",
+  "ref_BDAI",
+  "ref_CAE",
+  "ref_CASK",
+  "ref_CATL",
+  "ref_CRMN",
+  "ref_DRK",
+  "ref_ESYN",
+  "ref_FCDH",
+  "ref_FFR",
+  "ref_FFTT",
+  "ref_HUCK",
+  "ref_MTAK",
+  "ref_MTRI",
+  "ref_NRG",
+  "ref_NVT",
+  "ref_OCLT",
+  "ref_OPNW",
+  "ref_PTIV",
+  "ref_QUIT",
+  "ref_RNAQ",
+  "ref_SAEN",
+  "ref_SVIA",
+  "ref_XGPU"
+ ],
+ "evidence": [
+  {
+   "securityId": "ref_AUXX",
+   "ticker": "AUXX",
+   "cik": "0001961592",
+   "secName": "Gold X2 Mining Inc.",
+   "secExchange": "NYSE",
+   "providerRow": "tiingo:NYSE:AUXX:2026-09-17 (2026-09-17..2026-11-17)"
+  },
+  {
+   "securityId": "ref_AXNX",
+   "ticker": "AXNX",
+   "cik": "0001998560",
+   "secName": "Axonex AI Group Ltd",
+   "secExchange": "Nasdaq",
+   "providerRow": "tiingo:NASDAQ:AXNX:2018-10-31 (2018-10-31..2026-11-17)"
+  },
+  {
+   "securityId": "ref_BDAI",
+   "ticker": "BDAI",
+   "cik": "0001742341",
+   "secName": "Biddance AI Systems, Inc.",
+   "secExchange": "Nasdaq",
+   "providerRow": "tiingo:NASDAQ:BDAI:2024-02-29 (2024-02-29..2026-11-17)"
+  },
+  {
+   "securityId": "ref_CAE",
+   "ticker": "CAE",
+   "cik": "0001173382",
+   "secName": "CAE INC",
+   "secExchange": "Nasdaq",
+   "providerRow": "tiingo:NASDAQ:CAE:1996-01-10 (1996-01-10..2026-11-17)"
+  },
+  {
+   "securityId": "ref_CASK",
+   "ticker": "CASK",
+   "cik": "0000835011",
+   "secName": "SEMPREON, INC",
+   "secExchange": "Nasdaq",
+   "providerRow": "tiingo:NASDAQ:CASK:1990-03-26 (1990-03-26..2026-11-17)"
+  },
+  {
+   "securityId": "ref_CATL",
+   "ticker": "CATL",
+   "cik": "0002104391",
+   "secName": "Catalyst Acquisition Corp.",
+   "secExchange": "Nasdaq",
+   "providerRow": "tiingo:NASDAQ:CATL:2026-09-17 (2026-09-17..2026-11-17)"
+  },
+  {
+   "securityId": "ref_CRMN",
+   "ticker": "CRMN",
+   "cik": "0002031009",
+   "secName": "Skyline Builders Group Holding Ltd",
+   "secExchange": "Nasdaq",
+   "providerRow": "tiingo:NASDAQ:CRMN:2025-01-23 (2025-01-23..2026-11-17)"
+  },
+  {
+   "securityId": "ref_DRK",
+   "ticker": "DRK",
+   "cik": "0001591956",
+   "secName": "DarkHorse Technologies Inc.",
+   "secExchange": "Nasdaq",
+   "providerRow": "tiingo:NASDAQ:DRK:2008-06-24 (2008-06-24..2026-11-17)"
+  },
+  {
+   "securityId": "ref_ESYN",
+   "ticker": "ESYN",
+   "cik": "0001897245",
+   "secName": "EnerSyn Global Inc.",
+   "secExchange": "Nasdaq",
+   "providerRow": "tiingo:NASDAQ:ESYN:2024-01-08 (2024-01-08..2026-11-17)"
+  },
+  {
+   "securityId": "ref_FCDH",
+   "ticker": "FCDH",
+   "cik": "0001951294",
+   "secName": "Forcendra Holding Ltd",
+   "secExchange": "Nasdaq",
+   "providerRow": "tiingo:NASDAQ:FCDH:2023-09-27 (2023-09-27..2026-11-17)"
+  },
+  {
+   "securityId": "ref_FFR",
+   "ticker": "FFR",
+   "cik": "0001460702",
+   "secName": "FF EAI Robotics Ecosystem Inc.",
+   "secExchange": "Nasdaq",
+   "providerRow": "tiingo:NASDAQ:FFR:2015-06-24 (2015-06-24..2026-11-17)"
+  },
+  {
+   "securityId": "ref_FFTT",
+   "ticker": "FFTT",
+   "cik": "0002020228",
+   "secName": "Masonglory Ltd",
+   "secExchange": "Nasdaq",
+   "providerRow": "tiingo:NASDAQ:FFTT:2026-08-10 (2026-08-10..2026-11-17)"
+  },
+  {
+   "securityId": "ref_HUCK",
+   "ticker": "HUCK",
+   "cik": "0001505952",
+   "secName": "Huckleberry.ai, Inc.",
+   "secExchange": "Nasdaq",
+   "providerRow": "tiingo:NASDAQ:HUCK:2018-06-29 (2018-06-29..2026-11-17)"
+  },
+  {
+   "securityId": "ref_MTAK",
+   "ticker": "MTAK",
+   "cik": "0002133136",
+   "secName": "Market Technology Acquisition Corp",
+   "secExchange": "Nasdaq",
+   "providerRow": "tiingo:NASDAQ:MTAK:2026-09-17 (2026-09-17..2026-11-17)"
+  },
+  {
+   "securityId": "ref_MTRI",
+   "ticker": "MTRI",
+   "cik": "0001728328",
+   "secName": "InMed Pharmaceuticals Inc.",
+   "secExchange": "Nasdaq",
+   "providerRow": "tiingo:NASDAQ:MTRI:2014-05-05 (2014-05-05..2026-11-17)"
+  },
+  {
+   "securityId": "ref_NRG",
+   "ticker": "NRG",
+   "cik": "0001013871",
+   "secName": "NRG ENERGY, INC.",
+   "secExchange": "NYSE",
+   "providerRow": "tiingo:NYSE:NRG:2003-12-02 (2003-12-02..2026-11-17)"
+  },
+  {
+   "securityId": "ref_NVT",
+   "ticker": "NVT",
+   "cik": "0001720635",
+   "secName": "nVent Electric plc",
+   "secExchange": "NYSE",
+   "providerRow": "tiingo:NYSE:NVT:2018-04-30 (2018-04-30..2026-11-17)"
+  },
+  {
+   "securityId": "ref_OCLT",
+   "ticker": "OCLT",
+   "cik": "0002137679",
+   "secName": "OceanLight Acquisition Corp",
+   "secExchange": "Nasdaq",
+   "providerRow": "tiingo:NASDAQ:OCLT:2026-09-11 (2026-09-11..2026-11-17)"
+  },
+  {
+   "securityId": "ref_OPNW",
+   "ticker": "OPNW",
+   "cik": "0001104038",
+   "secName": "OpenWorld, Inc.",
+   "secExchange": "Nasdaq",
+   "providerRow": "tiingo:NASDAQ:OPNW:2009-05-07 (2009-05-07..2026-11-17)"
+  },
+  {
+   "securityId": "ref_PTIV",
+   "ticker": "PTIV",
+   "cik": "0001938109",
+   "secName": "Pineapple Financial Inc.",
+   "secExchange": "NYSE",
+   "providerRow": "tiingo:NYSE MKT:PTIV:2023-11-01 (2023-11-01..2026-11-17)"
+  },
+  {
+   "securityId": "ref_QUIT",
+   "ticker": "QUIT",
+   "cik": "0000949858",
+   "secName": "ACHIEVE LIFE SCIENCES, INC.",
+   "secExchange": "Nasdaq",
+   "providerRow": "tiingo:NASDAQ:QUIT:1995-10-13 (1995-10-13..2026-11-17)"
+  },
+  {
+   "securityId": "ref_RNAQ",
+   "ticker": "RNAQ",
+   "cik": "0002147219",
+   "secName": "Rainier Acquisition Corp",
+   "secExchange": "Nasdaq",
+   "providerRow": "tiingo:NASDAQ:RNAQ:2026-09-15 (2026-09-15..2026-11-17)"
+  },
+  {
+   "securityId": "ref_SAEN",
+   "ticker": "SAEN",
+   "cik": "0001838716",
+   "secName": "Genenta Science S.p.A.",
+   "secExchange": "Nasdaq",
+   "providerRow": "tiingo:NASDAQ:SAEN:2021-12-15 (2021-12-15..2026-11-17)"
+  },
+  {
+   "securityId": "ref_SVIA",
+   "ticker": "SVIA",
+   "cik": "0002076163",
+   "secName": "Silvia, Inc.",
+   "secExchange": "Nasdaq",
+   "providerRow": "tiingo:NASDAQ:SVIA:2025-12-05 (2025-12-05..2026-11-17)"
+  },
+  {
+   "securityId": "ref_XGPU",
+   "ticker": "XGPU",
+   "cik": "0001812727",
+   "secName": "Reliance Global Group, Inc.",
+   "secExchange": "Nasdaq",
+   "providerRow": "tiingo:NASDAQ:XGPU:2016-02-02 (2016-02-02..2026-11-17)"
+  }
+ ],
+ "deferred": [
+  "ref_ACCV",
+  "ref_ADRX",
+  "ref_AETR",
+  "ref_AIOK",
+  "ref_AMRO",
+  "ref_APXC",
+  "ref_ASPE",
+  "ref_BBTX",
+  "ref_BRRK",
+  "ref_BSRT",
+  "ref_CHWM",
+  "ref_DAVI",
+  "ref_ETRA",
+  "ref_FJDI",
+  "ref_FLSC",
+  "ref_GBC",
+  "ref_GOW",
+  "ref_GUNN",
+  "ref_HOST",
+  "ref_IAM",
+  "ref_IPHX",
+  "ref_IVAI",
+  "ref_LCU",
+  "ref_LEDR",
+  "ref_LYCA",
+  "ref_MDRN",
+  "ref_NANO",
+  "ref_NARA",
+  "ref_NWCL",
+  "ref_OIG",
+  "ref_ONEN",
+  "ref_PAXG",
+  "ref_PNAQ",
+  "ref_RNTZ",
+  "ref_RTSN",
+  "ref_RZAI",
+  "ref_SAIQ",
+  "ref_SATS",
+  "ref_SCAT",
+  "ref_SCQC",
+  "ref_TBCV",
+  "ref_TCXB",
+  "ref_TLAC",
+  "ref_TRXB",
+  "ref_VVVV",
+  "ref_VYLR",
+  "ref_WQEY",
+  "ref_WWB",
+  "ref_XIII"
+ ]
+}
