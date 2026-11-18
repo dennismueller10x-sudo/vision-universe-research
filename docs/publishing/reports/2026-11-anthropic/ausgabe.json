@@ -10,27 +10,214 @@
  "datenstandText": "Dienstag, 17.11.2026",
  "datenstandKurz": "17.11.",
  "seiten": [
-  { "id": "cover", "quellen": false },
-  { "id": "inhalt", "quellen": ["ant-s1", "anthropic-web"] },
-  { "id": "kennzahlen", "quellen": ["ant-s1", "cnbc-spanne"], "toc": { "rubrik": "Auf einen Blick", "titel": "Anthropic in zwölf Zahlen" } },
-  { "id": "geschichte", "quellen": ["ant-s1", "anthropic-web"], "toc": { "rubrik": "Die Geschichte", "titel": "Von 41 Millionen Dollar Umsatz zum Börsengang", "bild": "img/kompass.jpg" } },
-  { "id": "produkte", "quellen": ["ant-s1", "anthropic-web"], "toc": { "rubrik": "Die Produkte", "titel": "Claude, Claude Code, Cowork", "bild": "img/nautilus-gruen.jpg" } },
-  { "id": "geschaeft", "quellen": ["ant-s1"], "toc": { "rubrik": "Das Geschäftsmodell", "titel": "Bezahlt wird für Rechenarbeit" } },
-  { "id": "zahlen", "quellen": ["ant-s1"], "toc": { "rubrik": "Die Zahlen", "titel": "Umsatz mal 45 in sieben Quartalen" } },
-  { "id": "compute", "quellen": ["ant-s1", "anthropic-web"], "toc": { "rubrik": "Die Kosten", "titel": "900,9 Mrd. $ für Rechenleistung", "bild": "img/platine.jpg" } },
-  { "id": "bilanz", "quellen": ["ant-s1"], "toc": { "rubrik": "Die Bilanz", "titel": "104 Mrd. $ Verlust, erklärt" } },
-  { "id": "macht", "quellen": ["ant-s1", "anthropic-web"], "toc": { "rubrik": "Wer bestimmt", "titel": "Treuhandrat, Gründer, Großaktionäre", "bild": "img/tempel.jpg" } },
-  { "id": "boersengang", "quellen": ["ant-s1", "cnbc-spanne"], "toc": { "rubrik": "Der Börsengang", "titel": "825 Mio. Aktien, 70 bis 78 $" } },
-  { "id": "cyber", "quellen": ["ant-s1", "vu-daten", "anthropic-web"], "toc": { "rubrik": "Sonderthema", "titel": "Die beste Cyber-Aktie der Welt?", "bild": "img/spiegel.jpg" } },
-  { "id": "nvidia", "quellen": ["ant-s1", "vu-daten", "nvda-q3"], "toc": { "rubrik": "Sonderthema", "titel": "Wird Anthropic die neue Nvidia?", "bild": "img/netz.jpg" } },
-  { "id": "schaufel", "quellen": ["ant-s1", "nvda-q3", "spcx-q3", "vu-daten"], "toc": { "rubrik": "Sonderthema", "titel": "Goldgräber und Schaufelverkäufer" } },
-  { "id": "rechnung", "quellen": ["ant-s1", "vu-daten"], "toc": { "rubrik": "Rechenbeispiele", "titel": "Was müsste passieren?", "bild": "img/winkelmesser.jpg" } },
-  { "id": "bull", "quellen": ["ant-s1"], "toc": { "rubrik": "Szenarien", "titel": "Was Optimisten anführen", "bild": "img/himmel.jpg" } },
-  { "id": "bear", "quellen": ["ant-s1"], "toc": { "rubrik": "Szenarien", "titel": "Was Skeptiker anführen", "bild": "img/leuchtturm.jpg" } },
-  { "id": "termine", "quellen": ["ant-s1", "cnbc-spanne"], "toc": { "rubrik": "Ausblick", "titel": "Termine, Haltefristen, Checkliste" } },
-  { "id": "app", "quellen": ["vu-daten"], "toc": { "rubrik": "Vision Universe", "titel": "Eigenwerbung: die Großaktionäre in der App" } },
-  { "id": "impressum", "quellen": false },
-  { "id": "rueckseite", "quellen": false }
+  {
+   "id": "cover",
+   "quellen": false
+  },
+  {
+   "id": "inhalt",
+   "quellen": [
+    "ant-s1"
+   ]
+  },
+  {
+   "id": "kennzahlen",
+   "quellen": [
+    "ant-s1",
+    "cnbc-spanne"
+   ],
+   "toc": {
+    "rubrik": "Auf einen Blick",
+    "titel": "Anthropic in zwölf Zahlen"
+   }
+  },
+  {
+   "id": "geschichte",
+   "quellen": [
+    "ant-s1"
+   ],
+   "toc": {
+    "rubrik": "Die Geschichte",
+    "titel": "Von 41 Millionen Dollar Umsatz zum Börsengang",
+    "bild": "img/ki/buero-sf.jpg"
+   }
+  },
+  {
+   "id": "produkte",
+   "quellen": [
+    "ant-s1",
+    "anthropic-web"
+   ],
+   "toc": {
+    "rubrik": "Die Produkte",
+    "titel": "Claude, Claude Code, Cowork",
+    "bild": "img/ki/code-agent.jpg"
+   }
+  },
+  {
+   "id": "geschaeft",
+   "quellen": [
+    "ant-s1"
+   ],
+   "toc": {
+    "rubrik": "Das Geschäftsmodell",
+    "titel": "Bezahlt wird für Rechenarbeit"
+   }
+  },
+  {
+   "id": "zahlen",
+   "quellen": [
+    "ant-s1"
+   ],
+   "toc": {
+    "rubrik": "Die Zahlen",
+    "titel": "Umsatz mal 45 in sieben Quartalen"
+   }
+  },
+  {
+   "id": "compute",
+   "quellen": [
+    "ant-s1"
+   ],
+   "toc": {
+    "rubrik": "Die Kosten",
+    "titel": "900,9 Mrd. $ für Rechenleistung",
+    "bild": "img/ki/rechenzentrum.jpg"
+   }
+  },
+  {
+   "id": "bilanz",
+   "quellen": [
+    "ant-s1"
+   ],
+   "toc": {
+    "rubrik": "Die Bilanz",
+    "titel": "104 Mrd. $ Verlust, erklärt"
+   }
+  },
+  {
+   "id": "macht",
+   "quellen": [
+    "ant-s1"
+   ],
+   "toc": {
+    "rubrik": "Wer bestimmt",
+    "titel": "Treuhandrat, Gründer, Großaktionäre",
+    "bild": "img/ki/vorstand.jpg"
+   }
+  },
+  {
+   "id": "boersengang",
+   "quellen": [
+    "ant-s1",
+    "cnbc-spanne"
+   ],
+   "toc": {
+    "rubrik": "Der Börsengang",
+    "titel": "825 Mio. Aktien, 70 bis 78 $"
+   }
+  },
+  {
+   "id": "cyber",
+   "quellen": [
+    "ant-s1",
+    "vu-daten"
+   ],
+   "toc": {
+    "rubrik": "Sonderthema",
+    "titel": "Die beste Cyber-Aktie der Welt?",
+    "bild": "img/ki/sicherheit.jpg"
+   }
+  },
+  {
+   "id": "nvidia",
+   "quellen": [
+    "ant-s1",
+    "vu-daten",
+    "nvda-q3"
+   ],
+   "toc": {
+    "rubrik": "Sonderthema",
+    "titel": "Wird Anthropic die neue Nvidia?",
+    "bild": "img/ki/gpu-board.jpg"
+   }
+  },
+  {
+   "id": "schaufel",
+   "quellen": [
+    "ant-s1",
+    "nvda-q3",
+    "spcx-q3",
+    "vu-daten"
+   ],
+   "toc": {
+    "rubrik": "Sonderthema",
+    "titel": "Goldgräber und Schaufelverkäufer"
+   }
+  },
+  {
+   "id": "rechnung",
+   "quellen": [
+    "ant-s1",
+    "vu-daten"
+   ],
+   "toc": {
+    "rubrik": "Rechenbeispiele",
+    "titel": "Was müsste passieren?",
+    "bild": "img/ki/waage.jpg"
+   }
+  },
+  {
+   "id": "bull",
+   "quellen": [
+    "ant-s1"
+   ],
+   "toc": {
+    "rubrik": "Szenarien",
+    "titel": "Was Optimisten anführen",
+    "bild": "img/ki/bulle-baer.jpg"
+   }
+  },
+  {
+   "id": "bear",
+   "quellen": [
+    "ant-s1"
+   ],
+   "toc": {
+    "rubrik": "Szenarien",
+    "titel": "Was Skeptiker anführen",
+    "bild": "img/ki/bulle-baer.jpg"
+   }
+  },
+  {
+   "id": "termine",
+   "quellen": [
+    "ant-s1",
+    "cnbc-spanne"
+   ],
+   "toc": {
+    "rubrik": "Ausblick",
+    "titel": "Termine, Haltefristen, Checkliste"
+   }
+  },
+  {
+   "id": "app",
+   "quellen": [
+    "vu-daten"
+   ],
+   "toc": {
+    "rubrik": "Vision Universe",
+    "titel": "Eigenwerbung: die Großaktionäre in der App"
+   }
+  },
+  {
+   "id": "impressum",
+   "quellen": false
+  },
+  {
+   "id": "rueckseite",
+   "quellen": false
+  }
  ],
  "fussHinweis": false
 }
