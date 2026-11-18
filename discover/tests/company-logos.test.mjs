@@ -466,3 +466,9 @@ test("Gewaehlte Logo-Adressen: nur https, nur gueltige Ticker, nicht gesperrt", 
     assert.ok(!(rejects.urls || {})[url], "Gesperrte Adresse gewaehlt: " + sym);
   }
 });
+
+test("keinLogoErwartet: SPACs und Fonds ja, Betriebsunternehmen nein", async () => {
+  const { keinLogoErwartet } = await import("../../scripts/discover/company-logos-web.mjs");
+  for (const n of ["Armada Acquisition Corp I", "Virtus Artificial Intelligence & Technology Opportunities Fund", "Centurion Acquisition Class A"]) assert.equal(keinLogoErwartet(n), true, n);
+  for (const n of ["ACNB Corp", "Acco Brands", "Apogee Therapeutics", "", null]) assert.equal(keinLogoErwartet(n), false, String(n));
+});
