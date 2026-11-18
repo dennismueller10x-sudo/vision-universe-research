@@ -99,6 +99,12 @@ const WORK_DIR = arg("--work-dir",
 const { loadDuplicateResolution, DEFAULT_DUPLICATE_RESOLUTION_FILE } =
   await import(join(root, "scripts", "market", "lib", "security-master-duplicate-resolution.mjs"));
 const DUPLICATE_RESOLUTION_ARG = arg("--duplicate-resolution", DEFAULT_DUPLICATE_RESOLUTION_FILE);
+/* Register belegter Boersenwechsel (quant/engines/us-security-master.js, Abschnitt
+   BELEGTE BOERSENWECHSEL). Pflicht wie das Doppelzeilen-Register; "--exchange-transfer none"
+   schaltet es ausdruecklich ab (Vorher-Lauf), die Ausgabe ist dann byte-gleich mit dem Stand ohne. */
+const { loadExchangeTransfer, DEFAULT_EXCHANGE_TRANSFER_FILE } =
+  await import(join(root, "scripts", "market", "lib", "security-master-exchange-transfer.mjs"));
+const EXCHANGE_TRANSFER_ARG = arg("--exchange-transfer", DEFAULT_EXCHANGE_TRANSFER_FILE);
 const { loadDelistingEvidence, DEFAULT_DELISTING_EVIDENCE_FILE } =
   await import(join(root, "scripts", "market", "lib", "security-master-delisting-evidence.mjs"));
 const DELISTING_EVIDENCE_ARG = arg("--delisting-evidence", DEFAULT_DELISTING_EVIDENCE_FILE);
@@ -434,17 +440,31 @@ async function main() {
   let dupRegister;
   try { dupRegister = loadDuplicateResolution(DUPLICATE_RESOLUTION_ARG); }
   catch (err) { console.error("ABBRUCH: " + err.message + " Nichts geschrieben."); process.exit(2); }
+  let xferRegister;
+  try { xferRegister = loadExchangeTransfer(EXCHANGE_TRANSFER_ARG); }
+  catch (err) { console.error("ABBRUCH: " + err.message + " Nichts geschrieben."); process.exit(2); }
   const stamp = STAMP || new Date().toISOString();
   const result = Master.buildSecurityMaster({
     providerRows, baseline, today: TODAY,
     providerAvailable: providerRows.length > 0, stamp,
     duplicateResolution: dupRegister.doc,
+    exchangeTransfer: xferRegister.doc,
     delistingEvidence: delisting.doc
   });
   /* Nur mit Register im Kopf der Artefakte; ohne Register bleibt jede Datei byte-gleich. */
-  const dupHeader = result.duplicateResolution
-    ? { duplicateResolution: { ...result.duplicateResolution, file: dupRegister.file, sha256: dupRegister.sha256 } }
-    : {};
+  const dupHeader = {
+    ...(result.duplicateResolution
+      ? { duplicateResolution: { ...result.duplicateResolution, file: dupRegister.file, sha256: dupRegister.sha256 } }
+      : {}),
+    ...(result.exchangeTransfer
+      ? { exchangeTransfer: { ...result.exchangeTransfer, file: xferRegister.file, sha256: xferRegister.sha256 } }
+      : {})
+  };
+  console.log(`  Boersenwechsel-Register: ${result.exchangeTransfer
+    ? result.exchangeTransfer.records + " Eintraege, angewandt " + result.exchangeTransfer.applied.length +
+      ", nicht angewandt " + result.exchangeTransfer.notApplied.length +
+      result.exchangeTransfer.notApplied.map((n) => " [" + n.securityId + ": " + n.reason + "]").join("")
+    : "abgeschaltet"}`);
   console.log(`  Doppelzeilen-Register: ${result.duplicateResolution
     ? result.duplicateResolution.records + " Eintraege, angewandt " + result.duplicateResolution.applied.length +
       ", nicht angewandt " + result.duplicateResolution.notApplied.length +

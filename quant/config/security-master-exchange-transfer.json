@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "security-master-exchange-transfer-1.0.0",
+  "consumer": "scripts/market/build-us-security-master.mjs -> scripts/market/lib/security-master-exchange-transfer.mjs -> quant/engines/us-security-master.js#indexExchangeTransfer",
+  "effect": "Nur fuer den eingetragenen Ticker: von genau zwei Anbieterzeilen (beendete Altzeile an der bisherigen Boerse, Folgezeile ab to.startDate mit leerer oder gleichlautender Boerse) entfaellt die Altzeile (dropped_row), die Folgezeile bekommt die belegte Boerse. Passt etwas nicht, bleibt alles wie ohne Register. Zeilen ohne Eintrag bleiben unberuehrt.",
+  "rule": "Boersenwechsel derselben Aktie derselben Emittentin: gleiche CIK, 8-A12B-Registrierung an der neuen Boerse, zitierte Meldung, alle Meldungen vor dem Ereignis eingereicht; Ende der Altzeile und Beginn der Folgezeile hoechstens 7 Tage vom Ereignis. Tickerwechsel stehen in quant/config/ticker-successions.json (ADR-009), Umfirmierungen am selben Platz im Doppelzeilen-Register.",
+  "sources": [
+    { "id": "tiingo-supported-tickers-20261118", "url": "https://apimedia.tiingo.com/docs/tiingo/daily/supported_tickers.zip", "fetchedAt": "2026-11-18",
+      "note": "Offene Datei, nicht committet. Zeilen: TXCP,NASDAQ,Stock,USD,2003-08-14,2026-11-10 und TXCP,,Stock,USD,2026-11-11,2026-11-17; TCBI nicht mehr gefuehrt." },
+    { "id": "sec-edgar-submissions-0001077428", "url": "https://data.sec.gov/submissions/CIK0001077428.json", "fetchedAt": "2026-11-18",
+      "note": "name TEXAS CAPITAL BANCSHARES INC/TX, tickers [TXCP, TCBI, TCBI-PB, TXCP-PB], exchanges [-, TXSE, TXSE, -]. Rohdaten nicht committet." }
+  ],
+  "records": [
+    {
+      "securityId": "ref_TXCP",
+      "ticker": "TXCP",
+      "cik": "0001077428",
+      "assetType": "Stock",
+      "instrumentType": "EQUITY_COMMON",
+      "currency": "USD",
+      "from": { "exchange": "NASDAQ", "startDate": "2003-08-14", "endDate": "2026-11-10" },
+      "to": { "exchange": "TXSE", "startDate": "2026-11-11", "providerExchange": null },
+      "event": {
+        "kind": "EXCHANGE_TRANSFER_SAME_ISSUER",
+        "venueEffectiveDate": "2026-10-08",
+        "effectiveDate": "2026-11-09",
+        "note": "Texas Capital Bancshares, Inc. (CIK 0001077428) hat die Stammaktie von der Nasdaq an die Texas Stock Exchange verlegt (Handel an der TXSE ab 08.10.2026) und am 09.11.2026 das Kuerzel TCBI durch TXCP ersetzt. Der Anbieter fuehrt die bisherige Reihe rueckwirkend unter TXCP an der NASDAQ (2003-08-14..2026-11-10) und beginnt am 11.11. eine Folgezeile ohne Boersenangabe. Die Tickernachfolge ref_TCBI -> ref_TXCP steht in quant/config/ticker-successions.json."
+      },
+      "filings": [
+        { "form": "8-K", "items": ["3.01", "7.01", "9.01"], "accession": "0001077428-26-000061", "filingDate": "2026-09-14", "cik": "0001077428",
+          "url": "https://www.sec.gov/Archives/edgar/data/1077428/000107742826000061/tcbi-20260914.htm",
+          "quote": "On November 9, 2026, the Common Stock and the Preferred Stock are expected to begin trading under the new ticker symbols \"TXCP\" and \"TXCP PRB\", respectively." },
+        { "form": "8-A12B", "accession": "0001077428-26-000068", "filingDate": "2026-10-07", "cik": "0001077428",
+          "url": "https://www.sec.gov/Archives/edgar/data/1077428/000107742826000068/form8-a12bx1072026.htm",
+          "quote": "The Registrant expects that the listing and trading of the Equity Securities on the Nasdaq will end at market close on October 7, 2026, and that trading will begin on the TXSE at market open on October 8, 2026." },
+        { "form": "25", "accession": "0001077428-26-000070", "filingDate": "2026-10-07", "cik": "0001077428",
+          "url": "https://www.sec.gov/Archives/edgar/data/1077428/000107742826000070/form25-1072026.htm" }
+      ],
+      "reviewedAt": "2026-11-18"
+    }
+  ]
+}
