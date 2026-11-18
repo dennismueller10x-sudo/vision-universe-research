@@ -157,7 +157,7 @@ test("AK-8 · Grafiken zeichnen nur übergebene Werte", () => {
 });
 
 test("AK-9 · Die Vorschau installiert nur VUStockSheet und fasst den Rahmen nicht an; open() lehnt Nicht-US-Kürzel ab", async () => {
-  assert.deepEqual(Object.keys(S).sort(), ["CONTEXT_MODULES", "VERSION", "aktieHref", "bind", "data", "draw", "fmt", "html", "model", "moduleContext", "open", "ui"]);
+  assert.deepEqual(Object.keys(S).sort(), ["CONTEXT_MODULES", "VERSION", "aktieHref", "bind", "chart", "data", "draw", "fmt", "html", "model", "moduleContext", "open", "ui"]);
   const src = read("assets/vu-stock-sheet.js");
   assert.equal((src.match(/root\.[A-Za-z]+ = /g) || []).join(), "root.VUStockSheet = ");
   assert.doesNotMatch(src, /site-navigation/);

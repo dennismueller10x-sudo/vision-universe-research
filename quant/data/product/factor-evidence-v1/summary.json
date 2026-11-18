@@ -1,9 +1,9 @@
 {
  "schemaVersion": "factor-evidence-summary-1.0.0",
  "methodologyVersion": "vu-factor-evidence-2.0.0",
- "derivedFrom": "quant-v2.4.1",
+ "derivedFrom": "quant-v2.4.0",
  "changeMethodologyVersion": "vu-change-1.0.0",
- "generatedAt": "2026-11-18T11:29:50.000Z",
+ "generatedAt": "2026-11-18T13:16:36.000Z",
  "asOf": "2026-11-17",
  "publication": {
   "compositeAllowed": false,
@@ -33,7 +33,7 @@
   "version": "factor-band-2.0.0",
   "basis": "RELATIVE_POSITION",
   "universe": {
-   "quality": 4138,
+   "quality": 4100,
    "growth": 3361,
    "momentum": 5436,
    "value": 2788,
@@ -43,10 +43,10 @@
   },
   "scoreCuts": {
    "quality": {
-    "VERY_STRONG": 67.14,
-    "STRONG": 60.1,
-    "NEUTRAL": 49.9,
-    "WEAK": 41.74
+    "VERY_STRONG": 67.6,
+    "STRONG": 59.87,
+    "NEUTRAL": 49.76,
+    "WEAK": 41.79
    },
    "growth": {
     "VERY_STRONG": 75.19,
@@ -130,8 +130,8 @@
    "direction": "lower",
    "unit": "ratio",
    "basis": null,
-   "note": "Größter Rückgang der jährlichen operativen Marge vom früheren Hoch in den letzten drei Geschäftsjahren; steigende Margen zählen nicht.",
-   "window": "last 3 fiscal years; minimum 3",
+   "note": "Größter Rückgang der jährlichen operativen Marge vom früheren Hoch, bis zu fünf Geschäftsjahre (ab vier); steigende Margen zählen nicht.",
+   "window": "last 5 fiscal years; minimum 4",
    "input": "max(peak-to-trough decline of annualOperatingMargin, -min(0, median annualOperatingMargin)), margins capped to [-1, 1]; rising margins count 0"
   },
   "growth:revenueCagr3y": {
@@ -798,14 +798,7 @@
   "velocityWindowDays": 30,
   "velocityToleranceDays": 10,
   "scoreMomentumOpen": true,
-  "recomputationDrift": {
-   "asOf": "2026-11-17",
-   "publishedHash": "db2cab1614336c68",
-   "recomputedHash": "ab4119d1610c8758",
-   "rowsDiffering": 2956,
-   "rowsTotal": 5918,
-   "note": "Die veroeffentlichte Beobachtung bleibt unveraendert. Sie wurde an diesem Stichtag veroeffentlicht und wird nicht durch eine heutige Neuberechnung ersetzt."
-  }
+  "recomputationDrift": null
  },
  "scope": "CANONICAL_PRODUCT_UNIVERSE",
  "source": {
@@ -881,8 +874,8 @@
  },
  "factorStates": {
   "quality": {
-   "AVAILABLE": 4138,
-   "UNAVAILABLE": 1780,
+   "AVAILABLE": 4100,
+   "UNAVAILABLE": 1818,
    "NOT_APPLICABLE": 0
   },
   "growth": {
@@ -918,9 +911,9 @@
  },
  "reasonCounts": {
   "BLOCKED_EXTERNAL": 5918,
-  "INSUFFICIENT_COMPONENTS": 3746,
-  "INPUT_NOT_MATERIALIZED": 5632,
-  "INSUFFICIENT_WEIGHTED_COVERAGE": 1804,
+  "INSUFFICIENT_COMPONENTS": 3822,
+  "INPUT_NOT_MATERIALIZED": 5633,
+  "INSUFFICIENT_WEIGHTED_COVERAGE": 1765,
   "REPORTING_CURRENCY_NOT_LISTING_CURRENCY": 359,
   "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING": 248,
   "MANDATORY_COMPONENT_MISSING": 14,
@@ -931,7 +924,7 @@
   "quality:netDebtToAssets": 1978,
   "quality:equityToAssets": 4361,
   "quality:positiveFcfYears": 3440,
-  "quality:operatingMarginDrawdown": 3397,
+  "quality:operatingMarginDrawdown": 3197,
   "growth:revenueCagr3y": 3942,
   "growth:epsCagr3y": 2001,
   "growth:fcfCagr3y": 1938,
@@ -1043,6 +1036,6 @@
   "SHARE_COUNT_SCALE_SUSPECT": 4,
   "NOT_AN_EQUITY_LISTING:PREFERRED": 8
  },
- "runtimeMs": 15737,
- "contentHash": "6c47f7ba051dffa8"
+ "runtimeMs": 15629,
+ "contentHash": "953bdbb125325794"
 }

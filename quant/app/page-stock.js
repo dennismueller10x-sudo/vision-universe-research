@@ -1184,7 +1184,9 @@
       longPath: s.masterMemberId && /^[A-Za-z0-9_-]+$/.test(s.masterMemberId) ? "/quant/data/market/discover-series-long/" + s.masterMemberId + ".json" : null,
       loadJSON: global.QuantShell.loadJSON,
       realtime: function () { return api.getRealtimeCapability(ticker); },
-      onPrice: function (p) { if (typeof p.price === "number" && (p.live || !hasDailyPrice)) setLive(p); } });
+      onPrice: function (p) { if (typeof p.price === "number" && (p.live || !hasDailyPrice)) setLive(p); },
+      /* Owner 18.11.2026: die Pille neben dem Kurs folgt dem Zeitraum des Charts. */
+      onRange: function (r) { if (headApi && headApi.setRange) headApi.setRange(r); } });
     disposers.push(chart.dispose);
 
     /* Aufbau nach dem Owner-Mockup "Quant – Optimiertes UI Konzept" (23.10.2026): sechs kompakte Bereiche derselben

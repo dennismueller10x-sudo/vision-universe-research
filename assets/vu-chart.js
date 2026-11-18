@@ -23,15 +23,15 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function (root) {
   "use strict";
 
-  var VERSION = "vu-chart-2.3.0";
+  var VERSION = "vu-chart-2.4.0";
   /* C06: gleiche Zeitleiste in allen Welten (Folie A3, Regel 2). */
-  var RANGES = Object.freeze(["1T", "1W", "1M", "1J", "5J", "Max"]);
+  var RANGES = Object.freeze(["1T", "1W", "1M", "6M", "1J", "3J", "5J", "Max"]); /* Owner 18.11.2026: 1T 1W 1M 6M 1J 3J 5J Max überall */
   /* Hauptleiste fest in dieser Reihenfolge und mit diesen Beschriftungen (Chartstandard, core/chart-standard.js#PRIMARY);
-     alles andere (3M, 6M, YTD, 3J, 10J, 5T ...) steht hinter "Mehr". Alte Kennungen werden auf die kanonischen abgebildet. */
-  var ALIAS = { "1D": "1T", "5D": "1W", "5T": "1W", "1Y": "1J", "5Y": "5J", "MAX": "Max", "ALL": "Max" };
-  var EXTRA_ORDER = ["3M", "6M", "YTD", "3J", "3Y", "10J", "10Y"];
+     alles andere (3M, YTD, 10J, 5T ...) steht hinter "Mehr". Alte Kennungen werden auf die kanonischen abgebildet. */
+  var ALIAS = { "1D": "1T", "5D": "1W", "5T": "1W", "1Y": "1J", "3Y": "3J", "5Y": "5J", "MAX": "Max", "ALL": "Max" };
+  var EXTRA_ORDER = ["3M", "YTD", "10J", "10Y"];
   function canonRange(id) { var s = String(id || ""); return ALIAS[s.toUpperCase()] || ALIAS[s] || s; }
-  /** Rang einer Kennung: Hauptleiste 0-5, weitere dahinter. */
+  /** Rang einer Kennung: Hauptleiste 0-7, weitere dahinter. */
   function rangeRank(id) {
     var c = canonRange(id), p = RANGES.indexOf(c);
     if (p >= 0) return p;
@@ -53,6 +53,31 @@
   function dateLabel(iso, intraday) {
     if (intraday && iso.length > 10) return iso.slice(11, 16);
     return iso.slice(8, 10) + "." + iso.slice(5, 7) + "." + iso.slice(2, 4);
+  }
+  /* Beschriftung der Zeitachse nach Spanne (Owner 18.11.2026: „unten das Jahr“): ab zwei Jahren das Jahr, ab drei Monaten
+     Monat und Jahr, darunter Tag und Monat; Intraday die Uhrzeit. Tooltip und Vorlesetext behalten das volle Datum. */
+  var MON = ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"];
+  function tickLabel(iso, intraday, spanDays) {
+    if (intraday && iso.length > 10) return iso.slice(11, 16);
+    if (spanDays >= 730) return iso.slice(0, 4);
+    if (spanDays >= 90) return MON[Number(iso.slice(5, 7)) - 1] + " " + iso.slice(2, 4);
+    return iso.slice(8, 10) + "." + iso.slice(5, 7) + ".";
+  }
+  /* Langer Name eines Zeitraums für die Zeile unter dem Kurs („3 Jahre · seit 17.11.2023“). */
+  var LONG = { "1T": "1 Tag", "1W": "1 Woche", "1M": "1 Monat", "3M": "3 Monate", "6M": "6 Monate", "YTD": "seit Jahresbeginn", "1J": "1 Jahr", "3J": "3 Jahre", "5J": "5 Jahre", "10J": "10 Jahre", "Max": "Maximum" };
+  /**
+   * Veränderung im gezeigten Zeitraum (Owner 18.11.2026: die Zahl neben dem Kurs folgt dem Zeitraum).
+   * Erster gegen letzten Punkt des Fensters; bei 1T gegen den Bezug (Vortagesschluss), wenn die Geometrie einen trägt.
+   * @returns {{pct:number|null, label:string, since:string}} label: „3 Jahre · seit 17.11.2023“, bei 1T „1 Tag · zum Vortag“.
+   */
+  function rangeChange(id, g) {
+    var c = canonRange(id), name = LONG[c] || String(id || "");
+    if (!g || !isNum(g.last)) return { pct: null, label: name, since: "" };
+    var from = c === "1T" && isNum(g.base) ? g.base : g.first;
+    var pct = isNum(from) && from > 0 ? (g.last / from - 1) * 100 : null;
+    var t0 = g.pts && g.pts[0] ? g.pts[0].t : "";
+    var since = c === "1T" ? "zum Vortag" : t0 ? "seit " + t0.slice(8, 10) + "." + t0.slice(5, 7) + "." + t0.slice(0, 4) : "";
+    return { pct: pct, label: [name, since].filter(Boolean).join(" · "), since: since };
   }
 
   /* x-Marken: Anfang, Mitte, Ende; eine Marke, die der vorigen naeher als ~44 px kommt (Intraday kurz nach der Eroeffnung:
@@ -94,7 +119,7 @@
       w: w, h: h, padR: padR, padBottom: padBottom, log: log, d: d.trim(), pts: pts, base: base, baseY: Y(base),
       direction: last > base ? "up" : last < base ? "down" : "flat", first: vals[0], last: last, hi: hi, lo: lo,
       yTicks: [hi, lo].map(function (v) { return { v: v, y: Y(v) }; }).concat([{ v: last, y: Y(last), last: true }]),
-      xTicks: xTicks(p, X, w - padR),
+      xTicks: xTicks(p, X, w - padR), spanDays: (t1 - t0) / 864e5,
       intraday: isIntraday(p), y: Y,
       levels: levels.map(function (l) { return { value: l.value, label: l.label || "", tone: l.tone || "", y: Y(l.value) }; })
     };
@@ -151,7 +176,7 @@
       });
       g.xTicks.forEach(function (t, i) {
         var tx = el("text", { class: "vu-chart-axis", x: t.x.toFixed(1), y: g.h - 6, "text-anchor": i === 0 ? "start" : i === g.xTicks.length - 1 ? "end" : "middle" });
-        tx.textContent = dateLabel(t.t, g.intraday); svg.appendChild(tx);
+        tx.textContent = tickLabel(t.t, g.intraday, g.spanDays); svg.appendChild(tx);
       });
     }
     svg.__vuGeometry = g;
@@ -170,7 +195,13 @@
     if (!host) return { dispose: function () {} };
     var doc = host.ownerDocument, alive = true;
     /* Feste Reihenfolge (stabil: gleiche Rangzahl behaelt die Reihenfolge des Aufrufers) und einheitliche Beschriftung. */
-    var ranges = (o && o.ranges || []).filter(Boolean).map(function (r, i) { return { r: r, i: i }; })
+    var given = (o && o.ranges || []).filter(Boolean);
+    /* o.fullBar (Owner 18.11.2026): jede Hauptkennung steht an ihrem Platz; was die Seite nicht zeichnen kann, bleibt grau mit Grund. */
+    if (o && o.fullBar) RANGES.forEach(function (id) {
+      if (given.some(function (r) { return canonRange(r.id) === id; })) return;
+      given.push({ id: id, disabled: true, reason: id === "1T" ? "Für diese Aktie liegt kein Tagesverlauf vor." : "Für diesen Zeitraum liegen keine Kurse vor." });
+    });
+    var ranges = given.map(function (r, i) { return { r: r, i: i }; })
       .sort(function (a, b) { return rangeRank(a.r.id) - rangeRank(b.r.id) || a.i - b.i; }).map(function (x) { return x.r; });
     var extras = ranges.filter(function (r) { return !isPrimaryRange(r.id); });
     var box = doc.createElement("div"); box.className = "vu-chart" + (o.bleed === false ? "" : " vu-chart--bleed");
@@ -265,5 +296,5 @@
       '<circle cx="' + lx + '" cy="' + ly + '" r="3.5" fill="#c8f531" stroke="currentColor" stroke-width="2"/></svg>';
   }
 
-  return Object.freeze({ VERSION: VERSION, RANGES: RANGES, canonRange: canonRange, rangeRank: rangeRank, geometry: geometry, render: render, mount: mount, money: money, sparkline: sparkline, stockHeight: stockHeight });
+  return Object.freeze({ VERSION: VERSION, RANGES: RANGES, canonRange: canonRange, rangeRank: rangeRank, rangeChange: rangeChange, tickLabel: tickLabel, geometry: geometry, render: render, mount: mount, money: money, sparkline: sparkline, stockHeight: stockHeight });
 });

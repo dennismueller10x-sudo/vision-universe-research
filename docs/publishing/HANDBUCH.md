@@ -158,6 +158,8 @@ Alles frei lesbar und für Google und KI-Suchen gebaut (statisches HTML, `NewsAr
 3. Daten einfrieren: `node products/insights/snapshot.mjs <artikel.json>`, App-Screens aufnehmen:
    `node products/insights/screens.mjs <artikel.json>` (neue Aktienseite `/aktie/#/<T>` im dunklen Design an drei Stellen: Kurs,
    Analyse aus den Modulen, Das Geschäft; fehlt ein Abschnitt, entfällt die Ansicht, mindestens zwei je Ticker; nach `insights/img/app/`).
+   Diagramme im Text (Owner 18.11.2026): `abschnitte[].diagramm` mit `art` `saeulen` oder `balken`, gebaut als statisches
+   HTML in `products/insights/build.mjs` (`diagramm()`), geprüft in IN-2; der Tageslauf setzt sie, wo Zahlen im Text stehen.
    Die Datenbox im Artikel zeigt nur Kacheln mit Wert; bei jungen Notierungen ohne vier Quartale SEC-Zahlen den Abstand zum
    Hoch seit dem ersten Handelstag und einen Satz, dass Umsatz, Marge und Bewertung noch fehlen (Owner 16.11.2026).
 4. **Bilder mit Bezug statt Symbolbild** (Owner 09.11.2026): offizielles Pressematerial des Unternehmens oder Produkts

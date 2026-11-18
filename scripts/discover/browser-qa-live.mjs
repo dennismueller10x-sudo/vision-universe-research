@@ -149,7 +149,7 @@ ok("Aktienseite: Beschriftung mit Stand und Quelle",
    /Stand|schluss|Schluss|Letzter Handelstag|Live/.test(zustandstext), zustandstext.trim().slice(0, 120));
 /* V4 §13: 1W aus der Tagesreihe (sieben Kalendertage), 5T gibt es nicht. */
 ok("Aktienseite: 1W vorhanden, 5T entfaellt", (await d.locator('.dx-tf button', { hasText: /^1W$/ }).count()) === 1 && (await d.locator('.dx-tf button', { hasText: /^5T$/ }).count()) === 0);
-ok("Aktienseite: Zeitraeume 1T 1W 1M 6M 1J 5J Max", (await d.evaluate(() => [...document.querySelectorAll(".dx-tf button")].map((b) => b.textContent).join(" "))) === "1T 1W 1M 6M 1J 5J Max");
+ok("Aktienseite: Zeitraeume 1T 1W 1M 6M 1J 3J 5J Max", (await d.evaluate(() => [...document.querySelectorAll(".dx-tf button")].map((b) => b.textContent).join(" "))) === "1T 1W 1M 6M 1J 3J 5J Max");
 const s3 = await stats(d);
 ok("Aktienseite: wenige Abonnenten (Chart, Kopf, sichtbare Nachbarkarten; <= 6)", s3.subscribers <= 6, "subscribers " + s3.subscribers);
 if (SHOTS) await d.screenshot({ path: SHOTS + "/live-03-detail-desktop.png" });

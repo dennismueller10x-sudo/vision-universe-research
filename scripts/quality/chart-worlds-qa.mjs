@@ -6,7 +6,7 @@
 
    Dieselbe Aktie in Quant, Technical und (mit --worlds) Discover, mobil und Desktop:
      - der gemeinsame Chart ist da (assets/vu-chart.js: .vu-chart-line),
-     - die Leiste ist 1T 1W 1M 1J 5J Max und "Mehr", läuft nicht über den Rand,
+     - die Leiste ist 1T 1W 1M 6M 1J 3J 5J Max und "Mehr", läuft nicht über den Rand,
      - 1T ist bedienbar, wenn die Aktie einen Tagesverlauf hat,
      - die Zeitmarken der x-Achse liegen nicht übereinander,
      - der Kopfkurs ist in allen Welten derselbe Wert,
@@ -37,13 +37,13 @@ const ROUTE = {
   technical: (t) => "/technical/#/chart/" + t,
   discover: (t) => "/discover/#/s/US_REAL/" + t
 };
-export const LEISTE = ["1T", "1W", "1M", "1J", "5J", "Max", "Mehr"];
+export const LEISTE = ["1T", "1W", "1M", "6M", "1J", "3J", "5J", "Max", "Mehr"];
 /* Je Welt die Haken im Dokument: Quant und Technical bringen den Aktienchart samt Leiste (.qc-chart), Discover behält seine Leiste (.dx-tf)
-   und zeichnet die Linie mit demselben Baustein (assets/vu-chart.js). Die Hauptleiste ist überall 1T 1W 1M 1J 5J Max. */
+   und zeichnet die Linie mit demselben Baustein (assets/vu-chart.js). Die Hauptleiste ist überall 1T 1W 1M 6M 1J 3J 5J Max (Owner 18.11.2026). */
 const SEL = {
   quant: { line: ".qc-chart svg .vu-chart-line", bar: ".qc-chart .qc-ranges", buttons: ".qc-chart .qc-ranges button", ticks: ".qc-chart svg text.vu-chart-axis", head: ".vu-shead-value", leiste: LEISTE },
   technical: { line: ".qc-chart svg .vu-chart-line", bar: ".qc-chart .qc-ranges", buttons: ".qc-chart .qc-ranges button", ticks: ".qc-chart svg text.vu-chart-axis", head: ".vu-shead-value", leiste: LEISTE },
-  discover: { line: ".dx-chapter--chart svg .vu-chart-line", bar: ".dx-tf", buttons: ".dx-tf button", ticks: ".dx-chapter--chart svg text.vu-chart-axis", head: ".dx-chart-hero-preis > b", leiste: LEISTE.slice(0, 6) }
+  discover: { line: ".dx-chapter--chart svg .vu-chart-line", bar: ".dx-tf", buttons: ".dx-tf button", ticks: ".dx-chapter--chart svg text.vu-chart-axis", head: ".dx-chart-hero-preis > b", leiste: LEISTE.slice(0, 8) }
 };
 const price = (t) => { const m = /\d[\d.]*,\d{2}/.exec(t || ""); return m ? m[0] : null; };
 /* Nur der Release-Bau schreibt diese Ausschnitte (wie in der Technical-QA); im Repository greift der Rueckfall der Seite. */
