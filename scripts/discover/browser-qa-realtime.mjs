@@ -138,7 +138,9 @@ async function seite(opts) {
   p.__errors = [];
   p.on("pageerror", (e) => p.__errors.push(String(e.message)));
   p.on("console", (m) => {
-    if (m.type() === "error" && !/fonts\.googleapis|fonts\.gstatic|ERR_CERT/.test(m.text())) {
+    /* core/data/stock-availability/ entsteht erst im Bau; der Arbeitsbaum hat es nicht (404 nur hier, Produktion liefert 200; 17.11.2026). */
+    const bauNur = /\/core\/data\/stock-availability\//.test((m.location() && m.location().url) || "");
+    if (m.type() === "error" && !bauNur && !/fonts\.googleapis|fonts\.gstatic|ERR_CERT/.test(m.text())) {
       p.__errors.push(m.text());
     }
   });
@@ -342,6 +344,59 @@ for (const sym of SYMBOLE) {
   }
 }
 
+/* Drei Welten (Steuerung 17.11.2026): Discover, Quant und Technical zeigen fuer dieselbe Aktie bei offener Boerse denselben Live-Kurs
+   und denselben 1T-Verlauf. Die drei Seiten laufen gleichzeitig am selben Strom; gemessen wird sekuendlich 20 s lang. Bestanden, wenn
+   mindestens einmal alle drei Kopfkurse gleich sind (zwischen zwei Ticks liegt eine Sekunde) und der 1T-Verlauf in allen drei Welten
+   gezeichnet ist und die Punktzahl hoechstens um 2 abweicht. AFG hat duennen Handel: dort zaehlt der gleiche letzte Stand. */
+const WELTEN = {
+  discover: { route: (t) => "/discover/#/s/US_REAL/" + t, line: ".dx-chapter--chart svg .vu-chart-line", tf: ".dx-tf button", head: ".dx-chart-hero-preis > b" },
+  quant: { route: (t) => "/quant/#/aktie/" + t, line: ".qc-chart svg .vu-chart-line", tf: ".qc-chart .qc-ranges button", head: ".vu-shead-value" },
+  technical: { route: (t) => "/technical/#/chart/" + t, line: ".qc-chart svg .vu-chart-line", tf: ".qc-chart .qc-ranges button", head: ".vu-shead-value" }
+};
+bericht.dreiWelten = [];
+if (sitzung.phase === "REGULAR") {
+  for (const sym of SYMBOLE.filter((x) => x === "NVDA" || x === "AFG")) {
+    const seiten = {};
+    for (const [welt, w] of Object.entries(WELTEN)) {
+      const p = await seite();
+      await p.goto(BASIS + w.route(sym), { waitUntil: "networkidle" }).catch(() => null);
+      seiten[welt] = p;
+    }
+    const proben = [];
+    for (let i = 0; i < 20; i++) {
+      await seiten.discover.waitForTimeout(1000);
+      const probe = {};
+      for (const [welt, w] of Object.entries(WELTEN)) {
+        probe[welt] = await seiten[welt].evaluate((sel) => {
+          const h = document.querySelector(sel.head), m = /\d[\d.]*,\d{2}/.exec(h ? h.textContent : "");
+          return m ? m[0] : null;
+        }, { head: w.head }).catch(() => null);
+      }
+      proben.push(probe);
+    }
+    const eintag = {};
+    for (const [welt, w] of Object.entries(WELTEN)) {
+      eintag[welt] = await seiten[welt].evaluate(async (sel) => {
+        const knopf = [...document.querySelectorAll(sel.tf)].find((b) => b.dataset.range === "1D" || b.textContent.trim() === "1T");
+        if (!knopf || knopf.disabled) return { frei: false, punkte: 0 };
+        knopf.click();
+        await new Promise((r) => setTimeout(r, 1200));
+        const d = document.querySelector(sel.line);
+        return { frei: true, punkte: d ? (d.getAttribute("d") || "").split(/[ML]/).filter(Boolean).length : 0 };
+      }, { tf: w.tf, line: w.line }).catch(() => ({ frei: false, punkte: 0 }));
+      await seiten[welt].context().close();
+    }
+    const gleich = proben.filter((x) => x.discover && x.discover === x.quant && x.quant === x.technical).length;
+    const punkte = Object.values(eintag).map((e) => e.punkte);
+    bericht.dreiWelten.push({ symbol: sym, gleicheProben: gleich, proben: proben.length, letzteProbe: proben[proben.length - 1], eintag,
+                               ok: gleich > 0 && Object.values(eintag).every((e) => e.frei && e.punkte > 1) &&
+                                   Math.max(...punkte) - Math.min(...punkte) <= 2 });
+    console.log("  " + sym.padEnd(6) + "Drei Welten: " + gleich + "/" + proben.length + " gleiche Kopfkurse, 1T-Punkte " +
+                JSON.stringify(Object.fromEntries(Object.entries(eintag).map(([k, v]) => [k, v.punkte]))) +
+                ", zuletzt " + JSON.stringify(proben[proben.length - 1]));
+  }
+}
+
 /* §20: verbunden, Chart bewegt sich, keine Konsolenfehler. */
 const mitStrom = bericht.symbols.filter((s) => s.connected);
 const mitTicks = bericht.symbols.filter((s) => s.ticks > 0);
@@ -423,6 +478,11 @@ if (sitzung.phase === "REGULAR") {
   alleOk = pruefung("einKurs", "Kopf und Chart zeigen denselben Kurs",
                     auseinander.length === 0,
                     bericht.symbols.map((s) => s.symbol + ": " + JSON.stringify(s.prices))) && alleOk;
+}
+
+if (sitzung.phase === "REGULAR" && bericht.dreiWelten.length) {
+  alleOk = pruefung("dreiWelten", "Technical, Quant und Discover zeigen denselben Live-Kurs und 1T-Verlauf (AFG, NVDA)",
+                    bericht.dreiWelten.every((x) => x.ok), bericht.dreiWelten.filter((x) => !x.ok)) && alleOk;
 }
 
 alleOk = pruefung("keineFehler", "keine Konsolenfehler auf den Aktienseiten", fehlerfrei,
