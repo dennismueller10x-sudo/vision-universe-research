@@ -495,6 +495,8 @@ jobs:
           # Konfiguration, sondern eine Identitaet: damit ein spaeterer
           # Schritt feststellen kann, OB er mit der Fassung spricht, die
           # dieser Lauf gerade deployt hat.
+          # pipefail: ein gescheitertes Deploy macht den Schritt rot (vorher zaehlte tee).
+          set -o pipefail
           npx --yes wrangler@4.147.0 deploy --var VU_SOCIAL_BUILD:"$GITHUB_SHA" 2>&1 | tee /tmp/deploy.log
           # Die tatsaechliche Adresse aus der wrangler-Ausgabe lesen. Sie ist
           # die Quelle der Wahrheit — nicht das, was wir vorher geraten haben.
