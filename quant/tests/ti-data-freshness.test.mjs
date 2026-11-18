@@ -39,6 +39,8 @@ test("D-2 · Handelstage, nicht Kalendertage: Wochenende und Feiertage zaehlen n
   assert.equal(F.lastCompletedSession("2026-10-12T03:39:22Z"), "2026-10-09", "Montag frueh → Freitag");
   assert.equal(F.lastCompletedSession("2026-10-09T22:30:00Z"), "2026-10-09"); assert.equal(F.lastCompletedSession("2026-10-09T15:00:00Z"), "2026-10-08");
   assert.equal(F.calendarFor("XETRA"), "WEEKDAYS"); assert.equal(F.calendarFor("NYSE ARCA"), "US_EQUITY");
+  /* TXCP notiert seit 08.10.2026 an der TXSE: US-Feiertage (Thanksgiving 26.11.) sind dort keine Handelstage. */
+  assert.equal(F.calendarFor("TXSE"), "US_EQUITY");
 });
 
 test("D-3 · Inaktiver Titel: NON_TRADING (nicht frisch), aber nie bei frischen Kursen; Grund belegt", () => {
