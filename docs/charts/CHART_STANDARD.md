@@ -240,3 +240,5 @@ Jeder Schritt: Vorher/Nachher-Bilder bei 390 und 1 280 px, hell und dunkel, Pari
 6. **Je Produktwelt die UI-Umsetzung M1–M6.**
 
 Gate-Audit (Bestandsaufnahme, Empfehlungen): `docs/archiv/audits/GATE_AUDIT_2026-10-23.md`.
+
+**1T-Regel (Steuerung 18.11.2026):** Ist die Börse offen und heute schon gehandelt, ist 1T die heutige Sitzung ab Eröffnung, live fortgeschrieben; vor Eröffnung oder ohne heutigen Handel (dünne Titel) ist 1T die letzte volle Sitzung mit dem sichtbaren Etikett „letzte Sitzung (Datum)“, nie eine leere Kurve hinter einem freien Knopf – in Discover, Quant und Technical aus einer Funktion (`core/chart-standard.js#intradayView`), Vertragstest `core/tests/chart-1t-rule.test.mjs`.
