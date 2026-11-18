@@ -27,6 +27,13 @@ const writeReport=report=>writeFileSync(out+'/report.json',redact(JSON.stringify
 const brief=p=>p&&{referenceData:dataRef.reason??'SHA256',status:p.status,cause:p.cause,message:p.message,elapsedMs:p.elapsedMs,maxMs:p.maxMs,attemptCount:p.attemptCount,intermediateSeen:p.intermediateSeen,fingerprint:p.fingerprint,observed:p.observed,expectedSha:p.expectedSha,attempts:p.attempts};
 let failure=null;
 /* Eine Browser-Bewertung des bereits als ausgeliefert BEWIESENEN Releases. Fehler hier sind echte Fehler. */
+/* Das Scrollen vor dem Screenshot ist Kosmetik, keine Pruefung. Rendert die Seite den Abschnitt gerade neu (Lauf 44312137021,
+   18.11.2026: "Element is not attached to the DOM / not stable"), wird mit frisch aufgeloestem Element hoechstens 3 mal wiederholt;
+   scheitert es weiter, wird ohne Scrollen fotografiert. Alle Pruefungen (Text, Links, Antworten, Seitenfehler) laufen davor. */
+async function scrollForScreenshot(chapter){
+ for(let i=0;i<3;i++){try{await chapter.scrollIntoViewIfNeeded({timeout:5000});return true;}catch{await new Promise(r=>setTimeout(r,500));}}
+ return false;
+}
 async function phase({propagation,attempt,previousFailure}){
 const deliveryRetries=[];
 const get=path=>fetchWithRetry(fetch,origin+path+'?ci-proof='+Date.now(),{signal:AbortSignal.timeout(30000),cache:'no-store'},retry=>deliveryRetries.push({path,...retry}));
@@ -54,7 +61,7 @@ try{
   await page.goto(origin+'/discover/#/s/US_REAL/'+ticker,{waitUntil:'domcontentloaded'});await openCompanyIntelligence(page);await page.waitForSelector('.ci-company-intelligence h2');
   const chapter=page.locator('.ci-company-intelligence');assert(!(await chapter.innerText()).includes('derzeit nicht verfügbar'),ticker);assert.deepEqual(errors,[]);assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
   assertConsumerResponses(responses,ticker);
-  assert.equal(await page.locator('vu-navigation').count(),1);assert(await chapter.locator('a').count()>0);await chapter.scrollIntoViewIfNeeded();await page.screenshot({path:out+'/'+ticker+'-390.png'});
+  assert.equal(await page.locator('vu-navigation').count(),1);assert(await chapter.locator('a').count()>0);await scrollForScreenshot(chapter);await page.screenshot({path:out+'/'+ticker+'-390.png'});
   cases.push({ticker,width:390,status:'PASS',consumerRequests:responses});await page.close();
  }
  writeReport({status:'PASS',origin,sourceCommit:release.sourceCommit,generation:delivery.generation,verifiedAssetHashes:assetEntries.length,deliveryRetries,routine,protectedExistingAccessGate:true,noQueryOptIn:true,attempt,previousFailure,propagation:brief(propagation),cases});

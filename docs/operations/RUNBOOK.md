@@ -158,6 +158,8 @@ Offen, braucht eine UI-Schutz-Revision mit Owner-Freigabe (`scripts/vu2/browser-
 
 **Gehärtet (PR #2053, #2060, #2062):** Live-Lesen wiederholt transiente Fehler (8 Versuche, Pausen 1/2/4/8/15/30/30 s, Retry-After bis 30 s); 60 s Wartezeit nach dem Deploy; 2 statt 4 gleichzeitige Zugriffe; ein transienter Netzfehler gilt als Ausbreitungsfall und schließt das Gate nicht. Hash-, Inhalts- und Generationsfehler bleiben fail-closed. Kindprozesse der Profil-Stichprobe melden Exit-Signal und stderr-Ende (`source-onboarding-stderr.txt` im Artefakt).
 
+**Vierte Abschaltung 18.11.2026 (13:52 UTC):** Kein Hosting-Fehler. Pages-Lauf 44312137021 (Push), Job `company-intelligence-live`: Propagation bewiesen (AVAILABLE, Generation 9239ce28…), dann Playwright `scrollIntoViewIfNeeded: Element is not attached to the DOM / not stable` in `live-production-qa.mjs` (Scrollen vor dem Screenshot) → `REAL/BROWSER_ERROR_NOT_TIMEOUT`, Rollback, Gate zu. Behoben: Scrollen ist begrenzt wiederholbar und nie ein Prüfpunkt (`scrollForScreenshot`).
+
 **Nebenbefund:** Die Universums-Bereinigung (#2054) löste `UNEXPLAINED_PUBLIC_IDENTITY_REMAPPING` aus und wurde mit #2055 zurückgenommen; der Schutz in `universe-regression.mjs` bleibt unverändert.
 
 **Live belegen:** `company-intelligence/data/index.json` mit `state:AVAILABLE`, `company-intelligence/config/rollout.js` mit `stage:1` und ohne `productionOff`.
