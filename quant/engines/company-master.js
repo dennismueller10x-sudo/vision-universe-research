@@ -111,7 +111,10 @@
      mit benannter Grundlage und keine Anbieterangabe. */
   var PRIMARY_EXCHANGES = {
     "NASDAQ": "XNAS", "NYSE": "XNYS", "NYSE ARCA": "ARCX", "NYSE MKT": "XASE",
-    "NYSE AMERICAN": "XASE", "AMEX": "XASE", "BATS": "BATS", "IEX": "IEXG"
+    "NYSE AMERICAN": "XASE", "AMEX": "XASE", "BATS": "BATS", "IEX": "IEXG",
+    /* Texas Stock Exchange: Operating MIC TXSE (txse.com, ID-Codes). Regulaerer US-Platz wie in
+       us-security-master.js#US_PRIMARY_EXCHANGES; erster Fall TXCP (8-A12B 0001077428-26-000068). */
+    "TXSE": "TXSE"
   };
 
   /* Die Schreibweise der bestehenden securityIds. Sie stammt aus
