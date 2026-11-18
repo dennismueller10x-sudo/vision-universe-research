@@ -43,3 +43,18 @@ export function followState({ artifactSha, currentSha, changedAt, now = Date.now
     ? { state: "STALE", hours, reason: `Artefakt passt seit ${hours} h nicht zum Eingang (Grenze ${maxHours} h): Materialisierung ausgeblieben?` }
     : { state: "WAITING", hours, reason: `wartet auf die Materialisierung (Eingang seit ${hours} h neu, Grenze ${maxHours} h)` };
 }
+
+/**
+ * Dasselbe fuer Artefakte ohne Eingangs-Hash: nur die Zeitpunkte. Ist das Artefakt aelter als seine Quelle, wartet der
+ * Abgleich bis maxHours nach dem Quellstand, danach ist er ein Fehler. Ist es gleich alt oder juenger, gilt die volle Pruefung.
+ * @returns {{state: "CURRENT"|"WAITING"|"STALE", hours: number|null, reason: string}}
+ */
+export function followByTime({ artifactAt, sourceAt, now = Date.now(), maxHours = MAX_FOLLOW_HOURS }) {
+  const a = Date.parse(artifactAt || ""), s = Date.parse(sourceAt || "");
+  if (!Number.isFinite(a) || !Number.isFinite(s)) return { state: "STALE", hours: null, reason: "Zeitstempel fehlt, Abweichung nicht einzuordnen" };
+  if (a >= s) return { state: "CURRENT", hours: 0, reason: "Artefakt juenger als seine Quelle" };
+  const hours = Math.round(((typeof now === "number" ? now : now.getTime()) - s) / 36e5 * 10) / 10;
+  return hours > maxHours
+    ? { state: "STALE", hours, reason: `Artefakt aelter als seine Quelle seit ${hours} h (Grenze ${maxHours} h): Folgelauf ausgeblieben?` }
+    : { state: "WAITING", hours, reason: `wartet auf den Folgelauf (Quelle seit ${hours} h neu, Grenze ${maxHours} h)` };
+}

@@ -1,6 +1,11 @@
-import test from 'node:test';import assert from 'node:assert/strict';import {readFile} from 'node:fs/promises';import {gunzipSync} from 'node:zlib';import {createRequire} from 'node:module';
+import test from 'node:test';import assert from 'node:assert/strict';import {readFile} from 'node:fs/promises';import {gunzipSync} from 'node:zlib';import {createRequire} from 'node:module';import {fileURLToPath} from 'node:url';import {fixtureRoot} from '../../scripts/quant/lib/data-fixture.mjs';
 const require=createRequire(import.meta.url),Service=require('../api/product-services.js'),Policy=require('../engines/display-policy.js'),Query=require('../engines/query.js');
-const root=new URL('../../',import.meta.url);const reads=[];
+/* EINGEFRORENER DATENSTAND (Steuerung 18.11.2026, Muster #1991): Die Dienste rechnen auf quant/tests/fixtures/product-services/data.json.gz
+   (Erzeuger: scripts/quant/freeze-test-fixture.mjs), nicht auf dem Tagesstand. Ein Halbstand zwischen zwei Datenlaeufen oder eine neue
+   Kennzahl (NVDA nach dem 10-Q) macht so keinen Code-PR rot; die Deckung des Live-Stands meldet DQ-PQ-11 (core/product-quality.js).
+   DATA_FIXTURE_LIVE=1 prueft gegen das Repository. */
+const fixture=fixtureRoot(fileURLToPath(new URL('fixtures/product-services/data.json.gz',import.meta.url)));
+const root=fixture.url;const reads=[];
 const api=Service.create({loadJSON:async p=>{reads.push(p);return JSON.parse(await readFile(new URL(p.slice(1),root),'utf8'));},displayPolicy:Policy,queryEngine:Query});
 const materializedApi=Service.create({loadJSON:async p=>JSON.parse(await readFile(new URL(p.slice(1),root),'utf8')),loadCompressedJSON:async p=>JSON.parse(gunzipSync(await readFile(new URL(p.slice(1),root))).toString('utf8')),displayPolicy:Policy,queryEngine:Query});
 const canonicalPanel=JSON.parse(await readFile(new URL('quant/data/sec/quant-factor-inputs.json',root),'utf8')),nvda=canonicalPanel.securities.NVDA;

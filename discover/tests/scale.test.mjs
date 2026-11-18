@@ -9,6 +9,7 @@ import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import { followByTime } from "../../scripts/quant/lib/follow-artifact.mjs";
 
 const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -36,12 +37,18 @@ test("SC1 · keine MVP-Grenze im Build: kein GATE_500 und keine 498 als Konstant
   assert.ok(!/\b(498|500)\b/.test(ingest.replace(/\/\*[\s\S]*?\*\//g, "")), "Intraday-Ingest mit fester Titelzahl");
 });
 
-test("SC2 · die Universumsquelle ist kanonisch und im Meta benannt - mit Uebergabepunkt", { skip: !vorhanden }, () => {
+test("SC2 · die Universumsquelle ist kanonisch und im Meta benannt - mit Uebergabepunkt", { skip: !vorhanden }, (t) => {
   const u = meta.universes.find((x) => x.universeId === "US_REAL");
   assert.ok(u.universeSource && u.universeSource.file, "Universumsquelle fehlt");
   const quelle = resolveProductUniverse(root);
   assert.equal(u.universeSource.file, quelle.file);
-  assert.equal(u.universeSource.counts.productUniverse, quelle.counts.productUniverse);
+  /* Halbstand (18.11.2026): Ein Eignungslauf aendert das Universum, Discover baut erst im naechsten Marktlauf nach. Ist das Meta
+     aelter als die Quelle, wartet der Zahlenabgleich bis 6 h sichtbar, danach ist er ein Fehler (scripts/quant/lib/follow-artifact.mjs). */
+  if (u.universeSource.counts.productUniverse !== quelle.counts.productUniverse) {
+    const folge = followByTime({ artifactAt: meta.generatedAt, sourceAt: quelle.generatedAt });
+    if (folge.state === "WAITING") { t.skip(folge.reason); return; }
+    assert.equal(u.universeSource.counts.productUniverse, quelle.counts.productUniverse, folge.reason);
+  }
   assert.ok(["INTEGRATED", "PENDING"].includes(u.universeSource.handover.status));
   if (u.universeSource.handover.status === "PENDING") {
     assert.match(u.universeSource.handover.message, /Market-Data-Layer ist fuer \d+ Titel bereit/);
