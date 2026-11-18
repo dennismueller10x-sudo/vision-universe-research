@@ -187,7 +187,8 @@
 
   /**
    * @param {object} o {ticker, eod:[[date,close]], currency, adjusted, splitEvents,
-   *                    longPath, loadJSON, onPrice(fn), zoom}
+   *                    longPath, loadJSON, onPrice(fn), zoom, fx}
+   *   fx: false zeigt immer die Boersenwaehrung und blendet den Waehrungsumschalter aus (nur Technical, Owner 18.11.2026).
    *   zoom: true schaltet Fingerzoom ein (nur Technical, Owner 18.11.2026): zwei Finger zoomen, ein Finger verschiebt
    *   den gezoomten Ausschnitt, Doppeltipp und „Zurücksetzen“ zeigen wieder den ganzen Zeitraum; Knöpfe − und +,
    *   am Rechner Trackpad-Zoom (Strg + Rad). Der Ausschnitt wird neu gezeichnet (Reihe, Skala und Ebenen scharf),
@@ -639,7 +640,10 @@
     empty("Chart wird geladen", "");
     global.setTimeout(start, 0);
     function redraw() { if (!st.disposed && st.range) draw(st.range); }
-    display().then(function (CS) { if (CS && !st.disposed) { st.std = CS; redraw(); st.unfx = CS.currencyControl(fxHost, redraw); } });
+    /* fx: false (Technical, Owner 18.11.2026): immer Boersenwaehrung, kein Umschalter im Chart. Analyse-Ebenen (Zonen,
+       Linien, Baender) rechnen in der Boersenwaehrung; eine umgerechnete Kurslinie laege neben ihnen. Die
+       Anzeigewaehrung bleibt die zentrale Einstellung (Konto, Menue) fuer alle anderen Charts. */
+    if (o.fx !== false) display().then(function (CS) { if (CS && !st.disposed) { st.std = CS; redraw(); st.unfx = CS.currencyControl(fxHost, redraw); } });
 
     return {
       node: node,

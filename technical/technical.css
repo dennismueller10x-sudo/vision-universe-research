@@ -1358,3 +1358,29 @@ div.tc-signal{grid-template-columns:44px minmax(0,1fr) auto}
 .qc-zoom-hint{margin-left:auto;font-size:12px;color:var(--vu-mute,#6e6e6e)}
 .qc-chart.is-zoomed .qc-zoom-hint{display:none}
 svg .tc-layers{pointer-events:none}
+/* Linien und Katalog-Indikatoren auf der Chart-Seite (Owner 18.11.2026) */
+.tc-layers .tc-line{stroke-width:1.7;fill:none}
+:root[data-theme=dark] .tc-layers .tc-line[stroke="#000"]{stroke:#fff}
+.tc-layers .tc-ind-line{fill:none}
+.tc-panes:empty{display:none}
+.tc-panes{display:grid;gap:6px;margin-top:6px}
+.tc-pane-box{background:var(--vu-card,#f4f4f4);border-radius:14px;padding:6px 8px 4px}
+.tc-pane-h{display:flex;align-items:center;gap:8px;font-size:12.5px}
+.tc-pane-h b{font-weight:800}
+.tc-pane-h .num{color:var(--vu-mute,#6e6e6e);font-weight:700}
+.tc-pane-x{margin-left:auto;width:28px;height:28px;border:0;border-radius:50%;background:var(--vu-hair,#e9e9e9);color:var(--vu-ink,#000);font-size:15px;cursor:pointer}
+.tc-pane-svg{display:block;width:100%;height:86px}
+.tc-pane-zero{stroke:var(--vu-hair,#e9e9e9);stroke-dasharray:3 3}
+.tc-active:empty{display:none}
+.tc-active{margin-top:6px}
+.tc-ind-search{width:100%;min-height:44px;border:0;border-radius:999px;background:var(--vu-card,#f4f4f4);color:var(--vu-ink,#000);padding:0 16px;font:600 15px/1 var(--vu-font,Inter,sans-serif);margin:8px 0 4px}
+.tc-ind-fam{margin-top:12px}
+.tc-ind-box{background:var(--vu-card,#f4f4f4);border-radius:18px;padding:2px 12px;margin-top:6px}
+.tc-ind-row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;width:100%;padding:10px 0;border:0;border-top:1px solid var(--vu-hair,#e9e9e9);background:none;color:inherit;font:inherit;text-align:left;cursor:pointer;min-height:48px}
+.tc-ind-row:first-child{border-top:0}
+.tc-ind-t b{display:block;font-size:14px;font-weight:800;line-height:1.25}
+.tc-ind-t small{display:block;font-size:12px;color:var(--vu-mute,#6e6e6e);line-height:1.35;margin-top:2px}
+.tc-ind-sw{width:46px;height:28px;border-radius:999px;background:var(--vu-hair,#e9e9e9);position:relative;flex:none}
+.tc-ind-sw:before{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:var(--vu-mute,#6e6e6e);transition:left .15s}
+.tc-ind-sw.is-on{background:var(--vu-lime,#c8f531)}
+.tc-ind-sw.is-on:before{left:21px;background:#000}
