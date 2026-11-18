@@ -1,7 +1,7 @@
 {
   "version": "company-master-1.0.0",
   "masterId": "VU_COMPANY_MASTER",
-  "generatedAt": "2026-11-18T02:36:13.901Z",
+  "generatedAt": "2026-11-18T05:02:58.666Z",
   "asOf": "2026-11-18",
   "provider": "tiingo",
   "source": {
@@ -14,17 +14,17 @@
       "rows": 108573,
       "note": "Zeilenzahl des Anbieterverzeichnisses, aus dem diese Auszuege stammen."
     },
-    "providerRowsSeen": 7815,
+    "providerRowsSeen": 7840,
     "provenance": [
       {
         "file": "quant/data/market/scale/universe-ELIGIBLE_US_EQUITY.json",
         "gate": "ELIGIBLE_US_EQUITY",
-        "securities": 6315
+        "securities": 6340
       },
       {
         "file": "quant/data/market/scale/universe-FULL_UNIVERSE.json",
         "gate": "FULL_UNIVERSE",
-        "securities": 7808
+        "securities": 7833
       },
       {
         "file": "quant/data/market/scale/universe-GATE_100.json",
@@ -89,11 +89,11 @@
     "maxInstrumentsNote": "Bewusst null, und das ist die wichtigste Zeile dieser Datei. Es gibt keine Zielgroesse: nicht 500, nicht 7.000, nicht 50.000. Wie gross das Universum ist, entscheidet das Anbieterverzeichnis. Eine Zahl an dieser Stelle waere genau die Begrenzung, die der Master aufloest."
   },
   "totals": {
-    "providerRows": 7815,
-    "ingested": 7815,
+    "providerRows": 7840,
+    "ingested": 7840,
     "droppedByIngestRules": 0,
-    "inMaster": 7815,
-    "published": 7814,
+    "inMaster": 7840,
+    "published": 7839,
     "withheldFromPublication": 1
   },
   "shards": {
@@ -182,7 +182,7 @@
       },
       {
         "shard": "AU",
-        "count": 17
+        "count": 18
       },
       {
         "shard": "AV",
@@ -194,7 +194,7 @@
       },
       {
         "shard": "AX",
-        "count": 17
+        "count": 18
       },
       {
         "shard": "AY",
@@ -222,7 +222,7 @@
       },
       {
         "shard": "BD",
-        "count": 13
+        "count": 14
       },
       {
         "shard": "BE",
@@ -318,7 +318,7 @@
       },
       {
         "shard": "CA",
-        "count": 60
+        "count": 63
       },
       {
         "shard": "CB",
@@ -386,7 +386,7 @@
       },
       {
         "shard": "CR",
-        "count": 62
+        "count": 63
       },
       {
         "shard": "CS",
@@ -494,7 +494,7 @@
       },
       {
         "shard": "DR",
-        "count": 16
+        "count": 17
       },
       {
         "shard": "DS",
@@ -598,7 +598,7 @@
       },
       {
         "shard": "ES",
-        "count": 21
+        "count": 22
       },
       {
         "shard": "ET",
@@ -642,7 +642,7 @@
       },
       {
         "shard": "FC",
-        "count": 18
+        "count": 19
       },
       {
         "shard": "FD",
@@ -654,7 +654,7 @@
       },
       {
         "shard": "FF",
-        "count": 6
+        "count": 8
       },
       {
         "shard": "FG",
@@ -914,7 +914,7 @@
       },
       {
         "shard": "HU",
-        "count": 22
+        "count": 23
       },
       {
         "shard": "HV",
@@ -1410,7 +1410,7 @@
       },
       {
         "shard": "MT",
-        "count": 32
+        "count": 34
       },
       {
         "shard": "MU",
@@ -1506,7 +1506,7 @@
       },
       {
         "shard": "NR",
-        "count": 17
+        "count": 18
       },
       {
         "shard": "NS",
@@ -1522,7 +1522,7 @@
       },
       {
         "shard": "NV",
-        "count": 17
+        "count": 18
       },
       {
         "shard": "NW",
@@ -1546,7 +1546,7 @@
       },
       {
         "shard": "OC",
-        "count": 17
+        "count": 18
       },
       {
         "shard": "OD",
@@ -1594,7 +1594,7 @@
       },
       {
         "shard": "OP",
-        "count": 23
+        "count": 24
       },
       {
         "shard": "OR",
@@ -1710,7 +1710,7 @@
       },
       {
         "shard": "PT",
-        "count": 22
+        "count": 23
       },
       {
         "shard": "PU",
@@ -1810,7 +1810,7 @@
       },
       {
         "shard": "QU",
-        "count": 10
+        "count": 11
       },
       {
         "shard": "QV",
@@ -1874,7 +1874,7 @@
       },
       {
         "shard": "RN",
-        "count": 16
+        "count": 17
       },
       {
         "shard": "RO",
@@ -1926,7 +1926,7 @@
       },
       {
         "shard": "SA",
-        "count": 43
+        "count": 44
       },
       {
         "shard": "SB",
@@ -2010,7 +2010,7 @@
       },
       {
         "shard": "SV",
-        "count": 21
+        "count": 22
       },
       {
         "shard": "SW",
@@ -2450,7 +2450,7 @@
       },
       {
         "shard": "XG",
-        "count": 1
+        "count": 2
       },
       {
         "shard": "XH",
@@ -2688,17 +2688,17 @@
   },
   "previousState": {
     "from": "publishedShards",
-    "instruments": 7813
+    "instruments": 7814
   },
   "run": {
     "source": "github-actions",
-    "runId": "44224291775",
-    "commit": "841a1787d62a1bf9b2a95166b6ebfeb689c71faa",
-    "normalizeMs": 105,
-    "syncMs": 114,
-    "shardsWritten": 5,
-    "shardsUnchanged": 641,
-    "publishedBytes": 10100161
+    "runId": "44241203900",
+    "commit": "fa9273dcf6e7a0b10bfa69b69cd64f591ca6df15",
+    "normalizeMs": 77,
+    "syncMs": 97,
+    "shardsWritten": 21,
+    "shardsUnchanged": 625,
+    "publishedBytes": 10130654
   },
   "identifiers": {
     "cikMap": {
@@ -2711,11 +2711,11 @@
       "ambiguous": 0,
       "reason": null
     },
-    "withIssuerId": 6461,
-    "distinctIssuers": 5481,
-    "withCik": 6461,
-    "withName": 7590,
-    "withoutName": 224,
+    "withIssuerId": 6469,
+    "distinctIssuers": 5485,
+    "withCik": 6469,
+    "withName": 7598,
+    "withoutName": 241,
     "note": "isin/cusip/figi/lei bleiben null: keine der vorhandenen Quellen fuehrt sie, und eine neue kostenpflichtige Quelle ist ausgeschlossen (§32). Die Felder stehen im Schema, damit ein spaeterer Anbieter sie fuellen kann, ohne das Modell zu aendern."
   },
   "quality": {
@@ -2761,7 +2761,7 @@
           ]
         }
       ],
-      "missingName": 224,
+      "missingName": 241,
       "missingExchange": 0,
       "missingCurrency": 0,
       "missingCountry": 0,
