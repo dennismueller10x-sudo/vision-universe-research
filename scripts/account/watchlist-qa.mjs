@@ -100,10 +100,11 @@ check(!/Gesamtscore\s*\d/.test(text), 'kein Gesamtscore-Wert');
 const strategies = await page.evaluate(async () => (await (await fetch('/core/data/watchlist-summary-v1/meta.json')).json()).sources.supertrader.strategies);
 const released = Object.values(strategies).some(s => s.released);
 if (!released) {
-  const rowTexts = await page.locator('.wl-row').allTextContents();
+  /* nur die Chip-Zeile je Zeile: eine aufgeklappte Zeile nennt in den Benachrichtigungs-Schaltern ebenfalls „erfüllt die Regel einer Methode“ */
+  const rowTexts = await page.locator('.wl-row .wl-row-sub').allTextContents();
   const valid = rowTexts.filter(t => /erfüllt die Regel einer Methode|Supertrader gültig/.test(t));
   const research = rowTexts.filter(t => /Forschung/.test(t)).length;
-  check(!valid.length, 'Supertrader ohne Freigabe nur als Forschung (' + research + ' Zeile(n) mit Forschungs-Eintrag, keine mit Eignung)');
+  check(!valid.length, 'Supertrader ohne Freigabe nur als Forschung (' + research + ' Zeile(n) mit Forschungs-Eintrag, ' + valid.length + ' mit Eignung)');
 }
 check((await page.locator('.wl-row .wl-factors i').count()) >= 21, 'Faktorbalken je Zeile');
 check(/Schluss \d{2}\.\d{2}\.\d{2}/.test(text), 'Kurs mit Datenstand');
