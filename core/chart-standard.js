@@ -40,11 +40,11 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function () {
   "use strict";
 
-  var VERSION = "chart-standard-1.3.0";
+  var VERSION = "chart-standard-1.4.0";
 
   /* Kanonische Kennungen und Fenster (Kalendertage). */
-  var PRIMARY = ["1T", "1W", "1M", "1J", "5J", "MAX"];
-  var EXTRA = ["3M", "6M", "YTD", "3J", "10J"];
+  var PRIMARY = ["1T", "1W", "1M", "6M", "1J", "3J", "5J", "MAX"]; /* Owner 18.11.2026: eine Leiste überall, 6M und 3J in der Hauptleiste */
+  var EXTRA = ["3M", "YTD", "10J"];
   var DEFAULT_RANGE = "1J"; /* Redesign 2027 (C06, D09): Standard 1J; 1T bleibt in der Leiste. */
   var DAYS = { "1W": 7, "1M": 31, "3M": 92, "6M": 183, "1J": 366, "3J": 1096, "5J": 1827, "10J": 3653 };
   /* Die Kennungen, die die Welten heute benutzen, auf die kanonischen. */

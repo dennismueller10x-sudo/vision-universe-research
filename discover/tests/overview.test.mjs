@@ -94,7 +94,7 @@ test("OV9 ein Jahreswert: alle 12-Monats-Angaben der Titelseite sind derselbe Do
   assert.match(css, /dx-chart-hero\.dx-chart-hero--c04\{display:flex;flex-direction:column/, "Kursblock untereinander");
   assert.match(css, /dx-chart-hero--c04 \.dx-chart-hero-preis\{display:flex;flex-wrap:wrap/, "Kurs und Pille brechen schmal um");
   assert.doesNotMatch(css, /grid-template-columns:subgrid/, "kein Raster mehr neben dem Kurs");
-  assert.match(detail, /dx-chart-hero-zr num/, "Veränderung im Zeitraum über dem Chart");
+  assert.match(detail, /dx-chart-hero-vt dx-chart-hero-zr/, "Zeitraum der Veränderung unter dem Kurs (Owner 18.11.2026)");
   assert.match(detail, /var hoch = Math\.max\.apply\(null, jahr\)[\s\S]{0,160}"Hoch 12 Mon\. " \+ alsAngezeigt\(hoch, waehrung\)/, "Hoch/Tief aus der gezeichneten Tagesreihe");
   assert.match(css, /\.dx-chart-pills\{order:2;/, "Pillen unter den Zeitraum-Knöpfen");
 });
@@ -139,7 +139,7 @@ test("OV12 Aktienkopf C04 (Klickentwurf 17.11.2026): Kurs, Tagesbewegung, darunt
   const detail = readFileSync(new URL("../ui/detail.js", import.meta.url), "utf8");
   assert.match(detail, /dx-chart-hero dx-chart-hero--c04/);
   assert.match(detail, /compact: !!dollarKopf/);
-  assert.match(detail, /title: "zum Vortagesschluss"/, "die Pille ist die Tagesbewegung");
+  assert.match(detail, /title: "Veränderung im gewählten Zeitraum"/, "die Pille folgt dem Zeitraum (Owner 18.11.2026)");
   const css = readFileSync(new URL("../ui/overview.css", import.meta.url), "utf8");
   assert.match(css, /dx-chart-hero--c04 \.dx-chart-hero-preis>b\{font-size:clamp\(40px,13\.4vw,52px\)/, "Kurs groß wie im Klickentwurf (52 px)");
   assert.match(css, /vu-shead-watch\{display:none\}/, "ein Merken-Knopf im Kopf (Herz), kein zweites Lesezeichen");

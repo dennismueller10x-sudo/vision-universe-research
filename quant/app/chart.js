@@ -58,13 +58,13 @@
     { id: "1D", label: "1T", word: "heute" },
     { id: "5D", label: "1W", days: 7, word: "in 1 Woche" },
     { id: "1M", label: "1M", days: 31, word: "in 1 Monat" },
+    { id: "6M", label: "6M", days: 183, word: "in 6 Monaten" },
     { id: "1Y", label: "1J", days: 366, word: "in 1 Jahr" },
+    { id: "3Y", label: "3J", days: 1096, word: "in 3 Jahren", long: true },
     { id: "5Y", label: "5J", days: 1827, word: "in 5 Jahren", long: true },
     { id: "MAX", label: "MAX", all: true, word: "seit Beginn der Reihe", long: true },
     { id: "3M", label: "3M", days: 92, word: "in 3 Monaten" },
-    { id: "6M", label: "6M", days: 183, word: "in 6 Monaten" },
     { id: "YTD", label: "YTD", ytd: true, word: "seit Jahresbeginn" },
-    { id: "3Y", label: "3J", days: 1096, word: "in 3 Jahren", long: true },
     { id: "10Y", label: "10J", days: 3653, word: "in 10 Jahren", long: true }
   ];
   /* Gemerkte Wahl des Nutzers, ein Schluessel fuer alle Welten (core/chart-history.js#rangeKey,
@@ -221,8 +221,8 @@
       el("details", { class: "vu-more qc-about" }, [el("summary", { text: "Über diesen Chart" }), el("div", { class: "vu-more-body qv-more-body" }, [fxHost, note])])
     ]);
 
-    /* Hauptleiste fest 1T 1W 1M 1J 5J Max (assets/vu-chart.js, Chartstandard); 3M, 6M, YTD, 3J, 10J hinter "Mehr". */
-    var PRIMARY_IDS = ["1D", "5D", "1M", "1Y", "5Y", "MAX"], buttons = {}, moreBtn = null, extraBtns = [];
+    /* Hauptleiste fest 1T 1W 1M 6M 1J 3J 5J Max (assets/vu-chart.js, Chartstandard, Owner 18.11.2026); 3M, YTD, 10J hinter "Mehr". */
+    var PRIMARY_IDS = ["1D", "5D", "1M", "6M", "1Y", "3Y", "5Y", "MAX"], buttons = {}, moreBtn = null, extraBtns = [];
     function showMore(open) { if (moreBtn) moreBtn.setAttribute("aria-expanded", String(open)); extraBtns.forEach(function (b) { b.hidden = !open; }); }
     function rangeButton(r, primary) {
       var b = el("button", { type: "button", class: "qc-range" + (primary ? "" : " qc-range-extra"), text: r.id === "MAX" ? "Max" : r.label, "aria-pressed": "false",
@@ -349,6 +349,12 @@
     /* Richtung nie nur ueber Farbe: Pfeil plus Vorzeichen. */
     function arrow(d) { return isNum(d) && d > 0 ? "▲ " : isNum(d) && d < 0 ? "▼ " : ""; }
     function dirClass(d) { return d > 0 ? "up vu-up" : d < 0 ? "down vu-down" : ""; }
+    /* Owner 18.11.2026: die Pille neben dem Kurs im Seitenkopf folgt dem Zeitraum (o.onRange -> VUStockNavigator.setRange). */
+    var LONGN = { "1D": "1 Tag", "5D": "1 Woche", "1M": "1 Monat", "3M": "3 Monate", "6M": "6 Monate", "YTD": "seit Jahresbeginn", "1Y": "1 Jahr", "3Y": "3 Jahre", "5Y": "5 Jahre", "10Y": "10 Jahre", "MAX": "Maximum" };
+    function reportRange(delta, sinceIso) {
+      if (!o.onRange) return;
+      try { o.onRange({ id: st.range, pct: isNum(delta) ? delta : null, label: (LONGN[st.range] || st.range) + (st.range === "1D" ? " · zum Vortag" : sinceIso ? " · seit " + dateDe(sinceIso) : "") }); } catch (e) { /* Kopf der Seite stoert den Chart nicht */ }
+    }
     function head(price, delta, word, meta) {
       void price;   /* der Kurs steht im Kopf der Seite, nicht ein zweites Mal ueber dem Chart */
       headDelta.textContent = arrow(delta) + signedPct(delta);
@@ -391,6 +397,7 @@
       var datiert = frozen || !!(q && q.state === "STALE");
       /* Eine Zeile: Veraenderung, Bezug, Zeitpunkt. Ein Stand, der nicht live ist, nennt Datum und Uhrzeit. */
       var bis = snap.lastRegularLocal || snap.asOfLocal;
+      reportRange(isNum(snap.previousClose) ? delta : null, null);
       head(last, delta, isNum(snap.previousClose) ? "seit Vortagesschluss" : "seit dem ersten Kurs des Tages",
         (datiert ? dateDe(snap.sessionDate).slice(0, 6) + (bis ? ", bis " + String(bis).slice(0, 5) + " Uhr New York" : "") : "heute" + (bis ? ", " + String(bis).slice(0, 5) + " Uhr New York" : "")) +
         (q && q.state === "STALE" ? " · nicht aktuell" : q && q.state === "FINAL_SESSION" ? " · Sitzung beendet" : ""));
@@ -420,6 +427,7 @@
         /* Keine Rendite ueber einen gekuerzten Zeitraum: der Kopf zeigt den
            letzten Kurs ohne Veraenderung und sagt, wo die Reihe beginnt. */
         head(eod.length ? eod[eod.length - 1][1] : null, null, "", src.length ? "Kursreihe ab " + dateDe(src[0][0]) : "");
+        reportRange(null, null);
         empty("Zeitraum nicht verfügbar", "Die Kursreihe reicht nicht so weit zurück" + (src.length ? " (sie beginnt am " + dateDe(src[0][0]) + ")." : "."));
         delete plot.dataset.range; delete plot.dataset.grain;
         note.textContent = ""; return;
@@ -435,6 +443,7 @@
          juengste Tagesschluss. */
       var weekly = src === st.long;
       head(last, delta, r.word, dateDe(pts[0][0]) + " – " + dateDe(pts[pts.length - 1][0]));
+      reportRange(delta, pts[0][0]);
       var svg = paint(pts, { range: r.id === "1Y" ? "1Y" : r.id, label: r.word, grain: weekly ? "weekly" : "daily" });
       if (!svg) { empty("Zeitraum nicht verfügbar", "Zu wenige Kurse im Zeitraum."); return; }
       svg.classList.add("qc-svg");

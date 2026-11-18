@@ -262,7 +262,7 @@
   }
   /** Zeitleiste C06: 1T · 1W · 1M · 1J · 5J · Max (Segment). */
   function ranges(active) {
-    var r = ["1T", "1W", "1M", "1J", "5J", "Max"]; /* gleich assets/vu-chart.js RANGES (Test core/tests/vu-ui.test.mjs) */
+    var r = ["1T", "1W", "1M", "6M", "1J", "3J", "5J", "Max"]; /* gleich assets/vu-chart.js RANGES (Test core/tests/vu-ui.test.mjs) */
     return seg(r.map(function (x) { return { id: x, label: x }; }), active || "1J", { label: "Zeitraum" });
   }
 

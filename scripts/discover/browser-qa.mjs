@@ -346,7 +346,7 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
      unter den Zeitraum-Knöpfen Pillen (Euro, Hoch/Tief 12 Monate). Der Chart reicht auf dem Telefon bis an den Bildschirmrand;
      die Story sind Kacheln mit Grafik, ein Tipp öffnet das Kapitel als Fenster. */
   {const k=await page.evaluate(()=>{const q=s=>{const n=document.querySelector(s);return n?n.getBoundingClientRect().toJSON():null;};return {preis:q('.dx-chart-hero-preis > b'),pille:q('.dx-chart-hero-preis > span.num'),meta:q('.dx-chart-hero-meta'),zr:q('.dx-chart-hero-zr'),pills:document.querySelectorAll('.dx-chart-pills .dx-chart-pill').length,platz:!!document.querySelector('.dv3-titel .dv3-platz .vu-ring'),chart:q('.dx-chapter--chart svg.dx-range-chart'),w:innerWidth};});
-   assert(k.meta.top>=k.preis.bottom-1&&k.meta.top>=k.pille.bottom-1&&k.zr&&k.zr.top>=k.meta.bottom-1&&k.chart.top>=k.zr.bottom-1,'Close label under the price, period change above the chart: '+JSON.stringify(k));
+   assert(k.meta.top>=k.preis.bottom-1&&k.meta.top>=k.pille.bottom-1&&k.zr&&k.zr.top>=k.meta.top-1&&k.chart.top>=k.zr.bottom-1,'Close label and period under the price, chart below: '+JSON.stringify(k));
    assert(k.pills>=2&&k.platz,'Pills under the periods and the placement ring: '+JSON.stringify(k));
    if(k.w<=760)assert(k.chart.left<=0.5&&k.chart.right>=k.w-0.5,'Stock chart reaches both screen edges: '+JSON.stringify(k.chart));
    assert.equal(await page.locator('.dv3-story .dv3-story-r :is(.dv3-sg--bars,.dv3-sg--range,.dv3-sg--pe)').count(),3,'Each story tile carries its graphic');

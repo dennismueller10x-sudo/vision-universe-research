@@ -28,7 +28,7 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function (SC, root) {
   "use strict";
 
-  var VERSION = "stock-navigator-5.0.0";
+  var VERSION = "stock-navigator-5.1.0";
   var SPRITE = "/assets/product-icons.svg#";
   /* Reihenfolge = StockContext.PRODUCTS. icon: Symbol im Sprite. "technik" ist das Chartbild (/elliott/#/<T>), "technical" die Produktwelt Technical. */
   var MODULES = {
@@ -239,15 +239,19 @@
      Nur Module mit Nachweis im Verfuegbarkeits-Ausschnitt (state "available"); ohne Ausschnitt nur „Aktienseite“. */
   var OTHERS = ["discover", "quant", "technical", "fundamental", "hedgefonds", "technik", "supertrader"];
   function aktieHref(ctx) { return ctx.region === "US" ? "/aktie/#/" + encodeURIComponent(ctx.ticker) : SC.href(ctx, "discover"); }
-  function othersHtml(ctx, states, current) {
-    var cur = perspectiveOf(current), by = {};
+  var HOME = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>';
+  function othersHtml(ctx, states, current, name) {
+    var cur = perspectiveOf(current), by = {}, nm = shortName(name || ctx.name || ctx.displaySymbol || "");
     (states || []).forEach(function (s) { by[s.product] = s; });
     var pills = OTHERS.filter(function (p) { return p !== cur && by[p] && by[p].state === "available" && by[p].href; }).map(function (p) {
       var m = MODULES[p];
       return '<a class="vu-sothers-pill" href="' + esc(by[p].href) + '" data-module="' + esc(p) + '"><span class="vu-sothers-hud"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="' + SPRITE + esc(m.icon) + '"/></svg></span>' + esc(m.plain || m.label) + "</a>";
     });
-    pills.push('<a class="vu-sothers-pill vu-sothers-pill--aktie" href="' + esc(aktieHref(ctx)) + '" data-module="aktie"><svg class="vu-sothers-ic" viewBox="0 0 24 24" aria-hidden="true"><use href="' + SPRITE + 'chartbild"/></svg>Aktienseite</a>');
-    return '<h2 class="vu-sothers-h">Diese Aktie in anderen Modulen</h2><div class="vu-sothers-list">' + pills.join("") + "</div>";
+    /* Owner 18.11.2026: „Übersicht“ (die Aktienzentrale /aktie/#/<T>) steht als erste Pille; am Ende eine Karte zurück dorthin. */
+    pills.unshift('<a class="vu-sothers-pill vu-sothers-pill--aktie" href="' + esc(aktieHref(ctx)) + '" data-module="aktie"><span class="vu-sothers-ic">' + HOME + "</span>Übersicht</a>");
+    return '<h2 class="vu-sothers-h">Diese Aktie in anderen Modulen</h2><div class="vu-sothers-list">' + pills.join("") + "</div>" +
+      '<a class="vu-sothers-back" href="' + esc(aktieHref(ctx)) + '" data-module="aktie"><span class="vu-sothers-back-ic">' + HOME + '</span><span class="vu-sothers-back-t"><b>Zurück zur ' + esc(nm) + "-Übersicht</b><span>alle Module auf einen Blick</span></span>" +
+      '<svg class="vu-sothers-back-go" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></a>';
   }
   /**
    * Pillen „Diese Aktie in anderen Modulen“ in host zeichnen (sofort mit „Aktienseite“, nach dem Ausschnitt vollständig).
@@ -257,9 +261,9 @@
     if (!host || !ctx) return { el: null, dispose: function () {} };
     var o = opts || {}, alive = true, doc = host.ownerDocument, box = doc.createElement("nav");
     box.className = "vu-sothers"; box.setAttribute("aria-label", "Diese Aktie in anderen Modulen"); box.setAttribute("data-key", SC.key(ctx));
-    box.innerHTML = othersHtml(ctx, [], current);
+    box.innerHTML = othersHtml(ctx, [], current, o.name);
     host.appendChild(box);
-    loadShard(ctx, o.fetch).then(function (m) { if (alive && m) box.innerHTML = othersHtml(ctx, SC.availability(ctx, m), current); });
+    loadShard(ctx, o.fetch).then(function (m) { if (alive && m) box.innerHTML = othersHtml(ctx, SC.availability(ctx, m), current, shardName(ctx, m) || o.name); });
     return { el: box, dispose: function () { alive = false; if (box.parentNode) box.parentNode.removeChild(box); } };
   }
 
@@ -270,7 +274,7 @@
    * @returns {{setPrice:function, dispose:function, el:Element, others:{el:Element, place:function}}}
    */
   function head(host, o) {
-    if (!host || !o || !o.ctx) return { setPrice: function () {}, dispose: function () {}, el: null, others: { el: null, place: function () {} } };
+    if (!host || !o || !o.ctx) return { setPrice: function () {}, setRange: function () {}, dispose: function () {}, el: null, others: { el: null, place: function () {} } };
     var doc = host.ownerDocument, wrap = doc.createElement("header"), ctx = o.ctx, m = MODULES[o.current] || null;
     var full = o.name || ctx.name || ctx.displaySymbol, short = shortName(full);
     wrap.className = "vu-shead vu-shead--k2" + (o.compact ? " vu-shead--compact" : "");
@@ -278,11 +282,20 @@
     wrap.setAttribute("data-vu-stock", o.ctx.displaySymbol || ""); wrap.setAttribute("data-vu-stock-name", full || o.ctx.displaySymbol || "");
     if (o.current) wrap.setAttribute("data-module", o.current);
     var meta = subLine(full, short, ctx.displaySymbol, o.exchange).map(esc).join(" · ");
-    wrap.innerHTML = '<div class="vu-shead-top"><a class="vu-shead-back" href="' + esc(aktieHref(ctx)) + '" aria-label="Zurück zur Aktienseite"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></a>' +
-      (m ? '<span class="vu-shead-mod"><span class="vu-shead-mod-hud"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="' + SPRITE + esc(m.icon) + '"/></svg></span>' + esc(m.plain || m.label) + "</span>" : "") + "</div>" +
+    /* Owner 18.11.2026: Pfeil = zurück, woher ich kam (ohne Verlauf: Aktienzentrale); daneben die kleine grüne Schaltfläche
+       „⌂ <Name> · Übersicht“, die immer in die Aktienzentrale /aktie/#/<T> führt, und klein, in welchem Modul man ist. */
+    wrap.innerHTML = '<div class="vu-shead-top"><a class="vu-shead-back" href="' + esc(aktieHref(ctx)) + '" aria-label="Zurück"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></a>' +
+      '<a class="vu-shead-home" href="' + esc(aktieHref(ctx)) + '" aria-label="Zur Übersicht von ' + esc(short || ctx.displaySymbol) + '">' + HOME + '<span class="vu-shead-home-n">' + esc(short || ctx.displaySymbol) + "</span><span>&nbsp;· Übersicht</span></a>" +
+      (m ? '<span class="vu-shead-mod">in <b>' + esc(m.plain || m.label) + "</b></span>" : "") + "</div>" +
       '<div class="vu-shead-id">' + logoHtml(o) + '<div class="vu-shead-names"><h1 class="vu-shead-name">' + esc(short || ctx.displaySymbol) + "</h1>" +
       '<p class="vu-shead-meta">' + meta + "</p></div>" + '<div class="vu-shead-actions"></div></div>' +
       '<div class="vu-shead-pricebox"' + (o.pendingPrice ? ' data-price-pending="true" aria-busy="true"' : "") + ">" + priceHtml(o.price) + "</div>";
+    var back = wrap.querySelector(".vu-shead-back");
+    back.addEventListener("click", function (e) {
+      var ref = doc.referrer || "", same = false;
+      try { same = !!ref && new URL(ref).origin === root.location.origin; } catch (err) { same = false; }
+      if (same && root.history && root.history.length > 1) { e.preventDefault(); root.history.back(); }
+    });
     var img = wrap.querySelector(".vu-shead-logo img");
     if (img) img.addEventListener("error", function () { img.remove(); });
     /* App-Konzept 2 (Owner 14.11.2026, „Logos nicht gequetscht“): Wortmarken (deutlich breiter als hoch) bekommen weniger Rand. */
@@ -328,13 +341,23 @@
       if (!alive || !n || !h) return;
       var s = shortName(n);
       if (h.textContent !== s) h.textContent = s;
+      var hn = wrap.querySelector(".vu-shead-home-n"); if (hn && hn.textContent !== s) hn.textContent = s;
       var ex = o.exchange || (mf && mf.exchanges && typeof mf.exchanges[ctx.ticker] === "string" ? mf.exchanges[ctx.ticker] : null);
       if (mt && !mt.children.length) mt.textContent = subLine(n, s, ctx.displaySymbol, ex).join(" · ");
       wrap.setAttribute("data-vu-stock-name", n);
     });
+    var lastPrice = o.price || null, range = null;
+    function paintPrice() {
+      var box = wrap.querySelector(".vu-shead-pricebox"), p = lastPrice;
+      if (!p) return;
+      if (range) { p = Object.assign({}, p, { changePct: range.pct, changeLabel: range.label }); }
+      box.removeAttribute("data-price-pending"); box.setAttribute("aria-busy", "false"); box.innerHTML = priceHtml(p);
+    }
     return {
       el: wrap,
-      setPrice: function (p) { var box = wrap.querySelector(".vu-shead-pricebox"); box.removeAttribute("data-price-pending"); box.setAttribute("aria-busy", "false"); box.innerHTML = priceHtml(p); },
+      setPrice: function (p) { lastPrice = p; paintPrice(); },
+      /** Owner 18.11.2026: die Pille neben dem Kurs zeigt die Veränderung im Zeitraum des Charts ({pct, label}, VUChart.rangeChange). */
+      setRange: function (r) { range = r && typeof r.pct === "number" && isFinite(r.pct) ? r : null; paintPrice(); },
       others: { el: oth.el, place: place },
       dispose: function () { alive = false; if (keeper) keeper.disconnect(); oth.dispose(); if (wrap.parentNode) wrap.parentNode.removeChild(wrap); }
     };
