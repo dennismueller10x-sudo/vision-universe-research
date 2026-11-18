@@ -5,13 +5,13 @@
   "today": "2026-11-18",
   "status": "OK",
   "headline": {
-    "BASELINE_COUNT": 7808,
+    "BASELINE_COUNT": 7833,
     "RAW_US_PROVIDER_CANDIDATES": 109323,
-    "MATCHED_EXISTING": 5891,
-    "NEW_ELIGIBLE_ADDITIONS": 106,
+    "MATCHED_EXISTING": 5916,
+    "NEW_ELIGIBLE_ADDITIONS": 81,
     "REVIEW_EXISTING": 1917,
-    "BASELINE_ACCOUNTED_FOR": 7808,
-    "MATCHED_EXISTING_ROWS": 5891,
+    "BASELINE_ACCOUNTED_FOR": 7833,
+    "MATCHED_EXISTING_ROWS": 5916,
     "REVIEW_EXISTING_ROWS": 2173,
     "BASELINE_TICKERS_WITH_AMBIGUOUS_MATCH": 243,
     "EXCLUDED_NEW_CANDIDATES": 61220,
@@ -32,17 +32,17 @@
     "UNIT": 1548,
     "RIGHT": 443,
     "OTHER": 0,
-    "INACTIVE": 45290,
+    "INACTIVE": 45291,
     "UNKNOWN": 0,
     "DUPLICATES": 2311,
-    "OTC_COMMON_DEFERRED": 14977,
+    "OTC_COMMON_DEFERRED": 14976,
     "FINAL_PROPOSED_US_EQUITY_COUNT": 7914
   },
   "counts": {
     "rowsTotal": 109350,
-    "baselineCount": 7808,
-    "baselinePreserved": 7808,
-    "baselineMemberRows": 8064,
+    "baselineCount": 7833,
+    "baselinePreserved": 7833,
+    "baselineMemberRows": 8089,
     "baselineTickersWithAmbiguousMatch": 243,
     "byInstrumentType": {
       "EQUITY_COMMON": 43715,
@@ -66,7 +66,7 @@
       "UNKNOWN": 0
     },
     "newByInstrumentType": {
-      "EQUITY_COMMON": 37057,
+      "EQUITY_COMMON": 37032,
       "ADR": 0,
       "REIT": 0,
       "SPAC": 0,
@@ -87,8 +87,8 @@
       "UNKNOWN": 0
     },
     "byReconciliationStatus": {
-      "EXISTING": 5891,
-      "ADDED": 106,
+      "EXISTING": 5916,
+      "ADDED": 81,
       "REVIEW": 42133,
       "EXCLUDED_CANDIDATE": 61220
     },
@@ -130,12 +130,12 @@
       "UNKNOWN": 218
     },
     "byActiveStatus": {
-      "ACTIVE": 64060,
-      "INACTIVE": 45290,
+      "ACTIVE": 64059,
+      "INACTIVE": 45291,
       "UNKNOWN": 0
     },
     "activeUsPrimaryCommonEquities": 6469,
-    "otcCommonDeferred": 14977,
+    "otcCommonDeferred": 14976,
     "providerAvailable": true
   },
   "duplicateResolution": {
@@ -264,8 +264,8 @@
     "UNKNOWN": 218
   },
   "activeBreakdown": {
-    "ACTIVE": 64060,
-    "INACTIVE": 45290,
+    "ACTIVE": 64059,
+    "INACTIVE": 45291,
     "UNKNOWN": 0
   },
   "classificationBreakdown": {
@@ -316,45 +316,36 @@
     }
   ],
   "additions": {
-    "total": 106,
+    "total": 81,
     "byExchange": {
-      "NASDAQ": 86,
-      "NYSE": 13,
+      "NASDAQ": 65,
+      "NYSE": 10,
       "AMEX": 1,
-      "NYSE MKT": 5,
+      "NYSE MKT": 4,
       "NYSE ARCA": 1
     },
     "byStartYear": {
-      "1990": 1,
-      "1995": 1,
-      "1996": 2,
-      "2003": 1,
+      "1996": 1,
       "2004": 1,
       "2007": 1,
-      "2008": 1,
-      "2009": 1,
-      "2014": 1,
-      "2015": 1,
-      "2016": 1,
       "2017": 1,
-      "2018": 3,
       "2020": 1,
-      "2021": 3,
-      "2023": 9,
-      "2024": 6,
-      "2025": 5,
-      "2026": 66
+      "2021": 2,
+      "2023": 7,
+      "2024": 4,
+      "2025": 3,
+      "2026": 60
     },
     "historyRule": {
       "rule": "select-gate-universe.mjs ruleBasedCandidates(): minHistoryYears = 3",
       "cutoff": "2023-11-18",
-      "belowRule": 79,
-      "atOrAboveRule": 27,
+      "belowRule": 69,
+      "atOrAboveRule": 12,
       "noStartDate": 0,
       "note": "belowRule sind Titel, die das bestehende Universum NICHT wegen ihrer Gattung verfehlt haben, sondern wegen einer Auswahlregel. Diese Klassifikation wendet die Regel auf die Foerderfaehigkeit nicht an - ein Titel von gestern ist eine Aktie. Ob er in ein Momentumuniversum gehoert, ist eine andere Frage und gehoert in die Auswahl, nicht in den Stamm."
     }
   },
-  "newSecuritiesNotInBaseline": 101286,
+  "newSecuritiesNotInBaseline": 101261,
   "providerAggregate": {
     "basis": "COMMITTED_SUMMARY_AGGREGATE",
     "file": "quant/data/market/universe/summary.json",
