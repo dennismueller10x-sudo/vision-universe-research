@@ -1,13 +1,13 @@
 {
  "schemaVersion": "decision-intelligence-1.0.0",
- "generatedAt": "2026-11-18T13:32:45.607Z",
+ "generatedAt": "2026-11-18T16:47:09.585Z",
  "asOf": "2026-11-17",
  "measures": {
-  "RADAR_EVENTS_TOTAL": 809,
+  "RADAR_EVENTS_TOTAL": 863,
   "RADAR_EVENTS_BY_TYPE": {
    "SETUP_CONFIRMED": 0,
    "SETUP_NEW": 49,
-   "STRATEGY_MATCH_NEW": 12,
+   "STRATEGY_MATCH_NEW": 35,
    "NEW_52W_HIGH": 72,
    "MOMENTUM_IMPROVED": 64,
    "TREND_UP": 34,
@@ -16,7 +16,7 @@
    "RISK_RISING": 11,
    "SETUP_WEAKENED": 104,
    "SETUP_INVALIDATED": 0,
-   "STRATEGY_MATCH_LOST": 34,
+   "STRATEGY_MATCH_LOST": 65,
    "MOMENTUM_DETERIORATED": 98,
    "TREND_DOWN": 147,
    "EVIDENCE_CHANGED": 0
@@ -46,13 +46,13 @@
    }
   },
   "WATCHLIST_TRACKABLE_TITLES": 5393,
-  "ALERT_READY_EVENTS": 809
+  "ALERT_READY_EVENTS": 863
  },
  "criteria": [
   {
    "question": "welche Aktien heute interessant werden",
    "pass": true,
-   "measured": "703 Karten aus 809 Ereignissen"
+   "measured": "740 Karten aus 863 Ereignissen"
   },
   {
    "question": "warum",
@@ -94,7 +94,9 @@
   {
    "ticker": "NVDA",
    "kind": "Großwert",
-   "radarEvents": [],
+   "radarEvents": [
+    "STRATEGY_MATCH_NEW"
+   ],
    "setup": {
     "state": "NO_SETUP",
     "since": "2026-10-30",

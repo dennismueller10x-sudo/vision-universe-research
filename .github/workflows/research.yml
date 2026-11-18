@@ -1938,11 +1938,13 @@ jobs:
           python3 -I scripts/quant/v10/factor/pit_docs.py "$P/bulk/companyfacts.zip" "$P/jobs.json" "$P/docs" --workers 4
           rm -f "$P/bulk/companyfacts.zip"
           echo "Dokumente: $(find "$P/docs" -name '*.json.gz' | wc -l)"
-      - name: Drei Margenformen rechnen (nur Zaehlungen im Log)
+      # Satz iv (18.11.2026, Steuerung nach Owner-Ja): Einbruch ueber drei Geschaeftsjahre (iv) gegen das bisherige Fenster
+      # (ii) und ohne Margenkomponente. Der Satz vom 16.11. (i-iii) steht in docs/quant/QUANT_FINAL_HANDOVER.md.
+      - name: Margenformen rechnen (nur Zaehlungen im Log)
         run: |
           set -euo pipefail
           node --max-old-space-size=12288 scripts/quant/research/quality-margin-pit.cjs --docs "$RUNNER_TEMP/v10/docs" \
-            --out "$RUNNER_TEMP/quality-margin-pit/quality-margin-pit.json"
+            --set iv --out "$RUNNER_TEMP/quality-margin-pit/quality-margin-pit.json"
       - uses: actions/upload-artifact@v4
         with:
           name: quality-margin-pit-${{ github.run_id }}

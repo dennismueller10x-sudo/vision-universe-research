@@ -46,3 +46,16 @@ test("Vergleiche der PIT-Pruefung: (ii) und (iii) gegen (i), (ii) gegen (iii), (
   assert.deepEqual(M.COMPARISONS, [["ii", "i"], ["iii", "i"], ["ii", "iii"], ["i", "ohne"]]);
   assert.deepEqual(Object.keys(M.VARIANTS), ["ohne", "i", "ii", "iii"]);
 });
+
+test("Satz iv (18.11.2026): Einbruch nur ueber die letzten drei Geschaeftsjahre, Vergleich gegen (ii) und ohne", () => {
+  // Der Einbruch 0,37 -> 0,16 liegt vier Jahre zurueck: (ii) sieht ihn, (iv) nicht.
+  const fenster = [0.37, 0.16, 0.30, 0.55, 0.62];
+  assert.ok(Math.abs(M.marginForms(fenster).operatingMarginDrawdown - 0.21) < 1e-12);
+  assert.equal(M.drawdown3y(fenster), 0);
+  assert.ok(Math.abs(M.drawdown3y([0.30, 0.62, 0.40]) - 0.22) < 1e-12, "juengster Einbruch zaehlt");
+  assert.ok(Math.abs(M.drawdown3y([-0.3, -0.2, -0.1]) - 0.2) < 1e-12, "Dauerverlust wie (ii)");
+  assert.equal(M.drawdown3y([0.1, 0.2]), null, "ab drei Jahren");
+  assert.deepEqual(M.SETS.iv.comparisons, [["iv", "ii"], ["ii", "ohne"], ["iv", "ohne"]]);
+  assert.deepEqual(Object.keys(M.SETS.iv.variants), ["ohne", "ii", "iv"]);
+  assert.equal(M.SETS["i-iii"].comparisons, M.COMPARISONS, "der Satz vom 16.11. bleibt unveraendert");
+});
