@@ -94,7 +94,10 @@ jobs:
         run: bash scripts/ci/pruefe-json.sh
 
       - name: SEC-Tests (ohne Netz)
-        run: python3 -m unittest discover -s scripts/quant/tests -p 'test_*.py' 2>&1 | tail -3
+        # pipefail: ohne reicht die Pipe den Exit-Code von tail weiter, ein roter Test galt als gruen (18.11.2026).
+        run: |
+          set -o pipefail
+          python3 -m unittest discover -s scripts/quant/tests -p 'test_*.py' 2>&1 | tail -3
 
       - name: Faktenspeicher aus dem Zwischenspeicher laden
         id: cache
