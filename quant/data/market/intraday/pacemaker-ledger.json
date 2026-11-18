@@ -2,86 +2,16 @@
   "schemaVersion": "intraday-pacemaker-ledger-1.1.0",
   "note": "Zeitstempel je Zyklus. Keine Kurse - nur Uhrzeiten, Zahlen und Gruende.",
   "block": {
-    "startedAt": "2026-11-18T13:01:12.855Z",
-    "runId": "44309302163",
-    "runNumber": "1475",
+    "startedAt": "2026-11-18T18:56:12.707Z",
+    "runId": "44374892842",
+    "runNumber": "1476",
     "trigger": "workflow_dispatch",
     "intervalMs": 300000,
     "blockMaxMs": 20700000,
-    "branch": "main",
-    "endedAt": "2026-11-18T18:50:33.021Z",
-    "reason": "blockEnde",
-    "cycles": 21
+    "branch": "main"
   },
-  "updatedAt": "2026-11-18T18:50:33.022Z",
+  "updatedAt": "2026-11-18T19:00:16.390Z",
   "cycles": [
-    {
-      "cycle": 2,
-      "runId": "44151212512",
-      "triggerAt": "2026-11-17T18:58:35.342Z",
-      "marketStateAtTrigger": "OPEN",
-      "localTimeAtTrigger": "13:58:35",
-      "fetchStartAt": "2026-11-17T18:58:35.343Z",
-      "fetchEndAt": "2026-11-17T19:10:51.185Z",
-      "session": "2026-11-17",
-      "written": 1296,
-      "requests": 1432,
-      "notPublishable": 61,
-      "addAt": "2026-11-17T19:10:51.187Z",
-      "commitAt": "2026-11-17T19:10:51.559Z",
-      "pushAt": "2026-11-17T19:10:54.782Z",
-      "sha": "ba9e97f4e6",
-      "changed": true,
-      "ok": true,
-      "reason": null,
-      "parts": [
-        {
-          "part": 1,
-          "of": 3,
-          "fetchStartAt": "2026-11-17T18:58:35.343Z",
-          "fetchEndAt": "2026-11-17T19:02:38.565Z",
-          "ok": true,
-          "written": 432,
-          "requests": 478,
-          "sha": "81a7e0aea9",
-          "pushAt": "2026-11-17T19:02:42.015Z",
-          "changed": true
-        },
-        {
-          "part": 2,
-          "of": 3,
-          "fetchStartAt": "2026-11-17T19:02:42.015Z",
-          "fetchEndAt": "2026-11-17T19:06:45.303Z",
-          "ok": true,
-          "written": 438,
-          "requests": 477,
-          "sha": "fad8dd2d66",
-          "pushAt": "2026-11-17T19:06:47.961Z",
-          "changed": true
-        },
-        {
-          "part": 3,
-          "of": 3,
-          "fetchStartAt": "2026-11-17T19:06:47.961Z",
-          "fetchEndAt": "2026-11-17T19:10:51.185Z",
-          "ok": true,
-          "written": 426,
-          "requests": 477,
-          "sha": "ba9e97f4e6",
-          "pushAt": "2026-11-17T19:10:54.782Z",
-          "changed": true
-        }
-      ],
-      "snapshotAt": "2026-11-17T19:10:51.162Z",
-      "pushed": true,
-      "watchdog": {
-        "verdict": "FAIL",
-        "codes": [
-          "auslieferungZuWeitHinterher",
-          "seiteStandZuAlt"
-        ]
-      }
-    },
     {
       "cycle": 3,
       "runId": "44151212512",
@@ -2049,6 +1979,38 @@
       ],
       "snapshotAt": "2026-11-18T18:50:28.300Z",
       "pushed": true
+    },
+    {
+      "cycle": 1,
+      "runId": "44374892842",
+      "triggerAt": "2026-11-18T18:56:12.721Z",
+      "marketStateAtTrigger": "OPEN",
+      "localTimeAtTrigger": "13:56:12",
+      "fetchStartAt": "2026-11-18T18:56:13.075Z",
+      "fetchEndAt": "2026-11-18T19:00:16.388Z",
+      "session": "2026-11-18",
+      "written": 426,
+      "requests": 477,
+      "notPublishable": 23,
+      "addAt": null,
+      "commitAt": null,
+      "pushAt": null,
+      "sha": null,
+      "changed": false,
+      "ok": true,
+      "reason": null,
+      "parts": [
+        {
+          "part": 1,
+          "of": 3,
+          "fetchStartAt": "2026-11-18T18:56:13.075Z",
+          "fetchEndAt": "2026-11-18T19:00:16.388Z",
+          "ok": true,
+          "written": 426,
+          "requests": 477
+        }
+      ],
+      "snapshotAt": "2026-11-18T19:00:16.363Z"
     }
   ]
 }
