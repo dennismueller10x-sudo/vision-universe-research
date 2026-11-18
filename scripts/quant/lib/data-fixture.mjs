@@ -36,7 +36,8 @@ export function packFixture(paths, meta, root = REPO) {
   for (const rel of [...new Set(paths)].sort()) {
     if (!isData(rel)) throw Error("FIXTURE_NOT_DATA:" + rel);
     const buf = readFileSync(join(root, rel));
-    files[rel] = rel.endsWith(".gz") ? { enc: "base64", data: buf.toString("base64") } : { enc: "utf8", data: buf.toString("utf8") };
+    // .gz entpackt ablegen (das Bündel ist selbst gzip; Base64 eines gz-Stroms waere ein Drittel groesser und unkomprimierbar)
+    files[rel] = rel.endsWith(".gz") ? { enc: "gunzip", data: gunzipSync(buf).toString("utf8") } : { enc: "utf8", data: buf.toString("utf8") };
   }
   return gzipSync(JSON.stringify({ meta, files }), { level: 9 });
 }
@@ -50,7 +51,7 @@ export function mountFixture(bundlePath, { root = REPO, into } = {}) {
   for (const [rel, f] of Object.entries(files)) {
     const p = join(dest, rel);
     mkdirSync(dirname(p), { recursive: true });
-    writeFileSync(p, f.enc === "base64" ? Buffer.from(f.data, "base64") : f.data);
+    writeFileSync(p, f.enc === "gunzip" ? gzipSync(f.data) : f.enc === "base64" ? Buffer.from(f.data, "base64") : f.data);
   }
   const dataDirs = new Set(Object.keys(files).map(dataDirOf));
   const ancestors = new Set();

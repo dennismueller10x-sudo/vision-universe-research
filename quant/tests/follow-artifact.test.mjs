@@ -3,7 +3,7 @@
 // sichtbar; laenger als 6 h ist ein Fehler. Ohne Hash im Artefakt (vor der Umstellung gebaut) bleibt die volle Pruefung.
 import test from "node:test";
 import assert from "node:assert/strict";
-import { followState, MAX_FOLLOW_HOURS } from "../../scripts/quant/lib/follow-artifact.mjs";
+import { followState, followByTime, MAX_FOLLOW_HOURS } from "../../scripts/quant/lib/follow-artifact.mjs";
 
 const NOW = Date.parse("2026-11-18T10:00:00Z");
 
@@ -22,4 +22,12 @@ test("FA-2 · abweichender Hash: bis 6 h wartend, danach Fehler", () => {
 
 test("FA-3 · Artefakt ohne Hash: bisherige volle Pruefung", () => {
   assert.equal(followState({ artifactSha: undefined, currentSha: "b", changedAt: "2026-11-18T09:00:00Z", now: NOW }).state, "LEGACY");
+});
+
+test("FA-4 · ohne Hash nach Zeit: juenger = voll, aelter bis 6 h wartend, danach Fehler, ohne Zeitstempel Fehler", () => {
+  assert.equal(followByTime({ artifactAt: "2026-11-18T09:00:00Z", sourceAt: "2026-11-18T08:00:00Z", now: NOW }).state, "CURRENT");
+  const w = followByTime({ artifactAt: "2026-11-18T03:00:00Z", sourceAt: "2026-11-18T05:00:00Z", now: NOW });
+  assert.equal(w.state, "WAITING"); assert.equal(w.hours, 5);
+  assert.equal(followByTime({ artifactAt: "2026-11-18T01:00:00Z", sourceAt: "2026-11-18T03:00:00Z", now: NOW }).state, "STALE");
+  assert.equal(followByTime({ artifactAt: null, sourceAt: "2026-11-18T03:00:00Z", now: NOW }).state, "STALE");
 });

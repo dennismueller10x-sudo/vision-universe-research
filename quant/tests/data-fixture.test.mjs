@@ -4,11 +4,12 @@ import assert from "node:assert/strict";
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync, lstatSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
+import { gzipSync, gunzipSync } from "node:zlib";
 import { packFixture, mountFixture, dataDirOf, readFixture } from "../../scripts/quant/lib/data-fixture.mjs";
 
 function repo() {
   const r = mkdtempSync(join(tmpdir(), "vu-fx-src-"));
-  for (const [p, c] of Object.entries({ "a/data/x.json": '{"v":1}', "a/data/y.json": '{"v":2}', "a/data/z.json.gz": "GZ", "a/config/c.json": "{}", "a/code.js": "1", "b/data/q.json": "{}" })) {
+  for (const [p, c] of Object.entries({ "a/data/x.json": '{"v":1}', "a/data/y.json": '{"v":2}', "a/data/z.json.gz": gzipSync('{"g":1}'), "a/config/c.json": "{}", "a/code.js": "1", "b/data/q.json": "{}" })) {
     mkdirSync(join(r, p, ".."), { recursive: true }); writeFileSync(join(r, p), c);
   }
   return r;
@@ -22,7 +23,7 @@ test("DF-1 · nur Datendateien, Binaerdateien unveraendert, Spiegelwurzel: einge
   writeFileSync(join(src, "a/data/x.json"), '{"v":99}');                         // spaeterer Live-Stand
   const { root } = mountFixture(out, { root: src });
   assert.equal(readFileSync(join(root, "a/data/x.json"), "utf8"), '{"v":1}', "der eingefrorene Stand gilt");
-  assert.equal(readFileSync(join(root, "a/data/z.json.gz"), "utf8"), "GZ");
+  assert.equal(gunzipSync(readFileSync(join(root, "a/data/z.json.gz"))).toString(), '{"g":1}', "gz: Inhalt unveraendert");
   assert.equal(existsSync(join(root, "a/data/y.json")), false, "nicht Eingefrorenes fehlt sichtbar");
   assert.ok(lstatSync(join(root, "a/config")).isSymbolicLink() && lstatSync(join(root, "a/code.js")).isSymbolicLink());
   assert.ok(lstatSync(join(root, "b")).isSymbolicLink(), "fremde Datenwurzel bleibt das Repository");
