@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| Stand der Messung | 2026-11-18T02:58:48.000Z |
+| Stand der Messung | 2026-11-18T05:20:20.000Z |
 | Bestand | `CANONICAL_HISTORY` |
 | Studienlogik | `1.0.0` · Reihen `vu-return-series-1.0.0` · Vergleich `vu-return-basis-comparison-1.0.0` |
 | Entscheidung | **PENDING_METHOD_DECISION** |
@@ -17,7 +17,7 @@ Gemessen, nicht geschätzt. Ein Titel ohne Reihe zählt als fehlend und nicht al
 
 | Größe | Titel |
 |---|---:|
-| `CANONICAL_PRODUCT_UNIVERSE` | 6.315 |
+| `CANONICAL_PRODUCT_UNIVERSE` | 6.340 |
 | `CANONICAL_HISTORY_UNIVERSE` | 6.313 |
 | `RAW_CLOSE_AVAILABLE` | 6.313 |
 | `SPLIT_FACTOR_AVAILABLE` | 6.313 |
@@ -32,7 +32,7 @@ Gemessen, nicht geschätzt. Ein Titel ohne Reihe zählt als fehlend und nicht al
 
 | Grund | Titel |
 |---|---:|
-| `NO_SERIES` | 2 |
+| `NO_SERIES` | 27 |
 
 Quellen: `CANONICAL_STORE` 6.313. Bereinigungsstufe: `adjusted` 6.313.
 
@@ -45,11 +45,11 @@ Aus **einem** Satz Bars entstehen zwei Reihen, und keine davon ist eine Umdeutun
 
 Bewusst **nicht** die adjClose-Spalte für A: sie ist gesamtrenditebereinigt und trüge damit genau das in die Kursanalyse, was dort nicht hineingehört.
 
-**Beide Basen baubar:** 6.313 Titel von 6.315 im Produktuniversum, 6.313 davon mit gefundener Reihe.
+**Beide Basen baubar:** 6.313 Titel von 6.340 im Produktuniversum, 6.313 davon mit gefundener Reihe.
 
 | Ausschlussgrund | Titel |
 |---|---:|
-| `NO_SERIES` | 2 |
+| `NO_SERIES` | 27 |
 
 ### Der Nachweis, dass Reihe B eine Gesamtrendite-Reihe ist
 

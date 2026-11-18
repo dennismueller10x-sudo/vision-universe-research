@@ -1,6 +1,6 @@
 {
  "schemaVersion": "backtest-certification-measure-1.0.0",
- "generatedAt": "2026-11-18T03:28:08.232Z",
+ "generatedAt": "2026-11-18T05:54:49.056Z",
  "measures": {
   "CERTIFIED": [],
   "LIMITED": [
@@ -16,7 +16,7 @@
   "WITHHELD": [],
   "SIGNAL_RULES": {
    "MOMENTUM_IMPROVED": "LIMITED Δ -0.0135",
-   "MOMENTUM_DETERIORATED": "LIMITED Δ -0.0025",
+   "MOMENTUM_DETERIORATED": "LIMITED Δ -0.0024",
    "TREND_UP": "LIMITED Δ -0.0114",
    "TREND_DOWN": "LIMITED Δ -0.001",
    "NEW_52W_HIGH": "LIMITED Δ 0.0139"
@@ -61,15 +61,15 @@
   },
   "EFFECTIVE_N": {
    "MOMENTUM_IMPROVED": 20505,
-   "MOMENTUM_DETERIORATED": 24766,
-   "TREND_UP": 26902,
-   "TREND_DOWN": 25309,
-   "NEW_52W_HIGH": 11496
+   "MOMENTUM_DETERIORATED": 24769,
+   "TREND_UP": 26887,
+   "TREND_DOWN": 25303,
+   "NEW_52W_HIGH": 11493
   },
   "RADAR_EVENTS_WITH_BASE_RATE": 415,
   "ALERTS_NEW": 808,
   "WATCHLIST_TRACKED": 5393,
-  "DISCOVER_CHANGED": true
+  "DISCOVER_CHANGED": false
  },
  "criteria": [
   {
@@ -142,8 +142,8 @@
   },
   {
    "criterion": "Discover unverändert",
-   "pass": false
+   "pass": true
   }
  ],
- "verdict": "FAIL"
+ "verdict": "PASS"
 }

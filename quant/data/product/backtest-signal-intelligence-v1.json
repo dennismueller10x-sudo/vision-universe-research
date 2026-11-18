@@ -1,6 +1,6 @@
 {
  "schemaVersion": "backtest-signal-intelligence-1.0.0",
- "generatedAt": "2026-11-18T03:28:08.420Z",
+ "generatedAt": "2026-11-18T05:54:49.279Z",
  "radarAsOf": "2026-11-17",
  "signalAsOf": "2026-11-20",
  "setupAsOf": "2026-11-17",
@@ -27,7 +27,7 @@
   },
   "SIGNAL_STUDY_SOURCE": {
    "asOf": "2026-11-20",
-   "generatedAt": "2026-11-18T03:25:46.721Z",
+   "generatedAt": "2026-11-18T05:51:44.469Z",
    "returnType": "TOTAL_RETURN",
    "studySchemaVersion": "signal-backtest-study-2.0.0",
    "studyEngineVersion": "signal-backtest-2.0.0",
@@ -102,7 +102,7 @@
   "SURVIVORSHIP_PASS": "PASS",
   "SURVIVORSHIP_CONTROLLED": false,
   "TRUST_PASS": "PASS",
-  "DISCOVER_CHANGED": true
+  "DISCOVER_CHANGED": false
  },
  "criteria": [
   {
@@ -151,10 +151,10 @@
   },
   {
    "criterion": "Discover unverändert",
-   "pass": false
+   "pass": true
   }
  ],
- "verdict": "FAIL",
+ "verdict": "PASS",
  "sample": [
   {
    "ticker": "NVDA",
