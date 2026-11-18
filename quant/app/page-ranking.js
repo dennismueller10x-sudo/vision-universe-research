@@ -65,7 +65,7 @@
       var body = rows.slice(0, state.shown).map(function (r) {
         var name = ctx.names && ctx.names[r.ticker];
         return el("tr", {}, [el("td", { class: "num", text: r.place.toLocaleString("de-DE") }),
-          el("td", {}, [el("a", { href: X.routes.stock(r.ticker), text: r.ticker }), name ? el("small", { text: " " + name }) : null])]
+          el("td", {}, [el("a", { href: X.routes.aktie(r.ticker), dataset: X.stockData(r.ticker, name), text: r.ticker }), name ? el("small", { text: " " + name }) : null])]
           .concat(COLS.map(function (c) { return el("td", { class: "num", text: num(r[c[0]]) }); })));
       });
       tableHost.replaceChildren(el("div", { class: "qx-card qx-table-wrap", tabindex: "0", "aria-label": "Rangliste nach Gesamtwert, seitlich scrollbar" },

@@ -387,8 +387,8 @@
     if (p.startsWith('/willkommen/')) return {label: 'Home', icon: 'layers'};
     if (p.startsWith('/mein-dashboard/')) return {label: 'Ich', icon: 'layers'};
     if (p.startsWith('/insights/')) return {label: 'News', icon: 'insights'};
-    /* Aktienseite (Quant-SPA #/aktie/<T>): im Prototyp die eigene Welt „Aktie“. */
-    if (p === '/quant/' && /^#\/aktie\/[^/?]+/.test(loc.hash || '')) return {label: 'Aktie', icon: 'chartbild'};
+    /* Die Quant-Aktienseite #/aktie/<T> ist seit dem Klickentwurf (Owner 17.11.2026) eine Modulseite und traegt „Quant“;
+       die Welt „Aktie“ ist nur die gemeinsame Aktienseite. */
     /* Gemeinsame Aktienseite /aktie/#/<T> (Prototyp #v-aktie). */
     if (p === '/aktie/' || p === '/aktie/index.html') return {label: 'Aktie', icon: 'chartbild'};
     const product = PRODUCTS.find(x => x.match(p, loc));
@@ -457,6 +457,9 @@
          (Musterseite /status/bausteine/, Tests). */
       products: () => PRODUCTS.map(p => ({id: p.id, label: p.label, items: p.items.map(([id, label, href, icon]) => ({id, label, href, icon})), tabs: tabEntries(p).map(({id, label, href}) => ({id, label, href}))})),
       places: () => DOCK.map(([id, label, href, icon]) => ({id, label, href, icon})),
+      /* Nur lesend: Kennung der Welt der aktuellen Seite (dieselbe Zuordnung wie Menü und Reiter), sonst null.
+         Die Aktien-Vorschau (assets/vu-stock-sheet.js) hängt damit den Modul-Kontext an „Ganz öffnen“. */
+      product: () => { const p = PRODUCTS.find(x => x.match(location.pathname, location)); return p ? p.id : null; },
       /* Datenstand der Seite fuer das Fenster „Datenstand“: {datum: 'JJJJ-MM-TT', zeilen: [[Bereich, Text, vorhanden?], ...]}.
          Ersetzt den Kursstand, den der Rahmen sonst beim Oeffnen selbst liest. */
       datenstand: o => { o = o || {}; dataBus.own = true; dataBus.datum = isoDate(o.datum) ? o.datum : null; dataBus.zeilen = Array.isArray(o.zeilen) ? o.zeilen.filter(z => z && z[0] && z[1]) : []; dataBus.listeners.forEach(fn => fn()); },

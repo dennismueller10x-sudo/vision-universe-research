@@ -485,9 +485,9 @@
       "cik": "0001763950",
       "name": "Lantern Pharma Inc.",
       "sic": "2834",
-      "rawFacts": 4925,
-      "mappedFacts": 1675,
-      "unmappedFacts": 3393,
+      "rawFacts": 5194,
+      "mappedFacts": 1757,
+      "unmappedFacts": 3633,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -497,9 +497,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 8,
-      "quarterlyPeriods": 31,
+      "quarterlyPeriods": 32,
       "firstPeriodEnd": "2018-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
@@ -511,7 +511,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 17,
+          "quarterlyPeriods": 18,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
@@ -538,14 +538,14 @@
         },
         "net_income": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 30,
+          "quarterlyPeriods": 31,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
         },
         "operating_cash_flow": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 28,
+          "quarterlyPeriods": 29,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
@@ -566,14 +566,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 8,
-          "quarterlyPeriods": 31,
+          "quarterlyPeriods": 32,
           "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 26,
+          "quarterlyPeriods": 27,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
@@ -596,45 +596,46 @@
         }
       },
       "quality": {
-        "HIGH": 184,
+        "HIGH": 189,
         "MEDIUM": 2
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 186,
-        "resolvedValues": 186
+        "datableValues": 191,
+        "resolvedValues": 191
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 3420,
+        "rules_version": "1.1.0",
+        "total": 3661,
         "by_severity": {
-          "INFO": 3393,
-          "WARNING": 27
+          "INFO": 3633,
+          "WARNING": 28
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 24,
+          "CONCEPT_DISAGREEMENT": 25,
           "RESTATEMENT_CONFLICT": 3,
-          "UNKNOWN_CONCEPT": 3393
+          "UNKNOWN_CONCEPT": 3633
         }
       },
       "latestFiling": {
-        "accession": "0001493152-26-037971",
-        "filing_date": "2026-08-14",
+        "accession": "0001493152-26-052848",
+        "filing_date": "2026-11-17",
         "form": "10-Q",
-        "periodic_filings": 27
+        "periodic_filings": 28,
+        "acceptance_datetime": "2026-11-17T21:25:16.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
-        "formula": "1.2.0",
+        "normalization_logic": "1.15.0",
+        "formula": "1.3.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.8.0"
         }
       },
-      "sourceDigest": "4624a10328b25536d97116c854b1eb2519c89cf2bdc99c2b060f7ea5bf9c84c4",
+      "sourceDigest": "2c9543ebbdd555767d7f2c24de907107698144e936b5fa1c6b90ce87a29fe00c",
       "issuerId": "iss_cik_0001763950"
     },
     {

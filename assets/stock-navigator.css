@@ -69,3 +69,52 @@
 /* E5: keep C05 in place while C04 awaits its published price. */
 .vu-shead-pricebox[data-price-pending=true]{display:block;min-height:56px;padding-top:10px;box-sizing:border-box}
 .vu-shead-pricebox[data-price-pending=true]:before{content:"";display:block;width:128px;height:34px;border-radius:8px;background:var(--vu-hair,var(--vu-line))}
+
+/* ------------------------------------------------- Modul-Aktienkopf (Klickentwurf 17.11.2026)
+   Zurück zur Aktienseite + Modul-Etikett, Logo 76 px, Kurzname 34 px, Kurs 52 px mit Pille zum Vortag, Schlusskurs-Zeile.
+   Doppelte Klasse: gewinnt gegen ältere Kopf-Regeln der Module (z. B. .st-shead .vu-shead-name). Hell: volle helle Fläche. */
+.vu-shead--k2,.vu-sothers{--k2-card:#151516;--k2-dk:#232325;--k2-track:#2a2a2d;--k2-ink:#f4f5f1;--k2-hi:#fff;--k2-on-hi:#000;--k2-mut:#a1a7af;--k2-lime:#c8f531;--k2-hud:#0e1013;--k2-hud-line:rgba(200,245,49,.25);--k2-hud-ink:#c8f531}
+:root:not([data-theme=dark]) .vu-shead--k2,:root:not([data-theme=dark]) .vu-sothers{--k2-card:#f4f4f4;--k2-dk:#e4e4e4;--k2-track:#dcdcdc;--k2-ink:#0d0f12;--k2-hi:#000;--k2-on-hi:#fff;--k2-mut:#5f646b;--k2-hud:#c8f531;--k2-hud-line:transparent;--k2-hud-ink:#101318}
+.vu-shead.vu-shead--k2{display:block;margin:0 0 6px;color:var(--k2-ink);font-family:var(--vu-font,Inter,ui-sans-serif,system-ui,sans-serif)}
+.vu-shead.vu-shead--k2>*{flex:none}
+.vu-shead--k2.vu-shead--k2 .vu-shead-top{display:flex;align-items:center;gap:8px}
+.vu-shead--k2.vu-shead--k2 .vu-shead-back{display:grid;place-items:center;width:44px;height:44px;margin:-3px;border-radius:50%;color:var(--k2-hi);text-decoration:none;flex:none}
+.vu-shead--k2.vu-shead--k2 .vu-shead-back svg{width:38px;height:38px;padding:11px;border-radius:50%;background:var(--k2-card);fill:none;stroke:currentColor;stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
+.vu-shead--k2 .vu-shead-mod{display:inline-flex;align-items:center;gap:7px;height:30px;padding:0 12px 0 5px;border-radius:999px;background:var(--k2-dk);color:var(--k2-ink);font-size:12.5px;font-weight:800;white-space:nowrap}
+.vu-shead--k2 .vu-shead-mod-hud,.vu-sothers-hud{display:grid;place-items:center;width:22px;height:22px;border-radius:7px;background:var(--k2-hud);border:1px solid var(--k2-hud-line);color:var(--k2-hud-ink);flex:none;box-sizing:border-box}
+.vu-shead--k2 .vu-shead-mod-hud svg{width:13px;height:13px}
+.vu-shead--k2.vu-shead--k2 .vu-shead-id{display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px;margin-top:12px;min-width:0}
+.vu-shead--k2.vu-shead--k2 .vu-shead-logo{width:76px;height:76px;border-radius:22px;background:#fff;flex:none}
+.vu-shead--k2.vu-shead--k2 .vu-shead-logo:before{color:#000;font-size:22px}
+.vu-shead--k2.vu-shead--k2 .vu-shead-logo img{padding:12px;background:#fff}
+.vu-shead--k2.vu-shead--k2 .vu-shead-logo[data-wide] img{padding:10px 6px}
+.vu-shead--k2.vu-shead--k2 .vu-shead-names{flex:1 0 140px;min-width:0}
+:root:not([data-theme=dark]) .vu-shead--k2.vu-shead--k2 .vu-shead-logo{outline:1px solid rgba(0,0,0,.12);outline-offset:-1px}
+.vu-shead--k2.vu-shead--k2 .vu-shead-name{margin:0;font-size:34px;line-height:1.02;font-weight:900;letter-spacing:-.035em;color:var(--k2-hi);-webkit-line-clamp:2;overflow-wrap:anywhere}
+.vu-shead--k2.vu-shead--k2 .vu-shead-meta{margin:3px 0 0;font-size:12.5px;line-height:1.3;font-weight:500;color:var(--k2-mut);white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.vu-shead--k2 .vu-shead-heart{display:grid;place-items:center;width:46px;height:46px;border:0;border-radius:50%;background:var(--k2-track);color:var(--k2-hi);cursor:pointer;padding:0}
+.vu-shead--k2 .vu-shead-heart svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linejoin:round}
+.vu-shead--k2 .vu-shead-heart[aria-pressed=true]{background:var(--k2-lime);color:#101318}
+.vu-shead--k2 .vu-shead-heart[aria-pressed=true] svg{fill:currentColor}
+.vu-shead--k2.vu-shead--k2 .vu-shead-price{display:block;margin:12px 0 0}
+.vu-shead--k2 .vu-shead-row{display:flex;align-items:flex-end;flex-wrap:wrap;gap:4px 10px}
+.vu-shead--k2.vu-shead--k2 .vu-shead-value{font-size:52px;line-height:1;font-weight:900;letter-spacing:-.045em;color:var(--k2-hi)}
+.vu-shead--k2.vu-shead--k2 .vu-shead-change{height:34px;margin-bottom:4px;padding:0 13px;font-size:16px;font-weight:800;background:var(--k2-dk);color:var(--k2-ink)}
+.vu-shead--k2.vu-shead--k2 .vu-shead-price[data-direction=up] .vu-shead-change{background:var(--k2-lime);color:#101318}
+.vu-shead--k2.vu-shead--k2 .vu-shead-price[data-direction=down] .vu-shead-change{background:#c4281c;color:#fff}
+.vu-shead--k2.vu-shead--k2 .vu-shead-when{display:flex;flex-wrap:wrap;column-gap:6px;margin:4px 0 0;font-size:11px;font-weight:700;color:var(--k2-mut)}
+.vu-shead--k2.vu-shead--k2 .vu-shead-pricebox[data-price-pending=true]{min-height:70px}
+.vu-shead--k2.vu-shead--k2 .vu-shead-pricebox[data-price-pending=true]:before{width:190px;height:52px;background:var(--k2-card)}
+@media(min-width:761px){.vu-shead--k2.vu-shead--k2 .vu-shead-name{font-size:40px}.vu-shead--k2.vu-shead--k2 .vu-shead-value{font-size:58px}}
+@media(max-width:374px){.vu-shead--k2.vu-shead--k2 .vu-shead-logo{width:64px;height:64px;border-radius:19px}.vu-shead--k2.vu-shead--k2 .vu-shead-logo img{padding:10px}.vu-shead--k2.vu-shead--k2 .vu-shead-name{font-size:30px}.vu-shead--k2.vu-shead--k2 .vu-shead-value{font-size:46px}}
+.vu-shead--k2 a:focus-visible,.vu-shead--k2 button:focus-visible,.vu-sothers a:focus-visible{outline:2px solid var(--vu-focus,#c8f531);outline-offset:2px}
+
+/* Diese Aktie in anderen Modulen: Pillen am Seitenende (Klickentwurf: .chip, Aktienseite als helle Pille). */
+.vu-sothers{display:block;margin:26px 0 8px;color:var(--k2-ink);font-family:var(--vu-font,Inter,ui-sans-serif,system-ui,sans-serif);clear:both}
+.vu-sothers .vu-sothers-h{margin:0 0 10px;font-size:22px;line-height:1.15;font-weight:900;letter-spacing:-.025em;color:var(--k2-hi)}
+.vu-sothers-list{display:flex;flex-wrap:wrap;gap:8px}
+.vu-sothers .vu-sothers-pill{display:inline-flex;align-items:center;gap:7px;min-height:38px;padding:0 13px 0 6px;border-radius:999px;background:var(--k2-card);color:var(--k2-ink);font-size:14px;font-weight:700;white-space:nowrap;text-decoration:none;margin-block:-3px;border:3px solid transparent;background-clip:padding-box;box-sizing:content-box}
+.vu-sothers .vu-sothers-hud{width:26px;height:26px;border-radius:8px}
+.vu-sothers .vu-sothers-hud svg{width:15px;height:15px}
+.vu-sothers .vu-sothers-pill--aktie{padding:0 14px;background:var(--k2-hi);color:var(--k2-on-hi);gap:6px}
+.vu-sothers .vu-sothers-ic{width:16px;height:16px}

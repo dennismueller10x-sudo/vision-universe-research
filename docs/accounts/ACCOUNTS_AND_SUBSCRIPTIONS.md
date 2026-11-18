@@ -115,6 +115,17 @@ Datenexport (`savedSearches`) und Kontolöschung (Cascade) schließen sie ein.
 
 **Watchlist:** persönliche Auswahl (`instrumentId`, Notiz, Benachrichtigungen) in `watchlists`/`watchlist_items`; Kennzahlen kommen aus der gemeinsamen Release-Übersicht, nie aus Supabase. Details, RLS-Nachweise, Speicher und Kosten: [WATCHLIST.md](WATCHLIST.md).
 
+**Supertrader folgen und melden (App-Konzept 2, Owner 16.11.2026):** „Folgen“ im Fenster „Methode“ speichert die Methode in
+`public.supertrader_follows` (`strategy_id ~ '^SF_[A-Z0-9_]{2,48}$'`, RLS, fest 50 je Konto, Cascade, Export `supertraderFollows`;
+`GET/POST /v1/supertrader/follows`, `POST /v1/supertrader/follows/remove`, Ratenstufe `follows`). „Melden“ im Fenster „Ablauf“ ist kein
+eigener Speicher: die Aktie steht in der Watchlist, ihr Eintrag hat `alerts.SUPERTRADER_SIGNAL` nicht aus. Beides braucht die Art
+`SUPERTRADER_SIGNAL` im Konto. Der Push-Lauf (`src/push.mjs#stageNotices`) liest den veröffentlichten Kandidatenstand
+`supertrader/data/sf-candidates/index.json` (`changes`) und baut daraus Stufen-Meldungen (`src/st-notices.mjs`); `push_claim_daily`
+ordnet sie gemeldeten Aktien (jede Stufe, über `ticker_at_add`) und gefolgten Methoden („Regel erfüllt“, „Plan fertig“) zu, weiter
+höchstens eine Nachricht am Tag. Wortlaut nur nach Regel mit „Forschung, nicht zertifiziert“. **Eingebaut, aus bis zur Anwaltsprüfung**: Schalter
+`VU_SUPERTRADER_ALERTS_ENABLED` (Worker) und `ST_ALERTS_UI` (Frontend), Migration nur vorbereitet in `supabase/prepared/supertrader_follows.sql`
+([FREIGABEN.md](FREIGABEN.md), „Supertrader Folgen/Melden“).
+
 ### Anbieterunabhängiges Abo-Modell (Phase 4)
 
 | Begriff | Feld |

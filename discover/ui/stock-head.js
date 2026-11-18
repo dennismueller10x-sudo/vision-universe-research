@@ -86,7 +86,9 @@
       observer.observe(chart, { childList: true, subtree: true });
       place();
     }
-    return { dispose: head.dispose, observer: observer };
+    /* Klickentwurf 17.11.2026: der Kopf bringt „Diese Aktie in anderen Modulen“ am Seitenende mit (stock-navigator.js#others);
+       der Block „Dieselbe Aktie in …“ (worlds) entfällt dann. */
+    return { dispose: head.dispose, observer: observer, others: head.others && head.others.el ? head.others : null };
   }
   /* "Dieselbe Aktie in ...": Quant, Technical, Fundamental, Supertrader - nur Welten, die den Titel belegt fuehren
      (StockContext.moduleState "available" aus dem Verfuegbarkeits-Ausschnitt des Navigators, derselbe Abruf, kein zweiter).

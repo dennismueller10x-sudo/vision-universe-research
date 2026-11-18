@@ -226,3 +226,98 @@
 :root:not([data-theme=dark]) .cb-story .vu-verdict--none{border-color:#6e6e6e;color:#6e6e6e}
 :root:not([data-theme=dark]) #el-detail .cb-ew-none .vu-ltag,:root:not([data-theme=dark]) #el-detail .cb-ew-none .cb-ew-none-p,
 :root:not([data-theme=dark]) #el-detail .cb-ew-none .vu-verdict--none{color:#6e6e6e;border-color:#6e6e6e}
+/* Kurs gegen Ungültig-Marke (Prototyp „ablauf“: Spur 8px, Ungültig-Marke 20px, Schluss 24px; Owner 16.11.2026: Wochenschluss).
+   Aufwärtszählung: Marke links, Wochenschluss rechts davon; Abwärtszählung gespiegelt (Marke rechts). --p = Abstand auf der Skala 0–50 %. */
+#el-detail .ew-gap{margin:10px 0 0;padding:14px;border-radius:18px;background:var(--vu-card,#f4f4f4);color:var(--vu-ink,#000);--gap-tr:#e1e1e1;--gap-a:#9b9b9b;--gap-b:#000;--gap-dot:#000;--gap-dot-b:#fff;--gap-mk:#fff;--gap-mk-b:#000;--gap-mut:#5c5c5c}
+:root[data-theme=dark] #el-detail .ew-gap{background:#151515;color:#fff;--gap-tr:#2a2a2a;--gap-a:#fff;--gap-b:#c8f531;--gap-dot:#c8f531;--gap-dot-b:#000;--gap-mk:#000;--gap-mk-b:#fff;--gap-mut:#a1a1a1}
+#el-detail .ew-gap .ew-gap-k{margin:0;color:var(--gap-mut)}
+#el-detail .ew-gap-h{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 10px;margin:6px 0 0}
+#el-detail .ew-gap-n{font-size:30px;font-weight:900;letter-spacing:-.03em;line-height:1}
+#el-detail .ew-gap-t{font-size:12.5px;font-weight:700;color:var(--gap-mut)}
+#el-detail .ew-gap-bar{position:relative;height:30px;margin-top:10px}
+#el-detail .ew-gap-tr{position:absolute;left:0;right:0;top:11px;height:8px;border-radius:9px;background:var(--gap-tr);overflow:hidden}
+#el-detail .ew-gap-fill{position:absolute;top:0;bottom:0;left:0;width:calc(12px + var(--p,0)*(100% - 24px)/100);border-radius:9px;background:linear-gradient(90deg,var(--gap-a),var(--gap-b))}
+#el-detail .ew-gap-mk{position:absolute;left:0;top:5px;width:20px;height:20px;box-sizing:border-box;border-radius:99px;background:var(--gap-mk);border:3px solid var(--gap-mk-b)}
+#el-detail .ew-gap-dot{position:absolute;left:calc(var(--p,0)*(100% - 24px)/100);top:3px;width:24px;height:24px;box-sizing:border-box;border-radius:99px;background:var(--gap-dot);border:3px solid var(--gap-dot-b)}
+#el-detail .ew-gap.is-above .ew-gap-fill{left:auto;right:0;background:linear-gradient(270deg,var(--gap-a),var(--gap-b))}
+#el-detail .ew-gap.is-above .ew-gap-mk{left:auto;right:0}
+#el-detail .ew-gap.is-above .ew-gap-dot{left:auto;right:calc(var(--p,0)*(100% - 24px)/100)}
+#el-detail .ew-gap-cols{display:flex;justify-content:space-between;gap:12px;margin-top:8px;font-size:11px}
+#el-detail .ew-gap.is-above .ew-gap-cols{flex-direction:row-reverse}
+#el-detail .ew-gap-c{display:grid;gap:2px}
+#el-detail .ew-gap-c span{color:var(--gap-mut);font-weight:700}
+#el-detail .ew-gap-c b{font-size:14px;font-weight:800}
+#el-detail .ew-gap-c--cl{text-align:right}
+#el-detail .ew-gap.is-above .ew-gap-c--cl{text-align:left}
+#el-detail .ew-gap.is-above .ew-gap-c--mk{text-align:right}
+
+/* Klickentwurf Modul-Aktienseiten (#modul-elliott, Owner 17.11.2026). Nur Darstellung; elliott/aktie.js setzt die Klassen.
+   Hell voll hell (helle Kacheln, dunkle Schrift), dunkel wie der Entwurf. Farben nur Grau und Neongrün. */
+#el-detail .cb,#el-detail .ew-end{--ew-tile:#f4f4f4;--ew-ink:#000;--ew-mut:#6e6e6e;--ew-sec:#3a3a3a;--ew-track:#dcdcdc;--ew-pill:#e6e6e6;--ew-num:#000;--ew-line:#bdbdbd;--ew-zz:#6e6e6e}
+:root[data-theme=dark] #el-detail .cb,:root[data-theme=dark] #el-detail .ew-end{--ew-tile:#151515;--ew-ink:#fff;--ew-mut:#a6a6a6;--ew-sec:#c6c6c6;--ew-track:#2a2a2a;--ew-pill:#262626;--ew-num:#c8f531;--ew-line:#5a5a5a;--ew-zz:#a6a6a6}
+#el-detail .ew-sh{margin:26px 0 10px;font-size:22px;line-height:1.1;font-weight:800;letter-spacing:-.025em;color:var(--ew-ink)}
+/* Kopfkachel mit Zählung und Kachel ohne Zählung: hell hell, dunkel #151515 */
+#el-detail .is-ak2 .cb-ew-say{background:var(--ew-tile);color:var(--ew-ink)}
+#el-detail .is-ak2 .cb-ew-say .vu-mt{color:var(--ew-ink)}
+#el-detail .is-ak2 .cb-ew-say .vu-ltag{color:var(--ew-mut)}
+:root:not([data-theme=dark]) #el-detail .is-ak2 .cb-ew-say .vu-verdict--mid{background:#dcdcdc;color:#000}
+:root:not([data-theme=dark]) #el-detail .is-ak2 .cb-ew-say .vu-verdict--weak{background:#000;color:#fff}
+#el-detail .is-ak2 .cb-ew-none.ew-none{position:relative;margin-top:16px;padding:16px;border-radius:22px;background:var(--ew-tile);color:var(--ew-ink);overflow:hidden}
+#el-detail .ew-none .cb-ew-tags{justify-content:space-between;gap:10px;flex-wrap:wrap}
+#el-detail .ew-none .cb-ew-tags .vu-ltag{margin:0;font-size:10.5px;font-weight:800;letter-spacing:.12em;color:var(--ew-mut)}
+#el-detail .ew-none .vu-verdict--none{border:1px solid var(--ew-mut);border-style:solid;color:var(--ew-ink);padding:4px 10px;font-size:12.5px}
+#el-detail .is-ak2 .ew-none .vu-mt{margin:12px 0 6px;font-size:28px;line-height:1.08;letter-spacing:-.035em;color:var(--ew-ink)}
+#el-detail .ew-none-lead{margin:0;font-size:14px;line-height:1.45;color:var(--ew-sec)}
+#el-detail .ew-none-chart{position:relative;margin:12px -16px -16px;height:120px}
+#el-detail .ew-none-chart svg{display:block;width:100%;height:100%}
+#el-detail .ew-none-l{fill:none;stroke:var(--ew-line);stroke-width:2;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+#el-detail .ew-none-z{fill:none;stroke:var(--ew-zz);stroke-width:2;stroke-dasharray:5 6;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+#el-detail .ew-none-tag{position:absolute;right:12px;top:8px;display:inline-flex;align-items:center;height:21px;padding:0 8px;border-radius:999px;background:var(--ew-pill);color:var(--ew-ink);font-size:10.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
+/* Ring „N von M Aktien sind heute zählbar“ */
+#el-detail .ew-share{display:flex;align-items:center;gap:12px;margin-top:12px;padding:16px;border-radius:22px;background:var(--ew-tile);color:var(--ew-ink)}
+#el-detail .ew-share[hidden]{display:none}
+#el-detail .ew-share .vu-ring circle{stroke:var(--ew-track)}
+#el-detail .ew-share .vu-ring circle.is-on{stroke:var(--ew-num)}
+#el-detail .ew-share .vu-ring b{color:var(--ew-ink)}
+#el-detail .ew-share-t{flex:1;min-width:0;display:flex;flex-direction:column}
+#el-detail .ew-share-n{font-size:30px;font-weight:900;letter-spacing:-.045em;line-height:1;color:var(--ew-num)}
+#el-detail .ew-share-s{margin-top:4px;font-size:13px;font-weight:800}
+#el-detail .ew-share-x{margin-top:4px;font-size:11.5px;line-height:1.4;color:var(--ew-mut)}
+/* „Die Lesart in drei Sätzen“ als Karussell (wie Technical im Entwurf) */
+#el-detail .is-ak2 .cb-story.ew-rail{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x proximity;scrollbar-width:none;margin:0 calc(-1*var(--vu-gutter,16px));padding:0 var(--vu-gutter,16px);scroll-padding-inline:var(--vu-gutter,16px);background:none;border-radius:0;color:var(--ew-ink)}
+#el-detail .is-ak2 .cb-story.ew-rail::-webkit-scrollbar{display:none}
+#el-detail .is-ak2 .ew-rail>.cb-story-r{flex:none;scroll-snap-align:start;width:230px;display:flex;flex-direction:column;align-items:flex-start;gap:8px;padding:14px;border:0;border-radius:22px;background:var(--ew-tile)}
+#el-detail .is-ak2 .ew-rail .cb-story-r .vu-ltag{color:var(--ew-mut)}
+#el-detail .is-ak2 .ew-rail .cb-story-r p{color:var(--ew-ink);font-size:14px}
+#el-detail .is-ak2 .ew-rail .cb-story-r>.vu-verdict{margin-top:auto}
+#el-detail .is-ak2 .ew-rail .vu-hud{background:var(--ew-pill);color:var(--ew-ink)}
+:root[data-theme=dark] #el-detail .is-ak2 .ew-rail .vu-hud{color:#c8f531}
+:root:not([data-theme=dark]) #el-detail .is-ak2 .ew-rail .vu-verdict--mid{background:#dcdcdc;color:#000}
+:root:not([data-theme=dark]) #el-detail .is-ak2 .ew-rail .vu-verdict--weak{background:#000;color:#fff}
+:root:not([data-theme=dark]) #el-detail .is-ak2 .ew-rail .vu-verdict--none{border-color:#5a5a5a;color:#5a5a5a}
+#el-detail .is-ak2 .cb-story.ew-rail+.ew-gap{margin-top:12px}
+/* Folgeschritte: Karten, Frag VU, Melden */
+#el-detail .ew-end .cb-ew-link,#el-detail .ew-end .vu-next{margin-top:8px}
+#el-detail .ew-end .cb-ew-link{background:var(--ew-tile);color:var(--ew-ink)}
+#el-detail .ew-end .cb-crumbs.ew-asks{display:block;margin:8px 0 0}
+#el-detail .ew-end .cb-crumbs.ew-asks a.ew-ask{display:flex;align-items:center;gap:12px;min-height:68px;padding:14px;border-radius:22px;background:var(--ew-tile);color:var(--ew-ink);font-size:inherit;opacity:1;text-decoration:none}
+#el-detail .ew-ask-ic{display:grid;place-items:center;width:42px;height:42px;border-radius:99px;background:#c8f531;color:#000;font-size:15px;flex:none}
+#el-detail .ew-ask .vu-navcard__text{flex:1;min-width:0;display:flex;flex-direction:column}
+#el-detail .ew-ask .vu-navcard__text b{font-size:15px;font-weight:800}
+#el-detail .ew-ask .vu-navcard__text span{font-size:12px;color:var(--ew-mut)}
+#el-detail .ew-ask .cb-ep-go{font-size:22px;color:var(--ew-mut)}
+#el-detail .ew-melden{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:52px;margin-top:12px;border:1px solid rgba(0,0,0,.28);border-radius:999px;background:none;color:var(--ew-ink);font:800 16px/1 var(--vu-font,Inter,sans-serif);cursor:pointer}
+:root[data-theme=dark] #el-detail .ew-melden{border-color:rgba(255,255,255,.28)}
+#el-detail .ew-melden-ic{fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+/* Daten & Methodik und „Zur Elliott-Übersicht“ in einer Kachel */
+#el-detail .ew-dm{margin-top:12px;padding:4px 14px;border-radius:22px;background:var(--ew-tile);color:var(--ew-ink)}
+#el-detail .ew-dm .cb-foot.vu-dm{margin:0;padding:0;border:0;border-radius:0;background:none;color:var(--ew-ink)}
+#el-detail .ew-dm .cb-foot.vu-dm>summary{position:relative;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:2px;min-height:56px;padding:8px 24px 8px 0;color:var(--ew-ink);font-size:15px;font-weight:800;list-style:none;cursor:pointer}
+#el-detail .ew-dm .cb-foot.vu-dm>summary::-webkit-details-marker{display:none}
+#el-detail .ew-dm .cb-foot.vu-dm>summary:before{display:none}
+#el-detail .ew-dm .cb-foot.vu-dm>summary small{margin:0;font-size:12px;font-weight:600;color:var(--ew-mut)}
+#el-detail .ew-dm .cb-foot.vu-dm>summary:after{content:"›";position:absolute;right:0;top:50%;transform:translateY(-50%);font-size:22px;font-weight:700;color:var(--ew-mut)}
+#el-detail .ew-dm .cb-foot+.ew-home{border-top:1px solid rgba(127,127,127,.25)}
+#el-detail .ew-home{display:flex;align-items:center;justify-content:space-between;min-height:52px;color:var(--ew-ink);font-size:15px;font-weight:800;text-decoration:none}
+#el-detail .ew-home:after{content:"›";font-size:22px;font-weight:700;color:var(--ew-mut)}
+#el-detail .ew-end .ew-end-l{margin-top:16px}

@@ -123,7 +123,8 @@ test('Musterdepots-Seite: Bestand, Protokoll und Kennzeichnung; keine Rendite oh
     assert.ok(html.includes('erscheint hier nach der Freigabe'), 'Wertentwicklung ohne Freigabe sichtbar');
     assert.equal(/\+50|50,0 %|Rendite von|seit Aufnahme/.test(html), false, 'Veränderung je Position gezeigt');
   }
-  for (const x of ['/quant/#/aktie/AAA', '60,0 %', '05.11.2026']) assert.ok(det.includes(x), x);
+  /* App-Konzept 2 (16.11.2026): Aktien führen über die Vorschau (data-vu-stock) auf die gemeinsame Aktienseite. */
+  for (const x of ['/aktie/#/AAA', 'data-vu-stock="AAA"', '60,0 %', '05.11.2026']) assert.ok(det.includes(x), x);
   assert.match(det, /100,00\s\$/, 'Aufnahmekurs');
   assert.ok(det.includes('Umschichtung 03.12.2026') && det.includes('− CCC'));
   assert.deepEqual(P.groupedLog(depot).map(g => g.date), ['2026-12-03', '2026-11-05']);

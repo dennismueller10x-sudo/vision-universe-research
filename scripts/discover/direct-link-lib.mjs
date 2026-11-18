@@ -52,8 +52,8 @@ export const SPECS = {
   maerkte: {path: '/discover/#/maerkte', h1: '^Märkte', minText: 3000, includes: ['Marktbarometer'], textRe: '[−+-]\\d+,\\d+\\s*%',
     chart: {scope: 'main', minW: 60, minH: 20, minGeom: 2}}, // D07: je Markt eine Verlaufslinie (74×32) statt eines großen Charts
   strategien: {path: '/discover/#/strategien', h1: '^Strategien$', minText: 1500, list: {selector: '#v2-main a[href*="#/"]', min: 5}},
-  aktien: {path: '/discover/#/aktien', h1: 'Alle Aktien', minText: 800, list: {selector: '#v2-main a[href*="/s/"]', min: 30}},
-  start: {path: '/discover/', h1: '^Discover: Aktien entdecken' /* App-Konzept 2: Start nach Prototyp, Ueberschrift fuer Screenreader */, minText: 2000, list: {selector: '#v2-main a[href*="/s/"]', min: 4}},
+  aktien: {path: '/discover/#/aktien', h1: 'Alle Aktien', minText: 800, list: {selector: '#v2-main a[href*="/s/"], #v2-main a[data-vu-stock]', min: 30}},
+  start: {path: '/discover/', h1: '^Discover: Aktien entdecken' /* App-Konzept 2: Start nach Prototyp, Ueberschrift fuer Screenreader */, minText: 2000, list: {selector: '#v2-main a[href*="/s/"], #v2-main a[data-vu-stock]' /* App-Konzept 2: Aktien-Links fuehren ueber die Vorschau auf /aktie/#/<T> */, min: 4}},
   // Die Nicht-gefunden-Seite IST die erwartete Auskunft; der Abruf der Aktiendatei, der ins Leere laeuft, gehoert dazu.
   unknownStock: {path: '/discover/#/s/XX/UNKNOWN', h1: 'Aktie nicht gefunden', minText: 40, expectNotFound: true, allow404Data: true}
 };

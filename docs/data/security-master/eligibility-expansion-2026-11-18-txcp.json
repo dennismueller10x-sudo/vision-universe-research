@@ -1,0 +1,27 @@
+{
+ "schema": "vu-eligibility-catchup-1",
+ "id": "eligibility-expansion-2026-11-18-txcp",
+ "prevSha256": "3eb825015f074bdade95b21aca2dd456713a87f71654d2bd1fa842500ae7d7a1",
+ "sourceRun": "lokal 18.11.2026 gegen main cd06126945e (Anbieterliste Tiingo supported_tickers vom 18.11., build-us-security-master mit Boersenwechsel-Register, expand-us-universe --only TXCP, build-us-security-master mit erweitertem Bestand, Eignungskette, beide Gates)",
+ "decidedBy": "Steuerung 18.11.2026, Weg 1: TCBI bleibt als Stummel im Universum (einzige Quelle der Historie bis 06.11., die das Nachfolgemodul liest), TXCP wird angehaengt. Ersetzen erst nach Sicherung der Reihe (Teil B).",
+ "productUniverseBefore": 6314,
+ "productUniverseAfter": 6315,
+ "counts": {
+  "changes": 0,
+  "leaveProduct": 0,
+  "enterProduct": 1,
+  "membersAdded": 1
+ },
+ "changes": [],
+ "membersAdded": [
+  "ref_TXCP"
+ ],
+ "evidence": [
+  {
+   "securityId": "ref_TXCP",
+   "ticker": "TXCP",
+   "predecessor": "TCBI",
+   "note": "Texas Capital Bancshares, CIK 0001077428. Boersenwechsel Nasdaq -> TXSE (8-A12B 0001077428-26-000068, Handel ab 08.10.2026), Kuerzel TXCP ab 09.11.2026 (8-K 0001077428-26-000061 Item 3.01). Stammzeile tiingo:TXSE:TXCP:2026-11-11 ueber quant/config/security-master-exchange-transfer.json; Kurse vor dem 09.11. ueber ref_TCBI (quant/config/ticker-successions.json, ADR-009)."
+  }
+ ]
+}

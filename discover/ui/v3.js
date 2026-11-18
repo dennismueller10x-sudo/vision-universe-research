@@ -32,7 +32,24 @@
   function h(tag, cls, html) { var n = document.createElement(tag); if (cls) n.className = cls; if (html != null) n.innerHTML = html; return n; }
   function load(url) { return S().loadJSON(url); }
   function uid(ctx) { return (ctx && ctx.universeId) || 'US_REAL'; }
-  function stockHref(ctx, s) { return '#/s/' + uid(ctx) + '/' + encodeURIComponent(s); }
+  /* App-Konzept 2 (Owner 16.11.2026): Ein Tipp auf eine US-Aktie öffnet die Vorschau des Rahmens (data-vu-stock,
+     assets/vu-stock-sheet.js), „Ganz öffnen“ die gemeinsame Aktienseite /aktie/#/<T>. Ziel jedes Aktien-Elements ist darum
+     /aktie/#/<T>; die alte Discover-Aktienseite (#/s/US_REAL/<T>) bleibt für Lesezeichen erreichbar. Europa behält #/s/EUROPE/<id>. */
+  function usStock(ctx) { return uid(ctx) === 'US_REAL'; }
+  function stockHref(ctx, s) { return usStock(ctx) ? '/aktie/#/' + encodeURIComponent(s) : '#/s/' + uid(ctx) + '/' + encodeURIComponent(s); }
+  /** Merkmale für die Vorschau des Rahmens (nur US-Aktien): als Text (HTML) oder an ein Element. */
+  function stockAttrs(ctx, s, nm) { return usStock(ctx) ? ' data-vu-stock="' + esc(s) + '" data-vu-stock-name="' + esc(nm || s) + '"' : ''; }
+  function markStock(a, ctx, s, nm) { if (usStock(ctx)) { a.setAttribute('data-vu-stock', s); a.setAttribute('data-vu-stock-name', nm || s); } return a; }
+  /** Vorschau aus Code öffnen (Swipen, Suche): lädt die Vorschau wie der Rahmen; ohne Vorschau folgt es dem Ziel. */
+  function openStock(ctx, s, nm) {
+    var href = stockHref(ctx, s);
+    if (!usStock(ctx)) { location.hash = href; return; }
+    if (D.memory) D.memory.recordView(s, { universeId: uid(ctx), companyName: nm || null }); /* „Zuletzt angesehen“ wie bisher auf der Aktienseite */
+    var go = function () { location.assign(href); };
+    var run = function () { try { global.VUStockSheet.open(s, { name: nm || s }).then(function (ok) { if (!ok) go(); }, go); } catch (e) { go(); } };
+    if (global.VUStockSheet && global.VUStockSheet.open) { run(); return; }
+    var sc = document.createElement('script'); sc.src = '/assets/vu-stock-sheet.js'; sc.onload = run; sc.onerror = go; document.head.appendChild(sc);
+  }
   function num(v, d) { return U().num(v, d); }
 
   /* ------------------------------------------------------------ Datum */
@@ -143,7 +160,7 @@
   /** Ranglistenzeile (Discover-Muster): Rang, Logo, Name, Satz, Klartext-Zahl. */
   function rankRow(c, i, ctx) {
     var a = h('a', 'dv3-rank' + (i == null ? ' dv3-rank--norank' : ''));
-    a.href = stockHref(ctx, c.symbol); a.dataset.symbol = c.symbol;
+    a.href = stockHref(ctx, c.symbol); a.dataset.symbol = c.symbol; markStock(a, ctx, c.symbol, name(c));
     a.innerHTML = (i == null ? '' : '<span class="dv3-rank__n">' + (i + 1) + '</span>') + U().logo(c.symbol) +
       '<span class="dv3-rank__name"><b>' + esc(name(c)) + '</b><span>' + esc(story(c)) + '</span></span>' +
       '<span class="dv3-rank__val">' + (zahlPill(c) || U().chg(null)) + '<small>' + esc(zahlLabel(c)) + '</small></span>';
@@ -152,7 +169,7 @@
   /** Aktienzeile (C10) mit Kurslinie; rechts Kurs + Tagesbewegung oder die Klartext-Zahl. */
   function stockRow(c, ctx, o) {
     o = o || {};
-    var a = h('a', 'vu-lrow dv3-row'); a.href = stockHref(ctx, c.symbol); a.dataset.symbol = c.symbol;
+    var a = h('a', 'vu-lrow dv3-row'); a.href = stockHref(ctx, c.symbol); a.dataset.symbol = c.symbol; markStock(a, ctx, c.symbol, name(c));
     a.innerHTML = U().logo(c.symbol) + '<div class="vu-lrow__name"><b>' + esc(name(c)) + '</b><span>' + esc(o.sub != null ? o.sub : story(c)) + '</span></div><div class="vu-lrow__mini"></div>' +
       (o.zahl ? '<div class="vu-lrow__price dv3-zahl">' + (zahlPill(c) || U().chg(null)) + '<small>' + esc(zahlLabel(c)) + '</small></div>'
         : '<div class="vu-lrow__price"><span>' + esc(price(c)) + '</span>' + U().chg(val(c.changePercent)) + '</div>');
@@ -523,7 +540,7 @@
       showToast(c, added, st);
       step(1);
     }
-    function open() { if (current) location.hash = stockHref(ctx, current.o.s) + (current.o.rowId && /^[a-z0-9-]+$/.test(current.o.rowId) ? '?reihe=' + current.o.rowId : ''); }
+    function open() { if (current) openStock(ctx, current.o.s, current.c ? name(current.c) : current.o.s); }
     var toastTimer = 0;
     function showToast(c, added, st) {
       toast.innerHTML = '<span class="vu-hud" style="--vu-hud:32px">' + U().glyph('heart', 16) + '</span><span><b>' + esc(name(c)) + (added ? ' gemerkt' : ' ist schon gemerkt') + '</b><span>Auf deiner Watchlist</span></span>' + (added ? '<button type="button">Rückgängig</button>' : '');
@@ -583,7 +600,7 @@
       '<h2 class="dv3-story">' + esc(story(c)) + '</h2><div class="dv3-chart"></div><div class="dv3-dates"><span></span><span></span></div>' +
       (badges.length ? '<div class="dv3-reasons">' + badges.map(function (b, k) { return '<span class="vu-chip' + (k ? '' : ' vu-chip--lime') + '">' + esc(k === 0 ? b.label : (b.detail || b.label)) + '</span>'; }).join('') + '</div>' : '') +
       (c.hook && c.hook.text ? '<p class="dv3-hook">' + U().hud('fundamental', 26) + '<span>' + esc(c.hook.text) + '</span></p>' : '') +
-      '<a class="dv3-sr" href="' + esc(stockHref(ctx, c.symbol)) + '">' + esc(name(c)) + ' öffnen</a>';
+      '<a class="dv3-sr" href="' + esc(stockHref(ctx, c.symbol)) + '"' + stockAttrs(ctx, c.symbol, name(c)) + '>' + esc(name(c)) + ' öffnen</a>';
     var dates = art.querySelectorAll('.dv3-dates span'), box = art.querySelector('.dv3-chart');
     /* Gezeichnet wird, wenn die Karte im Dokument steht: am Telefon passt sie zwischen Kopf und Dock, und der Chart nimmt den Platz, der bleibt (fitChart). */
     art.drawChart = function () { fitChart(box, 320, 110, function (w, ht) { return spark(c, { big: true, eager: true, width: w, height: ht, onDates: function (a, b) { dates[0].textContent = dayYear(a); dates[1].textContent = dayYear(b); } }); }); };
@@ -617,7 +634,7 @@
       if (!active()) return;
       starters.filter(Boolean).forEach(function (c) {
         var row = h('div', 'vu-lrow vu-lrow--nochart dv3-row');
-        row.innerHTML = U().logo(c.symbol) + '<a class="vu-lrow__name" href="' + esc(stockHref(ctx, c.symbol)) + '"><b>' + esc(name(c)) + '</b><span>' + esc(what(c)) + '</span></a><button type="button" class="vu-btn vu-btn--sm">' + U().glyph('plus', 16) + ' Merken</button>';
+        row.innerHTML = U().logo(c.symbol) + '<a class="vu-lrow__name" href="' + esc(stockHref(ctx, c.symbol)) + '"' + stockAttrs(ctx, c.symbol, name(c)) + '><b>' + esc(name(c)) + '</b><span>' + esc(what(c)) + '</span></a><button type="button" class="vu-btn vu-btn--sm">' + U().glyph('plus', 16) + ' Merken</button>';
         row.querySelector('button').onclick = function () { if (st && !st.has(c.symbol)) st.toggle(c.symbol); if (ctx.route) ctx.route(); };
         if (!st) row.querySelector('button').hidden = true;
         sl.appendChild(row);
@@ -649,7 +666,7 @@
       list.replaceChildren();
       xs.forEach(function (c) {
         if (editing) { list.appendChild(removable(c)); return; }
-        if (c.missing) { var r = h('a', 'vu-lrow vu-lrow--noprice dv3-row'); r.href = stockHref(ctx, c.symbol); r.innerHTML = U().logo(c.symbol) + '<div class="vu-lrow__name"><b>' + esc(c.symbol) + '</b><span>Keine Discover-Daten zu diesem Kürzel</span></div>'; list.appendChild(r); return; }
+        if (c.missing) { var r = h('a', 'vu-lrow vu-lrow--noprice dv3-row'); r.href = stockHref(ctx, c.symbol); markStock(r, ctx, c.symbol, c.symbol); r.innerHTML = U().logo(c.symbol) + '<div class="vu-lrow__name"><b>' + esc(c.symbol) + '</b><span>Keine Discover-Daten zu diesem Kürzel</span></div>'; list.appendChild(r); return; }
         var row = stockRow(c, ctx, { sub: what(c) });
         if (mode === 'm12') { var p = row.querySelector('.vu-lrow__price'); var m = metric(c, 'return12M'); p.innerHTML = '<span>' + esc(price(c)) + '</span>' + U().chg(isNum(m) ? m * 100 : null, { digits: 0 }); }
         list.appendChild(row);
@@ -812,7 +829,7 @@
   var api = { home: home, welten: welten, thema: thema, strategien: strategien, strategie: strategie, swipen: swipen, watchlist: watchlist, maerkte: maerkte,
     rowTitle: rowTitle, closeLabel: closeLabel, stockRow: stockRow, rankRow: rankRow, spark: spark, GROUPS: GROUPS,
     /* Bausteine fuer discover/ui/reihen.js (Startseite, Reihen-Seite, Vorschau) */
-    kit: { load: load, esc: esc, h: h, uid: uid, stockHref: stockHref, name: name, story: story, what: what, zahlPill: zahlPill, fitChart: fitChart,
+    kit: { load: load, esc: esc, h: h, uid: uid, stockHref: stockHref, stockAttrs: stockAttrs, markStock: markStock, openStock: openStock, name: name, story: story, what: what, zahlPill: zahlPill, fitChart: fitChart,
       dayYear: dayYear, closeLabel: closeLabel, spark: spark, thin: thin, sheet: sheet, heart: heart, store: store, whySheet: whySheet,
       themeCard: themeCard, metaRow: metaRow, metaRows: metaRows, scale5: scale5, isNum: isNum, val: val, bindHelp: bindHelp } };
   D.V3 = api;

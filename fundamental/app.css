@@ -1132,3 +1132,63 @@ html[data-theme=dark]{--fu-m0:#c8f531;--fu-m1:#fff;--fu-m2:#9b9b9b;--fu-m3:#fff}
 :root:not([data-theme=dark]) .fu-fin-seg button{color:#3a3d42}
 :root:not([data-theme=dark]) .fu-fin-seg button[aria-pressed=true],:root:not([data-theme=dark]) .fu-fin .fu-pill[aria-pressed=true]{background:#000;color:#fff}
 :root:not([data-theme=dark]) .fu-fin .fu-pill{background:#dcdcdc;color:#000}
+
+/* ------------------------------------------------------------ Aktie #/<T> nach dem Klickentwurf (Owner 17.11.2026)
+   Gemeinsamer Kopf aus assets/stock-navigator.js; darunter: Satz-Karte (im Dunkeln weiß), „Kennzahlen“ als 2×3-Kacheln,
+   „Finanzen“ mit Zeitraum über der Karte, „Checklisten“ als drei Ring-Kacheln, „Kapitel“ als Zeilen in einer Karte, „Weiter“,
+   Daten & Methodik, Pillen „Diese Aktie in anderen Modulen“, zentrierter Fuß. Nur Darstellung; Werte und Regeln unverändert. */
+#fu-main[data-view=company]{--k2-card:#151516;--k2-dk:#232325;--k2-track:#2a2a2d;--k2-ink:#f4f5f1;--k2-hi:#fff;--k2-on-hi:#000;--k2-mut:#a1a7af;--k2-line:rgba(255,255,255,.09);--k2-lime:#c8f531}
+:root:not([data-theme=dark]) #fu-main[data-view=company]{--k2-card:#f4f4f4;--k2-dk:#e4e4e4;--k2-track:#dcdcdc;--k2-ink:#0d0f12;--k2-hi:#000;--k2-on-hi:#fff;--k2-mut:#5f646b;--k2-line:rgba(0,0,0,.09)}
+#fu-main[data-view=company] .fu-k2-sh{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:26px 0 10px}
+#fu-main[data-view=company] .fu-k2-sh h2{margin:0;font-size:22px;line-height:1.1;font-weight:800;letter-spacing:-.025em;color:var(--k2-hi)}
+#fu-main[data-view=company] .fu-k2-sh>span,#fu-main[data-view=company] .fu-k2-sh>a{font-size:13px;font-weight:700;color:var(--k2-mut);text-decoration:none;white-space:nowrap}
+#fu-main[data-view=company] .fu-k2-sh>a{display:inline-flex;align-items:center;min-height:44px;margin:-14px 0}
+#fu-main[data-view=company] .fu-k2-sh .fu-fin-r{font-size:13px;color:var(--k2-mut)}
+/* Satz-Karte: im Dunkeln weiß mit schwarzer Urteils-Pille, im Hellen eine helle Karte */
+#fu-main[data-view=company] .fu-story{margin:16px 0 0;padding:16px;border-radius:22px;background:#fff;color:#000;box-shadow:none}
+:root:not([data-theme=dark]) #fu-main[data-view=company] .fu-story{background:var(--k2-card)}
+#fu-main[data-view=company] .fu-story-h .vu-ltag{font-size:10.5px;font-weight:800;letter-spacing:.12em;color:#55595f}
+#fu-main[data-view=company] .fu-story-h .vu-verdict{background:#000;color:#fff;border:0;height:26px;padding:0 10px;font-size:12.5px;font-weight:800}
+#fu-main[data-view=company] .fu-story-t{margin:10px 0 4px;font-size:30px;line-height:1;font-weight:900;letter-spacing:-.045em}
+#fu-main[data-view=company] .fu-story-s{margin:0;font-size:12.5px;font-weight:700;color:#55595f}
+html body #fu-main[data-view=company] .fu-story-h .vu-q{background:radial-gradient(circle,#e4e4e4 0 10px,transparent 10.5px);color:#3a3d42}
+/* Kennzahlen: zwei Spalten, große Zahl */
+#fu-main[data-view=company] .fu-strip{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:0}
+#fu-main[data-view=company] .fu-k.fu-kt{padding:13px;border-radius:22px;background:var(--k2-card)}
+#fu-main[data-view=company] .fu-kt-l{font-size:11px;font-weight:700;color:var(--k2-mut)}
+#fu-main[data-view=company] .fu-kt .fu-k-v{margin-top:8px;font-size:23px;line-height:1;font-weight:900;letter-spacing:-.045em;color:var(--k2-hi)}
+#fu-main[data-view=company] .fu-kt-s{margin-top:4px;font-size:11px;font-weight:500;color:var(--k2-mut)}
+@media (min-width:720px){#fu-main[data-view=company] .fu-strip{grid-template-columns:repeat(3,minmax(0,1fr))}}
+/* Finanzen: Karte ohne eigene Überschrift, großer Wert, Jahre/Quartale als Schalter */
+#fu-main[data-view=company] .fu-fin{margin:0;padding:14px;border-radius:22px;background:var(--k2-card)}
+#fu-main[data-view=company] .fu-fin-seg{margin-top:0;background:var(--k2-on-hi)}
+#fu-main[data-view=company] .fu-fin-big>b{font-size:38px;letter-spacing:-.045em}
+#fu-main[data-view=company] .fu-fin-plot{height:140px;margin-top:12px}
+#fu-main[data-view=company] .fu-fin-per{gap:4px;margin-top:12px}
+#fu-main[data-view=company] .fu-fin-per [data-p]{min-height:38px;padding:0 22px;font-size:13.5px}
+html[data-theme=dark] #fu-main[data-view=company] .fu-fin-per [data-p]:not([aria-pressed=true]){background:none;color:var(--k2-mut)}
+/* Checklisten: drei Kacheln, Ring oben, Name und Punkte zentriert */
+#fu-main[data-view=company] .fu-ckbox{gap:8px}
+#fu-main[data-view=company] .fu-ckr,#fu-main[data-view=company] .fu-ckr.is-wait{align-items:center;gap:6px;padding:12px;border-radius:22px;background:var(--k2-card);text-align:center}
+#fu-main[data-view=company] .fu-ckr-t b{margin-top:4px;font-size:12.5px;font-weight:800}
+#fu-main[data-view=company] .fu-ckr-t small{font-size:11px;color:var(--k2-mut)}
+/* Kapitel: Zeilen in einer Karte, rechts Pfeil; „In der Branche“ mit Balken (Anteil der Gruppe aus dem Satz) */
+#fu-main[data-view=company] .fu-chap.fu-k2-list{display:block;padding:4px 14px;border-radius:22px;background:var(--k2-card)}
+#fu-main[data-view=company] .fu-k2-list li{display:block}
+#fu-main[data-view=company] .fu-k2-list a{display:flex;flex-direction:row;align-items:center;gap:12px;height:auto;min-height:56px;padding:11px 0;border-radius:0;background:none;border-bottom:1px solid var(--k2-line)}
+#fu-main[data-view=company] .fu-k2-list li:last-child a{border-bottom:0}
+#fu-main[data-view=company] .fu-k2-list .fu-chap-t{flex:1;min-width:0}
+#fu-main[data-view=company] .fu-k2-list .fu-chap-t b{font-size:14px;font-weight:800;color:var(--k2-hi)}
+#fu-main[data-view=company] .fu-k2-list .fu-chap-t span{font-size:11px;color:var(--k2-mut)}
+#fu-main[data-view=company] .fu-k2-list a>svg{display:block;flex:none;color:var(--k2-mut)}
+#fu-main[data-view=company] .fu-chap-bar{flex:none;width:54px;height:6px;border-radius:9px;background:var(--k2-track);overflow:hidden}
+#fu-main[data-view=company] .fu-chap-bar[hidden]{display:none}
+#fu-main[data-view=company] .fu-chap-bar i{display:block;height:100%;border-radius:9px;background:var(--k2-lime)}
+:root:not([data-theme=dark]) #fu-main[data-view=company] .fu-chap-bar i{background:#000}
+#fu-main[data-view=company] .fu-next .vu-next{margin-top:22px}
+#fu-main[data-view=company] .vu-dm{margin-top:16px}
+/* Fuß: ein zentrierter Absatz unter den Pillen */
+#fu-main[data-view=company] .fu-k2-foot{margin:28px 0 0;font-size:11px;line-height:1.45;font-weight:500;text-align:center;color:var(--k2-mut)}
+#fu-main[data-view=company] .fu-fin-big{align-items:center;gap:4px 10px;margin-top:14px}
+#fu-main[data-view=company] .fu-fin-big>.vu-chg{order:2}
+#fu-main[data-view=company] .fu-fin-when{order:3;flex-basis:100%;font-size:11px}

@@ -109,7 +109,9 @@ jobs:
           node scripts/quant/portfolio/check-model-depots-live.mjs --site="$SITE" 2>&1 | tee -a freshness-live.txt
 
       - name: Freshness des Repository-Stands (zur Einordnung)
-        run: node scripts/market/check-freshness.mjs | tee freshness-repo.txt
+        run: |
+          set -o pipefail
+          node scripts/market/check-freshness.mjs | tee freshness-repo.txt
 
       - name: Zusammenfassung
         if: always()

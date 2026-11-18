@@ -488,7 +488,7 @@
       [].forEach.call(list.children, function (li, k) { li.classList.toggle('is-active', k === i); li.setAttribute('aria-selected', String(k === i)); });
       if (i >= 0) input.setAttribute('aria-activedescendant', 'fu-hit-' + i); else input.removeAttribute('aria-activedescendant');
     }
-    function go(t) { location.hash = '#/' + encodeURIComponent(t); }
+    function go(t) { fuPreview(t); }
     function paint() {
       var q = input.value;
       if (!q.trim()) { close(); live.textContent = ''; return; }
@@ -520,10 +520,10 @@
   }
   function exampleChips(asList) {
     if (asList) return el('ul', { class: 'fu-exlist', 'aria-label': 'Beispiele' }, EXAMPLES.map(function (e) {
-      return el('li', {}, el('a', { href: '#/' + e[0] }, [el('b', { text: e[0] }), el('span', { text: e[1] }), glyph('chevron', 'fu-glyph-sm')]));
+      return el('li', {}, el('a', fuStock(e[0], e[1]), [el('b', { text: e[0] }), el('span', { text: e[1] }), glyph('chevron', 'fu-glyph-sm')]));
     }));
     return el('div', { class: 'fu-chips fu-examples', role: 'list', 'aria-label': 'Beispiele' }, EXAMPLES.map(function (e) {
-      return el('a', { class: 'fu-chip', role: 'listitem', href: '#/' + e[0] }, [el('b', { text: e[0] }), e[1]]);
+      return el('a', fuStock(e[0], e[1], { class: 'fu-chip', role: 'listitem' }), [el('b', { text: e[0] }), e[1]]);
     }));
   }
 
@@ -561,6 +561,13 @@
       o.actions ? el('div', { class: 'fu-empty-act' }, o.actions) : null]);
   }
   function reloadBtn(fn) { return el('button', { type: 'button', class: 'vu-btn vu-btn--sm', onclick: fn }, 'Neu laden'); }
+  /* Fuß der Aktie (Klickentwurf 17.11.2026): Quelle, Stand und Datenstand der Meldungen als ein zentrierter Absatz. */
+  function stockFoot(co) {
+    var asOf = co.raw && co.raw.fundamentals && co.raw.fundamentals.asOf, st = co.book && co.book.state;
+    var line = 'Zahlen aus den Pflichtmeldungen der Unternehmen' + (asOf ? ' · Stand ' + M.dateDe(String(asOf).slice(0, 10)) : '') + ' · keine Anlageberatung.';
+    if (st && st.filed) line += ' Neuester Berichtszeitraum ' + (periodText(st) || '–') + ', letzte verarbeitete Meldung vom ' + M.dateDe(st.filed) + '.';
+    return el('p', { class: 'fu-k2-foot', 'data-fu-state': st && st.filed ? (st.pending ? 'pending' : 'current') : null, text: line });
+  }
   function foot(asOf) {
     return el('p', { class: 'fu-foot' }, [glyph('source', 'fu-glyph-sm'), 'Zahlen aus den Pflichtmeldungen der Unternehmen' + (asOf ? ' · Stand ' + M.dateDe(String(asOf).slice(0, 10)) : '') + ' · keine Empfehlung']);
   }
@@ -595,6 +602,10 @@
     return emptyState({ id: 'ranking', verdict: 'Gerade keine Daten', title: 'Ranglisten laden gerade nicht.', text: 'Die Vergleichsdaten aller US-Aktien fehlen. Wir zeigen nichts Halbes.',
       next: [['#/suche', 'Jede Firma einzeln (Suche)'], ['#/methodik', 'Methodik und Erklärungen'], ['#/ranglisten/auswahlen', 'Auswahlen aus Discover']],
       actions: [reloadBtn(retry), el('a', { class: 'vu-btn vu-btn--sm vu-btn--line', href: '/status/' }, 'Status')] });
+  }
+  /* Abschnittskopf des Klickentwurfs: Titel links, rechts ein Hinweis oder ein Weg. */
+  function k2Sh(title, right, to) {
+    return el('div', { class: 'fu-k2-sh' }, [el('h2', { text: title }), right ? (to ? el('a', { href: to }, right) : el('span', { text: right })) : null]);
   }
   function railHead(title, to, link, sub, tag) {
     return el('div', { class: 'fu-rh' }, [el('div', { class: 'fu-rh-t' }, [el('h2', { text: title }), tag ? el('span', { class: 'fu-rh-tag', text: tag }) : null,
@@ -662,6 +673,18 @@
     return el('div', { class: 'fp-sh', id: id || null }, [el('h2', { text: title }), more ? el('a', { class: 'fp-more', href: to }, more + ' ›') : null]);
   }
   /* Aktien-Element: öffnet die Vorschau (assets/vu-stock-sheet.js), ganz geöffnet die Aktienseite. */
+  /* App-Konzept 2 (Owner 16.11.2026): jeder Tipp auf eine Firma (Liste, Suche, Rangliste, Karte) öffnet die Vorschau; Ziel /aktie/#/<T>.
+     Die Unternehmensseite #/<T> bleibt für Lesezeichen und die bewussten Wege („Zahlen“, Kapitel) erreichbar. */
+  function fuStock(t, name, attrs) {
+    var a = attrs || {}; a.href = '/aktie/#/' + encodeURIComponent(t); a['data-vu-stock'] = t; a['data-vu-stock-name'] = name || t; return a;
+  }
+  /** Vorschau aus Code (Enter in der Suche); ohne Vorschau die Unternehmensseite. */
+  function fuPreview(t, name) {
+    var go = function () { location.hash = '#/' + encodeURIComponent(t); };
+    var run = function () { try { global.VUStockSheet.open(t, { name: name || t }).then(function (ok) { if (!ok) go(); }, go); } catch (e) { go(); } };
+    if (global.VUStockSheet && global.VUStockSheet.open) { run(); return; }
+    var sc = document.createElement('script'); sc.src = '/assets/vu-stock-sheet.js'; sc.onload = run; sc.onerror = go; document.head.appendChild(sc);
+  }
   function stockLink(t, name, cls, kids, label) {
     return el('a', { class: cls, href: '/aktie/#/' + encodeURIComponent(t), 'data-vu-stock': t, 'data-vu-stock-name': name || t, 'aria-label': label || null }, kids);
   }
@@ -783,7 +806,7 @@
       fpSh('Zahlen lesen in 30 Sekunden'), el('div', { class: 'fp-px' }, learn),
       fpSh('Branchen im Vergleich', 'Alle', '#/branchen', 'fp-branchen'), indBox,
       fpSh('Firma suchen'), el('div', { class: 'fp-px fp-find' }, [searchBox({ placeholder: 'Firma oder Kürzel, z. B. NVIDIA' }),
-        el('div', { class: 'fu-qchips', role: 'list', 'aria-label': 'Schnellwahl' }, QUICK.map(function (t) { return el('a', { class: 'fu-qchip', role: 'listitem', href: '#/' + t }, [frag(UI.logo(t)), t]); })),
+        el('div', { class: 'fu-qchips', role: 'list', 'aria-label': 'Schnellwahl' }, QUICK.map(function (t) { return el('a', fuStock(t, t, { class: 'fu-qchip', role: 'listitem' }), [frag(UI.logo(t)), t]); })),
         navEl('/screener/', el('span', { class: 'vu-hud', style: '--vu-hud:42px' }, productIcon('screener', 'fu-hud-g')), 'Selbst filtern', 'Im Screener nach eigenen Bedingungen')]),
       el('div', { class: 'fp-px fp-next' }, nextEl({ title: 'Hedgefonds: was Investoren halten', sub: 'Depots großer Fonds aus Pflichtmeldungen', href: '/hedgefonds/#/' })),
       el('div', { class: 'fp-end' }, endLink), asOfNote);
@@ -866,7 +889,7 @@
   }
   function firmCard(t) {
     var sub = 'Umsatz ' + usd(t.revenue) + (t.pe != null ? ' · KGV ' + M.multiple(t.pe) : '');
-    return el('a', { class: 'vu-box fu-firm', href: '#/' + encodeURIComponent(t.ticker) }, [
+    return el('a', fuStock(t.ticker, t.name, { class: 'vu-box fu-firm' }), [
       el('div', { class: 'fu-firm-head' }, [frag(UI.logo(t.ticker)), el('div', {}, [el('b', { text: t.name || t.ticker }), el('small', { text: sub })]), glyph('chevron', 'fu-glyph-sm')]),
       fbar('Wachstum pro Jahr (3 J)', t.growth3, false, true), fbar('Nettomarge', t.netMargin, t.implausible.netMargin), fbar('Free-Cashflow-Marge', t.fcfMargin, t.implausible.fcfMargin)]);
   }
@@ -906,8 +929,8 @@
     function idle() {
       var rc = recent();
       return [rc.length ? el('p', { class: 'vu-ltag fu-gap', text: 'Zuletzt angesehen' }) : null,
-        rc.length ? el('div', { class: 'vu-box fu-rows' }, rc.map(function (x) { return frag(UI.stockRow({ ticker: x.t, name: x.n || x.t, sub: x.t + ' · Zahlen', href: '#/' + x.t, noPrice: true })); })) : null,
-        el('p', { class: 'vu-ltag fu-gap', text: 'Schnellwahl' }), el('div', { class: 'fu-wrapchips' }, EXAMPLES.map(function (e) { return el('a', { class: 'vu-chip', href: '#/' + e[0] }, e[0]); }))];
+        rc.length ? el('div', { class: 'vu-box fu-rows' }, rc.map(function (x) { return frag(UI.stockRow({ ticker: x.t, name: x.n || x.t, sub: x.t + ' · Zahlen', href: '/aktie/#/' + encodeURIComponent(x.t), preview: true, noPrice: true })); })) : null,
+        el('p', { class: 'vu-ltag fu-gap', text: 'Schnellwahl' }), el('div', { class: 'fu-wrapchips' }, EXAMPLES.map(function (e) { return el('a', fuStock(e[0], e[1], { class: 'vu-chip' }), e[0]); }))];
     }
     function paint() {
       var q = input.value.trim(), my = ++tok; firstHit = null;
@@ -918,11 +941,11 @@
         var hits = M.search(entries, q, 6); firstHit = hits[0] || null;
         if (!hits.length && !mets.length) {
           put(out, emptyState({ id: 'search', verdict: 'Kein Treffer', title: '„' + q + '“: keine US-Firma mit Pflichtmeldungen', text: 'Fundamental zeigt US-Firmen mit Pflichtmeldungen. Kurse und Chart findest du trotzdem.', actions: [el('a', { class: 'vu-btn vu-btn--sm vu-btn--line', href: '/discover/#/suche' }, 'In Discover suchen')] }),
-            el('p', { class: 'vu-ltag fu-gap', text: 'Probier' }), el('div', { class: 'vu-box fu-rows' }, EXAMPLES.slice(0, 3).map(function (e) { return frag(UI.stockRow({ ticker: e[0], name: e[1], sub: e[0], href: '#/' + e[0], noPrice: true })); })));
+            el('p', { class: 'vu-ltag fu-gap', text: 'Probier' }), el('div', { class: 'vu-box fu-rows' }, EXAMPLES.slice(0, 3).map(function (e) { return frag(UI.stockRow({ ticker: e[0], name: e[1], sub: e[0], href: '/aktie/#/' + e[0], preview: true, noPrice: true })); })));
           return;
         }
         var rows = hits.map(function (h) {
-          var node = frag(UI.stockRow({ ticker: h.ticker, name: h.name || h.ticker, sub: h.ticker + ' · Zahlen', href: '#/' + encodeURIComponent(h.ticker), noPrice: true })).firstChild;
+          var node = frag(UI.stockRow({ ticker: h.ticker, name: h.name || h.ticker, sub: h.ticker + ' · Zahlen', href: '/aktie/#/' + encodeURIComponent(h.ticker), preview: true, noPrice: true })).firstChild;
           // eine Zahl je Treffer: Umsatz der letzten 12 Monate aus der Discover-Aktiendatei
           loadRow(M.stockPath(h.ticker)).then(function (raw) { var z = raw && raw.geschaeftszahlen; if (z && z.status === 'CALCULATED' && isNum(z.umsatzTTM) && z.einheit === 'usd_m') node.querySelector('.vu-lrow__name span').textContent = h.ticker + ' · Umsatz ' + usd(z.umsatzTTM * 1e6) + ' (12 M)'; }).catch(function () {});
           return node;
@@ -933,7 +956,7 @@
     }
     input.addEventListener('input', paint);
     input.addEventListener('keydown', function (ev) {
-      if (ev.key === 'Enter') { ev.preventDefault(); var t = firstHit ? firstHit.ticker : M.normTicker(input.value); if (M.validTicker(t)) location.hash = '#/' + encodeURIComponent(t); }
+      if (ev.key === 'Enter') { ev.preventDefault(); var t = firstHit ? firstHit.ticker : M.normTicker(input.value); if (M.validTicker(t)) fuPreview(t, firstHit && firstHit.name); }
       else if (ev.key === 'Escape') location.hash = '#/';
     });
     put(main, el('form', { class: 'fu-bigq', role: 'search', onsubmit: function (e) { e.preventDefault(); } }, [glyph('search', 'fu-glyph'), input, cancel]), out);
@@ -964,7 +987,7 @@
     var on = others.querySelector('[aria-current=page]'); if (on && others.scrollWidth > others.clientWidth) others.scrollLeft = Math.max(0, on.offsetLeft - 16);
     var max = 1;
     function row(x, i) {
-      return el('li', {}, el('a', { href: '#/' + encodeURIComponent(x.s) }, [el('span', { class: 'fu-rk-n vu-num', text: String(i + 1) }), frag(UI.logo(x.s)),
+      return el('li', {}, el('a', fuStock(x.s, x.n), [el('span', { class: 'fu-rk-n vu-num', text: String(i + 1) }), frag(UI.logo(x.s)),
         el('span', { class: 'fu-rk-name' }, [raceBar(x.n || x.s, x[def.col], max), el('small', { text: x.s + (isNum(x.revenue) ? ' · Umsatz ' + usd(x.revenue) : '') })]),
         el('span', { class: 'vu-num fu-rk-v fu-race-v', text: rankValue(def, x[def.col]) })]));
     }
@@ -1025,7 +1048,7 @@
         var d = uDef(col), rows = members.filter(function (r) { return isNum(r[col]); }).sort(function (a, b) { return col === 'pe' ? a[col] - b[col] : b[col] - a[col]; }).slice(0, 40);
         var max = Math.max.apply(null, rows.map(function (r) { return Math.abs(r[col]); })) || 1;
         put(list, el('ol', { class: 'fu-rk fu-rk-box' }, rows.map(function (x, i) {
-          return el('li', {}, el('a', { href: '#/' + encodeURIComponent(x.s) }, [
+          return el('li', {}, el('a', fuStock(x.s, x.n), [
             el('span', { class: 'fu-rk-n fu-num', text: String(i + 1) }), frag(UI.logo(x.s)),
             el('span', { class: 'fu-rk-name' }, [raceBar(x.n || x.s, x[col], max), el('small', { text: x.s })]),
             el('span', { class: 'fu-num fu-rk-v fu-race-v', text: C.fmt(d, x[col], 'USD') })
@@ -1045,11 +1068,12 @@
       el('div', { class: 'fu-phead-t' }, [eyebrow ? el('p', { class: 'vu-eyebrow', text: eyebrow }) : null, el('h1', { class: 'fu-h1', text: title }), lead ? el('p', { class: 'fu-sub', text: lead }) : null])]);
   }
   function backLink(h, label) { return el('a', { class: 'fu-back', href: h }, [glyph('back', 'fu-glyph-sm'), label]); }
-  function stockHead(t, co) {
+  /* others: Ort der Pillen „Diese Aktie in anderen Modulen“ (Klickentwurf: nach „Weiter“, vor dem Fuß); ohne Ort am Seitenende. */
+  function stockHead(t, co, others) {
     var host = el('div', { class: 'fu-shead' });
     var SN = global.VUStockNavigator, SCX = global.VUCore && global.VUCore.StockContext, ctx = null;
     try { ctx = SN && SCX ? SCX.fromUs(t, { name: co && co.name }) : null; } catch (e) { ctx = null; }
-    if (ctx) { SN.head(host, { ctx: ctx, current: 'fundamental', name: (co && co.name) || t, exchange: co && co.exchange, price: co && co.quote, back: { href: '#/', label: 'Fundamental' } }); return host; }
+    if (ctx) { SN.head(host, { ctx: ctx, current: 'fundamental', name: (co && co.name) || t, exchange: co && co.exchange, price: co && co.quote, back: { href: '#/', label: 'Fundamental' }, others: others || undefined }); return host; }
     host.append(el('header', { class: 'fu-head' }, [backLink('#/', 'Fundamental'), el('h1', { class: 'fu-h1', text: (co && co.name) || t })]));
     return host;
   }
@@ -1073,7 +1097,7 @@
         return done();
       }
       main.setAttribute('data-fu-source', co.book.source);
-      var ctx = { snap: C.snapshot(co.raw, null) };
+      var ctx = { snap: C.snapshot(co.raw, null), others: el('div', { class: 'fu-others' }) };
       var views = { '': overview, kennzahlen: catalogView, kennzahl: metricView, vergleich: compareView, branche: compareView, finanzen: financeView, mehr: moreView };
       var fn = views[sub] || (AREAS[sub] ? areaView : overview);
       var content = fn(co, r, ctx);
@@ -1085,8 +1109,9 @@
       // Fehlt die volle SEC-Historie, steht das als ehrlicher Hinweis unten – kein Warnkasten ueber der Seite.
       var fallback = co.book.source === 'discover' && co.historyState !== 'NOT_IN_SHARD'
         ? el('p', { class: 'fu-note fu-fallback', role: 'note', 'data-fu-fallback': co.historyState, text: 'Volle Historie gerade nicht verfügbar' + (co.historyState === 'GZIP_UNSUPPORTED' ? ' (Browser zu alt)' : '') + ': gezeigt wird der Discover-Auszug ohne Quartale und mit weniger Kennzahlen.' }) : null;
-      var st = stateNotes(co);
-      var nodes = isOverview ? [stockHead(t, co)].concat(content, st, fallback) : content.concat(st, fallback);
+      // Auf der Aktie steht der Datenstand im Fuß (Klickentwurf); hier bleibt nur der Hinweis auf eine noch nicht verarbeitete Meldung.
+      var st = isOverview ? stateNotes(co).slice(1) : stateNotes(co);
+      var nodes = isOverview ? [stockHead(t, co, ctx.others)].concat(content, st, fallback) : content.concat(st, fallback);
       put(main, nodes.filter(Boolean));
       remember(t, co.name);
       done();
@@ -1211,7 +1236,9 @@
       show(lastP, def, rows);
     }
     paint();
-    return el('section', { class: 'fu-fin fu-night', 'aria-label': 'Finanzen' }, [el('div', { class: 'fu-fin-h' }, [el('h2', { text: 'Finanzen' }), range]), seg, big, plot, xs, per]);
+    // Klickentwurf: Überschrift „Finanzen“ mit Zeitraum über der Karte; die Karte trägt Reihe, Wert, Säulen und Zeitraum-Wahl.
+    var out = [el('div', { class: 'fu-k2-sh' }, [el('h2', { text: 'Finanzen' }), range]), el('section', { class: 'fu-fin fu-night', 'aria-label': 'Finanzen' }, [seg, big, plot, xs, per])];
+    return out;
   }
   /* Kapitel: zugeklappt als Zeilen; jede oeffnet ihren Bereich (die bisherigen Adressen bleiben die Ziele). */
   var CHAPTERS = [
@@ -1233,10 +1260,10 @@
   }
   function chapters(co, ctx) {
     var subs = {};
-    var list = el('ol', { class: 'fu-chap' }, CHAPTERS.map(function (c) {
+    var list = el('ol', { class: 'fu-chap fu-k2-list' }, CHAPTERS.map(function (c) {
       var sub = el('span', { text: chapterSub(co, c[0], ctx) }); subs[c[0]] = sub;
-      return el('li', {}, el('a', { href: chapterHref(co.t, c[0]) }, [el('span', { class: 'fu-chap-i' }, glyph(c[2])),
-        el('span', { class: 'fu-chap-t' }, [el('b', { text: c[1] }), sub]), glyph('chevron', 'fu-glyph-sm')]));
+      var bar = c[0] === 'branche' ? (subs.bar = el('span', { class: 'fu-chap-bar', 'aria-hidden': 'true', hidden: true }, el('i'))) : null;
+      return el('li', {}, el('a', { href: chapterHref(co.t, c[0]) }, [el('span', { class: 'fu-chap-t' }, [el('b', { text: c[1] }), sub]), bar, glyph('chevron', 'fu-glyph-sm')]));
     }));
     /* Nachgeladen: Branchenmedian des KGV, Lage in der Branche, Analysten (Angabe Dritter). */
     main.addEventListener('fu-universe', function h(e) {
@@ -1245,6 +1272,8 @@
       var g = C.peerGroup(U, co.t, 'industry', 6) || groupOf(co, U); if (!g) return;
       var p = C.position(g.members, 'revenue', g.self.revenue), pe = C.position(g.members.filter(function (m) { return m.pe > 0; }), 'pe', g.self.pe);
       put(subs.branche, (g.by === 'industry' ? g.label : groupLabel(g)) + (p && p.rank === 1 && p.count > 1 ? ' · höchster Umsatz der Gruppe' : p && isNum(p.pct) && p.count > 1 ? ' · Umsatz höher als ' + Math.round(p.pct * 100) + ' % der Gruppe' : ''));
+      // Balken = derselbe Anteil der Gruppe, den der Satz nennt (Klickentwurf), nur Darstellung.
+      if (p && p.count > 1 && (p.rank === 1 || isNum(p.pct))) { subs.bar.hidden = false; subs.bar.firstChild.style.width = (p.rank === 1 ? 100 : Math.round(p.pct * 100)) + '%'; }
       if (isNum(ctx.snap.pe) && pe) put(subs.bewertung, 'KGV ' + C.fmt({ kind: 'multiple' }, ctx.snap.pe) + ' · Branche ' + C.fmt({ kind: 'multiple' }, pe.median) + (isNum(ctx.snap.peMedian) ? ' · Markt ' + C.fmt({ kind: 'multiple' }, ctx.snap.peMedian) : ''));
     });
     loadConsensus(co.t).then(function (d) { var e = d && d.entries && d.entries[ID.securityIdForTicker(co.t)]; return e ? C.consensus(e) : null; }, function () { return null; })
@@ -1288,7 +1317,7 @@
       el('p', { class: 'vu-ltag', text: list.items.length + ' Punkte · jede Bedingung mit Haken' }),
       ckItems(list.items.map(function (i) { return { item: i }; })),
       U && hits ? ckUni(hits, U, list.items.length, list) : el('a', { class: 'vu-btn vu-btn--ink vu-btn--block fu-gap', href: CK.screenerHref(list) }, 'Im Screener'),
-      U && hits && hits.length ? el('div', { class: 'fu-ck-firms' }, hits.slice(0, 12).map(function (t) { var x = U.get(t); return el('a', { class: 'fu-ck-firm', href: '#/' + encodeURIComponent(t) }, [frag(UI.logo(t)), el('b', { text: shortName((x && x.n) || t) })]); })) : null,
+      U && hits && hits.length ? el('div', { class: 'fu-ck-firms' }, hits.slice(0, 12).map(function (t) { var x = U.get(t); return el('a', fuStock(t, (x && x.n) || t, { class: 'fu-ck-firm' }), [frag(UI.logo(t)), el('b', { text: shortName((x && x.n) || t) })]); })) : null,
       U && hits && hits.length > 12 ? el('p', { class: 'fu-note', text: 'Die 12 größten nach Börsenwert. Alle ' + hits.length.toLocaleString('de-DE') + ' stehen im Screener.' }) : null,
       el('div', { class: 'fu-gap-s' }, helpEl(CK_HELP))]), 'fu-ck-sheet');
   }
@@ -1301,7 +1330,7 @@
       put(box, CK.CHECKLISTS.map(function (list) {
         var r = CK.evaluate(list, function (col) { return row[col]; });
         return el('button', { type: 'button', class: 'fu-ckr' + (r.all ? ' is-all' : ''), 'data-ck': list.id, 'aria-haspopup': 'dialog', onclick: function () { ckSheet(co, U, list); } }, [
-          frag(UI.ring(r.of ? r.met / r.of * 100 : null, { size: 60, stroke: 7, text: r.met + '/' + r.of, label: list.name + ', Anteil erfüllter Punkte' })),
+          frag(UI.ring(r.of ? r.met / r.of * 100 : null, { size: 66, stroke: 8, text: r.met + '/' + r.of, label: list.name + ', Anteil erfüllter Punkte' })),
           el('span', { class: 'fu-ckr-t' }, [el('b', { text: list.name }), el('small', { text: r.all ? 'Alle Punkte erfüllt' : r.met + ' von ' + r.of + ' Punkten erfüllt' })])]);
       }));
     }
@@ -1310,17 +1339,18 @@
   }
   function overview(co, r, ctx) {
     var f = co.f, t = co.t;
-    var stripHost = el('div', {}, strip(co, ctx));
+    var stripHost = el('div', {}, strip(co, ctx)), fin = finCard(co);
     main.addEventListener('fu-universe', function h(e) { main.removeEventListener('fu-universe', h); if (e.detail) put(stripHost, strip(co, ctx)); });
     return [
       storyCard(co, ctx),
       f.stale && f.stale.stale ? el('p', { class: 'fu-note', role: 'note', text: 'Die Geschäftszahlen sind veraltet: letztes gemeldetes Geschäftsjahr ' + f.latestFiscalYear + '.' }) : null,
-      stripHost, finCard(co),
-      CK ? railHead('Checklisten', null, null, 'Tipp zeigt jede Bedingung mit Wert.', 'Neu') : null,
+      k2Sh('Kennzahlen'), stripHost,
+      fin[0], fin[1],
+      CK ? k2Sh('Checklisten', 'Tipp zeigt jede Bedingung') : null,
       checklistRows(co),
-      railHead('Kapitel', href(t, 'mehr'), 'Alle'), chapters(co, ctx),
-      el('div', { class: 'fu-next' }, nextEl({ title: 'Zahlen in Quant', sub: co.name + ': dieselben Geschäftszahlen im Quant-Profil', href: '/quant/#/aktie/' + encodeURIComponent(t) + '/zahlen' })),
-      foot(co.raw && co.raw.fundamentals && co.raw.fundamentals.asOf), dataMethod(co)];
+      k2Sh('Kapitel', 'Alle', href(t, 'mehr')), chapters(co, ctx),
+      el('div', { class: 'fu-next' }, nextEl({ title: 'Zahlen in Quant', sub: 'Dieselben Geschäftszahlen im Quant-Profil', href: '/quant/#/aktie/' + encodeURIComponent(t) + '/zahlen' })),
+      dataMethod(co), ctx.others, stockFoot(co)];
   }
   function fyNote(b) { var e = C.fiscalYearEnd(b); return e ? (e.calendar ? 'Geschäftsjahr = Kalenderjahr' : 'Geschäftsjahr endet im ' + e.month) : 'Geschäftsjahre laut Jahresbericht'; }
   /* ------------------------------------------------------------ F06 Reiter Kennzahlen */
@@ -2094,7 +2124,8 @@
     main.removeAttribute('data-view');
     if (r.view !== 'company') { main.removeAttribute('data-ticker'); main.removeAttribute('data-fu-source'); }
     main.setAttribute('data-sub', r.sub || '');
-    if (!(r.view === 'home' && !r.focus)) fpTabsMode(false);
+    // Aktie #/<T> (Klickentwurf 17.11.2026): ohne Reiterzeile des Rahmens; Start setzt sie selbst, alle anderen Ansichten zeigen sie.
+    if (!(r.view === 'home' && !r.focus)) fpTabsMode(r.view === 'company');
     if (r.view === 'company') company(r); else if (r.view === 'method') method(); else if (r.view === 'ranking') rankingView(r.id); else if (r.view === 'industry') industryView(r.id); else home(r.focus, r);
     if (r.focus === 'suche') { var q = document.getElementById('fu-q'); if (q) q.focus({ preventScroll: true }); }
     if (global.VUNavigation) global.VUNavigation.dock({});

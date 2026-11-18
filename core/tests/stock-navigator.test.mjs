@@ -97,3 +97,32 @@ test("Kopf · Name aus dem Ausschnitt unter dem Kuerzel (nicht unter dem Kontext
   assert.equal(NAV.shardName(ctx, { schema: SC.SCHEMA, modules: {} }), null);
   assert.equal(NAV.shardName(ctx, null), null);
 });
+
+test("Kopf (Klickentwurf 17.11.2026) · Pillen „Diese Aktie in anderen Modulen“: nur belegte Module, ohne das eigene, Elliott als Wellenbild, dazu „Aktienseite“", () => {
+  const ctx = SC.fromUs("TTWO");
+  const mf = { schema: SC.SCHEMA, modules: Object.fromEntries(["discover", "quant", "technical", "technik", "elliott", "fundamental", "hedgefonds"].map((m) => [m, { US: ["TTWO"] }]).concat([["supertrader", { US: [] }]])) };
+  const h = NAV.othersHtml(ctx, SC.availability(ctx, mf), "quant");
+  assert.match(h, /<h2 class="vu-sothers-h">Diese Aktie in anderen Modulen<\/h2>/);
+  assert.deepEqual([...h.matchAll(/data-module="([a-z]+)"/g)].map((m) => m[1]), ["discover", "technical", "fundamental", "hedgefonds", "technik", "aktie"], "Reihenfolge wie im Klickentwurf; Supertrader ohne Beleg entfällt; das eigene Modul fehlt");
+  assert.match(h, /href="\/elliott\/#\/TTWO" data-module="technik">.*Elliott<\/a>/);
+  assert.match(h, /href="\/aktie\/#\/TTWO" data-module="aktie">.*Aktienseite<\/a>/);
+  assert.doesNotMatch(NAV.othersHtml(ctx, SC.availability(ctx, mf), "elliott"), /data-module="technik"/, "Elliott-Profiansicht ist dasselbe Modul");
+  assert.deepEqual([...NAV.othersHtml(ctx, [], "quant").matchAll(/data-module="([a-z]+)"/g)].map((m) => m[1]), ["aktie"], "ohne Ausschnitt nur die Aktienseite");
+});
+
+test("Kopf (Klickentwurf 17.11.2026) · großer Kurs mit Pille, darunter die Schlusskurs-Zeile; Kurzname und Rest des Namens", () => {
+  const p = NAV.priceHtml({ value: 227.82, currency: "USD", changePct: 0.38, changeLabel: "zum Vortag", kind: "close", at: "13.11.2026" });
+  assert.match(p, /<b class="vu-shead-value">227,82 \$<\/b><span role="img" aria-label="Plus 0,38 Prozent zum Vortag" class="vu-shead-change">▲ \+0,38 %<\/span>/);
+  assert.match(p, /<p class="vu-shead-when">Schlusskurs 13\.11\.2026 · zum Vortag<\/p>/);
+  assert.match(NAV.priceHtml({ value: 10, changePct: -1, kind: "close", at: "13.11." }), /data-direction="down"/);
+  assert.equal(NAV.priceHtml(null), "");
+  assert.equal(NAV.shortName("Take-Two Interactive Software Inc"), "Take-Two");
+  assert.deepEqual(NAV.subLine("Take-Two Interactive Software Inc", "Take-Two", "TTWO", "NASDAQ"), ["Interactive Software", "TTWO", "NASDAQ"]);
+  assert.deepEqual(NAV.subLine("NVIDIA Corp", "NVIDIA", "NVDA"), ["NVDA"]);
+  const css = readFileSync(join(ROOT, "assets", "stock-navigator.css"), "utf8");
+  assert.match(css, /:root:not\(\[data-theme=dark\]\) \.vu-shead--k2/, "helles Design");
+  assert.match(css, /\.vu-shead--k2\.vu-shead--k2 \.vu-shead-price\[data-direction=down\] \.vu-shead-change\{background:#c4281c;color:#fff\}/, "Minus rot (Owner 06.11.2026)");
+  const src = readFileSync(join(ROOT, "assets", "stock-navigator.js"), "utf8");
+  assert.match(src, /aria-label="Zurück zur Aktienseite"/); assert.match(src, /return ctx\.region === "US" \? "\/aktie\/#\/" \+ encodeURIComponent\(ctx\.ticker\)/);
+  assert.doesNotMatch(src.slice(src.indexOf("function head(")), /vu-shead-nav/, "keine Reiterleiste im Kopf");
+});

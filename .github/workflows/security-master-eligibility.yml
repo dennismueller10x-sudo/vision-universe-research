@@ -39,6 +39,10 @@ on:
         description: 'Mitgliedschaft erweitern: nur diese Ticker anhaengen (komma-getrennt; neuer Stamm aus der Anbieterliste, Stamm-Gate, Freigabe membersAdded)'
         type: string
         default: ''
+      neuzugaenge:
+        description: 'Dauerregel von Hand: neue Titel mit SEC-Abgleich anhaengen, hoechstens autoMembersAdded (core/registry/eligibility-gate.json); nach dem Wochenlauf automatisch'
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -67,20 +71,42 @@ jobs:
       # Erweiterung vom 11.09.). Nur die Positivliste wird angehaengt (expand-us-universe --only), nichts entfernt; der
       # Wertpapierstamm wird mit dem erweiterten Bestand neu gebaut und muss das Stamm-Gate bestehen. Die Eignung unten
       # rechnet dann auf diesem Stand; die Zugaenge brauchen die Freigabe membersAdded in der Freigabeliste.
-      - name: Erweiterung (nur mit Positivliste)
-        if: inputs.erweiterung != ''
+      #
+      # Dauerregel (18.11.2026, Steuerung): nach dem Wochenlauf (workflow_run) oder mit neuzugaenge=true haengt derselbe
+      # Schritt neue Titel ohne Positivliste an: expand-us-universe --auto (hoechstens autoMembersAdded aus
+      # core/registry/eligibility-gate.json, nur mit SEC-Abgleich an derselben Boersenfamilie, aelteste Notierung zuerst,
+      # der Rest wartet auf den naechsten Lauf). Das Gate laesst genau diese Zugaenge ohne Freigabeliste durch
+      # (expansion.json auto.added); Abgaenge bleiben 0. Titel ohne genug Historie zeigen "zu kurze Historie".
+      # Ohne SEC-Liste (Secret SEC_USER_AGENT fehlt oder Abruf scheitert) haengt der Lauf nichts an und warnt.
+      - name: Erweiterung (Positivliste oder Dauerregel)
+        if: inputs.erweiterung != '' || inputs.neuzugaenge == true || github.event_name == 'workflow_run'
         env:
           IN_ERWEITERUNG: ${{ inputs.erweiterung }}
+          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
         run: |
           set -euo pipefail
-          case "$IN_ERWEITERUNG" in *[!A-Za-z0-9,.\ -]*) echo "::error::erweiterung: nur Ticker, Komma, Leerzeichen"; exit 2;; esac
+          case "${IN_ERWEITERUNG:-}" in *[!A-Za-z0-9,.\ -]*) echo "::error::erweiterung: nur Ticker, Komma, Leerzeichen"; exit 2;; esac
           heute="$(date -u +%F)"; X="$RUNNER_TEMP/erw"; N=quant/data/market/security-master
           mkdir -p "$X/work0" "$X/next0" "$X/scale" "$X/out" "$X/work1" "$X/next1" "$X/prev"
+          if [ -z "${IN_ERWEITERUNG:-}" ]; then
+            if [ -z "${SEC_USER_AGENT:-}" ] || ! curl -fsS --retry 3 -A "$SEC_USER_AGENT" -o "$X/sec-tickers.json" \
+                 https://www.sec.gov/files/company_tickers_exchange.json; then
+              echo "::warning::Dauerregel: keine SEC-Tickerliste (Secret SEC_USER_AGENT oder Abruf) - dieser Lauf haengt keine neuen Titel an"
+              exit 0
+            fi
+          fi
           node scripts/market/build-us-security-master.mjs --require-provider --today "$heute" --stamp "${heute}T00:00:00Z" \
             --out "$X/next0" --work-dir "$X/work0"
           cp quant/data/market/scale/universe-FULL_UNIVERSE.json "$X/scale/"
-          node scripts/market/expand-us-universe.mjs --only "$IN_ERWEITERUNG" --master "$X/work0/us-security-master.json" \
-            --scale-dir "$X/scale" --out "$X/out" --today "$heute"
+          if [ -n "${IN_ERWEITERUNG:-}" ]; then
+            node scripts/market/expand-us-universe.mjs --only "$IN_ERWEITERUNG" --master "$X/work0/us-security-master.json" \
+              --scale-dir "$X/scale" --out "$X/out" --today "$heute"
+          else
+            max="$(node -e 'console.log(require("./core/registry/eligibility-gate.json").limits.autoMembersAdded)')"
+            node scripts/market/expand-us-universe.mjs --auto "$max" --sec "$X/sec-tickers.json" \
+              --master "$X/work0/us-security-master.json" --scale-dir "$X/scale" --out "$X/out" --today "$heute"
+            echo "ELIG_AUTO_ADDED=$X/out/expansion.json" >> "$GITHUB_ENV"
+          fi
           # Erst in den Repo-Pfad, dann den Stamm mit dem Standard-Bestand bauen: Stamm (reconciliation.baselineFile) und
           # Eignung speichern den Pfad der Bestandsdatei; ein Runner-Pfad macht SM60/SM62 und verify-company-master rot.
           cp "$X/scale/universe-FULL_UNIVERSE.json" quant/data/market/scale/universe-FULL_UNIVERSE.json
@@ -124,9 +150,10 @@ jobs:
           IN_FREIGABE: ${{ inputs.freigabe }}
         run: |
           extra=()
+          if [ -n "${ELIG_AUTO_ADDED:-}" ]; then extra+=(--auto-added "$ELIG_AUTO_ADDED"); fi
           if [ "$IN_APPROVED" = "true" ]; then
             case "${IN_FREIGABE:-}" in ''|*/*|*..*) echo "::error::freigabe: nur ein Dateiname"; exit 2;; esac
-            extra=(--approved "docs/data/security-master/$IN_FREIGABE")
+            extra+=(--approved "docs/data/security-master/$IN_FREIGABE")
           fi
           set +e
           node scripts/core/eligibility-gate.mjs "${extra[@]}" --prev quant/data/market/security-master/eligibility.json \
@@ -174,7 +201,7 @@ jobs:
         id: folgen
         if: steps.commit.outputs.changed == 'true' || inputs.umfangsfolgen == true
         env:
-          PUSH_OWNED_PATHS: quant/data/market/discover-series/ quant/data/market/discover-series-long/ quant/data/market/intraday/ quant/data/universe/ quant/data/market/capabilities/ quant/data/product/capabilities-v1.json quant/data/product/capabilities-summary-v1.json quant/data/market/security-master/company-names.json quant/data/market/security-master/company-names-summary.json
+          PUSH_OWNED_PATHS: quant/data/market/discover-series/ quant/data/market/discover-series-long/ quant/data/market/intraday/ quant/data/universe/ quant/data/market/capabilities/ quant/data/product/capabilities-v1.json quant/data/product/capabilities-summary-v1.json quant/data/market/security-master/company-names.json quant/data/market/security-master/company-names-summary.json quant/data/fundamentals/
           SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT || 'VisionUniverseResearch info@visionuniverse.de' }}
         run: |
           set -euo pipefail
@@ -188,6 +215,9 @@ jobs:
           node scripts/universe/build-universe-indexes.mjs
           node scripts/universe/build-issuer-master.mjs
           node scripts/universe/verify-company-master.mjs
+          # SEC-Abdeckung zum neuen Universum (18.11.2026): Aggregate und Abgleich aus den committeten Emittenten-Scherben,
+          # ohne Abruf und ohne Faktenspeicher. Sonst sind sie bis zum naechsten SEC-Tageslauf vom alten Universum (test_daily rot).
+          python3 scripts/quant/cli.py universe-follow
           # Faehigkeitsmatrix und Produkt-Projektion (Quelle von productUniverse fuer Strategie, Watchlist, Radar):
           # dieselben Schritte wie im Marktdatenlauf, ohne Kursabruf.
           node scripts/market/build-capability-matrix.mjs

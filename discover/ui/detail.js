@@ -913,6 +913,7 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
 
     wrap.appendChild(el("div", { class: "dx-chart-head" }, [tf]));
     wrap.appendChild(chartBox);
+    if (ueberblickUS(state)) wrap.appendChild(state.chartPills = el("div", { class: "dx-chart-pills", "aria-label": "Kurs in Euro und Spanne der letzten 12 Monate" }));
     /* Die Werkzeuge sind zugeklappt. Wer sie braucht, findet sie in einer
        Zeile; wer sie nicht kennt, wird von ihnen nicht aufgehalten. */
     var werkzeuge = el("details", { class: "dx-werkzeuge" }, [
@@ -1209,10 +1210,16 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
         ]),
         el("div", { class: "dx-chart-hero-meta" }, [
           frischeTages(state),
-          euroDaneben ? el("span", { class: "dx-chart-hero-eur", text: "≈ " + euroDaneben }) : null,
+          el("span", { class: "dx-chart-hero-vt", text: "Veränderung zum Vortag" }),
           el("span", { class: "dx-chart-hero-span dv3-sr", text: "Kursverlauf " + z.wort + ": " + spanText })
-        ].filter(Boolean))
-      ]);
+        ]),
+        /* Klickentwurf 17.11.2026: Veränderung im gewählten Zeitraum als Zeile über dem Chart („▼ −5,2 % seit 12.11.2025“). */
+        isNum(veraenderung) ? el("p", { class: "dx-chart-hero-zr num " + C().toneClass(veraenderung) }, [
+          el("b", { text: (veraenderung > 0 ? "▲ " : veraenderung < 0 ? "▼ " : "") + (veraenderung > 0 ? "+" : veraenderung < 0 ? "−" : "") + Math.abs(veraenderung).toFixed(1).replace(".", ",") + " %" }),
+          el("span", { text: "seit " + String(sel.from).slice(8, 10) + "." + String(sel.from).slice(5, 7) + "." + String(sel.from).slice(0, 4) })
+        ]) : null
+      ].filter(Boolean));
+      chartPillen(state, tage, euroDaneben, waehrung);
     }
     else kopf = el("div", { class: "dx-chart-hero" }, [
       el("div", { class: "dx-chart-hero-preis" }, [
@@ -1260,6 +1267,22 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
 
   /* "Schluss Montag" / "Schluss Fr., 11.09. · nicht aktuell" - die Frische
      der Tagesreihe aus demselben Vertrag wie der Tagesverlauf. */
+  /* Klickentwurf 17.11.2026: unter den Zeitraum-Knöpfen Pillen mit Euro-Wert und Hoch/Tief der letzten 12 Monate aus der gezeichneten
+     Tagesreihe (dieselben Schlusskurse wie die Linie, keine zweite Ableitung). */
+  function chartPillen(state, tage, euro, waehrung) {
+    var host = state.chartPills;
+    if (!host) return;
+    S.clear(host);
+    var letzt = tage.length ? String(tage[tage.length - 1][0]).slice(0, 10) : null, jahr = [];
+    if (letzt) {
+      var ab = (Number(letzt.slice(0, 4)) - 1) + letzt.slice(4);
+      jahr = tage.filter(function (p) { return String(p[0]).slice(0, 10) >= ab; }).map(function (p) { return p[1]; });
+    }
+    var pillen = [euro ? "≈ " + euro : null];
+    var hoch = Math.max.apply(null, jahr), tief = Math.min.apply(null, jahr);
+    if (jahr.length >= 20) pillen.push("Hoch 12 Mon. " + alsAngezeigt(hoch, waehrung), "Tief 12 Mon. " + alsAngezeigt(tief, waehrung));
+    pillen.filter(Boolean).forEach(function (t) { host.appendChild(el("span", { class: "dx-chart-pill num", text: t })); });
+  }
   function frischeTages(state) {
     if (state.detail.region === "EUROPE") {
       var status = state.detail.freshness || "MISSING";

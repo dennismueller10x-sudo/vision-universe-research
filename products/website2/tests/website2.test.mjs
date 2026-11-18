@@ -6,7 +6,7 @@ import assert from "node:assert/strict";
 import { readFileSync, existsSync, readdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { buildSite, buildWww, loadSnapshot, makeSnapshot, wwwAssets, wwwCss, wwwJs, MODULES, NEWSLETTER, HEFT, REPORT, BASE, SOCIAL, PAGES as SITE_PAGES } from "../build.mjs";
+import { buildSite, buildWww, loadSnapshot, makeSnapshot, wwwAssets, wwwCss, wwwJs, MODULES, NEWSLETTER, HEFT, REPORT, BASE, SOCIAL, PAGES as SITE_PAGES, storyFilm } from "../build.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 const SITE = buildSite();
@@ -208,7 +208,7 @@ test("W2-10 · Zugänglichkeit: eine Hauptüberschrift, Alternativtexte, Sprungl
   }
   for (const m of MODULES.filter((x) => x.video)) {
     const html = SITE.get(`module/${m.id}/index.html`);
-    assert.ok(html.includes(`<source src="/assets/stories/${m.video}-v1.mp4" type="video/mp4">`) && html.includes(`poster="${BASE}img/p-${m.video}.jpg"`), `${m.id}: Film`);
+    assert.ok(html.includes(`<source src="${storyFilm(m.video)}" type="video/mp4">`) && existsSync(join(ROOT, storyFilm(m.video).slice(1))) && html.includes(`poster="${BASE}img/p-${m.video}.jpg"`), `${m.id}: Film`);
   }
   assert.equal(tags(SITE.get("faq/index.html"), "details").length, 7, "Fragen als details/summary (ohne JavaScript bedienbar)");
   assert.match(CSS, /:focus-visible\{outline:3px solid/);

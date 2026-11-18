@@ -32,7 +32,7 @@ const ROUTES = [
   ['Discover', '/discover/#/', 'Discover'], ['Discover', '/discover/#/welten', 'Welten'], ['Discover', '/discover/#/strategien', 'Strategien'],
   ['Discover', '/discover/#/swipen', 'Swipen'], ['Discover', '/discover/#/einzeln/US_REAL', 'Swipen'], ['Discover', '/discover/#/maerkte', 'Märkte'], ['Discover', '/discover/#/watchlist', 'Watchlist'],
   ['Quant', '/quant/#/', 'Quant'], ['Quant', '/quant/#/screener', 'Screener'], ['Quant', '/quant/#/stile', 'Anlagestile'],
-  ['Quant', '/quant/#/aktien', 'Aktien'], ['Quant', '/quant/#/aktie/NVDA', 'Aktien'], ['Quant', '/quant/#/methodik', 'Methodik'],
+  ['Quant', '/quant/#/aktien', 'Aktien'], ['Quant', '/quant/#/aktie/NVDA', null], ['Quant', '/quant/#/methodik', 'Methodik'],
   // Elliott: eigenes Produkt; das Aktienbild liegt unter /elliott/#/<T> (alt: /quant/#/elliott/<T>, leitet um), gehoert aber zu Elliott (nur Produktkontext).
   // Der Start traegt seine Reiter im Inhalt (App-Konzept 2: Heute · Wellenlagen · Zählbar · Neu · Suche · Aufwärts · Abwärts, data-vu-tabs="inhalt");
   // dort gelten Dock, Universe-Knopf, Reiter im Inhalt und Ueberlauf. Die uebrigen Ansichten zeigen die Reiterzeile des Rahmens.
@@ -160,7 +160,8 @@ for (const [vpName, width, height] of VIEWPORTS) {
           const place = DOCK_ACTIVE(new URL(page.url()).pathname);
           if ((inhalt.place[0] || null) !== place || inhalt.place.length > 1) fail(where, `Dock: aktiv ${inhalt.place.join('|') || '-'} statt ${place || '-'}`);
           if (!inhalt.stripHidden) fail(where, 'Reiterzeile des Rahmens doppelt zu den Reitern im Inhalt');
-          if (inhalt.tabs < 3) fail(where, 'Reiter im Inhalt fehlen: ' + inhalt.tabs);
+          // Aktienseiten der Module (Klickentwurf, Owner 17.11.2026; erwartet null = nur Produktkontext) zeigen gar keine Reiterzeile.
+          if (expected !== null && inhalt.tabs < 3) fail(where, 'Reiter im Inhalt fehlen: ' + inhalt.tabs);
           if (inhalt.overflow > 1) fail(where, 'horizontaler Ueberlauf ' + inhalt.overflow + ' px');
           if (inhaltExpected && (inhalt.current[0] !== inhaltExpected || inhalt.current.length > 1)) fail(where, `${pass}: Reiter im Inhalt aktiv ${inhalt.current.join('|') || '-'} statt ${inhaltExpected}`);
           // Vorsorge traegt ihre Bereiche als Reiter im Inhalt (.vsp-tabs): genau einer aktiv, Pille 36 px, Tippflaeche 44 px.
@@ -814,8 +815,15 @@ for (const [vpName, width, height] of VIEWPORTS) {
       await page.goForward(); await settle(page);
       if ((await state(page))?.current[0] !== 'Zählbar') fail(where, 'Vor: ' + JSON.stringify((await state(page))?.current));
       await page.goBack(); await settle(page);
-      await page.locator('#el-main a.el-cr').first().click(); await page.waitForSelector('main#qx-main[data-ready="true"]', { timeout: 60000 });
-      if ((await inhalt()).own) fail(where, 'Aktienbild behaelt die Reiter im Inhalt');
+      /* App-Konzept 2 (Owner 16.11.2026): ein Tipp auf eine Aktie öffnet erst die Vorschau (data-vu-stock) und bleibt auf der Seite;
+         das Ziel des Links bleibt das Aktienbild (Strg/Cmd-Klick). Danach wie bisher ins Aktienbild und zurück. */
+      const cr = page.locator('#el-main a.el-cr').first(), crHref = await cr.getAttribute('href');
+      await cr.click(); await page.waitForSelector('[data-vsk-ticker]', { timeout: 20000 });
+      if (!(await inhalt()).own) fail(where, 'Vorschau verlässt die Elliott-Liste');
+      await page.keyboard.press('Escape'); await page.evaluate(() => { const s = document.querySelector('[data-vsk-ticker]'); if (s && window.VUUI) window.VUUI.closeSheet(s); });
+      await page.evaluate((h) => { location.href = h; }, crHref); await page.waitForSelector('main#qx-main[data-ready="true"]', { timeout: 60000 });
+      /* Klickentwurf Modul-Aktienseiten (Owner 17.11.2026): das Aktienbild hat gar keine Reiter - weder im Inhalt noch im Rahmen. */
+      { const a = await inhalt(); if (a.tabs > 0 || !a.strip) fail(where, 'Aktienbild zeigt Reiter: ' + JSON.stringify(a)); }
       await page.goBack(); await settle(page);
       if (!ok(s = await inhalt())) fail(where, 'Zurueck aus dem Aktienbild: ' + JSON.stringify(s));
       checks.push({ where, pass: !findings.some((f) => f.where === where) });

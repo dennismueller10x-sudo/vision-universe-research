@@ -6,9 +6,9 @@
       "cik": "0000057131",
       "name": "LA-Z-BOY INC",
       "sic": "2510",
-      "rawFacts": 22100,
-      "mappedFacts": 6669,
-      "unmappedFacts": 15279,
+      "rawFacts": 22440,
+      "mappedFacts": 6794,
+      "unmappedFacts": 15492,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -18,28 +18,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 18,
-      "quarterlyPeriods": 67,
+      "quarterlyPeriods": 68,
       "firstPeriodEnd": "2009-04-25",
-      "lastPeriodEnd": "2026-07-25",
+      "lastPeriodEnd": "2026-10-24",
       "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2010-04-24",
           "lastAvailablePeriod": "2026-04-25",
           "historyYears": 16.0
         },
         "eps_diluted": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2010-04-24",
           "lastAvailablePeriod": "2026-04-25",
           "historyYears": 16.0
         },
         "free_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2010-04-24",
           "lastAvailablePeriod": "2026-04-25",
           "historyYears": 16.0,
@@ -59,21 +59,21 @@
         },
         "net_income": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2010-04-24",
           "lastAvailablePeriod": "2026-04-25",
           "historyYears": 16.0
         },
         "operating_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2010-04-24",
           "lastAvailablePeriod": "2026-04-25",
           "historyYears": 16.0
         },
         "revenue": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2010-04-24",
           "lastAvailablePeriod": "2026-04-25",
           "historyYears": 16.0
@@ -87,14 +87,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-04-25",
           "lastAvailablePeriod": "2026-04-25",
           "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2011-04-30",
           "lastAvailablePeriod": "2026-04-25",
           "historyYears": 15.0
@@ -117,45 +117,46 @@
         }
       },
       "quality": {
-        "HIGH": 486,
-        "MEDIUM": 108
+        "HIGH": 494,
+        "MEDIUM": 107
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 594,
-        "resolvedValues": 594
+        "datableValues": 601,
+        "resolvedValues": 601
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 16200,
+        "rules_version": "1.1.0",
+        "total": 16428,
         "by_severity": {
-          "INFO": 15279,
-          "WARNING": 921
+          "INFO": 15492,
+          "WARNING": 936
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 903,
-          "RESTATEMENT_CONFLICT": 18,
-          "UNKNOWN_CONCEPT": 15279
+          "CONCEPT_DISAGREEMENT": 917,
+          "RESTATEMENT_CONFLICT": 19,
+          "UNKNOWN_CONCEPT": 15492
         }
       },
       "latestFiling": {
-        "accession": "0000057131-26-000035",
-        "filing_date": "2026-08-18",
+        "accession": "0000057131-26-000043",
+        "filing_date": "2026-11-17",
         "form": "10-Q",
-        "periodic_filings": 134
+        "periodic_filings": 135,
+        "acceptance_datetime": "2026-11-17T21:22:17.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
-        "formula": "1.2.0",
+        "normalization_logic": "1.15.0",
+        "formula": "1.3.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.8.0"
         }
       },
-      "sourceDigest": "b3c2f864b8baaa68361434a73bd10aa9abf6cb2d252e375243de3902af728d30",
+      "sourceDigest": "9ad5bf685818b05af964c27beac86b2843be90b8641c42e3a5db89fc6c3bead5",
       "issuerId": "iss_cik_0000057131"
     },
     {

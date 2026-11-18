@@ -59,7 +59,8 @@
     var c = r.cusip || (r.isin && /^(US|CA)/.test(r.isin) ? r.isin.slice(2, 11) : null);
     return c ? "CUSIP:" + c : r.isin ? "ISIN:" + r.isin : r.ticker ? "T:" + r.ticker : "N:" + String(r.name || "").toLowerCase();
   };
-  VS.stockHref = function (r) { return r.vuTicker ? "/discover/#/s/US_REAL/" + encodeURIComponent(r.vuTicker) : null; };
+  /* App-Konzept 2 (Owner 16.11.2026): ein Tipp auf eine Fonds-Position öffnet die Aktien-Vorschau des Rahmens (data-vu-stock), „Ganz öffnen“ /aktie/#/<T>. */
+  VS.stockHref = function (r) { return r.vuTicker ? "/aktie/#/" + encodeURIComponent(r.vuTicker) : null; };
 
   /* ---------------------------------------------- Kurzkopf (Übersicht) */
   function fv(d, k) { var f = d.fundamentals && d.fundamentals[k]; return f && typeof f === "object" && "value" in f ? f.value : null; }
@@ -124,7 +125,7 @@
           U.sect((n === 10 ? "Top 10" : "Top " + Math.min(n, f.rows.length)) + " · Stand " + F.date(f.asOf)) +
           '<div class="vu-box vs-kvbox">' + rows.map(function (r) {
             var href = VS.stockHref(r), nm = esc(VS.displayName ? VS.displayName(r.name || r.ticker || "") : (r.name || r.ticker || ""));
-            return '<' + (href ? 'a href="' + href + '"' : "div") + ' class="vs-kv"><span class="vu-sm"><b>' + nm + '</b>' + (r.ticker ? ' <span class="vu-mu">' + esc(r.ticker) + '</span>' : "") +
+            return '<' + (href ? 'a href="' + href + '" data-vu-stock="' + esc(r.vuTicker) + '" data-vu-stock-name="' + nm + '"' : "div") + ' class="vs-kv"><span class="vu-sm"><b>' + nm + '</b>' + (r.ticker ? ' <span class="vu-mu">' + esc(r.ticker) + '</span>' : "") +
               (r.assetType !== "EQUITY" ? ' <span class="vu-mu">· ' + esc(VS.assetName(r.assetType)) + '</span>' : "") + '</span><b class="num">' + wpct(r.weight) + '</b></' + (href ? "a" : "div") + '>';
           }).join("") + '</div>' +
           (f.rows.length > 10 ? '<button type="button" class="vu-btn vu-btn--line vu-btn--block vs-best-more" data-more style="margin-top:10px">' + (n === 10 ? "Die " + Math.min(25, f.rows.length) + " größten zeigen" : n < f.rows.length ? "Alle " + f.rows.length + " gezeigten" : "Nur Top 10") + '</button>' : "") +

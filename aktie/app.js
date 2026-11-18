@@ -10,7 +10,14 @@
 
    Nur Darstellung. Modell, Grafiken und Daten: assets/vu-stock-sheet.js
    (VUStockSheet.model/.draw/.data). Die Aktienseiten der Module bleiben
-   bestehen; jede Kachel führt hinein.
+   bestehen; jedes Fenster führt hinein.
+
+   Klickentwurf „Modul-Aktienseiten“ (Owner 17.11.2026): Kachel, Fenster, „In drei
+   Sätzen“ und Modulseite sagen dasselbe (Lesarten in VUStockSheet.model). Modul-
+   Kontext in der Adresse: /aktie/#/<T>/<modul> (quant, technical, fundamental,
+   hedgefonds, elliott, supertrader, discover) öffnet nach dem Laden das Fenster
+   dieses Moduls über der Aktienseite; Schließen (X, daneben tippen, Griff nach
+   unten, Esc) führt auf /aktie/#/<T>. /aktie/#/<T> bleibt gültig.
    ========================================================================= */
 (function (root) {
   "use strict";
@@ -23,10 +30,15 @@
   var state = null;
 
   function isNum(v) { return typeof v === "number" && isFinite(v); }
-  function tickerOfHash() { var m = /^#\/([A-Za-z0-9-]{1,12})\/?$/.exec(root.location.hash || ""); var t = m ? m[1].toUpperCase() : null; return t && US_TICKER.test(t) ? t : null; }
+  var SHEET_IDS = ["fundamental", "quant", "technical", "supertrader", "hedgefonds", "elliott", "discover"];
+  /** Adresse #/<T> oder #/<T>/<modul> → {ticker, mod}; ein unbekanntes Modul zählt nicht (die Aktie öffnet ohne Fenster). */
+  function routeOfHash() {
+    var m = /^#\/([A-Za-z0-9-]{1,12})(?:\/([a-z]{1,16}))?\/?$/.exec(root.location.hash || ""), t = m ? m[1].toUpperCase() : null;
+    return t && US_TICKER.test(t) ? { ticker: t, mod: m[2] && SHEET_IDS.indexOf(m[2]) >= 0 ? m[2] : null } : null;
+  }
   function sh(title, more, attr) { return '<div class="k-sh"><h2>' + esc(title) + "</h2>" + (more ? "<button type=\"button\" class=\"k-tap\" " + (attr || "") + "><span>" + esc(more) + " ›</span></button>" : "") + "</div>"; }
   var MARK = { strong: "▲", weak: "▼", mid: "●" };
-  function tonePill(word, tone, extra) { return '<span class="k-pill ' + (tone === "strong" ? "" : tone === "weak" ? "wh" : tone === "mid" ? "dk" : "ol") + '" style="align-self:flex-start' + (extra || "") + '">' + (MARK[tone] ? MARK[tone] + " " : "") + esc(word) + "</span>"; }
+  function tonePill(word, tone, extra) { return '<span class="k-pill ' + (tone === "strong" || tone === "plain" ? "" : tone === "weak" ? "wh" : tone === "mid" ? "dk" : "ol") + '" style="align-self:flex-start' + (extra || "") + '">' + (MARK[tone] ? MARK[tone] + "\u00a0" : "") + esc(word) + "</span>"; }
   /* Bewegung über einen Zeitraum (kein Tageswert): Pille wie im Prototyp, Plus neongrün, Minus weiß. */
   function chg(v, digits) { return isNum(v) ? '<span class="k-pill ' + (v < 0 ? "wh" : "") + '">' + (v < 0 ? "▼" : "▲") + " " + esc(F.pct(v, digits == null ? 0 : digits)) + "</span>" : ""; }
 
@@ -69,8 +81,8 @@
       m.hedgefonds.buyers != null && m.hedgefonds.sellers != null ? '<div style="width:100%">' + seg2(m.hedgefonds) + '<div class="k-fl k-sb k-xs k-b7 k-mt8"><span class="k-lc">' + num(m.hedgefonds.buyers, 0) + " auf</span><span>" + num(m.hedgefonds.sellers, 0) + " ab</span></div></div>"
         : '<div class="k-num" style="font-size:34px">' + num(m.hedgefonds.funds, 0) + "</div>"));
     if (m.elliott) t.push(mtile("elliott", "Elliott", tonePill(m.elliott.word, m.elliott.countable ? "mid" : "none"),
-      m.elliott.countable ? '<div style="text-align:center"><div class="k-num k-lc" style="font-size:40px">' + esc(m.elliott.wave || "–") + '</div><div class="k-xs k-mut k-b7 k-mt4">' + esc(m.elliott.pattern) + "</div></div>"
-        : '<svg width="120" height="54" aria-hidden="true"><path d="M4 44 28 20 44 32 70 8 86 24 116 14" fill="none" stroke="#55595f" stroke-width="2.2" stroke-dasharray="4 5" stroke-linejoin="round"/></svg>'));
+      m.elliott.countable ? '<div style="text-align:center"><div class="k-num k-lc" style="font-size:40px">' + esc(m.elliott.wave || "✓") + '</div><div class="k-xs k-mut k-b7 k-mt4">' + esc(m.elliott.pattern) + "</div></div>"
+        : '<svg width="120" height="54" aria-hidden="true"><path class="ak-ew-none" d="M4 44 28 20 44 32 70 8 86 24 116 14" fill="none" stroke-width="2.2" stroke-dasharray="4 5" stroke-linejoin="round"/></svg>'));
     return t.join("");
   }
   function moduleCount(v) { return Object.keys(v.modules).length; }
@@ -81,25 +93,31 @@
   }
   function titleCase(s) { return String(s || "").toLocaleLowerCase("de-DE").replace(/(^|[\s+\-/])(\p{L})/gu, function (m, a, b) { return a + b.toLocaleUpperCase("de-DE"); }).replace(/\b(Im|In|Und|Mit|Von|Der|Die|Das|Für|Am|An|Auf|Zum|Zur)\b/g, function (x, w, i) { return i ? x.toLowerCase() : x; }); }
 
-  /* --------------------------------------------------------------- Fenster */
+  /* --------------------------------------------------------------- Fenster
+     Klickentwurf (Fenster m-*): Modul-Symbol, „<Name> in“, Modulname, Urteil als Pille, X; unten „Im Modul … öffnen“. */
+  var XICON = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+  function xbtn() { return '<button type="button" class="k-rnd k-x k-tap" data-ak-close aria-label="Schließen">' + XICON + "</button>"; }
   function mhead(v, id, name, word, tone) {
-    return '<div class="k-fl k-g10"><div class="k-hud">' + D.icon(id, 22) + '</div><div class="k-f1"><div class="k-xs k-mut k-b7">' + esc(v.name) + ' in</div><h2 style="font-size:24px">' + name + "</h2></div>" + tonePill(word, tone, ";align-self:center") + "</div>";
+    return '<div class="k-fl k-g10"><div class="k-hud">' + D.icon(id, 22) + '</div><div style="flex:none"><div class="k-xs k-mut k-b7">' + esc(v.short) + ' in</div><h2 style="font-size:24px;white-space:nowrap">' + name + "</h2></div>" +
+      (word ? tonePill(word, tone, ";align-self:center;flex:0 1 auto;margin-left:auto;min-width:0;white-space:normal;height:auto;min-height:26px;padding-block:4px;line-height:1.15") : "") + xbtn() + "</div>";
   }
   function mfoot(href, name) { return '<a class="k-btn k-mt16 k-tap" style="width:100%" href="' + esc(href) + '">Im Modul ' + name + " öffnen</a>"; }
+  function dateDe(iso) { return iso ? F.dateShort(iso) + String(iso).slice(0, 4) : ""; }
   var SHEETS = {
     fundamental: function (v) {
       var m = v.modules.fundamental, tr = v.tracks[0];
       return mhead(v, "fundamental", "Fundamental", m.word, m.tone) +
-        (tr ? '<div class="k-fl k-g10 k-mt12" style="align-items:flex-end"><span class="k-num" style="font-size:40px">' + esc(F.compact(tr.value, "USD")) + "</span>" + chg(tr.growthPct) + '</div><div class="k-mt8">' + D.bars(tr.points.map(function (p) { return p.v; }), 358, 120) + "</div>" : "") +
+        (m.text ? '<p class="k-md k-b8 k-mt12">' + esc(m.text) + ".</p>" : '<p class="k-md k-sec k-mt12">Für ' + esc(v.short) + " fehlen Wachstum oder Marge über mehrere Jahre. Die Zahlen gelten trotzdem.</p>") +
+        (tr ? '<div class="k-fl k-g10 k-mt8" style="align-items:flex-end;flex-wrap:wrap"><span class="k-num" style="font-size:40px">' + esc(F.compact(tr.value, "USD")) + "</span>" + chg(tr.growthPct, 1) + '</div><div class="k-xs k-mut k-b7">Umsatz GJ ' + tr.fy + '</div><div class="k-mt8 ak-bars">' + D.bars(tr.points.map(function (p) { return p.v; }), 358, 110) + "</div>" : "") +
         v.facts.map(function (f) { return '<div class="k-fl k-g8 k-mt8"><span class="k-sm k-f1">' + esc(f.label) + '</span><b class="k-sm" style="text-align:right">' + esc(f.value) + "</b>" + (f.grade ? '<span class="k-pill sm ' + (f.tone === "strong" ? "" : f.tone === "weak" ? "wh" : "dk") + '" style="text-transform:none;letter-spacing:0">' + esc(f.grade) + "</span>" : "") + "</div>"; }).join("") +
-        '<p class="k-xs k-mut k-mt8">' + (tr ? "Umsatz je Geschäftsjahr " + tr.from + " bis " + tr.fy + ". " : "") + "Quelle: Pflichtmeldungen" + (v.asOf.zahlen ? ", Stand " + F.dateShort(v.asOf.zahlen) + v.asOf.zahlen.slice(0, 4) : "") + ".</p>" + mfoot(m.href, "Fundamental");
+        '<p class="k-xs k-mut k-mt8">' + (tr ? "Umsatz je Geschäftsjahr " + tr.from + " bis " + tr.fy + ". " : "") + "Urteil wie im Modul: die schwächere Stufe aus Umsatzwachstum und Nettomarge. Quelle: Pflichtmeldungen" + (v.asOf.zahlen ? ", Stand " + dateDe(v.asOf.zahlen) : "") + ".</p>" + mfoot(m.href, "Fundamental");
     },
     quant: function (v) {
       var m = v.modules.quant, K = S.model.PROFILE_KEYS, L = S.model.PROFILE_LABEL;
       var rows = K.filter(function (k) { return m.profile[k] != null; }).sort(function (a, b) { return m.profile[b] - m.profile[a]; });
-      return mhead(v, "quant", "Quant", m.word, "mid") + '<div class="k-fl k-g12 k-mt12">' + D.radar(K.map(function (k) { return m.profile[k]; }), 150) + '<div class="k-f1">' + rows.map(function (k) {
+      return mhead(v, "quant", "Quant", m.word, "mid") + '<div class="k-fl k-g12 k-mt12">' + D.radar(K.map(function (k) { return m.profile[k]; }), 140) + '<div class="k-f1" style="min-width:0">' + rows.map(function (k) {
         var x = m.profile[k];
-        return '<div class="k-mt4"><div class="k-fl k-sb k-xs k-b7"><span>' + esc(L[k]) + "</span><span>" + x + '</span></div><div class="k-bar ' + (x >= S.model.STRONG ? "l" : "") + '" style="height:6px;margin-top:2px"><i style="width:' + x + '%"></i></div></div>';
+        return '<div class="k-mt4"><div class="k-fl k-sb k-xs k-b7 k-g6"><span>' + esc(L[k]) + "</span><span>" + x + '</span></div><div class="k-bar ' + (x >= S.model.STRONG ? "l" : "") + '" style="height:6px;margin-top:2px"><i style="width:' + x + '%"></i></div></div>';
       }).join("") + '</div></div><p class="k-xs k-mut k-mt12">Werte 0–100: Rang unter den bewerteten US-Aktien, stark ab ' + S.model.STRONG + ". Eine Gesamtnote gibt es bewusst nicht.</p>" + mfoot(m.href, "Quant");
     },
     technical: function (v) {
@@ -109,56 +127,94 @@
       if (isNum(m.rsi)) rows.push(["Schwung", "RSI " + num(m.rsi, 1) + " (Skala 0 bis 100)"]);
       if (m.support && isNum(p) && p > m.support.hi) rows.push(["Nächste Zone", "Unterstützung, " + num((p - m.support.hi) / p * 100, 0) + " % entfernt"]);
       else if (m.resistance && isNum(p) && p < m.resistance.lo) rows.push(["Nächste Zone", "Widerstand, " + num((m.resistance.lo - p) / p * 100, 0) + " % entfernt"]);
-      else if (m.support && isNum(p)) rows.push(["Nächste Zone", "Kurs liegt in der Unterstützung"]);
+      else if (m.support && isNum(p)) rows.push(["Nächste Zone", "Kurs liegt in der Unterstützung " + zl(m.support)]);
       var w = Math.round((doc.querySelector("#vsk-m .vu-sheet-ui") || main).clientWidth || 390);
       return mhead(v, "technical", "Technical", m.word, m.tone) +
         (vals.length > 1 ? '<div class="k-bleed" style="margin-top:12px;position:relative">' + D.line(vals, w, 170, { sw: 2.2, zones: [m.support, m.resistance], fit: true }) + "</div>" : "") +
         '<div class="k-fl k-g6 k-wr k-mt8">' + (m.resistance ? '<span class="k-pill sm wh">Widerstand ' + zl(m.resistance) + "</span>" : "") + (m.support ? '<span class="k-pill sm">Unterstützung ' + zl(m.support) + "</span>" : "") + "</div>" +
-        rows.map(function (r) { return '<div class="k-row"><b style="width:104px">' + r[0] + '</b><span class="k-sm k-sec k-f1">' + esc(r[1]) + "</span></div>"; }).join("") + mfoot(m.href, "Technical");
+        rows.map(function (r) { return '<div class="k-row"><b style="width:104px">' + r[0] + '</b><span class="k-sm k-sec k-f1">' + esc(r[1]) + "</span></div>"; }).join("") +
+        '<p class="k-xs k-mut k-mt8">Urteil wie im Modul: Kurs über oder unter der 50- und der 200-Tage-Linie' + (m.asOf ? ", Stand " + dateDe(m.asOf) : "") + ". Keine Prognose.</p>" + mfoot(m.href, "Technical");
     },
     supertrader: function (v) {
-      var m = v.modules.supertrader, n = m.total ? "der " + m.total + " Methoden" : "Methode";
-      return mhead(v, "supertrader", "Supertrader", m.count + (m.total ? " von " + m.total : ""), "none") +
-        (m.count ? '<p class="k-sm k-sec k-mt12">' + m.count + " " + (m.total ? "von " + m.total + " Methoden" : "Methoden") + " erkennen heute ein Muster bei " + esc(v.name) + ":</p>" + m.entries.map(function (e) {
-          return '<div class="k-card k-mt8" style="border-radius:18px"><div class="k-fl k-sb k-g8"><b class="k-f1">' + esc(e.name) + '</b><span class="k-pill dk">' + esc(e.state) + "</span></div>" + (e.released ? "" : '<div class="k-xs k-mut k-mt4">Forschung, nicht zertifiziert</div>') + "</div>";
-        }).join("") : '<p class="k-sm k-sec k-mt12">Keine ' + n + " erkennt heute ein Muster bei " + esc(v.name) + ".</p>") +
-        '<p class="k-xs k-mut k-mt8">Methoden beschreiben Regel-Ereignisse. Keine Empfehlung.</p>' + mfoot(m.href, "Supertrader");
+      var m = v.modules.supertrader, names = m.entries.map(function (e) { return e.name; }), ST = root.STNames;
+      var today = m.count ? m.count + (m.total ? " von " + m.total : "") + " Methoden " + (m.count === 1 ? "erkennt " : "erkennen ") + v.short + ": " + (names.length <= 2 ? names.join(" und ") : names.slice(0, 2).join(", ") + " und " + (names.length - 2) + " weitere") + "."
+        : "Keine der " + (m.total ? m.total + " " : "") + "Methoden erkennt " + v.short + " gerade.";
+      return mhead(v, "supertrader", "Supertrader", m.total ? m.count + " von " + m.total : String(m.count), "none") +
+        '<p class="k-sm k-sec k-mt12">' + esc(today) + "</p>" +
+        m.entries.map(function (e) {
+          var mt = ST && ST.method ? ST.method(e.id) : null;
+          return '<div class="k-card k-mt8" style="border-radius:18px"><div class="k-fl k-sb k-g8"><b class="k-f1">' + esc(e.name) + '</b><span class="k-pill dk" style="font-size:11px">Regel erfüllt laut Methode</span></div>' +
+            (e.stageText ? '<div class="k-xs k-mut k-b7 k-mt4">Stand im Ablauf: ' + esc(e.stageText) + "</div>" : "") +
+            (mt && mt.plain ? '<div class="k-sm k-sec k-mt4">' + esc(mt.plain) + "</div>" : "") +
+            (e.met.length ? '<div class="k-xs k-mut k-b7 k-mt4">' + e.met.length + (e.met.length === 1 ? " Regel" : " Regeln") + " erfüllt" + (e.notMet.length ? ", " + e.notMet.length + " nicht" : "") + (e.pending.length ? ", " + e.pending.length + " offen" : "") + "</div>" : "") + "</div>";
+        }).join("") +
+        '<p class="k-xs k-mut k-mt8">Forschung, nicht zertifiziert. Methoden beschreiben Regel-Ereignisse, keine Empfehlung.' + (m.asOf ? " Schlusskurse vom " + dateDe(m.asOf) + "." : "") + "</p>" + mfoot(m.href, "Supertrader");
     },
     hedgefonds: function (v) {
       var m = v.modules.hedgefonds, q = m.period ? "Q" + Math.ceil(+m.period.slice(5, 7) / 3) + " " + m.period.slice(0, 4) : "";
       return mhead(v, "hedgefonds", "Hedgefonds", m.word || num(m.funds, 0) + " Fonds", m.word ? m.tone : "none") +
-        '<div class="k-num k-mt12" style="font-size:44px">' + num(m.funds, 0) + ' Fonds</div><p class="k-sm k-mut k-b7">halten ' + esc(v.name) + (m.stars != null ? ", darunter " + num(m.stars, 0) + " Star-Investoren" : "") + "</p>" +
+        '<div class="k-num k-mt12" style="font-size:44px">' + num(m.funds, 0) + ' Fonds</div><p class="k-sm k-mut k-b7">halten ' + esc(v.short) + (m.stars != null ? ", darunter " + num(m.stars, 0) + " Star-Investoren" : "") + "</p>" +
         (m.buyers != null && m.sellers != null ? '<div class="k-mt12">' + seg2(m, 20) + '</div><div class="k-fl k-sb k-sm k-b8 k-mt8"><span class="k-lc">' + num(m.buyers, 0) + " aufgestockt</span><span>" + num(m.sellers, 0) + " verkauft</span></div>" : "") +
         (m.fresh ? '<div class="k-row"><b class="k-f1">Neue Positionen großer Fonds</b><span class="k-sm k-b8 k-lc">' + m.fresh + "</span></div>" : "") +
-        '<p class="k-xs k-mut k-mt8">' + (q ? "Stand " + q + ". " : "") + "Angabe aus Pflichtmeldungen.</p>" + mfoot(m.href, "Hedgefonds");
+        '<p class="k-xs k-mut k-mt8">' + (q ? "Stand " + q + ". " : "") + "Angabe Dritter aus Pflichtmeldungen (13F).</p>" + mfoot(m.href, "Hedgefonds");
     },
     elliott: function (v) {
-      var m = v.modules.elliott, DIR = { UP: "aufwärts", DOWN: "abwärts" };
+      var m = v.modules.elliott, DIR = { UP: "nach oben", DOWN: "nach unten" }, sh = m.share;
       return mhead(v, "elliott", "Elliott", m.word, m.countable ? "mid" : "none") +
-        (m.countable ? '<p class="k-md k-sec k-mt12">Das Modell zählt bei ' + esc(v.name) + " gerade eine Struktur" + (DIR[m.direction] ? " " + DIR[m.direction] : "") + '.</p><div class="k-card k-mt12 k-fl k-g12" style="border-radius:18px"><span class="k-num k-lc" style="font-size:44px">' + esc(m.wave || "–") + '</span><b class="k-sm">Aktuelle Welle im Muster ' + esc(m.pattern) + ". Experimentelles Strukturmodell.</b></div>"
-          : '<p class="k-md k-sec k-mt12">Der Chart von ' + esc(v.name) + " verläuft gerade nicht sauber in Wellen. Das Modell zählt nur, wenn die Struktur klar ist.</p>") + mfoot(m.href, "Elliott");
+        (m.countable ? '<p class="k-md k-sec k-mt12">Das Modell zählt bei ' + esc(v.short) + " gerade eine Struktur" + (DIR[m.direction] ? " " + DIR[m.direction] : "") + '.</p><div class="k-card k-mt12 k-fl k-g12" style="border-radius:18px"><span class="k-num k-lc" style="font-size:44px">' + esc(m.wave || "✓") + '</span><b class="k-sm">' + esc(m.line) + ". Experimentelles Strukturmodell.</b></div>" +
+            (m.invalid ? '<p class="k-sm k-sec k-mt8">Die Lesart ist ' + esc(m.invalid) + " (Wochenschluss).</p>" : "")
+          : '<p class="k-md k-sec k-mt12">Bei ' + esc(v.short) + " lassen sich gerade keine Wellen sauber zählen. Der Chart verläuft zu unruhig für eine belastbare Lesart.</p>" +
+            (sh && isNum(sh.count) && isNum(sh.n) ? '<div class="k-card k-mt12 k-fl k-g12" style="border-radius:18px"><span class="k-num k-lc" style="font-size:44px">' + num(sh.count, 0) + '</span><b class="k-sm">von ' + num(sh.n, 0) + " Aktien sind heute zählbar. Das ist der Normalfall.</b></div>" : "")) +
+        mfoot(m.href, "Elliott");
+    },
+    discover: function (v) {
+      var m = v.modules.discover, st = m.story || {}, best = m.best;
+      var col = function (eb, x) { return x ? '<div class="k-f1" style="min-width:0"><div class="k-eb">' + eb + '</div><div class="k-num k-mt4" style="font-size:26px">' + esc(x.word) + '</div><p class="k-xs k-sec k-mt4">' + esc(x.text) + "</p></div>" : ""; };
+      return mhead(v, "discover", "Discover", best ? "Platz " + best.rank : "", "plain") +
+        (st.business || st.price ? '<div class="k-fl k-g12 k-mt12" style="align-items:flex-start">' + col("Geschäft", st.business) + col("Kurs", st.price) + "</div>" : "") +
+        (m.ranks.length ? '<div class="k-eb k-mt16">Steht in ' + (m.rows === 1 ? "einer Reihe" : m.rows + " Reihen") + "</div>" + m.ranks.map(function (r) {
+          return '<div class="k-fl k-g10 k-mt8"><span class="k-num k-lc" style="font-size:28px;width:56px">' + r.rank + '.</span><div class="k-f1" style="min-width:0"><b class="k-sm">' + esc(titleCase(r.title)) + '</b><div class="k-bar l k-mt4" style="height:6px"><i style="width:' + Math.max(3, Math.round((1 - (r.rank - 1) / r.of) * 100)) + '%"></i></div></div><span class="k-xs k-mut">von ' + num(r.of, 0) + "</span></div>";
+        }).join("") + '<p class="k-xs k-mut k-mt12">Platz nach der Regel der Reihe. Die Wörter oben sind Discovers Story. Keine Empfehlung.</p>' : '<p class="k-sm k-sec k-mt12">Anlass, Kurs und Unternehmen im Überblick.</p>') + mfoot(m.href, "Discover");
     },
     hinweise: function (v) {
       var rows = [["Kurse", v.asOf.kurs ? "Schluss " + F.dateShort(v.asOf.kurs) + v.asOf.kurs.slice(0, 4) : null], ["Geschäftszahlen", v.asOf.zahlen ? "Pflichtmeldungen bis " + F.dateShort(v.asOf.zahlen) : null],
         ["Eigenschaften (Quant)", v.asOf.quant ? F.dateShort(v.asOf.quant) + v.asOf.quant.slice(0, 4) : null], ["Methoden", v.asOf.supertrader ? F.dateShort(v.asOf.supertrader) + v.asOf.supertrader.slice(0, 4) : null], ["Investoren", v.asOf.fonds ? "Depots zum " + F.dateShort(v.asOf.fonds) + v.asOf.fonds.slice(0, 4) : null]];
       var N = root.VUUI && root.VUUI.legalNotice && root.VUUI.legalNotice("stock");
-      return '<h2 style="font-size:24px">Daten &amp; Hinweise</h2>' + (N ? '<p class="k-sm k-sec k-mt8">' + esc(N.text) + "</p>" : "") +
+      return '<div class="k-fl k-g10"><h2 class="k-f1" style="font-size:24px">Daten &amp; Hinweise</h2>' + xbtn() + "</div>" + (N ? '<p class="k-sm k-sec k-mt8">' + esc(N.text) + "</p>" : "") +
         rows.filter(function (r) { return r[1]; }).map(function (r) { return '<div class="k-row"><div style="width:8px;height:8px;border-radius:9px;background:#c8f531;flex:none"></div><b class="k-f1">' + r[0] + '</b><span class="k-sm k-mut">' + esc(r[1]) + "</span></div>"; }).join("") +
         [["Quellen und Methodik", "/infos/#quellen"], ["Rechtliches und Infos", "/infos/"]].map(function (l) { return '<a class="k-row k-tap" style="width:100%" href="' + l[1] + '"><b class="k-f1">' + l[0] + '</b><span class="k-mut">' + D.CHEV + "</span></a>"; }).join("");
     }
   };
+  /** Fenster eines Moduls öffnen (nur mit Daten zur Aktie). Schließt es sich und nennt die Adresse ein Modul (Modul-Kontext),
+      kehrt die Adresse auf /aktie/#/<T> zurück – ohne neuen Eintrag im Verlauf und ohne Neuladen. */
   function openSheet(id) {
     var v = state && state.view;
-    if (!v || !SHEETS[id] || (id !== "hinweise" && !v.modules[id])) return;
+    if (!v || !SHEETS[id] || (id !== "hinweise" && !v.modules[id])) return null;
     /* Erst das leere Fenster, dann der Inhalt: die Grafik des Technical-Fensters richtet sich nach seiner Breite. */
     var el = S.ui.popup("vsk-m", "");
-    if (el) el.querySelector(".vsk").innerHTML = SHEETS[id](v);
+    if (!el) return null;
+    el.setAttribute("data-ak-open", id);
+    el.querySelector(".vsk").innerHTML = SHEETS[id](v);
+    el.addEventListener("click", function (e) { if (e.target.closest && e.target.closest("[data-ak-close]") && root.VUUI) root.VUUI.closeSheet(el); });
+    el.addEventListener("vu-sheet-close", function () { clearContext(v.ticker); });
+    return el;
+  }
+  function clearContext(ticker) {
+    var r = routeOfHash();
+    if (r && r.mod && r.ticker === ticker && root.history && root.history.replaceState) root.history.replaceState(root.history.state, "", root.location.pathname + root.location.search + "#/" + ticker);
+  }
+  /* Modul-Kontext: das Fenster öffnet, sobald das Modul Daten hat; liegen alle Quellen vor und das Modul hat keine, bleibt die Seite. */
+  function openPending() {
+    var st = state, mod = st && st.pending;
+    if (!mod || !st.view) return;
+    if (st.view.modules[mod]) { st.pending = null; openSheet(mod); }
+    else if (st.settled) { st.pending = null; clearContext(st.ticker); }
   }
 
   /* ---------------------------------------------------------------- Seite */
   function storyHtml(v) {
     var t = [];
-    if (v.business) t.push('<div class="k-tile ak-lime" style="width:250px"><div class="k-eb">Geschäft</div><div class="k-num k-mt4" style="font-size:30px">' + esc(v.business.word) + '</div><div class="k-mt8">' + D.bars(v.business.series, 220, 64) + '</div><p class="k-sm k-b7 k-mt8">' + esc(v.business.sentence) + "</p></div>");
+    if (v.business) t.push('<div class="k-tile' + (v.business.tone === "strong" ? " ak-lime" : "") + '" style="width:250px"><div class="k-eb">Geschäft</div><div class="k-num k-mt4" style="font-size:30px">' + esc(v.business.word) + '</div><div class="k-mt8">' + D.bars(v.business.series, 220, 64) + '</div><p class="k-sm k-b7 k-mt8">' + esc(v.business.sentence) + "</p></div>");
     if (v.chart) t.push('<div class="k-tile" style="width:250px"><div class="k-eb">Kurs</div><div class="k-num k-mt4" style="font-size:30px">' + esc(v.chart.word) + '</div><div class="k-mt8" id="ak-story-line"></div><p class="k-sm k-sec k-b7 k-mt8">' + esc(v.chart.sentence) + "</p></div>");
     if (v.valuation) {
       var mx = Math.max(v.valuation.pe, v.valuation.median || 0) || 1, row = function (label, x, me) {
@@ -183,19 +239,19 @@
   }
   function pageHtml(v) {
     var n = moduleCount(v), note = moduleNote(v), partner = S.ui.comparePartner(v), d = v.modules.discover;
-    return '<header class="k-px k-fl k-g12" data-vu-stock="' + esc(v.ticker) + '" data-vu-stock-name="' + esc(v.name) + '">' + D.logo(v.ticker, "x") + '<div class="k-f1"><h1 style="margin:0;font-size:34px;overflow-wrap:anywhere">' + esc(v.name) + '</h1><div class="k-sm k-mut">' + esc(v.what || v.ticker) + "</div></div>" +
+    return '<header class="k-px k-fl k-g12" data-vu-stock="' + esc(v.ticker) + '" data-vu-stock-name="' + esc(v.name) + '">' + D.logo(v.ticker, "x") + '<div class="k-f1" style="min-width:0"><h1 style="margin:0;font-size:34px;line-height:1.02;overflow-wrap:anywhere">' + esc(v.short) + '</h1><div class="k-sm k-mut k-mt4">' + esc([v.what || v.rest, v.ticker].filter(Boolean).join(" · ")) + "</div></div>" +
       '<button type="button" class="k-rnd k-tap k-heart" data-vsk-heart="' + esc(v.ticker) + '" aria-pressed="false" style="width:46px;height:46px">' + D.HEART + "</button></header>" +
       (v.price ? '<div class="k-px k-fl k-g10 k-mt12" style="align-items:flex-end;flex-wrap:wrap"><span class="k-num" style="font-size:52px">' + esc(F.money(v.price.value, v.price.currency)) + '</span><div style="padding-bottom:4px">' + D.move(v.price.changePct, true) + "</div></div>" : "") +
       '<div id="ak-chart" style="margin-top:6px;position:relative;min-height:230px;overflow:hidden"></div><span id="ak-chart-note" class="ak-sr" aria-live="polite"></span>' +
       '<div class="k-px k-fl k-sb k-xs k-b7 k-mut k-mt4" id="ak-ranges" role="group" aria-label="Zeitraum">' + RANGES.map(function (r) { return '<button type="button" class="k-tab" data-range="' + r[0] + '" aria-pressed="' + (r[0] === "1J") + '" style="height:30px;padding:0 13px;font-size:12.5px' + (r[0] === "1J" ? "" : ";background:none") + '">' + r[0] + "</button>"; }).join("") + "</div>" +
       storyHtml(v) +
       (n ? sh("Analyse aus " + n + " Modulen", "") .replace("</h2>", "</h2>" + (note ? "<span>" + esc(note) + "</span>" : "")) + '<div class="k-px" id="ak-mods" style="display:grid;grid-template-columns:1fr 1fr;gap:10px">' + modulesHtml(v) + "</div>" : "") +
-      (d ? '<div class="k-px k-mt8"><a class="k-tile k-tap k-fl k-g10" href="' + esc(d.href) + '" style="padding:12px 14px"><div class="k-hud" style="width:30px;height:30px;border-radius:9px">' + D.icon("discover", 17) + '</div><div class="k-f1"><b class="k-sm">Discover</b><div class="k-xs k-mut" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (d.best ? "Platz " + d.best.rank + " · " + esc(titleCase(d.best.title)) : "Anlass, Kurs und Unternehmen im Überblick") + "</div></div>" + (d.rows ? '<span class="k-pill">' + d.rows + (d.rows === 1 ? " Reihe" : " Reihen") + "</span>" : "") + "</a></div>" : "") +
+      (d ? '<div class="k-px k-mt8"><button type="button" class="k-tile k-tap k-fl k-g10" data-ak-sheet="discover" aria-haspopup="dialog" style="padding:12px 14px;text-align:left"><div class="k-hud" style="width:30px;height:30px;border-radius:9px">' + D.icon("discover", 17) + '</div><div class="k-f1"><b class="k-sm">Discover</b><div class="k-xs k-mut" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (d.best ? "Platz " + d.best.rank + " · " + esc(titleCase(d.best.title)) : "Anlass, Kurs und Unternehmen im Überblick") + "</div></div>" + (d.rows ? '<span class="k-pill">' + d.rows + (d.rows === 1 ? " Reihe" : " Reihen") + "</span>" : "") + "</button></div>" : "") +
       businessHtml(v) +
       (v.news.length ? '<div class="k-sh"><h2>Aus den News</h2><a class="k-tap" href="/insights/"><span>Alle ›</span></a></div><div class="k-rail">' + v.news.map(function (a) {
         return '<a class="k-cover k-tap" href="' + esc(a.href) + '" style="width:270px;height:170px">' + (a.image ? '<img src="' + esc(a.image) + '" alt="" loading="lazy" decoding="async">' : "") + '<div class="sc"></div><div class="ct2">' + (a.tag ? '<span class="k-pill sm">' + esc(a.tag) + "</span>" : "") + '<div class="k-b8 k-mt4" style="line-height:1.1">' + esc(a.title) + "</div></div></a>";
       }).join("") + "</div>" : "") +
-      (v.similar.length ? sh("Mehr wie " + v.name) + '<div class="k-rail">' + v.similar.map(poster).join("") + "</div>" : "") +
+      (v.similar.length ? sh("Mehr wie " + v.short) + '<div class="k-rail">' + v.similar.map(poster).join("") + "</div>" : "") +
       (partner ? '<div class="k-px k-fl k-g8" style="margin-top:22px"><button type="button" class="k-btn k-f1 k-tap" data-ak-compare>Vergleichen</button></div>' : "") +
       '<div class="k-end"><button type="button" class="k-lk" data-ak-sheet="hinweise">Daten &amp; Hinweise' + (v.asOf.kurs ? " · Schluss " + F.dateShort(v.asOf.kurs) : "") + "</button></div>";
   }
@@ -237,27 +293,35 @@
       return S.data.getJSON("/hedgefonds/data/stocks/" + (n % HEDGE_SHARDS) + ".json").then(function (part) { var x = part && part[cusip]; return x && x.ticker === ticker ? x : null; });
     });
   }
-  function show(ticker) {
-    var st = state = { ticker: ticker, range: "1J", daily: null, long: null, src: null, view: null };
+  function show(ticker, mod) {
+    var st = state = { ticker: ticker, range: "1J", daily: null, long: null, src: null, view: null, pending: mod || null, settled: false };
     main.setAttribute("aria-busy", "true");
     root.scrollTo(0, 0);
     S.data.load(ticker).then(function (src) {
       if (state !== st) return;
-      if (!src.detail && !src.watch) { blank("Keine Daten zu " + ticker, "Für dieses Kürzel liegt keine Aktie vor."); return; }
+      if (!src.detail && !src.watch) { st.pending = null; clearContext(ticker); blank("Keine Daten zu " + ticker, "Für dieses Kürzel liegt keine Aktie vor."); return; }
       st.src = src; st.view = S.model.summarize(src);
       fill();
-      S.data.loadSeries(ticker).then(function (p) { if (state !== st) return; st.daily = p; drawChart(); storyLine(); refreshModules(); });
+      var hedge = hedgeOf(ticker).then(function (h) { if (state !== st || !h) return; st.src.hedge = h; st.view = S.model.summarize(st.src); refreshModules(); });
+      /* Das Technical-Fenster zeichnet die Kurslinie: im Modul-Kontext erst öffnen, wenn sie da ist. */
+      var series = S.data.loadSeries(ticker).then(function (p) { if (state !== st) return; st.daily = p; drawChart(); storyLine(); refreshModules(); });
+      if (st.pending && st.pending !== "technical" && st.pending !== "hedgefonds") openPending();
+      Promise.all([hedge, series]).then(function () { if (state !== st) return; st.settled = true; openPending(); }, function () { if (state === st) { st.settled = true; openPending(); } });
       S.data.getJSON("/insights/artikel.json").then(function (a) {
         if (state !== st || !a || !Array.isArray(a.artikel)) return;
         st.src.articles = a.artikel; var had = st.view.news.length; st.view = S.model.summarize(st.src);
         if (st.view.news.length !== had) fill();
       });
-      hedgeOf(ticker).then(function (h) { if (state !== st || !h) return; st.src.hedge = h; st.view = S.model.summarize(st.src); refreshModules(); });
     });
   }
   function route() {
-    var t = tickerOfHash();
-    if (t) { doc.documentElement.setAttribute("data-state", "PAGE"); show(t); }
+    var r = routeOfHash();
+    if (r) {
+      doc.documentElement.setAttribute("data-state", "PAGE");
+      /* Dieselbe Aktie (z. B. nach dem Schließen des Fensters oder #/<T> → #/<T>/<modul>): nicht neu laden, nur das Fenster. */
+      if (state && state.ticker === r.ticker && state.view) { if (r.mod) { state.pending = r.mod; openPending(); } return; }
+      show(r.ticker, r.mod);
+    }
     else if (root.location.hash.length > 2) blank("Welche Aktie willst du sehen?", "Diese Adresse nennt kein gültiges Kürzel. Suche die Aktie in Discover.");
   }
 

@@ -1,5 +1,6 @@
 import {HttpError, json, readJson} from './http.mjs';
 import {requireUser} from './auth.mjs';
+import {SF_INDEX_URL, stageEvents, noticeMessage, forClaim, RESEARCH} from './st-notices.mjs';
 export function deviceToken(token) {
   if (typeof token !== 'string' || !/^[A-Za-z0-9_:.-]{20,4096}$/.test(token)) throw new HttpError(400, 'PUSH_TOKEN_INVALID');
   return token;
@@ -24,7 +25,8 @@ export function createFcm({secret, fetchImpl = fetch, now = Date.now}) {
   let cached = null;
   return {
     configured: Boolean(secret),
-    async send(token, count) {
+    // message: {title, body} fuer genau eine Stufen-Meldung (st-notices.mjs#noticeMessage), sonst die Tagesuebersicht.
+    async send(token, count, message = null) {
       const account = JSON.parse(secret);
       if (!/^[a-z0-9-]+$/.test(account.project_id) || !account.client_email || !account.private_key) throw Error('FCM_CONFIG_INVALID');
       if (!cached || cached.until < now()) {
@@ -43,7 +45,7 @@ export function createFcm({secret, fetchImpl = fetch, now = Date.now}) {
       }
       const res = await fetchImpl(`https://fcm.googleapis.com/v1/projects/${account.project_id}/messages:send`,{
         method:'POST', headers:{Authorization:`Bearer ${cached.token}`,'Content-Type':'application/json'},
-        body:JSON.stringify({message:{token,notification:{title:'Watchlist · Tagesübersicht',
+        body:JSON.stringify({message:{token,notification:message || {title:'Watchlist · Tagesübersicht',
           body:`${count} neue Regelereignisse in der persönlichen Watchlist. Details und Datenstand in der App.`},
           android:{ttl:'86400s',collapse_key:'watchlist-daily'},apns:{headers:{'apns-collapse-id':'watchlist-daily','apns-expiration':String(Math.floor(now()/1000)+86400)}}}})});
       if (!res.ok) throw Error('FCM_SEND_FAILED');
@@ -58,17 +60,47 @@ export function deliverableEvents(doc, now) {
     e.source?.ruleVersion === doc.ruleVersion && TYPES[e.type]?.includes(e.subtype) &&
     Date.parse(e.occurredAt)<=now && Date.parse(e.occurredAt)>now-86400000 && (!e.expiresAt || Date.parse(e.expiresAt)>now));
 }
-export async function runPush({fcm, service, fetchImpl = fetch, now = Date.now}) {
+// Stufen-Meldungen der Supertrader-Methoden aus dem veroeffentlichten Kandidatenstand (fester Ort, nur lesen).
+// occurredAt = erster Blick des Workers auf diesen Stand (supertrader_stage_seen): dasselbe 24-Stunden-Fenster wie
+// die Watchlist-Ereignisse, ein alter Stand kommt nicht jeden Tag wieder. Fehler: keine Stufen-Meldungen, nichts sonst.
+export async function stageNotices({service, fetchImpl = fetch, now = Date.now}) {
+  try {
+    const res = await fetchImpl(SF_INDEX_URL);
+    if (!res.ok) return [];
+    // Erst den Stand aus dem Dateikopf lesen; das ganze Dokument nur parsen, solange er frisch ist (Rechenzeit je Cron-Lauf).
+    const raw = await res.text(), asOf = /^\{"schema":"[^"]*","asOf":"(\d{4}-\d{2}-\d{2})"/.exec(raw.slice(0, 200));
+    if (!asOf) return [];
+    const seen = Date.parse(await service.rpc('supertrader_stage_seen', {p_as_of: asOf[1]}));
+    if (!Number.isFinite(seen) || seen > now() || seen <= now() - 86400000) return [];
+    const events = stageEvents(JSON.parse(raw));
+    if (!events.length || events[0].asOf !== asOf[1]) return [];
+    const occurredAt = new Date(seen).toISOString();
+    return events.map(e => ({...e, occurredAt}));
+  } catch { return []; }
+}
+// Tagesuebersicht, wenn mehr als eine Meldung zusammenkommt; mit einer Stufen-Meldung darin der Forschungshinweis.
+export function digestMessage(count, withStage) {
+  return {title: 'Watchlist · Tagesübersicht', body: `${count} neue Regelereignisse in Watchlist und gefolgten Methoden. Details und Datenstand in der App.`
+    + (withStage ? ` Supertrader: ${RESEARCH}.` : '')};
+}
+// stageAlerts: Supertrader-Stufen-Meldungen mitsenden (cfg.supertraderAlerts.enabled). Aus (Standard bis zur
+// Anwaltspruefung): weder Kandidatenstand noch supertrader_stage_seen werden gelesen, nur die Watchlist-Ereignisse wie bisher.
+export async function runPush({fcm, service, fetchImpl = fetch, now = Date.now, stageAlerts = false}) {
   if (!fcm.configured) return {skipped:'FCM_NOT_CONFIGURED'};
   // Fester vertrauenswuerdiger Ort, keine Client-Ereignisse oder beliebigen URLs.
   const response = await fetchImpl('https://research.visionuniverse.de/core/data/watchlist-events-v1.json');
-  if (!response.ok) return {skipped:'EVENTS_UNAVAILABLE'};
-  const events = deliverableEvents(await response.json(), now());
-  if (!events.length) return {skipped:'NO_EVENTS'};
-  const claims = await service.rpc('push_claim_daily', {p_events:events});
+  const events = response.ok ? deliverableEvents(await response.json(), now()) : [];
+  const stage = stageAlerts === true ? await stageNotices({service, fetchImpl, now}) : [];
+  if (!response.ok && !stage.length) return {skipped:'EVENTS_UNAVAILABLE'};
+  const all = events.concat(stage.map(forClaim)).slice(0, 5000);
+  if (!all.length) return {skipped:'NO_EVENTS'};
+  const claims = await service.rpc('push_claim_daily', {p_events:all});
+  const byId = new Map(stage.map(e => [e.eventId, e]));
   let sent=0,failed=0;
   for (const claim of claims || []) {
-    try { await fcm.send(claim.token,claim.count); sent++; } catch { failed++; }
+    const ids = Array.isArray(claim.ids) ? claim.ids : [], one = claim.count === 1 ? byId.get(ids[0]) : null;
+    const message = one ? noticeMessage(one) : Number(claim.stage) > 0 || ids.some(id => byId.has(id)) ? digestMessage(claim.count, true) : null;
+    try { await fcm.send(claim.token,claim.count,message); sent++; } catch { failed++; }
   }
   return {sent,failed};
 }

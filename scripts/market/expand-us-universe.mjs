@@ -42,6 +42,7 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync, copyFileSync } from
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import { createHash } from "node:crypto";
 
 const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -61,6 +62,13 @@ const OUT_DIR = arg("--out", join(root, "quant", "data", "market", "security-mas
 /* --only T1,T2 (17.11.2026, Steuerung): nur diese Ticker anhaengen (Positivliste). Ein Ticker der Liste, der nicht
    angehaengt werden kann, bricht den Lauf ab - eine Freigabe soll nicht still kleiner werden. */
 const ONLY = (() => { const v = arg("--only"); return v ? new Set(v.split(/[\s,]+/).map((t) => t.trim().toUpperCase()).filter(Boolean)) : null; })();
+/* --auto N --sec <company_tickers_exchange.json> (Dauerregel, Steuerung 17./18.11.2026): neue Titel nicht liegen lassen,
+   sondern je Lauf hoechstens N anhaengen. Zusaetzlich zur Kette unten gilt: reines Kuerzel (1-5 Buchstaben) und die SEC
+   fuehrt den Ticker an derselben Boersenfamilie (Nasdaq, NYSE, Cboe, TXSE). Reihenfolge: aelteste Notierung zuerst, dann
+   Ticker; der Rest wartet auf den naechsten Lauf (deferred). Ohne SEC-Liste bricht --auto ab (fail closed). */
+const AUTO = (() => { const v = arg("--auto"); if (v === null) return null; const n = Number(v);
+  if (!Number.isInteger(n) || n < 0) throw new Error("--auto erwartet eine ganze Zahl >= 0, nicht " + v); return n; })();
+const SEC_FILE = arg("--sec");
 const MASTER_FILE = arg("--master",
   join(root, SCALE.storage.workingDir, "tiingo", "security-master", "us-security-master.json"));
 const UNIVERSE_FILE = join(SCALE_DIR, "universe-FULL_UNIVERSE.json");
@@ -117,6 +125,37 @@ export function toUniverseEntry(row) {
  *
  * @returns {object} {entries, appended, skipped, invariants}
  */
+/* Boersenfamilie: Anbieterplatz (Tiingo) und SEC-Bezeichnung (company_tickers_exchange.json). NYSE American und
+   NYSE Arca fuehrt die SEC als "NYSE". */
+const FAMILY_PROVIDER = { NASDAQ: "NASDAQ", "NASDAQ GLOBAL SELECT": "NASDAQ", "NASDAQ GLOBAL MARKET": "NASDAQ",
+  "NASDAQ CAPITAL MARKET": "NASDAQ", NYSE: "NYSE", "NYSE MKT": "NYSE", "NYSE AMERICAN": "NYSE", AMEX: "NYSE",
+  "NYSE ARCA": "NYSE", BATS: "CBOE", TXSE: "TXSE" };
+const FAMILY_SEC = { NASDAQ: "NASDAQ", NYSE: "NYSE", CBOE: "CBOE", TXSE: "TXSE" };
+
+/** company_tickers_exchange.json -> Map Ticker -> {cik, name, exchange}. */
+export function indexSecTickers(sec) {
+  if (!sec || !Array.isArray(sec.fields) || !Array.isArray(sec.data)) throw new Error("SEC-Liste: fields/data fehlen");
+  const ix = (k) => sec.fields.indexOf(k), by = new Map();
+  if (ix("ticker") < 0 || ix("exchange") < 0 || ix("cik") < 0) throw new Error("SEC-Liste: Felder ticker/exchange/cik fehlen");
+  for (const d of sec.data) {
+    by.set(String(d[ix("ticker")]).toUpperCase(),
+           { cik: String(d[ix("cik")]).padStart(10, "0"), name: ix("name") >= 0 ? d[ix("name")] : null, exchange: d[ix("exchange")] ?? null });
+  }
+  return by;
+}
+
+/** Pruefung der Dauerregel fuer einen Kandidaten, der die Kette schon bestanden hat. -> null (ok) oder Grund. */
+export function autoRejectReason(row, secBy) {
+  const t = String(row.ticker || "").toUpperCase();
+  if (!/^[A-Z]{1,5}$/.test(t)) return "tickerForm";
+  const s = secBy.get(t);
+  if (!s) return "secNotListed";
+  const fam = FAMILY_SEC[String(s.exchange || "").toUpperCase()];
+  if (!fam) return "secNotOnExchange";
+  if (FAMILY_PROVIDER[String(row.exchange || "").toUpperCase()] !== fam) return "secExchangeMismatch";
+  return null;
+}
+
 export function appendOnlyMerge(baselineEntries, masterRows, opts) {
   opts = opts || {};
   const baseline = baselineEntries || [];
@@ -148,8 +187,22 @@ export function appendOnlyMerge(baselineEntries, masterRows, opts) {
     if (baselineByTicker.has(t)) { skipped.alreadyInBaseline++; continue; }
     if (seenAppended.has(t)) { skipped.duplicateWithinAppend++; continue; }
 
+    if (opts.auto) {
+      const why = autoRejectReason(r, opts.auto.secBy);
+      if (why) { skipped[why] = (skipped[why] || 0) + 1; continue; }
+    }
+
     seenAppended.add(t);
     appended.push(toUniverseEntry(r));
+  }
+
+  /* Dauerregel: hoechstens max Titel, aelteste Notierung zuerst (dann Ticker). Der Rest wartet. */
+  let deferred = [];
+  if (opts.auto) {
+    appended.sort((a, b) => ((a.startDate || "9999") < (b.startDate || "9999") ? -1 : (a.startDate || "9999") > (b.startDate || "9999") ? 1
+      : a.ticker < b.ticker ? -1 : a.ticker > b.ticker ? 1 : 0));
+    deferred = appended.splice(opts.auto.max).map((e) => e.securityId);
+    skipped.deferredOverCap = deferred.length;
   }
 
   /* Bestand zuerst, zeichengleich. Dann die Neuzugaenge, nach Ticker
@@ -164,7 +217,7 @@ export function appendOnlyMerge(baselineEntries, masterRows, opts) {
     const missing = [...opts.only].filter((t) => !got.has(t));
     if (missing.length) throw new Error("POSITIVLISTE_NICHT_ANHAENGBAR: " + missing.join(", ") + " (nicht ADDED, nicht EQUITY_COMMON, nicht primaer, inaktiv oder schon im Bestand)");
   }
-  return { entries, appended, skipped, invariants };
+  return { entries, appended, skipped, invariants, deferred };
 }
 
 /**
@@ -242,7 +295,16 @@ function main() {
   console.log(`  Bestand:        ${baseline.length} Titel`);
   console.log(`  Wertpapierstamm: ${masterRows.length} Zeilen (${masterDoc.version})`);
 
-  const merged = appendOnlyMerge(baseline, masterRows, { today: TODAY, only: ONLY });
+  if (AUTO !== null && ONLY) { console.error("--auto und --only schliessen sich aus."); process.exit(2); }
+  let auto = null, secInfo = null;
+  if (AUTO !== null) {
+    if (!SEC_FILE || !existsSync(SEC_FILE)) { console.error("--auto braucht --sec <company_tickers_exchange.json> (fail closed)."); process.exit(2); }
+    const bytes = readFileSync(SEC_FILE);
+    auto = { max: AUTO, secBy: indexSecTickers(JSON.parse(bytes.toString("utf8"))) };
+    secInfo = { file: SEC_FILE.replace(root + "/", ""), sha256: createHash("sha256").update(bytes).digest("hex"), tickers: auto.secBy.size };
+  }
+  const merged = appendOnlyMerge(baseline, masterRows, { today: TODAY, only: ONLY, auto });
+  if (auto) console.log(`  Dauerregel:     hoechstens ${AUTO} je Lauf, SEC-Liste ${secInfo.tickers} Ticker; zurueckgestellt ${merged.deferred.length}`);
   if (ONLY) console.log(`  Positivliste:   ${[...ONLY].join(", ")}`);
 
   console.log(`\n  Angehaengt:     ${merged.appended.length}`);
@@ -318,6 +380,9 @@ function main() {
     removed: 0,
     note: "Der Bestand steht zeichengleich an derselben Stelle. Angehaengt wurde ans Ende."
   };
+  /* Die Dauerregel nennt ihre Zugaenge: das Eignungs-Gate laesst ohne Freigabeliste nur genau diese durch. */
+  if (auto) manifest.auto = { rule: "AUTO_NEW_LISTINGS", max: AUTO, sec: secInfo,
+    added: merged.appended.map((e) => e.securityId).sort(), deferred: merged.deferred.slice().sort() };
   writeFileSync(join(OUT_DIR, "expansion.json"), JSON.stringify(manifest, null, 2) + "\n");
 
   console.log(`\n  ${UNIVERSE_FILE.replace(root + "/", "")}`);

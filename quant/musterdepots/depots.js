@@ -25,7 +25,9 @@
   function esc(s) { return U ? U.esc(s) : String(s == null ? "" : s); }
   function dDe(d) { var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(d || "")); return m ? m[3] + "." + m[2] + "." + m[1] : "–"; }
   function pctW(w) { return typeof w === "number" && isFinite(w) ? U.num(w * 100, 1) + " %" : "–"; }
-  function stockHref(t) { return "/quant/#/aktie/" + encodeURIComponent(t); }
+  /* App-Konzept 2 (Owner 16.11.2026): ein Tipp auf eine Aktie öffnet die Vorschau des Rahmens (data-vu-stock), „Ganz öffnen“ /aktie/#/<T>. */
+  function stockHref(t) { return "/aktie/#/" + encodeURIComponent(t); }
+  function stockAttrs(t) { return ' data-vu-stock="' + esc(t) + '" data-vu-stock-name="' + esc(nameOf(t)) + '"'; }
 
   /* ---------------------------------------------------------------- Modell (rein, testbar) */
   function lastChanges(depot) {
@@ -89,14 +91,14 @@
   function detail(doc, depot) {
     var c = lastChanges(depot), pub = published(doc);
     var rows = depot.positions.slice().sort(function (a, b) { return b.weight - a.weight; }).map(function (p) {
-      return U.stockRow({ ticker: p.ticker, name: nameOf(p.ticker), href: stockHref(p.ticker),
+      return U.stockRow({ ticker: p.ticker, name: nameOf(p.ticker), href: stockHref(p.ticker), preview: true,
         sub: p.ticker + " · " + pctW(p.weight) + " · aufgenommen " + dDe(p.since) + " zu " + U.money(p.entryPrice, "USD"),
         noPrice: !pub, price: p.lastPrice, currency: "USD", changePct: pub ? sinceEntry(p) : null });
     });
     var logs = groupedLog(depot).map(function (g) {
       return '<div class="vu-box md-logbox"><h3 class="vu-sm">Umschichtung ' + dDe(g.date) + '</h3><p class="vu-xs vu-mu">' + g.rein.length + " rein · " + g.raus.length + " raus</p>" +
-        (g.rein.length ? '<div class="vu-chips md-chips" aria-label="Rein">' + g.rein.map(function (e) { return '<a class="vu-chip md-chip--in" href="' + esc(stockHref(e.ticker)) + '">+ ' + esc(nameOf(e.ticker)) + " <small>" + pctW(e.weight) + "</small></a>"; }).join("") + "</div>" : "") +
-        (g.raus.length ? '<div class="vu-chips md-chips" aria-label="Raus">' + g.raus.map(function (e) { return '<a class="vu-chip md-chip--out" href="' + esc(stockHref(e.ticker)) + '">− ' + esc(e.ticker) + " <small>seit " + dDe(e.since) + "</small></a>"; }).join("") + "</div>" : "") + "</div>";
+        (g.rein.length ? '<div class="vu-chips md-chips" aria-label="Rein">' + g.rein.map(function (e) { return '<a class="vu-chip md-chip--in" href="' + esc(stockHref(e.ticker)) + '"' + stockAttrs(e.ticker) + '>+ ' + esc(nameOf(e.ticker)) + " <small>" + pctW(e.weight) + "</small></a>"; }).join("") + "</div>" : "") +
+        (g.raus.length ? '<div class="vu-chips md-chips" aria-label="Raus">' + g.raus.map(function (e) { return '<a class="vu-chip md-chip--out" href="' + esc(stockHref(e.ticker)) + '"' + stockAttrs(e.ticker) + '>− ' + esc(e.ticker) + " <small>seit " + dDe(e.since) + "</small></a>"; }).join("") + "</div>" : "") + "</div>";
     });
     var cap = '<p class="vu-xs vu-mu md-cap">Gewicht im Modell, Aufnahme mit Datum und veröffentlichtem Schlusskurs' + (pub ? "; rechts der Schluss heute und die Veränderung seit Aufnahme" : "") + ".</p>";
     var more = rows.length > ROWS_SHOWN, moreLog = logs.length > 1;

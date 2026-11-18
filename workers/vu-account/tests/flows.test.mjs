@@ -1273,3 +1273,56 @@ test('E4: native Anmeldung, Rotation und Push-RLS durch Worker und PostgreSQL', 
   assert.equal((await request('/v1/push/devices/remove',{token:device},token)).res.status,200);
   assert.equal((await request('/v1/auth/app/logout',{},token)).res.status,200);
 });
+
+test('Supertrader: Methoden folgen, Aktie melden, Stufen-Meldung per App-Push (Worker, PostgreSQL)', {skip}, async t => {
+  const {createSupabase} = await import('../src/supabase.mjs');
+  const {runPush} = await import('../src/push.mjs');
+  const {SF_INDEX_URL, SF_SCHEMA, noticeMessage, stageEvents} = await import('../src/st-notices.mjs');
+  const env = await createEnvironment({envOverrides: {VU_SUPERTRADER_ALERTS_ENABLED: 'true'}}); t.after(() => env.close());
+  const anon = env.browser();
+  assert.equal((await anon.get('/v1/supertrader/follows')).status, 401);
+  const a = await signedIn(env, 'st-anna@example.test'), b = await signedIn(env, 'st-ben@example.test');
+  assert.deepEqual((await a.get('/v1/supertrader/follows')).data, {follows: [], limit: 50});
+
+  // Folgen: idempotent, Kennung geprueft, CSRF, nur eigene Zeilen.
+  const f1 = await a.post('/v1/supertrader/follows', {strategyId: 'SF_MINERVINI_SEPA_VCP'});
+  assert.deepEqual([f1.status, f1.data], [201, {state: 'FOLLOWED', strategyId: 'SF_MINERVINI_SEPA_VCP'}]);
+  assert.equal((await a.post('/v1/supertrader/follows', {strategyId: 'SF_MINERVINI_SEPA_VCP'})).status, 200, 'idempotent');
+  const bad = await a.post('/v1/supertrader/follows', {strategyId: 'MINERVINI'});
+  assert.deepEqual([bad.status, bad.data.state], [400, 'STRATEGY_INVALID']);
+  assert.equal((await a.post('/v1/supertrader/follows', {strategyId: 'SF_TURTLE_S1'}, {headers: {'X-VU-Client': ''}})).status, 403, 'CSRF');
+  const listA = await a.get('/v1/supertrader/follows');
+  assert.deepEqual(listA.data.follows.map(f => f.strategyId), ['SF_MINERVINI_SEPA_VCP']);
+  assert.match(listA.headers.get('Cache-Control'), /private, no-store/);
+  assert.deepEqual((await b.get('/v1/supertrader/follows')).data.follows, [], 'Ben sieht Annas Methoden nicht');
+  assert.deepEqual((await b.post('/v1/supertrader/follows/remove', {strategyId: 'SF_MINERVINI_SEPA_VCP'})).data, {state: 'NOT_PRESENT', removed: 0});
+
+  // Melden: der bestehende Watchlist-Eintrag mit alerts.SUPERTRADER_SIGNAL, die Art im Konto eingeschaltet.
+  assert.equal((await a.post('/v1/watchlist/items', {instrumentId: 'vu_abc123', ticker: 'NVDA'})).status, 201);
+  const item = (await a.get('/v1/watchlist')).data.items[0];
+  const upd = await a.patch('/v1/watchlist/items', {instrumentId: item.instrumentId, listId: item.listId, alerts: {SUPERTRADER_SIGNAL: true}});
+  assert.deepEqual(upd.data.item.alerts, {SUPERTRADER_SIGNAL: true});
+  assert.equal((await a.patch('/v1/me', {settings: {notifications: {SUPERTRADER_SIGNAL: true}}})).status, 200);
+  await env.pg.json(`with x as (insert into public.push_devices (user_id, token, platform)
+    select id, 'token_annaaaaaaaaaaaaaaaaaaa', 'ios' from auth.users where email = 'st-anna@example.test' returning 1) select to_json(count(*)) from x`);
+
+  // Ein Kandidatenstand von heute: NVDA erreicht bei Minervini · VCP „Regel erfuellt“ (gemeldet und gefolgt: eine Meldung).
+  const asOf = new Date().toISOString().slice(0, 10);
+  const index = {schema: SF_SCHEMA, asOf, strategies: [{strategyId: 'SF_MINERVINI_SEPA_VCP', candidateId: 'C06'}],
+    candidates: [{c: 'C06', t: 'NVDA', n: 'NVIDIA', s: 'CONFIRMED_RESEARCH_SETUP'}],
+    changes: {status: 'COMPARED', added: ['C06|NVDA'], removed: [], restaged: []}};
+  const service = createSupabase({url: env.env.SUPABASE_URL, publishableKey: env.env.SUPABASE_PUBLISHABLE_KEY,
+    secretKey: env.env.SUPABASE_SECRET_KEY, fetchImpl: env.fetchImpl}).service;
+  const fetchImpl = async url => url === SF_INDEX_URL ? {ok: true, text: async () => JSON.stringify(index)} : {ok: false};
+  const sent = [];
+  const fcm = {configured: true, send: async (token, count, message) => { sent.push({token, count, message}); }};
+  assert.deepEqual(await runPush({fcm, service, fetchImpl, stageAlerts: true}), {sent: 1, failed: 0});
+  assert.deepEqual(sent, [{token: 'token_annaaaaaaaaaaaaaaaaaaa', count: 1, message: noticeMessage(stageEvents(index)[0])}]);
+  assert.equal(sent[0].message.body, 'NVIDIA: Regel erfüllt laut Methode Minervini · VCP (Stand ' + asOf.slice(8, 10) + '.' + asOf.slice(5, 7) + '.) · Forschung, nicht zertifiziert');
+  assert.deepEqual(await runPush({fcm, service, fetchImpl, stageAlerts: true}), {sent: 0, failed: 0}, 'hoechstens eine Nachricht am Tag');
+
+  // Export und Entfolgen.
+  assert.deepEqual((await a.get('/v1/me/export')).data.supertraderFollows.map(f => f.strategy_id), ['SF_MINERVINI_SEPA_VCP']);
+  assert.deepEqual((await a.post('/v1/supertrader/follows/remove', {strategyId: 'SF_MINERVINI_SEPA_VCP'})).data, {state: 'REMOVED', removed: 1});
+  assert.deepEqual((await a.get('/v1/supertrader/follows')).data.follows, []);
+});

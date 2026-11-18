@@ -38,8 +38,9 @@ d.addEventListener("click",function(v){var b=v.target.closest&&v.target.closest(
 d.addEventListener("keydown",function(v){if(v.key==="/"&&!/^(INPUT|TEXTAREA|SELECT)$/.test(v.target&&v.target.tagName||"")&&d.querySelector("[data-static]")){v.preventDefault();w.__vuSearchTap=1}},true);
 })(window,document);</script>
 <!-- App-Konzept 2: auf der Startseite laeuft der Kopf durchsichtig ueber der Aktie des Tages (data-vu-bleed) und die Seite zeigt ihre
-     Reiter im Inhalt (data-vu-tabs="inhalt"); assets/site-navigation.js liest beide. app.js nimmt sie auf anderen Routen weg. -->
-<script>(function(h){if(!/^#\/?(s|settings|suche|aktien|watchlist|welten|strategien|thema|c|einzeln|swipen|maerkte|daten|reihen)([/?]|$)/.test(location.hash)){if(!/[?&]genre=/.test(location.hash))h.setAttribute("data-vu-bleed","");h.setAttribute("data-vu-tabs","inhalt");}})(document.documentElement);</script>
+     Reiter im Inhalt (data-vu-tabs="inhalt"); assets/site-navigation.js liest beide. app.js nimmt sie auf anderen Routen weg.
+     Klickentwurf 17.11.2026: die Aktienseite #/s/… zeigt keine Reiterzeile (data-vu-tabs="inhalt", ohne eigene Reiter). -->
+<script>(function(h){if(!/^#\/?(s|settings|suche|aktien|watchlist|welten|strategien|thema|c|einzeln|swipen|maerkte|daten|reihen)([/?]|$)/.test(location.hash)){if(!/[?&]genre=/.test(location.hash))h.setAttribute("data-vu-bleed","");h.setAttribute("data-vu-tabs","inhalt");}else if(/^#\/?s\//.test(location.hash))h.setAttribute("data-vu-tabs","inhalt");})(document.documentElement);</script>
 <meta name="theme-color" content="#ffffff">
 <link rel="icon" href="data:,">
 <link rel="manifest" href="/manifest.webmanifest">

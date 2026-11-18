@@ -16,7 +16,17 @@ const arr = (name) => Function('return ' + APP.match(new RegExp('var ' + name + 
 test('keine zweite Leiste: kein Reiter Überblick · Kennzahlen · Branche · Finanzen mehr', () => {
   assert.doesNotMatch(APP, /class: 'vu-seg fu-tabs'/);
   assert.doesNotMatch(APP, /function tabs\(/);
-  assert.match(APP, /isOverview \? \[stockHead\(t, co\)\]/, 'Aktienkopf mit Perspektiven-Leiste nur auf der Aktie selbst');
+  assert.match(APP, /isOverview \? \[stockHead\(t, co, ctx\.others\)\]/, 'Aktienkopf nur auf der Aktie selbst');
+});
+
+test('Klickentwurf 17.11.2026: Aktie ohne Reiterzeile des Rahmens, Abschnitte in der Reihenfolge des Entwurfs, Pillen vor dem Fuß', () => {
+  assert.match(APP, /fpTabsMode\(r\.view === 'company'\)/, 'Reiterzeile nur auf der Aktie aus');
+  const ov = APP.slice(APP.indexOf('function overview('), APP.indexOf('function fyNote('));
+  const order = ["k2Sh('Kennzahlen')", 'fin[0], fin[1]', "k2Sh('Checklisten'", "k2Sh('Kapitel'", "title: 'Zahlen in Quant'", 'dataMethod(co), ctx.others, stockFoot(co)'];
+  let at = -1;
+  for (const t of order) { const i = ov.indexOf(t); assert.ok(i > at, t); at = i; }
+  assert.match(APP, /others: others \|\| undefined/, 'Pillen am Ort der Seite');
+  assert.match(APP, /keine Anlageberatung\./);
 });
 
 test('Kennzahlen-Streifen: sechs Zahlen in der Reihenfolge des Mockups, jede aus dem Katalog', () => {

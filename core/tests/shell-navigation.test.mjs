@@ -696,8 +696,8 @@ test('Welten-Wechsler: Name und Symbol je Ort; Home, Ich, Konto und News heissen
   same(w('/konto/einstellungen/'), ['Konto', 'layers']);
   same(w('/insights/reports/'), ['News', 'insights']);
   same(w('/discover/#/welten'), ['Discover', 'discover']);
-  same(w('/quant/#/aktie/NVDA'), ['Aktie', 'chartbild']);
-  same(w('/quant/#/aktie/NVDA/zahlen'), ['Aktie', 'chartbild']);
+  same(w('/quant/#/aktie/NVDA'), ['Quant', 'quant']);
+  same(w('/quant/#/aktie/NVDA/zahlen'), ['Quant', 'quant']);
   same(w('/quant/#/aktien'), ['Quant', 'quant']);
   assert.equal(DOCK_PRODUCT_ICONS.chartbild, readFileSync(join(root, 'assets/product-icons.svg'), 'utf8').match(/<symbol id="chartbild"[^>]*>([\s\S]*?)<\/symbol>/)[1], 'Symbol der Aktie: Originalgeometrie');
   same(w('/quant/#/elliott/NVDA'), ['Elliott', 'elliott']);

@@ -78,8 +78,22 @@
     chart: function (t) { return "#/aktie/" + encodeURIComponent(String(t || "").toUpperCase()) + "/chart"; },
     chartlagen: function (q) { return "#/chartlagen" + (q ? "?" + q : ""); },
     fundamentals: function (t) { return "#/aktie/" + encodeURIComponent(t) + "/zahlen"; },
-    compare: function (list) { return "#/vergleich" + (list && list.length ? "/" + list.map(encodeURIComponent).join(",") : ""); }
+    compare: function (list) { return "#/vergleich" + (list && list.length ? "/" + list.map(encodeURIComponent).join(",") : ""); },
+    /* App-Konzept 2 (Owner 16.11.2026): Ein Tipp auf eine Aktie in einer Liste, Karte oder Suche öffnet die Vorschau des Rahmens
+       (data-vu-stock, assets/vu-stock-sheet.js); „Ganz öffnen“ führt auf die gemeinsame Aktienseite /aktie/#/<T>. Die Quant-Aktienseite
+       (#/aktie/<T>) bleibt Ziel der bewussten Wege („Zur Aktienanalyse“, „In Quant öffnen“) und für Lesezeichen. */
+    aktie: function (t) { var u = String(t || "").toUpperCase(); return /^[A-Z0-9][A-Z0-9-]{0,11}$/.test(u) ? "/aktie/#/" + encodeURIComponent(u) : routes.stock(u); }
   };
+  /** Merkmale eines Aktien-Elements für die Vorschau: dataset (für el) bzw. Attribut-Text (für HTML-Strings). */
+  function stockData(t, name, extra) {
+    var u = String(t || "").toUpperCase(), d = extra || {};
+    if (/^[A-Z0-9][A-Z0-9-]{0,11}$/.test(u)) { d.vuStock = u; d.vuStockName = name || u; }
+    return d;
+  }
+  function stockAttrs(t, name) {
+    var d = stockData(t, name), esc = function (v) { return String(v).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
+    return d.vuStock ? ' data-vu-stock="' + esc(d.vuStock) + '" data-vu-stock-name="' + esc(d.vuStockName) + '"' : "";
+  }
 
   /* Die Tonwerte des View Models in Discovers Farbklassen. */
   var TONE = { good: "up", bad: "down", neutral: "warm", unknown: "" };
@@ -167,7 +181,7 @@
   }
   /* Eine Trefferzeile: Logo, (Anlagestil), Name, Kuerzel, Grund, Wert. */
   function stockRow(o) {
-    return el("a", { class: "qx-row", href: routes.stock(o.ticker), dataset: { symbol: o.ticker } }, [
+    return el("a", { class: "qx-row", href: routes.aktie(o.ticker), dataset: stockData(o.ticker, o.name, { symbol: o.ticker }) }, [
       logo(o.ticker, o.name, "sm", { initialOnly: !o.withLogo }),
       el("div", { class: "qx-row-main" }, [
         o.kicker ? el("span", { class: "qx-row-kicker", text: o.kicker }) : null,
@@ -187,7 +201,7 @@
   }
   /* Eine Aktienkarte wie "Heute interessant": Logo, Name, ein Satz, Wert. */
   function poster(o) {
-    return el("a", { class: "q-card qx-poster", href: routes.stock(o.ticker), dataset: { symbol: o.ticker },
+    return el("a", { class: "q-card qx-poster", href: routes.aktie(o.ticker), dataset: stockData(o.ticker, o.name, { symbol: o.ticker }),
       "aria-label": (o.name || o.ticker) + (o.story ? " — " + o.story : "") + " – Analyse öffnen" }, [
       logo(o.ticker, o.name, "md", { initialOnly: !!o.initialOnly }),
       el("b", { class: "q-card-name", text: o.name || o.ticker }),
@@ -202,7 +216,7 @@
   /* Kuerzel als Pillen. */
   function tickerChips(list, max) {
     var shown = (list || []).slice(0, max || 12);
-    return el("p", { class: "dx-index-badges qx-tickers" }, shown.map(function (t) { return el("a", { class: "dx-index-badge", href: routes.stock(t), text: t }); }));
+    return el("p", { class: "dx-index-badges qx-tickers" }, shown.map(function (t) { return el("a", { class: "dx-index-badge", href: routes.aktie(t), dataset: stockData(t), text: t }); }));
   }
   /* Eine helle Kachel (Quick Access): Symbol, Titel, Satz, Pfeil. Ohne
      Ziel ist sie gedaempft und sagt, warum. */
@@ -301,7 +315,7 @@
     return h.split("/").filter(Boolean).map(function (x) { try { return decodeURIComponent(x); } catch (e) { return x; } }).map(function (x, i) { return i === 1 ? x.toUpperCase() : x; });
   }
   function nextCard(main) {
-    var U = global.VUUI, host = main.parentNode && main.parentNode.querySelector(":scope > .qk2-next");
+    var U = global.VUUI, host = main.parentNode && main.parentNode.querySelector(":scope > .qk2-next, :scope > main > .qk2-next");
     if (host) host.remove();
     if (!U || !U.next || global.QX_HOST) return;
     var make = NEXT[main.dataset.view], parts = hashParts();
@@ -310,7 +324,9 @@
     if (!o || main.querySelector(".v2-message")) return;
     host = el("nav", { class: "qk2-next vu-ui", "aria-label": "Weiter" });
     host.innerHTML = U.next(o);
-    main.after(host);
+    /* Klickentwurf Modul-Aktienseiten (17.11.2026): auf der Aktienseite steht „Weiter“ vor „Diese Aktie in anderen Modulen“ (am Ende von main). */
+    var others = main.dataset.view === "aktie" ? main.querySelector(":scope > .vu-sothers") : null;
+    if (others) main.insertBefore(host, others); else main.after(host);
   }
   function introDate(text) { var m = /(?:Stand|Schluss)\s+(?:[A-Za-zÄÖÜäöü]{2}\.\s*)?(\d{2}\.\d{2}\.)/.exec(text || ""); return m ? m[1] : null; }
   function compactIntro(main) {
@@ -341,14 +357,14 @@
         var t = m.target;
         if (t.id !== "qx-main" || m.attributeName !== "data-ready") return;
         if (t.dataset.ready === "true") finishPage(t);
-        else { var old = root.querySelector(":scope > .qk2-next"); if (old) old.remove(); }
+        else { var old = root.querySelector(":scope > .qk2-next, :scope > main > .qk2-next"); if (old) old.remove(); }
       });
     }).observe(root, { subtree: true, attributes: true, attributeFilter: ["data-ready"] });
   })();
 
   global.QX = {
     say: say, fill: fill, add: add, deltaOf: deltaOf, finishPage: finishPage,
-    icon: icon, routes: routes, link: link, btn: btn, actions: actions, section: section, world: world, card: card, notice: notice,
+    icon: icon, routes: routes, stockData: stockData, stockAttrs: stockAttrs, link: link, btn: btn, actions: actions, section: section, world: world, card: card, notice: notice,
     pill: pill, more: more, loading: loading, dateDe: dateDe, money: money, signed: signed, companyName: companyName, logo: logo,
     stockRow: stockRow, poster: poster, rail: rail, tickerChips: tickerChips, stat: stat, stats: stats, toneClass: toneClass,
     tile: tile, scoreBox: scoreBox, globe: globe,

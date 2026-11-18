@@ -345,44 +345,13 @@ html[data-theme=light] .qd .qv-stock,html[data-theme=light] body.qd .qv-stock{--
 .qd .qv-stock .qv2-panel.tone-bad .qv2-pt-ico,.qd .qv-stock .qv2-panel.tone-bad .qv2-pt-ico *{color:#000}
 .qd .qv-stock .qv2-panel.tone-bad .qv2-pt-ico{background:#fff}
 /* Profil groß (Konzept Quant 2026-11, Folie K1 / Screen q-stock) */
-.qd .qv-stock .qv3-profile{padding:14px;margin-top:4px}
-.qd .qv-stock .qv3-profile-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:10px}
-.qd .qv-stock .qv3-profile-h h2{margin:0;font-size:17px;font-weight:800;letter-spacing:-.02em}
-.qd .qv-stock .qv3-profile-help{margin-top:10px}
 /* Konzept Quant 2026-11 (QX05): drei Sätze, Kapitel, Kurs, ähnliches Profil */
-.qd .qv-stock .qk-story{background:#000;color:#fff;border-radius:22px;padding:14px 14px 6px;margin-top:12px}
-.qd .qv-stock .qk-story .vu-ltag{color:#9b9b9b}
-.qd .qv-stock .qk-story-r{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;padding:10px 0;border-top:1px solid #262626}
-.qd .qv-stock .qk-story-r:first-of-type{border-top:0}
-.qd .qv-stock .qk-story-r p{margin:1px 0 0;font-size:14px;font-weight:700;line-height:1.3;color:#fff}
-.qd .qv-stock .qk-story .vu-verdict--mid{background:#262626;color:#fff}
-.qd .qv-stock .qk-story .vu-verdict--weak{background:#fff;color:#000}
 .qd .qv-stock .qk-hud{width:34px;height:34px;border-radius:28%;background:#0e1013;color:#c8f531;display:grid;place-items:center;box-shadow:0 0 0 1px #262a2f inset;flex:none}
-.qd .qv-stock .qk-chap .qk-hud{width:42px;height:42px;background:#000}
-.qd .qv-stock .qk-chaps{margin-top:6px}
-.qd .qv-stock .qk-chap{background:var(--vu-card,#f4f4f4);border-radius:18px;margin-top:8px}
-.qd .qv-stock .qk-chap>summary{display:grid;grid-template-columns:16px 42px 1fr 18px;gap:12px;align-items:center;padding:12px 14px;cursor:pointer;list-style:none;min-height:56px}
-.qd .qv-stock .qk-chap>summary::-webkit-details-marker{display:none}
-.qd .qv-stock .qk-chap-n{font-weight:900;color:var(--vu-mute,#6e6e6e);font-variant-numeric:tabular-nums}
-.qd .qv-stock .qk-chap-t b{display:block;font-size:15px;font-weight:800;line-height:1.2}
-.qd .qv-stock .qk-chap-t span{display:block;font-size:12.5px;color:var(--vu-mute,#6e6e6e);margin-top:2px}
-.qd .qv-stock .qk-chap>summary>svg{color:var(--vu-mute,#6e6e6e);transition:transform .15s}
-.qd .qv-stock .qk-chap[open]>summary>svg{transform:rotate(90deg)}
-.qd .qv-stock .qk-chap-b{padding:0 10px 10px}
-.qd .qv-stock .qk-chap-b .qx-section{margin:0;box-shadow:none}
-.qd .qv-stock .qk-chap-b .qx-section>.q-kicker{display:none}
-.qd .qv-stock .qk-chap-b .qv2-card{flex:none;margin:0}
-.qd .qv-stock .qk-h2{margin:22px 0 10px;font-size:17px;font-weight:800;letter-spacing:-.02em}
 .qd .qv-stock .qk-miss{margin:8px 0 0;font-size:12.5px;font-weight:700}
 .qd .qv-stock .qk-sim{margin-top:6px}
-@media (prefers-reduced-motion:reduce){.qd .qv-stock .qk-chap>summary>svg{transition:none}}
 .qd .qv-stock .qx-verdict-card:has(.qv3-profile){background:none;box-shadow:none;border:0;padding:0}
 .qd .qv-stock .qx-verdict-card:has(.qv3-profile)>.qv-limit{display:none}
-.qd .qv-stock .qv3-profile{background:var(--vu-card,#f4f4f4);border:0;border-radius:20px}
-.qd .qv-stock .qk-all{margin-left:auto;background:none;border:0;font:700 13px/1 var(--vu-font,inherit);color:var(--vu-mute,#6e6e6e);display:inline-flex;align-items:center;gap:2px;min-height:44px;cursor:pointer}
 /* Im Kapitel trägt die Zusammenfassung den Titel; der Abschnittskopf darunter entfällt (Mockup q-stock-ch). */
-.qd .qv-stock .qk-chap-b>.qx-section>.q-sec-head,.qd .qv-stock .qk-chap-b>.qv2-card>.q-sec-head{display:none}
-.qd .qv-stock .qk-chap-b>.qx-section>.q-sec-intro{margin-top:4px}
 .qd .qv-stock .qv3-strat-card .qv3-setup-h>span:first-child>.vu-ltag{display:block;margin-bottom:2px}
 .qd .qv-stock .qv3-strat-card .qv3-setup-h>span:first-child>b{display:block}
 .qd .qv-stock .qk-sim{min-height:1px}
@@ -390,14 +359,114 @@ html[data-theme=light] .qd .qv-stock,html[data-theme=light] body.qd .qv-stock{--
 /* Hell ist vollständig hell (Owner 16.11.2026: „wenn ich auf hell den Schalter umlege, dann muss natürlich auch alles hell sein“).
    Symbolkacheln im Hellen neongrün mit dunklem Zeichen, dunkle Flächen hellgrau mit dunkler Schrift; dunkel unverändert. */
 :root:not([data-theme=dark]) .qd .qv-stock .qk-hud{background:var(--vu-lime,#c8f531);color:#101318;box-shadow:none}
-:root:not([data-theme=dark]) .qd .qv-stock .qv3-ink,:root:not([data-theme=dark]) .qd .qv-stock .qk-story{background:#f4f4f4;color:#000}
-:root:not([data-theme=dark]) .qd .qv-stock .qk-story .vu-ltag{color:#5d636b}
-:root:not([data-theme=dark]) .qd .qv-stock .qk-story-r{border-top-color:#dcdcdc}
-:root:not([data-theme=dark]) .qd .qv-stock .qk-story-r p,:root:not([data-theme=dark]) .qd .qv-stock .qv3-ink-t{color:#000}
-:root:not([data-theme=dark]) .qd .qv-stock .qk-story .vu-verdict--mid{background:#dcdcdc;color:#000}
-:root:not([data-theme=dark]) .qd .qv-stock .qk-story .vu-verdict--weak{background:#000;color:#fff}
+:root:not([data-theme=dark]) .qd .qv-stock .qv3-ink{background:#f4f4f4;color:#000}
 :root:not([data-theme=dark]) .qd .qv-stock .qv3-ink-n{color:#4f6b00}
 :root:not([data-theme=dark]) .qd .qv-stock .qv3-ink-s,:root:not([data-theme=dark]) .qd .qv-stock .qv3-ink-note{color:#000}
 :root:not([data-theme=dark]) .qd .qv-stock .qv3-segs i{background:#b4b8bd}
 :root:not([data-theme=dark]) .qd .qv-stock .qv3-segs i.is-good{background:var(--vu-lime,#c8f531);box-shadow:inset 0 0 0 1.5px #000}
 :root:not([data-theme=dark]) .qd .qv-stock .qv3-segs i.is-none{background:transparent;box-shadow:inset 0 0 0 1.5px #8a8f96}
+
+/* Klickentwurf Modul-Aktienseiten (Owner 17.11.2026, #modul-quant): Abschnittskopf, Karten, Profil mit Netz und Balken, Pillen,
+   Gesamtwert-Ring, drei Sätze als Schiene, Stärken und Schwächen, Kapitel als Zeilen einer Karte. Dunkel wie der Entwurf, hell voll hell. */
+.qd .qv-stock{--qk-tile:var(--vu-card,#151516);--qk-hair:var(--vu-hair,#262626);--qk-track:#2a2a2d;--qk-dk:#232325;--qk-lime:#c8f531;--qk-lime-t:#c8f531;--qk-sec:#c3c7cc}
+:root:not([data-theme=dark]) .qd .qv-stock{--qk-track:#e1e1e1;--qk-dk:#e9e9e9;--qk-lime-t:#4f6b00;--qk-sec:#3d4249}
+.qd .qv-stock .qk-sh{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:26px 0 10px}
+.qd .qv-stock .qk-sh h2,.qd .qv-stock .qk-h2{margin:0;font-size:22px;line-height:1.1;font-weight:800;letter-spacing:-.025em}
+.qd .qv-stock .qk-chart>.qk-h2{margin:26px 0 10px}
+.qd .qv-stock .qk-sh>span{font-size:13px;font-weight:700;color:var(--vu-mute,#6e6e6e);text-align:right}
+.qd .qv-stock .qk-sub{margin:-6px 0 10px;font-size:12.5px;color:var(--vu-mute,#6e6e6e);line-height:1.35}
+.qd .qv-stock .qk-tile{display:block;background:var(--qk-tile);border-radius:22px;padding:14px;color:var(--vu-ink,#000)}
+.qd .qv-stock .qk-lime{color:var(--qk-lime-t)}
+/* Das Profil */
+.qd .qv-stock .qk-profile{margin-top:0}
+.qd .qv-stock .qk-profile>.qk-sh{margin-top:22px}
+.qd .qv-stock .qk-prof-top{display:flex;align-items:center;gap:12px}
+.qd .qv-stock .qk-prof .vu-radar{width:150px;height:150px}
+.qd .qv-stock .qk-prof .vu-radar__g{stroke:var(--qk-track)}
+.qd .qv-stock .qk-pbars{flex:1;min-width:0}
+.qd .qv-stock .qk-pbar{margin-top:4px}
+.qd .qv-stock .qk-pbar-l{display:flex;justify-content:space-between;gap:6px;font-size:11px;font-weight:700;line-height:1.3}
+.qd .qv-stock .qk-pbar-l>span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.qd .qv-stock .qk-pbar-l>b{font-weight:800;letter-spacing:0}
+.qd .qv-stock .qk-pbar.is-na .qk-pbar-l{color:var(--vu-mute,#6e6e6e)}
+.qd .qv-stock .qk-bar{display:block;height:7px;margin-top:2px;border-radius:9px;background:var(--qk-track);overflow:hidden}
+.qd .qv-stock .qk-bar>i{display:block;height:100%;border-radius:9px;background:var(--vu-ink,#000)}
+.qd .qv-stock .qk-bar.is-hi>i{background:var(--qk-lime)}
+:root:not([data-theme=dark]) .qd .qv-stock .qk-bar.is-hi>i{box-shadow:inset 0 0 0 1.5px #000}
+.qd .qv-stock .qk-pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.qd .qv-stock .qk-pill{display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 10px;border-radius:999px;font-size:11.5px;font-weight:800;white-space:nowrap;max-width:100%}
+.qd .qv-stock .qk-pill--hi{background:var(--qk-lime);color:#101318}
+.qd .qv-stock .qk-pill--mid{background:var(--qk-dk);color:var(--vu-ink,#000)}
+.qd .qv-stock .qk-pill--lo{background:var(--vu-ink,#000);color:var(--vu-inv,#fff)}
+.qd .qv-stock .qk-prof .qv3-profile-help{margin-top:12px}
+.qd .qv-stock .qk-prof .vu-help{font-size:11px;color:var(--qk-sec)}
+/* Gesamtwert */
+.qd .qv-stock .qk-mean{margin-top:12px}
+.qd .qv-stock .qk-mean-tile{display:flex;align-items:center;gap:12px;background:var(--qk-tile);border-radius:22px;padding:16px}
+.qd .qv-stock .qk-mean-tile .vu-ring circle{stroke:var(--qk-track)}
+.qd .qv-stock .qk-mean-tile .vu-ring circle.is-on{stroke:var(--qk-lime)}
+:root:not([data-theme=dark]) .qd .qv-stock .qk-mean-tile .vu-ring circle.is-on{stroke:var(--vu-ink,#000)}
+.qd .qv-stock .qk-mean-t{display:flex;flex-direction:column;min-width:0}
+.qd .qv-stock .qk-mean-place{display:flex;flex-direction:column;margin-top:4px;color:inherit;text-decoration:none}
+.qd .qv-stock .qk-mean-place b{font-size:26px;font-weight:900;letter-spacing:-.045em;line-height:1}
+.qd .qv-stock .qk-mean-place span{font-size:12.5px;font-weight:700;color:var(--vu-mute,#6e6e6e);margin-top:2px}
+.qd .qv-stock .qk-mean-note{margin:8px 14px 0;font-size:11px;line-height:1.4;color:var(--vu-mute,#6e6e6e)}
+/* Quant in drei Sätzen */
+.qd .qv-stock .qk-story .qk-rail{padding-bottom:2px}
+.qd .qv-stock .qk-story .qk-rail>div.qk-story-r{flex:none;width:250px;max-width:82vw;display:flex;flex-direction:column;background:var(--qk-tile);border-radius:22px;padding:14px;color:var(--vu-ink,#000)}
+.qd .qv-stock .qk-story .qk-rail>div.qk-story-r.is-lime{background:var(--qk-lime);color:#101318}
+.qd .qv-stock .qk-story-r.is-lime .vu-ltag{color:#101318}
+.qd .qv-stock .qk-story-w{display:block;margin-top:4px;font-size:30px;font-weight:900;letter-spacing:-.045em;line-height:1}
+.qd .qv-stock .qk-story-r p{margin:8px 0 0;font-size:12.5px;font-weight:700;line-height:1.35;color:var(--qk-sec)}
+.qd .qv-stock .qk-story-r.is-lime p{color:#101318}
+/* Stärken und Schwächen */
+.qd .qv-stock .qk-sw>.vu-ltag{margin:12px 0 0}
+.qd .qv-stock .qk-sw>.vu-ltag:first-child{margin-top:0}
+.qd .qv-stock .qk-sw-row{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--qk-hair);color:inherit;text-decoration:none}
+.qd .qv-stock .qk-sw>div>.qk-sw-row:last-child{border-bottom:0}
+.qd .qv-stock .qk-sw-n{flex:none;width:42px;font-size:26px;font-weight:900;letter-spacing:-.045em;line-height:1}
+.qd .qv-stock .qk-sw-n.is-hi{color:var(--qk-lime-t)}
+.qd .qv-stock .qk-sw-t{flex:1;min-width:0;display:flex;flex-direction:column}
+.qd .qv-stock .qk-sw-t b{font-size:12.5px;font-weight:800;line-height:1.3}
+.qd .qv-stock .qk-sw-t small{font-size:11px;color:var(--vu-mute,#6e6e6e);line-height:1.35;margin-top:1px;overflow-wrap:anywhere}
+.qd .qv-stock .qk-sw-none{margin:6px 0 0;font-size:12.5px;color:var(--vu-mute,#6e6e6e)}
+.qd .qv-stock .qk-sw .qk-pills{margin-top:8px}
+.qd .qv-stock .qk-sw-foot{margin:12px 0 0;font-size:11px;line-height:1.4;color:var(--vu-mute,#6e6e6e)}
+/* Kapitel: Zeilen einer Karte; ein Kapitel öffnet unter seiner Zeile. */
+.qd .qv-stock .qk-all{margin-left:auto;background:none;border:0;font:700 13px/1 var(--vu-font,inherit);color:var(--vu-mute,#6e6e6e);display:inline-flex;align-items:center;gap:2px;min-height:44px;margin-block:-14px;cursor:pointer}
+.qd .qv-stock .qk-chap-list{padding:4px 14px}
+.qd .qv-stock .qk-chap{border-bottom:1px solid var(--qk-hair)}
+.qd .qv-stock .qk-chap:last-child{border-bottom:0}
+.qd .qv-stock .qk-chap>summary{display:grid;grid-template-columns:26px 1fr 16px;gap:12px;align-items:center;padding:11px 0;cursor:pointer;list-style:none;min-height:56px}
+.qd .qv-stock .qk-chap>summary::-webkit-details-marker{display:none}
+.qd .qv-stock .qk-chap-n{display:grid;place-items:center;width:26px;height:26px;border-radius:99px;background:var(--qk-dk);color:var(--vu-ink,#000);font-size:12.5px;font-weight:900;font-variant-numeric:tabular-nums}
+.qd .qv-stock .qk-chap-t b{display:block;font-size:14px;font-weight:800;line-height:1.2}
+.qd .qv-stock .qk-chap-t span{display:block;font-size:11px;color:var(--vu-mute,#6e6e6e);margin-top:2px}
+.qd .qv-stock .qk-chap>summary>svg{color:var(--vu-mute,#6e6e6e);transition:transform .15s}
+.qd .qv-stock .qk-chap[open]>summary>svg{transform:rotate(90deg)}
+.qd .qv-stock .qk-chap-b{padding:0 0 12px;margin-inline:-6px}
+.qd .qv-stock .qk-chap-b .qx-section{margin:0;box-shadow:none}
+.qd .qv-stock .qk-chap-b .qx-section>.q-kicker{display:none}
+.qd .qv-stock .qk-chap-b .qv2-card{flex:none;margin:0}
+.qd .qv-stock .qk-chap-b>.qx-section>.q-sec-head,.qd .qv-stock .qk-chap-b>.qv2-card>.q-sec-head{display:none}
+.qd .qv-stock .qk-chap-b>.qx-section>.q-sec-intro{margin-top:4px}
+@media (prefers-reduced-motion:reduce){.qd .qv-stock .qk-chap>summary>svg{transition:none}}
+/* Weiter-Karte vor „Diese Aktie in anderen Modulen“ (ui.js#nextCard setzt sie auf der Aktienseite in main). */
+#qx-main>.qk2-next{margin-top:22px}
+/* „Beobachten“ als runder Herz-Knopf im gemeinsamen Kopf (Stil aus assets/stock-navigator.css, .vu-shead-heart). */
+.qd .qv-head .vu-shead--k2 .qx-watch.vu-shead-heart{width:46px;min-width:46px;height:46px;min-height:46px;padding:0;border:0;border-radius:50%;letter-spacing:0;justify-content:center;background:var(--k2-track);color:var(--k2-hi)}
+.qd .qv-head .vu-shead--k2 .qx-watch.vu-shead-heart[aria-pressed=true]{background:var(--k2-lime);color:#101318}
+/* Die alte schwarze Satz-Karte (app.css .qk .qk-story) und der Rasterabstand der Übersicht gelten hier nicht mehr: Abstände tragen die Abschnittsköpfe. */
+:root .qd .qv-stock .qk-story.qk-block{background:none;color:inherit;padding:0;margin-top:0;border-radius:0}
+.qd .qv-stock .qx-stock-layout.qv2-overview{gap:0;margin-top:0}
+/* Desktop: das Profil links (erste Spalte, wie die Reihenfolge des Entwurfs), drei Sätze und Stärken/Schwächen rechts; ohne Kastenfläche. */
+@media (min-width:1100px){
+ .qd .qv-stock .qx-stock-layout.qv2-overview{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:auto 1fr;column-gap:32px;align-items:start}
+ .qd .qv-stock .qx-stock-layout.qv2-overview>.qx-glance.qv2-glance:has(.qv3-profile){grid-column:1;grid-row:1/span 2;padding:0;background:none;box-shadow:none;border:0}
+ .qd .qv-stock .qx-stock-layout.qv2-overview>.qk-story{grid-column:2;grid-row:1}
+ .qd .qv-stock .qx-stock-layout.qv2-overview>.qk-sw-block{grid-column:2;grid-row:2}
+ .qd .qv-stock .qk-story .qk-rail{margin-right:0;padding-right:0}
+ .qd .qv-stock .qk-story .qk-rail>div.qk-story-r{width:calc((100% - 20px) / 3);max-width:none;min-width:0}
+ .qd .qv-stock .qk-story-w{font-size:24px}
+}
+.qd .qv-stock .qx-section.qx-limits.qv-limits{margin-top:20px;padding-top:8px}

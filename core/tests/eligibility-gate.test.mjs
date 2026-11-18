@@ -128,3 +128,25 @@ test("EG-10 · Tickerwechsel (ADR-009): registrierter Austausch Vorgaenger -> Na
   assert.equal(r3.decision, "BLOCKED"); assert.match(r3.failures.join(" "), /CIK von NEU ist 0000000008/);
   assert.equal(evaluate({ prev: doc(base), next: doc(swapped), prevUniverse: uni(900), nextUniverse: uni(900), limits: LIMITS, successions: succ }).decision, "BLOCKED");
 });
+
+test("EG-11 · Dauerregel: genannte Zugaenge bis autoMembersAdded zaehlen nicht, alles andere schon", () => {
+  assert.equal(LIMITS.autoMembersAdded, 25);
+  const neu = Array.from({ length: 25 }, (_, i) => `ref_N${i}`);
+  const next = [...base, ...neu.map((id) => [id, "ELIGIBLE"])];
+  const r = evaluate({ prev: doc(base), next: doc(next), prevUniverse: uni(900), nextUniverse: uni(905), limits: LIMITS, autoAdded: { added: neu } });
+  assert.equal(r.decision, "COMMIT", r.failures.join()); assert.equal(r.counted.universeMembersChanged, 0); assert.equal(r.autoMembersAdded, 25);
+  // Ohne Nennung bleibt jeder Zugang ein Mitgliederwechsel.
+  assert.equal(evaluate({ prev: doc(base), next: doc(next), prevUniverse: uni(900), nextUniverse: uni(905), limits: LIMITS }).decision, "BLOCKED");
+  // Ein nicht genannter Zugang neben den genannten zaehlt weiter.
+  const plus = [...next, ["ref_FREMD", "ELIGIBLE"]];
+  const r2 = evaluate({ prev: doc(base), next: doc(plus), prevUniverse: uni(900), nextUniverse: uni(906), limits: LIMITS, autoAdded: { added: neu } });
+  assert.equal(r2.counted.universeMembersChanged, 1); assert.equal(r2.decision, "BLOCKED");
+  // Ueber der Grenze, genannt aber nicht angekommen, oder ein Abgang: rot.
+  const viele = [...neu, "ref_N25"];
+  const r3 = evaluate({ prev: doc(base), next: doc([...next, ["ref_N25", "ELIGIBLE"]]), prevUniverse: uni(900), nextUniverse: uni(906), limits: LIMITS, autoAdded: { added: viele } });
+  assert.match(r3.failures.join(), /autoMembersAdded 26 > 25/);
+  const r4 = evaluate({ prev: doc(base), next: doc(base), prevUniverse: uni(900), nextUniverse: uni(900), limits: LIMITS, autoAdded: { added: ["ref_WEG"] } });
+  assert.match(r4.failures.join(), /Zugaenge der Dauerregel fehlen/);
+  const r5 = evaluate({ prev: doc(base), next: doc(next.slice(1)), prevUniverse: uni(900), nextUniverse: uni(904), limits: LIMITS, autoAdded: { added: neu } });
+  assert.match(r5.failures.join(), /universeMembersChanged 1 > 0/);
+});

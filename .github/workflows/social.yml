@@ -364,6 +364,7 @@ jobs:
       - name: Preflight gegen die reale Infrastruktur
         id: preflight
         run: |
+          set -o pipefail
           node products/social/producer/preflight-worker.mjs \
             --out /tmp/cf-preflight --backup tmp/cf-backup | tee /tmp/preflight.log
           verdict=$(node -e '
@@ -494,6 +495,8 @@ jobs:
           # Konfiguration, sondern eine Identitaet: damit ein spaeterer
           # Schritt feststellen kann, OB er mit der Fassung spricht, die
           # dieser Lauf gerade deployt hat.
+          # pipefail: ein gescheitertes Deploy macht den Schritt rot (vorher zaehlte tee).
+          set -o pipefail
           npx --yes wrangler@4.147.0 deploy --var VU_SOCIAL_BUILD:"$GITHUB_SHA" 2>&1 | tee /tmp/deploy.log
           # Die tatsaechliche Adresse aus der wrangler-Ausgabe lesen. Sie ist
           # die Quelle der Wahrheit — nicht das, was wir vorher geraten haben.
@@ -594,13 +597,18 @@ jobs:
       - name: Zustand pruefen
         if: steps.mode.outputs.deploy == 'true' || steps.mode.outputs.verify == 'true'
         run: |
+          # Exit-Code von verify-worker durchreichen (vorher zaehlte der von tee), die Zusammenfassung trotzdem schreiben.
+          set +e -o pipefail
           node products/social/producer/verify-worker.mjs --out /tmp/cf-verify | tee /tmp/verify.log
+          rc=$?
+          set -e
           {
             echo "## Worker-Zustand"
             echo '```'
             cat /tmp/verify.log
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
+          exit "$rc"
 
       # =====================================================================
       # DER READ-ONLY SMOKE DES APPROVAL CENTERS (§20)
@@ -1436,6 +1444,8 @@ jobs:
         run: |
           # Ein Lauf, der einen oeffentlichen Beitrag vorbereiten oder
           # ausloesen kann, laeuft nicht gegen ungepruefte Engines.
+          # pipefail: sonst zaehlt der Exit-Code von tail, ein roter Test galt als gruen (18.11.2026).
+          set -o pipefail
           node --test "products/social/tests/*.test.mjs" 2>&1 | tail -8
           node --test "workers/vision-universe-social/tests/*.test.mjs" 2>&1 | tail -8
 

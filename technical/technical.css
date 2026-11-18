@@ -1248,6 +1248,93 @@ div.tc-signal{grid-template-columns:44px minmax(0,1fr) auto}
 :root:not([data-theme=dark]) .vu-hud .tc-glyph{stroke:#000}
 :root:not([data-theme=dark]) .tk .tk-scr .vu-hud,:root:not([data-theme=dark]) .tk .tk-row1 .vu-hud{box-shadow:none}
 :root:not([data-theme=dark]) .tc-satz .tc-note{color:#5d636b}
+
+/* Klickentwurf Modul-Aktienseiten (#modul-technical, Owner 17.11.2026): Chart-Seite #/chart/<T> als main.tk.tk-ak.
+   Dieselben Rollen wie der Start (--tk-*), hell mit hellen Werten. Nur Darstellung. */
+.tk-ak{padding-bottom:40px}
+.tk-ak .tk-b7{font-weight:700}
+.tk-ak .tk-shb .tk-sh{margin:26px 0 10px;align-items:center}
+.tk-ak .tk-shb .tk-sh h2{flex:1;min-width:0}
+.tk-ak .tk-shsub{margin:-6px 0 10px}
+.tk-ak .tk-shb .tc-info{flex:none}
+.tk-ak .tk-say{padding:16px;margin-top:16px}
+.tk-ak .tk-say-t{margin:4px 0 0;font-size:30px;line-height:1.08;font-weight:900;letter-spacing:-.035em;color:var(--tk-ink)}
+.tk-ak .tk-say-p{margin-top:8px}
+.tk-ak .tc-explain-btn{margin-top:8px;padding:12px 14px;border-radius:22px;background:var(--tk-tile);color:var(--tk-ink)}
+.tk-ak .tc-explain-btn>span:first-child{width:40px;height:40px;background:var(--tk-lime);color:#101318;font-size:14px}
+.tk-ak .tc-explain-btn small{color:var(--tk-mut);opacity:1}
+.tk-ak .tc-togs{flex-wrap:wrap;overflow:visible;white-space:normal;gap:6px;margin-top:12px}
+.tk-ak .tc-togs .vu-chip{position:relative;min-width:0;min-height:32px;height:32px;padding:0 13px;font-size:13px;background:var(--tk-tile);color:var(--tk-ink)}
+.tk-ak .tc-togs .vu-chip[aria-pressed=true]{background:var(--tk-on);color:var(--tk-on-t)}
+.tk-ak .tc-togs .vu-chip::after{content:"";position:absolute;inset:-6px 0}
+/* Der Chart in drei Sätzen: Karussell aus Karten */
+.tk-ak .tk-story-c{width:220px;display:flex;flex-direction:column}
+.tk-ak .tk-story-c>.tk-sm{margin:8px 0 0;line-height:1.35}
+.tk-ak .tk-story-v{display:flex;align-items:center;gap:10px;margin-top:6px;min-height:54px}
+.tk-ak .tk-story-v .tk-num{font-size:24px;white-space:nowrap;color:var(--tk-ink)}
+.tk-ak .tk-story-v .tk-story-n{font-size:38px}
+.tk-ak .tk-story-v .tk-story-n.tk-lc{color:var(--tk-lc)}
+.tk-ak .tk-story-v .vu-ring circle{stroke:var(--tk-track)}
+.tk-ak .tk-story-v .vu-ring circle.is-on{stroke:var(--tk-lc)}
+.tk-ak .tk-story-p{margin-top:auto;padding-top:8px}
+/* Zonen-Karte */
+.tk-ak .tk-zc-t{padding:16px}
+.tk-ak .tk-zc-s{display:flex;align-items:center;gap:12px}
+.tk-ak .tk-zc-s p{margin:0}
+.tk-ak .tk-zc-n{display:block;font-size:30px;margin-top:4px;color:var(--tk-ink)}
+.tk-ak .tk-zc-m{position:relative;height:120px;margin:12px 0}
+.tk-ak .tk-zc-m>i{position:absolute;left:0;right:0;border-radius:8px}
+.tk-ak .tk-zc-r{background:rgba(255,255,255,.14)}
+.tk-ak .tk-zc-u{background:rgba(200,245,49,.25)}
+.tk-ak .tk-zc-m>em{position:absolute;left:0;right:0;height:0;border-top:2px dashed var(--tk-lime);font-style:normal}
+.tk-ak .tk-zc-m>em>span{position:absolute;right:0;top:-12px}
+.tk-ak .tk-pill--k{height:21px;font-size:10.5px;padding:0 8px;letter-spacing:.04em;text-transform:uppercase;background:#000;color:var(--tk-lime);box-shadow:inset 0 0 0 1px var(--tk-lime)}
+.tk-ak .tk-pill--xs{height:21px;font-size:10.5px;padding:0 8px}
+:root:not([data-theme=dark]) .tk-ak .tk-zc-r{background:rgba(0,0,0,.08)}
+:root:not([data-theme=dark]) .tk-ak .tk-zc-u{background:rgba(200,245,49,.55)}
+:root:not([data-theme=dark]) .tk-ak .tk-zc-m>em{border-top-color:#000}
+:root:not([data-theme=dark]) .tk-ak .tk-pill--k{background:#fff;color:#000;box-shadow:inset 0 0 0 1px #000}
+/* Befunde heute als Karten: Name und Richtung oben, der Satz darunter (das Musterbild steht im Befund-Fenster). */
+.tk-ak .tc-rh{margin:26px 0 10px}
+.tk-ak .tc-rh-t h2{font-size:22px;line-height:1.1;font-weight:800;letter-spacing:-.025em;color:var(--tk-ink)}
+.tk-ak .tc-rh-t a{font-size:13px;font-weight:700;color:var(--tk-mut)}
+.tk-ak .tc-rh>p{font-size:11px;color:var(--tk-mut)}
+.tk-ak .tc-bfl{display:flex;flex-direction:column;gap:8px;background:none;padding:0;border:0;box-shadow:none}
+.tk-ak .tc-bf{display:grid;grid-template-columns:1fr auto;grid-template-areas:"t p" "x x";gap:4px 8px;align-items:start;width:100%;padding:13px 14px;border:0;border-radius:22px;background:var(--tk-tile);color:var(--tk-ink);text-align:left;min-height:0}
+.tk-ak .tc-bf>.tc-shapebox{display:none}
+.tk-ak .tc-bf>span:not(.vu-verdict):not(.tc-shapebox){display:contents}
+.tk-ak .tc-bf>span>b{grid-area:t;font-size:15px;font-weight:800;line-height:1.25}
+.tk-ak .tc-bf>span>span{grid-area:x;font-size:11.5px;line-height:1.4;color:var(--tk-sec)}
+.tk-ak .tc-bf>.vu-verdict{grid-area:p;font-size:11.5px;padding:3px 9px}
+.tk-ak .tc-bf .vu-verdict--mid{background:var(--tk-pill);color:var(--tk-ink)}
+/* Verlauf der letzten 12 Monate */
+.tk-ak .tk-verlauf>.tk-tile>p{margin:0}
+.tk-ak .tk-tl{position:relative;list-style:none;margin:10px 0 0;padding:0 0 0 20px}
+.tk-ak .tk-tl::before{content:"";position:absolute;left:5px;top:6px;bottom:6px;width:2px;background:var(--tk-track)}
+.tk-ak .tk-tl li{position:relative;display:flex;align-items:center;gap:8px;padding:6px 0}
+.tk-ak .tk-tl li>i{position:absolute;left:-19px;top:50%;margin-top:-5px;width:10px;height:10px;border-radius:9px;background:var(--tk-track)}
+.tk-ak .tk-tl li.is-on>i{background:var(--tk-lime)}
+:root:not([data-theme=dark]) .tk-ak .tk-tl li.is-on>i{background:#000}
+.tk-ak .tk-tl-d{width:44px;flex:none}
+.tk-ak .tk-tl .tk-f1{display:block}
+.tk-ak .tk-tl li>span:last-child{flex:none;white-space:nowrap}
+/* Kapitel als Liste in einer Kachel */
+.tk-ak .tk-kap{padding:4px 14px}
+.tk-ak .tk-krow{display:flex;align-items:center;gap:12px;width:100%;margin:0;padding:11px 0;border:0;border-bottom:1px solid rgb(127 127 127/.18);border-radius:0;background:none;box-shadow:none;color:var(--tk-ink);text-decoration:none;text-align:left;font:inherit;cursor:pointer;min-height:44px}
+.tk-ak .tk-krow:last-child{border-bottom:0}
+.tk-ak .tk-krow b{font-size:15px;font-weight:800}
+.tk-ak .tk-krow .tk-f1>span,.tk-ak .tk-krow .tc-row-text>span{font-size:11px;color:var(--tk-mut)}
+.tk-ak .tk-kn{display:grid;place-items:center;width:26px;height:26px;border-radius:99px;background:var(--tk-pill);font-size:12.5px;flex:none}
+.tk-ak .tk-krow>svg{color:var(--tk-mut);flex:none}
+.tk-ak .tk-krow>.vu-hud{display:none}
+.tk-ak .tk-krow .tc-row-text{flex:1;min-width:0;display:flex;flex-direction:column}
+/* Pillen der anderen Module vor der Fußzeile; Fußzeile mittig wie im Entwurf */
+.tk-ak .vu-sothers{margin-top:26px}
+.tk-ak .tc-foot{text-align:center;margin:28px 0 0;color:var(--tk-mut);font-size:12.5px;line-height:1.45}
+/* Am Schreibtisch eine ruhige Spalte wie im Entwurf (statt des Studio-Rasters mit zwei Spalten). */
+.tc.tk-ak{max-width:760px}
+.tk-ak .tc-studio{display:block}
+.tk-ak .tk-story-v .tk-story-n--bars{font-size:30px}
 /* EMA-Bänder (ema-cluster.js): schnelles Bündel 3–15, langsames 30–60 Tage */
 .tc-layers .tc-ema{stroke:none}
 .tc-layers .tc-ema--fast{fill:#000;opacity:.32}

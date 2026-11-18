@@ -94,13 +94,8 @@ body.dv2 .dv2-stock:has(.dv3-overview) .dx-werkzeuge{display:none}
 .dx-chart-hero-eur{display:block;font-size:11.5px;font-weight:700;color:var(--vu-mute)}
 /* Aktienkopf C04 (a-top): Kurs, Tagesbewegung, rechts Schluss und Euro; Chart ohne Kursachse (Masse aus .stk2, .stkp, .chg.big) */
 .dv3-sr{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
-body.dv2 .dv2-stock .dx-chart-hero.dx-chart-hero--c04{display:flex;flex-wrap:nowrap;align-items:center;justify-content:space-between;gap:10px;margin:10px 0 0;padding:0}
-body.dv2 .dv2-stock .dx-chart-hero--c04 .dx-chart-hero-preis{display:flex;flex-wrap:nowrap;align-items:center;gap:10px;min-width:0}
-body.dv2 .dv2-stock .dx-chart-hero--c04 .dx-chart-hero-preis>b{font-size:34px;font-weight:900;line-height:1;letter-spacing:-.045em;white-space:nowrap}
-body.dv2 .dv2-stock .dx-chart-hero--c04 .dx-chart-hero-preis>span.num{font-size:15px;padding:5px 11px;white-space:nowrap}
 body.dv2 .dv2-stock .dx-chart-hero--c04 .dx-chart-hero-wort{font-size:11.5px;font-weight:700;color:var(--vu-mute);white-space:nowrap}
 body.dv2 .dv2-stock .dx-chart-hero--c04 .dx-chart-hero-wort:empty{display:none}
-body.dv2 .dv2-stock .dx-chart-hero--c04 .dx-chart-hero-meta{display:flex;flex-direction:column;align-items:flex-end;gap:0;margin-left:auto;text-align:right;font-size:11.5px;font-weight:700;line-height:1.35;color:var(--vu-mute)}
 body.dv2 .dv2-stock .dx-chart-hero--c04 .dx-live-label{display:block;padding:0;border:0;background:none;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none;font:inherit;color:inherit;white-space:normal;overflow:visible;max-width:none;text-overflow:clip}
 body.dv2 .dv2-stock .dx-chart-hero--c04 .dx-live-label::before{content:none}
 body.dv2 .dv2-stock .dx-chart-hero--c04 .dx-live-label>i{display:none}
@@ -108,7 +103,6 @@ body.dv2 .dv2-stock .dx-chart-hero--c04 .dx-chart-hero-eur{font-size:inherit}
 body.dv2 .dv2-stock .dx-chart:has(.dx-chart-hero--c04) .dx-range-chart{height:var(--dv3-chart-h,184px)}
 @media(min-width:861px){body.dv2 .dv2-stock .dx-chart:has(.dx-chart-hero--c04) .dx-range-chart{height:var(--dv3-chart-h,260px)}}
 body.dv2 .dv2-stock .dx-chart:has(.dx-chart-hero--c04) .dx-range-date{font-size:11px}
-body.dv2 .dv2-stock:has(.dx-chart-hero--c04) .dv2-head .vu-shead-name{font-size:18px}
 body.dv2 .dv2-stock:has(.dx-chart-hero--c04) .dv2-head .vu-shead-watch{display:none}
 /* Etiketten */
 .dv3-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
@@ -137,20 +131,6 @@ body.dv2 .dv2-stock:has(.dx-chart-hero--c04) .dv2-head .vu-shead-watch{display:n
 .dv3-ep-body{padding:0}
 .dv3-ep-body>.dv3-sec{margin:0}
 .dv3-ep-body>.dv3-sec>.vu-sect:first-child{display:none}
-.dv3-thumb{width:76px;height:52px;border-radius:12px;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden;color:#fff}
-.dv3-thumb-range{position:relative;width:64px;height:6px;border-radius:9px;background:rgb(255 255 255/.25)}
-.dv3-thumb-range i{position:absolute;left:0;top:0;bottom:0;border-radius:9px;background:#c8f531}
-.dv3-thumb-range b{position:absolute;top:-4px;width:14px;height:14px;border-radius:50%;background:#fff;transform:translateX(-50%)}
-.dv3-thumb--bars{align-items:flex-end;gap:3px;padding-bottom:12px}
-.dv3-thumb--bars i{width:6px;border-radius:2px;background:#fff}
-.dv3-thumb--dots{gap:5px}
-.dv3-thumb--dots i{width:12px;height:12px;border-radius:50%;background:rgb(255 255 255/.25)}
-.dv3-thumb--dots i.on{background:#c8f531}
-.dv3-thumb--pe,.dv3-thumb--idx{flex-direction:column;align-items:stretch;gap:6px;padding:0 10px}
-.dv3-thumb--pe i,.dv3-thumb--idx i{display:block;height:6px;border-radius:9px;background:#fff}
-.dv3-thumb--pe i+i{background:rgb(255 255 255/.45)}
-.dv3-thumb--marks{flex-direction:column;align-items:flex-start;gap:4px;padding-left:12px;font-size:13px}
-.dv3-thumb--marks b:first-child{color:#c8f531}
 /* Reihen der Aktie und Schienen */
 .dv3-titel .dv3-rail{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;margin:-8px -16px 0;padding:8px 16px 2px;scroll-snap-type:x proximity;scroll-padding:0 16px}
 .dv3-titel .dv3-rail::-webkit-scrollbar{display:none}
@@ -207,22 +187,6 @@ body.dv2 .dv2-stock .dx-chart:has(.dx-chart-hero--c04) .dx-intraday-chart{height
 /* =====================================================================
    App-Konzept 2 (Owner-Freigabe 14.11.2026): Bildschirm nutzen, Grafik vor Text.
    ===================================================================== */
-/* Kursblock wie der gemeinsame Aktienkopf (assets/stock-navigator.css): Kurs links über zwei Zeilen, rechts daneben die
-   Tagesbewegung und klein darunter „Schluss …“ (auch der Stale-Hinweis) und der Euro-Wert. Keine eigene Zeile mehr.
-   Der Kursblock (.dx-chart-hero-preis) bleibt ein eigener Kasten (Direktlink-Prüfung) und reicht sein Raster weiter (subgrid);
-   ohne subgrid gilt die Fassung darunter: Schluss und Euro rutschen bei schmaler Breite unter Kurs und Pille. */
-@media (max-width:480px){
-body.dv2 .dv2-stock .dx-chart-hero.dx-chart-hero--c04{flex-wrap:wrap;row-gap:6px}
-body.dv2 .dv2-stock .dx-chart-hero--c04 .dx-chart-hero-meta{flex:1 1 100%;margin-left:0;align-items:flex-start;text-align:left}
-}
-@supports (grid-template-columns:subgrid){
-body.dv2 .dv2-stock .dx-chart-hero.dx-chart-hero--c04{display:grid;grid-template-columns:auto auto minmax(0,1fr);grid-template-rows:auto auto;align-items:center;justify-content:start;column-gap:10px;row-gap:2px}
-body.dv2 .dv2-stock .dx-chart-hero--c04 .dx-chart-hero-preis{grid-column:1/-1;grid-row:1/span 2;display:grid;grid-template-columns:subgrid;grid-template-rows:subgrid;align-items:center;column-gap:10px;row-gap:2px}
-body.dv2 .dv2-stock .dx-chart-hero--c04 .dx-chart-hero-preis>b{grid-column:1;grid-row:1/span 2}
-body.dv2 .dv2-stock .dx-chart-hero--c04 .dx-chart-hero-preis>span.num{grid-column:2;grid-row:1;justify-self:start}
-body.dv2 .dv2-stock .dx-chart-hero--c04 .dx-chart-hero-wort{grid-column:3;grid-row:1}
-body.dv2 .dv2-stock .dx-chart-hero--c04 .dx-chart-hero-meta{grid-column:2/-1;grid-row:2;flex:none;flex-direction:row;flex-wrap:wrap;align-items:baseline;column-gap:6px;row-gap:0;margin:0;text-align:left;font-size:11px;line-height:1.2}
-}
 /* Chart bis an den Bildschirmrand (Telefon); die Höhe setzt discover/ui/detail.js#kopfMass als --dv3-chart-h. */
 @media(max-width:760px){
 body.dv2 .dv2-stock .dx-chart:has(.dx-chart-hero--c04) .dx-range-chart-wrap,body.dv2 .dv2-stock .dx-chart:has(.dx-chart-hero--c04) .dx-intraday{margin-inline:-16px}
@@ -265,11 +229,50 @@ body.dv2 .dv2-stock .dx-chart:has(.dx-chart-hero--c04) .dx-range-chart-wrap,body
 .dv3-rk2-bar i{display:block;height:100%;border-radius:9px;background:var(--vu-ink)}
 :root[data-theme=dark] .dv3-rk2-bar i{background:var(--vu-lime)}
 
-/* Hell ist vollständig hell (Owner 16.11.2026: „wenn ich auf hell den Schalter umlege, dann muss natürlich auch alles hell sein“).
-   Symbolkacheln im Hellen neongrün mit dunklem Zeichen, dunkle Flächen hellgrau mit dunkler Schrift; dunkel unverändert. */
-:root:not([data-theme=dark]) .dv3-thumb{background:#fff;color:#000;box-shadow:inset 0 0 0 1px rgb(0 0 0/.08)}
-:root:not([data-theme=dark]) .dv3-thumb-range,:root:not([data-theme=dark]) .dv3-thumb--dots i{background:rgb(0 0 0/.16)}
-:root:not([data-theme=dark]) .dv3-thumb-range i,:root:not([data-theme=dark]) .dv3-thumb--dots i.on{box-shadow:inset 0 0 0 1.5px #000}
-:root:not([data-theme=dark]) .dv3-thumb-range b,:root:not([data-theme=dark]) .dv3-thumb--bars i,:root:not([data-theme=dark]) .dv3-thumb--pe i,:root:not([data-theme=dark]) .dv3-thumb--idx i{background:#000}
-:root:not([data-theme=dark]) .dv3-thumb--pe i+i{background:rgb(0 0 0/.4)}
-:root:not([data-theme=dark]) .dv3-thumb--marks b:first-child{color:#000}
+/* Klickentwurf 17.11.2026 (Owner: „so umsetzen und live nehmen“), Modul-Aktienseite Discover. Hell voll hell, 360/390 px ohne Überlauf. */
+/* Kurs: Preis groß mit Tagespille, darunter Stand und „Veränderung zum Vortag“, darunter die Veränderung im Zeitraum. */
+body.dv2 .dv2-stock .dx-chart-hero.dx-chart-hero--c04{display:flex;flex-direction:column;align-items:flex-start;gap:4px;margin:6px 0 0}
+body.dv2 .dv2-stock .dx-chart-hero--c04 .dx-chart-hero-preis{display:flex;flex-wrap:wrap;align-items:flex-end;column-gap:10px;row-gap:6px;min-width:0}
+body.dv2 .dv2-stock .dx-chart-hero--c04 .dx-chart-hero-preis>b{font-size:clamp(40px,13.4vw,52px);font-weight:900;line-height:1;letter-spacing:-.05em;white-space:nowrap}
+body.dv2 .dv2-stock .dx-chart-hero--c04 .dx-chart-hero-preis>span.num{white-space:nowrap;height:34px;display:inline-flex;align-items:center;margin-bottom:5px;padding:0 13px;font-size:16px}
+body.dv2 .dv2-stock .dx-chart-hero--c04 .dx-chart-hero-meta{display:flex;flex-direction:row;font-weight:700;color:var(--vu-mute);flex-wrap:wrap;align-items:baseline;column-gap:6px;margin:0;text-align:left;font-size:11.5px;line-height:1.3}
+body.dv2 .dv2-stock .dx-chart-hero--c04 .dx-chart-hero-vt::before{content:"· "}
+.dx-chart-hero-zr{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 0;font-size:14px;font-weight:800;line-height:1.2}
+.dx-chart-hero-zr>span{color:var(--vu-mute)}
+:root[data-theme=dark] .dx-chart-hero-zr.up>b{color:var(--vu-lime)}
+body.dv2 .dv2-stock .dx-chapter--chart>div>.dx-chart-pills{order:2;display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 0}
+.dx-chart-pill{display:inline-flex;align-items:center;height:30px;padding:0 12px;border-radius:999px;background:var(--vu-card);color:var(--vu-ink);font-size:12.5px;font-weight:800;white-space:nowrap}
+:root[data-theme=dark] .dx-chart-pill{background:color-mix(in srgb,#fff 12%,#000)}
+/* Platzierung: Karte mit Ring. */
+.dv3-platz{display:flex;align-items:center;gap:12px;margin-top:16px;padding:16px;border-radius:22px;background:var(--vu-card);color:var(--vu-ink);text-decoration:none;box-shadow:inset 0 0 0 1.5px var(--vu-lime)}
+.dv3-platz:focus-visible{outline:2px solid var(--vu-focus-ring);outline-offset:2px}
+.dv3-platz .vu-ring b{font-size:22px!important}
+.dv3-platz-t{display:grid;gap:4px;min-width:0}
+.dv3-platz-t>b{font-size:19px;font-weight:900;line-height:1.15;letter-spacing:-.02em}
+:root[data-theme=dark] .dv3-platz .vu-ltag{color:var(--vu-lime)}
+.dv3-platz-sub{font-size:12px;font-weight:700;line-height:1.35;color:var(--vu-mute)}
+.dv3-platz-solo{margin:14px 0 0}
+/* Kapitel: eine Karte, Zeilen mit Nummer im Kreis. */
+.dv3-titel .dv3-eps{gap:0;padding:4px 14px;border-radius:22px;background:var(--vu-card)}
+.dv3-titel .dv3-ep{grid-template-columns:26px 1fr 22px;gap:12px;min-height:60px;padding:12px 0;border-radius:0;background:none;box-shadow:inset 0 -1px 0 var(--vu-hair)}
+.dv3-titel .dv3-ep:last-child{box-shadow:none}
+.dv3-titel .dv3-ep-n{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:color-mix(in srgb,var(--vu-ink) 12%,transparent);color:var(--vu-ink);font-size:12.5px;font-weight:900}
+.dv3-titel .dv3-ep-t b{font-size:15px}
+/* Reihen der Aktie: zwei Karten nebeneinander, Platz groß. */
+#dv3-reihen .dv3-rk2{width:calc(50% - 5px);min-width:150px;padding:14px;border-radius:20px}
+#dv3-reihen .dv3-rk2 .vu-num{order:-1;font-size:44px}
+#dv3-reihen .dv3-rk2 b{min-height:36px;font-size:15px;line-height:1.15;font-weight:800}
+#dv3-reihen .dv3-rk2-bar{height:8px;margin:4px 0 0}
+#dv3-reihen .dv3-rk2 .vu-xs{order:2}
+:root[data-theme=dark] #dv3-reihen .dv3-rk2 .vu-num{color:var(--vu-lime)}
+/* „Alle Kennzahlen“ und „Daten & Methodik“ in einer Karte, danach die anderen Module und der Kurshinweis. */
+body.dv2 .dv2-stock:has(.dv3-titel) .dv3-profi{border-radius:22px 22px 0 0}
+body.dv2 .dv2-stock:has(.dv3-titel) .dv3-profi+.dv2-foot{margin-top:0;max-width:none;width:auto}
+body.dv2 .dv2-stock:has(.dv3-titel) .dv3-profi+.dv2-foot .dv2-dm{max-width:none;width:auto}
+body.dv2 .dv2-stock:has(.dv3-titel) .dv3-profi+.dv2-foot .dv2-dm{margin:0;border-radius:0 0 22px 22px;box-shadow:inset 0 1px 0 var(--vu-hair)}
+body.dv2 .dv2-stock>.vu-sothers{margin-top:30px}
+.dv2-endnote{margin:24px 0 0;padding:14px 0 0;border-top:1px solid var(--vu-hair);font-size:12px;font-weight:600;line-height:1.45;color:var(--vu-mute)}
+/* Abschnittsköpfe wie im Entwurf (22 px); „Alle ›“ in einer Zeile, Tippfläche über Polster statt über ::after. */
+.dv3-titel .vu-sect{margin-top:26px;font-size:22px;font-weight:900;letter-spacing:-.03em}
+.dv3-titel .vu-sect>a{padding:12px 0;margin:-12px 0;font-size:13px;font-weight:700}
+.dv3-titel .vu-sect>a::after{position:static;width:auto;height:auto;transform:none}
