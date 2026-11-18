@@ -180,5 +180,28 @@
     return result('DQ-PQ-10', title, 1, f, 'Faktorzeilen ' + c.computed + ' von ' + c.requested + ' (' + (share * 100).toFixed(1) + ' %).');
   }
 
-  return { universeList, marketStatus, benchmarkNotInUniverse, observationSummary, secUniverse, technicalV3, duplicateResolutionSeries, requiredSearchTitles, totalReturnMeasurement, factorCoverage };
+  /** DQ-PQ-11 (aus quant/tests/product-services, 18.11.2026): Die Dienste-Tests rechnen auf einem eingefrorenen Datenstand
+      (quant/tests/fixtures/product-services). Was sie vorher am Live-Stand prueften, meldet diese Regel: Breite des
+      Produktuniversums, Technical- und Signal-Deckung und dass beide Artefakte dasselbe Universum zaehlen (sonst Halbstand
+      zwischen Marktlauf und Materialisierung). Grenzen wie bisher im Test: > 6000 Titel, > 5000 je Deckung. */
+  function serviceCoverage(capability, technicalSummary, signals20) {
+    const title = 'Produktdienste: Universum > 6000, Technical- und Signal-Deckung > 5000, ein Universum fuer alle';
+    if (!capability || !Array.isArray(capability.members)) return result('DQ-PQ-11', title, 0, []);
+    const f = [], n = capability.members.length, c = (technicalSummary && technicalSummary.counts) || null;
+    if (n <= 6000) f.push('Produktuniversum ' + n + ' Titel (Grenze > 6000)');
+    if (!c) f.push('Technical-Zusammenfassung fehlt');
+    else {
+      if (c.productUniverse !== n) f.push('Technical zaehlt ' + c.productUniverse + ' Titel, die Faehigkeitsliste ' + n + ' (Halbstand: Materialisierung nach dem Marktlauf ausstehend?)');
+      for (const k of ['signalsCapable', 'technicalFullBundles', 'elliottCapable']) if (!(c[k] > 5000)) f.push(k + ' ' + c[k] + ' (Grenze > 5000)');
+    }
+    const s = signals20 && signals20.counts;
+    if (!s) f.push('Signal-Datei (20 Tage) fehlt');
+    else {
+      if (s.requested !== n) f.push('Signale angefragt ' + s.requested + ', Faehigkeitsliste ' + n);
+      if (!(s.available > 5000)) f.push('Signale verfuegbar ' + s.available + ' (Grenze > 5000)');
+    }
+    return result('DQ-PQ-11', title, 1, f, 'Universum ' + n + (c ? ', Technical ' + c.technicalFullBundles + ', Signale ' + c.signalsCapable : '') + (s ? ', Signale 20 T verfuegbar ' + s.available : '') + '.');
+  }
+
+  return { universeList, marketStatus, benchmarkNotInUniverse, observationSummary, secUniverse, technicalV3, duplicateResolutionSeries, requiredSearchTitles, totalReturnMeasurement, factorCoverage, serviceCoverage };
 });
