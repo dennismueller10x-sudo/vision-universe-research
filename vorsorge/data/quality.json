@@ -7,45 +7,45 @@
   "report": {
    "schemaVersion": "vu-vorsorge-ingest-report-1.0.0",
    "ingest": "vorsorge-ingest-2.0.0",
-   "activeTickers": 388,
+   "activeTickers": 396,
    "extraEtfs": 386,
    "onlyExtra": true,
    "universeRows": 7547,
    "keptFromPreviousRuns": 7162,
    "processedOk": 385,
    "notFound": 0,
-   "noPrices": 3,
-   "failed": 3,
+   "noPrices": 11,
+   "failed": 11,
    "pending": 0,
    "complete": true,
    "stoppedBecause": null,
    "thisRun": {
-    "requests": 3,
+    "requests": 17,
     "rateLimited": 0,
     "minutes": 0,
-    "newlyAttempted": 1
+    "newlyAttempted": 8
    }
   },
   "catalog": {
    "schemaVersion": "vu-vorsorge-catalog-stats-1.0.0",
    "source": "https://apimedia.tiingo.com/docs/tiingo/daily/supported_tickers.zip",
-   "catalogRows": 109307,
-   "etfRows": 9937,
-   "malformedRows": 161,
-   "activeRows": 7164,
+   "catalogRows": 109323,
+   "etfRows": 9947,
+   "malformedRows": 163,
+   "activeRows": 7172,
    "inactiveRows": 2612,
    "rowsWithoutPriceDates": 0,
-   "uniqueTickers": 9559,
+   "uniqueTickers": 9567,
    "tickersWithMultipleRows": 213,
-   "activeUniqueTickers": 7164,
+   "activeUniqueTickers": 7172,
    "byExchange": {
     "SHE": 426,
     "SHG": 426,
     "NYSE": 2943,
     "BATS": 1814,
-    "NASDAQ": 1634,
+    "NASDAQ": 1641,
     "NYSE MKT": 24,
-    "NYSE ARCA": 1609,
+    "NYSE ARCA": 1610,
     "PINK": 548,
     "OTCMKTS": 133,
     "AMEX": 50,
@@ -58,7 +58,7 @@
     "OTCCE": 1
    },
    "byCurrency": {
-    "USD": 9020,
+    "USD": 9028,
     "CNY": 754,
     "AUD": 2
    },
@@ -67,8 +67,8 @@
     "SHG": 426,
     "NYSE": 2637,
     "BATS": 1479,
-    "NASDAQ": 1319,
-    "NYSE ARCA": 282,
+    "NASDAQ": 1326,
+    "NYSE ARCA": 283,
     "PINK": 449,
     "OTCMKTS": 111,
     "AMEX": 31,
@@ -80,16 +80,16 @@
     "NMFQS": 1
    },
    "otherAssetTypes": {
-    "Stock": 49488,
+    "Stock": 49494,
     "Mutual Fund": 49882
    },
    "staleBefore": "2026-10-18",
    "maxEndDate": "2026-11-17"
   },
-  "failedCount": 3
+  "failedCount": 11
  },
  "layers": {
-  "raw": 9937,
+  "raw": 9947,
   "canonical": 7540,
   "listings": 7557,
   "publicAnalysis": 3962,
@@ -98,7 +98,7 @@
   "review": 1460
  },
  "counts": {
-  "rowsRead": 15387,
+  "rowsRead": 15412,
   "listings": 7557,
   "canonicalFunds": 7540,
   "shareClasses": 7540,
