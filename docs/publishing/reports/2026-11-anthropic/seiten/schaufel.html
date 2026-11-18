@@ -1,0 +1,45 @@
+<section class="page dark">
+  <div class="glowimg" style="left:60mm;right:-40mm;top:-30mm;height:140mm"></div>
+  <div data-run="Sonderthema"></div>
+  <div class="pad" style="top:16mm">
+    <span class="ressort">Sonderthema · Die Pointe</span>
+    <div class="hx" style="margin-top:3mm">Goldgräber und<br>Schaufelverkäufer</div>
+    <div class="sub" style="margin-top:3mm;max-width:178mm;color:#e6e6e6">Im Goldrausch verdienten oft die am sichersten, die Schaufeln verkauften. Nvidia verkauft die Schaufeln der KI, Anthropic gräbt. Und der Schaufelverkäufer kauft sich jetzt beim Goldgräber ein.</div>
+    <div class="grid" style="grid-template-columns:repeat(3,1fr);gap:3.5mm;margin-top:5mm">
+      <div style="background:var(--lime);color:#000;border-radius:10px;padding:5mm"><div style="font-size:28pt;font-weight:900;letter-spacing:-.045em;line-height:1">10&nbsp;Mrd.&nbsp;$</div><div style="font-size:9.4pt;font-weight:900;margin-top:2mm">kauft Nvidia an Anthropic-Aktien</div><div class="xs" style="margin-top:1mm">in der Privatplatzierung, rund 135 Mio. Aktien bei 74 $; gut 1&nbsp;% des Kapitals (eigene Rechnung)</div></div>
+      <div style="background:#111;border:1px solid #262626;border-radius:10px;padding:5mm"><div style="font-size:28pt;font-weight:900;letter-spacing:-.045em;line-height:1">≈&nbsp;254&nbsp;Mrd.&nbsp;$</div><div style="font-size:9.4pt;font-weight:900;margin-top:2mm">Zusagen an Anbieter mit Nvidia-Chips</div><div class="xs" style="margin-top:1mm;color:#bdbdbd">Microsoft, SpaceXAI, Nscale, Lambda; eigene Summe der Prospektbeträge, teils Höchstwerte, teils kündbar</div></div>
+      <div style="background:#111;border:1px solid #262626;border-radius:10px;padding:5mm"><div style="font-size:28pt;font-weight:900;letter-spacing:-.045em;line-height:1">4</div><div style="font-size:9.4pt;font-weight:900;margin-top:2mm">Chip-Welten statt einer</div><div class="xs" style="margin-top:1mm;color:#bdbdbd">Nvidia, Google TPU, Amazon Trainium, AMD. Rund 38&nbsp;% der Partnerbeträge entfallen auf Nvidia-Anbieter (eigene Rechnung)</div></div>
+    </div>
+    <div class="grid" style="grid-template-columns:1fr 1fr;gap:7mm;margin-top:9mm">
+      <div>
+        <div class="kick" style="color:var(--lime)">Ein Quartal im Vergleich: Umsatz, Mrd. $</div>
+        <div style="margin-top:3mm" data-k="quartal"></div>
+        <div class="xs" style="color:#9a9a9a;margin-top:2mm">Nvidia: drittes Geschäftsquartal 2027 (bis Ende Oktober 2026), 8-K vom 17.11.2026; davon Rechenzentren 107,6 Mrd. $; Ausblick für das laufende Quartal rund 130 Mrd. $. Anthropic: Juli bis September 2026, Prospekt. SpaceX: Juli bis September 2026, 8-K vom 20.10.2026, davon KI-Sparte 7,6 Mrd. $. Einen Börsenwert für SpaceX enthalten unsere Daten nicht.</div>
+        <div class="kick" style="color:var(--lime);margin-top:5mm">Nvidia-Aktie, zwölf Monate, Index (Start = 100)</div>
+        <div style="margin-top:2.5mm" data-k="nvkurs"></div>
+        <div class="xs" style="color:#9a9a9a;margin-top:1.5mm" data-k="nvtext"></div>
+      </div>
+      <div>
+        <div class="body nodrop" style="font-size:9.7pt">
+          <p>Die Verflechtung ist eng. Anthropic mietet Rechenleistung mit Nvidia-Chips bei Microsoft, bei SpaceXAI, der früheren X.AI und heutigen KI-Tochter von SpaceX, bei Nscale und bei Lambda. Ein Teil dessen, was Anthropic für Rechenleistung ausgibt, im dritten Quartal 9,9 Mrd. $ über alle Anbieter, landet so mittelbar bei Nvidia. Wie viel, steht nirgends.</p>
+          <p>Gleichzeitig baut Anthropic Abhängigkeiten ab. Die größten Zusagen gehen an Broadcom und Google für TPU-Chips und an Amazon für Trainium. AMD liefert ab 2027. Wer „die neue Nvidia“ sucht, findet bei Anthropic also eher einen der größten Kunden der Chipbranche als einen Konkurrenten.</p>
+          <p>Der Unterschied liegt im Geschäftsmodell. Nvidia verdient an jedem, der KI baut, mit einer Nettomarge von zuletzt rund 64&nbsp;% (VU-Daten, vier Quartale bis Juli 2026). Anthropic verdient am Ende des Rechenwegs, an Kunden, die für Antworten bezahlen. Seine Marge hängt davon ab, was Rechenleistung kostet und welche Preise der Wettbewerb zulässt.</p>
+        </div>
+        <div style="margin-top:6mm;border:1.5px solid var(--lime);border-radius:10px;padding:5mm">
+          <div class="kick" style="color:var(--lime)">Beide Lesarten</div>
+          <div class="sm" style="margin-top:1.5mm;color:#e6e6e6"><b style="color:#fff">Optimisten</b> sehen den Goldgräber mit der größten Ader: Wer die Kunden hat, bestimmt später die Preise. <b style="color:#fff">Skeptiker</b> sehen einen Kunden, der seine Schaufeln auf Jahre im Voraus bezahlen muss, egal wie viel Gold er findet.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div data-foot></div>
+</section>
+<script>
+(function(){const D=VUM.D,de=VUM.de;
+VUM.k('quartal',()=>VUC.hbars([{l:'Nvidia',v:115.8,c:'#fff'},{l:'Anthropic',v:D.ant.quartale.at(-1)[1]/1e3},{l:'SpaceX',v:14.6,c:'#fff'}],{w:300,rh:30,lw:70,vw:40,dark:1,fmt:v=>de(v,1)}));
+const s=D.kursindex.NVDA;
+VUM.k('nvkurs',()=>VUC.line(s,{w:300,h:175,pr:26,tick:10,mstep:3,ink:'#fff',grid:'#2a2a2a'}));
+const v=D.vergleich.NVDA;
+VUM.k('nvtext',()=>`Schlusskurse, beschreibend; ${VUM.sg(v.r12m*100,0)} % in zwölf Monaten, ${de(Math.abs(v.zumHoch)*100,0)} % unter dem Hoch dieser Zeit (VU-Daten, Stand 17.11.2026).`);
+})();
+</script>

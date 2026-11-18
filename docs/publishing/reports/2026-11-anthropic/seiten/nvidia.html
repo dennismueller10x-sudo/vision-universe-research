@@ -1,0 +1,45 @@
+<section class="page">
+  <div data-run="Sonderthema"></div>
+  <div class="pad" style="top:16mm">
+    <div style="display:grid;grid-template-columns:1fr 64mm;gap:6mm;align-items:start">
+      <div>
+        <span class="ressort">Sonderthema · Der große Vergleich</span>
+        <div style="font-size:42pt;font-weight:900;letter-spacing:-.05em;line-height:.92;margin-top:3mm">Wird Anthropic<br>die neue<br><span style="display:inline-block;background:var(--lime);padding:1mm 2.5mm 0;border-radius:2mm;margin-top:2mm;line-height:.95">Nvidia?</span></div>
+        <div class="sub" style="margin-top:4mm">Nvidia ist das wertvollste Unternehmen in unseren Daten und der Konzern, der am KI-Ausbau bisher am meisten verdient. Wo stünde Anthropic daneben? Drei Vergleiche, gerechnet mit der Preisspanne.</div>
+      </div>
+      <div class="ph" style="height:62mm;background-image:url(img/netz.jpg);background-position:50% 50%"><div class="cap">Bild: Anthropic</div></div>
+    </div>
+    <div class="grid" style="grid-template-columns:1fr 1fr;gap:7mm;margin-top:6mm">
+      <div><div class="kick">1 · Börsenwert, Mrd. $</div><div style="margin-top:3mm" data-k="nvwert"></div></div>
+      <div><div class="kick">2 · Umsatz der letzten vier Quartale, Mrd. $</div><div style="margin-top:3mm" data-k="nvumsatz"></div></div>
+    </div>
+    <div class="grid" style="grid-template-columns:1fr 1fr;gap:7mm;margin-top:6mm">
+      <div><div class="kick">3 · Kurs-Umsatz-Verhältnis (Börsenwert ÷ Umsatz)</div><div style="margin-top:3mm" data-k="kuv"></div></div>
+      <div>
+        <div class="card ink" style="padding:5mm">
+          <div class="kick" style="color:var(--lime)">Was die Balken zeigen</div>
+          <div class="sm" style="margin-top:2mm;color:#e6e6e6" data-k="lesart"></div>
+        </div>
+        <div class="grid" style="grid-template-columns:1fr 1fr;gap:3mm;margin-top:3.5mm" data-k="wachstum"></div>
+      </div>
+    </div>
+    <div class="xs mu" style="margin-top:3mm" data-k="fuss"></div>
+  </div>
+  <div data-foot></div>
+</section>
+<script>
+(function(){const D=VUM.D,A=D.ant,V=D.vergleich,de=VUM.de;
+const PEERS=['NVDA','MSFT','META','AVGO','TSLA','PLTR'];
+const ant=(v,s)=>({l:'Anthropic',s,v,c:'#c8f531'});
+const peer=(t,f)=>({l:V[t].n,v:f(V[t]),c:'#000'});
+VUM.k('nvwert',()=>VUC.hbars([...PEERS.map(t=>peer(t,x=>x.mcap/1e3)),ant(A.mcapMitte/1e3,'bei 74 $')].sort((a,b)=>b.v-a.v),{w:300,rh:26,lw:124,sx:58,vw:40,fmt:v=>de(v,0)}));
+VUM.k('nvumsatz',()=>VUC.hbars([...PEERS.map(t=>peer(t,x=>x.umsatzTTM/1e3)),ant(A.ttm/1e3,'Q4 25 – Q3 26')].sort((a,b)=>b.v-a.v),{w:300,rh:26,lw:124,sx:58,vw:40,fmt:v=>de(v,1)}));
+const kuvTTM=A.mcapMitte/A.ttm,kuvRR=A.mcapMitte/A.runRate;
+VUM.k('kuv',()=>VUC.hbars([...PEERS.map(t=>peer(t,x=>x.ps)),ant(kuvTTM,'auf 12 Monate'),ant(kuvRR,'auf Run-Rate')].sort((a,b)=>b.v-a.v),{w:300,rh:25,lw:130,sx:58,vw:40,fmt:v=>de(v,1)}));
+const n=V.NVDA;
+VUM.k('lesart',()=>`Bei 74 $ wäre Anthropic rund ${de(A.mcapMitte/1e3,0)} Mrd. $ wert, gut ein Viertel von Nvidia (${de(n.mcap/1e6,2)} Bio. $) und in der Größenordnung von Tesla, Meta und Broadcom. Beim Umsatz liegt Anthropic weit dahinter: Nvidia setzte in vier Quartalen rund ${de(n.umsatzTTM/A.ttm,1)}-mal so viel um und verdiente ${de(n.gewinnTTM/1e3,0)} Mrd. $, Anthropic schrieb Verluste. Gemessen an der Run-Rate wäre Anthropic ähnlich bewertet wie Nvidia heute, gemessen am tatsächlichen Umsatz gut doppelt so hoch. Alles eigene Rechnung, keine Bewertungsaussage.`);
+const w=(v,l,s,hl)=>`<div class="card${hl?' lime':''}" style="padding:3.5mm"><div style="font-size:19pt;font-weight:900;letter-spacing:-.04em">${v}</div><div class="xs" style="font-weight:800;margin-top:.8mm">${l}</div><div class="xs" style="color:#5c5c5c">${s}</div></div>`;
+VUM.k('wachstum',()=>w('+1.127&nbsp;%','Anthropic, Umsatz Q3','Juli–Sept. 2026 zum Vorjahr',1)+w('+103&nbsp;%','Nvidia, Umsatz Q3','Aug.–Okt. 2026 zum Vorjahr'));
+VUM.k('fuss',()=>`Anthropic: Börsenwert eigene Rechnung (13,09 Mrd. Aktien × 74 $; Spanne ${de(A.mcap[0]/1e3,0)}–${de(A.mcap[1]/1e3,0)} Mrd. $), Umsatz Q4 2025 bis Q3 2026 aus dem Prospekt addiert, Run-Rate ≈ 81 Mrd. $ (31.10.2026, keine Prognose). Vergleichswerte: VU-Daten aus SEC-Meldungen, Stand 17.11.2026; Umsatz der letzten vier gemeldeten Quartale (Nvidia bis Juli 2026, Broadcom bis Aug. 2026, sonst bis Sept. 2026). Nvidias Quartal bis Oktober (8-K vom 17.11.2026) ist darin noch nicht enthalten.`);
+})();
+</script>

@@ -1,0 +1,32 @@
+<section class="page dark imgtop">
+  <div class="img" style="left:0;right:0;top:0;height:124mm;background-image:linear-gradient(0deg,#000 0%,rgba(0,0,0,.1) 60%),url(img/leuchtturm.jpg);background-position:50% 30%"></div>
+  <span class="imgnote" style="right:14mm;top:15mm">Bild: Anthropic</span>
+  <div data-run="Szenarien"></div>
+  <div style="position:absolute;left:14mm;right:14mm;top:88mm;color:#fff">
+    <span class="ressort">Der Bärenfall</span>
+    <div class="hx" style="margin-top:2.5mm">Was Skeptiker anführen</div>
+  </div>
+  <div class="pad" style="top:130mm">
+    <div class="sub" style="color:#e6e6e6">Sechs Argumente der Kritiker. Sie bestreiten selten das Wachstum. Sie fragen, ob es die Verpflichtungen, die Konkurrenz und den Preis trägt. Fast alle Punkte nennt Anthropic selbst als Risiko.</div>
+    <div class="grid list-n" style="grid-template-columns:1fr 1fr;gap:4.5mm 7mm;margin-top:5mm" data-k="bearpunkte"></div>
+    <div style="margin-top:6mm;padding:5mm;border:1.5px solid var(--lime);border-radius:10px">
+      <div class="kick" style="color:var(--lime)">Woran man erkennen würde, dass der Bärenfall eintritt</div>
+      <div class="grid" style="grid-template-columns:repeat(3,1fr);gap:5mm;margin-top:3mm">
+        <div class="sm" style="color:#e6e6e6"><b style="color:#fff">Wachstum bricht ein</b><br>Das Plus zum Vorquartal fällt weiter, nach 144&nbsp;% im 2. und 47&nbsp;% im 3. Quartal.</div>
+        <div class="sm" style="color:#e6e6e6"><b style="color:#fff">Kosten laufen davon</b><br>Mehr teure Kurzfrist-Rechenleistung, weitere Preissenkungen, operative Verluste über mehrere Quartale.</div>
+        <div class="sm" style="color:#e6e6e6"><b style="color:#fff">Angebot drückt</b><br>Große Haltefrist-Freigaben nach den Jahreszahlen 2026 und ab dem 180. Tag (Seite {{seite:termine}}).</div>
+      </div>
+    </div>
+  </div>
+  <div data-foot></div>
+</section>
+<script>
+VUM.k('bearpunkte',()=>[
+ ['Zahlen, egal wie es läuft','900,9 Mrd. $ hat Anthropic für Rechenleistung zugesagt, 70,7 Mrd. $ davon sind in den nächsten zwölf Monaten fällig. Die Zusagen gelten laut Prospekt grundsätzlich unabhängig von Umsatz und Auslastung.'],
+ ['Das dritte Quartal kippte','Operativ wieder −567 Mio. $ nach +974 Mio. $, das Wachstum zum Vorquartal fiel von 144&nbsp;% auf 47&nbsp;%. Anthropic schreibt selbst: „Wir erwarten, dass unsere Umsatzwachstumsrate mit der Zeit sinkt“ (übersetzt).'],
+ ['Preise unter Druck','Preissenkungen und Rabatte kosteten im 3. Quartal rund 600 Mio. $ Umsatz. OpenAI und Google haben laut Prospekt deutlich größere Mittel, offene Modelle drücken die Preise.'],
+ ['Umsatz mit Haken','5 bis 7&nbsp;% des Umsatzes kamen von Kunden, die gegen Nutzungsregeln verstießen. Die fünf größten Kunden stehen für rund 25&nbsp;%, 44&nbsp;% laufen über Cloud-Partner, die zugleich Wettbewerber sind.'],
+ ['Klagen und Politik','Klagen von Musikverlagen, Reddit und kanadischen Medien, eine Prüfung der FTC. Im Streit mit dem Kriegsministerium entschied ein Berufungsgericht 2:1 gegen Anthropic; der Ausgang ist offen.'],
+ ['Wenig Rechte, viel Angebot','Treuhandrat und Gründer kontrollieren den Vorstand, Dividenden sind nicht geplant. Beschäftigte dürfen ab Tag 1 verkaufen, die 26 Mrd. $ der Privatplatzierung haben keine Sperre, der Gemeinwohl-Fonds kann neue Aktien bekommen.'],
+].map(r=>`<div><div style="font-size:11.5pt;font-weight:900;letter-spacing:-.01em;line-height:1.15;color:#fff">${r[0]}</div><div class="sm" style="margin-top:1.2mm;color:#d6d6d6">${r[1]}</div></div>`).join(''));
+</script>

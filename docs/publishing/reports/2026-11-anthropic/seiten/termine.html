@@ -1,0 +1,44 @@
+<section class="page">
+  <div data-run="Ausblick"></div>
+  <div class="pad" style="top:16mm">
+    <span class="ressort">Ausblick</span>
+    <div class="hx" style="margin-top:3mm">Was jetzt zählt</div>
+    <div class="sub" style="margin-top:3mm;max-width:176mm">Die Termine der nächsten Monate, die Haltefristen der bisherigen Aktionäre und eine Checkliste, mit der jeder selbst prüfen kann, welcher Fall eintritt.</div>
+    <div class="grid" style="grid-template-columns:repeat(5,1fr);gap:3mm;margin-top:5mm" data-k="kal"></div>
+    <div style="margin-top:6mm">
+      <div class="kick">Haltefristen: Aktien, die frühestens frei werden, Mio. Stück</div>
+      <div style="margin-top:3mm" data-k="lockup"></div>
+      <div class="xs mu" style="margin-top:1.5mm">Höchstwerte laut Prospekt (Shares Eligible for Future Sale), Class A und Class N zusammen. Tage ab dem Datum des endgültigen Prospekts; Kalenderdaten sind eigene Rechnung unter der Annahme, dass er am 18.11.2026 datiert (fällt ein Tag nicht auf einen Handelstag, gilt der nächste). Nach den Jahreszahlen 2026 folgen fünf weitere Stufen von je bis zu 480 Mio., nach den Zahlen zum 1. und 2. Quartal 2027 weitere Stufen. Die Gründer sind bis zu 365 Tage gebunden. Zum Vergleich: Das Angebot umfasst 825 Mio. Aktien.</div>
+    </div>
+    <div class="grid" style="grid-template-columns:1fr 1fr;gap:7mm;margin-top:6mm">
+      <div class="card lime" style="padding:5mm">
+        <div class="kick">Checkliste für die ersten Quartale</div>
+        <div style="margin-top:2.5mm" data-k="check"></div>
+      </div>
+      <div>
+        <div class="ph" style="height:78mm;background-image:url(img/rahmen.jpg);background-position:50% 50%"><div class="cap">Illustration aus der Bildwelt von Anthropic. Bild: Anthropic</div></div>
+        <div class="card ink" style="padding:5mm;margin-top:4mm">
+          <div class="kick" style="color:var(--lime)">Gut zu wissen</div>
+          <div class="sm" style="margin-top:2mm;color:#e6e6e6">Die ersten 76 Tage können bis zu rund 1,6 Mrd. Aktien frei werden (eigene Summe), etwa doppelt so viele, wie im Angebot verkauft werden. Ob die Inhaber verkaufen, ist offen. Die Aktien der Privatplatzierung haben gar keine Sperre.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div data-foot></div>
+</section>
+<script>
+(function(){const de=VUM.de;
+VUM.k('kal',()=>[['18.11.2026','Ausgabepreis','laut Berichten, Spanne 70–78 $'],['19.11.2026','Erster Handelstag','Nasdaq, Kürzel ANT, laut Berichten'],['15.12.2026','Erste Freigabe','Tag 27 der Haltefristen'],['Anfang 2027','Jahreszahlen 2026','erste Zahlen an der Börse, Termin offen'],['spätestens 17.05.2027','Tag 180','oder früher: Zahlen zum 1. Quartal 2027']].map((r,i)=>`<div style="background:${i===1?'var(--lime)':'var(--g1)'};border-radius:6px;padding:3.5mm"><div style="font-size:8pt;font-weight:900">${r[0]}</div><div style="font-size:11pt;font-weight:900;margin-top:1mm;line-height:1.1">${r[1]}</div><div class="xs mu" style="margin-top:1mm;color:#333">${r[2]}</div></div>`).join(''));
+VUM.k('lockup',()=>VUC.vbars([['1. Handelstag',315],['Tag 27',303],['Tag 48',303],['Tag 62',353],['Tag 76',353],['nach Zahlen 2026',1700],['Q1 27 / Tag 180',3000]],{w:600,h:150,allvals:true,fmt:v=>de(v,0),hl:(r)=>r[1]>=1700}));
+VUM.k('check',()=>[
+ ['Ausgabepreis und erster Kurs','Spanne 70–78 $, Börsenwert 916–1.021 Mrd. $'],
+ ['Umsatz im 4. Quartal','3. Quartal: 16,96 Mrd. $, +47 % zum Vorquartal'],
+ ['Operatives Ergebnis','3. Quartal: −567 Mio. $; bereinigt +2,5 Mrd. $ (15 %)'],
+ ['Run-Rate','31.10.2026: ≈ 81 Mrd. $ (keine Prognose)'],
+ ['Großkunden','über 11.900 ab 100.000 $, rund 250 ab 10 Mio. $'],
+ ['Kurzfrist-Rechenleistung','3. Quartal: 5,0 Mrd. $, soll vorerst steigen'],
+ ['Einmalbuchung Aktienvergütung','rund 14,2 Mrd. $ mit dem Börsengang'],
+ ['Verfahren gegen das Kriegsministerium','Antrag auf erneute Verhandlung gestellt'],
+].map(r=>`<div style="display:grid;grid-template-columns:5mm 1fr;gap:2mm;padding:1.6mm 0;border-bottom:1px solid rgba(0,0,0,.2)"><span style="width:3.6mm;height:3.6mm;border:1.5px solid #000;border-radius:2px;margin-top:.6mm"></span><div><div style="font-size:9pt;font-weight:800">${r[0]}</div><div class="xs">${r[1]}</div></div></div>`).join(''));
+})();
+</script>

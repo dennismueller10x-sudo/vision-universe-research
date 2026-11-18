@@ -1,0 +1,43 @@
+<section class="page imgtop">
+  <div class="img" style="left:0;right:0;top:0;height:84mm;background-image:linear-gradient(180deg,rgba(0,0,0,.7) 0%,rgba(0,0,0,0) 22%),linear-gradient(0deg,rgba(0,0,0,.85),rgba(0,0,0,.05) 60%),url(img/tempel.jpg);background-position:50% 30%"></div>
+  <span class="imgnote" style="right:14mm;top:15mm">Bild: Anthropic</span>
+  <div data-run="Wer bestimmt"></div>
+  <div style="position:absolute;left:14mm;right:14mm;top:50mm;color:#fff">
+    <span class="ressort" style="background:var(--lime);color:#000">Wer bestimmt</span>
+    <div class="hx" style="margin-top:2.5mm">Viel Kapital, wenig Stimmen</div>
+  </div>
+  <div class="pad" style="top:90mm">
+    <div class="sub" style="max-width:178mm">Wer an der Börse Anthropic-Aktien kauft, wird Miteigentümer, aber kaum Mitbestimmer. Zwei Aktien mit Sonderrechten sichern einem Treuhandrat und den Gründern die Kontrolle.</div>
+    <div class="grid" style="grid-template-columns:repeat(4,1fr);gap:3mm;margin-top:5mm" data-k="klassen"></div>
+    <div class="grid" style="grid-template-columns:1fr 1fr;gap:7mm;margin-top:6mm">
+      <div>
+        <div class="kick">Größte Anteilseigner nach dem Börsengang, Anteil am Kapital</div>
+        <div style="margin-top:3mm" data-k="eigner"></div>
+        <div class="xs mu" style="margin-top:2mm">Amazon, Google: laut Prospekt, nach Angebot und Privatplatzierung, bei 74 $. Fonds, Gründer und Nvidia: eigene Rechnung aus den Aktienzahlen im Prospekt (13,09 Mrd. Aktien). Amazon käme bei voller Wandlung seiner Anleihen ohne Obergrenze auf 23,8 %. Weitere Anteile (Microsoft, AMD, Broadcom, Micron, TSMC) nennt der Prospekt nicht in Prozent.</div>
+      </div>
+      <div class="body">
+        <p><b>Der Treuhandrat.</b> Der Long-Term Benefit Trust besteht aus bis zu fünf Treuhändern ohne finanzielles Interesse an Anthropic; sie dürfen keine Anthropic-Aktien halten. Über seine Class-T-Aktie wählt er die Mehrheit des Vorstands: vier von sieben Sitzen, darunter Netflix-Mitgründer Reed Hastings. Ins Tagesgeschäft redet er laut Prospekt nicht hinein.</p>
+        <p><b>Die Gründer.</b> Eine Gesellschaft der sieben Mitgründer hält eine Class-F-Aktie mit 50,1&nbsp;% aller Stimmen. Damit kommen die Gründer laut Prospekt auf 61,3&nbsp;% der Stimmen. Die übrigen drei Sitze im Vorstand bestimmen faktisch sie.</p>
+        <p><b>Der Zweck.</b> Als Public Benefit Corporation muss der Vorstand die Interessen der Aktionäre gegen das Gemeinwohl und den Satzungszweck abwägen. Dividenden sind nicht geplant. Ein eigener Fonds hält 6,5&nbsp;% und darf jedes Mal bis zu 2&nbsp;% neue Aktien bekommen, wenn der Kurs eine weitere Stufe von +50&nbsp;% erreicht.</p>
+      </div>
+    </div>
+    <div class="kick" style="margin-top:5mm">Der Vorstand nach dem Börsengang: sieben Sitze</div>
+    <div class="grid" style="grid-template-columns:repeat(7,1fr);gap:2.5mm;margin-top:2.5mm" data-k="vorstand"></div>
+    <div class="xs mu" style="margin-top:1.5mm">Laut Prospekt. Treuhandrat und Gründer-Gesellschaft können zusammen alle Mitglieder des Vorstands wählen.</div>
+  </div>
+  <div data-foot></div>
+</section>
+<script>
+(function(){const de=VUM.de,A=VUM.D.ant,p=(n)=>de(n/A.aktien*100,1);
+VUM.k('klassen',()=>[
+ ['Class T','1 Aktie','Long-Term Benefit Trust','wählt die Mehrheit des Vorstands','lime'],
+ ['Class F','1 Aktie','Gesellschaft der 7 Gründer','50,1 % aller Stimmen','ink'],
+ ['Class A','7,43 Mrd. Aktien','Börse, Gründer, Beschäftigte','1 Stimme je Aktie, zusammen höchstens 49,9 %',''],
+ ['Class N','5,66 Mrd. Aktien','Amazon, Google, Nvidia und andere','keine Stimme, aber Dividendenrecht',''],
+].map(r=>`<div class="card${r[4]?' '+r[4]:''}" style="padding:4mm"><div style="font-size:16pt;font-weight:900;letter-spacing:-.02em;${r[4]==='ink'?'color:var(--lime)':''}">${r[0]}</div><div style="font-size:8pt;font-weight:900;margin-top:1mm">${r[1]}</div><div class="xs" style="margin-top:2mm;font-weight:700;${r[4]==='ink'?'color:#e6e6e6':''}">${r[2]}</div><div class="xs" style="margin-top:1mm;${r[4]==='ink'?'color:#bdbdbd':r[4]?'':'color:#5c5c5c'}">${r[3]}</div></div>`).join(''));
+VUM.k('vorstand',()=>[['Reed Hastings','Treuhandrat (T)',1],['Vas Narasimhan','Treuhandrat (T)',1],['Christopher Liddell','Treuhandrat (T)',1],['Sitz frei','Treuhandrat (T)',1],['Dario Amodei','Vorstandschef, Gründer',0],['Daniela Amodei','Vorsitzende, Gründerin',0],['Yasmin Razavi','Class A + F',0]].map(r=>`<div style="background:${r[2]?'var(--lime)':'#000'};color:${r[2]?'#000':'#fff'};border-radius:6px;padding:3mm 2.5mm;min-height:17mm"><div style="font-size:8.6pt;font-weight:900;line-height:1.15">${r[0]}</div><div style="font-size:6.6pt;font-weight:700;margin-top:1mm;opacity:.8">${r[1]}</div></div>`).join(''));
+VUM.k('eigner',()=>VUC.hbars([
+ {l:'Amazon',s:'Class N',v:14.7},{l:'Google',s:'Class N',v:13.7},{l:'Die 7 Gründer',s:'zusammen, rund',v:12.8,c:'#000'},{l:'Gemeinwohl-Fonds',v:+p(846840960).replace(',','.')},{l:'Nvidia',s:'Privatplatzierung',v:+p(135135135).replace(',','.')},
+],{w:300,rh:23,lw:176,sx:84,vw:44,fmt:v=>de(v,1)+' %'}));
+})();
+</script>

@@ -1,0 +1,48 @@
+<section class="page">
+  <div data-run="Die Zahlen"></div>
+  <div class="pad" style="top:16mm">
+    <span class="ressort">Die Zahlen</span>
+    <style>#seite-zahlen table.t td.r,#seite-zahlen table.t th.r{padding-left:2.5mm}</style><div class="hx" style="margin-top:3mm;font-size:31pt">Umsatz mal 45 in sieben Quartalen</div>
+    <div class="sub" style="margin-top:3mm;max-width:176mm">Von 376 Mio. $ Anfang 2025 auf 16,96 Mrd. $ im dritten Quartal 2026. Die Kosten für Rechenleistung wuchsen mit, aber langsamer. Im letzten Quartal flachte das Tempo ab.</div>
+    <div style="margin-top:5mm"><div style="display:flex;justify-content:space-between;align-items:baseline"><div class="kick">Umsatz und Kosten für Rechenleistung je Quartal, Mrd. $</div><div class="xs" style="display:flex;gap:4mm;font-weight:700"><span><i style="display:inline-block;width:3mm;height:3mm;background:var(--lime);border-radius:1px;vertical-align:-.3mm"></i> Umsatz</span><span><i style="display:inline-block;width:3mm;height:3mm;background:#000;border-radius:1px;vertical-align:-.3mm"></i> Compute und Infrastruktur</span></div></div><div style="margin-top:3mm" data-k="paare"></div></div>
+    <div style="margin-top:2mm" data-k="opzeile"></div>
+    <div class="xs mu" style="margin-top:1.5mm">Quartale laut Prospekt (Quarterly Results of Operations), GAAP. Operatives Ergebnis je Quartal in Mio. $. Wachstum zum Vorquartal: eigene Rechnung.</div>
+    <div class="grid" style="grid-template-columns:1fr 1fr;gap:7mm;margin-top:6mm">
+      <div>
+        <div class="kick">Die Jahre im Überblick, Mio. $</div>
+        <table class="t" style="margin-top:2mm;font-size:7.6pt;white-space:nowrap">
+          <tr><th></th><th class="r">2023</th><th class="r">2024</th><th class="r">2025</th><th class="r">9M 2026</th></tr>
+          <tr><td>Umsatz</td><td class="r">41</td><td class="r">386</td><td class="r">4.585</td><td class="r"><b>33.242</b></td></tr>
+          <tr><td>Wachstum</td><td class="r">–</td><td class="r">+841&nbsp;%</td><td class="r">+1.088&nbsp;%</td><td class="r">+1.206&nbsp;%</td></tr>
+          <tr><td>Operatives Ergebnis</td><td class="r">−551</td><td class="r">−2.980</td><td class="r">−8.060</td><td class="r">−1.260</td></tr>
+          <tr><td>Marge bereinigt</td><td class="r">−1.273&nbsp;%</td><td class="r">−722&nbsp;%</td><td class="r">−106&nbsp;%</td><td class="r"><b>+12&nbsp;%</b></td></tr>
+        </table>
+        <div class="xs mu" style="margin-top:1.5mm">Wachstum 9M 2026 gegenüber 9M 2025. Bereinigt (Non-GAAP, Angabe Anthropic): ohne Aktienvergütung, nicht zahlungswirksame Spenden und den Vergleich mit Buchautoren.</div>
+        <div class="body" style="margin-top:3mm;font-size:9pt"><p>Das dritte Quartal zeigt beide Seiten. Der Umsatz wuchs zum Vorquartal noch um 47&nbsp;%, nach 144&nbsp;% im zweiten Quartal. Operativ rutschte Anthropic von +974 Mio. $ auf −567 Mio. $. Gründe laut Prospekt: 5,0 Mrd. $ für kurzfristig zugekaufte, teurere Rechenleistung und 2,0 Mrd. $ Aufwand für das Spendenprogramm. Preissenkungen bei neuen Modellen und Rabatte kosteten rund 600 Mio. $ Umsatz.</p></div>
+      </div>
+      <div>
+        <div class="card ink" style="padding:5mm">
+          <div class="kick" style="color:var(--lime)">Run-Rate: Hochrechnung, keine Prognose</div>
+          <div style="font-size:46pt;font-weight:900;letter-spacing:-.05em;line-height:1;margin-top:2.5mm;color:var(--lime)">≈&nbsp;81&nbsp;Mrd.&nbsp;$</div>
+          <div style="font-size:9.5pt;font-weight:800;margin-top:1.5mm">am 31.10.2026, rund 10 Mrd. $ mehr als am 30.09.</div>
+          <div class="sm" style="margin-top:2.5mm;color:#d6d6d6">So rechnet Anthropic: Verbrauchsgebühren der letzten 28 Tage mal 13 plus monatliche Abo-Gebühren mal 12. Der Prospekt betont, dass die Run-Rate keine Prognose künftiger Umsätze ist. Tatsächlich erzielt wurden in den zwölf Monaten bis September 35,3 Mrd. $ (eigene Rechnung aus vier Quartalen).</div>
+          <div style="margin-top:3.5mm" data-k="rr"></div>
+        </div>
+        <div class="ph" style="height:66mm;margin-top:4mm;background-image:url(img/linien.jpg);background-position:30% 50%"><div class="cap">Illustration aus der Bildwelt von Anthropic. Bild: Anthropic</div></div>
+      </div>
+    </div>
+  </div>
+  <div data-foot></div>
+</section>
+<script>
+(function(){const A=VUM.D.ant,de=VUM.de;
+VUM.k('paare',()=>{const w=600,h=150,pb=16,pt=16,n=A.quartale.length,max=Math.max(...A.quartale.map(q=>q[1]),...A.compute);const gw=w/n,bw=gw*.32;const Y=v=>pt+(h-pt-pb)*(1-v/max);let s=`<svg viewBox="0 0 ${w} ${h}" width="100%" style="display:block;overflow:visible">`;
+ A.quartale.forEach((q,i)=>{const x=i*gw+gw/2;const u=q[1],c=A.compute[i];
+  s+=`<rect x="${x-bw-1}" y="${Y(u)}" width="${bw}" height="${h-pb-Y(u)}" rx="2" fill="#c8f531"/><rect x="${x+1}" y="${Y(c)}" width="${bw}" height="${h-pb-Y(c)}" rx="2" fill="#000"/>`;
+  s+=`<text x="${x-bw/2-1}" y="${Y(u)-4}" font-size="8.5" font-weight="800" text-anchor="middle">${de(u/1e3,1)}</text><text x="${x+bw/2+1}" y="${Y(c)-4}" font-size="8" font-weight="600" text-anchor="middle" fill="#5c5c5c">${de(c/1e3,1)}</text>`;
+  s+=`<text x="${x}" y="${h-3}" font-size="8.5" font-weight="700" text-anchor="middle" fill="#8c8c8c">${q[0]}</text>`;});
+ return s+'</svg>';});
+VUM.k('opzeile',()=>`<div style="display:grid;grid-template-columns:28mm repeat(${A.quartale.length},1fr);gap:1mm;align-items:center;font-size:7.6pt"><b>Operativ, Mio. $</b>${A.opQuartal.map(v=>`<span style="text-align:center"><span class="pill ${v>=0?'up':'dn'}" style="font-size:7pt">${v>0?'+':'−'}${de(Math.abs(v),0)}</span></span>`).join('')}</div><div style="display:grid;grid-template-columns:28mm repeat(${A.quartale.length},1fr);gap:1mm;align-items:center;font-size:7.6pt;margin-top:1.5mm"><b>zum Vorquartal</b>${A.quartale.map((q,i)=>`<span style="text-align:center;font-weight:800">${i?'+'+de((q[1]/A.quartale[i-1][1]-1)*100,0)+'&nbsp;%':'–'}</span>`).join('')}</div>`);
+VUM.k('rr',()=>VUC.hbars([{l:'Run-Rate 31.10.',v:81,c:'#c8f531'},{l:'12 Monate bis 9/26',v:A.ttm/1e3,c:'#fff'}],{w:300,rh:24,lw:116,vw:70,dark:1,fmt:v=>de(v,1)+' Mrd. $'}));
+})();
+</script>

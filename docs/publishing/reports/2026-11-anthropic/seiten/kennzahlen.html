@@ -1,0 +1,35 @@
+<section class="page dark">
+  <div data-run="Die Zahlen auf einen Blick"></div>
+  <div class="pad" style="top:16mm">
+    <span class="ressort">Die Zahlen auf einen Blick</span>
+    <div class="hx" style="margin-top:2.5mm">Anthropic in zwölf Zahlen</div>
+    <div class="grid" style="grid-template-columns:repeat(3,minmax(0,1fr));gap:3.5mm;margin-top:5mm" data-k="kz"></div>
+    <div class="grid" style="grid-template-columns:1.3fr 1fr;gap:3.5mm;margin-top:3.5mm">
+      <div style="background:#111;border:1px solid #262626;border-radius:10px;padding:4mm"><div class="kick" style="color:#9a9a9a">Umsatz je Quartal, Mrd. $</div><div style="margin-top:2.5mm" data-k="kzumsatz"></div></div>
+      <div style="background:#111;border:1px solid #262626;border-radius:10px;padding:4mm"><div class="kick" style="color:#9a9a9a">Kunden ab 100.000 $ im Jahr</div><div style="margin-top:2.5mm" data-k="kzkunden"></div></div>
+    </div>
+    <div class="xs" style="color:#8c8c8c;margin-top:2mm">Quelle aller Unternehmenszahlen: Prospekt (S-1/A Nr. 3) vom 17.11.2026, GAAP, wenn nicht anders vermerkt. Börsenwert: eigene Rechnung, 13,09 Mrd. Aktien aller Klassen nach Angebot und Privatplatzierung × Preisspanne. Kunden: Umsatz der jeweils letzten zwölf Monate, Angaben „rund“ bzw. „über“ laut Prospekt.</div>
+  </div>
+  <div data-foot></div>
+</section>
+<script>
+(function(){const D=VUM.D,A=D.ant,de=VUM.de;
+const t=(v,l,s,hl)=>`<div style="background:${hl==='lime'?'var(--lime)':hl==='ton'?'#d97757':'#111'};color:${hl?'#000':'#fff'};border:1px solid ${hl?'transparent':'#262626'};border-radius:10px;padding:6mm 4.5mm 5.5mm"><div style="font-size:24pt;font-weight:900;letter-spacing:-.045em;line-height:1">${v}</div><div style="font-size:9.6pt;font-weight:900;margin-top:2.5mm">${l}</div><div style="font-size:7.8pt;margin-top:.8mm;opacity:.75">${s}</div></div>`;
+VUM.k('kz',()=>[
+ t('70–78&nbsp;$','Preisspanne je Aktie','Nasdaq, Kürzel ANT','lime'),
+ t(de(A.mcap[0]/1e3,0)+'–'+de(A.mcap[1]/1e3,0)+'&nbsp;Mrd.&nbsp;$','Börsenwert in der Spanne','eigene Rechnung, alle Aktienklassen','lime'),
+ t('825&nbsp;Mio.','Aktien im Angebot','dazu 26,0 Mrd. $ Privatplatzierung'),
+ t('16,96&nbsp;Mrd.&nbsp;$','Umsatz im 3. Quartal','Juli bis Sept. 2026, +1.127 % zum Vorjahr'),
+ t('33,2&nbsp;Mrd.&nbsp;$','Umsatz in neun Monaten','Jan. bis Sept. 2026, +1.206 %'),
+ t('≈&nbsp;81&nbsp;Mrd.&nbsp;$','Run-Rate am 31.10.2026','Hochrechnung, laut Anthropic keine Prognose','ton'),
+ t('−1,26&nbsp;Mrd.&nbsp;$','Operatives Ergebnis','9 Monate 2026; bereinigt +4,08 Mrd. $'),
+ t('+6,57&nbsp;Mrd.&nbsp;$','Operativer Cashflow','Jan. bis Sept. 2026'),
+ t('131,8&nbsp;Mrd.&nbsp;$','Barmittel und Anlagen','am 30.09.2026, vor dem Börsengang'),
+ t('900,9&nbsp;Mrd.&nbsp;$','Zusagen für Rechenleistung','überwiegend bis 2045','ton'),
+ t('&gt;&nbsp;11.900','Kunden ab 100.000 $','zwölf Monate bis 30.09.2026'),
+ t('50,1&nbsp;%','Stimmen der Gründer','über eine einzige Class-F-Aktie','ton'),
+].join(''));
+VUM.k('kzumsatz',()=>VUC.vbars(A.quartale.map(q=>[q[0],q[1]/1e3]),{w:340,h:200,allvals:true,dark:1,fmt:v=>de(v,v<1?2:1)}));
+VUM.k('kzkunden',()=>VUC.vbars([['Ende 23',20],['Ende 24',200],['9/25',950],['Ende 25',1500],['9/26',11900]],{w:260,h:200,allvals:true,dark:1,fmt:v=>de(v,0)}));
+})();
+</script>

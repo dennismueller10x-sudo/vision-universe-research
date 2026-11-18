@@ -1,0 +1,53 @@
+<section class="page">
+  <div data-run="Die Bilanz"></div>
+  <div class="pad" style="top:16mm">
+    <span class="ressort">Ergebnis, Cashflow, Bilanz</span>
+    <div class="hx" style="margin-top:3mm">104 Mrd. $ Verlust, erklärt</div>
+    <div class="sub" style="margin-top:3mm;max-width:176mm">Die größte Zahl im Prospekt ist ein Buchverlust. Er entsteht, weil Anthropic mehr wert geworden ist. Aus dem Geschäft selbst floss in neun Monaten Geld zu.</div>
+    <div class="grid" style="grid-template-columns:1.15fr 1fr;gap:7mm;margin-top:5mm">
+      <div>
+        <div class="kick">Vom operativen Ergebnis zum Nettoverlust, neun Monate 2026, Mrd. $</div>
+        <div style="margin-top:3mm" data-k="bruecke"></div>
+        <div class="xs mu" style="margin-top:2mm">GAAP laut Prospekt. Sonstiges: vor allem erstmalige Bewertung und Zeitwertänderung von Finanzierungsverträgen mit Partnern.</div>
+        <div class="card ink" style="padding:5mm;margin-top:4mm">
+          <div class="kick" style="color:var(--lime)">Warum Wachstum hier Verlust macht</div>
+          <div class="sm" style="margin-top:2mm;color:#e6e6e6">Anthropic hat sich unter anderem über Wandelanleihen finanziert: Geldgeber bekommen später Aktien statt Geld zurück. Steigt der Wert des Unternehmens, sind diese Aktien mehr wert, und die Schuld muss höher bewertet werden. Diese Neubewertung von 94,3 Mrd. $ ist ein Aufwand in der Bilanz, aber keine Zahlung. Von 156,2 Mrd. $ aufgelaufenem Verlust seit der Gründung stammen 135,1 Mrd. $ aus solchen Neubewertungen.</div>
+        </div>
+        <div class="grid" style="grid-template-columns:1fr 1fr;gap:3mm;margin-top:4mm">
+          <div class="card" style="padding:4mm"><div class="kick">Operativ (GAAP)</div><div style="font-size:21pt;font-weight:900;letter-spacing:-.04em;margin-top:1mm">−1,26&nbsp;Mrd.&nbsp;$</div><div class="xs mu" style="margin-top:1mm">Marge −4 %, nach −205 % im Vorjahreszeitraum</div></div>
+          <div class="card lime" style="padding:4mm"><div class="kick">Operativ bereinigt</div><div style="font-size:21pt;font-weight:900;letter-spacing:-.04em;margin-top:1mm">+4,08&nbsp;Mrd.&nbsp;$</div><div class="xs" style="margin-top:1mm">Marge 12 %; Angabe Anthropic, Non-GAAP</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="kick">Cashflow, neun Monate 2026</div>
+        <table class="t" style="margin-top:2mm">
+          <tr><td>Operativer Cashflow</td><td class="r"><b>+6.569&nbsp;Mio.&nbsp;$</b></td></tr>
+          <tr><td>Investitionen in Sachanlagen</td><td class="r">−925&nbsp;Mio.&nbsp;$</td></tr>
+          <tr><td>Freier Cashflow (operativ minus Sachanlagen, eigene Rechnung)</td><td class="r"><b>+5.644&nbsp;Mio.&nbsp;$</b></td></tr>
+          <tr><td>Vorauszahlungen auf geleaste Anlagen</td><td class="r">−1.955&nbsp;Mio.&nbsp;$</td></tr>
+          <tr><td>Finanzierung (Kapital von außen)</td><td class="r">+110.735&nbsp;Mio.&nbsp;$</td></tr>
+        </table>
+        <div class="kick" style="margin-top:5mm">Geld in der Kasse, 30.09.2026</div>
+        <table class="t" style="margin-top:2mm">
+          <tr><td>Bargeld</td><td class="r">95,6&nbsp;Mrd.&nbsp;$</td></tr>
+          <tr><td>Kurzfristige Anlagen</td><td class="r">36,3&nbsp;Mrd.&nbsp;$</td></tr>
+          <tr><td><b>Zusammen</b></td><td class="r"><b>131,8&nbsp;Mrd.&nbsp;$</b></td></tr>
+          <tr><td>Freie Kreditlinie</td><td class="r">14,8&nbsp;Mrd.&nbsp;$</td></tr>
+          <tr><td>Nach dem Börsengang (pro forma)</td><td class="r">212,7&nbsp;Mrd.&nbsp;$</td></tr>
+        </table>
+        <div class="xs mu" style="margin-top:1.5mm">Pro forma laut Prospekt, bei 74 $ je Aktie und mit Privatplatzierung. Dazu Finanzierungszusagen aus Wandelanleihe-Verträgen von bis zu 77,0 Mrd. $ (Googles Teil sinkt nach dem Börsengang von 20 auf 10 Mrd. $).</div>
+        <div class="card" style="padding:4mm;margin-top:4mm">
+          <div class="kick">Was noch kommt</div>
+          <div class="sm" style="margin-top:1.5mm">Mit dem Börsengang bucht Anthropic einmalig rund <b>14,2 Mrd. $</b> Aufwand für Aktienvergütung, die bisher an diese Bedingung geknüpft war. Das belastet die GAAP-Zahlen, nicht die Kasse.</div>
+        </div>
+      </div>
+    </div>
+    <div class="ph" style="height:68mm;margin-top:5mm;background-image:url(img/waage.jpg);background-position:50% 30%"><div class="cap">Illustration aus der Bildwelt von Anthropic. Bild: Anthropic</div></div>
+  </div>
+  <div data-foot></div>
+</section>
+<script>
+VUM.k('bruecke',()=>VUC.hbars([
+ {l:'Operatives Ergebnis',v:-1.260},{l:'Zinserträge',v:2.359},{l:'Neubewertung Wandelanleihen',v:-94.324,c:'#c4281c'},{l:'Sonstiges',v:-10.397},{l:'Steuern',v:-0.417},{l:'Nettoverlust',v:-104.039,c:'#000'},
+],{w:340,rh:23,lw:150,vw:56,fmt:v=>VUM.sg(v,1)}));
+</script>

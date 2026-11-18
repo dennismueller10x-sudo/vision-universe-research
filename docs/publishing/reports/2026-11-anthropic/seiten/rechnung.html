@@ -1,0 +1,51 @@
+<section class="page">
+  <div data-run="Rechenbeispiele"></div>
+  <div class="pad" style="top:16mm">
+    <div style="display:grid;grid-template-columns:1fr 52mm;gap:6mm;align-items:start">
+      <div>
+        <span class="ressort">Rechenbeispiele</span>
+        <div class="hx" style="margin-top:3mm">Was müsste passieren?</div>
+        <div class="sub" style="margin-top:3mm">Wer 1 Billion Dollar für ein Unternehmen bezahlt, unterstellt Umsätze und Gewinne, die es heute noch nicht gibt. Wie groß sie sein müssten, lässt sich ausrechnen, mit Maßstäben anderer Konzerne.</div>
+      </div>
+      <div class="ph" style="height:50mm;background-image:url(img/winkelmesser.jpg)"><div class="cap">Bild: Anthropic</div></div>
+    </div>
+    <div class="card lime" style="padding:3.5mm 4.5mm;margin-top:4mm;font-size:8.6pt;font-weight:700">Reine Umrechnungen mit einem runden Börsenwert von 1 Bio. $ (oberes Ende der Spanne: 1,02 Bio. $). Keine Prognose, kein Kursziel, keine Aussage darüber, ob Anthropic diese Werte erreicht.</div>
+    <div class="grid" style="grid-template-columns:1fr 1fr;gap:7mm;margin-top:5mm">
+      <div>
+        <div class="kick">1 · Nötiger Jahresumsatz bei einem Kurs-Umsatz-Verhältnis wie …, Mrd. $</div>
+        <div style="margin-top:3mm" data-k="reumsatz"></div>
+        <div class="xs mu" style="margin-top:2mm" data-k="reumsatztext"></div>
+      </div>
+      <div>
+        <div class="kick">2 · Nötiger Jahresgewinn bei einem Kurs-Gewinn-Verhältnis wie …, Mrd. $</div>
+        <div style="margin-top:3mm" data-k="gewinn"></div>
+        <div class="xs mu" style="margin-top:2mm">KGV der Vergleichswerte: Börsenwert ÷ Gewinn der letzten vier Quartale (VU-Daten, 17.11.2026). Anthropic: Nettoverlust 104,0 Mrd. $ (GAAP, neun Monate 2026); bereinigter Nettogewinn laut Anthropic 5,6 Mrd. $ (Non-GAAP).</div>
+      </div>
+    </div>
+    <div class="grid" style="grid-template-columns:1fr 1fr;gap:7mm;margin-top:10mm">
+      <div>
+        <div class="kick">3 · Wie lange bis zum Umsatz-Maßstab von Nvidia?</div>
+        <table class="t" style="margin-top:2mm;font-size:9.4pt" data-k="jahre"></table>
+        <div class="xs mu" style="margin-top:1.5mm" data-k="jahretext"></div>
+      </div>
+      <div class="card ink" style="padding:5mm">
+        <div class="kick" style="color:var(--lime)">Die Pointe der Rechnung</div>
+        <div class="sm" style="margin-top:2mm;color:#e6e6e6" data-k="pointe"></div>
+      </div>
+    </div>
+  </div>
+  <div data-foot></div>
+</section>
+<script>
+(function(){const D=VUM.D,A=D.ant,V=D.vergleich,de=VUM.de,B=1e6;// 1 Bio. $ in Mio. $
+const K=['PLTR','AVGO','TSLA','NVDA','MSFT','GOOGL','META','AMZN'];
+VUM.k('reumsatz',()=>VUC.hbars([...K.map(t=>({l:V[t].n,s:'KUV '+de(V[t].ps,1),v:B/V[t].ps/1e3,c:t==='NVDA'?'#c8f531':'#000'})),{l:'Anthropic heute',v:A.ttm/1e3,c:'#c4281c'},{l:'Run-Rate 31.10.',v:81,c:'#8c8c8c'}],{w:300,rh:29,lw:126,sx:64,vw:36,fmt:v=>de(v,0)}));
+VUM.k('reumsatztext',()=>`Rechnung: 1.000 Mrd. $ ÷ Kurs-Umsatz-Verhältnis des Vergleichswerts (VU-Daten, 17.11.2026). Anthropic heute: Umsatz der letzten vier Quartale, ${de(A.ttm/1e3,1)} Mrd. $ (eigene Rechnung aus dem Prospekt).`);
+const G=['NVDA','GOOGL','AMZN','META','MSFT','AVGO'];
+VUM.k('gewinn',()=>VUC.hbars([...G.map(t=>({l:V[t].n,s:'KGV '+de(V[t].kgv,1),v:B/V[t].kgv/1e3,c:t==='NVDA'?'#c8f531':'#000'})),{l:'Anthropic',s:'9 M., bereinigt',v:A.nettoAdj9M/1e3,c:'#8c8c8c'}],{w:300,rh:33,lw:126,sx:64,vw:36,fmt:v=>de(v,1)}));
+const ziel=B/V.NVDA.ps/1e3,heute=A.ttm/1e3;
+VUM.k('jahre',()=>`<tr><th>Wachstum pro Jahr</th><th class="r">Jahre bis ${de(ziel,0)} Mrd. $</th></tr>`+[150,100,50,25].map(g=>`<tr><td>+${g}&nbsp;%</td><td class="r"><b>${de(Math.log(ziel/heute)/Math.log(1+g/100),1)}</b></td></tr>`).join(''));
+VUM.k('jahretext',()=>`Ausgangspunkt ${de(heute,1)} Mrd. $ (letzte vier Quartale), Ziel: Umsatz bei 1 Bio. $ und dem KUV von Nvidia (${de(V.NVDA.ps,1)}). Gleichmäßiges Wachstum angenommen, reine Mathematik. Anthropic schreibt selbst, dass die Wachstumsrate mit der Zeit sinken wird.`);
+VUM.k('pointe',()=>`Mit dem Maßstab von Nvidia bräuchte Anthropic bei 1 Bio. $ Börsenwert rund ${de(ziel,0)} Mrd. $ Jahresumsatz. Das ist fast genau die Run-Rate von Ende Oktober (≈ 81 Mrd. $). Mit diesem Maßstab entspräche 1 Bio. $ einem Jahr, in dem die Hochrechnung aus den letzten Wochen tatsächlich als Umsatz eintritt. Beim Gewinn ist der Abstand größer: Für ein KGV wie Nvidia wären rund ${de(B/V.NVDA.kgv/1e3,0)} Mrd. $ Gewinn im Jahr nötig. Bereinigt verdiente Anthropic in neun Monaten 5,6 Mrd. $, nach GAAP stand ein Verlust.`);
+})();
+</script>

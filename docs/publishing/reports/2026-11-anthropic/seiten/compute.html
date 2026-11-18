@@ -1,0 +1,45 @@
+<section class="page dark imgtop">
+  <div class="img" style="left:0;right:0;top:0;height:92mm;background-image:linear-gradient(0deg,#000 0%,rgba(0,0,0,.15) 65%),url(img/platine.jpg);background-position:50% 40%"></div>
+  <span class="imgnote" style="right:14mm;top:15mm">Bild: Anthropic</span>
+  <div data-run="Die Kosten"></div>
+  <div style="position:absolute;left:14mm;right:14mm;top:52mm;color:#fff">
+    <span class="ressort">Kosten und Rechenleistung</span>
+    <div class="hx" style="margin-top:2.5mm">900,9 Milliarden Dollar<br>für Rechenleistung</div>
+  </div>
+  <div class="pad" style="top:97mm">
+    <div class="sub" style="color:#e6e6e6;max-width:178mm">Ohne Rechenzentren keine KI. Anthropic mietet Chips bei Amazon, Google, Microsoft und anderen und hat sich zu Zahlungen verpflichtet, die den heutigen Jahresumsatz um ein Vielfaches übersteigen.</div>
+    <div class="grid" style="grid-template-columns:1fr 1fr;gap:7mm;margin-top:5mm">
+      <div>
+        <div class="kick" style="color:var(--lime)">Zusagen nach Partner, Mrd. $</div>
+        <div style="margin-top:3mm" data-k="partner"></div>
+        <div class="xs" style="color:#9a9a9a;margin-top:2mm">Laut Prospekt, Teil „Contractual Obligations“. Google, Amazon und Microsoft: Mindestbeträge; SpaceXAI und Nscale: Höchstbeträge; AMD: erwartete Ausgaben. Google zusätzlich 125 bis 150 Mrd. $ für weitere TPU-Kapazität 2028 bis 2031 (geschätzt, nicht in der Summe). Laufzeiten reichen bis 2036.</div>
+      </div>
+      <div>
+        <div class="grid" style="grid-template-columns:1fr 1fr;gap:3mm" data-k="kacheln"></div>
+        <div style="border-left:4px solid var(--lime);padding-left:4mm;margin-top:5mm"><div style="font-size:12pt;font-weight:800;line-height:1.28">Die Zusagen müssen „grundsätzlich unabhängig von unserem Umsatz oder unserer Auslastung“ erfüllt werden.</div><div class="xs" style="color:#bdbdbd;margin-top:1.5mm">Anthropic, Prospekt vom 17.11.2026, übersetzt (Original: „generally must be satisfied regardless of our revenue or utilization“)</div></div>
+      </div>
+    </div>
+    <div class="grid" style="grid-template-columns:repeat(3,1fr);gap:4mm;margin-top:6mm">
+      <div style="border-top:2px solid var(--lime);padding-top:2.5mm"><div style="font-size:11pt;font-weight:900">Vier Chip-Welten</div><div class="sm" style="color:#bdbdbd;margin-top:1mm">Anthropic rechnet auf Trainium von Amazon, TPUs von Google, GPUs von Nvidia (Grace Blackwell, Vera Rubin) und GPUs von AMD (MI450).</div></div>
+      <div style="border-top:2px solid var(--lime);padding-top:2.5mm"><div style="font-size:11pt;font-weight:900">Kurzfristig ist teuer</div><div class="sm" style="color:#bdbdbd;margin-top:1mm">Im 3. Quartal kaufte Anthropic für 5,0 Mrd. $ kurzfristig Rechenleistung zu. Das soll laut Prospekt vorerst zunehmen und die Marge drücken.</div></div>
+      <div style="border-top:2px solid var(--lime);padding-top:2.5mm"><div style="font-size:11pt;font-weight:900">Nicht alles ist fest</div><div class="sm" style="color:#bdbdbd;margin-top:1mm">186,2 Mrd. $ sind kündbar oder an Bedingungen geknüpft. Dazu kommen 150 bis 175 Mrd. $ aus Verträgen ohne festen Betrag (Schätzung Anthropic).</div></div>
+    </div>
+    <div class="ph" style="height:44mm;margin-top:6mm;background-image:url(img/kugel.jpg);background-position:50% 45%"><div class="cap">Illustration aus der Bildwelt von Anthropic. Bild: Anthropic</div></div>
+  </div>
+  <div data-foot></div>
+</section>
+<script>
+(function(){const A=VUM.D.ant,de=VUM.de;
+VUM.k('partner',()=>VUC.hbars([
+ {l:'Broadcom',s:'TPU-Leasing',v:161.2},{l:'Google',s:'TPU, Cloud',v:121.3},{l:'SpaceXAI',s:'Nvidia-GPUs',v:120.5},{l:'Amazon',s:'AWS, Trainium',v:110.0},
+ {l:'Microsoft',s:'Nvidia über Azure',v:47.2},{l:'Nscale',s:'Nvidia-GPUs',v:44.6},{l:'Lambda',s:'Nvidia-GPUs',v:41.3},{l:'AMD',s:'MI450 ab 2027',v:20.0},
+],{w:300,rh:21,lw:150,sx:58,vw:40,dark:1,fmt:v=>de(v,1)}));
+const k=(v,l,hl)=>`<div style="background:${hl?'var(--lime)':'#111'};color:${hl?'#000':'#fff'};border:1px solid ${hl?'transparent':'#262626'};border-radius:8px;padding:4mm"><div style="font-size:19pt;font-weight:900;letter-spacing:-.04em;line-height:1">${v}</div><div class="xs" style="margin-top:1.5mm;font-weight:700;${hl?'':'color:#bdbdbd'}">${l}</div></div>`;
+VUM.k('kacheln',()=>[
+ k('900,9&nbsp;Mrd.&nbsp;$','Zusagen insgesamt, fast alles für Rechenleistung und Infrastruktur',1),
+ k('451,6&nbsp;Mrd.&nbsp;$','davon bis Ende 2030, der Rest im Wesentlichen 2031 bis 2045'),
+ k('70,7&nbsp;Mrd.&nbsp;$','fällig in den zwölf Monaten ab Oktober 2026'),
+ k('≈&nbsp;'+de(A.verpflichtungen/A.ttm,0)+'-fach','Zusagen im Verhältnis zum Umsatz der letzten zwölf Monate (eigene Rechnung)'),
+].join(''));
+})();
+</script>

@@ -1,0 +1,63 @@
+<section class="page dark">
+  <div class="img" style="right:0;top:0;width:96mm;height:118mm;background-image:linear-gradient(90deg,#000 0%,rgba(0,0,0,0) 30%),linear-gradient(0deg,#000 0%,rgba(0,0,0,0) 25%),url(img/spiegel.jpg);background-position:50% 30%"></div>
+  <span class="imgnote" style="right:14mm;top:15mm">Bild: Anthropic</span>
+  <div data-run="Sonderthema"></div>
+  <div class="pad" style="top:16mm">
+    <span class="ressort">Sonderthema · Kontrovers</span>
+    <div style="font-size:40pt;font-weight:900;letter-spacing:-.05em;line-height:.9;margin-top:3mm;max-width:118mm">Die beste <span style="color:var(--lime)">Cyber-Aktie</span> der Welt?</div>
+    <div class="sub" style="margin-top:4mm;max-width:112mm;color:#e6e6e6">Eine zugespitzte Frage: Wenn ein KI-Modell Sicherheitslücken schneller findet als jedes Team, ist sein Hersteller dann der wichtigste Sicherheitskonzern? These und Gegenthese stehen im selben Prospekt.</div>
+    <div style="margin-top:4mm;max-width:112mm;background:#111;border:1px solid #262626;border-radius:10px;padding:4mm">
+      <div class="kick" style="color:#9a9a9a">ExploitBench: Anteil gelöster Angriffsaufgaben</div>
+      <div style="margin-top:2.5mm" data-k="bench"></div>
+      <div class="xs" style="color:#9a9a9a;margin-top:1.5mm">Test von Forschern der Carnegie Mellon University: Kann ein Modell bekannte Schwachstellen in Software ausnutzen? Werte laut Prospekt, über rund vier Monate.</div>
+    </div>
+    <div class="grid" style="grid-template-columns:1fr 1fr;gap:5mm;margin-top:5mm">
+      <div style="background:var(--lime);color:#000;border-radius:10px;padding:5mm">
+        <div class="kick">These · Der Wächter</div>
+        <div style="font-size:13pt;font-weight:900;line-height:1.15;margin-top:1.5mm">Wer die Lücken findet, verkauft auch den Schutz.</div>
+        <div data-k="these" style="margin-top:2.5mm"></div>
+      </div>
+      <div style="background:#111;border:1.5px solid #fff;border-radius:10px;padding:5mm">
+        <div class="kick" style="color:var(--lime)">Gegenthese · Die doppelte Klinge</div>
+        <div style="font-size:13pt;font-weight:900;line-height:1.15;margin-top:1.5mm">Dieselbe Fähigkeit nutzen auch Angreifer.</div>
+        <div data-k="gegen" style="margin-top:2.5mm"></div>
+      </div>
+    </div>
+    <div class="grid" style="grid-template-columns:1.1fr 1fr;gap:5mm;margin-top:5mm">
+      <div style="background:#111;border:1px solid #262626;border-radius:10px;padding:4mm">
+        <div class="kick" style="color:#9a9a9a">Umsatz der letzten vier Quartale, Mrd. $</div>
+        <div style="margin-top:2.5mm" data-k="branche"></div>
+        <div class="xs" style="color:#9a9a9a;margin-top:1.5mm" data-k="branchetext"></div>
+      </div>
+      <div style="border:1.5px solid var(--lime);border-radius:10px;padding:4mm">
+        <div class="kick" style="color:var(--lime)">Woran man es erkennen würde</div>
+        <div class="sm" style="margin-top:2mm;color:#e6e6e6"><b style="color:#fff">Für die These:</b> Claude Security verlässt die Testphase, Anthropic weist Umsätze mit Sicherheitskunden aus, Glasswing wird zum Standard für die Freigabe starker Modelle.</div>
+        <div class="sm" style="margin-top:2mm;color:#e6e6e6"><b style="color:#fff">Für die Gegenthese:</b> weitere Angriffe mit Claude, neue Exportsperren, strengere Auflagen für Modelle mit Angriffsfähigkeiten.</div>
+        <div class="xs" style="color:#9a9a9a;margin-top:2.5mm">Kein Urteil: Beide Lesarten stützen sich auf Angaben im Prospekt.</div>
+      </div>
+    </div>
+  </div>
+  <div data-foot></div>
+</section>
+<script>
+(function(){const D=VUM.D,de=VUM.de,ant=D.ant;
+VUM.k('bench',()=>VUC.hbars([{l:'Opus 4.8',v:40,c:'#fff'},{l:'Mythos 5',v:78,c:'#fff'},{l:'Opus 5.5',v:91}],{w:300,rh:18,lw:60,vw:40,dark:1,fmt:v=>v+' %'}));
+const li=(arr,dark)=>arr.map(t=>`<div style="display:grid;grid-template-columns:3mm 1fr;gap:1.8mm;padding:.8mm 0;font-size:7.9pt;line-height:1.34;${dark?'color:#e6e6e6':''}"><span style="width:1.8mm;height:1.8mm;border-radius:50%;margin-top:1.3mm;background:${dark?'var(--lime)':'#000'}"></span><span>${t}</span></div>`).join('');
+VUM.k('these',()=>li([
+ 'Anthropic nennt Cybersicherheit „eine unserer wichtigsten kurzfristigen Chancen“: Netzwerke zu verteidigen werde zunehmend Spitzenmodelle erfordern.',
+ '<b>Claude Security</b> durchsucht den Code von Kunden laufend, sortiert Schwachstellen nach Schwere und schreibt Korrekturen; öffentliche Testphase für Enterprise-Kunden. Dazu der OSS Scanner für offene Software.',
+ 'Das stärkste Modell, <b>Mythos</b>, gibt es nur für geprüfte Verteidiger über das Cyber Verification Program, zuerst im April 2026 über <b>Project Glasswing</b>.',
+ 'Für Glasswing hat Anthropic bis zu <b>100 Mio. $</b> für Initiativen zur Cyberabwehr zugesagt und mit Regierungen in Kanada, der EU, Großbritannien und den USA gesprochen.',
+]));
+VUM.k('gegen',()=>li([
+ 'Im September 2025 nutzte laut Anthropic eine staatlich gesteuerte <b>chinesische Hackergruppe</b> Claude Code für Angriffe auf rund 30 Ziele, in wenigen Fällen mit Erfolg. Anthropic hält das für den ersten dokumentierten großen Angriff ohne wesentliches menschliches Zutun.',
+ 'Im Juni 2026 verhängte das US-Handelsministerium eine weltweite <b>Exportsperre</b> für Fable 5 und Mythos 5; nach angepassten Schutzmaßnahmen wurde sie aufgehoben.',
+ 'Mit Behörden macht Anthropic <b>unter 2&nbsp;%</b> des Umsatzes, und mit dem Kriegsministerium streitet es vor Gericht. Wie viel Umsatz mit Sicherheit entsteht, steht nicht im Prospekt.',
+ 'Die Modelle selbst gelten laut Prospekt als besonders lohnendes Ziel für staatliche Spionage.',
+],1));
+const c=D.cyber,rows=[{l:'Anthropic',v:ant.ttm/1e3},...Object.values(c).map(x=>({l:x.n,v:x.umsatzTTM/1e3,c:'#fff'}))];
+VUM.k('branche',()=>VUC.hbars(rows,{w:300,rh:16,lw:110,vw:36,dark:1,fmt:v=>de(v,1)}));
+const summe=Object.values(c).reduce((a,x)=>a+x.umsatzTTM,0)/1e3;
+VUM.k('branchetext',()=>`Fünf große Sicherheitsfirmen setzen zusammen ${de(summe,1)} Mrd. $ um (VU-Daten, SEC, letzte vier Quartale, Stand 17.11.2026). Anthropic setzt insgesamt mehr um; welcher Teil auf Sicherheit entfällt, weist es nicht aus.`);
+})();
+</script>

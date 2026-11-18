@@ -1,0 +1,32 @@
+<section class="page imgtop">
+  <div class="img" style="left:0;right:0;top:0;height:128mm;background-image:linear-gradient(180deg,rgba(0,0,0,.7) 0%,rgba(0,0,0,0) 22%),linear-gradient(0deg,rgba(0,0,0,.85),rgba(0,0,0,.05) 60%),url(img/himmel.jpg);background-position:50% 40%"></div>
+  <span class="imgnote" style="right:14mm;top:15mm">Bild: Anthropic</span>
+  <div data-run="Szenarien"></div>
+  <div style="position:absolute;left:14mm;right:14mm;top:92mm;color:#fff">
+    <span class="ressort" style="background:var(--lime);color:#000">Der Bullenfall</span>
+    <div class="hx" style="margin-top:2.5mm">Was Optimisten anführen</div>
+  </div>
+  <div class="pad" style="top:134mm">
+    <div class="sub">Sechs Argumente, die Befürworter nennen, jedes mit Zahlen aus dem Prospekt. Ob sie tragen, zeigen die nächsten Quartale.</div>
+    <div class="grid list-n" style="grid-template-columns:1fr 1fr;gap:4.5mm 7mm;margin-top:5mm" data-k="bullpunkte"></div>
+    <div class="card ink" style="margin-top:6mm;padding:5mm">
+      <div class="kick" style="color:var(--lime)">Woran man erkennen würde, dass der Bullenfall eintritt</div>
+      <div class="grid" style="grid-template-columns:repeat(3,1fr);gap:5mm;margin-top:3mm">
+        <div class="sm" style="color:#e6e6e6"><b style="color:#fff">Umsatz folgt der Run-Rate</b><br>Das vierte Quartal liegt deutlich über 16,96 Mrd. $ und nähert sich einem Viertel der Run-Rate von rund 81 Mrd. $.</div>
+        <div class="sm" style="color:#e6e6e6"><b style="color:#fff">Marge dreht wieder</b><br>Das operative Ergebnis wird nach −567 Mio. $ im 3. Quartal wieder positiv, trotz teurer Kurzfrist-Rechenleistung.</div>
+        <div class="sm" style="color:#e6e6e6"><b style="color:#fff">Großkunden wachsen weiter</b><br>Mehr Kunden ab 1 Mio. $ und 10 Mio. $, eine Net Revenue Retention weit über 100&nbsp;%.</div>
+      </div>
+    </div>
+  </div>
+  <div data-foot></div>
+</section>
+<script>
+VUM.k('bullpunkte',()=>[
+ ['Wachstum ohne Vorbild','Der Umsatz stieg in neun Monaten um 1.206&nbsp;% auf 33,2 Mrd. $. Ende Oktober lag die Run-Rate bei rund 81 Mrd. $, 10 Mrd. $ mehr als einen Monat zuvor. Anthropic nennt das ausdrücklich keine Prognose.'],
+ ['Kunden geben jedes Jahr mehr aus','Über 11.900 Kunden zahlen mindestens 100.000 $ im Jahr, vor einem Jahr waren es rund 950. Bestandskunden brachten im dritten Quartal etwa neunmal so viel Umsatz wie ein Jahr zuvor.'],
+ ['Das Geschäft trägt sich schon','Bereinigt verdiente Anthropic in neun Monaten operativ 4,1 Mrd. $, aus dem Geschäft flossen 6,6 Mrd. $ zu. Ohne Trainingskosten lag die Marge auf den Umsatz rechnerisch bei 85&nbsp;% (eigene Rechnung).'],
+ ['Effizienz als Hebel','Opus 5.5 senkte die Kosten je Aufgabe für Kunden um rund 40&nbsp;%, laut Anthropic ohne die eigene Marge zu opfern. Mit rund 5.300 Beschäftigten kommt Anthropic auf über 6,6 Mio. $ Umsatz je Kopf.'],
+ ['Geld für den Ausbau','131,8 Mrd. $ in der Kasse, nach Börsengang und Privatplatzierung pro forma 212,7 Mrd. $. Rechenleistung kommt von vier Chip-Plattformen, das stärkt die Verhandlungsmacht.'],
+ ['Neue Märkte durch Agenten','Claude Code und Cowork erledigen Arbeit selbstständig. Laut einer Schätzung im Prospekt gibt es 2028 weltweit über eine Milliarde Wissensarbeiter; dazu kommt die Cybersicherheit (Seite {{seite:cyber}}).'],
+].map(r=>`<div><div style="font-size:11.5pt;font-weight:900;letter-spacing:-.01em;line-height:1.15">${r[0]}</div><div class="sm" style="margin-top:1.2mm">${r[1]}</div></div>`).join(''));
+</script>

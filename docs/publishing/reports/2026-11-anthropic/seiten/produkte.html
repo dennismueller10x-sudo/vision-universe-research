@@ -1,0 +1,44 @@
+<section class="page">
+  <div data-run="Die Produkte"></div>
+  <div class="pad" style="top:16mm">
+    <div style="display:grid;grid-template-columns:1fr 62mm;gap:7mm;align-items:end">
+      <div><span class="ressort">Die Produkte</span><div class="hx" style="margin-top:3mm">Vier Modellklassen,<br>ein Name: Claude</div></div>
+      <div class="ph" style="height:30mm;background-color:#f0eee6;background-image:url(img/claude-logo.jpg);background-size:150% auto;border-radius:6px"></div>
+    </div>
+    <div class="sub" style="margin-top:3mm;max-width:176mm">Anthropic verkauft Rechenarbeit seiner KI-Modelle: an Entwickler über eine Schnittstelle, an Unternehmen und Privatleute über eigene Programme. Alle Modelle verarbeiten Text, Code und weitere Formate wie Bilder.</div>
+    <div class="grid" style="grid-template-columns:repeat(4,1fr);gap:3.5mm;margin-top:5mm" data-k="modelle"></div>
+    <div class="xs mu" style="margin-top:1.5mm">Modellklassen und Beschreibungen laut Prospekt vom 17.11.2026, übersetzt und gekürzt. Bild- und Videoerzeugung entwickelt Anthropic laut Prospekt bewusst nicht.</div>
+    <div class="grid" style="grid-template-columns:1fr 1fr;gap:7mm;margin-top:6mm">
+      <div>
+        <div class="kick">Die Programme</div>
+        <div style="margin-top:2mm" data-k="programme"></div>
+      </div>
+      <div>
+        <div class="ph" style="height:60mm;background-image:url(img/nautilus-gruen.jpg);background-position:50% 50%"><div class="cap">Illustration aus der Bildwelt von Anthropic. Bild: Anthropic</div></div>
+        <div class="grid" style="grid-template-columns:1fr 1fr;gap:3mm;margin-top:3.5mm">
+          <div class="card lime" style="padding:4mm"><div style="font-size:24pt;font-weight:900;letter-spacing:-.04em">&gt;&nbsp;90&nbsp;%</div><div class="xs" style="font-weight:700;margin-top:1mm">der Beiträge zum eigenen Programmcode schrieb im September 2026 Claude</div></div>
+          <div class="card" style="padding:4mm"><div style="font-size:24pt;font-weight:900;letter-spacing:-.04em">≈&nbsp;40&nbsp;%</div><div class="xs" style="font-weight:700;margin-top:1mm">weniger Kosten je Aufgabe für Kunden mit Opus 5.5 gegenüber Opus 5</div></div>
+          <div class="card" style="padding:4mm"><div style="font-size:24pt;font-weight:900;letter-spacing:-.04em">&gt;&nbsp;80&nbsp;%</div><div class="xs" style="font-weight:700;margin-top:1mm">des Umsatzes im 3. Quartal kam aus Modellen, die höchstens sechs Monate alt waren</div></div>
+          <div class="card ink" style="padding:4mm"><div style="font-size:24pt;font-weight:900;letter-spacing:-.04em;color:var(--lime)">250</div><div class="xs" style="font-weight:700;margin-top:1mm;color:#e6e6e6">neue Modellversionen, Funktionen und Apps von Januar bis September 2026</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div data-foot></div>
+</section>
+<script>
+VUM.k('modelle',()=>[
+ ['Mythos · Fable','Die stärkste Klasse','Ein Grundmodell, zwei Fassungen: Fable für alle mit Schutzfiltern, Mythos nur für geprüfte Organisationen in Cybersicherheit und Biowissenschaften. Version 5.2 seit November 2026.','lime'],
+ ['Opus','Das Arbeitspferd','Für anspruchsvolles Denken. Opus 5.5 soll laut Anthropic das Standardmodell im Unternehmensalltag sein und Projekte von Anfang bis Ende als Agent erledigen.','ink'],
+ ['Sonnet','Für jeden Tag','Ausgewogen zwischen Leistung, Kosten und Tempo; auch als Hilfs-Agent in Systemen aus vielen Agenten.',''],
+ ['Haiku','Schnell und günstig','Die preiswerteste und schnellste Klasse, gebaut für sehr große Mengen an Anfragen.',''],
+].map(r=>`<div class="card${r[3]?' '+r[3]:''}" style="padding:4mm"><div style="font-size:15pt;font-weight:900;letter-spacing:-.02em;${r[3]==='ink'?'color:var(--lime)':''}">${r[0]}</div><div style="font-size:7pt;font-weight:900;letter-spacing:.1em;text-transform:uppercase;margin-top:1mm;opacity:.75">${r[1]}</div><div style="font-size:8pt;line-height:1.42;margin-top:2mm;${r[3]==='ink'?'color:#e6e6e6':''}">${r[2]}</div></div>`).join(''));
+VUM.k('programme',()=>[
+ ['Claude Platform','Die Schnittstelle für Entwickler, die Claude in eigene Produkte einbauen. Erreichbar auch über die Cloud-Marktplätze von Amazon, Google und Microsoft.'],
+ ['Claude Code','Der Programmier-Agent: plant, schreibt, testet und korrigiert Code in großen Projekten. Seit Februar 2025, laut Anthropic das Produkt, das autonome Arbeit am deutlichsten zeigt.'],
+ ['Claude Cowork','Der Agent für Büroarbeit, seit Januar 2026, seit September Teil von Claude.ai. Laut Prospekt schneller angenommen als Claude Code zum gleichen Zeitpunkt.'],
+ ['Claude.ai','Der Assistent im Browser und als App, mit Abos (u. a. Pro, Max, Ultra) und Fassungen für Unternehmen.'],
+ ['Claude Security','Durchsucht den Code von Kunden laufend nach Schwachstellen und schreibt Korrekturen. Öffentliche Testphase für Enterprise-Kunden (Seite {{seite:cyber}}).'],
+ ['Weitere','Claude Design, Claude Tag in Slack, Claude for Government, Claude for Education, OSS Scanner.'],
+].map(r=>`<div style="display:grid;grid-template-columns:30mm 1fr;gap:3mm;padding:2mm 0;border-bottom:1px solid var(--g2)"><div style="font-size:9.4pt;font-weight:900">${r[0]}</div><div style="font-size:8.2pt;line-height:1.42">${r[1]}</div></div>`).join(''));
+</script>
