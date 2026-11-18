@@ -126,7 +126,8 @@ export function regions(state) {
       about: "Der Aktienreport nimmt sich eine einzige Firma vor: Wie verdient sie ihr Geld? Was sagen die Zahlen? Was spricht für die Aktie, was dagegen? Alles einfach erklärt.",
       what: ["Die Firma und ihr Geschäft", "Umsatz, Gewinn und Bewertung über viele Jahre", "Chart und was die großen Anleger tun", "Was für die Aktie spricht und was dagegen"],
       titel: report.titel, unterzeile: report.unterzeile, cover: report.cover, coverAlt: "den ganzen Report", pages: report.preview, inhalt: report.alles }) } } : {}),
-    "news/index.html": { page: `<section class="full nfirst">${stand(a0)}${grid("../", 3, true)}</section><section class="full"><h2>Alle Artikel</h2><div class="alist">${artikel.map((x) => box("../", x, true)).join("")}</div></section>` }
+    // News-Seite (Owner 17.11.2026): nur Artikel; Magazin und Aktienreports haben eigene Seiten im Menü.
+    "news/index.html": { page: `<section class="full nfirst">${stand(a0)}<div class="newsgrid nonly">${lead("../", a0)}</div></section><section class="full"><h2>Alle Artikel</h2><div class="alist">${artikel.slice(1).map((x) => box("../", x, true)).join("")}</div></section>` }
   };
 }
 
