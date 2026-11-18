@@ -6,15 +6,15 @@
     "youngListingYears": 2
   },
   "denominator": {
-    "PRODUCT_TITLES": 6309
+    "PRODUCT_TITLES": 6340
   },
-  "TITLES_WITH_SUFFICIENT_FUNDAMENTALS": 4967,
-  "TITLES_WITH_GAP": 1342,
+  "TITLES_WITH_SUFFICIENT_FUNDAMENTALS": 4970,
+  "TITLES_WITH_GAP": 1370,
   "byCause": [
     {
       "cause": "VERY_YOUNG_LISTING",
-      "count": 497,
-      "percent": 7.8776,
+      "count": 505,
+      "percent": 7.9653,
       "recoverability": "RESOLVES_WITH_TIME",
       "examples": [
         {
@@ -51,8 +51,8 @@
     },
     {
       "cause": "NO_CIK",
-      "count": 333,
-      "percent": 5.2782,
+      "count": 351,
+      "percent": 5.5363,
       "recoverability": "REQUIRES_REVIEW",
       "examples": [
         {
@@ -90,7 +90,7 @@
     {
       "cause": "SPECIAL_SECURITY_STRUCTURE",
       "count": 320,
-      "percent": 5.0721,
+      "percent": 5.0473,
       "recoverability": "BY_DESIGN",
       "examples": [
         {
@@ -127,8 +127,8 @@
     },
     {
       "cause": "SEC_DATA_PRESENT_BUT_NOT_NORMALIZED",
-      "count": 108,
-      "percent": 1.7118,
+      "count": 110,
+      "percent": 1.735,
       "recoverability": "SEC_RECOVERABLE",
       "examples": [
         {
@@ -144,6 +144,12 @@
           "securityType": "COMMON_STOCK"
         },
         {
+          "symbol": "AUXX",
+          "cik": "0001961592",
+          "form": null,
+          "securityType": "COMMON_STOCK"
+        },
+        {
           "symbol": "BANX",
           "cik": "0001578987",
           "form": null,
@@ -154,19 +160,13 @@
           "cik": "0001809541",
           "form": null,
           "securityType": "COMMON_STOCK"
-        },
-        {
-          "symbol": "BMEZ",
-          "cik": "0001785971",
-          "form": null,
-          "securityType": "COMMON_STOCK"
         }
       ]
     },
     {
       "cause": "INSUFFICIENT_HISTORY",
       "count": 56,
-      "percent": 0.8876,
+      "percent": 0.8833,
       "recoverability": "EXTERNAL_PROVIDER_CANDIDATE",
       "examples": [
         {
@@ -204,7 +204,7 @@
     {
       "cause": "FOREIGN_ISSUER",
       "count": 28,
-      "percent": 0.4438,
+      "percent": 0.4416,
       "recoverability": "SEC_RECOVERABLE",
       "examples": [
         {
@@ -243,9 +243,9 @@
   "byRecoverability": {
     "SEC_RECOVERABLE": 2,
     "EXTERNAL_PROVIDER_CANDIDATE": 98,
-    "RESOLVES_WITH_TIME": 536,
-    "BY_DESIGN": 373,
-    "REQUIRES_REVIEW": 333
+    "RESOLVES_WITH_TIME": 545,
+    "BY_DESIGN": 374,
+    "REQUIRES_REVIEW": 351
   },
   "mainGroups": {
     "note": "\u00a77 verlangt zwei Hauptgruppen. Das sind diese beiden - und nur sie tragen die Anbieterfrage.",
@@ -260,35 +260,35 @@
   },
   "providerDecision": "OFFEN. Die Trennung oben ist die Entscheidungsgrundlage und nicht die Entscheidung (\u00a715). Solange die groesste Gruppe SEC_RECOVERABLE heisst, waere ein zugekaufter Anbieter Geld fuer Daten, die bereits bei der SEC liegen und nur nicht gemappt sind.",
   "byRecoverabilityCoarse": {
-    "SEC_RECOVERABLE": 136,
+    "SEC_RECOVERABLE": 138,
     "EXTERNAL_PROVIDER_CANDIDATE": 56,
-    "RESOLVES_WITH_TIME": 497,
+    "RESOLVES_WITH_TIME": 505,
     "BY_DESIGN": 320,
-    "REQUIRES_REVIEW": 333
+    "REQUIRES_REVIEW": 351
   },
-  "regroupedByFineClassification": 134,
+  "regroupedByFineClassification": 136,
   "versions": {
     "normalization_schema": "1.0.0",
-    "normalization_logic": "1.14.0",
-    "formula": "1.2.0",
+    "normalization_logic": "1.15.0",
+    "formula": "1.3.0",
     "provider_adapter": "sec-edgar-1.0.0",
     "quality_rules": "1.1.0",
     "metric_registry": {
       "schema_version": 1,
-      "mapping_version": "1.7.0"
+      "mapping_version": "1.8.0"
     }
   },
   "priorities": {
     "note": "Die Gruppen ueberschneiden sich bewusst; jede beantwortet eine eigene Frage. Ihre Summe ist deshalb KEINE Titelzahl.",
     "denominator": {
-      "PRODUCT_TITLES": 6309
+      "PRODUCT_TITLES": 6340
     },
     "groups": [
       {
         "priority": "PRIORITY_1_TECHNICAL_WITHOUT_ANY_FUNDAMENTALS",
         "description": "Technisch gedeckt, aber keinerlei Fundamentaldaten",
-        "COUNT": 539,
-        "PERCENT": 8.5434,
+        "COUNT": 562,
+        "PERCENT": 8.8644,
         "TOP_CAUSES": [
           {
             "cause": "SPECIAL_SECURITY_STRUCTURE",
@@ -296,11 +296,11 @@
           },
           {
             "cause": "NO_CIK",
-            "count": 216
+            "count": 234
           },
           {
             "cause": "VERY_YOUNG_LISTING",
-            "count": 11
+            "count": 16
           }
         ],
         "SEC_RECOVERABLE_COUNT": 0,
@@ -309,16 +309,16 @@
       {
         "priority": "PRIORITY_2_FUNDAMENTALS_WITHOUT_CORE_METRICS",
         "description": "Fundamentaldaten vorhanden, aber zentrale Kennzahlen fehlen",
-        "COUNT": 1057,
-        "PERCENT": 16.7538,
+        "COUNT": 1062,
+        "PERCENT": 16.7508,
         "TOP_CAUSES": [
           {
             "cause": "VERY_YOUNG_LISTING",
-            "count": 346
+            "count": 349
           },
           {
             "cause": "SEC_DATA_PRESENT_BUT_NOT_NORMALIZED",
-            "count": 108
+            "count": 110
           },
           {
             "cause": "INSUFFICIENT_HISTORY",
@@ -339,12 +339,12 @@
       {
         "priority": "PRIORITY_3_HISTORY_TOO_SHORT",
         "description": "Fundamentaldaten vorhanden, Historie zu kurz",
-        "COUNT": 467,
-        "PERCENT": 7.4021,
+        "COUNT": 470,
+        "PERCENT": 7.4132,
         "TOP_CAUSES": [
           {
             "cause": "VERY_YOUNG_LISTING",
-            "count": 411
+            "count": 414
           },
           {
             "cause": "INSUFFICIENT_HISTORY",
@@ -357,12 +357,12 @@
       {
         "priority": "PRIORITY_4_PIT_INSUFFICIENT",
         "description": "Nicht zeitpunktgenau abfragbar",
-        "COUNT": 138,
-        "PERCENT": 2.1874,
+        "COUNT": 140,
+        "PERCENT": 2.2082,
         "TOP_CAUSES": [
           {
             "cause": "SEC_DATA_PRESENT_BUT_NOT_NORMALIZED",
-            "count": 108
+            "count": 110
           },
           {
             "cause": "FOREIGN_ISSUER",
@@ -379,8 +379,8 @@
       {
         "priority": "PRIORITY_5_EDGE_CASES",
         "description": "Spezial- und Randfaelle",
-        "COUNT": 1096,
-        "PERCENT": 17.372,
+        "COUNT": 1102,
+        "PERCENT": 17.3817,
         "TOP_CAUSES": [
           {
             "cause": "SPECIAL_SECURITY_STRUCTURE",
@@ -392,7 +392,7 @@
           },
           {
             "cause": "VERY_YOUNG_LISTING",
-            "count": 191
+            "count": 192
           },
           {
             "cause": "SEC_DATA_PRESENT_BUT_NOT_NORMALIZED",
@@ -408,5 +408,5 @@
       }
     ]
   },
-  "generatedAtUtc": "2026-11-16T06:28:46+00:00"
+  "generatedAtUtc": "2026-11-18T06:32:28+00:00"
 }
