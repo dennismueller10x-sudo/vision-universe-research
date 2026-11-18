@@ -10,75 +10,8 @@
     "blockMaxMs": 20700000,
     "branch": "main"
   },
-  "updatedAt": "2026-11-18T20:22:49.849Z",
+  "updatedAt": "2026-11-18T20:26:56.474Z",
   "cycles": [
-    {
-      "cycle": 9,
-      "runId": "44151212512",
-      "triggerAt": "2026-11-17T20:25:44.399Z",
-      "marketStateAtTrigger": "OPEN",
-      "localTimeAtTrigger": "15:25:44",
-      "fetchStartAt": "2026-11-17T20:25:44.400Z",
-      "fetchEndAt": "2026-11-17T20:37:59.637Z",
-      "session": "2026-11-17",
-      "written": 1308,
-      "requests": 1432,
-      "notPublishable": 54,
-      "addAt": "2026-11-17T20:37:59.639Z",
-      "commitAt": "2026-11-17T20:38:00.034Z",
-      "pushAt": "2026-11-17T20:38:03.418Z",
-      "sha": "4627293586",
-      "changed": true,
-      "ok": true,
-      "reason": null,
-      "parts": [
-        {
-          "part": 1,
-          "of": 3,
-          "fetchStartAt": "2026-11-17T20:25:44.400Z",
-          "fetchEndAt": "2026-11-17T20:29:47.565Z",
-          "ok": true,
-          "written": 433,
-          "requests": 478,
-          "sha": "656bdf2604",
-          "pushAt": "2026-11-17T20:29:50.523Z",
-          "changed": true
-        },
-        {
-          "part": 2,
-          "of": 3,
-          "fetchStartAt": "2026-11-17T20:29:50.523Z",
-          "fetchEndAt": "2026-11-17T20:33:53.702Z",
-          "ok": true,
-          "written": 438,
-          "requests": 477,
-          "sha": "e5232300c6",
-          "pushAt": "2026-11-17T20:33:56.436Z",
-          "changed": true
-        },
-        {
-          "part": 3,
-          "of": 3,
-          "fetchStartAt": "2026-11-17T20:33:56.436Z",
-          "fetchEndAt": "2026-11-17T20:37:59.637Z",
-          "ok": true,
-          "written": 437,
-          "requests": 477,
-          "sha": "4627293586",
-          "pushAt": "2026-11-17T20:38:03.418Z",
-          "changed": true
-        }
-      ],
-      "snapshotAt": "2026-11-17T20:37:59.612Z",
-      "pushed": true,
-      "watchdog": {
-        "verdict": "FAIL",
-        "codes": [
-          "auslieferungZuWeitHinterher",
-          "seiteStandZuAlt"
-        ]
-      }
-    },
     {
       "cycle": 10,
       "runId": "44151212512",
@@ -1993,10 +1926,10 @@
       "written": 1308,
       "requests": 1431,
       "notPublishable": 56,
-      "addAt": "2026-11-18T20:18:43.705Z",
-      "commitAt": "2026-11-18T20:18:44.075Z",
-      "pushAt": "2026-11-18T20:18:46.708Z",
-      "sha": "95ec237f03",
+      "addAt": "2026-11-18T20:22:49.850Z",
+      "commitAt": "2026-11-18T20:22:50.223Z",
+      "pushAt": "2026-11-18T20:22:52.819Z",
+      "sha": "3d2cf4081b",
       "changed": true,
       "ok": true,
       "reason": null,
@@ -2032,11 +1965,52 @@
           "fetchEndAt": "2026-11-18T20:22:49.848Z",
           "ok": true,
           "written": 440,
-          "requests": 477
+          "requests": 477,
+          "sha": "3d2cf4081b",
+          "pushAt": "2026-11-18T20:22:52.819Z",
+          "changed": true
         }
       ],
       "snapshotAt": "2026-11-18T20:22:49.826Z",
-      "pushed": true
+      "pushed": true,
+      "watchdog": {
+        "verdict": "FAIL",
+        "codes": [
+          "auslieferungZuWeitHinterher"
+        ]
+      }
+    },
+    {
+      "cycle": 8,
+      "runId": "44374892842",
+      "triggerAt": "2026-11-18T20:22:53.341Z",
+      "marketStateAtTrigger": "OPEN",
+      "localTimeAtTrigger": "15:22:53",
+      "fetchStartAt": "2026-11-18T20:22:53.341Z",
+      "fetchEndAt": "2026-11-18T20:26:56.472Z",
+      "session": "2026-11-18",
+      "written": 432,
+      "requests": 477,
+      "notPublishable": 22,
+      "addAt": null,
+      "commitAt": null,
+      "pushAt": null,
+      "sha": null,
+      "changed": false,
+      "ok": true,
+      "reason": null,
+      "parts": [
+        {
+          "part": 1,
+          "of": 3,
+          "fetchStartAt": "2026-11-18T20:22:53.341Z",
+          "fetchEndAt": "2026-11-18T20:26:56.472Z",
+          "ok": true,
+          "written": 432,
+          "requests": 477
+        }
+      ],
+      "snapshotAt": "2026-11-18T20:26:56.450Z"
     }
   ]
 }
