@@ -40,7 +40,7 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function () {
   "use strict";
 
-  var VERSION = "chart-standard-1.4.0";
+  var VERSION = "chart-standard-1.5.0";
 
   /* Kanonische Kennungen und Fenster (Kalendertage). */
   var PRIMARY = ["1T", "1W", "1M", "6M", "1J", "3J", "5J", "MAX"]; /* Owner 18.11.2026: eine Leiste überall, 6M und 3J in der Hauptleiste */
@@ -153,6 +153,46 @@
     var cut = cutoffOf(points, c);
     if (cut === null) return [];
     return points.filter(function (p) { return Date.parse(String(p[0]).slice(0, 10)) >= cut; });
+  }
+
+
+  /* ------------------------------------------------------------ 1T */
+
+  function hm(t) { return String(t).slice(0, 5); }
+  function dayDe(d) { var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(d || "")); return m ? m[3] + "." + m[2] + "." + m[1] : ""; }
+
+  /**
+   * DIE 1T-REGEL, EINE FUNKTION FUER ALLE WELTEN (Steuerung 18.11.2026).
+   * Boerse offen und heute schon gehandelt: 1T = heutige Sitzung ab Eroeffnung, live fortgeschrieben.
+   * Vor Eroeffnung bzw. heute noch kein Handel: 1T = letzte volle Sitzung mit dem Etikett "letzte Sitzung (Datum)".
+   * Nie eine leere Kurve hinter einem freien Knopf: mit weniger als zwei Punkten ist 1T nicht verfuegbar.
+   *
+   * @param {object} snap Intraday-Snapshot (points [[HH:MM, kurs]], sessionDate, sessionOpenLocal, sessionCloseLocal)
+   * @param {object} [opt] today: Sitzungstag heute (YYYY-MM-DD, Ortszeit der Boerse); prev: Snapshot der letzten vollen Sitzung,
+   *                       falls der heutige noch zu wenig Punkte hat
+   * @returns {{available:boolean, mode:"today"|"last"|"none", snap:object|null, points:Array, sessionDate:string|null, label:string, reason:string}}
+   */
+  function intradayView(snap, opt) {
+    var o = opt || {}, none = { available: false, mode: "none", snap: null, points: [], sessionDate: null, label: "", reason: "Für diese Aktie liegt kein Tagesverlauf vor." };
+    function regular(sn) {
+      if (!sn || !Array.isArray(sn.points) || !sn.sessionDate) return null;
+      var open = hm(sn.sessionOpenLocal || "09:30"), close = hm(sn.sessionCloseLocal || sn.closeLocal || "16:00");
+      var pts = sn.points.filter(function (p) { return Array.isArray(p) && isNum(p[1]) && hm(p[0]) >= open && hm(p[0]) < close; });
+      if (pts.length < 2) return null;
+      var copy = {}; Object.keys(sn).forEach(function (k) { copy[k] = sn[k]; });
+      copy.points = pts;
+      return copy;
+    }
+    var today = o.today || null, cur = regular(snap), prev = regular(o.prev);
+    if (cur && (!today || cur.sessionDate >= today)) {
+      return { available: true, mode: "today", snap: cur, points: cur.points, sessionDate: cur.sessionDate, label: "heute", reason: "" };
+    }
+    var last = cur && today && cur.sessionDate < today ? cur : prev;
+    if (last) {
+      return { available: true, mode: "last", snap: last, points: last.points, sessionDate: last.sessionDate,
+        label: "letzte Sitzung (" + dayDe(last.sessionDate).slice(0, 6) + ")", reason: "" };
+    }
+    return none;
   }
 
   /* ------------------------------------------------------------ Waehrung */
@@ -293,7 +333,7 @@
   return {
     VERSION: VERSION, DEFAULT_DISPLAY: DEFAULT_DISPLAY, PRIMARY: PRIMARY, EXTRA: EXTRA, DEFAULT_RANGE: DEFAULT_RANGE, DAYS: DAYS, RANGE_KEY: RANGE_KEY,
     canonical: canonical, order: order, startRange: startRange, rememberedRange: rememberedRange, rememberRange: rememberRange,
-    intradayEntry: intradayEntry, covers: covers, slice: slice,
+    intradayEntry: intradayEntry, intradayView: intradayView, covers: covers, slice: slice,
     displayCurrency: displayCurrency, displaySeries: displaySeries, displaySnapshot: displaySnapshot,
     displayLevel: displayLevel, displayHead: displayHead, currencyControl: currencyControl,
     currencyNote: currencyNote, ensureDisplay: ensureDisplay
