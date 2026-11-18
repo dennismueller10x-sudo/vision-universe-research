@@ -73,9 +73,14 @@ async function http(url, opts = {}, versuch = 0) {
  * {error:{code:"maxlag"}} statt Daten. Lauf 42210753943 (06.11.2026)
  * nahm das als "nichts gefunden" und verlor 27 freigegebene Commons-Logos
  * aus der Namenszuordnung. Jetzt: warten und wiederholen, sonst abbrechen.
+ * Laeuft der Lag laenger (Laeufe 17.11. und 16.11.2026: "wdqs1012 97 s lagged",
+ * nach 6 Wiederholungen Abbruch, nichts committet), wird nach 3 Versuchen
+ * ohne maxlag weitergelesen: maxlag ist Hoeflichkeit fuer Schreiber, die
+ * Leseabfragen laufen seriell und sind davon nicht betroffen.
  */
 async function mwApi(url, versuche = 6) {
   for (let v = 0; ; v++) {
+    if (v >= 3) url = url.replace(/&maxlag=\d+/, "");
     const data = await (await http(url)).json();
     if (!data.error) return data;
     if (v >= versuche) throw new Error(`MediaWiki-API ${data.error.code || "Fehler"}: ${String(data.error.info || "").slice(0, 120)}`);
