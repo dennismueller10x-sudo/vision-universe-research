@@ -313,6 +313,16 @@ async function main() {
       assert(/Linien/i.test(await page.locator(".tc-guide h3").innerText()), "Chart erklären: Schritt 3 ist nicht das Linienbündel");
       assert(await page.locator('.tc-togs [data-layer="ema"][aria-pressed="true"]').count() === 1, "EMA-Bänder nicht eingeschaltet");
       assert(await page.locator(".tc-simple-chart .tc-layers .tc-ema--fast").count() === 1 && await page.locator(".tc-simple-chart .tc-layers .tc-ema--slow").count() === 1, "EMA-Bänder nicht gezeichnet");
+      /* EMA-Faecher: sechs schnelle und sechs langsame Linien (Owner 18.11.2026). */
+      assert(await page.locator(".tc-simple-chart .tc-ema-line--fast").count() === 6 && await page.locator(".tc-simple-chart .tc-ema-line--slow").count() === 6, "EMA-Fächer: nicht 6 + 6 Linien");
+      /* Fingerzoom (nur Technical): + verkleinert den Ausschnitt, Zurücksetzen zeigt wieder den ganzen Zeitraum. */
+      const nPts = () => page.evaluate(() => (document.querySelector(".tc-simple-chart svg").__vuGeometry || {}).pts.length);
+      const full = await nPts();
+      await page.locator(".tc-simple-chart .qc-zoom-btn", { hasText: "+" }).click();
+      await page.waitForFunction((n) => (document.querySelector(".tc-simple-chart svg").__vuGeometry || {}).pts.length < n, full);
+      assert(/im Ausschnitt/.test(await page.locator(".tc-simple-chart .qc-head").innerText()), "Zoom: Kopf nennt keinen Ausschnitt");
+      await page.locator(".tc-simple-chart .qc-zoom-reset").click();
+      await page.waitForFunction((n) => (document.querySelector(".tc-simple-chart svg").__vuGeometry || {}).pts.length === n, full);
       /* Wochenchart (5J): Baender aus der langen Wochenreihe ueber die ganze Breite; Ebenen fangen keine Klicks ab. */
       await page.locator('.tc-simple-chart .qc-ranges button[data-range="5Y"]').click();
       await page.waitForFunction(() => { const f = document.querySelector(".tc-simple-chart .tc-ema--fast"), s = f && f.ownerSVGElement; return f && s && f.getBBox().width > s.getBBox().width * 0.8; }, null, { timeout: 15000 });

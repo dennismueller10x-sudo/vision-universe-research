@@ -1250,8 +1250,24 @@ div.tc-signal{grid-template-columns:44px minmax(0,1fr) auto}
 :root:not([data-theme=dark]) .tc-satz .tc-note{color:#5d636b}
 /* EMA-Bänder (ema-cluster.js): schnelles Bündel 3–15, langsames 30–60 Tage */
 .tc-layers .tc-ema{stroke:none}
-.tc-layers .tc-ema--fast{fill:#000;opacity:.32}
-.tc-layers .tc-ema--slow{fill:var(--vu-mute,#6e6e6e);opacity:.2}
-:root[data-theme=dark] .tc-layers .tc-ema--fast{fill:var(--vu-lime,#c8f531);opacity:.5}
-:root[data-theme=dark] .tc-layers .tc-ema--slow{fill:#9b9b9b;opacity:.28}
+/* Faecher deutlich (Owner 18.11.2026): schnelles Buendel neongruen mit dunkelgruenen Linien, langsames grau mit schwarzen Linien. */
+.tc-layers .tc-ema--fast{fill:var(--vu-lime,#c8f531);opacity:.55}
+.tc-layers .tc-ema--slow{fill:#6e6e6e;opacity:.18}
+.tc-layers .tc-ema-line{stroke-width:.9;vector-effect:non-scaling-stroke}
+.tc-layers .tc-ema-line--fast{stroke:#4f6b00;opacity:.85}
+.tc-layers .tc-ema-line--slow{stroke:#000;opacity:.45}
+.tc-layers .tc-ema-edge{stroke-width:1.6}
+.tc-layers .tc-ema-edge--fast{stroke:#4f6b00}
+.tc-layers .tc-ema-edge--slow{stroke:#000;opacity:.7}
+:root[data-theme=dark] .tc-layers .tc-ema--fast{opacity:.35}
+:root[data-theme=dark] .tc-layers .tc-ema--slow{fill:#9b9b9b;opacity:.22}
+:root[data-theme=dark] .tc-layers .tc-ema-line--fast,:root[data-theme=dark] .tc-layers .tc-ema-edge--fast{stroke:var(--vu-lime,#c8f531)}
+:root[data-theme=dark] .tc-layers .tc-ema-line--slow,:root[data-theme=dark] .tc-layers .tc-ema-edge--slow{stroke:#bdbdbd}
+/* Fingerzoom (quant/app/chart.js, Option zoom, nur Technical) */
+.qc-zoom{display:flex;align-items:center;gap:6px;margin:6px 0 2px}
+.qc-zoom[hidden],.qc-zoom-btn[hidden]{display:none}
+.qc-zoom-btn{min-width:44px;height:36px;padding:0 12px;border:0;border-radius:999px;background:var(--vu-card,#f4f4f4);color:var(--vu-ink,#000);font:800 17px/1 var(--vu-font,Inter,sans-serif);cursor:pointer}
+.qc-zoom-reset{font-size:13px;background:var(--vu-ink,#000);color:var(--vu-inv,#fff)}
+.qc-zoom-hint{margin-left:auto;font-size:12px;color:var(--vu-mute,#6e6e6e)}
+.qc-chart.is-zoomed .qc-zoom-hint{display:none}
 svg .tc-layers{pointer-events:none}
