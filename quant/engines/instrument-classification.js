@@ -60,7 +60,8 @@
     "AMEX": "US", "NYSE AMERICAN": "US", "BATS": "US", "IEX": "US",
     "OTC": "US", "PINK": "US", "OTCMKTS": "US", "NMFQS": "US",
     "NASDAQ GLOBAL SELECT": "US", "NASDAQ CAPITAL MARKET": "US",
-    "NASDAQ GLOBAL MARKET": "US"
+    "NASDAQ GLOBAL MARKET": "US",
+    "TXSE": "US"   /* Texas Stock Exchange (us-security-master.js, US_PRIMARY_EXCHANGES) */
   };
 
   /* Ausserboerslich gehandelte Titel sind Aktien - aber sie sind nicht

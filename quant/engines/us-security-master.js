@@ -93,7 +93,10 @@
     "NASDAQ": true, "NYSE": true, "NYSE ARCA": true, "NYSE MKT": true,
     "NYSE AMERICAN": true, "AMEX": true, "BATS": true, "IEX": true,
     "NASDAQ GLOBAL SELECT": true, "NASDAQ CAPITAL MARKET": true,
-    "NASDAQ GLOBAL MARKET": true
+    "NASDAQ GLOBAL MARKET": true,
+    /* Texas Stock Exchange, nationale Wertpapierboerse seit 2024 (SEC-Zulassung),
+       Handel seit 2026; erster Fall TXCP (8-A12B 0001077428-26-000068). */
+    "TXSE": true
   };
 
   function norm(v) { return v === null || v === undefined ? "" : String(v).trim(); }
@@ -946,6 +949,163 @@
     return { applied: applied, notApplied: notApplied };
   }
 
+  /* ----------------------------------- BELEGTE BOERSENWECHSEL (Register)
+
+     quant/config/security-master-exchange-transfer.json. Wechselt eine
+     Aktie derselben Emittentin (gleiche CIK) die Boerse, beendet Tiingo
+     die bisherige Zeile und beginnt eine Folgezeile - beim ersten Fall
+     (TXCP: NASDAQ -> Texas Stock Exchange, 2026) OHNE Boersenangabe.
+     Die Folgezeile ist dann EXCHANGE_MISSING (REVIEW), die beendete faellt
+     nach staleDays aus der Eignung: der Titel ginge verloren, obwohl er
+     belegt weiter notiert.
+
+     Ein Eintrag ordnet GENAU EINER Anbieterzeile (Ticker, Beginn, leere
+     oder gleichlautende Boerse) die belegte Boerse zu und loest die
+     beendete Zeile ab (dropped_row). Wirkung nur, wenn alles passt: genau
+     diese zwei Zeilen unter dem Ticker, gleiche Gattung und Waehrung,
+     die Altzeile endet am registrierten Tag, die Folgezeile beginnt danach,
+     ein Bestandstitel des Tickers (falls vorhanden) traegt die registrierte
+     securityId. Pflicht: dieselbe CIK, eine 8-A12B-Registrierung an der
+     neuen Boerse und eine zitierte Meldung derselben CIK. Sonst bleibt alles
+     wie ohne Register und der Lauf meldet den Eintrag als nicht angewandt.
+     Ein fehlerhaftes Register bricht den Lauf ab (fail closed). Die
+     EDVA-Regel des Doppelzeilen-Registers (Boersenwechsel ausgeschlossen)
+     bleibt unberuehrt. */
+  var EXCHANGE_TRANSFER_SCHEMA = "security-master-exchange-transfer-1.0.0";
+  var EXCHANGE_TRANSFER_KEYS = ["securityId", "ticker", "cik", "assetType", "instrumentType", "currency",
+    "from", "to", "event", "filings", "reviewedAt"];
+  var EXCHANGE_TRANSFER_MAX_DAYS = 7;
+
+  /** Register -> Index je Ticker. null/undefined -> null. Wirft bei jedem Formfehler. */
+  function indexExchangeTransfer(doc) {
+    if (doc === null || doc === undefined) return null;
+    function fail(msg) { throw new Error("EXCHANGE_TRANSFER_INVALID: " + msg); }
+    if (!doc || typeof doc !== "object" || doc.schemaVersion !== EXCHANGE_TRANSFER_SCHEMA) {
+      fail("schemaVersion " + EXCHANGE_TRANSFER_SCHEMA + " erwartet");
+    }
+    if (!Array.isArray(doc.records)) fail("records[] fehlt");
+    var by = {}, ids = {};
+    doc.records.forEach(function (r, i) {
+      function bad(msg) { fail("records[" + i + "] " + msg); }
+      if (!r || typeof r !== "object" || Array.isArray(r)) bad("kein Objekt");
+      Object.keys(r).forEach(function (k) { if (EXCHANGE_TRANSFER_KEYS.indexOf(k) < 0) bad("unbekanntes Feld " + k); });
+      EXCHANGE_TRANSFER_KEYS.forEach(function (k) { if (r[k] === undefined || r[k] === null) bad("Pflichtfeld " + k + " fehlt"); });
+      if (!nonEmpty(r.ticker) || r.ticker !== upper(r.ticker)) bad("ticker");
+      if (!/^ref_[A-Z0-9_]+$/.test(r.securityId)) bad("securityId " + r.securityId);
+      if (!CIK_RE.test(r.cik)) bad("cik");
+      if (!nonEmpty(r.assetType) || CLASSES.indexOf(r.instrumentType) < 0) bad("Gattung");
+      if (!/^[A-Z]{3}$/.test(r.currency)) bad("currency");
+      if (!isIsoDay(r.reviewedAt)) bad("reviewedAt");
+      var f = r.from, t = r.to, ev = r.event;
+      if (!f || !nonEmpty(f.exchange) || f.exchange !== upper(f.exchange) || !isIsoDay(f.startDate) || !isIsoDay(f.endDate)) {
+        bad("from braucht exchange, startDate, endDate");
+      }
+      if (!US_PRIMARY_EXCHANGES[f.exchange]) bad("from.exchange " + f.exchange + " ist kein regulaerer US-Platz");
+      if (!t || !nonEmpty(t.exchange) || t.exchange !== upper(t.exchange) || !isIsoDay(t.startDate)) bad("to braucht exchange, startDate");
+      if (!US_PRIMARY_EXCHANGES[t.exchange]) bad("to.exchange " + t.exchange + " ist kein regulaerer US-Platz");
+      if (sameVenue(f.exchange, t.exchange)) bad("kein Boersenwechsel (gleiche Boerse)");
+      if (t.providerExchange !== null && t.providerExchange !== t.exchange) bad("to.providerExchange nur null (leer) oder gleich to.exchange");
+      if (!(f.endDate >= f.startDate) || !(t.startDate > f.endDate)) bad("Folgezeile muss nach dem Ende der Altzeile beginnen");
+      if (!ev || !nonEmpty(ev.kind) || !isIsoDay(ev.effectiveDate)) bad("event");
+      /* venueEffectiveDate: erster Handelstag an der neuen Boerse. Der Anbieter kann die Zeilen spaeter
+         umstellen (TXCP: Boersenwechsel 08.10., Umstellung beim Anbieter mit dem Symbolwechsel 09.11.);
+         effectiveDate ist der Tag, an dem der Anbieter umstellt, und traegt die 7-Tage-Pruefung. */
+      if (!isIsoDay(ev.venueEffectiveDate) || ev.venueEffectiveDate > ev.effectiveDate) bad("event.venueEffectiveDate");
+      if (Math.abs(dayDistance(ev.effectiveDate, f.endDate)) > EXCHANGE_TRANSFER_MAX_DAYS ||
+          Math.abs(dayDistance(ev.effectiveDate, t.startDate)) > EXCHANGE_TRANSFER_MAX_DAYS) {
+        bad("Ende der Altzeile und Beginn der Folgezeile hoechstens " + EXCHANGE_TRANSFER_MAX_DAYS + " Tage vom Ereignis");
+      }
+      if (!Array.isArray(r.filings) || !r.filings.length) bad("filings[] fehlt");
+      var reg = null, quoted = false;
+      r.filings.forEach(function (x, j) {
+        if (!x || !nonEmpty(x.form) || !ACCESSION_RE.test(x.accession || "") || !isIsoDay(x.filingDate) ||
+            x.cik !== r.cik || !nonEmpty(x.url)) {
+          bad("filings[" + j + "] braucht form, accession, filingDate, url und die CIK des Eintrags");
+        }
+        if (x.filingDate > ev.effectiveDate) bad("filings[" + j + "] nach dem Ereignis eingereicht");
+        if (x.form === "8-A12B") reg = reg || x;
+        if (typeof x.quote === "string" && x.quote.length >= 20) quoted = true;
+      });
+      if (!reg) bad("keine 8-A12B-Registrierung an der neuen Boerse");
+      if (!quoted) bad("keine zitierte Meldung");
+      if (by[r.ticker]) bad("ticker " + r.ticker + " doppelt");
+      if (ids[r.securityId]) bad("securityId " + r.securityId + " doppelt");
+      ids[r.securityId] = true;
+      by[r.ticker] = Object.freeze({
+        securityId: r.securityId, ticker: r.ticker, cik: r.cik,
+        assetType: r.assetType, instrumentType: r.instrumentType, currency: r.currency,
+        fromExchange: f.exchange, fromStartDate: f.startDate, fromEndDate: f.endDate,
+        toExchange: t.exchange, toStartDate: t.startDate, toProviderExchange: t.providerExchange,
+        effectiveDate: ev.effectiveDate, venueEffectiveDate: ev.venueEffectiveDate,
+        eventKind: ev.kind, accession: reg.accession, form: reg.form
+      });
+    });
+    return by;
+  }
+
+  /** Wendet das Register auf die ROHEN Anbieterzeilen an (vor der Klassierung,
+   *  damit die Folgezeile mit der belegten Boerse klassiert wird).
+   *  -> { rows (neue Liste), applied[], notApplied[], byRow (Map Folgezeile -> Beleg) } */
+  function applyExchangeTransfer(index, providerRows, baselineByTicker) {
+    var applied = [], notApplied = [], byRow = new Map();
+    if (!index) return { rows: providerRows, applied: applied, notApplied: notApplied, byRow: byRow };
+    var groups = {};
+    providerRows.forEach(function (r, i) {
+      var t = upper(r.ticker);
+      if (index[t]) (groups[t] = groups[t] || []).push(i);
+    });
+    var drop = {};
+    Object.keys(index).sort().forEach(function (t) {
+      var e = index[t];
+      function skip(reason) { notApplied.push({ securityId: e.securityId, ticker: t, reason: reason }); }
+      var base = baselineByTicker[t];
+      if (base && (base.length !== 1 || base[0].securityId !== e.securityId)) return skip("BASELINE_SECURITY_ID_MISMATCH");
+      var g = groups[t] || [];
+      if (g.length !== 2) return skip("PROVIDER_ROWS_FOR_TICKER:" + g.length);
+      var oldI = g.filter(function (i) {
+        var r = providerRows[i];
+        return upper(r.exchange) === e.fromExchange && r.startDate === e.fromStartDate && r.endDate === e.fromEndDate;
+      });
+      var newI = g.filter(function (i) {
+        var r = providerRows[i], ex = upper(r.exchange);
+        return r.startDate === e.toStartDate && (e.toProviderExchange === null ? ex === "" : ex === e.toExchange);
+      });
+      if (oldI.length !== 1) return skip("FROM_ROW_NOT_FOUND");
+      if (newI.length !== 1) return skip("TO_ROW_NOT_FOUND");
+      var o = providerRows[oldI[0]], n = providerRows[newI[0]];
+      for (var k = 0; k < 2; k++) {
+        var r = k ? n : o;
+        if (r.assetType !== e.assetType) return skip("ASSET_TYPE_MISMATCH");
+        if (upper(r.currency) !== e.currency) return skip("CURRENCY_MISMATCH");
+      }
+      drop[oldI[0]] = true;
+      var moved = {};
+      Object.keys(n).forEach(function (key) { moved[key] = n[key]; });
+      moved.exchange = e.toExchange;
+      var info = {
+        schemaVersion: EXCHANGE_TRANSFER_SCHEMA, cik: e.cik, event: e.eventKind, effectiveDate: e.effectiveDate,
+        venueEffectiveDate: e.venueEffectiveDate, form: e.form, accession: e.accession,
+        provider_exchange: e.toProviderExchange,
+        dropped_row: { canonical_id: canonicalId({ exchange: e.fromExchange, ticker: t, startDate: e.fromStartDate }),
+                       start_date: o.startDate, end_date: o.endDate }
+      };
+      byRow.set(moved, { info: info, instrumentType: e.instrumentType });
+      groups[t].replaced = { index: newI[0], row: moved };
+      applied.push({ securityId: e.securityId, ticker: t,
+                     canonicalId: canonicalId({ exchange: e.toExchange, ticker: t, startDate: e.toStartDate }),
+                     droppedCanonicalId: info.dropped_row.canonical_id, accession: e.accession });
+    });
+    if (!applied.length) return { rows: providerRows, applied: applied, notApplied: notApplied, byRow: byRow };
+    var replace = {};
+    Object.keys(groups).forEach(function (t) { if (groups[t].replaced) replace[groups[t].replaced.index] = groups[t].replaced.row; });
+    var rows = [];
+    providerRows.forEach(function (r, i) {
+      if (drop[i]) return;
+      rows.push(replace[i] || r);
+    });
+    return { rows: rows, applied: applied, notApplied: notApplied, byRow: byRow };
+  }
+
   /**
    * Baut den Wertpapierstamm und den Abgleich.
    *
@@ -1020,9 +1180,26 @@
     var classifyOpts = { today: today, staleDays: input.staleDays, listedRoots: listedRoots,
                          delistingEvidence: delistingIndex };
 
+    /* Belegte Boersenwechsel (Register oben): VOR der Klassierung. Ohne Register (null) kein Eingriff. */
+    var transferIndex = indexExchangeTransfer(input.exchangeTransfer);
+    var transfer = applyExchangeTransfer(transferIndex, providerRows, baselineByTicker);
+    providerRows = transfer.rows;
+
     providerRows.forEach(function (r) {
       var c = classifySecurity(r, classifyOpts);
       if (!c.ticker) return;
+      var moved = transfer.byRow.get(r);
+      if (moved) {
+        if (c.instrumentType !== moved.instrumentType) {
+          /* Gattung passt nicht: Beleg nicht anwenden waere zu spaet (Zeile schon ersetzt) - abbrechen. */
+          throw new Error("EXCHANGE_TRANSFER_INVALID: " + c.ticker + " klassiert als " + c.instrumentType +
+                          ", Register verlangt " + moved.instrumentType);
+        }
+        c.exchangeTransfer = moved.info;
+        c.activeBasis = c.activeBasis + " (Folgezeile nach Boersenwechsel derselben Emittentin CIK " + moved.info.cik +
+          "; Boerse " + c.exchange + " belegt: " + moved.info.form + " " + moved.info.accession + "; Altzeile " +
+          moved.info.dropped_row.canonical_id + " bis " + moved.info.dropped_row.end_date + " abgeloest)";
+      }
       if (!providerByTicker[c.ticker]) { providerByTicker[c.ticker] = []; tickerOrder.push(c.ticker); }
       providerByTicker[c.ticker].push(c);
       providerSeen[c.ticker] = true;
@@ -1060,6 +1237,10 @@
         if (c.duplicateResolution) {
           row.duplicate_resolution = c.duplicateResolution;
           row.review_flags.push("PROVIDER_DUPLICATE_ROW_RESOLVED");
+        }
+        if (c.exchangeTransfer) {
+          row.exchange_transfer = c.exchangeTransfer;
+          row.review_flags.push("PROVIDER_EXCHANGE_TRANSFER_RESOLVED");
         }
         row.baseline_match = !baseEntries ? "NOT_A_BASELINE_TICKER"
           : ambiguous ? "AMBIGUOUS"
@@ -1194,6 +1375,14 @@
         records: Object.keys(resolutionIndex).length,
         applied: resolution.applied,
         notApplied: resolution.notApplied
+      };
+    }
+    if (transferIndex !== null) {
+      result.exchangeTransfer = {
+        schemaVersion: EXCHANGE_TRANSFER_SCHEMA,
+        records: Object.keys(transferIndex).length,
+        applied: transfer.applied,
+        notApplied: transfer.notApplied
       };
     }
     return result;
@@ -1618,6 +1807,9 @@
     DUPLICATE_RESOLUTION_SCHEMA: DUPLICATE_RESOLUTION_SCHEMA,
     DUPLICATE_RESOLUTION_LIMITS: DUPLICATE_RESOLUTION_LIMITS,
     indexDuplicateResolution: indexDuplicateResolution,
+    indexExchangeTransfer: indexExchangeTransfer,
+    applyExchangeTransfer: applyExchangeTransfer,
+    EXCHANGE_TRANSFER_SCHEMA: EXCHANGE_TRANSFER_SCHEMA,
     canonicalId: canonicalId,
     parseCanonicalId: parseCanonicalId,
     sameVenue: sameVenue,
