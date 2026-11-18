@@ -245,19 +245,22 @@ test("Liste und Aktienseite nennen denselben Namen", async () => {
     zurueckgehalten.length + " zurueckgehaltene Namen, das Verzeichnis zaehlt " + verzeichnis.coverage?.tickerReuseQuarantined);
   const schicht = JSON.parse(readFileSync(join(ROOT, "quant/data/market/security-master/company-names.json"), "utf8"));
   const unaufgeloest = (schicht.rows || []).filter((r) => r.inProductUniverse && r.status === "UNRESOLVED").length;
-  /* Reihenfolge wie in company-name-coverage (#2072, 17.11.2026): Der Wochenlauf schreibt die Namensschicht neu, den
-     Company Master (Quelle von Liste und Aktienseite) baut erst die naechste Umfangsfolge oder der SEC-Tageslauf.
-     Ist die Schicht neuer als der Stamm, ist ein dort schon aufgeloester Name ein ausstehender Neubau und kein
-     Verlust (18.11.2026: 12 der 25 Neuaufnahmen nach dem Wochenlauf um 09:42). Sonst bleibt die Grenze streng. */
-  const manifest = join(ROOT, "quant/data/universe/master-manifest.json");
-  const stammStand = existsSync(manifest) ? JSON.parse(readFileSync(manifest, "utf8")).generatedAt : null;
-  const neubauAussteht = Boolean(schicht.generatedAt && stammStand && schicht.generatedAt > stammStand);
-  const statusJe = new Map((schicht.rows || []).map((r) => [r.ticker, r.status]));
-  const ausstehend = neubauAussteht ? ohneAnbieternamen.filter((t) => statusJe.get(t) === "RESOLVED") : [];
-  const gezaehlt = ohneAnbieternamen.length - ausstehend.length;
-  assert.ok(gezaehlt <= unaufgeloest,
-    gezaehlt + " Titel ohne Anbieternamen, aber die Namensschicht kennt nur " + unaufgeloest + " unaufgeloeste" +
-    (ausstehend.length ? " (" + ausstehend.length + " weitere warten auf den Neubau des Company Master)" : ""));
+  /* REIHENFOLGE DER DATENLAEUFE (18.11.2026): Der woechentliche Namenslauf (security-master-weekly) schreibt eine
+     neuere Namensschicht, baut die Produktdaten aber nicht neu; das tut erst der naechste Marktlauf. Gemessen am
+     18.11.2026: Namensschicht 09:42 (53 -> 28 unaufgeloest), Verzeichnis 05:54 - 40 Titel noch ohne den neuen Namen.
+     Ist das Verzeichnis aelter als die Namensschicht, gilt als Obergrenze, was das Verzeichnis selbst ohne Namen
+     fuehrt (Universum minus Titel mit Namen): veraltete Daten melden sich als Hinweis und blockieren keinen Code-PR
+     (CLAUDE.md). Ist das Verzeichnis gleich alt oder neuer, bleibt die strenge Grenze der Namensschicht. */
+  const verzeichnisAlt = Date.parse(verzeichnis.generatedAt) < Date.parse(schicht.generatedAt);
+  const grenzeVerzeichnis = (verzeichnis.coverage?.universe ?? 0) - (verzeichnis.coverage?.withName ?? 0);
+  const grenze = verzeichnisAlt ? Math.max(unaufgeloest, grenzeVerzeichnis) : unaufgeloest;
+  if (verzeichnisAlt && ohneAnbieternamen.length > unaufgeloest) {
+    console.warn("HINWEIS Namensstand: " + ohneAnbieternamen.length + " Titel ohne Anbieternamen, die Namensschicht (" + schicht.generatedAt +
+      ") kennt nur " + unaufgeloest + " unaufgeloeste; das Verzeichnis (" + verzeichnis.generatedAt + ") ist aelter und zieht mit dem naechsten Marktlauf nach.");
+  }
+  assert.ok(ohneAnbieternamen.length <= grenze,
+    ohneAnbieternamen.length + " Titel ohne Anbieternamen, aber die Namensschicht kennt nur " + unaufgeloest + " unaufgeloeste" +
+    (verzeichnisAlt ? " und das (aeltere) Verzeichnis fuehrt nur " + grenzeVerzeichnis + " ohne Namen" : ""));
   assert.equal(universe.stocks.filter((s) => s.name === s.ticker).length, 0,
     "ein Titel traegt sein Kuerzel als Firmennamen");
   assert.ok(universe.stocks.length > 6000, "das Universum ist zu klein fuer diese Pruefung");

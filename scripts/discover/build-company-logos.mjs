@@ -31,7 +31,7 @@ import { createHash } from "node:crypto";
 import {
   normalizeSite, parseIconLinks, parseManifest, orderCandidates, toPng, genericIcons,
   WEB_USER_AGENT, websiteFromFiling, filingText, latestReport, rootDomain, isLightOnTransparent,
-  normalizeLogo, logoFilings, secLogoImages, parseIsharesUsTickers, WIDE_RATIO
+  normalizeLogo, logoFilings, secLogoImages, parseIsharesUsTickers, WIDE_RATIO, keinLogoErwartet
 } from "./company-logos-web.mjs";
 import {
   USER_AGENT, THUMB_WIDTH, SPARQL_BY_CIK, SPARQL_BY_TICKER, SPARQL_SITE_BY_CIK, SPARQL_SITE_BY_TICKER, MIME_EXT,
@@ -73,9 +73,14 @@ async function http(url, opts = {}, versuch = 0) {
  * {error:{code:"maxlag"}} statt Daten. Lauf 42210753943 (06.11.2026)
  * nahm das als "nichts gefunden" und verlor 27 freigegebene Commons-Logos
  * aus der Namenszuordnung. Jetzt: warten und wiederholen, sonst abbrechen.
+ * Laeuft der Lag laenger (Laeufe 17.11. und 16.11.2026: "wdqs1012 97 s lagged",
+ * nach 6 Wiederholungen Abbruch, nichts committet), wird nach 3 Versuchen
+ * ohne maxlag weitergelesen: maxlag ist Hoeflichkeit fuer Schreiber, die
+ * Leseabfragen laufen seriell und sind davon nicht betroffen.
  */
 async function mwApi(url, versuche = 6) {
   for (let v = 0; ; v++) {
+    if (v >= 3) url = url.replace(/&maxlag=\d+/, "");
     const data = await (await http(url)).json();
     if (!data.error) return data;
     if (v >= versuche) throw new Error(`MediaWiki-API ${data.error.code || "Fehler"}: ${String(data.error.info || "").slice(0, 120)}`);
@@ -678,6 +683,10 @@ for (const [id, set] of Object.entries(INDEX_MITGLIEDER)) {
 
 const sortiert = (o) => Object.fromEntries(Object.keys(o).sort().map((k) => [k, o[k]]));
 const generatedAt = new Date().toISOString();
+/* SPACs und Fonds ohne Website: ohne Logo ist der Normalfall (eigene Kategorie, ehrliche Quote). */
+const nameOf = new Map(universe.map((r) => [r.symbol, r.name]));
+for (const [sym, why] of reasons) if (why === "KEINE_WEBSITE_BEKANNT" && !files[sym] && keinLogoErwartet(nameOf.get(sym))) reasons.set(sym, "KEIN_LOGO_ERWARTET");
+const erwartetOhne = [...reasons].filter(([sym, why]) => why === "KEIN_LOGO_ERWARTET" && !files[sym]).length;
 const grundZaehler = {};
 for (const r of reasons.values()) { const k = r.split(":")[0]; grundZaehler[k] = (grundZaehler[k] || 0) + 1; }
 
@@ -701,7 +710,7 @@ if (webSites) writeFileSync(join(OUT, "sites.json"), JSON.stringify({
 }, null, 1) + "\n");
 writeFileSync(join(OUT, "missing.json"), JSON.stringify({
   generatedAt,
-  note: "Titel ohne Logo und der Grund. KEIN_WIKIDATA_LOGO: Wikidata kennt fuer die Firma kein Logo (oder die Firma nicht). NAME_ODER_CIK_WIDERSPRICHT / MEHRERE_ITEMS: Zuordnung unklar, deshalb bewusst ohne Logo. LIZENZ_NICHT_FREI / EINSCHRAENKUNG / URHEBER_FEHLT: kein Logo der Firma mit freier Lizenz. WEB_*: die Website brachte kein brauchbares Icon (keins, zu klein, generisch). WARTET_AUF_SICHTPRUEFUNG: Logo gefunden, geht nach der Sichtpruefung live.",
+  note: "Titel ohne Logo und der Grund. KEIN_WIKIDATA_LOGO: Wikidata kennt fuer die Firma kein Logo (oder die Firma nicht). NAME_ODER_CIK_WIDERSPRICHT / MEHRERE_ITEMS: Zuordnung unklar, deshalb bewusst ohne Logo. LIZENZ_NICHT_FREI / EINSCHRAENKUNG / URHEBER_FEHLT: kein Logo der Firma mit freier Lizenz. WEB_*: die Website brachte kein brauchbares Icon (keins, zu klein, generisch). KEIN_LOGO_ERWARTET: Mantelgesellschaft (SPAC) oder Fonds ohne bekannte Website - ohne Logo ist hier der Normalfall. WARTET_AUF_SICHTPRUEFUNG: Logo gefunden, geht nach der Sichtpruefung live.",
   reasons: sortiert(Object.fromEntries([...reasons].filter(([sym]) => !files[sym])))
 }, null, 1) + "\n");
 writeFileSync(join(OUT, "summary.json"), JSON.stringify({
@@ -709,6 +718,9 @@ writeFileSync(join(OUT, "summary.json"), JSON.stringify({
   universe: universe.length,
   withLogo: Object.keys(files).length,
   pct: Math.round((Object.keys(files).length / Math.max(1, universe.length)) * 1000) / 10,
+  /* Quote ohne Mantelgesellschaften/Fonds (KEIN_LOGO_ERWARTET): was ein Firmenlogo haben koennte. */
+  withoutExpected: erwartetOhne,
+  pctOfLogoCapable: Math.round((Object.keys(files).length / Math.max(1, universe.length - erwartetOhne)) * 1000) / 10,
   downloaded: geladen + webNeu, unchanged: behalten + webBehalten,
   pending: wartend.sort(),
   bySource: live.reduce((a, c) => ((a[c.source] = (a[c.source] || 0) + 1), a), {}),
