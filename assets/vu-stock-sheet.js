@@ -102,7 +102,7 @@
   function move(changePct, big) {
     if (!isNum(changePct)) return "";
     var dir = changePct > 0 ? "up" : changePct < 0 ? "down" : "flat";
-    return '<span class="k-pill k-move k-move--' + dir + (big ? " k-move--big" : "") + '" role="img" aria-label="' + (changePct > 0 ? "Plus " : changePct < 0 ? "Minus " : "Unverändert ") + num(Math.abs(changePct), 2) + ' Prozent"><span aria-hidden="true">' + (dir === "up" ? "▲" : dir === "down" ? "▼" : "◆") + " " + esc(pct(changePct, 2)) + "</span></span>";
+    return '<span class="k-pill k-move k-move--' + dir + (big ? " k-move--big" : "") + '" role="img" aria-label="' + (changePct > 0 ? "Plus " : changePct < 0 ? "Minus " : "Unverändert ") + num(Math.abs(changePct), Math.abs(changePct) >= 100 ? 0 : 2) + ' Prozent"><span aria-hidden="true">' + (dir === "up" ? "▲" : dir === "down" ? "▼" : "◆") + " " + esc(pct(changePct, Math.abs(changePct) >= 100 ? 0 : 2)) + "</span></span>";
   }
   function icon(id, s) { return '<svg width="' + s + '" height="' + s + '" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="' + SPRITE + esc(id) + '"/></svg>'; }
   var HEART = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.3-9.4C1.4 8 3.6 4.5 7 4.5c2 0 3.7 1.1 5 3 1.3-1.900 3-3 5-3 3.400 0 5.600 3.500 4.300 7.100C19.500 16.400 12 21 12 21z"/></svg>';
@@ -374,7 +374,9 @@
     if (v.valuation) cards.push(["Bewertung", v.valuation]);
     return '<div class="k-fl k-g12">' + logo(v.ticker, "b") + '<div class="k-f1"><h2 class="k-h2" style="font-size:24px">' + esc(v.name) + '</h2><div class="k-sm k-mut">' + esc(v.ticker) + "</div></div>" +
       '<button type="button" class="k-rnd k-tap k-heart" data-vsk-heart="' + esc(v.ticker) + '" aria-pressed="' + (opt.saved ? "true" : "false") + '" aria-label="' + esc(v.ticker) + ' merken" style="width:44px;height:44px">' + HEART + "</button></div>" +
-      '<div class="k-bleed" data-vsk-chart style="margin-top:12px">' + (opt.values ? line(opt.values, opt.width || 430, 130, { fill: true, base: true, sw: 2.2 }) : "") + "</div>" +
+      /* Owner 18.11.2026: Kurs mit Pille über dem Chart; die Pille folgt dem Zeitraum der Leiste darunter. */
+      (v.price && isNum(v.price.value) ? '<div class="k-fl k-g8 k-mt12" style="align-items:center;flex-wrap:wrap"><span class="k-num" style="font-size:26px">' + esc(money(v.price.value, v.price.currency)) + '</span><span data-vsk-move>' + move(v.price.changePct) + '</span></div><div class="k-xs k-mut k-b7 k-mt4" data-vsk-since>1 Tag · zum Vortag</div>' : "") +
+      '<div data-vsk-chart style="margin-top:8px">' + (opt.values ? line(opt.values, opt.width || 430, 130, { fill: true, base: true, sw: 2.2 }) : "") + "</div>" +
       (cards.length ? '<div class="k-fl k-g6 k-mt12" style="align-items:stretch">' + cards.map(function (c) {
         return '<div class="k-f1 k-card" style="padding:10px;border-radius:16px"><div class="k-xs k-mut k-b7">' + c[0] + '</div><div class="k-sm k-b8 k-mt4' + (c[1].tone === "strong" ? " k-lc" : "") + '" style="line-height:1.1">' + esc(c[1].word) + "</div></div>";
       }).join("") + "</div>" : "") +
@@ -448,6 +450,71 @@
   function loadSeries(ticker, long) {
     return getJSON(seriesPath(ticker, long)).then(function (s) {
       return s && s.status === "CALCULATED" && Array.isArray(s.points) ? s.points.filter(function (p) { return p && typeof p[0] === "string" && isNum(p[1]); }) : [];
+    });
+  }
+  /* ------------------------------------------------------------- Kurschart
+     Owner 18.11.2026: überall dieselbe Leiste 1T 1W 1M 6M 1J 3J 5J Max (assets/vu-chart.js, fullBar), mit Zeit- und
+     Kursachse; die Pille neben dem Kurs folgt dem Zeitraum (onRange -> VUChart.rangeChange). Quellen wie die Module:
+     Tagesschlüsse discover-series (ein Jahr), Wochenschlüsse discover-series-long (seit Beginn, am Ende um die jüngeren
+     Tagesschlüsse ergänzt) und der Tagesverlauf aus quant/data/market/intraday (nur auf Wunsch geladen). */
+  var INTRADAY_INDEX = "/quant/data/market/intraday/index.json", RANGE_KEY = "vu-chart-range-v1";
+  var DAYS = { "1W": 7, "1M": 31, "6M": 183, "1J": 366, "3J": 1096, "5J": 1827 };
+  function windowOf(points, days) {
+    if (!days || !points.length) return points;
+    var from = new Date(Date.parse(points[points.length - 1][0]) - days * 864e5).toISOString().slice(0, 10);
+    return points.filter(function (p) { return p[0] >= from; });
+  }
+  function coversDays(points, days) { return points.length > 1 && (Date.parse(points[points.length - 1][0]) - Date.parse(points[0][0])) / 864e5 >= days * 0.95; }
+  function loadIntraday(ticker) {
+    var I = ident();
+    return getJSON(INTRADAY_INDEX).then(function (ix) {
+      if (!ix || !I) return null;
+      var e = ix.entries && ix.entries[ticker], path = e && e.path;
+      if (!path && ix.available) {
+        var dates = Object.keys(ix.available).sort();
+        for (var i = dates.length - 1; i >= 0 && !path; i--) if ((ix.available[dates[i]] || []).indexOf(ticker) >= 0)
+          path = String(ix.pathPattern || "/quant/data/market/intraday/<sessionDate>/<securityId>.json").replace("<sessionDate>", dates[i]).replace("<securityId>", I.securityIdForTicker(ticker));
+      }
+      return path ? getJSON(path) : null;
+    }).then(function (snap) {
+      if (!snap || !Array.isArray(snap.points)) return null;
+      var day = String(snap.sessionDate || "").slice(0, 10), iso = function (hm) { return day + "T" + String(hm).slice(0, 5) + ":00"; };
+      var pts = snap.points.filter(function (p) { return p && isNum(p[1]); }).map(function (p) { return [iso(p[0]), p[1]]; });
+      return pts.length > 1 ? { points: pts, base: isNum(snap.previousClose) ? snap.previousClose : undefined, sessionEnd: snap.sessionCloseLocal ? iso(snap.sessionCloseLocal) : undefined } : null;
+    }).catch(function () { return null; });
+  }
+  /**
+   * Kurschart mit der einen Zeitleiste in host. opt: {onRange({id, pct, label}), height, label}.
+   * @returns {Promise<{dispose:function}|null>}
+   */
+  function mountChart(host, ticker, opt) {
+    var o = opt || {};
+    return Promise.all([root.VUChart ? true : script("/assets/vu-chart.js"), loadSeries(ticker)]).then(function (r) {
+      var C = root.VUChart, daily = r[1];
+      if (!C || !host.isConnected) return null;
+      var longP = null;
+      function long() {
+        if (!longP) longP = loadSeries(ticker, true).then(function (lp) {
+          if (!lp.length) return daily;
+          var last = lp[lp.length - 1][0];
+          return lp.concat(daily.filter(function (p) { return p[0] > last; }));
+        });
+        return longP;
+      }
+      var ranges = [{ id: "1T", load: function () { var me = this; return loadIntraday(ticker).then(function (d) { if (!d) return []; me.base = d.base; me.sessionEnd = d.sessionEnd; return d.points; }); } }];
+      ["1W", "1M", "6M", "1J", "3J", "5J"].forEach(function (id) {
+        ranges.push({ id: id, load: function () {
+          return coversDays(daily, DAYS[id]) ? Promise.resolve(windowOf(daily, DAYS[id])) : long().then(function (lp) { return windowOf(lp, DAYS[id]); });
+        } });
+      });
+      ranges.push({ id: "Max", load: function () { return long(); } });
+      ranges.forEach(function (x) { var f = x.load; x.load = function () { return f.call(x); }; });
+      var initial = "1J";
+      try { var mem = root.localStorage.getItem(RANGE_KEY); if (mem) initial = C.canonRange(mem === "MAX" ? "Max" : mem); } catch (e) { /* ohne Gedächtnis */ }
+      if (C.RANGES.indexOf(initial) < 0) initial = "1J";
+      return C.mount(host, { ranges: ranges, initial: initial, fullBar: true, bleed: o.bleed, currency: "USD", label: o.label || ticker, height: o.height,
+        onSelect: function (id) { try { root.localStorage.setItem(RANGE_KEY, id === "Max" ? "MAX" : id); } catch (e) { /* ohne Gedächtnis */ } },
+        onRange: function (id, g) { if (o.onRange) o.onRange(Object.assign({ id: id }, C.rangeChange(id, g))); } });
     });
   }
   function loadDetail(ticker) { return getJSON("/discover/data/stocks/US_REAL/" + encodeURIComponent(ticker) + ".json"); }
@@ -542,7 +609,13 @@
       if (!el) return false;
       el.setAttribute("data-vsk-ticker", t);
       bindHearts(el);
-      loadSeries(t).then(function (p) { if (el.isConnected) drawPreviewChart(el, p); });
+      var chartHost = el.querySelector("[data-vsk-chart]");
+      if (chartHost) mountChart(chartHost, t, { height: 170, bleed: false, onRange: function (r) {
+        var mv = el.querySelector("[data-vsk-move]"), since = el.querySelector("[data-vsk-since]");
+        var pct = r.id === "1T" && v.price && isNum(v.price.changePct) ? v.price.changePct : r.pct;
+        if (mv && isNum(pct)) mv.innerHTML = move(pct);
+        if (since) since.textContent = r.label;
+      } }).then(function (c) { if (!c) loadSeries(t).then(function (p) { if (el.isConnected) drawPreviewChart(el, p); }); });
       var cmp = el.querySelector("[data-vsk-compare]");
       if (cmp) cmp.addEventListener("click", function () { openCompare(v, partner.ticker, partner.name); });
       /* „Ganz öffnen“ mit Modul-Kontext; auf der Aktienseite derselben Aktie: nur schließen. */
@@ -575,7 +648,8 @@
     draw: Object.freeze({ line: line, bars: bars, radar: radar, ring: ring, move: move, icon: icon, logo: logo, HEART: HEART, CHEV: CHEV }),
     fmt: Object.freeze({ num: num, pct: pct, money: money, compact: compact, dateShort: dateShort, esc: esc }),
     html: Object.freeze({ preview: previewHtml, compare: compareHtml }),
-    data: Object.freeze({ ready: ready, getJSON: getJSON, load: load, loadWatch: loadWatch, loadSeries: loadSeries, loadDetail: loadDetail, seriesPath: seriesPath, script: script }),
+    data: Object.freeze({ ready: ready, getJSON: getJSON, load: load, loadWatch: loadWatch, loadSeries: loadSeries, loadIntraday: loadIntraday, loadDetail: loadDetail, seriesPath: seriesPath, script: script }),
+    chart: Object.freeze({ mount: mountChart }),
     ui: Object.freeze({ popup: popup, bindHearts: bindHearts, toast: toast, watchStore: watchStore, openCompare: openCompare, comparePartner: comparePartner })
   });
 });

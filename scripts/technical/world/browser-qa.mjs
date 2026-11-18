@@ -288,7 +288,7 @@ async function main() {
       await page.waitForSelector(".tc-simple-chart .qc-chart svg .vu-chart-line", { timeout: 45000 });
       assert(await page.locator(".tc-chart .tc-up rect, .tc-chart .tc-down rect").count() === 0, "Kerzen in der Einsteigeransicht");
       const leiste = await page.locator(".tc-simple-chart .qc-ranges button:not([hidden])").allInnerTexts();
-      assert(leiste.join(",") === "1T,1W,1M,1J,5J,Max,Mehr", "Zeitraumleiste nicht 1T 1W 1M 1J 5J Max: " + leiste.join(","));
+      assert(leiste.join(",") === "1T,1W,1M,6M,1J,3J,5J,Max,Mehr", "Zeitraumleiste nicht 1T 1W 1M 6M 1J 3J 5J Max: " + leiste.join(","));
       /* Klickentwurf Modul-Aktienseiten (Owner 17.11.2026): gemeinsamer Kopf ohne Reiterzeile, Pillen der anderen Module vor der Fußzeile. */
       assert(await page.locator(".vu-shead.vu-shead--k2").count() === 1, "gemeinsamer Aktienkopf fehlt");
       assert(await page.evaluate(() => document.documentElement.getAttribute("data-vu-tabs") === "inhalt" && document.querySelector("vu-navigation").shadowRoot.querySelector("nav.tabs").hidden), "Aktienseite zeigt die Reiterzeile des Rahmens");
