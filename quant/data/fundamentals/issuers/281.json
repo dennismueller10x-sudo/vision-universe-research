@@ -1485,9 +1485,9 @@
       "cik": "0002088281",
       "name": "Midera Food Processing, Inc.",
       "sic": "3580",
-      "rawFacts": 276,
-      "mappedFacts": 87,
-      "unmappedFacts": 185,
+      "rawFacts": 585,
+      "mappedFacts": 193,
+      "unmappedFacts": 390,
       "calendarYears": 2,
       "industry": null,
       "industryMetrics": {},
@@ -1496,29 +1496,29 @@
         "MFP"
       ],
       "status": "INGESTED",
-      "annualPeriods": 1,
-      "quarterlyPeriods": 3,
-      "firstPeriodEnd": "2025-06-28",
-      "lastPeriodEnd": "2026-07-04",
-      "historyYears": 0.0,
+      "annualPeriods": 2,
+      "quarterlyPeriods": 6,
+      "firstPeriodEnd": "2024-12-28",
+      "lastPeriodEnd": "2026-10-03",
+      "historyYears": 1.08,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "eps_diluted": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "free_cash_flow": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0,
@@ -1531,56 +1531,56 @@
         },
         "long_term_debt": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 2,
+          "quarterlyPeriods": 3,
           "firstAvailablePeriod": "2026-01-03",
           "lastAvailablePeriod": "2026-01-03",
           "historyYears": 0.0
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 2,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "operating_cash_flow": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "revenue": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 2,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "short_term_debt": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 2,
+          "quarterlyPeriods": 3,
           "firstAvailablePeriod": "2026-01-03",
           "lastAvailablePeriod": "2026-01-03",
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 1,
-          "quarterlyPeriods": 2,
-          "firstAvailablePeriod": "2026-01-03",
+          "annualPeriods": 2,
+          "quarterlyPeriods": 6,
+          "firstAvailablePeriod": "2024-12-28",
           "lastAvailablePeriod": "2026-01-03",
-          "historyYears": 0.0
+          "historyYears": 1.08
         },
         "total_assets": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 2,
+          "quarterlyPeriods": 3,
           "firstAvailablePeriod": "2026-01-03",
           "lastAvailablePeriod": "2026-01-03",
           "historyYears": 0.0
         },
         "total_debt": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 2,
+          "quarterlyPeriods": 3,
           "firstAvailablePeriod": "2026-01-03",
           "lastAvailablePeriod": "2026-01-03",
           "historyYears": 0.0,
@@ -1596,43 +1596,44 @@
         }
       },
       "quality": {
-        "HIGH": 16
+        "HIGH": 34
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 16,
-        "resolvedValues": 16
+        "datableValues": 34,
+        "resolvedValues": 34
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 192,
+        "rules_version": "1.1.0",
+        "total": 402,
         "by_severity": {
-          "INFO": 185,
-          "WARNING": 7
+          "INFO": 390,
+          "WARNING": 12
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 7,
-          "UNKNOWN_CONCEPT": 185
+          "CONCEPT_DISAGREEMENT": 12,
+          "UNKNOWN_CONCEPT": 390
         }
       },
       "latestFiling": {
-        "accession": "0001193125-26-354735",
-        "filing_date": "2026-08-18",
+        "accession": "0001193125-26-465503",
+        "filing_date": "2026-11-17",
         "form": "10-Q",
-        "periodic_filings": 1
+        "periodic_filings": 2,
+        "acceptance_datetime": "2026-11-17T21:05:39.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
-        "formula": "1.2.0",
+        "normalization_logic": "1.15.0",
+        "formula": "1.3.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.8.0"
         }
       },
-      "sourceDigest": "d95e77473b00159f2ed26c278cf310d7c98a2a30c2c7803ec4526f2f7e9af821",
+      "sourceDigest": "13abf710173fd29acf4fa414b001d748553dee5a69ad0451d5d980613c7f0a99",
       "issuerId": "iss_cik_0002088281"
     }
   ]

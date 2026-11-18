@@ -878,23 +878,23 @@
       "cik": "0001850059",
       "name": "Flag Ship Acquisition Corp",
       "sic": "6770",
-      "rawFacts": 1042,
-      "mappedFacts": 546,
-      "unmappedFacts": 494,
+      "rawFacts": 1163,
+      "mappedFacts": 604,
+      "unmappedFacts": 573,
       "calendarYears": 3,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "FSHP",
-        "FSHPU",
-        "FSHPR"
+        "FSHPR",
+        "FSHPU"
       ],
       "status": "INGESTED",
       "annualPeriods": 4,
-      "quarterlyPeriods": 15,
+      "quarterlyPeriods": 16,
       "firstPeriodEnd": "2022-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 3.0,
       "metrics": {
         "capital_expenditures": {
@@ -933,14 +933,14 @@
         },
         "net_income": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 14,
+          "quarterlyPeriods": 15,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
         },
         "operating_cash_flow": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 12,
+          "quarterlyPeriods": 13,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
@@ -961,14 +961,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 15,
+          "quarterlyPeriods": 16,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
         },
         "total_assets": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 10,
+          "quarterlyPeriods": 11,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
@@ -991,45 +991,45 @@
         }
       },
       "quality": {
-        "HIGH": 70
+        "HIGH": 74
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 70,
-        "resolvedValues": 70
+        "datableValues": 74,
+        "resolvedValues": 74
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 511,
+        "rules_version": "1.1.0",
+        "total": 592,
         "by_severity": {
-          "INFO": 494,
-          "WARNING": 17
+          "INFO": 573,
+          "WARNING": 19
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 11,
-          "RESTATEMENT_CONFLICT": 6,
-          "UNKNOWN_CONCEPT": 494
+          "CONCEPT_DISAGREEMENT": 12,
+          "RESTATEMENT_CONFLICT": 7,
+          "UNKNOWN_CONCEPT": 573
         }
       },
       "latestFiling": {
-        "accession": "0001829126-26-010563",
-        "filing_date": "2026-09-29",
-        "form": "10-K/A",
-        "periodic_filings": 10,
-        "acceptance_datetime": "2026-09-29T20:46:25.000Z"
+        "accession": "0001829126-26-012554",
+        "filing_date": "2026-11-17",
+        "form": "10-Q",
+        "periodic_filings": 11,
+        "acceptance_datetime": "2026-11-17T21:50:29.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.10.0",
-        "formula": "1.2.0",
+        "normalization_logic": "1.15.0",
+        "formula": "1.3.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.8.0"
         }
       },
-      "sourceDigest": "9db07ad70a3de5ec4b55d19d7946da5327acc9a400857d1c0d7b370c369d35bc",
+      "sourceDigest": "3f0a328516bc75ecb174d81730fc9d9ea3d8f9d3624bb96293bde99590c2e992",
       "issuerId": "iss_cik_0001850059"
     }
   ]

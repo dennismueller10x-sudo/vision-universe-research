@@ -161,10 +161,10 @@
       "cik": "0001414932",
       "name": "Oaktree Specialty Lending Corp",
       "sic": null,
-      "rawFacts": 5474,
-      "mappedFacts": 1043,
-      "unmappedFacts": 4467,
-      "calendarYears": 10,
+      "rawFacts": 5919,
+      "mappedFacts": 1125,
+      "unmappedFacts": 4875,
+      "calendarYears": 11,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "0930",
@@ -172,11 +172,11 @@
         "OCSL"
       ],
       "status": "INGESTED",
-      "annualPeriods": 6,
-      "quarterlyPeriods": 21,
+      "annualPeriods": 7,
+      "quarterlyPeriods": 22,
       "firstPeriodEnd": "2020-09-30",
-      "lastPeriodEnd": "2026-06-30",
-      "historyYears": 5.0,
+      "lastPeriodEnd": "2026-09-30",
+      "historyYears": 6.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 0,
@@ -186,11 +186,11 @@
           "historyYears": 0.0
         },
         "eps_diluted": {
-          "annualPeriods": 5,
-          "quarterlyPeriods": 19,
+          "annualPeriods": 6,
+          "quarterlyPeriods": 20,
           "firstAvailablePeriod": "2021-09-30",
-          "lastAvailablePeriod": "2025-09-30",
-          "historyYears": 4.0
+          "lastAvailablePeriod": "2026-09-30",
+          "historyYears": 5.0
         },
         "free_cash_flow": {
           "annualPeriods": 0,
@@ -206,25 +206,25 @@
           ]
         },
         "long_term_debt": {
-          "annualPeriods": 4,
-          "quarterlyPeriods": 13,
-          "firstAvailablePeriod": "2022-09-30",
-          "lastAvailablePeriod": "2025-09-30",
-          "historyYears": 3.0
-        },
-        "net_income": {
-          "annualPeriods": 5,
-          "quarterlyPeriods": 19,
-          "firstAvailablePeriod": "2021-09-30",
-          "lastAvailablePeriod": "2025-09-30",
-          "historyYears": 4.0
-        },
-        "operating_cash_flow": {
           "annualPeriods": 5,
           "quarterlyPeriods": 14,
-          "firstAvailablePeriod": "2021-09-30",
-          "lastAvailablePeriod": "2025-09-30",
+          "firstAvailablePeriod": "2022-09-30",
+          "lastAvailablePeriod": "2026-09-30",
           "historyYears": 4.0
+        },
+        "net_income": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 20,
+          "firstAvailablePeriod": "2021-09-30",
+          "lastAvailablePeriod": "2026-09-30",
+          "historyYears": 5.0
+        },
+        "operating_cash_flow": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 15,
+          "firstAvailablePeriod": "2021-09-30",
+          "lastAvailablePeriod": "2026-09-30",
+          "historyYears": 5.0
         },
         "revenue": {
           "annualPeriods": 0,
@@ -241,18 +241,18 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 6,
-          "quarterlyPeriods": 18,
+          "annualPeriods": 7,
+          "quarterlyPeriods": 19,
           "firstAvailablePeriod": "2020-09-30",
-          "lastAvailablePeriod": "2025-09-30",
-          "historyYears": 5.0
+          "lastAvailablePeriod": "2026-09-30",
+          "historyYears": 6.0
         },
         "total_assets": {
-          "annualPeriods": 4,
-          "quarterlyPeriods": 13,
+          "annualPeriods": 5,
+          "quarterlyPeriods": 14,
           "firstAvailablePeriod": "2022-09-30",
-          "lastAvailablePeriod": "2025-09-30",
-          "historyYears": 3.0
+          "lastAvailablePeriod": "2026-09-30",
+          "historyYears": 4.0
         },
         "total_debt": {
           "annualPeriods": 0,
@@ -272,47 +272,47 @@
         }
       },
       "quality": {
-        "HIGH": 123,
-        "MEDIUM": 2
+        "HIGH": 137
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 125,
-        "resolvedValues": 125
+        "datableValues": 137,
+        "resolvedValues": 137
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 4619,
+        "rules_version": "1.1.0",
+        "total": 5029,
         "by_severity": {
-          "INFO": 4467,
-          "WARNING": 152
+          "INFO": 4875,
+          "WARNING": 154
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 116,
+          "CONCEPT_DISAGREEMENT": 118,
           "FISCAL_PERIOD_CONFLICT": 8,
           "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 27,
-          "UNKNOWN_CONCEPT": 4467
+          "UNKNOWN_CONCEPT": 4875
         }
       },
       "latestFiling": {
-        "accession": "0001414932-26-000017",
-        "filing_date": "2026-08-05",
-        "form": "10-Q",
-        "periodic_filings": 77
+        "accession": "0001414932-26-000023",
+        "filing_date": "2026-11-17",
+        "form": "10-K",
+        "periodic_filings": 78,
+        "acceptance_datetime": "2026-11-17T00:02:27.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
-        "formula": "1.2.0",
+        "normalization_logic": "1.15.0",
+        "formula": "1.3.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.8.0"
         }
       },
-      "sourceDigest": "79972bacbeabc458ddf56b76de12a8417a71c83f87ff281af1683e0b182ccca7",
+      "sourceDigest": "06032caf4dd6abc544838c842be3ba272ec93bc984e1543092e777c235ca93e4",
       "issuerId": "iss_cik_0001414932"
     },
     {
