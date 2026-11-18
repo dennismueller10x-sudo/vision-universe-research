@@ -356,7 +356,7 @@
     return {
       el: wrap,
       setPrice: function (p) { lastPrice = p; paintPrice(); },
-      /** Owner 18.11.2026: die Pille neben dem Kurs zeigt die Veränderung im Zeitraum des Charts ({pct, label}, VUChart.rangeChange). */
+      /** Owner 18.11.2026: die Pille neben dem Kurs zeigt die Veränderung im Zeitraum des Charts ({pct, label} aus dem Chart der Seite). */
       setRange: function (r) { range = r && typeof r.pct === "number" && isFinite(r.pct) ? r : null; paintPrice(); },
       others: { el: oth.el, place: place },
       dispose: function () { alive = false; if (keeper) keeper.disconnect(); oth.dispose(); if (wrap.parentNode) wrap.parentNode.removeChild(wrap); }
