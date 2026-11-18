@@ -23,7 +23,7 @@ function describe(path, html) {
   const slug = path === 'index.html' ? 'home' : path.replace(/\/index\.html$/, '').replace(/\//g, '-');
   const h1 = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/);
   // Erster Absatz direkt nach der Überschrift (nicht der Satz aus der Newsletter-Box weiter unten).
-  const lead = html.match(/<\/h1>\s*<p class="(?:t|sub|ah2-sub)"[^>]*>([\s\S]*?)<\/p>/) || html.match(/<p class="t">([\s\S]*?)<\/p>/);
+  const lead = html.match(/<\/h1>\s*<p class="(?:t|sub)">([\s\S]*?)<\/p>/) || html.match(/<p class="t">([\s\S]*?)<\/p>/);
   const tagm = html.match(/<span class="tagm">((?:(?!<\/span>\s*<h1)[\s\S])*?)<\/span>\s*<h1/);
   const tag = slug === 'home' ? null : tagm || html.match(/<p class="k pvk">([\s\S]*?)<\/p>/);
   const icon = tagm && slug !== 'home' ? (tagm[1].match(/<use href="#([a-z]+)"/) || [])[1] : undefined;
