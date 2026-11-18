@@ -48,14 +48,24 @@ test("NVDA: Kurs, Faktoren mit Stufe, Gesamtscore zurueckgehalten, Supertrader n
   assert.ok(v.links.some(l => l.href === "/quant/#/aktie/NVDA"));
 });
 
-test("Supertrader: Zustaende nur als Forschung, solange keine Strategie freigegeben ist", () => {
+/* Eingefrorenes Fixture statt Echtbestand: ob ein bestimmter Titel heute ein Setup hat, wandert mit jedem Datenlauf. */
+test("Supertrader: Zustaende nur als Forschung, solange keine Strategie freigegeben ist", t => {
+  const strategies = [{ strategy_id: "S_RES", strategy_name: "Forschung", mode: "LIVE", evidence: { level: "IN_REVIEW", presentation: "RESEARCH" } }];
+  const signals = { ACME: [{ strategyId: "S_RES", state: "SETUP" }], ACX: [{ strategyId: "S_RES", state: "ACTIVE" }] };
+  const { doc } = buildSummary(fixtureRoot(t, { strategies, signals }), { now: AFTER_RUN });
+  assert.ok(!Object.values(doc.sources.supertrader.strategies).some(s => s.released), "keine Strategie freigegeben");
+  const x = W.index(doc);
+  const v = W.view(x, { instrumentId: "vu_aaaaaa000001" }, AFTER_RUN);
+  assert.equal(v.supertrader.status, "RESEARCH_ONLY");
+  assert.match(v.supertrader.label, /Forschung/);
+  assert.ok(v.supertrader.entries.length > 0 && v.supertrader.entries.every(e => !e.released));
+  const agg = W.aggregate(doc.cols.i.map(id => W.view(x, { instrumentId: id }, AFTER_RUN)));
+  assert.equal(agg.validSupertrader, 0, "keine Eignung ohne Freigabe");
+  assert.equal(agg.researchSupertrader, 2);
+});
+
+test("Supertrader im Echtbestand: ohne Freigabe nie eine Eignung (Regel, nicht Titel)", () => {
   const released = Object.values(real.sources.supertrader.strategies).filter(s => s.released);
-  const v = W.view(ix, { instrumentId: byTicker("ESTC") }, REAL_NOW);
-  if (!released.length) {
-    assert.equal(v.supertrader.status, "RESEARCH_ONLY");
-    assert.match(v.supertrader.label, /Forschung/);
-    assert.ok(v.supertrader.entries.length > 0 && v.supertrader.entries.every(e => !e.released));
-  }
   const all = real.cols.i.map(id => W.view(ix, { instrumentId: id }, REAL_NOW));
   const agg = W.aggregate(all);
   if (!released.length) assert.equal(agg.validSupertrader, 0, "keine Eignung ohne Freigabe");
