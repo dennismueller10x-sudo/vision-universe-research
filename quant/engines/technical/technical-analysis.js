@@ -134,6 +134,10 @@
       bundle.chartSeries = { sma20: features.columns.sma20.map(nz), sma50: features.columns.sma50.map(nz), sma200: features.columns.sma200.map(nz),
                              atr: features.columns.atr.map(nz), rsi14: features.columns.rsi14.map(nz), relativeVolume: features.columns.relativeVolume.map(nz),
                              ema20: settled[20].values.map(nz), ema50: settled[50].values.map(nz), ema200: settled[200].values.map(nz) };
+      /* SMA 150 (Vier-Phasen-Linie, Technical „150-Tage-Linie“) aus der vollen Historie, damit die Linie im Tageschart am linken
+         Rand beginnt; rein additiv wie die Baender. */
+      var s150 = Features.sma(series.close, 150);
+      bundle.chartSeries.sma150 = (Array.isArray(s150) ? s150 : s150 && s150.values || []).map(nz);
       /* EMA-Cluster-Baender (ema-cluster.js, GMMA 3–15/30–60) je Bar aus der vollen Historie, nur fuer die Anzeige
          (Technical „EMA-Bänder“, docs/technical/EMA_CLUSTER.md). Rein additiv wie EMA 20/50/200; keine Engine liest sie. */
       var Cluster = isNode ? require("./ema-cluster.js") : (global.VUTechnical || {}).EmaCluster;
