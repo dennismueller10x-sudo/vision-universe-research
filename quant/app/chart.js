@@ -187,7 +187,11 @@
 
   /**
    * @param {object} o {ticker, eod:[[date,close]], currency, adjusted, splitEvents,
-   *                    longPath, loadJSON, onPrice(fn)}
+   *                    longPath, loadJSON, onPrice(fn), zoom}
+   *   zoom: true schaltet Fingerzoom ein (nur Technical, Owner 18.11.2026): zwei Finger zoomen, ein Finger verschiebt
+   *   den gezoomten Ausschnitt, Doppeltipp und „Zurücksetzen“ zeigen wieder den ganzen Zeitraum; Knöpfe − und +,
+   *   am Rechner Trackpad-Zoom (Strg + Rad). Der Ausschnitt wird neu gezeichnet (Reihe, Skala und Ebenen scharf),
+   *   die Reihe selbst bleibt unverändert. Ohne zoom verhält sich der Chart wie bisher.
    */
   function create(o) {
     var MC = global.VUDiscover && global.VUDiscover.MicroChart;
@@ -212,12 +216,20 @@
     var headNode = el("p", { class: "qc-head" }, [headDelta, headWord, headMeta]);
     var plot = el("div", { class: "qc-plot", "aria-live": "off" });
     var box = el("div", { class: "vu-chart vu-chart--bleed qc-box" }, [plot]);
+    var zoomBar = null, zoomReset = null;
+    if (o.zoom) {
+      zoomReset = el("button", { type: "button", class: "qc-zoom-btn qc-zoom-reset", text: "Zurücksetzen", "aria-label": "Ganzen Zeitraum zeigen", onclick: function () { st.zoom = null; zoomRedraw(); } });
+      zoomBar = el("div", { class: "qc-zoom", role: "group", "aria-label": "Zoom" }, [
+        el("button", { type: "button", class: "qc-zoom-btn", text: "−", "aria-label": "Herauszoomen", onclick: function () { zoomBy(0.66, 0.5); } }),
+        el("button", { type: "button", class: "qc-zoom-btn", text: "+", "aria-label": "Hineinzoomen", onclick: function () { zoomBy(1.5, 0.5); } }), zoomReset,
+        el("span", { class: "qc-zoom-hint", text: "Mit zwei Fingern zoomen" })]);
+    }
     var bar = el("div", { class: "vu-ranges qc-ranges", role: "group", "aria-label": "Zeitraum des Charts", tabindex: "0" }); /* scrollbar auf schmalen Schirmen */
     var note = el("p", { class: "qc-note" });
     /* Anzeigewaehrung waehlen: der vorhandene Umschalter der FX-Schicht (VUFx.Switch, wie in Discover). */
     var fxHost = el("p", { class: "qc-fx" });
     var node = el("section", { class: "qc-chart", "aria-label": "Kursverlauf " + o.ticker }, [
-      el("h2", { class: "qx-sr", text: "Kursverlauf" }), headNode, box, bar,
+      el("h2", { class: "qx-sr", text: "Kursverlauf" }), headNode, box, zoomBar, bar,
       el("details", { class: "vu-more qc-about" }, [el("summary", { text: "Über diesen Chart" }), el("div", { class: "vu-more-body qv-more-body" }, [fxHost, note])])
     ]);
 
@@ -226,7 +238,7 @@
     function showMore(open) { if (moreBtn) moreBtn.setAttribute("aria-expanded", String(open)); extraBtns.forEach(function (b) { b.hidden = !open; }); }
     function rangeButton(r, primary) {
       var b = el("button", { type: "button", class: "qc-range" + (primary ? "" : " qc-range-extra"), text: r.id === "MAX" ? "Max" : r.label, "aria-pressed": "false",
-        dataset: { range: r.id }, onclick: function () { st.touched = true; memo(r.label); draw(r.id); } });
+        dataset: { range: r.id }, onclick: function () { st.touched = true; st.zoom = null; memo(r.label); draw(r.id); } });
       if (!primary) { b.hidden = true; extraBtns.push(b); }
       buttons[r.id] = b; bar.append(b);
     }
@@ -339,8 +351,8 @@
         headPrice.hidden = true;
         headDelta.textContent = resting.delta; headDelta.className = resting.deltaClass; headWord.textContent = resting.word;
       }
-      svg.addEventListener("pointerdown", function (e) { if (e.pointerType === "mouse" && e.button !== 0) return; show(e); });
-      svg.addEventListener("pointermove", function (e) { if (on || e.pointerType === "mouse") show(e); });
+      svg.addEventListener("pointerdown", function (e) { if (st.gesture || (e.pointerType === "mouse" && e.button !== 0)) return; show(e); });
+      svg.addEventListener("pointermove", function (e) { if (st.gesture) { rest(); return; } if (on || e.pointerType === "mouse") show(e); });
       svg.addEventListener("pointerleave", rest);
       svg.addEventListener("pointerup", function (e) { if (e.pointerType !== "mouse") rest(); });
       svg.addEventListener("pointercancel", rest);
@@ -426,6 +438,12 @@
       }
       /* Anzeigewaehrung (Vorgabe EUR): jeder Punkt mit dem EZB-Kurs seines Tages; die
          Veraenderung kommt aus DIESER Reihe, wie in Discover (detail.js, §41). */
+      var zoomed = false;
+      if (o.zoom) {
+        st.zoomFull = pts.length;
+        if (st.zoom && st.zoom.range === r.id && st.zoom.i1 < pts.length) { pts = pts.slice(st.zoom.i0, st.zoom.i1 + 1); zoomed = true; } else st.zoom = null;
+        syncZoom();
+      }
       if (st.std) { var shown = st.std.displaySeries(pts, o.currency || "USD"); pts = shown.points; st.cur = shown.currency; }
       else st.cur = o.currency || "USD";
       var first = pts[0][1], last = pts[pts.length - 1][1];
@@ -434,7 +452,7 @@
          (SeriesSampling.mergeWeeklyWithDaily), nur ihr letzter Punkt ist der
          juengste Tagesschluss. */
       var weekly = src === st.long;
-      head(last, delta, r.word, dateDe(pts[0][0]) + " – " + dateDe(pts[pts.length - 1][0]));
+      head(last, delta, zoomed ? "im Ausschnitt" : r.word, dateDe(pts[0][0]) + " – " + dateDe(pts[pts.length - 1][0]));
       var svg = paint(pts, { range: r.id === "1Y" ? "1Y" : r.id, label: r.word, grain: weekly ? "weekly" : "daily" });
       if (!svg) { empty("Zeitraum nicht verfügbar", "Zu wenige Kurse im Zeitraum."); return; }
       svg.classList.add("qc-svg");
@@ -470,6 +488,63 @@
       return st.longPromise;
     }
 
+    /* Fingerzoom (nur mit o.zoom): Ausschnitt [i0, i1] der Punkte des gewaehlten Zeitraums, mindestens ZOOM_MIN Punkte. */
+    var ZOOM_MIN = 8, zoomRaf = 0;
+    function zoomRedraw() { if (zoomRaf || st.disposed) return; zoomRaf = (global.requestAnimationFrame || global.setTimeout)(function () { zoomRaf = 0; if (st.range) draw(st.range); }); }
+    function zoomWin() { var n = st.zoomFull || 0, z = st.zoom && st.zoom.range === st.range ? st.zoom : { i0: 0, i1: n - 1 }; return { i0: z.i0, i1: z.i1, n: n }; }
+    function setZoom(i0, len) {
+      var n = st.zoomFull || 0; if (n < ZOOM_MIN + 2) return;
+      len = Math.round(Math.max(ZOOM_MIN, Math.min(n - 1, len)));
+      if (len >= n - 1) st.zoom = null;
+      else { i0 = Math.max(0, Math.min(n - 1 - len, Math.round(i0))); st.zoom = { range: st.range, i0: i0, i1: i0 + len }; }
+      zoomRedraw();
+    }
+    function zoomBy(f, at) { var w = zoomWin(), len = w.i1 - w.i0, nl = len / f; setZoom(w.i0 + len * at - nl * at, nl); }
+    function syncZoom() {
+      if (!zoomBar) return;
+      zoomBar.hidden = !(st.zoomFull > ZOOM_MIN + 2);
+      zoomReset.hidden = !st.zoom;
+      node.classList.toggle("is-zoomed", !!st.zoom);
+    }
+    if (o.zoom) {
+      var ptrs = {}, gest = null;
+      plot.style.touchAction = "pan-y";
+      var frac = function (cx) { var rc = plot.getBoundingClientRect(); return Math.max(0, Math.min(1, (cx - rc.left) / Math.max(1, rc.width))); };
+      plot.addEventListener("pointerdown", function (e) {
+        if (!st.zoomFull) return;
+        ptrs[e.pointerId] = e.clientX;
+        var ids = Object.keys(ptrs);
+        if (ids.length === 2) {
+          st.gesture = true;
+          ids.forEach(function (id) { try { plot.setPointerCapture(Number(id)); } catch (x) { /* Zeiger schon weg */ } });
+          gest = { mode: "pinch", d: Math.max(1, Math.abs(ptrs[ids[0]] - ptrs[ids[1]])), w: zoomWin(), at: frac((ptrs[ids[0]] + ptrs[ids[1]]) / 2) };
+        } else if (ids.length === 1 && st.zoom && e.pointerType !== "mouse") gest = { mode: "maybe", x: e.clientX, w: zoomWin(), id: e.pointerId };
+        else if (ids.length === 1 && st.zoom && e.pointerType === "mouse" && e.button === 0) gest = { mode: "maybe", x: e.clientX, w: zoomWin(), id: e.pointerId };
+      });
+      plot.addEventListener("pointermove", function (e) {
+        if (!(e.pointerId in ptrs) || !gest) return;
+        ptrs[e.pointerId] = e.clientX;
+        var ids = Object.keys(ptrs), len = gest.w.i1 - gest.w.i0;
+        if (gest.mode === "pinch" && ids.length === 2) {
+          var f = Math.max(1, Math.abs(ptrs[ids[0]] - ptrs[ids[1]])) / gest.d, nl = len / f, anchor = gest.w.i0 + len * gest.at;
+          setZoom(anchor - nl * gest.at, nl);
+        } else if (gest.mode !== "pinch" && ids.length === 1) {
+          var dx = e.clientX - gest.x;
+          if (gest.mode === "maybe" && Math.abs(dx) > 8) { gest.mode = "pan"; st.gesture = true; try { plot.setPointerCapture(gest.id); } catch (x) { /* Zeiger schon weg */ } }
+          if (gest.mode === "pan") setZoom(gest.w.i0 - dx / Math.max(1, plot.getBoundingClientRect().width) * len, len);
+        }
+      });
+      var zoomUp = function (e) {
+        delete ptrs[e.pointerId];
+        if (!Object.keys(ptrs).length) { gest = null; global.setTimeout(function () { st.gesture = false; }, 0); }
+        else if (gest && gest.mode === "pinch") gest = null;
+      };
+      plot.addEventListener("pointerup", zoomUp); plot.addEventListener("pointercancel", zoomUp);
+      plot.addEventListener("dblclick", function () { if (st.zoom) { st.zoom = null; zoomRedraw(); } });
+      /* Trackpad-Zoom am Rechner (Strg + Rad); normales Rad scrollt die Seite weiter. */
+      plot.addEventListener("wheel", function (e) { if (!e.ctrlKey || !st.zoomFull) return; e.preventDefault(); zoomBy(e.deltaY < 0 ? 1.2 : 1 / 1.2, frac(e.clientX)); }, { passive: false });
+    }
+
     function draw(id) {
       if (st.disposed) return;
       plot.style.minHeight = height() + "px";
@@ -478,6 +553,7 @@
       node.dataset.range = r.id;
       syncButtons();
       if (r.id === "1D") {
+        if (o.zoom) { st.zoom = null; st.zoomFull = 0; syncZoom(); }
         if (!available("1D")) { empty("Kein Tagesverlauf", "Für diesen Titel liegt kein veröffentlichter Tagesverlauf vor."); note.textContent = ""; return; }
         drawIntraday(); return;
       }
