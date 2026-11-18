@@ -42,7 +42,7 @@
         </div>
       </div>
     </div>
-    <div class="ph" style="height:68mm;margin-top:5mm;background-image:url(img/ki/waage.jpg);background-position:50% 50%"><div class="cap">KI-Bild</div></div>
+    <div class="card ink" style="margin-top:5mm;padding:5mm;display:grid;grid-template-columns:1fr 1fr;gap:7mm;min-height:66mm"><div><div class="kick" style="color:var(--lime)">Woher das Geld kam, wohin es floss</div><div style="font-size:7.4pt;color:#9a9a9a;margin-top:1mm">Cashflow, neun Monate 2026, Mrd. $</div><div style="margin-top:3mm" data-k="cfbars"></div><div class="xs" style="color:#9a9a9a;margin-top:2mm">Investitionen inklusive Geldanlagen und Vorauszahlungen; Finanzierung vor allem Kapitalrunden und Wandelanleihen. Laut Prospekt.</div></div><div><div class="kick" style="color:var(--lime)">Aufgelaufener Verlust seit 2021</div><div style="font-size:40pt;font-weight:900;letter-spacing:-.05em;line-height:1;margin-top:3mm">156,2&nbsp;Mrd.&nbsp;$</div><div style="margin-top:4mm" data-k="cfmeter"></div><div class="sm" style="margin-top:3mm;color:#e6e6e6"><b style="color:var(--lime)">135,1 Mrd. $</b> davon sind Neubewertungen von Wandelanleihen, also Buchungen ohne Zahlung. Der Rest von rund 21 Mrd. $ (eigene Rechnung) umfasst operative Verluste der Aufbaujahre und übrige Posten.</div></div></div>
   </div>
   <div data-foot></div>
 </section>
@@ -50,4 +50,6 @@
 VUM.k('bruecke',()=>VUC.hbars([
  {l:'Operatives Ergebnis',v:-1.260},{l:'Zinserträge',v:2.359},{l:'Neubewertung Wandelanleihen',v:-94.324,c:'#c4281c'},{l:'Sonstiges',v:-10.397},{l:'Steuern',v:-0.417},{l:'Nettoverlust',v:-104.039,c:'#000'},
 ],{w:340,rh:23,lw:150,vw:56,fmt:v=>VUM.sg(v,1)}));
+VUM.k('cfbars',()=>VUC.hbars([{l:'Operativ',v:6.569},{l:'Investitionen',v:-36.546,c:'#fff'},{l:'Finanzierung',v:110.735}],{w:300,rh:26,lw:84,vw:46,dark:1,fmt:v=>VUM.sg(v,1)}));
+VUM.k('cfmeter',()=>VUC.meter(135.1/156.2,{w:300,dark:1}));
 </script>
