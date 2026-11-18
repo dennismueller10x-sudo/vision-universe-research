@@ -17,7 +17,8 @@ const run = spawnSync(process.execPath, ["--require", join(REPO, "scripts/quant/
   { cwd: REPO, env: { ...process.env, DATA_FIXTURE_LIVE: "1", TRACE_OUT: trace }, encoding: "utf8", maxBuffer: 1 << 28 });
 if (run.status !== 0) { process.stderr.write(run.stdout.split("\n").filter((l) => /^not ok|error:/.test(l)).join("\n") + "\n"); throw Error("Test live nicht gruen - kein Einfrieren eines roten Stands"); }
 const paths = JSON.parse(readFileSync(trace, "utf8"));
-let sourceCommit = null; try { sourceCommit = execFileSync("git", ["rev-parse", "HEAD"], { cwd: REPO, encoding: "utf8" }).trim(); } catch {}
+// --source <commit>: der Commit, dessen Datenstand eingefroren wird (Standard HEAD; auf einem Arbeitszweig der main-Commit darunter).
+let sourceCommit = arg("--source"); try { sourceCommit = execFileSync("git", ["rev-parse", sourceCommit || "HEAD"], { cwd: REPO, encoding: "utf8" }).trim(); } catch {}
 const buf = packFixture(paths, { test: testFile, sourceCommit, frozenAt: new Date().toISOString(), files: paths.length });
 mkdirSync(dirname(join(process.cwd(), out)), { recursive: true });
 writeFileSync(out, buf);

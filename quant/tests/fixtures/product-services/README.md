@@ -5,7 +5,7 @@ Der Test rechnet darauf statt auf dem Tagesstand (Steuerung 18.11.2026, Muster #
 
 - Quelle: Commit und Zeitpunkt stehen im Bündel (`meta.sourceCommit`, `meta.frozenAt`).
 - Neu einfrieren, wenn sich ein Artefakt-Schema ändert oder der Test neue Dateien liest:
-  `node scripts/quant/freeze-test-fixture.mjs --test quant/tests/product-services.test.mjs --out quant/tests/fixtures/product-services/data.json.gz`
+  `node scripts/quant/freeze-test-fixture.mjs --test quant/tests/product-services.test.mjs --out quant/tests/fixtures/product-services/data.json.gz --source origin/main`
   (nur auf einem Stand, auf dem der Test live grün ist; das Skript bricht sonst ab).
 - Gegen den Live-Stand prüfen: `DATA_FIXTURE_LIVE=1 node --test quant/tests/product-services.test.mjs`.
 - Die Deckung des Live-Stands (Universum > 6000, Technical und Signale > 5000, ein Universum für alle Artefakte) meldet `DQ-PQ-11` in `core/product-quality.js`.
