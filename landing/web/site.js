@@ -129,3 +129,14 @@ document.documentElement.classList.add("js");
   }
 
 })();
+
+/* Startseite v3: Solange der Hero im Bild ist, ist in der Sprungleiste „Start“ markiert (Owner 18.11.2026). */
+(function () {
+  var hero = document.querySelector(".ahero2"), jb = document.querySelector(".jbar");
+  if (!hero || !jb || !("IntersectionObserver" in window)) return;
+  new IntersectionObserver(function (es) {
+    if (!es[0].isIntersecting) return;
+    jb.querySelectorAll("a").forEach(function (a) { a.classList.toggle("cur", a.getAttribute("href") === "#start"); });
+    var jin = jb.querySelector(".jin"); if (jin) jin.scrollLeft = 0;
+  }, { rootMargin: "-30% 0px -30% 0px" }).observe(hero);
+})();
