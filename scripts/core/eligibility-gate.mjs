@@ -25,7 +25,7 @@ function statusMap(doc) {
   return m;
 }
 
-export function evaluate({ prev, next, prevUniverse, nextUniverse, limits, approval = null, prevSha256 = null, successions = null, cikByTicker = null }) {
+export function evaluate({ prev, next, prevUniverse, nextUniverse, limits, approval = null, prevSha256 = null, successions = null, cikByTicker = null, autoAdded = null }) {
   const a = statusMap(prev), b = statusMap(next), transitions = {}, samples = {};
   const approved = new Map((approval?.changes || []).map((c) => [c.securityId, `${c.from}->${c.to}`]));
   const used = new Set(), failures = [];
@@ -57,7 +57,17 @@ export function evaluate({ prev, next, prevUniverse, nextUniverse, limits, appro
     }
   }
   const replacedFrom = new Set(replacements.map((r) => r.from)), replacedTo = new Set(replacements.map((r) => r.to));
-  const added = addedIds.filter((id) => !membersApproved.has(id) && !replacedTo.has(id)).length;
+  /* Dauerregel (expand-us-universe --auto, Steuerung 18.11.2026): die Zugaenge, die der Lauf selbst nennt
+     (expansion.json -> auto.added), zaehlen bis zur Grenze autoMembersAdded nicht gegen universeMembersChanged.
+     Mehr als die Grenze, ein genannter Zugang, der nicht ankommt, oder ein Abgang bleiben rot. */
+  const autoIds = new Set(autoAdded?.added || []);
+  if (autoAdded) {
+    const max = limits.autoMembersAdded ?? 0;
+    if (autoIds.size > max) failures.push(`autoMembersAdded ${autoIds.size} > ${max}`);
+    const missing = [...autoIds].filter((id) => !addedIds.includes(id));
+    if (missing.length) failures.push(`${missing.length} Zugaenge der Dauerregel fehlen (${missing.slice(0, 5).join(", ")})`);
+  }
+  const added = addedIds.filter((id) => !membersApproved.has(id) && !replacedTo.has(id) && !autoIds.has(id)).length;
   const removed = [...a.keys()].filter((id) => !b.has(id) && !replacedFrom.has(id)).length;
   const membersUnused = [...membersApproved].filter((id) => !addedIds.includes(id));
   const pu = prevUniverse ? prevUniverse.actualSize : prev.counts?.productUniverse;
@@ -67,13 +77,14 @@ export function evaluate({ prev, next, prevUniverse, nextUniverse, limits, appro
   const deltaPct = base ? Math.abs(nu - base) / base * 100 : 100;
   const counted = { statusChanges, eligibleToExcluded: transitions["ELIGIBLE->EXCLUDED"] || 0,
                     productUniverseDeltaPct: Math.round(deltaPct * 100) / 100, universeMembersChanged: added + removed };
-  for (const [k, max] of Object.entries(limits)) if (counted[k] > max) failures.push(`${k} ${counted[k]} > ${max}`);
+  for (const [k, max] of Object.entries(limits)) if (k in counted && counted[k] > max) failures.push(`${k} ${counted[k]} > ${max}`);
   const unused = [...approved.keys()].filter((id) => !used.has(id));
   if (unused.length) failures.push(`${unused.length} freigegebene Wechsel ungenutzt (z. B. ${unused.slice(0, 5).join(", ")})`);
   if (membersUnused.length) failures.push(`${membersUnused.length} freigegebene Zugaenge fehlen (${membersUnused.slice(0, 5).join(", ")})`);
   if ((next.counts?.universeMembers ?? 0) !== (next.decisions || []).length) failures.push("Zaehlung im Kopf != Entscheidungen");
   return { schema: "vu-eligibility-gate-report-1", decision: failures.length ? "BLOCKED" : "COMMIT", failures, counted, limits,
            productUniverse: { before: pu, after: nu }, transitions, samples, successionReplacements: replacements,
+           autoMembersAdded: autoAdded ? addedIds.filter((id) => autoIds.has(id)).length : null,
            approval: approval ? { id: approval.id, approved: approved.size, applied: approvedChanges, unused: unused.length,
                                   membersAdded: addedIds.filter((id) => membersApproved.has(id)).length } : null };
 }
@@ -89,7 +100,8 @@ function main(argv) {
   const successions = TS.tickerSuccessions(j(join(ROOT, "quant/config/ticker-successions.json")));
   const rep = evaluate({ prev: j(o.prev), next: j(o.next), prevUniverse: j(o["prev-universe"]), nextUniverse: j(o["next-universe"]),
                          limits: cfg.limits, approval: j(o.approved), prevSha256, successions,
-                         cikByTicker: j(join(ROOT, "quant/data/universe/cik-map.json")).byTicker });
+                         cikByTicker: j(join(ROOT, "quant/data/universe/cik-map.json")).byTicker,
+                         autoAdded: o["auto-added"] ? (j(o["auto-added"]).auto || { added: [] }) : null });
   if (o.out) writeFileSync(o.out, JSON.stringify(rep, null, 2) + "\n");
   console.log(`[eignung] ${rep.decision} · ${JSON.stringify(rep.counted)} · Produktuniversum ${rep.productUniverse.before} -> ${rep.productUniverse.after}`);
   for (const f of rep.failures) console.log(`[eignung] - ${f}`);
