@@ -24,6 +24,11 @@ test('IN-2 · jeder Artikel hat Pflichtfelder, Bild, Quellen mit Adresse und ein
       assert.ok(a.bild.ki || a.bild.quelle, `${a.slug}: Bild braucht Bildnachweis (quelle) oder ki: true`);
     }
     assert.ok(!a.pruefung || ['redaktion', 'automatisch'].includes(a.pruefung), `${a.slug}: unbekannte pruefung`);
+    for (const s of a.abschnitte) for (const g of [].concat(s.diagramm || [])) {
+      assert.ok(g.titel && g.quelle && ['saeulen', 'balken'].includes(g.art || 'saeulen'), `${a.slug}: Diagramm braucht titel, quelle und art saeulen|balken`);
+      assert.ok(Array.isArray(g.werte) && g.werte.length >= 2 && g.werte.every(([k, v]) => typeof k === 'string' && Number.isFinite(v)), `${a.slug}: Diagramm-Werte [[Beschriftung, Zahl], …]`);
+      if ((g.art || 'saeulen') === 'saeulen') assert.ok(g.werte.every(([, v]) => v >= 0), `${a.slug}: Säulen nur mit Werten >= 0 (sonst art balken)`);
+    }
     for (const s of a.abschnitte) if (s.bild) { assert.ok(s.bild.quelle && fs.existsSync('.' + s.bild.src), `${a.slug}: Bild im Text ohne Nachweis oder Datei`); }
     for (const [t, list] of Object.entries(a.appScreens || {})) for (const sc of list) assert.ok(fs.existsSync('.' + sc.src), `${a.slug}: App-Screen ${sc.src} fehlt (${t})`);
     assert.ok(a.quellen.length >= 2, `${a.slug}: weniger als zwei Quellen`);
