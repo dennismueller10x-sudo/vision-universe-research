@@ -1616,7 +1616,7 @@
        sonst die Engine auf den 270 Tagesbalken (nach Anlaufzeit). Woche: Engine im Zeitrahmen 1W auf der langen Wochenreihe. */
     function bandsFrom(rows) {
       var byDate = {}, from = null;
-      rows.forEach(function (r) { if (r.fast && r.slow) { byDate[r.date] = { fast: [r.fast.min, r.fast.max], slow: [r.slow.min, r.slow.max] }; if (!from) from = r.date; } });
+      rows.forEach(function (r) { if (r.fast && r.slow) { byDate[r.date] = { fast: [r.fast.min, r.fast.max], slow: [r.slow.min, r.slow.max], fv: r.fast.values, sv: r.slow.values }; if (!from) from = r.date; } });
       return from ? { byDate: byDate, from: from } : null;
     }
     var emaDailyCache;
@@ -1629,6 +1629,8 @@
           var v = k.map(function (x) { return cs[x][i]; });
           if (v.every(isNum)) { byDate[String(d).slice(0, 10)] = { fast: [v[0], v[1]], slow: [v[2], v[3]] }; if (!from) from = String(d).slice(0, 10); }
         });
+        /* Einzelne Linien (Faecher) aus der Engine auf den Tagesbalken, wo sie eingeschwungen sind. */
+        var ecl = emaData(); if (ecl) ecl.rows.forEach(function (r) { var b = byDate[r.date]; if (b && r.fast && r.slow) { b.fv = r.fast.values; b.sv = r.slow.values; } });
         emaDailyCache = from ? { byDate: byDate, from: from } : null;
       } else { var ec = emaData(); emaDailyCache = ec ? bandsFrom(ec.rows) : null; }
       return emaDailyCache;
@@ -1657,7 +1659,7 @@
         layer.appendChild(svgEl("rect", { class: "tc-ema tc-ema--" + k, x: 2, y: y1.toFixed(1), width: Math.max(0, right - 2), height: Math.max(2, y2 - y1).toFixed(1) }));
       });
       var line = svg.querySelector(".vu-chart-line"); if (layer.childNodes.length) svg.insertBefore(layer, line || null);
-      put(legend, "Bänder: EMAs des letzten Tagesschlusses (" + M.dateDe(last) + "), schnelle 3–15 Tage kräftig, langsame 30–60 Tage blass" +
+      put(legend, "Bänder: EMAs des letzten Tagesschlusses (" + M.dateDe(last) + "), schnelle 3–15 Tage neongrün, langsame 30–60 Tage grau" +
         (outside.length ? "; außerhalb der heutigen Spanne: " + outside.join(", ") : "") + ".");
     }
     function fibData() { if (fibCache === undefined) fibCache = VT.ChartExplain && X.ctx ? VT.ChartExplain.fibSwing(X.ctx, VT.TILevels) : null; return fibCache; }
@@ -1711,14 +1713,24 @@
       if (simple.ema) {
         var bands = dailyGrain ? emaBandsDaily() : emaBandsWeekly();
         if (bands) {
+          var cy = function (v) { return Math.max(0, Math.min(plotBottom, g.y(v))).toFixed(1); };
+          /* Faecher sichtbar machen: Flaeche, Raender und die sechs Linien je Buendel (schnell neongruen, langsam grau). */
           ["slow", "fast"].forEach(function (k) {
-            var up = [], lo = [];
-            var cy = function (v) { return Math.max(0, Math.min(plotBottom, g.y(v))).toFixed(1); };
-            g.pts.forEach(function (p) { var r = bands.byDate[p.t.slice(0, 10)]; if (r) { up.push(p.x.toFixed(1) + " " + cy(r[k][1])); lo.push(p.x.toFixed(1) + " " + cy(r[k][0])); } });
-            if (up.length > 1) layer.appendChild(svgEl("path", { class: "tc-ema tc-ema--" + k, d: "M" + up.join("L") + "L" + lo.reverse().join("L") + "Z" }));
+            var up = [], lo = [], lines = [[], [], [], [], [], []], vk = k === "fast" ? "fv" : "sv";
+            g.pts.forEach(function (p) {
+              var r = bands.byDate[p.t.slice(0, 10)]; if (!r) return;
+              var xx = p.x.toFixed(1); up.push(xx + " " + cy(r[k][1])); lo.push(xx + " " + cy(r[k][0]));
+              if (r[vk]) r[vk].forEach(function (v, q) { if (isNum(v)) lines[q].push(xx + " " + cy(v)); });
+            });
+            if (up.length > 1) {
+              layer.appendChild(svgEl("path", { class: "tc-ema tc-ema--" + k, d: "M" + up.join("L") + "L" + lo.slice().reverse().join("L") + "Z" }));
+              lines.forEach(function (ln) { if (ln.length > 1) layer.appendChild(svgEl("path", { class: "tc-ema-line tc-ema-line--" + k, d: "M" + ln.join("L"), fill: "none" })); });
+              layer.appendChild(svgEl("path", { class: "tc-ema-edge tc-ema-edge--" + k, d: "M" + up.join("L"), fill: "none" }));
+              layer.appendChild(svgEl("path", { class: "tc-ema-edge tc-ema-edge--" + k, d: "M" + lo.join("L"), fill: "none" }));
+            }
           });
-          note.push(dailyGrain ? "Bänder: schnelle EMAs 3–15 Tage kräftig, langsame 30–60 Tage blass" + (bands.from && g.pts[0].t.slice(0, 10) < bands.from ? ", ab " + M.dateDe(bands.from) + " nach Anlaufzeit" : "")
-            : "Bänder im Wochenchart: schnelle EMAs 3–15 Wochen kräftig, langsame 30–60 Wochen blass");
+          note.push(dailyGrain ? "Bänder: schnelle EMAs 3–15 Tage neongrün, langsame 30–60 Tage grau" + (bands.from && g.pts[0].t.slice(0, 10) < bands.from ? ", ab " + M.dateDe(bands.from) + " nach Anlaufzeit" : "")
+            : "Bänder im Wochenchart: schnelle EMAs 3–15 Wochen neongrün, langsame 30–60 Wochen grau");
         } else if (!dailyGrain && emaWeekly === undefined) loadEmaWeekly();
       }
       var fb = simple.fib && dailyGrain ? fibData() : null;
@@ -1746,7 +1758,7 @@
       var eod = S.dates.map(function (d, i) { return [d, S.close[i]]; });
       /* Der Strom kommt nur, wenn die gemeinsame Freigabe ihn fuer diesen Ticker erlaubt (sonst bleibt es beim Snapshot). */
       var RT = global.VURealtimeCapability && global.VUDisplayPolicy ? global.VURealtimeCapability.create({ loadJSON: fetchJSON, displayPolicy: global.VUDisplayPolicy }) : null;
-      widget = Chart.create({ ticker: X.T, eod: eod, currency: "USD", adjusted: true, onPaint: paintLayers,
+      widget = Chart.create({ ticker: X.T, eod: eod, currency: "USD", adjusted: true, onPaint: paintLayers, zoom: true,
         realtime: RT ? function () { return RT.getRealtimeCapability(X.T); } : undefined,
         longPath: M.LONG_DIR + global.VUCore.Identity.securityIdForTicker(X.T) + ".json", loadJSON: fetchJSON,
         /* Der Kopf zeigt denselben Kurs wie Quant und Discover: nur ein LAUFENDER Tag (p.live) ersetzt den veroeffentlichten Schluss; nach Schluss gilt der
