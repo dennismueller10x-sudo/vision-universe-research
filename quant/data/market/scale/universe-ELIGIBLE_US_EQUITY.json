@@ -1,15 +1,15 @@
 {
- "generatedAt": "2026-11-17T12:38:23.778Z",
+ "generatedAt": "2026-11-18T02:19:58.203Z",
  "gate": "ELIGIBLE_US_EQUITY",
  "derivedFrom": "quant/data/market/scale/universe-FULL_UNIVERSE.json",
- "derivedFromSha256": "86a8085ef771d04012527e3297bbafd70c9cff3b055c077d33214f00f920eb9d",
+ "derivedFromSha256": "ecafd9c1cda369206d206553ae34f9653779151fe6a8c5bfd793c3ea75f998d6",
  "version": "us-security-master-1.3.0",
- "today": "2026-11-17",
+ "today": "2026-11-18",
  "method": "PRODUCT_ELIGIBILITY_LAYER",
  "provider": "tiingo",
- "actualSize": 6314,
+ "actualSize": 6315,
  "counts": {
-  "ELIGIBLE": 5212,
+  "ELIGIBLE": 5213,
   "SEPARATE_CLASS": 787,
   "REVIEW": 315,
   "EXCLUDED_NOT_LISTED_HERE": 1493
@@ -126293,6 +126293,26 @@
    "industry": null,
    "industryStatus": "SOURCE_MISSING",
    "startDate": "2023-10-09",
+   "selection": "appendedFrom:US_SECURITY_MASTER",
+   "productEligibility": "ELIGIBLE"
+  },
+  {
+   "securityId": "ref_TXCP",
+   "ticker": "TXCP",
+   "company": null,
+   "exchange": "TXSE",
+   "country": "US",
+   "currency": "USD",
+   "assetType": "Stock",
+   "instrumentType": "COMMON_STOCK",
+   "active": true,
+   "providerSymbol": "TXCP",
+   "provider": "tiingo",
+   "sector": null,
+   "sectorStatus": "SOURCE_MISSING",
+   "industry": null,
+   "industryStatus": "SOURCE_MISSING",
+   "startDate": "2026-11-11",
    "selection": "appendedFrom:US_SECURITY_MASTER",
    "productEligibility": "ELIGIBLE"
   }
