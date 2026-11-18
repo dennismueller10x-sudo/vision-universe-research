@@ -1113,3 +1113,59 @@ main,.story,.steps,.step{overflow-x:clip}
 .hlband .hlfix .hlm:nth-child(2) small{color:#000;opacity:.7}
 .hlband .hlfix{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.hlband .hlm>span{min-width:0}.hlband .hlm small{overflow-wrap:anywhere}
 @media(max-width:560px){.hlband .hlm small{overflow-wrap:normal;-webkit-hyphens:auto;hyphens:auto;font-size:10px;letter-spacing:.02em}.hlband .hlm img{width:44px;height:62px}.hlband .hlm{gap:8px;padding:8px}}
+
+/* News-Seite v3 (Owner 18.11.2026): schlicht, großer Titel mit Claim, darunter ruhigere Kacheln */
+.nplain{padding:56px 0 8px;text-align:left}
+.nplain .nb-k{color:var(--mute)}
+.nplain h1{margin-top:10px;font-size:clamp(64px,11vw,140px);font-weight:900;letter-spacing:-.065em;line-height:.88}
+.nplain .sub{margin-top:16px;max-width:36ch;font-size:clamp(18px,1.8vw,24px);font-weight:600;color:#333}
+.ntiles.nall{gap:18px 16px}
+@media(min-width:900px){.ntiles.nall{grid-template-columns:repeat(3,minmax(0,1fr));gap:28px 22px}}
+.ntiles.nall .ntile{padding:0;background:none;box-shadow:none;gap:8px}
+.ntiles.nall .ntile:hover{transform:none}
+.ntiles.nall .ntile img,.ntiles.nall .ntile .noimg{border-radius:18px;aspect-ratio:4/3;transition:transform .3s var(--ease)}
+.ntiles.nall .ntile:hover img{transform:scale(1.02)}
+.ntiles.nall .ntile .k{padding:4px 2px 0}
+.ntiles.nall .ntile b{padding:0 2px;font-size:clamp(15px,1.4vw,19px);line-height:1.2;-webkit-line-clamp:3}
+
+/* Landingpage (Owner 18.11.2026): kein Weißraum über und unter den Inhalten; die Abschnitte folgen dicht */
+.lp2 .lpa{min-height:0}
+.lp2 .lpa-in{align-content:start;padding-top:18px;padding-bottom:22px}
+.lp2 .lpb{min-height:0;align-items:flex-start}
+.lp2 .lpb-in{padding-top:24px;padding-bottom:28px}
+
+/* Startseite Hero v3 (Owner 18.11.2026): schlicht wie bei Apple. Mitte, viel Luft, drei iPhones, keine schwebenden Karten. */
+.ahero2{padding:56px 0 0;text-align:center;overflow:hidden}
+.ahero2 .apptag{margin:0 auto}
+.ahero2 h1{margin:22px auto 0;max-width:13ch;font-size:clamp(44px,8.2vw,112px);font-weight:900;letter-spacing:-.06em;line-height:.92}
+.ah2-sub{margin:20px auto 0;max-width:30ch;font-size:clamp(18px,2vw,24px);font-weight:600;color:#444;line-height:1.35}
+.ah2-cta{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:10px;margin-top:28px}
+.ah2-cta .b{display:flex;gap:10px}.ah2-cta .b img{height:54px;width:auto}
+.ah2-cap{margin-top:12px;font-size:14px;font-weight:700;color:var(--mute)}
+.ah2-phones{position:relative;display:flex;justify-content:center;align-items:flex-end;gap:0;margin:48px auto 0;height:clamp(380px,52vw,640px)}
+.ah2-phones::before{content:"";position:absolute;left:50%;bottom:-10%;width:min(900px,120%);height:80%;transform:translateX(-50%);border-radius:50%;background:radial-gradient(closest-side,rgba(205,255,0,.38),rgba(205,255,0,0));z-index:0}
+.ah2-phones .aphone{position:relative;z-index:1;flex:none}
+.ah2-phones .pm{--pw:clamp(180px,24vw,300px);z-index:2;margin-bottom:-60px}
+.ah2-phones .ps{--pw:clamp(130px,18vw,230px);opacity:.96;margin-bottom:-120px}
+.ah2-phones .l{transform:rotate(-7deg) translateX(18%)}
+.ah2-phones .r{transform:rotate(7deg) translateX(-18%)}
+.ah2-phones .scr img{animation:none}
+.ah2-caps{padding:84px 0 24px;border-top:1px solid var(--hair);position:relative;z-index:3;background:#fff}
+.ah2-caps h2{text-align:center;font-size:clamp(34px,4.6vw,60px);font-weight:900;letter-spacing:-.05em;line-height:1}
+.ah2-caps .hcaps{max-width:980px;margin:34px auto 0;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media(min-width:760px){.ah2-caps .hcaps{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}}
+.ah2-caps .hcaps a{flex-direction:column;align-items:flex-start;gap:14px;padding:22px;border-radius:24px;background:#f5f5f7}
+.ah2-caps .hcaps .ic{width:46px;height:46px}.ah2-caps .hcaps .ic svg{width:24px;height:24px}
+.ah2-caps .hcaps b{font-size:clamp(18px,1.8vw,22px)}
+.ah2-caps .hcaps small{margin-top:4px;font-size:clamp(13.5px,1.3vw,15.5px)}
+.ah2-caps .hlband{max-width:980px;margin:56px auto 0}
+@media(max-width:620px){
+  .ahero2{padding-top:32px}
+  .ah2-cta .btn{width:100%;justify-content:space-between}
+  .ah2-cta .b img{height:44px}
+  .ah2-phones{margin-top:32px}
+  .ah2-phones .ps{display:none}
+  .ah2-phones .pm{--pw:220px;margin-bottom:-90px}
+  .ah2-caps{padding-top:64px}
+  .ah2-caps .hcaps a{padding:16px;gap:10px}
+}

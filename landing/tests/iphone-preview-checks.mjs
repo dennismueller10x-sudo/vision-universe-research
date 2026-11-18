@@ -5,7 +5,7 @@ export async function checkIphonePreview(page){
   const viewport=page.viewportSize();
   assert.match(await page.locator('h1').innerText(),/Aktien und Finanzen/);
   assert.match(await page.locator('.apptag').first().innerText(),/App für iPhone und Android/);
-  const stores=page.locator('#start .stores img');assert.ok(await stores.count()>=2,'App Store und Google Play im ersten Abschnitt');
+  const stores=page.locator('#start .ah2-cta .b img');assert.ok(await stores.count()>=2,'App Store und Google Play im ersten Abschnitt');
   const first=await stores.first().boundingBox();assert.ok(first&&first.y<viewport.height*2.2,'Store-Logos weit oben');
   assert.equal(await page.locator('.hlfix .hlm').count(),2,'Aktienmagazin und Aktienreport fest unter den Tagesnews');
   assert.ok(await page.locator('.hlnews .hlc').count()>=3,'mindestens drei Tagesnews');
