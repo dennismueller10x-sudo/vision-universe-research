@@ -1392,7 +1392,7 @@
   /* T06: Aktienseite, Perspektive „Chart“. Einsteiger: der eine Chart mit Zonen, drei Saetze, Preise, Signale.
      Chart Studio (Kerzen, alle Schichten) ist die PRO-Ansicht unter #/chart/<T>/studio. */
   /* Klickentwurf Modul-Aktienseiten (Owner 17.11.2026): Zonen und 200-Tage-Linie sind zu Beginn eingeschaltet. */
-  var simple = { range: "1J", zones: true, trend: false, avg: true, stage: false, fib: false, ema: false };
+  var simple = { range: "1J", zones: true, trend: false, avg: true, stage: false, fib: false, ema: false, sma20: false, sma50: false, ind: {} };
   function stockHeadMount(host, T, name) {
     var SN = global.VUStockNavigator, SCX = global.VUCore && global.VUCore.StockContext, api = null;
     try { if (SN && SCX) api = SN.head(host, { ctx: SCX.fromUs(T, name ? { name: name } : undefined), current: "technical", name: name || null, pendingPrice: true, back: { href: "#/", label: "Technical" } }); } catch (e) { api = null; }
@@ -1662,6 +1662,147 @@
       put(legend, "Bänder: EMAs des letzten Tagesschlusses (" + M.dateDe(last) + "), schnelle 3–15 Tage neongrün, langsame 30–60 Tage grau" +
         (outside.length ? "; außerhalb der heutigen Spanne: " + outside.join(", ") : "") + ".");
     }
+    /* ---- Linien und Katalog-Indikatoren (Owner 18.11.2026) ---- */
+    var LINE_DEF = [["sma20", "20-Tage-Linie", 20, 4, "#0057b8", "2 3"], ["sma50", "50-Tage-Linie", 50, 10, "#8a6a00", ""],
+      ["stage", "150-Tage-Linie", 150, 30, "#7a3cff", ""], ["avg", "200-Tage-Linie", 200, 40, "#000", "5 4"]];
+    var wkData;
+    /* Lange Wochenreihe (discover-series-long, Schluesse): einmal laden, danach neu zeichnen. */
+    function weekly() {
+      if (wkData === undefined) {
+        wkData = null;
+        loadWeekly(X.T).then(function (w) {
+          var pts = (w && w.status === "CALCULATED" && Array.isArray(w.points) ? w.points : []).filter(function (p) { return p && typeof p[0] === "string" && isNum(p[1]) && p[1] > 0; });
+          if (pts.length > 1) { wkData = { dates: pts.map(function (p) { return p[0].slice(0, 10); }), close: pts.map(function (p) { return p[1]; }) }; draw(); }
+        }).catch(function () {});
+      }
+      return wkData;
+    }
+    function byDate(dates, values) { var m = {}; dates.forEach(function (d, i) { if (isNum(values[i])) m[String(d).slice(0, 10)] = values[i]; }); return m; }
+    var lineCache = {};
+    function lineSeries(key, daily) {
+      var ck = key + (daily ? "D" : "W"); if (lineCache[ck]) return lineCache[ck];
+      var L = LINE_DEF.filter(function (x) { return x[0] === key; })[0], cs = X.cs || {}, arr = null;
+      if (daily) {
+        arr = { sma20: cs.sma20, sma50: cs.sma50, stage: cs.sma150, avg: cs.sma200 }[key];
+        if (!Array.isArray(arr) || arr.length !== S.dates.length) arr = VT.Indicators.compute(S, "sma", { period: L[2] }).values;
+        return (lineCache[ck] = byDate(S.dates, arr));
+      }
+      var w = weekly(); if (!w) return null;
+      return (lineCache[ck] = byDate(w.dates, VT.Indicators.compute(w, "sma", { period: L[3] }).values));
+    }
+    var FAMILY = { TREND: "Trend", MOMENTUM: "Schwung", VOLATILITY: "Schwankung", VOLUME: "Volumen" };
+    /* Ein Satz in Alltagssprache fuer die bekanntesten; die uebrigen zeigen ihre Formel aus dem Katalog. */
+    var IND_TEXT = {
+      rsi: "Wie kräftig der Kurs zuletzt gestiegen oder gefallen ist, 0 bis 100.", macd: "Wird der Druck nach oben stärker oder schwächer?",
+      stochastic: "Wo der Kurs in seiner Spanne der letzten 14 Tage steht.", bollinger: "Band um den Durchschnitt; breit bei Unruhe, eng bei Ruhe.",
+      atr: "Wie weit der Kurs an einem Tag typischerweise schwankt.", adx: "Wie ausgeprägt ein Trend ist, nicht seine Richtung.",
+      obv: "Läuft das Volumen eher mit steigenden oder fallenden Tagen?", mfi: "RSI mit Volumen: fließt Geld hinein oder heraus?",
+      cci: "Wie weit der Kurs von seinem üblichen Niveau entfernt ist.", williamsR: "Wie nah der Schluss am Hoch der letzten 14 Tage liegt.",
+      ichimoku: "Japanisches Trendsystem mit Wolke als Zone.", supertrend: "Linie, die dem Trend im Abstand der Schwankung folgt.",
+      psar: "Punkte, die dem Trend folgen und bei einer Wende die Seite wechseln.", keltner: "Band um die EMA im Abstand der Schwankung.",
+      donchian: "Höchster und tiefster Kurs der letzten 20 Tage.", vwma: "Durchschnitt, bei dem Tage mit viel Handel mehr zählen.",
+      hma: "Schneller, glatter Durchschnitt (Hull).", cmf: "Kauf- oder Verkaufsdruck der letzten 20 Tage aus Volumen.",
+      aroon: "Wie lange das letzte Hoch und Tief zurückliegen.", roc: "Prozentuale Kursänderung über einen festen Zeitraum.",
+      sma: "Einfacher Durchschnitt der Schlusskurse.", ema: "Durchschnitt, der jüngere Kurse stärker gewichtet.",
+      vortex: "Zeigt, ob Aufwärts- oder Abwärtsbewegungen überwiegen.", choppiness: "Läuft der Markt im Trend oder seitwärts?",
+      historicalVolatility: "Schwankung der letzten 20 Tage aufs Jahr gerechnet.", alligator: "Drei versetzte Durchschnitte nach Bill Williams.",
+      envelope: "Band in festem Prozentabstand um den Durchschnitt.", chandelier: "Ausstiegslinie im Abstand der Schwankung vom Hoch.",
+      pivots: "Tagesmarken aus Hoch, Tief und Schluss des Vortags.", linreg: "Gerade durch die letzten Kurse mit Band.",
+      trix: "Dreifach geglätteter Schwung.", stochRsi: "Stochastik auf dem RSI, reagiert schneller.", ppo: "MACD in Prozent.",
+      kst: "Schwung aus vier Zeiträumen.", tsi: "Doppelt geglätteter Schwung.", coppock: "Langfristiger Schwung für Wenden nach Abschwüngen.",
+      zScore: "Wie ungewöhnlich weit der Kurs vom Durchschnitt liegt.", connorsRsi: "Kurzfristige Übertreibung aus drei Bausteinen.",
+      elderImpulse: "Trend und Schwung zusammen: grün, rot oder neutral.", forceIndex: "Kursänderung mal Volumen.", adLine: "Kumulierter Geldfluss.",
+      fisher: "Macht Wenden im Kurs deutlicher sichtbar.", ultimateOscillator: "Schwung aus drei Zeiträumen.", natr: "Schwankung in Prozent des Kurses."
+    };
+    var SKIP_KEYS = { direction: 1, width: 1, percentB: 1, r2: 1, slope: 1, raw: 1, up: 1, down: 1, cloudA: 1, cloudB: 1 };
+    var COLORS = ["#0057b8", "#8a6a00", "#7a3cff", "#b4508c", "#000", "#6e6e6e"];
+    var indCache = {};
+    function catalog() { return VT.Indicators && VT.Indicators.CATALOG || []; }
+    function indResult(id, daily) {
+      var ck = id + (daily ? "D" : "W"); if (indCache[ck] !== undefined) return indCache[ck];
+      var src = daily ? S : weekly(); if (!src) return null;
+      var r = VT.Indicators.compute(src, id), out = null;
+      if (r && !r.error && r.values) {
+        var series = [];
+        if (Array.isArray(r.values)) series.push({ key: "", values: r.values });
+        else Object.keys(r.values).forEach(function (k) { var v = r.values[k]; if (!SKIP_KEYS[k] && Array.isArray(v) && v.some(isNum)) series.push({ key: k, values: v }); });
+        out = { dates: src.dates.map(function (d) { return String(d).slice(0, 10); }), series: series };
+      }
+      return (indCache[ck] = out);
+    }
+    var panes = el("div", { class: "tc-panes", "aria-live": "off" });
+    var activeHost = el("div", { class: "vu-chips tc-active" });
+    function activeIds() { return Object.keys(simple.ind).filter(function (k) { return simple.ind[k]; }); }
+    function syncActive() {
+      var ids = activeIds(), cat = catalog();
+      put(activeHost, ids.map(function (id) {
+        var c = cat.filter(function (x) { return x.id === id; })[0];
+        return el("button", { type: "button", class: "vu-chip vu-chip--on tc-active-chip", "aria-label": (c ? c.name : id) + " ausblenden", onclick: function () { simple.ind[id] = false; syncActive(); draw(); } }, [(c ? shortInd(c) : id) + " ×"]);
+      }));
+    }
+    function shortInd(c) { var m = /\(([^)]+)\)\s*$/.exec(c.name); return m && m[1].length <= 14 ? m[1] : c.name.length > 24 ? c.name.slice(0, 22) + "…" : c.name; }
+    function paintExtras(layer, g, daily, plotBottom) {
+      var ids = activeIds(), cat = catalog(), missing = [], paneEls = [];
+      ids.forEach(function (id, n) {
+        var c = cat.filter(function (x) { return x.id === id; })[0]; if (!c) return;
+        var r = indResult(id, daily);
+        if (!r) { if (daily || weekly()) missing.push(shortInd(c)); return; }
+        var color = COLORS[n % COLORS.length];
+        if (c.overlay) {
+          r.series.forEach(function (sr, q) {
+            var m = byDate(r.dates, sr.values), d = "";
+            if (/Price$/.test(sr.key)) { g.pts.forEach(function (p) { var v = m[p.t.slice(0, 10)]; if (isNum(v)) layer.appendChild(svgEl("circle", { class: "tc-ind-dot", cx: p.x.toFixed(1), cy: g.y(v).toFixed(1), r: 2.4, fill: color })); }); return; }
+            g.pts.forEach(function (p) { var v = m[p.t.slice(0, 10)]; if (isNum(v)) d += (d ? "L" : "M") + p.x.toFixed(1) + " " + Math.max(0, Math.min(plotBottom, g.y(v))).toFixed(1) + " "; });
+            if (d) layer.appendChild(svgEl("path", { class: "tc-ind-line", d: d.trim(), fill: "none", stroke: color, "stroke-width": q ? 1.1 : 1.6, "stroke-dasharray": q ? "3 2" : "" }));
+          });
+        } else paneEls.push(paneFor(c, r, g, color));
+      });
+      put(panes, paneEls);
+      /* Fenster direkt unter dem Chart (vor Zoom- und Zeitleiste). */
+      var box = host.querySelector(".qc-box"); if (box && panes.previousSibling !== box) box.parentNode.insertBefore(panes, box.nextSibling);
+      return missing.length ? "Ohne Hoch, Tief und Volumen nicht rechenbar" + (daily ? "" : " im Wochenchart") + ": " + missing.join(", ") : "";
+    }
+    /* Feste Skalen mit den ueblichen Marken fuer begrenzte Oszillatoren. */
+    var FIXED = { rsi: [0, 100, [30, 70]], mfi: [0, 100, [20, 80]], stochastic: [0, 100, [20, 80]], stochRsi: [0, 100, [20, 80]], stochFast: [0, 100, [20, 80]],
+      connorsRsi: [0, 100, [10, 90]], ultimateOscillator: [0, 100, [30, 70]], williamsR: [-100, 0, [-80, -20]], cmo: [-100, 100, [-50, 50]], aroon: [0, 100, [30, 70]] };
+    function paneFor(c, r, g, color) {
+      var H = 86, top = 16, maps = r.series.map(function (sr) { return { key: sr.key, m: byDate(r.dates, sr.values) }; }), lo = Infinity, hi = -Infinity, last = null, fx = FIXED[c.id];
+      if (fx) { lo = fx[0]; hi = fx[1]; }
+      else g.pts.forEach(function (p) { maps.forEach(function (mp) { var v = mp.m[p.t.slice(0, 10)]; if (isNum(v)) { lo = Math.min(lo, v); hi = Math.max(hi, v); } }); });
+      var svg = svgEl("svg", { class: "tc-pane-svg", viewBox: "0 0 " + g.w + " " + H, preserveAspectRatio: "none", role: "img", "aria-label": c.name });
+      if (!(hi > lo)) { hi = lo + 1; }
+      var y = function (v) { return top + (hi - v) / (hi - lo) * (H - top - 6); };
+      if (lo < 0 && hi > 0 && !fx) svg.appendChild(svgEl("line", { x1: 0, x2: g.w - g.padR, y1: y(0).toFixed(1), y2: y(0).toFixed(1), class: "tc-pane-zero" }));
+      if (fx) fx[2].forEach(function (m) { svg.appendChild(svgEl("line", { x1: 0, x2: g.w - g.padR, y1: y(m).toFixed(1), y2: y(m).toFixed(1), class: "tc-pane-zero" })); });
+      maps.forEach(function (mp, q) {
+        if (mp.key === "histogram") { g.pts.forEach(function (p) { var v = mp.m[p.t.slice(0, 10)]; if (isNum(v)) { var y0 = y(Math.max(lo, Math.min(hi, 0))), y1 = y(v); svg.appendChild(svgEl("rect", { x: (p.x - 1).toFixed(1), y: Math.min(y0, y1).toFixed(1), width: 2, height: Math.max(0.5, Math.abs(y1 - y0)).toFixed(1), fill: "#9b9b9b" })); } }); return; }
+        var d = "";
+        g.pts.forEach(function (p) { var v = mp.m[p.t.slice(0, 10)]; if (isNum(v)) { d += (d ? "L" : "M") + p.x.toFixed(1) + " " + y(v).toFixed(1) + " "; if (!q) last = v; } });
+        if (d) svg.appendChild(svgEl("path", { d: d.trim(), fill: "none", stroke: q ? "#6e6e6e" : color, "stroke-width": q ? 1.1 : 1.6, "stroke-dasharray": q ? "3 2" : "", "vector-effect": "non-scaling-stroke" }));
+      });
+      return el("div", { class: "tc-pane-box" }, [el("div", { class: "tc-pane-h" }, [el("b", { text: shortInd(c) }), el("span", { class: "num", text: isNum(last) ? M.num(last, Math.abs(last) < 10 ? 2 : 1) : "–" }),
+        el("button", { type: "button", class: "tc-pane-x", "aria-label": c.name + " ausblenden", text: "×", onclick: function () { simple.ind[c.id] = false; syncActive(); draw(); } })]), svg]);
+    }
+    /* Fenster „Indikatoren“: alle Katalogeintraege nach Familie, Suche, Schalter. */
+    function openIndicators() {
+      var cat = catalog(), q = el("input", { type: "search", class: "tc-ind-search", placeholder: "Suchen, z. B. RSI, Volumen, Band", "aria-label": "Indikator suchen" });
+      var listHost = el("div", { class: "tc-ind-list" });
+      function row(c) {
+        var on = !!simple.ind[c.id], sw = el("span", { class: "tc-ind-sw" + (on ? " is-on" : ""), "aria-hidden": "true" });
+        return el("button", { type: "button", class: "tc-ind-row", "aria-pressed": String(on), onclick: function (ev) {
+          simple.ind[c.id] = !simple.ind[c.id]; ev.currentTarget.setAttribute("aria-pressed", String(!!simple.ind[c.id])); sw.classList.toggle("is-on", !!simple.ind[c.id]); syncActive(); draw();
+        } }, [el("span", { class: "tc-ind-t" }, [el("b", { text: c.name }), el("small", { text: (c.overlay ? "Im Kurs · " : "Eigenes Fenster · ") + (IND_TEXT[c.id] || c.definition || "") })]), sw]);
+      }
+      function paint() {
+        var term = q.value.trim().toLowerCase();
+        put(listHost, Object.keys(FAMILY).map(function (f) {
+          var items = cat.filter(function (c) { return c.family === f && (!term || (c.name + " " + c.id + " " + (IND_TEXT[c.id] || "") + " " + FAMILY[f]).toLowerCase().indexOf(term) >= 0); });
+          return items.length ? el("section", { class: "tc-ind-fam" }, [el("p", { class: "vu-ltag", text: FAMILY[f] + " · " + items.length }), el("div", { class: "tc-ind-box" }, items.map(row))]) : null;
+        }));
+      }
+      q.addEventListener("input", paint); paint();
+      pop("tc-ind-pop", "Indikatoren · " + cat.length, [el("p", { class: "tc-note", text: "Gerechnet mit denselben geprüften Formeln wie im Screener. Im Kurs: Linien im Chart; die übrigen erscheinen in eigenen Fenstern unter dem Chart." }), q, listHost]);
+    }
     function fibData() { if (fibCache === undefined) fibCache = VT.ChartExplain && X.ctx ? VT.ChartExplain.fibSwing(X.ctx, VT.TILevels) : null; return fibCache; }
     /* Ebenen der Technical-Welt auf DEM Chart (kein zweiter Zeichner): Zonen, Trendlinie, 200-Tage-Linie.
        Sie gelten fuer die Tagesansicht; im Tagesverlauf (1T) und in Wochenraster-Zeitraeumen bleibt die Kurslinie allein. */
@@ -1675,17 +1816,19 @@
     }
     function paintLayers(svg, g, rangeId) {
       if (!svg || !g || !g.pts) { put(legend, ""); return; }
-      if (g.intraday) { paintEmaIntraday(svg, g); return; }
+      if (g.intraday) { paintEmaIntraday(svg, g); put(panes, Object.keys(simple.ind).some(function (k) { return simple.ind[k]; }) ? el("p", { class: "tc-note", text: "Indikatoren gelten für Tag, Woche und Monat; im Tagesverlauf (1T) fehlen dafür noch die 5-Minuten-Kerzen." }) : ""); return; }
       var dailyGrain = svg.parentNode && svg.parentNode.dataset && svg.parentNode.dataset.grain === "daily";
       var plotBottom = g.h - g.padBottom, right = g.w - g.padR, note = [];
       var layer = svgEl("g", { class: "tc-layers" }), top = svgEl("g", { class: "tc-layers tc-layers--top" });
       function inView(y) { return y >= 0 && y <= plotBottom; }
+      var zoneLabelY = null;
       if (simple.zones) [[R, "negative", "Widerstand"], [Su, "positive", "Unterstützung"]].forEach(function (z) {
         var zone = z[0]; if (!zone) return;
         var y1 = g.y(zone.zoneHigh), y2 = g.y(zone.zoneLow); if (!inView(y1) && !inView(y2)) return;
         var top = Math.max(0, Math.min(y1, y2)), bot = Math.min(plotBottom, Math.max(y1, y2));
         layer.appendChild(svgEl("rect", { class: "tc-zone tc-zone--" + z[1], x: 2, y: top.toFixed(1), width: Math.max(0, right - 2), height: Math.max(2, bot - top).toFixed(1) }));
-        var tx = svgEl("text", { class: "tc-zone-label", x: 6, y: (top + 12).toFixed(1) }); tx.textContent = z[2] + " " + de(zone.zoneLow) + "–" + de(zone.zoneHigh); layer.appendChild(tx);
+        var ly = top + 12; if (zoneLabelY !== null && Math.abs(ly - zoneLabelY) < 14) ly = zoneLabelY + 14; zoneLabelY = ly;
+        var tx = svgEl("text", { class: "tc-zone-label", x: 6, y: ly.toFixed(1) }); tx.textContent = z[2] + " " + de(zone.zoneLow) + "–" + de(zone.zoneHigh); layer.appendChild(tx);
       });
       if (simple.trend && dailyGrain) {
         var lines = []; formationLayers(X.analysis, S, { trend: true, muster: false }, null, g.pts[0].t.slice(0, 10), lines, [], []);
@@ -1698,18 +1841,21 @@
         });
         note.push("Trendlinien gelten für den Tageschart");
       }
-      if (simple.avg && dailyGrain && X.cs.sma200) {
+      /* Gleitende Durchschnitte (Owner 18.11.2026): 20/50/150/200 Tage; im Wochenchart (5J, Max) dieselbe Zeitspanne als
+         4/10/30/40 Wochen. Tag: chartSeries der Materialisierung (volle Historie), sonst indicators.js auf den Tagesbalken. */
+      var lineNote = [];
+      LINE_DEF.forEach(function (L) {
+        if (!simple[L[0]]) return;
+        var m = lineSeries(L[0], dailyGrain); if (!m) return;
         var d = "";
-        g.pts.forEach(function (p) { var i = S.dates.indexOf(p.t.slice(0, 10)), v = i >= 0 ? X.cs.sma200[i] : null; if (isNum(v)) d += (d ? "L" : "M") + p.x.toFixed(1) + " " + g.y(v).toFixed(1) + " "; });
-        if (d) layer.appendChild(svgEl("path", { class: "tc-avg", d: d.trim(), fill: "none", "stroke-dasharray": "5 4" }));
-        note.push("gestrichelt: 200-Tage-Linie");
-      }
-      if (simple.stage && dailyGrain) {
-        var s150 = sma150(), d2 = "";
-        g.pts.forEach(function (p) { var i = S.dates.indexOf(p.t.slice(0, 10)), v = i >= 0 && s150 ? s150[i] : null; if (isNum(v)) d2 += (d2 ? "L" : "M") + p.x.toFixed(1) + " " + g.y(v).toFixed(1) + " "; });
-        if (d2) layer.appendChild(svgEl("path", { class: "tc-avg tc-avg--stage", d: d2.trim(), fill: "none" }));
-        note.push("durchgezogen: 150-Tage-Linie");
-      }
+        g.pts.forEach(function (p) { var v = m[p.t.slice(0, 10)]; if (isNum(v)) d += (d ? "L" : "M") + p.x.toFixed(1) + " " + Math.max(0, Math.min(plotBottom, g.y(v))).toFixed(1) + " "; });
+        if (d) layer.appendChild(svgEl("path", { class: "tc-avg tc-line", d: d.trim(), fill: "none", stroke: L[4], "stroke-dasharray": L[5] || "" }));
+        lineNote.push(dailyGrain ? L[1] : L[3] + "-Wochen-Linie");
+      });
+      if (lineNote.length) note.push("Linien: " + lineNote.join(", ") + (dailyGrain ? "" : " (Wochenchart)"));
+      /* Indikatoren aus dem Katalog (indicators.js): im Kurs als Linien, die uebrigen in Fenstern unter dem Chart. */
+      var extra = paintExtras(layer, g, dailyGrain, plotBottom);
+      if (extra) note.push(extra);
       if (simple.ema) {
         var bands = dailyGrain ? emaBandsDaily() : emaBandsWeekly();
         if (bands) {
@@ -1758,7 +1904,7 @@
       var eod = S.dates.map(function (d, i) { return [d, S.close[i]]; });
       /* Der Strom kommt nur, wenn die gemeinsame Freigabe ihn fuer diesen Ticker erlaubt (sonst bleibt es beim Snapshot). */
       var RT = global.VURealtimeCapability && global.VUDisplayPolicy ? global.VURealtimeCapability.create({ loadJSON: fetchJSON, displayPolicy: global.VUDisplayPolicy }) : null;
-      widget = Chart.create({ ticker: X.T, eod: eod, currency: "USD", adjusted: true, onPaint: paintLayers, zoom: true,
+      widget = Chart.create({ ticker: X.T, eod: eod, currency: "USD", adjusted: true, onPaint: paintLayers, zoom: true, fx: false,
         realtime: RT ? function () { return RT.getRealtimeCapability(X.T); } : undefined,
         longPath: M.LONG_DIR + global.VUCore.Identity.securityIdForTicker(X.T) + ".json", loadJSON: fetchJSON,
         /* Der Kopf zeigt denselben Kurs wie Quant und Discover: nur ein LAUFENDER Tag (p.live) ersetzt den veroeffentlichten Schluss; nach Schluss gilt der
@@ -1767,10 +1913,12 @@
       put(host, widget.node);
     });
     function tog(key, label) { return el("button", { type: "button", class: "vu-chip", "data-layer": key, "aria-pressed": String(simple[key]), text: label, onclick: function (ev) { simple[key] = !simple[key]; ev.currentTarget.setAttribute("aria-pressed", String(simple[key])); draw(); } }); }
-    var togs = el("div", { class: "vu-chips tc-togs" }, [tog("zones", "Zonen"), tog("avg", "200-Tage-Linie"), tog("trend", "Trendlinie"), tog("stage", "150-Tage-Linie"), tog("ema", "EMA-Bänder"), tog("fib", "Fibonacci")]);
+    var togs = el("div", { class: "vu-chips tc-togs" }, [tog("zones", "Zonen"), tog("trend", "Trendlinie"), tog("sma20", "20-Tage-Linie"), tog("sma50", "50-Tage-Linie"),
+      tog("stage", "150-Tage-Linie"), tog("avg", "200-Tage-Linie"), tog("ema", "EMA-Bänder"), tog("fib", "Fibonacci"),
+      el("button", { type: "button", class: "vu-chip vu-chip--lime tc-ind-open", "aria-haspopup": "dialog", onclick: openIndicators }, ["+ Indikatoren (" + catalog().length + ")"])]);
     function syncTogs() { Array.prototype.forEach.call(togs.querySelectorAll("[data-layer]"), function (b) { b.setAttribute("aria-pressed", String(!!simple[b.getAttribute("data-layer")])); }); }
     /* „Chart erklären“ (engine/chart-explain.js): sieben Schritte, je Schritt nur die passende Ebene im Chart. */
-    var LAYER_KEYS = ["zones", "trend", "avg", "stage", "ema", "fib"], guide = { data: null, i: 0, saved: null };
+    var LAYER_KEYS = ["zones", "trend", "sma20", "sma50", "avg", "stage", "ema", "fib"], guide = { data: null, i: 0, saved: null };
     var guideHost = el("section", { class: "tc-guide", "aria-live": "polite", "aria-label": "Chart erklären" });
     function setLayers(only) { LAYER_KEYS.forEach(function (k) { simple[k] = k === only; }); syncTogs(); draw(); }
     function activeFormation() {
@@ -1866,6 +2014,8 @@
       explainBtn, sh("Kursverlauf"), host, guideHost, legend, togs,
       sh("Der Chart in drei Sätzen", [storyInfo]), story,
       X.st.frozenSince ? null : zoneCard(lv, S.close[t], sh), bh[0], bh[1], verlauf, sh("Kapitel"), chapters, foot]);
+    /* Indikator-Fenster direkt unter dem Chart, aktive Indikatoren unter den Chips (Owner 18.11.2026). */
+    if (togs.parentNode) togs.parentNode.insertBefore(activeHost, togs.nextSibling);
     /* „Diese Aktie in anderen Modulen“ steht wie im Entwurf vor der Fußzeile. */
     if (X.head && X.head.others && X.head.others.place) X.head.others.place(body, foot);
   }

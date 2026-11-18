@@ -327,6 +327,18 @@ async function main() {
       assert(/im Ausschnitt/.test(await page.locator(".tc-simple-chart .qc-head").innerText()), "Zoom: Kopf nennt keinen Ausschnitt");
       await page.locator(".tc-simple-chart .qc-zoom-reset").click();
       await page.waitForFunction((n) => (document.querySelector(".tc-simple-chart svg").__vuGeometry || {}).pts.length === n, full);
+      /* Linien, Katalog-Indikatoren und Boersenwaehrung (Owner 18.11.2026). */
+      for (const k of ["sma20", "sma50", "stage", "avg"]) assert(await page.locator('.tc-togs [data-layer="' + k + '"]').count() === 1, "Chip fehlt: " + k);
+      assert(await page.locator(".tc-simple-chart .qc-fx button, .tc-simple-chart .qc-fx select").count() === 0, "Währungsumschalter im Technical-Chart");
+      await page.locator(".tc-ind-open").click();
+      await page.waitForSelector(".tc-ind-row");
+      assert(await page.locator(".tc-ind-row").count() === 92, "Indikatoren-Fenster: nicht 92 Einträge");
+      await page.locator(".tc-ind-search").fill("Relative Strength Index");
+      await page.locator(".tc-ind-row").first().click();
+      await page.keyboard.press("Escape");
+      await page.waitForSelector(".tc-pane-box");
+      await page.locator(".tc-pane-x").first().click();
+      await page.waitForFunction(() => !document.querySelector(".tc-pane-box"));
       /* Wochenchart (5J): Baender aus der langen Wochenreihe ueber die ganze Breite; Ebenen fangen keine Klicks ab. */
       await page.locator('.tc-simple-chart .qc-ranges button[data-range="5Y"]').click();
       await page.waitForFunction(() => { const f = document.querySelector(".tc-simple-chart .tc-ema--fast"), s = f && f.ownerSVGElement; return f && s && f.getBBox().width > s.getBBox().width * 0.8; }, null, { timeout: 15000 });
