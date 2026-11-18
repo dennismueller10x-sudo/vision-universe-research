@@ -4,11 +4,12 @@ import assert from 'node:assert/strict';
 export async function checkIphonePreview(page){
   const viewport=page.viewportSize();
   assert.match(await page.locator('h1').innerText(),/Aktien und Finanzen/);
-  assert.match(await page.locator('.apptag').first().innerText(),/App für iPhone und Android/);
+  assert.match(await page.locator('#start .ah2-cta').innerText(),/Zum Start benachrichtigen/);
   const stores=page.locator('#start .ah2-cta .b img');assert.ok(await stores.count()>=2,'App Store und Google Play im ersten Abschnitt');
   const first=await stores.first().boundingBox();assert.ok(first&&first.y<viewport.height*2.2,'Store-Logos weit oben');
-  assert.equal(await page.locator('.hlfix .hlm').count(),2,'Aktienmagazin und Aktienreport fest unter den Tagesnews');
-  assert.ok(await page.locator('.hlnews .hlc').count()>=3,'mindestens drei Tagesnews');
+  assert.equal(await page.locator('#start .ah2-new[href="./magazin/"]').count(),1,'Zeile „Neu“ zum aktuellen Aktienmagazin über der Überschrift');
+  assert.equal(await page.locator('#news .hlm').count(),2,'Aktienmagazin und Aktienreport im News-Kapitel');
+  assert.ok(await page.locator('#news .ntile').count()>=3,'mindestens drei Tagesnews im News-Kapitel');
   for(const id of ['discover','fundamental','technical','supertrader','vorsorge','screener','atlas','quant','hedgefonds','elliott','portfolios'])
     assert.equal(await page.locator('#k-'+id).count(),1,'Kapitel '+id);
   assert.equal(await page.locator('.jbar a[href="#k-technical"]').count(),1,'Sprungleiste führt auf der Seite zu den Kapiteln');

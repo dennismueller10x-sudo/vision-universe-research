@@ -27,7 +27,7 @@ export function analyticsId(id = '') {
   return id;
 }
 
-export async function build({output = resolve(root,'dist'), config = {}, production = false, gaId = ''} = {}) {
+export async function build({output = resolve(root,'dist'), config = {}, production = false, gaId = '', concepts = false} = {}) {
   const ready = validateConfig(config);
   const ga = analyticsId(gaId);
   if (production && config.mode === 'test') throw new Error('Testmodus darf nicht öffentlich veröffentlicht werden.');
@@ -137,9 +137,30 @@ export async function build({output = resolve(root,'dist'), config = {}, product
   // Advanced-mode source contains binding names, never credential values.
   await cp(resolve(root,'server/newsletter.mjs'),resolve(output,'_worker.js'));
   await writeFile(resolve(output,'_routes.json'),JSON.stringify({version:1,include:['/api/*','/.newsletter-internal/*','/_worker*','/server/*'],exclude:[]}));
+  // Entwurfs-Konzepte (Owner 18.11.2026) nur in Branch-Vorschauen, nie auf main: /konzepte/
+  if (concepts) await buildConcepts(output);
   const files = await readdir(output);
   return {newsletter:ready?'Eigene Formularoberfläche; geschützte Brevo-DOI-API':'BLOCKIERT: Newsletter-Anmeldung geschlossen',mode:production?'production':'preview',output,entries:files.length};
 }
+const CONCEPTS = {
+  s: [['s1','Kompakt','Kleinere Schrift, Karten neben dem iPhone'],['s2','Zweispaltig','Text links, iPhone rechts, alles auf einem Bildschirm'],['s3','Ruhig','Kleine Überschrift, iPhone ohne Karten, Karten als Leiste darunter'],['s4','Fähigkeiten oben','Sechs Fähigkeiten direkt im Hero neben dem iPhone'],['s5','Apple-Bühne','iPhone wächst von unten ins Bild, Karten links und rechts']],
+  l: [['l1','Kompakt','Kleinere Schrift, kleines iPhone, Karten links und rechts'],['l2','Zweispaltig','Text und Knopf links, iPhone rechts'],['l3','Ohne Karten','iPhone frei, drei Stichworte darunter'],['l4','Fähigkeiten zuerst','Überschrift, sechs Fähigkeiten, kleines iPhone'],['l5','Apple-Bühne','iPhone wächst von unten ins Bild, Knopf darüber']]
+};
+async function buildConcepts(output) {
+  const rel = (html, from) => html.replace(/(src|href|data-img|data-src)="(\.\.?\/)/g, (m, a, p) => `${a}="${p === './' && from === 'home' ? '../../' : '../../'}`);
+  const home = await readFile(resolve(output,'index.html'),'utf8'), start = await readFile(resolve(output,'start/index.html'),'utf8');
+  const make = async (kind, [id, name, text]) => {
+    let html = rel(kind === 's' ? home : start, kind === 's' ? 'home' : 'start');
+    html = html.replace('<html lang="de"', `<html lang="de" class="kz kz-${id}"`).replace('</head>', '<link rel="stylesheet" href="../../web/konzepte.css"></head>')
+      .replace(/(<body[^>]*>)/, `$1<a class="kz-badge" href="../">Konzept ${id.toUpperCase()} · ${name} <span>‹ alle Konzepte</span></a>`);
+    await mkdir(resolve(output,'konzepte',id),{recursive:true}); await writeFile(resolve(output,'konzepte',id,'index.html'),html);
+  };
+  for (const c of CONCEPTS.s) await make('s', c);
+  for (const c of CONCEPTS.l) await make('l', c);
+  const list = (k, title) => `<h2>${title}</h2><ul>${CONCEPTS[k].map(([id,n,t]) => `<li><a href="./${id}/"><b>${id.toUpperCase()} · ${n}</b><span>${t}</span></a></li>`).join('')}</ul>`;
+  await writeFile(resolve(output,'konzepte/index.html'), `<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex, nofollow"><title>Konzepte · Vision Universe</title><link rel="stylesheet" href="../web/site.css"><link rel="stylesheet" href="../web/konzepte.css"></head><body class="kz-list"><main class="w"><h1>Konzepte</h1><p>Entwürfe zum Vergleichen, nur in der Vorschau. Aktuell live: <a href="../">Startseite</a> · <a href="../start/">Landingpage</a></p>${list('s','Startseite')}${list('l','Landingpage')}</main></body></html>`);
+}
+
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const args = process.argv.slice(2);
   const configArg = args.find(a=>a.startsWith('--config='))?.slice(9);
@@ -155,6 +176,6 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
       privacyHtmlPath:process.env.LANDING_PRIVACY_HTML_PATH||''
     }:{};
     if(config.mode==='test'&&process.env.CF_PAGES_BRANCH==='main')throw new Error('Testformular auf main gesperrt.');
-    console.log(JSON.stringify(await build({config,output:outputArg,gaId:process.env.LANDING_GA_ID||'',production:args.includes('--production')||publicationMode==='production'})));
+    console.log(JSON.stringify(await build({config,output:outputArg,gaId:process.env.LANDING_GA_ID||'',concepts:(!!process.env.CF_PAGES_BRANCH&&process.env.CF_PAGES_BRANCH!=='main')||process.env.LANDING_CONCEPTS==='1',production:args.includes('--production')||publicationMode==='production'})));
   } catch (error) { console.error(error instanceof SyntaxError ? 'Konfiguration ist kein gültiges JSON/keine gültige URL.' : error.message); process.exitCode=1; }
 }

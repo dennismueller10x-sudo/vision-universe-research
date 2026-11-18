@@ -1,0 +1,114 @@
+/* Entwurfs-Konzepte (Owner 18.11.2026), nur in Branch-Vorschauen unter /konzepte/. Nicht auf main eingebunden. */
+.kz-badge{position:fixed;left:12px;bottom:12px;z-index:90;display:inline-flex;gap:8px;align-items:center;padding:9px 14px;border-radius:99px;background:var(--lime);color:#000;font-weight:900;font-size:13px;box-shadow:0 10px 30px -10px rgba(0,0,0,.4)}
+.kz-badge span{font-weight:700;opacity:.7}
+.kz-list main{padding:48px 20px 80px}.kz-list h1{font-size:48px;font-weight:900;letter-spacing:-.05em}.kz-list h2{margin-top:36px;font-size:26px;font-weight:900}
+.kz-list p{margin-top:10px;color:#555;font-weight:600}.kz-list p a{text-decoration:underline}
+.kz-list ul{display:grid;gap:10px;margin-top:14px;max-width:720px}.kz-list li a{display:block;padding:16px 18px;border-radius:18px;background:#f5f5f7}
+.kz-list li b{display:block;font-size:18px}.kz-list li span{display:block;margin-top:4px;color:#555;font-weight:600}
+
+/* Gemeinsam: etwas kleinere Schrift */
+.kz .ahero2 h1,.kz .lp3a h1{font-size:clamp(34px,5.4vw,76px);max-width:16ch}
+.kz .ah2-sub,.kz .lp3a-sub{font-size:clamp(16px,1.5vw,20px)}
+.kz .ahero2{padding-top:36px}
+
+/* Karten links und rechts neben dem Display (S1, S5, L1, L5) */
+.kz-s1 .ah2-stage,.kz-s5 .ah2-stage,.kz-l1 .ah2-stage,.kz-l5 .ah2-stage{max-width:960px}
+.kz-s1 .ah2-stage .hc,.kz-s5 .ah2-stage .hc,.kz-l1 .ah2-stage .hc,.kz-l5 .ah2-stage .hc{width:270px;white-space:normal}
+.kz-s1 .ah2-stage .hc.c1,.kz-s5 .ah2-stage .hc.c1,.kz-l1 .ah2-stage .hc.c1,.kz-l5 .ah2-stage .hc.c1{left:0;top:60px}
+.kz-s1 .ah2-stage .hc.c3,.kz-s5 .ah2-stage .hc.c3,.kz-l1 .ah2-stage .hc.c3,.kz-l5 .ah2-stage .hc.c3{left:0;top:230px}
+.kz-s1 .ah2-stage .hc.c5,.kz-s5 .ah2-stage .hc.c5,.kz-l1 .ah2-stage .hc.c5,.kz-l5 .ah2-stage .hc.c5{left:0;top:390px;bottom:auto}
+.kz-s1 .ah2-stage .hc.c2,.kz-s5 .ah2-stage .hc.c2,.kz-l1 .ah2-stage .hc.c2,.kz-l5 .ah2-stage .hc.c2{right:0;top:120px}
+.kz-s1 .ah2-stage .hc.c4,.kz-s5 .ah2-stage .hc.c4,.kz-l1 .ah2-stage .hc.c4,.kz-l5 .ah2-stage .hc.c4{right:0;top:300px}
+@media(max-width:760px){
+  .kz-s1 .ah2-stage .aphone,.kz-s5 .ah2-stage .aphone,.kz-l1 .ah2-stage .aphone,.kz-l5 .ah2-stage .aphone{--pw:150px}
+  .kz-s1 .ah2-stage .hc,.kz-s5 .ah2-stage .hc,.kz-l1 .ah2-stage .hc,.kz-l5 .ah2-stage .hc{width:calc(50% - 86px);min-width:0;padding:8px;gap:6px;font-size:10px;border-radius:12px;transform:none}
+  .kz .ah2-stage .hc .ring{display:none}
+  .kz .ah2-stage .hc b{font-size:12px;white-space:normal}
+  .kz .ah2-stage .hc small{font-size:8.5px}
+  .kz-s1 .ah2-stage .hc.c1,.kz-s5 .ah2-stage .hc.c1,.kz-l1 .ah2-stage .hc.c1,.kz-l5 .ah2-stage .hc.c1{top:20px}
+  .kz-s1 .ah2-stage .hc.c3,.kz-s5 .ah2-stage .hc.c3,.kz-l1 .ah2-stage .hc.c3,.kz-l5 .ah2-stage .hc.c3{top:150px}
+  .kz-s1 .ah2-stage .hc.c2,.kz-s5 .ah2-stage .hc.c2,.kz-l1 .ah2-stage .hc.c2,.kz-l5 .ah2-stage .hc.c2{top:60px}
+  .kz-s1 .ah2-stage .hc.c4,.kz-s5 .ah2-stage .hc.c4,.kz-l1 .ah2-stage .hc.c4,.kz-l5 .ah2-stage .hc.c4{top:190px}
+  .kz .ah2-stage .hc.c5{display:none}
+  .kz-s1 .ah2-stage,.kz-l1 .ah2-stage{height:340px;margin-top:20px}
+}
+
+/* S1/L1 Kompakt */
+.kz-s1 .ah2-stage{height:560px;margin-top:28px}.kz-s1 .ah2-stage .aphone{--pw:260px}
+.kz-l1 .lp3a-stage{height:520px}.kz-l1 .lp3a-stage .aphone{--pw:230px}
+.kz-l1 .lp3a h1{font-size:clamp(28px,4.4vw,60px)}
+
+/* S2/L2 Zweispaltig */
+@media(min-width:900px){
+  .kz-s2 .ahero2{text-align:left}
+  .kz-s2 .ahero2 .w{display:grid;grid-template-columns:1fr 1fr;column-gap:40px;align-items:center}
+  .kz-s2 .ahero2 .w>*{grid-column:1}.kz-s2 .ahero2 .ah2-new{justify-self:start}
+  .kz-s2 .ahero2 h1,.kz-s2 .ah2-sub{margin-left:0}
+  .kz-s2 .ah2-cta{justify-content:flex-start}
+  .kz-s2 .ah2-stage{grid-column:2;grid-row:1/span 6;height:620px;margin:0}
+  .kz-l2 .lp3a-in{display:grid;grid-template-columns:1fr 1fr;column-gap:40px;align-items:center;text-align:left}
+  .kz-l2 .lp3a-in>*{grid-column:1}.kz-l2 .lp3a h1,.kz-l2 .lp3a-sub{margin-left:0}
+  .kz-l2 .lp3a-cta{align-items:flex-start}.kz-l2 .lp3a-cta .lpstores .b{justify-content:flex-start}
+  .kz-l2 .lp3a-stage{grid-column:2;grid-row:1/span 3;height:560px;margin:0}
+}
+@media(max-width:899px){
+  .kz-s2 .ahero2 .w,.kz-l2 .lp3a-in{display:grid;grid-template-columns:1fr 128px;column-gap:12px;text-align:left}
+  .kz-s2 .ahero2 .w>*,.kz-l2 .lp3a-in>*{grid-column:1/-1}
+  .kz-s2 .ahero2 h1,.kz-l2 .lp3a h1{grid-column:1;font-size:clamp(26px,7.4vw,34px);margin:0}
+  .kz-s2 .ah2-stage,.kz-l2 .lp3a-stage{grid-column:2;grid-row:2/span 2;height:280px;margin:0}
+  .kz-s2 .ah2-stage .aphone,.kz-l2 .lp3a-stage .aphone{--pw:128px}
+  .kz-s2 .ah2-stage .hc,.kz-l2 .lp3a-stage .hc{display:none}
+  .kz-s2 .ah2-sub,.kz-l2 .lp3a-sub{grid-column:1;margin:8px 0 0;font-size:14.5px}
+  .kz-s2 .ah2-new{grid-row:1}
+}
+
+/* S3/L3 Ruhig, ohne Karten im Display */
+.kz-s3 .ah2-stage .hc,.kz-l3 .ah2-stage .hc{display:none}
+.kz-s3 .ahero2 h1,.kz-l3 .lp3a h1{font-size:clamp(30px,4.6vw,64px)}
+.kz-s3 .ah2-stage,.kz-l3 .lp3a-stage{height:auto;padding-bottom:64px;margin-top:28px}
+.kz-s3 .ah2-stage .aphone,.kz-l3 .lp3a-stage .aphone{position:relative;left:auto;transform:none;margin:0 auto;--pw:240px}
+.kz-s3 .ah2-stage::after,.kz-l3 .lp3a-stage::after{content:"Zeugnis  ·  Geschäft  ·  Kurs  ·  Große Anleger";position:absolute;left:0;right:0;bottom:18px;text-align:center;font-weight:800;font-size:14px;color:#444;white-space:pre}
+@media(max-width:620px){.kz-s3 .ah2-stage .aphone,.kz-l3 .lp3a-stage .aphone{--pw:190px}}
+
+/* S4/L4 Fähigkeiten zuerst */
+.kz-s4 .ah2-stage{display:none}
+.kz-s4 .ahero2{padding-bottom:8px}
+.kz-s4 .ah2-caps{padding-top:28px;border-top:0}
+.kz-s4 .ah2-caps h2{display:none}
+.kz-s4 .ah2-caps .hcaps{margin-top:0}
+.kz-l4 .lp3a-stage{display:none}
+.kz-l4 .lp3b{padding-top:16px;border-top:0}.kz-l4 .lp3b h2{display:none}
+.kz-l4 .lp3a-cta{margin-top:18px}
+.kz-l4 .lp3a{order:0}
+.kz-l4 .lp3b .lpcaps{grid-template-columns:1fr 1fr;gap:8px}
+.kz-l4 .lp3b .lpcaps li{grid-template-columns:34px 1fr;padding:10px}.kz-l4 .lp3b .lpcaps .ic{width:34px;height:34px}
+@media(max-width:620px){.kz-l4 .lp3b .lpcaps b{font-size:14px}.kz-l4 .lp3b .lpcaps li>span:last-child{font-size:12px}}
+
+/* S5/L5 Apple-Bühne: iPhone wächst von unten ins Bild */
+.kz-s5 .ah2-stage,.kz-l5 .lp3a-stage{height:420px;overflow:hidden;margin-top:32px}
+.kz-s5 .ah2-stage .aphone,.kz-l5 .lp3a-stage .aphone{--pw:300px}
+.kz-s5 .ahero2 h1,.kz-l5 .lp3a h1{font-size:clamp(32px,5vw,70px)}
+.kz-l5 .lp3a-in{display:flex;flex-direction:column}
+.kz-l5 .lp3a-cta{order:2;margin-top:16px}.kz-l5 .lp3a-stage{order:3}
+@media(max-width:760px){.kz-s5 .ah2-stage,.kz-l5 .lp3a-stage{height:300px}.kz-s5 .ah2-stage .aphone,.kz-l5 .lp3a-stage .aphone{--pw:170px}}
+
+/* Korrekturen: Reihenfolge und Spezifität */
+html.kz-l1 .lp2 .lp3a-stage,html.kz-l5 .lp2 .lp3a-stage{max-width:960px}
+@media(min-width:900px){
+  html.kz-s2 .ahero2 .w>.ah2-stage{grid-column:2;grid-row:1/span 6}
+  html.kz-s2 .ahero2 .w>.ah2-new{grid-row:1}
+}
+@media(max-width:899px){
+  html.kz-s2 .ahero2 .w>.ah2-stage{grid-column:2;grid-row:2/span 2}
+  html.kz-s2 .ahero2 .w>h1{grid-column:1;grid-row:2}
+  html.kz-s2 .ahero2 .w>.ah2-sub{grid-column:1;grid-row:3}
+  html.kz-l2 .lp2 .lp3a-in>.lp3a-stage{grid-column:2;grid-row:1/span 2}
+  html.kz-l2 .lp2 .lp3a-in>h1{grid-column:1;grid-row:1}
+  html.kz-l2 .lp2 .lp3a-in>.lp3a-sub{grid-column:1;grid-row:2}
+}
+@media(max-width:760px){
+  html.kz-s1 .ah2-stage .aphone,html.kz-s5 .ah2-stage .aphone,html.kz-l1 .ah2-stage .aphone,html.kz-l5 .ah2-stage .aphone{--pw:150px}
+  html.kz-s1 .ah2-stage,html.kz-l1 .lp2 .lp3a-stage{height:340px}
+  html.kz-s5 .ah2-stage,html.kz-l5 .lp2 .lp3a-stage{height:280px}
+}
+@media(min-width:761px){html.kz-l1 .lp2 .lp3a-stage,html.kz-l5 .lp2 .lp3a-stage{width:min(960px,calc(100vw - 40px));max-width:none;margin-left:50%;transform:translateX(-50%)}}
