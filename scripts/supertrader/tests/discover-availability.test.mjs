@@ -28,7 +28,9 @@ test('Build weist den Zustand vor dem Schreiben von signals.json aus und veraend
 
 test('Seite: jeder Discover-Link laeuft ueber discoverLink, mit Hinweis statt totem Link', () => {
   const src = readFileSync(join(ROOT, 'supertrader', 'assets', 'supertrader.js'), 'utf8');
-  assert.equal((src.match(/\/discover\/#\/s\/US_REAL\//g) || []).length, 1, 'nur discoverLink baut den Link');
+  /* App-Konzept 2 (16.11.2026): der Link führt über die Vorschau (data-vu-stock) auf die gemeinsame Aktienseite /aktie/#/<T>. */
+  assert.equal((src.match(/\/discover\/#\/s\/US_REAL\//g) || []).length, 0, 'keine alte Discover-Aktienseite');
+  assert.match(src, /function discoverLink\(sym, sig, label\)[\s\S]*?href: '\/aktie\/#\/' \+ encodeURIComponent\(sym\), 'data-vu-stock': sym/, 'nur discoverLink baut den Link');
   assert.match(src, /function discoverLink\(sym, sig, label\)/);
   assert.match(src, /av\.unavailable \|\| \[\]\)\.indexOf\(sym\) >= 0\) return h\('p', \{ class: 'st-hint', 'data-discover': 'unavailable'/);
   assert.match(src, /Aktienansicht vorübergehend nicht verfügbar – Daten werden geprüft\./);

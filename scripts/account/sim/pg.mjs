@@ -45,7 +45,7 @@ export function createPg(url) {
   };
 }
 
-// Frische Datenbank mit Plattform-Stub, Migrationen und Seed.
+// Frische Datenbank mit Plattform-Stub, Migrationen, vorbereiteten Migrationen (supabase/prepared/) und Seed.
 export async function createTestDatabase(adminUrl, root) {
   const name = 'vu_account_sim_' + randomBytes(4).toString('hex');
   await run(adminUrl, `create database ${name};\n`);
@@ -54,6 +54,8 @@ export async function createTestDatabase(adminUrl, root) {
   const url = u.toString();
   const files = ['supabase/local/platform-stub.sql',
     ...readdirSync(join(root, 'supabase/migrations')).filter(f => f.endsWith('.sql')).sort().map(f => 'supabase/migrations/' + f),
+    // Vorbereitet, nicht ausgerollt (siehe scripts/account/sql-tests.mjs): nur lokal, nach allen Migrationen.
+    ...readdirSync(join(root, 'supabase/prepared')).filter(f => f.endsWith('.sql')).sort().map(f => 'supabase/prepared/' + f),
     'supabase/seed.sql'];
   for (const f of files) await run(url, `\\i ${join(root, f)}\n`);
   return {url, name, drop: () => run(adminUrl, `drop database if exists ${name} with (force);\n`)};

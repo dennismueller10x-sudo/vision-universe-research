@@ -57,11 +57,12 @@ test('der Baustein zeigt das Symbol aus dem Sprite auf neongruener Kachel', () =
   assert.match(css, /\.vu-theme\{[^}]*background:var\(--vu-card\);color:var\(--vu-ink\)/, 'Kachel folgt Hell und Dunkel');
 });
 
-test('Discover zeigt Themen ueber den Baustein: Kachel, Zeile, Themenkopf, Kapitel-Bildchen', () => {
+test('Discover zeigt Themen ueber den Baustein: Kachel, Zeile, Themenkopf', () => {
   const v3 = read('discover/ui/v3.js'), ov = read('discover/ui/overview.js');
   assert.match(v3, /function themeCard\(t, ctx, o\) \{[\s\S]*?U\(\)\.themeHud\(t\.slug, 74, 22\)/);
   assert.match(v3, /thumb \? U\(\)\.themeHud\(t\.slug, 56, 16\) : U\(\)\.themeHud\(t\.slug, 36, 11\)/, 'jede Zeile der Themenwelten traegt ihr Symbol');
   assert.match(v3, /<header class="dv3-themehead">[\s\S]{0,80}U\(\)\.themeHud\(theme\.slug, 74, 22\)/);
-  assert.match(ov, /U\(\)\.themeHud\(th\.slug, 34, 10\)/);
+  /* Klickentwurf 17.11.2026: die Kapitel der Aktienseite tragen nur ihre Nummer im Kreis, kein Bildchen (auch kein Themensymbol). */
+  assert.doesNotMatch(ov, /dv3-thumb/);
   for (const src of [v3, ov]) assert.doesNotMatch(src, /<img[^>]*photo/);
 });

@@ -213,7 +213,9 @@ test("the route builders and the legacy mapping only produce routes QXApp.parse 
     backtestCase: ["backtest", "replay-nvda-winner-splits"],
     backtestKind: ["backtest", "SIGNAL_BACKTEST"], backtestMethod: ["backtest", "MONTE_CARLO"],
     /* Chartbild (02.10.2026): technische Lage einer Aktie und Uebersicht der Lagen. */
-    chartbild: ["elliott", "NVDA"], elliott: ["elliott", "NVDA"], chart: ["chart", "NVDA"], chartlagen: ["chartlagen", "reihe=near-entry"]
+    chartbild: ["elliott", "NVDA"], elliott: ["elliott", "NVDA"], chart: ["chart", "NVDA"], chartlagen: ["chartlagen", "reihe=near-entry"],
+    /* App-Konzept 2 (16.11.2026): Aktien-Elemente zeigen auf die gemeinsame Aktienseite /aktie/#/<T> (absolut, öffnet vorher die Vorschau). */
+    aktie: ["aktie", "NVDA"]
   };
   assert.deepEqual(Object.keys(routes).sort(), Object.keys(erwartet).sort(),
     "X.routes hat sich geaendert - dieser Test muss die neue Route kennen");
@@ -221,6 +223,7 @@ test("the route builders and the legacy mapping only produce routes QXApp.parse 
   const NATIV = new Set(["chartbild", "elliott"]);
   for (const [name, [view, arg]] of Object.entries(erwartet)) {
     if (NATIV.has(name)) { assert.equal(routes[name](arg), "/elliott/#/NVDA", "X.routes." + name); continue; }
+    if (name === "aktie") { assert.equal(routes.aktie(arg), "/aktie/#/NVDA"); assert.equal(routes.aktie("BRK.B"), routes.stock("BRK.B"), "Kürzel mit Punkt bleiben in Quant"); continue; }
     assert.equal(parse(routes[name](arg)).view, view, "X.routes." + name + " -> " + routes[name](arg));
     /* Ohne Wert muss nur eine Route ohne Pflichtwert funktionieren. */
     if (!["stock", "technical", "fundamentals", "chartbild", "elliott", "chart"].includes(name)) {

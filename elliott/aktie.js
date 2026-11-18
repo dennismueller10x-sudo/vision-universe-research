@@ -87,6 +87,113 @@
     });
   }
 
+  /* Kurs gegen Ungültig-Marke (Prototyp „App-Konzept 2“, Fenster „ablauf“: Balken mit Ungültig-Marke und Schluss; Owner 16.11.2026:
+     gemessen gegen den Wochenschluss). Die Zahlen rechnet VUElliottHome.gapOfAnalysis aus der Analyse, die das Aktienbild schon
+     geladen hat (VUTechnicalIntelligence.getAnalysis liefert sie aus seinem Speicher, keine zweite Anfrage): Marke der Zeile „Grenze“
+     (Hauptlesart) und Schluss der letzten Wochenkerze. Nur mit Zählung (Kachel „Die Lesart in drei Sätzen“); fehlt eine Zahl, kein Balken. */
+  function gapCard(g) {
+    var sec = make("section", "ew-gap is-" + g.side), bar = make("div", "ew-gap-bar"), fill = make("i", "ew-gap-fill");
+    sec.setAttribute("aria-label", "Kurs gegen Ungültig-Marke");
+    sec.appendChild(make("p", "vu-ltag ew-gap-k", "Kurs gegen Ungültig-Marke"));
+    var h = sec.appendChild(make("p", "ew-gap-h"));
+    if (g.beyond) h.appendChild(make("span", "ew-gap-t", g.line));
+    else { h.appendChild(make("b", "ew-gap-n num", g.pctText)); h.appendChild(make("span", "ew-gap-t", "Abstand zur Ungültig-Marke (Wochenschluss " + g.dateText + ")")); }
+    bar.setAttribute("role", "img"); bar.setAttribute("aria-label", g.aria);
+    bar.style.setProperty("--p", (g.pos * 100).toFixed(1));
+    bar.appendChild(make("span", "ew-gap-tr")).appendChild(fill);
+    bar.appendChild(make("i", "ew-gap-mk")); bar.appendChild(make("i", "ew-gap-dot"));
+    sec.appendChild(bar);
+    var cols = sec.appendChild(make("div", "ew-gap-cols")), mk = make("div", "ew-gap-c ew-gap-c--mk"), cl = make("div", "ew-gap-c ew-gap-c--cl");
+    mk.appendChild(make("span", "", g.markLabel)); mk.appendChild(make("b", "num", g.markText));
+    cl.appendChild(make("span", "", g.closeLabel)); cl.appendChild(make("b", "num", g.closeText));
+    cols.appendChild(mk); cols.appendChild(cl);
+    return sec;
+  }
+  function abstand(cb, t) {
+    var M = global.VUElliottHome, TI = global.VUTechnicalIntelligence, story = cb.querySelector(":scope > .cb-story");
+    if (!story || !t || !M || !M.gapOfAnalysis || !TI || !TI.getAnalysis) return;
+    TI.getAnalysis(t).then(function (r) {
+      var g = r && r.state === "AVAILABLE" ? M.gapOfAnalysis(r.analysis) : null;
+      if (g && story.isConnected && !cb.querySelector(".ew-gap")) story.after(gapCard(g));
+    }).catch(function () { /* ohne Analyse kein Balken */ });
+  }
+
+  /* Ohne Zählung (Entwurf #modul-elliott): Kachel „Keine Zählung“ mit Kurvenbild, darunter der Ring „N von M Aktien sind heute zählbar“.
+     Der Satz der Seite wird geteilt: „Der Chart verläuft zu unruhig …“ bleibt in der Kachel, Anteil und Zahlen stehen im Ring.
+     Die Zahlen liest der Ring aus dem Satz der Seite („nur 40 von 5.052 Aktien“); kommt der Anteil später, zieht er nach. */
+  function ohneZaehlung(main, cb, none, t) {
+    var U = global.VUUI, tags = none.querySelector(".cb-ew-tags"), lt = tags && tags.querySelector(".vu-ltag"), h2 = none.querySelector("h2"), p = none.querySelector(".cb-ew-none-p");
+    none.classList.add("ew-none");
+    if (lt) lt.textContent = "Elliott · Experimentell";
+    var kurz = text(main, ".vu-shead-name");
+    if (h2 && kurz && /^Bei .+ lassen sich/.test(h2.textContent)) h2.textContent = h2.textContent.replace(/^Bei .+? lassen sich/, "Bei " + kurz + " lassen sich");
+    var lead = make("p", "ew-none-lead"), ring = make("section", "ew-share");
+    ring.setAttribute("aria-label", "Zählbare Aktien heute");
+    function paint() {
+      var all = p ? p.textContent.trim() : "", cut = all.indexOf(" Das ist der Normalfall"), m = /nur ([\d.]+) von ([\d.]+) Aktien sind heute zählbar/.exec(all);
+      lead.textContent = cut > 0 ? all.slice(0, cut) : all;
+      ring.replaceChildren();
+      if (!m || !U.ring) { ring.hidden = true; lead.textContent = all; return; }
+      var n = +m[1].replace(/\./g, ""), of = +m[2].replace(/\./g, "");
+      ring.hidden = false;
+      ring.appendChild(node(U.ring(of ? n / of * 100 : 0, { size: 76, stroke: 9, text: m[1], label: "Anteil zählbarer Aktien" })));
+      var tx = ring.appendChild(make("div", "ew-share-t"));
+      tx.appendChild(make("b", "ew-share-n num", m[1] + " von " + m[2]));
+      tx.appendChild(make("b", "ew-share-s", "Aktien sind heute zählbar."));
+      tx.appendChild(make("span", "ew-share-x", "Das ist der Normalfall: Das Modell zählt nur, wenn die Struktur klar ist."));
+    }
+    if (p) { p.hidden = true; p.after(lead); if (global.MutationObserver) new global.MutationObserver(paint).observe(p, { childList: true, characterData: true, subtree: true }); }
+    paint();
+    none.after(ring);
+    kurve(none, t);
+  }
+  /* Kurvenbild der Kachel ohne Zählung: Wochenschlüsse des letzten Jahres aus der Analyse, die das Aktienbild schon geladen hat
+     (VUTechnicalIntelligence.getAnalysis aus dem Speicher, keine zweite Anfrage), grau; gestrichelt die Zickzack-Linie durch Hoch
+     und Tief von sechs gleich langen Abschnitten – das Bild „keine saubere Struktur“. Fehlt die Reihe, bleibt die Kachel ohne Bild. */
+  function kurve(none, t) {
+    var TI = global.VUTechnicalIntelligence;
+    if (!t || !TI || !TI.getAnalysis) return;
+    TI.getAnalysis(t).then(function (r) {
+      var c = r && r.state === "AVAILABLE" && r.analysis && r.analysis.chart && r.analysis.chart.close;
+      var v = (c || []).slice(-53).filter(function (x) { return typeof x === "number" && isFinite(x); });
+      if (v.length < 12 || !none.isConnected || none.querySelector(".ew-none-chart")) return;
+      var W = 430, H = 150, P = 6, lo = Math.min.apply(null, v), hi = Math.max.apply(null, v), sp = hi - lo || 1;
+      var X = function (i) { return (i / (v.length - 1) * W).toFixed(1); }, Y = function (x) { return (P + (1 - (x - lo) / sp) * (H - 2 * P)).toFixed(1); };
+      var seg = 6, step = (v.length - 1) / seg, zz = [], up = v[Math.round(step)] >= v[0];
+      for (var k = 0; k < seg; k++) {
+        var a = Math.round(k * step), b = Math.round((k + 1) * step), best = a;
+        for (var i = a; i <= b; i++) if ((k % 2 === 0) === up ? v[i] > v[best] : v[i] < v[best]) best = i;
+        zz.push(best);
+      }
+      zz.unshift(0);
+      var NS = "http://www.w3.org/2000/svg", svg = doc.createElementNS(NS, "svg");
+      svg.setAttribute("viewBox", "0 0 " + W + " " + H); svg.setAttribute("preserveAspectRatio", "none"); svg.setAttribute("aria-hidden", "true");
+      var line = doc.createElementNS(NS, "path"), dash = doc.createElementNS(NS, "path");
+      line.setAttribute("class", "ew-none-l"); line.setAttribute("d", v.map(function (x, i) { return (i ? "L" : "M") + X(i) + " " + Y(x); }).join(""));
+      dash.setAttribute("class", "ew-none-z"); dash.setAttribute("d", zz.map(function (i, j) { return (j ? "L" : "M") + X(i) + " " + Y(v[i]); }).join(""));
+      svg.appendChild(line); svg.appendChild(dash);
+      var box = make("div", "ew-none-chart");
+      box.appendChild(svg); box.appendChild(make("span", "ew-none-tag", "keine saubere Struktur"));
+      none.appendChild(box);
+    }).catch(function () { /* ohne Reihe kein Bild */ });
+  }
+  /* „Melden, wenn zählbar“: öffnet die Benachrichtigungen des Kontos mit der Art „Elliott-Lesarten“ zuerst (konto/push-settings.js,
+     erst beim Antippen geladen; dieselbe Art wie die Glocke der Elliott-Startseite). */
+  function melden() {
+    var b = make("button", "ew-melden");
+    b.type = "button"; b.setAttribute("aria-haspopup", "dialog");
+    var NS = "http://www.w3.org/2000/svg", ic = doc.createElementNS(NS, "svg"), pa = doc.createElementNS(NS, "path");
+    ic.setAttribute("viewBox", "0 0 24 24"); ic.setAttribute("width", "16"); ic.setAttribute("height", "16"); ic.setAttribute("aria-hidden", "true"); ic.setAttribute("class", "ew-melden-ic");
+    pa.setAttribute("d", "M6 16V11a6 6 0 0112 0v5l2 2H4zM10 21h4"); ic.appendChild(pa); b.appendChild(ic);
+    b.appendChild(doc.createTextNode("Melden, wenn zählbar"));
+    b.addEventListener("click", function () {
+      var pp = global.__vuPushP || (global.__vuPushP = global.VUPush ? Promise.resolve() : new Promise(function (done) {
+        var sc = doc.createElement("script"); sc.src = "/konto/push-settings.js"; sc.onload = sc.onerror = function () { done(); }; doc.head.appendChild(sc); }));
+      pp.then(function () { if (global.VUPush) global.VUPush.open({ focus: ["ELLIOTT_CHANGE"] }); });
+    });
+    return b;
+  }
+
   function ticker() {
     var M = global.VUElliottHome, t = M && M.parseHash ? M.parseHash(global.location.hash).ticker : null;
     return t || (/^#\/([A-Za-z0-9.-]{1,12})(\?|$)/.exec(global.location.hash) || [])[1] || null;
@@ -110,7 +217,7 @@
     if (lesart && ctr) { lesart.classList.add("ew-lesart"); ctr.appendChild(lesart); }
     var zeit = cb.querySelector(".cb-ep-body #zeitreise");
     if (zeit && card) { zeit.classList.add("ew-zeit"); card.after(zeit); }
-    balken(cb); leiter(cb);
+    balken(cb); leiter(cb); abstand(cb, ticker());
 
     /* Tipp zum Chart: ein Tipp entfernt hinter „?“ (C09), derselbe Satz. */
     var tip = card && card.querySelector(":scope > p.cb-small.cb-dim");
@@ -120,11 +227,34 @@
     var dm = cb.querySelector(":scope > details.cb-foot");
     if (dm) alsFenster(cb, dm, function () { return text(dm, "summary > span"); }, function () { return text(dm, "summary > small"); }, ":scope > dl");
 
-    /* Seitenende: „Weiter“-Karte (nur mit Zählung; ohne Zählung stehen die beiden Wege schon als Karten da), dann Rückweg und Frag VU. */
-    var end = make("div", "ew-end"), t = ticker(), crumbs = main.querySelector(":scope > .cb-crumbs");
-    if (cb.querySelector(".cb-ew-say") && U.next && t) end.appendChild(node(U.next({ title: "Chart-Lage in Technical ansehen", sub: "Trend, Zonen, Befunde", href: "/technical/#/chart/" + encodeURIComponent(t) })));
-    if (crumbs) end.appendChild(crumbs);
-    /* Prototyp end(): „Daten & Hinweise“ unter der „Weiter“-Karte öffnet das Fenster des Rahmens mit dem Aktien-Hinweis
+    /* Klickentwurf Modul-Aktienseiten (#modul-elliott, Owner 17.11.2026). Ohne Zählung: Kachel mit Kurvenbild, Ring „N von M“,
+       „Folgeschritte“. Mit Zählung: „Die Lesart in drei Sätzen“ als Karussell, Überschrift „Kapitel“. Seitenende für beide:
+       Folgeschritte (Technical, Liste bzw. „Weiter“-Karte, Frag VU), „Melden, wenn zählbar“ (nur ohne Zählung), Daten & Methodik
+       mit „Zur Elliott-Übersicht“, „Daten & Hinweise“. Die Pillen der anderen Module hält der Kopf am Ende von <main>. */
+    var end = make("div", "ew-end"), t = ticker(), crumbs = main.querySelector(":scope > .cb-crumbs"), none = cb.querySelector(":scope > .cb-ew-none");
+    var say = cb.querySelector(":scope > .cb-ew-say"), story = cb.querySelector(":scope > .cb-story"), eps = cb.querySelector(":scope > .cb-eps");
+    if (story) { var sl = story.querySelector(":scope > .vu-ltag"); if (sl) { sl.hidden = true; story.before(make("h2", "ew-sh", sl.textContent)); } story.classList.add("ew-rail"); }
+    if (eps) eps.before(make("h2", "ew-sh", "Kapitel"));
+    if (none) ohneZaehlung(main, cb, none, t);
+    end.appendChild(make("h2", "ew-sh", "Folgeschritte"));
+    if (say && U.next && t) end.appendChild(node(U.next({ title: "Chart-Lage in Technical ansehen", sub: "Trend, Zonen, Befunde", href: "/technical/#/chart/" + encodeURIComponent(t) })));
+    Array.prototype.forEach.call(cb.querySelectorAll(":scope > a.cb-ew-link"), function (a) { end.appendChild(a); });
+    var home = crumbs && crumbs.querySelector(".cb-crumb-home"), ask = crumbs && crumbs.querySelector(".cb-crumb-link");
+    if (ask) {
+      /* Frag VU als Karte (Entwurf): derselbe Link, Zeichen und eine Zeile darunter. */
+      var q = ask.textContent.trim();
+      ask.textContent = ""; ask.classList.add("vu-navcard", "ew-ask");
+      ask.appendChild(make("span", "ew-ask-ic", "\u2726")).setAttribute("aria-hidden", "true");
+      var tx = ask.appendChild(make("span", "vu-navcard__text")); tx.appendChild(make("b", "", q)); tx.appendChild(make("span", "", "Vision Universe KI erklärt den Stand"));
+      ask.appendChild(make("span", "cb-ep-go", "›")).setAttribute("aria-hidden", "true");
+    }
+    if (crumbs) { crumbs.classList.add("ew-asks"); end.appendChild(crumbs); }
+    if (none) end.appendChild(melden());
+    var dmBox = make("div", "ew-dm");
+    if (dm) dmBox.appendChild(dm);
+    if (home) { home.textContent = "Zur Elliott-Übersicht"; home.className = "ew-home"; dmBox.appendChild(home); }
+    if (dmBox.firstChild) end.appendChild(dmBox);
+    /* Prototyp end(): „Daten & Hinweise“ öffnet das Fenster des Rahmens mit dem Aktien-Hinweis
        (assets/legal-notices.json „stock“); der Elliott-Satz und die Methodik stehen weiter im Fenster „Daten & Methodik“. */
     var N = global.VUNavigation;
     if (N && N.openHinweise && N.hinweis) {

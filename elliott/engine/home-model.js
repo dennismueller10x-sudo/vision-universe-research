@@ -4,7 +4,7 @@
 (function (global) {
   "use strict";
 
-  var VERSION = "elliott-home-model-1.3.0";
+  var VERSION = "elliott-home-model-1.4.0";
   var SCHEMAS = { "vu-elliott-home-1.0.0": "elliott-home-1.0.0", "vu-elliott-home-1.1.0": "elliott-home-1.1.0", "vu-elliott-home-1.2.0": "elliott-home-1.2.0" };
   var INDEX_PATH = "/quant/data/technical-intelligence/v3/elliott-home.json";
   var DETAIL_BASE = "/elliott/#/";
@@ -246,6 +246,55 @@
     return waveLabel(c) + " · " + DIR_LABEL[c.dir];
   }
 
+  /* Kurs gegen Ungültig-Marke (App-Konzept 2, Owner 16.11.2026: gemessen gegen den Wochenschluss). Reine Beschreibung des Abstands:
+     Abstand = |Ungültig-Marke − Wochenschluss| / Wochenschluss, beides aus derselben Wochenreihe, auf der die Engine zählt
+     (Wochenschluss = Schluss der letzten Wochenkerze der Analyse, Ungültig-Marke = Marke der Hauptlesart). Keine neue Ableitung:
+     beide Zahlen stehen fertig in den Daten. Fehlt eine Zahl, die Richtung oder das Datum, oder zählt die Reihe nicht in Wochen,
+     gibt es keinen Abstand (null) und die Seite zeigt keinen Balken. GAP_SCALE ist nur die Darstellungsskala des Balkens (0 bis 50 %
+     Abstand, darüber steht der Punkt am Ende); sie bewertet nichts. */
+  var GAP_SCALE = 0.5;
+  function money(v, cur) {
+    var a = Math.abs(v), s = v.toFixed(a >= 1 ? 2 : 4).replace(".", ",");
+    s = s.replace(/^(-?)(\d+)/, function (m, sg, d) { return sg + group(d); });
+    return s + (cur === "USD" || !cur ? " $" : " " + cur);
+  }
+  function gapPct(f) {
+    var v = f * 100, d = v < 10 ? 1 : 0, s = v.toFixed(d).replace(".", ",");
+    return (d && /,0$/.test(s) ? s.slice(0, -2) : s) + " %";
+  }
+  function shortDe(iso) { var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || ""); return m ? m[3] + "." + m[2] + "." : null; }
+  function invalidGap(o) {
+    o = o || {};
+    var c = o.close, m = o.mark, side = o.side, at = shortDe(o.asOf);
+    if (o.tf !== "1W" || !at || (side !== "below" && side !== "above")) return null;
+    if (typeof c !== "number" || !isFinite(c) || !(c > 0) || typeof m !== "number" || !isFinite(m) || !(m > 0)) return null;
+    var d = side === "below" ? (c - m) / c : (m - c) / c, beyond = d < 0, f = beyond ? 0 : d;
+    var markText = money(m, o.cur), closeText = money(c, o.cur), pctText = gapPct(f);
+    return {
+      side: side, beyond: beyond, pct: f, pos: Math.min(f / GAP_SCALE, 1), asOf: o.asOf,
+      pctText: pctText, closeText: closeText, markText: markText, dateText: at,
+      markLabel: side === "below" ? "Ungültig unter" : "Ungültig über",
+      closeLabel: "Wochenschluss " + at,
+      short: beyond ? "Wochenschluss " + at + " " + (side === "below" ? "unter" : "über") + " der Marke" : "Abstand " + pctText + " · Wochenschluss " + at,
+      line: beyond ? "Der Wochenschluss vom " + at + " liegt " + (side === "below" ? "unter" : "über") + " der Ungültig-Marke." : "Abstand zur Ungültig-Marke: " + pctText + " (Wochenschluss " + at + ")",
+      aria: (beyond ? "Wochenschluss " + at + " " + closeText + " liegt " + (side === "below" ? "unter" : "über") + " der Ungültig-Marke " + markText : "Abstand zur Ungültig-Marke " + pctText + ": Wochenschluss " + at + " " + closeText + ", ungültig " + (side === "below" ? "unter " : "über ") + markText) + "."
+    };
+  }
+  /** Zeile „Zählbar heute“ (Wellen-Index, applicable.rows): close/asOf/tf der Wochenreihe, inv der Hauptlesart, Richtung der Lesart. */
+  function gapOfRow(r) {
+    if (!r) return null;
+    var d = dirOf(r);
+    return invalidGap({ close: r.close, mark: r.inv, side: d === "up" ? "below" : d === "down" ? "above" : null, asOf: r.asOf, tf: r.tf, cur: r.cur || "USD" });
+  }
+  /** Analyse des Aktienbilds (Technical-Intelligence-Shard): dieselbe Marke wie die Zeile „Grenze“ (Szenario PRIMARY, invalidation),
+      derselbe Wochenschluss wie der Kopf ohne Tageskurs (price.close der letzten Bar, asOf). */
+  function gapOfAnalysis(a) {
+    if (!a || !a.price) return null;
+    var prim = (a.scenarios || []).filter(function (x) { return x && x.kind === "PRIMARY"; })[0], inv = prim && prim.invalidation;
+    if (!inv) return null;
+    return invalidGap({ close: a.price.close, mark: inv.price, side: inv.direction, asOf: a.asOf, tf: a.timeframe, cur: "USD" });
+  }
+
   var api = {
     VERSION: VERSION, SCHEMAS: SCHEMAS, INDEX_PATH: INDEX_PATH, DETAIL_BASE: DETAIL_BASE, PAGE: PAGE,
     ROLE_LABEL: ROLE_LABEL, ROLE_NOTE: ROLE_NOTE, STATUS_LABEL: STATUS_LABEL, DIR_LABEL: DIR_LABEL, TIER_LABEL: TIER_LABEL, CHANGE_LABEL: CHANGE_LABEL,
@@ -255,7 +304,7 @@
     rowHref: rowHref, validate: validate, emptyState: emptyState,
     norm: norm, searchEntries: searchEntries, cardsByTicker: cardsByTicker, searchHint: searchHint,
     PATTERN_DE: PATTERN_DE, STRUCTURE_DE: STRUCTURE_DE, APPLICABLE_DE: APPLICABLE_DE, ZAEHLBAR_HASH: ZAEHLBAR_HASH,
-    patternDe: patternDe, phaseDe: phaseDe, structureDe: structureDe, countLine: countLine, dirOf: dirOf, invalidLine: invalidLine, applicableOf: applicableOf, redirectOf: redirectOf, shortName: shortName, loadFailText: loadFailText
+    patternDe: patternDe, phaseDe: phaseDe, structureDe: structureDe, countLine: countLine, dirOf: dirOf, invalidLine: invalidLine, GAP_SCALE: GAP_SCALE, invalidGap: invalidGap, gapOfRow: gapOfRow, gapOfAnalysis: gapOfAnalysis, applicableOf: applicableOf, redirectOf: redirectOf, shortName: shortName, loadFailText: loadFailText
   };
   global.VUElliottHome = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;

@@ -164,7 +164,7 @@
         el("p", { class: "q-rc-link" }, [X.link("Zur Analyse von " + c.ticker, X.routes.stock(c.ticker))])
       ])]);
     return el("article", { class: "q-radar-card q-rc-compact tone-" + tone, dataset: { symbol: c.ticker } }, [
-      el("a", { class: "q-rc-head", href: X.routes.stock(c.ticker) }, [X.logo(c.ticker, nameOf(ctx, c.ticker), "md", { initialOnly: !opts.logo }),
+      el("a", { class: "q-rc-head", href: X.routes.aktie(c.ticker), dataset: X.stockData(c.ticker, nameOf(ctx, c.ticker)) }, [X.logo(c.ticker, nameOf(ctx, c.ticker), "md", { initialOnly: !opts.logo }),
         el("span", { class: "q-rc-id" }, [el("b", { text: nameOf(ctx, c.ticker) }),
           el("span", { class: "q-rc-meta" }, [el("span", { class: "q-rc-ticker", text: c.ticker }),
             el("span", { class: "q-rc-status tone-" + tone }, [el("i", { "aria-hidden": "true", text: tone === "up" ? "▲" : tone === "down" ? "▼" : "●" }), el("span", { text: t0.label || first.eventType })])])])]),
@@ -382,14 +382,14 @@
   /* Profil-Poster für Schienen: Logo, Name, Kürzel, Profil klein, ein Chip. */
   function qPoster(ctx, rowBy, t, chip) {
     var pv = profileOf(rowBy, t);
-    return '<a class="qk-pc" href="' + U().esc(X.routes.stock(t)) + '">' + U().logo(t) + '<b class="qk-pc-n">' + U().esc(qName(ctx, t)) + '</b><span class="qk-pc-t">' + U().esc(t) + "</span>" +
+    return '<a class="qk-pc" href="' + U().esc(X.routes.aktie(t)) + '"' + X.stockAttrs(t, qName(ctx, t)) + '>' + U().logo(t) + '<b class="qk-pc-n">' + U().esc(qName(ctx, t)) + '</b><span class="qk-pc-t">' + U().esc(t) + "</span>" +
       '<span class="qk-pc-p">' + (pv ? U().profileMini(pv, { width: 110, height: 34 }) : '<span class="vu-xs vu-mu">Kein Profil veröffentlicht</span>') + "</span>" +
       (chip ? '<span class="qk-pc-c">' + U().esc(chip) + "</span>" : "") + "</a>";
   }
   /* Aktienzeile mit Profil: Logo, Name, Zeile darunter, Profil klein, rechts ein Wert oder Etikett. */
   function qRow(ctx, rowBy, t, sub, right, href) {
     var pv = profileOf(rowBy, t);
-    return '<a class="qk-pr" href="' + U().esc(href || X.routes.stock(t)) + '">' + U().logo(t) + '<span class="qk-pr-n"><b>' + U().esc(qName(ctx, t)) + "</b><span>" + U().esc(sub || t) + "</span></span>" +
+    return '<a class="qk-pr" href="' + U().esc(href || X.routes.aktie(t)) + '"' + (href ? "" : X.stockAttrs(t, qName(ctx, t))) + '>' + U().logo(t) + '<span class="qk-pr-n"><b>' + U().esc(qName(ctx, t)) + "</b><span>" + U().esc(sub || t) + "</span></span>" +
       (pv ? U().profileMini(pv, { width: 60, height: 26 }) : '<span class="vu-xs vu-mu qk-pr-na">kein Profil</span>') + (right || "") + "</a>";
   }
   function scoreP(v, label) { return typeof v === "number" ? '<span class="qk-sp' + (v >= 75 ? " is-hi" : "") + '"><small>' + U().esc(label) + '</small><b class="vu-num">' + Math.round(v) + "</b></span>" : '<span class="qk-sp is-na"><small>' + U().esc(label) + '</small><b class="vu-num">–</b></span>'; }
@@ -411,7 +411,7 @@
     var name = qName(ctx, c.ticker);
     var back = c.replay && c.replay.sufficient ? "Ähnliche Lagen bei " + name + ": " + Math.round(c.replay.positiveShare * 100) + " % von " + c.replay.completed + " Fällen später höher · Forschung, nicht zertifiziert"
       : c.replay && c.replay.state === "AVAILABLE" ? "Zu wenige frühere Fälle für eine Aussage." : null;
-    return '<a class="vu-box qk-setup" href="' + U().esc(X.routes.stock(c.ticker)) + '"><span class="qk-setup-h">' + U().logo(c.ticker) + '<span class="qk-setup-n"><b>' + U().esc(name) + '</b><span class="vu-xs vu-mu"><b>' + U().esc(c.ticker) + "</b></span></span>" + U().verdict("strong", "Bestätigt") + "</span>" +
+    return '<a class="vu-box qk-setup" href="' + U().esc(X.routes.aktie(c.ticker)) + '"' + X.stockAttrs(c.ticker, name) + '><span class="qk-setup-h">' + U().logo(c.ticker) + '<span class="qk-setup-n"><b>' + U().esc(name) + '</b><span class="vu-xs vu-mu"><b>' + U().esc(c.ticker) + "</b></span></span>" + U().verdict("strong", "Bestätigt") + "</span>" +
       '<span class="qk-grid2">' + box("Zone laut Methode", tr && zoneText(tr.entry)) + box("Ungültig laut Methode", inv != null ? usd(inv) : null) + "</span>" +
       (back ? '<span class="vu-xs vu-mu qk-setup-b">' + U().esc(back) + "</span>" : "") + "</a>";
   }
@@ -470,7 +470,7 @@
       var a = d.from, b = d.to, up = b > a;
       body += '<span class="qp-wc-v"><span class="qp-num qp-mut" style="font-size:26px">' + a + '</span><span class="qp-wc-bar" aria-hidden="true"><span class="qp-bar"><i style="width:' + Math.max(a, b) + '%;background:#55595f"></i></span><span class="qp-bar qp-bar--o' + (up ? " is-up" : "") + '"><i style="width:' + Math.min(a, b) + '%"></i></span></span><span class="qp-num' + (up ? " qp-lc" : "") + '" style="font-size:34px">' + b + "</span></span>";
     } else body += '<span class="qp-wc-v qp-wc-v--t">' + meldungVerdict(e) + "</span>";
-    return '<a class="qp-tile qp-tap qp-wc" href="' + qpEsc(X.routes.stock(c.ticker)) + '"' + qpStock(ctx, c.ticker) + ' aria-label="' + qpEsc(name + ": " + meldungText(e) + (d ? ", von " + d.from + " auf " + d.to : "")) + '">' + body + "</a>";
+    return '<a class="qp-tile qp-tap qp-wc" href="' + qpEsc(X.routes.aktie(c.ticker)) + '"' + qpStock(ctx, c.ticker) + ' aria-label="' + qpEsc(name + ": " + meldungText(e) + (d ? ", von " + d.from + " auf " + d.to : "")) + '">' + body + "</a>";
   }
   /* Faktor-Landkarte (Prototyp heat()): Helligkeit nach Wert, ab 63 dunkle Schrift. */
   function qpHeatStyle(v) { return "background:rgba(200,245,49," + Math.max(0.06, Math.pow(v / 100, 1.6)).toFixed(2) + ")" + (v > 62 ? ";color:#101318" : ""); }
@@ -628,11 +628,11 @@
     var mapT = watched.filter(function (t) { return profileOf(rowBy, t); }).slice(0, 7), openF = VM.PROFILE_ORDER.filter(VM.isOpen);
     if (mapT.length) {
       mapHost.replaceChildren(frag(qpSh("Deine Faktor-Landkarte", "Erklärung", X.routes.method("faktoren")) + '<div class="qp-px"><div class="qp-tile qp-map" role="table" aria-label="Profil deiner beobachteten Aktien" style="--qp-n:' + mapT.length + '">' +
-        '<div class="qp-map-r" role="row"><span role="columnheader"><span class="vu-visually-hidden">Eigenschaft</span></span>' + mapT.map(function (t) { return '<a class="qp-map-h" role="columnheader" href="' + qpEsc(X.routes.stock(t)) + '"' + qpStock(ctx, t) + ' aria-label="' + qpEsc(qName(ctx, t)) + '">' + U().logo(t) + "</a>"; }).join("") + "</div>" +
+        '<div class="qp-map-r" role="row"><span role="columnheader"><span class="vu-visually-hidden">Eigenschaft</span></span>' + mapT.map(function (t) { return '<a class="qp-map-h" role="columnheader" href="' + qpEsc(X.routes.aktie(t)) + '"' + qpStock(ctx, t) + ' aria-label="' + qpEsc(qName(ctx, t)) + '">' + U().logo(t) + "</a>"; }).join("") + "</div>" +
         openF.map(function (id) {
           return '<div class="qp-map-r" role="row"><span class="qp-map-l" role="rowheader">' + qpEsc(VM.FACTORS[id].name) + "</span>" + mapT.map(function (t) {
             var v = profileOf(rowBy, t)[id];
-            return typeof v === "number" ? '<a class="qp-map-c" role="cell" href="' + qpEsc(X.routes.stock(t)) + '"' + qpStock(ctx, t) + ' data-t="' + qpEsc(t) + '" data-f="' + qpEsc(id) + '" data-v="' + Math.round(v) + '" style="' + qpHeatStyle(v) + '" aria-label="' + qpEsc(qName(ctx, t) + ", " + VM.FACTORS[id].name + " " + Math.round(v) + ": erklären") + '">' + Math.round(v) + "</a>"
+            return typeof v === "number" ? '<a class="qp-map-c" role="cell" href="' + qpEsc(X.routes.aktie(t)) + '"' + qpStock(ctx, t) + ' data-t="' + qpEsc(t) + '" data-f="' + qpEsc(id) + '" data-v="' + Math.round(v) + '" style="' + qpHeatStyle(v) + '" aria-label="' + qpEsc(qName(ctx, t) + ", " + VM.FACTORS[id].name + " " + Math.round(v) + ": erklären") + '">' + Math.round(v) + "</a>"
               : '<span class="qp-map-c is-na" role="cell" aria-label="' + qpEsc(qName(ctx, t) + ", " + VM.FACTORS[id].name + ": kein Wert veröffentlicht") + '">–</span>';
           }).join("") + "</div>";
         }).join("") + '<div class="qp-map-n qp-xs qp-mut qp-b7"><span>Wert 0–100 unter US-Aktien</span><span>hell = stark</span></div></div></div>'));
@@ -1307,7 +1307,7 @@
       })));
       var rowsEl = res.stocks.slice(0, 500).map(function (st) {
         var ev = st.evidence || {};
-        return el("a", { class: "qv3-prow", role: "row", href: X.routes.stock(st.ticker), title: X.companyName(st) }, [el("b", { role: "cell", text: st.ticker })].concat(show.map(function (f) {
+        return el("a", { class: "qv3-prow", role: "row", href: X.routes.aktie(st.ticker), dataset: X.stockData(st.ticker, X.companyName(st)), title: X.companyName(st) }, [el("b", { role: "cell", text: st.ticker })].concat(show.map(function (f) {
           var v = ev[FIELD(f[0])];
           return el("span", { role: "cell", class: "num" + (sortF === f[0] ? " is-sort" : "") + (typeof v === "number" && v >= 75 ? " is-hi" : ""), text: typeof v === "number" ? String(Math.round(v)) : "–" });
         })));
@@ -1628,7 +1628,7 @@
     var results = el("div", { "aria-live": "polite", class: "qv3-sresults" });
     var field = el("label", { class: "vu-find qv3-search" }); field.innerHTML = U.glyph("search", 18); field.append(input); field.insertAdjacentHTML("beforeend", '<i aria-hidden="true">' + U.glyph("spark", 18) + "</i>");
     page.append(el("header", { class: "qv3-intro" }, [el("p", { class: "vu-ltag", text: "Quant" }), el("h1", { class: "vu-lt", text: "Welche Aktie willst du verstehen?" })]), field,
-      el("div", { class: "vu-chips qv3-known" }, KNOWN_CHIPS.map(function (k) { return el("a", { class: "vu-chip", href: X.routes.stock(k[0]), text: k[1] }); })),
+      el("div", { class: "vu-chips qv3-known" }, KNOWN_CHIPS.map(function (k) { return el("a", { class: "vu-chip", href: X.routes.aktie(k[0]), dataset: X.stockData(k[0], k[1]), text: k[1] }); })),
       el("p", { class: "qx-small" }, [el("a", { href: "#/aktien/rangliste", text: "Rangliste nach Gesamtwert ansehen →" })]), results);
     var req = 0;
     input.addEventListener("input", async function () {
@@ -1642,7 +1642,7 @@
         : el("p", { class: "qx-small", text: "Keine passenden Aktien gefunden." }));
     });
     var html = function (h) { var d = el("div"); d.innerHTML = h; return d; };
-    var row = function (t, sub) { return U.stockRow({ ticker: t, name: nameOf(ctx, t) || t, sub: sub, href: X.routes.stock(t), noPrice: true }); };
+    var row = function (t, sub) { return U.stockRow({ ticker: t, name: nameOf(ctx, t) || t, sub: sub, href: X.routes.aktie(t), preview: true, noPrice: true }); };
     var recent = X.recent.list(), watched = X.watch.list();
     /* Beobachten: ehrlicher Leerzustand oder Aktienzeilen; was gemeldet wird, steht im Sheet. */
     var sheet = html(U.sheet("qv3-watch-sheet", "Was Quant für beobachtete Aktien verfolgt", '<ul class="qv3-watch">' + WATCH_VALUE.map(function (w) { return "<li>" + U.esc(w) + "</li>"; }).join("") + '</ul><p class="vu-xs vu-mu">Kein Depot: keine Stückzahl, kein Einstand.</p><button type="button" class="vu-btn vu-btn--ink vu-btn--block" data-close style="margin-top:14px">Verstanden</button>')).firstElementChild;
@@ -1665,7 +1665,7 @@
       var conf = setupIdx && setupIdx.state === "AVAILABLE" ? (setupIdx.states || []).filter(function (st) { return st.state === "CONFIRMED" && typeof st.count === "number"; })[0] : null;
       if (confirmed.length) setupHost.append(html(U.sect("Setup bestätigt", { href: X.routes.screener("frage=setups"), link: conf ? "Alle " + conf.count.toLocaleString("de-DE") : "Alle" }) + '<div class="vu-stack">' + confirmed.map(function (c) {
         var tr = c.trade && c.trade.state === "AVAILABLE" ? c.trade : null, z = tr && zoneText(tr.entry);
-        return '<a class="vu-box qv3-mini" href="' + U.esc(X.routes.stock(c.ticker)) + '">' + U.logo(c.ticker) + '<span class="qv3-mini-t"><b>' + U.esc(nameOf(ctx, c.ticker) || c.ticker) + '</b><span class="vu-xs vu-mu"><b>' + U.esc(z ? "Zone laut Methode: " + z : c.ticker) + "</b></span></span>" + U.verdict("strong", "Bestätigt") + "</a>";
+        return '<a class="vu-box qv3-mini" href="' + U.esc(X.routes.aktie(c.ticker)) + '"' + X.stockAttrs(c.ticker, nameOf(ctx, c.ticker)) + '>' + U.logo(c.ticker) + '<span class="qv3-mini-t"><b>' + U.esc(nameOf(ctx, c.ticker) || c.ticker) + '</b><span class="vu-xs vu-mu"><b>' + U.esc(z ? "Zone laut Methode: " + z : c.ticker) + "</b></span></span>" + U.verdict("strong", "Bestätigt") + "</a>";
       }).join("") + "</div>"));
     }
     if (idx && idx.historicalEvidence && idx.historicalEvidence.transitions) {
@@ -1676,7 +1676,7 @@
       if (items.length) stratHost.append(html(U.sect("Neu in einer Strategie", { href: X.routes.strategies(), link: "Alle" }) + '<div class="vu-box qv3-strats">' + items.slice(0, 5).map(function (it) {
         var v = rowBy && rowBy[it[0]] ? VM.fromScreeningRow(rowBy[it[0]], rowBy._dist) : null;
         var best = v ? v.factors.filter(function (f) { return f.state === "AVAILABLE"; }).sort(function (a, b) { return b.score - a.score; })[0] : null;
-        return '<a class="qv3-strat" href="' + U.esc(X.routes.stock(it[0])) + '">' + U.logo(it[0]) + '<span class="qv3-strat-t"><b class="vu-sm">' + U.esc(nameOf(ctx, it[0]) || it[0]) + '</b><span class="vu-xs vu-mu">neu in ' + U.esc(labels[it[1]] || it[1]) + "</span></span>" +
+        return '<a class="qv3-strat" href="' + U.esc(X.routes.aktie(it[0])) + '"' + X.stockAttrs(it[0], nameOf(ctx, it[0])) + '>' + U.logo(it[0]) + '<span class="qv3-strat-t"><b class="vu-sm">' + U.esc(nameOf(ctx, it[0]) || it[0]) + '</b><span class="vu-xs vu-mu">neu in ' + U.esc(labels[it[1]] || it[1]) + "</span></span>" +
           (best ? '<span class="vu-chip vu-chip--lime qv3-best">' + U.esc((FACTOR_SHORT[best.id] || best.name) + " " + Math.round(best.score)) + "</span>" : "") + "</a>";
       }).join("") + '</div><p class="vu-xs vu-mu" style="margin:6px 0 0">Zwischen den Ständen ' + U.esc(X.dateDe(he.from)) + " und " + U.esc(X.dateDe(he.to)) + ".</p>"));
     }
@@ -1718,7 +1718,7 @@
         var trs = all.slice(1);
         if (!tlHost.isConnected) return;
         if (!global.QXEvidence) { tlHost.replaceChildren(el("p", { class: "qx-small", text: "Der Verlauf konnte nicht geladen werden." })); return; }
-        tlHost.replaceChildren.apply(tlHost, watched.slice(0, 12).map(function (t, i) { return global.QXEvidence.watchTimeline(t, nameOf(ctx, t), trs[i], X.routes.stock(t)); }));
+        tlHost.replaceChildren.apply(tlHost, watched.slice(0, 12).map(function (t, i) { return global.QXEvidence.watchTimeline(t, nameOf(ctx, t), trs[i], X.routes.aktie(t)); }));
       });
     }
     main.append(X.world("Zuletzt analysiert", recent.length ? null : "Aktien, die du analysierst oder beobachtest, erscheinen hier. Tippe auf einer Aktienseite auf „Beobachten“.",

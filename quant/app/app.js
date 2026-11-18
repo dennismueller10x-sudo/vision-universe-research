@@ -335,7 +335,7 @@
       if (r.state !== "AVAILABLE") { list.replaceChildren(); status.textContent = "Die Suche ist derzeit nicht verfügbar."; return; }
       list.replaceChildren.apply(list, r.entries.map(function (e) {
         var name = X.companyName(e) === "Firmenname nicht veröffentlicht" ? e.ticker : e.name;
-        return el("a", { class: "qx-hit", role: "option", href: X.routes.stock(e.ticker), "aria-selected": "false", onclick: function () { close(); } }, [
+        return el("a", { class: "qx-hit", role: "option", href: X.routes.aktie(e.ticker), dataset: X.stockData(e.ticker, name), "aria-selected": "false", onclick: function () { close(); } }, [
           X.logo(e.ticker, name, "sm"), el("span", {}, [el("b", { text: name }), el("em", { text: e.ticker })]), el("span", { class: "val", text: "Analyse →" })]);
       }));
       sel = -1; input.setAttribute("aria-expanded", r.entries.length ? "true" : "false");
@@ -345,7 +345,8 @@
     input.addEventListener("keydown", function (e) {
       if (e.key === "ArrowDown") { e.preventDefault(); select(sel + 1); }
       else if (e.key === "ArrowUp") { e.preventDefault(); select(sel - 1); }
-      else if (e.key === "Enter") { var it = items(); var t = it[sel >= 0 ? sel : 0]; if (t) { e.preventDefault(); location.hash = t.getAttribute("href"); close(); } }
+      /* Enter wie ein Tipp: schliesst den Dialog und oeffnet die Aktien-Vorschau des Rahmens (data-vu-stock, Ziel /aktie/#/<T>). */
+      else if (e.key === "Enter") { var it = items(); var t = it[sel >= 0 ? sel : 0]; if (t) { e.preventDefault(); close(); t.click(); } }
     });
     dialog.addEventListener("click", function (e) { if (e.target === dialog) close(); });
     var opener = null;

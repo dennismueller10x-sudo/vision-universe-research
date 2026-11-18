@@ -89,11 +89,14 @@ test("OV9 ein Jahreswert: alle 12-Monats-Angaben der Titelseite sind derselbe Do
   const css = readFileSync(new URL("../ui/overview.css", import.meta.url), "utf8");
   assert.match(css, /dx-chart-hero-preis>\.down\{background:#c4281c;color:#fff\}/, "Minus rot (#c4281c, Owner 11.11.2026)");
   assert.match(css, /dx-chart-hero-preis>\.up\{background:#c8f531/, "Plus neongruen");
-  assert.match(css, /max-width:480px\)\{[^}]*dx-chart-hero--c04\{flex-wrap:wrap/, "Kopf bricht bei schmaler Breite um");
-  /* App-Konzept 2 (Owner 14.11.2026): mit subgrid kosten Schluss, Stale-Hinweis und Euro keine eigene Zeile mehr – Kurs links,
-     Pille rechts daneben, darunter klein Schluss und Euro (lange Hinweise brechen dort um, kein Überlappen). */
-  assert.match(css, /@supports \(grid-template-columns:subgrid\)\{\s*body\.dv2 \.dv2-stock \.dx-chart-hero\.dx-chart-hero--c04\{display:grid;grid-template-columns:auto auto minmax\(0,1fr\)/, "Kursblock als Raster");
-  assert.match(css, /dx-chart-hero--c04 \.dx-chart-hero-meta\{grid-column:2\/-1;grid-row:2;[^}]*flex-wrap:wrap/, "Schluss und Euro unter der Pille");
+  /* Klickentwurf 17.11.2026: Kurs und Pille in einer Zeile (bricht schmal um), darunter „Schluss …“, darunter die Veränderung im
+     Zeitraum; der Euro-Wert steht als Pille unter den Zeitraum-Knöpfen, neben Hoch und Tief der letzten 12 Monate. */
+  assert.match(css, /dx-chart-hero\.dx-chart-hero--c04\{display:flex;flex-direction:column/, "Kursblock untereinander");
+  assert.match(css, /dx-chart-hero--c04 \.dx-chart-hero-preis\{display:flex;flex-wrap:wrap/, "Kurs und Pille brechen schmal um");
+  assert.doesNotMatch(css, /grid-template-columns:subgrid/, "kein Raster mehr neben dem Kurs");
+  assert.match(detail, /dx-chart-hero-zr num/, "Veränderung im Zeitraum über dem Chart");
+  assert.match(detail, /var hoch = Math\.max\.apply\(null, jahr\)[\s\S]{0,160}"Hoch 12 Mon\. " \+ alsAngezeigt\(hoch, waehrung\)/, "Hoch/Tief aus der gezeichneten Tagesreihe");
+  assert.match(css, /\.dx-chart-pills\{order:2;/, "Pillen unter den Zeitraum-Knöpfen");
 });
 
 test("OV10 „Weiter in …“ nur mit Herkunft aus einer Reihe (Adress-Zusatz ?reihe=)", () => {
@@ -109,14 +112,18 @@ test("OV10 „Weiter in …“ nur mit Herkunft aus einer Reihe (Adress-Zusatz ?
   assert.match(src, /if \(!id \|\| !UI \|\| !R\(\)\) return;/, "ohne Herkunft keine Leiste und keine Endkarte");
 });
 
-test("OV11 Etiketten: bester Platz, Thema, Index-Gewicht, +N Reihen", () => {
+test("OV11 Platzierung (Klickentwurf 17.11.2026): Ring mit bestem Platz, Titel, Indizes mit Gewicht, +N Reihen", () => {
   const html = OV.etiketten(NVDA, "US_REAL");
-  assert.match(html, /Platz 2 · /);
+  assert.match(html, /^<a class="dv3-platz" href="[^"]+">/, "Karte führt in die Reihe");
+  assert.match(html, /class="vu-ring"[^>]*aria-label="Platz 2 von /);
+  assert.match(html, /<b>Platz 2 · [^<]+<\/b>/);
   assert.match(html, /S&amp;P 500 · 6,9 %|S&P 500 · 6,9 %/);
   assert.match(html, /\+12 Reihen/);
+  const one = OV.etiketten({ ...NVDA, memberships: NVDA.memberships.filter((x) => x.rowId !== "sector-leaders").slice(0, 2) }, "US_REAL");
+  assert.match(one, /\+1 Reihe</, "Einzahl");
 });
 
-test("OV12 Aktienkopf C04 wie Folie AX01 (a-top): Kurs, Tagesbewegung, Schluss und Euro rechts; Chart ohne Kursachse, Datum nur an den Enden", async () => {
+test("OV12 Aktienkopf C04 (Klickentwurf 17.11.2026): Kurs, Tagesbewegung, darunter Schluss; Chart ohne Kursachse, Datum nur an den Enden", async () => {
   const vm = await import("node:vm");
   class N { constructor(tag) { this.tag = tag; this.attrs = {}; this.children = []; this.textContent = ""; } setAttribute(k, v) { this.attrs[k] = String(v); } appendChild(c) { this.children.push(c); return c; } }
   const context = vm.createContext({ document: { createElementNS: (_ns, tag) => new N(tag) } });
@@ -134,7 +141,7 @@ test("OV12 Aktienkopf C04 wie Folie AX01 (a-top): Kurs, Tagesbewegung, Schluss u
   assert.match(detail, /compact: !!dollarKopf/);
   assert.match(detail, /title: "zum Vortagesschluss"/, "die Pille ist die Tagesbewegung");
   const css = readFileSync(new URL("../ui/overview.css", import.meta.url), "utf8");
-  assert.match(css, /dx-chart-hero--c04 \.dx-chart-hero-preis>b\{font-size:34px/);
+  assert.match(css, /dx-chart-hero--c04 \.dx-chart-hero-preis>b\{font-size:clamp\(40px,13\.4vw,52px\)/, "Kurs groß wie im Klickentwurf (52 px)");
   assert.match(css, /vu-shead-watch\{display:none\}/, "ein Merken-Knopf im Kopf (Herz), kein zweites Lesezeichen");
 });
 
@@ -167,4 +174,33 @@ test("OV14 App-Konzept 2: Story als drei Kacheln mit Grafik aus den Werten der A
   const css = readFileSync(new URL("../ui/overview.css", import.meta.url), "utf8");
   assert.match(css, /\.dx-range-chart\{height:var\(--dv3-chart-h,184px\)\}/, "Charthöhe wächst mit dem Bildschirm, nie unter 184 px");
   assert.match(css, /max-width:760px\)\{\s*body\.dv2 \.dv2-stock \.dx-chart:has\(\.dx-chart-hero--c04\) \.dx-range-chart-wrap,[^{]*\{margin-inline:-16px\}/, "Chart bis an den Bildschirmrand");
+});
+
+test("OV15 Story „Geschäft“ folgt dem Fundamental-Urteil (Klickentwurf 17.11.2026): Regel aus fundamental/app.js#business gelesen", () => {
+  const src = readFileSync(new URL("../../fundamental/app.js", import.meta.url), "utf8");
+  const obj = (name) => { const i = src.indexOf(name + " = "); return new Function("return " + src.slice(i + name.length + 3, src.indexOf(";", i)))(); };
+  assert.deepEqual(OV.F_GRADE, obj("var GRADE_KIND")); assert.deepEqual(OV.F_GROW, obj("var GROW_TXT")); assert.deepEqual(OV.F_PROF, obj("var PROF_TXT"));
+  const body = src.slice(src.indexOf("  function business(raw) {"), src.indexOf("  function ttmGrowth"));
+  const business = new Function("GRADE_KIND", "GROW_TXT", "PROF_TXT", body + "; return business;")(OV.F_GRADE, OV.F_GROW, OV.F_PROF);
+  const raw = (g, p) => ({ fundamentals: { health: { available: true, categories: [{ id: "growth", grade: g }, { id: "profitability", grade: p }] } } });
+  for (const [g, p] of [["Stark", "Negativ"], ["Sehr stark", "Solide"], ["Rückläufig", "Sehr stark"], ["Flach", "Knapp"]]) assert.deepEqual(OV.businessVerdict(raw(g, p)), business(raw(g, p)), g + "/" + p);
+  /* TTWO 13.11.2026: Wachstum „Stark“, Nettomarge „Negativ“ – Fundamental sagt „▼ Negativ / Wächst und macht Verlust“, die Story-Kachel ebenso. */
+  const ttwo = { ...NVDA, fundamentals: { ...NVDA.fundamentals, health: { available: true, categories: [{ id: "growth", grade: "Stark" }, { id: "profitability", grade: "Negativ" }] } } };
+  const html = OV.story(ttwo);
+  assert.match(html, /<b class="dv3-st-w" data-verdict="weak">Negativ<\/b>/);
+  assert.match(html, /<span class="dv3-st-p">Wächst und macht Verlust\. /);
+  assert.doesNotMatch(html, /data-verdict="strong">Stark</);
+});
+
+test("OV16 Klickentwurf 17.11.2026: Kapitel ohne Bildchen, „Steht in N Reihen“, „Mehr wie …“ und „Gleiches Thema“ mit 12 Monaten", () => {
+  const src = readFileSync(new URL("../ui/overview.js", import.meta.url), "utf8");
+  assert.doesNotMatch(src, /dv3-thumb/, "Kapitel: Nummer im Kreis, keine Bildchen");
+  assert.match(src, /U\(\)\.sect\("Steht in " \+ \(m\.length === 1 \? "einer Reihe" : m\.length \+ " Reihen"\)/);
+  assert.match(src, /return "Mehr wie " \+ kurz\(d\);/);
+  assert.match(src, /return "Gleiches Thema"; \}, function \(d\) \{ var th = themeOf\(d\); return \(th \? th\.title \+ " · " : ""\) \+ "12 Monate"; \}/);
+  const page = readFileSync(new URL("../detail.js", import.meta.url), "utf8");
+  assert.match(page, /head\.others\.place\(page\);/, "andere Module nach „Alle Kennzahlen“ und „Daten & Methodik“");
+  const app = readFileSync(new URL("../app.js", import.meta.url), "utf8"), html = readFileSync(new URL("../index.html", import.meta.url), "utf8");
+  assert.match(app, /if\(parts\[0\]==='s'\)H\.setAttribute\('data-vu-tabs','inhalt'\)/, "Aktienseite ohne Reiterzeile des Rahmens");
+  assert.match(html, /else if\(\/\^#\\\/\?s\\\/\/\.test\(location\.hash\)\)h\.setAttribute\("data-vu-tabs","inhalt"\)/, "schon vor dem ersten Zeichnen");
 });

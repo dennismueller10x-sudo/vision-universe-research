@@ -89,6 +89,10 @@ VU_BREVO_LIST_NEWSLETTER = ""
 # Interne Backtest-Vorschau (/v1/admin/backtests*, Rolle backtest_reviewer): AUS. Nur per eigenem PR mit
 # Owner-Freigabe auf "true" (docs/accounts/FREIGABEN.md, docs/quant/BACKTEST_PREVIEW.md Abschnitt 9).
 VU_BACKTEST_REVIEW_ENABLED = "false"
+# Supertrader „Folgen“/„Melden“ (Stufen-Meldungen per App-Push, /v1/supertrader/follows*): eingebaut, AUS bis zur
+# Pruefung durch einen Anwalt (Owner 16.11.2026; docs/accounts/FREIGABEN.md, docs/legal/EINORDNUNG.md). Einschalten nur
+# per eigenem PR zusammen mit der vorbereiteten Migration (supabase/prepared/) und dem Frontend-Schalter.
+VU_SUPERTRADER_ALERTS_ENABLED = "false"
 
 # =============================================================================
 # PRODUKTION (eine einzige Infrastruktur, docs/accounts/PRODUCTION.md)
@@ -166,3 +170,5 @@ VU_BREVO_LIST_NEWSLETTER = "4"
 # Interne Backtest-Vorschau: EIN nur in Produktion, nach Owner-Freigabe (docs/accounts/BACKTEST_VORSCHAU_AKTIVIERUNG.md).
 # Zugang bleibt an Sitzung und Rolle backtest_reviewer gebunden. Abschalten: diese Zeile auf "false" (PR) oder Rolle entziehen (sofort).
 VU_BACKTEST_REVIEW_ENABLED = "true"
+# Supertrader „Folgen“/„Melden“: AUS bis zur Anwaltspruefung (siehe [vars], docs/accounts/FREIGABEN.md).
+VU_SUPERTRADER_ALERTS_ENABLED = "false"

@@ -25,7 +25,7 @@
     vorsorge: { title: 'Mit 10 € im Monat anfangen', text: 'Sparplan, ETF und Rente einfach erklärt.', world: 'vorsorge', worldName: 'Vorsorge',
       label: 'Dein Ziel: Mit einem Sparplan anfangen', step: 'Starte mit dem Vorsorge-Planer', href: '/vorsorge/#/plan' },
     aktie: { title: 'Eine Aktie verstehen', text: 'Eine Aktie, sieben Blickwinkel, ein klares Urteil.', world: 'discover', worldName: 'Aktienseite',
-      label: 'Dein Ziel: Eine Aktie verstehen', step: 'Starte mit NVIDIA im Überblick', href: '/discover/#/s/US_REAL/NVDA' },
+      label: 'Dein Ziel: Eine Aktie verstehen', step: 'Starte mit NVIDIA im Überblick', href: '/aktie/#/NVDA' },
     ideen: { title: 'Ideen finden', text: 'Themen, Listen und Swipen statt langer Tabellen.', world: 'discover', worldName: 'Discover',
       label: 'Dein Ziel: Ideen finden', step: 'Starte mit den Themenwelten', href: '/discover/#/welten' },
     signale: { title: 'Strategien und Regel-Ergebnisse', text: 'Methoden der Profis, Backtests, 13F-Daten der Fonds.', world: 'supertrader', worldName: 'Supertrader',

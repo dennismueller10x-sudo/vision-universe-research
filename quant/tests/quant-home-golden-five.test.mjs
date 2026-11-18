@@ -68,8 +68,10 @@ test("GF1 · Quant Home fuehrt ohne spezielle URL zu den Golden Five: Suche auf 
   assert.ok(max >= listed.length, "tickerChips kuerzt die Liste auf " + max + " von " + listed.length);
 
   /* Jeder Chip und jede Karte verlinkt auf die Aktienanalyse #/aktie/<TICKER>. */
-  assert.match(ui, /function tickerChips[\s\S]*?href:\s*routes\.stock\(t\)/, "tickerChips muss auf routes.stock verlinken");
-  assert.match(ui, /function poster[\s\S]*?href:\s*routes\.stock\(o\.ticker\)/, "die Aktienkarte muss auf routes.stock verlinken");
+  /* App-Konzept 2 (16.11.2026): Kürzel und Karten öffnen die Vorschau (data-vu-stock) und führen auf /aktie/#/<T> (routes.aktie). */
+  assert.match(ui, /function tickerChips[\s\S]*?href:\s*routes\.aktie\(t\), dataset: stockData\(t\)/, "tickerChips muss auf routes.aktie verlinken und die Vorschau tragen");
+  assert.match(ui, /function poster[\s\S]*?href:\s*routes\.aktie\(o\.ticker\), dataset: stockData\(/, "die Aktienkarte muss auf routes.aktie verlinken und die Vorschau tragen");
+  assert.match(ui, /aktie:\s*function\s*\(t\)\s*\{[^\n]*"\/aktie\/#\/"/, "routes.aktie muss auf /aktie/#/<T> zeigen");
   assert.match(ui, /stock:\s*function\s*\(t\)\s*\{\s*return\s*"#\/aktie\/"/, "routes.stock muss auf #/aktie/<T> zeigen");
   assert.match(app, /case "aktie":[\s\S]*?r\.view\s*=/, "der Router muss #/aktie/<T> als Aktienanalyse auffassen");
 });

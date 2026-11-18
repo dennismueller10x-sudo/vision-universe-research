@@ -97,11 +97,29 @@
     if (r1m <= -0.05) return ["weak", "Etwas schwächer"];
     return ["mid", "Seitwärts"];
   }
+  /* Urteil „Geschäft“ = Urteil der Fundamental-Seite („Das Geschäft in einem Satz“, fundamental/app.js#business; Abschrift wie
+     VUStockSheet.model.businessVerdict): zwei Stufen der Discover-Fundamentaldaten (Wachstum, Profitabilität), es zählt die
+     schwächere. Klickentwurf 17.11.2026: Discover-Seite, /aktie und Fundamental sagen dasselbe Wort (TTWO: „Negativ“, nicht
+     „Stark“). Nur Lesart der vorhandenen Stufen, kein Modell geändert; discover/tests/overview.test.mjs (OV15) hält die Abschrift gleich. */
+  var F_GRADE = { "Sehr stark": "strong", "Stark": "strong", "Sehr solide": "strong", "Solide": "mid", "Flach": "mid", "Knapp": "mid", "Belastet": "mid", "Rückläufig": "weak", "Negativ": "weak", "Angespannt": "weak" };
+  var F_GROW = { "Sehr stark": "Wächst stark", "Stark": "Wächst", "Solide": "Wächst langsam", "Flach": "Wächst kaum", "Rückläufig": "Schrumpft" };
+  var F_PROF = { "Sehr stark": "verdient sehr gut", "Stark": "verdient gut", "Solide": "verdient solide", "Knapp": "verdient knapp", "Negativ": "macht Verlust" };
+  function businessVerdict(d) {
+    var h = d && d.fundamentals && d.fundamentals.health;
+    if (!h || !h.available || !Array.isArray(h.categories)) return null;
+    var by = {}; h.categories.forEach(function (c) { if (c && c.id) by[c.id] = c; });
+    var g = by.growth, p = by.profitability;
+    if (!g || !p || !F_GROW[g.grade] || !F_PROF[p.grade]) return null;
+    var rank = { strong: 2, mid: 1, weak: 0 }, kg = F_GRADE[g.grade], kp = F_GRADE[p.grade], worse = rank[kg] <= rank[kp] ? g : p;
+    return { text: F_GROW[g.grade] + " und " + F_PROF[p.grade], kind: F_GRADE[worse.grade], label: worse.grade };
+  }
   /** Auf einen Blick: drei Urteile Geschäft / Bewertung / Kurs (tippbar → Perspektive Zahlen bzw. Chart). */
   function blick(d) {
     var f = d.fundamentals || {}, g = d.geschaeftszahlen || {}, rows = [], t = encodeURIComponent(d.symbol);
     var growth = f.health && (f.health.categories || []).filter(function (c) { return c.id === "growth"; })[0];
-    if (growth) rows.push(["fundamental", "Geschäft", gradeKind(growth.grade), growth.grade, isNum(g.umsatzWachstum) ? "Umsatz " + pctFromRatio(g.umsatzWachstum, 0) + " in 12 Monaten" : growth.detail, "/fundamental/#/" + t]);
+    var bz = businessVerdict(d);
+    if (bz) rows.push(["fundamental", "Geschäft", bz.kind, bz.label, bz.text + (isNum(g.umsatzWachstum) ? " · Umsatz " + pctFromRatio(g.umsatzWachstum, 0) + " in 12 Monaten" : ""), "/fundamental/#/" + t]);
+    else if (growth) rows.push(["fundamental", "Geschäft", gradeKind(growth.grade), growth.grade, isNum(g.umsatzWachstum) ? "Umsatz " + pctFromRatio(g.umsatzWachstum, 0) + " in 12 Monaten" : growth.detail, "/fundamental/#/" + t]);
     var b = bewertungsUrteil(f.valuation);
     if (b) rows.push(["fundamental", "Bewertung", b[0], b[1], "KGV " + num(f.valuation.pe && f.valuation.pe.value, 1) + " · Markt " + num(f.valuation.relative.peMedian, 1), "/fundamental/#/" + t]);
     var k = kursUrteil(d.metrics && d.metrics.return1M);
@@ -276,14 +294,21 @@
     var t = T && T.byRow(th.rowId);
     return { rowId: th.rowId, title: t ? t.title : titleCase(th.title), slug: t ? t.slug : null, href: t ? T.href(t) : null };
   }
-  /** Etiketten wie die Metazeile einer Serie: bester Platz, Thema, Index-Gewicht, „+N Reihen“. */
+  /** Platzierung (Klickentwurf 17.11.2026, ersetzt die Etiketten-Zeile): Ring = Lage des besten Platzes in seiner Reihe (Platz 1 = voll,
+      dieselbe Rechnung wie die Balken unter „Steht in N Reihen“), Titel „Platz N · Reihe“, darunter Thema (wenn anders als die Reihe),
+      Indizes mit Gewicht und „+N Reihen“. Die Karte führt in die Reihe. Ohne Platz bleiben Thema und Indizes als Zeile. */
   function etiketten(d, universe) {
-    var m = sortedMemberships(d), th = themeOf(d), ix = (d.indexMemberships || []).filter(function (x) { return isNum(x.weight); })[0], out = [];
-    if (m[0]) out.push('<a class="vu-chip vu-chip--lime" href="' + esc(rowLink(universe, m[0].rowId)) + '">Platz ' + m[0].rank + " · " + esc(rowName(m[0].rowId, m[0].title)) + "</a>");
-    if (th) out.push('<a class="vu-chip" href="' + esc(th.href || rowLink(universe, th.rowId)) + '">' + esc(th.title) + "</a>");
-    if (ix) out.push('<span class="vu-chip">' + esc((ix.shortLabel || ix.indexName) + " · " + num(ix.weight, 1) + " %") + "</span>");
-    if (m.length > 1) out.push('<a class="vu-chip" href="#dv3-reihen">+' + (m.length - 1) + " Reihen</a>");
-    return out.length ? '<div class="dv3-tags">' + out.join("") + "</div>" : "";
+    var m = sortedMemberships(d), th = themeOf(d), out = [], best = m[0];
+    var row = best ? (th && th.rowId === best.rowId ? th.title : rowName(best.rowId, best.title)) : "";
+    if (th && (!best || th.rowId !== best.rowId)) out.push(esc(th.title));
+    (d.indexMemberships || []).forEach(function (x) {
+      out.push(esc((x.shortLabel || x.indexName).replace("NASDAQ-100", "Nasdaq-100").replace("Dow Jones Industrial Average", "Dow") + (isNum(x.weight) ? " · " + num(x.weight, 1) + " %" : "")));
+    });
+    if (m.length > 1) out.push("+" + (m.length - 1) + (m.length === 2 ? " Reihe" : " Reihen"));
+    if (!best) return out.length ? '<p class="dv3-platz-sub dv3-platz-solo">' + out.join(" · ") + "</p>" : "";
+    var p = Math.max(4, Math.round((1 - (best.rank - 1) / Math.max(1, best.of)) * 100));
+    return '<a class="dv3-platz" href="' + esc(rowLink(universe, best.rowId)) + '">' + U().ring(p, { size: 76, stroke: 9, text: best.rank + ".", label: "Platz " + best.rank + " von " + num(best.of, 0) + ", Lage in der Reihe" }) +
+      '<span class="dv3-platz-t"><span class="vu-ltag">Platzierung</span><b>Platz ' + best.rank + " · " + esc(row) + "</b>" + (out.length ? '<span class="dv3-platz-sub">' + out.join(" · ") + "</span>" : "") + "</span></a>";
   }
   /** Kurs gegen das Jahreshoch: ab −20 % schwächer, bis −5 % nah am Hoch, dazwischen mittel. */
   function hochUrteil(dist) {
@@ -316,7 +341,9 @@
     var f = d.fundamentals || {}, rows = [], m = d.metrics || {};
     var st = f.story && f.story.available && (f.story.statements || [])[0];
     var growth = f.health && (f.health.categories || []).filter(function (c) { return c.id === "growth"; })[0];
-    if (st && st.text) rows.push(["fundamental", "Geschäft", st.text, growth ? [gradeKind(growth.grade), growth.grade] : null, "geschaeft", grafikUmsatz(d)]);
+    /* Wort und Ton wie Fundamental (businessVerdict), dahinter Discovers Satz zur Umsatzentwicklung; ohne beide Stufen wie bisher die Wachstumsstufe. */
+    var bz = businessVerdict(d), gt = [bz ? bz.text + "." : "", st && st.text || ""].filter(Boolean).join(" ");
+    if (gt) rows.push(["fundamental", "Geschäft", gt, bz ? [bz.kind, bz.label] : growth ? [gradeKind(growth.grade), growth.grade] : null, "geschaeft", grafikUmsatz(d)]);
     var j = d.jahresspanne, k = hochUrteil(m.distanceTo52wHigh);
     if (j && j.zumHoch && k) rows.push(["technical", "Kurs", "Der Kurs liegt " + j.zumHoch.replace(/^[−-]/, "") + " unter dem Hoch der letzten 12 Monate.", k, "kurs", grafikSpanne(d)]);
     else if (d.plain && d.plain.story) rows.push(["technical", "Kurs", d.plain.story + ".", kursUrteil(m.return1M), "kurs", grafikSpanne(d)]);
@@ -332,29 +359,21 @@
         { cls: "dv3-story-r", tone: r[3] && r[3][0] === "strong" ? "lime" : "", attrs: { "data-ch": r[4] } });
     }), { label: "Die Story in drei Sätzen", width: 244 }) + "</section>";
   }
-  /* Bildchen der Kapitel (schwarz, 76 × 52) */
-  function thumbSpanne(d) { var p = d.jahresspanne && isNum(d.jahresspanne.position) ? Math.round(Math.max(0, Math.min(1, d.jahresspanne.position)) * 100) : 50; return '<span class="dv3-thumb"><span class="dv3-thumb-range"><i style="width:' + p + '%"></i><b style="left:' + p + '%"></b></span></span>'; }
-  function thumbThema(d) { var th = themeOf(d); return '<span class="dv3-thumb">' + (th && th.slug ? U().themeHud(th.slug, 34, 10) : U().hud("discover", 30, 8)) + "</span>"; }
   function revenue(d) { var j = d.fundamentals && d.fundamentals.journey; return j && j.tracks ? (j.tracks.revenue || []).filter(function (x) { return isNum(x.v); }) : []; }
-  function thumbBars(d) { var r = revenue(d).slice(-8), mx = Math.max.apply(null, r.map(function (x) { return x.v; }).concat([1])); return '<span class="dv3-thumb dv3-thumb--bars">' + r.map(function (x, i) { return '<i style="height:' + Math.max(2, Math.round(x.v / mx * 36)) + "px" + (i === r.length - 1 ? ";background:#c8f531" : "") + '"></i>'; }).join("") + "</span>"; }
   function healthCount(d) { var c = (d.fundamentals && d.fundamentals.health && d.fundamentals.health.categories) || []; return [c.filter(function (x) { return /^Sehr/.test(x.grade); }).length, c.length]; }
-  function thumbDots(d) { var k = healthCount(d); return '<span class="dv3-thumb dv3-thumb--dots">' + Array.from({ length: k[1] }, function (_, i) { return "<i" + (i < k[0] ? ' class="on"' : "") + "></i>"; }).join("") + "</span>"; }
-  function thumbPe(d) { var v = d.fundamentals && d.fundamentals.valuation, pe = v && v.pe && v.pe.value, med = v && v.relative && v.relative.peMedian, mx = Math.max(pe || 0, med || 0) || 1; return '<span class="dv3-thumb dv3-thumb--pe"><i style="width:' + Math.round((pe || 0) / mx * 100) + '%"></i><i style="width:' + Math.round((med || 0) / mx * 100) + '%"></i></span>'; }
-  function thumbMarks(z) { var plus = z ? z.rows.filter(function (r) { return r[0] === "+"; }).length : 0, minus = z ? z.rows.length - plus : 0; return '<span class="dv3-thumb dv3-thumb--marks"><b>' + new Array(plus + 1).join("+ ").trim() + "</b><b>" + new Array(minus + 1).join("− ").trim() + "</b></span>"; }
-  function thumbIndex(d) { var ix = (d.indexMemberships || []).slice(0, 3), mx = Math.max.apply(null, ix.map(function (x) { return isNum(x.weight) ? x.weight : 0; }).concat([1])); return '<span class="dv3-thumb dv3-thumb--idx">' + ix.map(function (x, i) { return '<i style="width:' + (isNum(x.weight) ? Math.max(20, Math.round(x.weight / mx * 90)) : 60) + "%" + (i % 2 ? "" : ";background:#c8f531") + '"></i>'; }).join("") + "</span>"; }
   function kapitelListe(d, universe) {
     var name = d.companyName || d.symbol, z = d.zeitachse || [], y = z.filter(function (x) { return x.key === "return12M"; })[0], j = d.jahresspanne;
     var r = revenue(d), last = r[r.length - 1], hc = healthCount(d), v = d.fundamentals && d.fundamentals.valuation, wz = waageZeilen(d);
     var plus = wz ? wz.rows.filter(function (x) { return x[0] === "+"; }).length : 0, minus = wz ? wz.rows.length - plus : 0;
     var ix = d.indexMemberships || [];
     return [
-      ["kurs", "Kurs: Zeitachse und Jahresspanne", [y ? y.wert + " in 12 Monaten" : null, j && j.zumHoch ? j.zumHoch.replace(/^[−-]/, "") + " unter dem Hoch" : null].filter(Boolean).join(" · "), thumbSpanne(d), zeitachse(d) + spanne(d)],
-      ["firma", "Was macht " + name + "?", [d.was, (d.themes || []).length ? d.themes.length + " Themen" : null].filter(Boolean).join(" · "), thumbThema(d), firma(d, universe)],
-      ["geschaeft", "Wie sich das Geschäft entwickelt hat", last ? "Umsatz " + usd(last.v) + " im GJ " + last.fy : "", thumbBars(d), geschaeft(d)],
-      ["gesund", "Wie gesund ist die Firma?", hc[1] ? hc[0] + " von " + hc[1] + " sehr stark" : "", thumbDots(d), gesundheit(d)],
-      ["teuer", "Ist " + name + " teuer?", v && v.pe && isNum(v.pe.value) ? "KGV " + num(v.pe.value, 1) + (v.relative && isNum(v.relative.peMedian) ? " · Markt " + num(v.relative.peMedian, 1) : "") : "", thumbPe(d), teuer(d)],
-      ["waage", "Stärken und Schwächen laut Kennzahlen", wz && wz.rows.length ? plus + (plus === 1 ? " Stärke" : " Stärken") + " · " + minus + (minus === 1 ? " Schwäche" : " Schwächen") : "", thumbMarks(wz), waage(d)],
-      ["indizes", "In welchen Indizes?", ix.map(function (x) { return (x.shortLabel || x.indexName).replace("NASDAQ-100", "Nasdaq-100").replace("Dow Jones Industrial Average", "Dow") + (isNum(x.weight) ? " " + num(x.weight, 1) + " %" : ""); }).join(" · "), thumbIndex(d), indizes(d)]
+      ["kurs", "Kurs: Zeitachse und Jahresspanne", [y ? y.wert + " in 12 Monaten" : null, j && j.zumHoch ? j.zumHoch.replace(/^[−-]/, "") + " unter dem Hoch" : null].filter(Boolean).join(" · "), null, zeitachse(d) + spanne(d)],
+      ["firma", "Was macht " + name + "?", [d.was, (d.themes || []).length ? d.themes.length + (d.themes.length === 1 ? " Thema" : " Themen") : null].filter(Boolean).join(" · "), null, firma(d, universe)],
+      ["geschaeft", "Wie sich das Geschäft entwickelt hat", last ? "Umsatz " + usd(last.v) + " im GJ " + last.fy : "", null, geschaeft(d)],
+      ["gesund", "Wie gesund ist die Firma?", hc[1] ? hc[0] + " von " + hc[1] + " sehr stark" : "", null, gesundheit(d)],
+      ["teuer", "Ist " + name + " teuer?", v && v.pe && isNum(v.pe.value) ? "KGV " + num(v.pe.value, 1) + (v.relative && isNum(v.relative.peMedian) ? " · Markt " + num(v.relative.peMedian, 1) : "") : "", null, teuer(d)],
+      ["waage", "Stärken und Schwächen laut Kennzahlen", wz && wz.rows.length ? plus + (plus === 1 ? " Stärke" : " Stärken") + " · " + minus + (minus === 1 ? " Schwäche" : " Schwächen") : "", null, waage(d)],
+      ["indizes", "In welchen Indizes?", ix.map(function (x) { return (x.shortLabel || x.indexName).replace("NASDAQ-100", "Nasdaq-100").replace("Dow Jones Industrial Average", "Dow") + (isNum(x.weight) ? " " + num(x.weight, 1) + " %" : ""); }).join(" · "), null, indizes(d)]
     ].filter(function (k) { return k[4]; });
   }
   function kapitel(ks) {
@@ -362,27 +381,30 @@
     /* App-Konzept 2: der erklärende Satz steht hinter dem „?“ (ein Tipp), nicht mehr als Zeile unter der Überschrift. */
     return '<section class="dv3-sec dv3-kapitel" data-sec="kapitel">' + U().sect("Kapitel").replace("</h2>", " <span class=\"dv3-kn\">" + ks.length + "</span></h2>" + U().q(ks.length + " Kapitel, ein Tipp öffnet eines als Fenster. Zusammen das, was die Seite bisher untereinander zeigte.", "Kapitel")) +
       '<div class="dv3-eps">' + ks.map(function (k, i) {
-        return '<button type="button" class="dv3-ep" data-ch="' + k[0] + '" aria-haspopup="dialog"><b class="dv3-ep-n">' + (i + 1) + "</b>" + k[3] + '<span class="dv3-ep-t"><b>' + esc(k[1]) + "</b>" + (k[2] ? "<span>" + esc(k[2]) + "</span>" : "") + '</span><span class="dv3-ep-c" aria-hidden="true">' + U().glyph("next", 15) + "</span></button>";
+        return '<button type="button" class="dv3-ep" data-ch="' + k[0] + '" aria-haspopup="dialog"><b class="dv3-ep-n">' + (i + 1) + '</b><span class="dv3-ep-t"><b>' + esc(k[1]) + "</b>" + (k[2] ? "<span>" + esc(k[2]) + "</span>" : "") + '</span><span class="dv3-ep-c" aria-hidden="true">' + U().glyph("next", 15) + "</span></button>";
       }).join("") + "</div></section>";
   }
   /** „{Name} steht in N Reihen“: Platz groß, Tipp öffnet die Reihe. */
   function reihen(d, universe) {
-    var m = sortedMemberships(d);
+    var m = sortedMemberships(d), th = themeOf(d);
     if (!m.length) return "";
-    return '<section class="dv3-sec" id="dv3-reihen" data-sec="reihen">' + U().sect((d.companyName || d.symbol) + " steht in " + m.length + (m.length === 1 ? " Reihe" : " Reihen"), { href: "#/reihen" }) + '<p class="dv3-sub">Platz nach der Regel der Reihe. Tipp öffnet die Reihe.</p><div class="dv3-rail" role="list">' + m.map(function (x) {
+    return '<section class="dv3-sec" id="dv3-reihen" data-sec="reihen">' + U().sect("Steht in " + (m.length === 1 ? "einer Reihe" : m.length + " Reihen"), { href: "#/reihen" }) + '<p class="dv3-sub">Platz nach der Regel der Reihe. Tipp öffnet die Reihe.</p><div class="dv3-rail" role="list">' + m.map(function (x) {
       /* Balken: Lage des Platzes in der Reihe (Platz 1 = voll), aus rank und of der Aktiendatei. */
-      return '<a class="dv3-rk2" role="listitem" href="' + esc(rowLink(universe, x.rowId)) + '"><span class="vu-num">' + x.rank + ".</span><b>" + esc(rowName(x.rowId, x.title)) + '</b><span class="vu-xs vu-mu">von ' + num(x.of, 0) + '</span><span class="dv3-rk2-bar" aria-hidden="true"><i style="width:' + Math.max(4, Math.round((1 - (x.rank - 1) / Math.max(1, x.of)) * 100)) + '%"></i></span></a>';
+      return '<a class="dv3-rk2" role="listitem" href="' + esc(rowLink(universe, x.rowId)) + '"><span class="vu-num">' + x.rank + ".</span><b>" + esc(th && th.rowId === x.rowId ? th.title : rowName(x.rowId, x.title)) + '</b><span class="vu-xs vu-mu">von ' + num(x.of, 0) + '</span><span class="dv3-rk2-bar" aria-hidden="true"><i style="width:' + Math.max(4, Math.round((1 - (x.rank - 1) / Math.max(1, x.of)) * 100)) + '%"></i></span></a>';
     }).join("") + "</div></section>";
   }
   /** Schienen „Mehr wie …“, „Gleiches Thema“, „Niedrigere Bewertung im Sektor“ (aus discoverNext), Poster wie auf der Startseite. */
-  var NEXT = [["similar", function (d) { return "Mehr wie " + (d.companyName || d.symbol); }, "Ähnlich in Kursverhalten, Wachstum, Marge und Bewertung."],
-    ["sameTheme", function (d) { var th = themeOf(d); return "Gleiches Thema" + (th ? ": " + th.title : ""); }, ""],
+  /* Klickentwurf 17.11.2026: „Mehr wie <Kurzname>“ (Kurzname wie im Kopf, VUStockNavigator.shortName), „Gleiches Thema“ mit dem Thema
+     in der Unterzeile; die Poster zeigen die Bewegung in 12 Monaten. */
+  function kurz(d) { var N = global.VUStockNavigator, n = d.companyName || d.symbol; return N && N.shortName ? N.shortName(n) : n; }
+  var NEXT = [["similar", function (d) { return "Mehr wie " + kurz(d); }, function () { return "Ähnlich in Kursverhalten, Wachstum, Marge und Bewertung · 12 Monate"; }],
+    ["sameTheme", function () { return "Gleiches Thema"; }, function (d) { var th = themeOf(d); return (th ? th.title + " · " : "") + "12 Monate"; }],
     ["cheaperAlternatives", function () { return "Niedrigere Bewertung im Sektor"; }, null]];
   function schienen(d, universe) {
     return NEXT.map(function (x) {
       var n = d.discoverNext && d.discoverNext[x[0]];
       if (!n || !(n.cards || []).length) return "";
-      var sub = x[2] != null ? x[2] : "KGV unter 80 % von " + (d.companyName || d.symbol) + ", Nettomarge mindestens 5 %.";
+      var sub = x[2] != null ? x[2](d) : "KGV unter 80 % von " + (d.companyName || d.symbol) + ", Nettomarge mindestens 5 %.";
       return '<section class="dv3-sec dv3-next" data-next="' + x[0] + '">' + U().sect(x[1](d), x[0] === "sameTheme" && themeOf(d) ? { href: rowLink(universe, themeOf(d).rowId), link: alleN(themeOf(d).rowId) } : null) + (sub ? '<p class="dv3-sub">' + esc(sub) + "</p>" : "") + '<div class="dv3-rail dv3-posters" role="list"></div></section>';
     }).join("");
   }
@@ -509,6 +531,6 @@
   }
 
   D.Overview = Object.freeze({ render: render, kursUrteil: kursUrteil, bewertungsUrteil: bewertungsUrteil, gradeKind: gradeKind, titleCase: titleCase,
-    hochUrteil: hochUrteil, story: story, kapitelListe: kapitelListe, etiketten: etiketten, reiheAusAdresse: reiheAusAdresse });
+    hochUrteil: hochUrteil, businessVerdict: businessVerdict, F_GRADE: F_GRADE, F_GROW: F_GROW, F_PROF: F_PROF, story: story, kapitelListe: kapitelListe, etiketten: etiketten, reiheAusAdresse: reiheAusAdresse });
   if (typeof module === "object" && module.exports) module.exports = D.Overview;
 })(typeof globalThis !== "undefined" ? globalThis : this);

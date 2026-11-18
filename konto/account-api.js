@@ -52,6 +52,8 @@
     SAVED_SEARCH_NOT_FOUND: 'Diese Suche liegt nicht mehr im Konto.',
     QUERY_TOO_LARGE: 'Diese Suche ist zu groß für das Konto. Sie bleibt auf diesem Gerät.',
     QUERY_INVALID: 'Diese Suche kann nicht im Konto gespeichert werden.',
+    SUPERTRADER_FOLLOWS_LIMIT_REACHED: 'Im Konto ist Platz für 50 gefolgte Methoden.',
+    STRATEGY_INVALID: 'Dieser Methode kann nicht gefolgt werden.',
     WATCHLIST_ITEMS_LIMIT_REACHED: 'Deine Watchlist ist voll. Entferne einen Titel, um einen neuen aufzunehmen.',
     WATCHLIST_LIMIT_REACHED: 'Du hast die Zahl der Watchlists deines Tarifs erreicht.',
     FEATURE_NOT_IN_PLAN: 'Diese Funktion ist in deinem Tarif nicht enthalten.',

@@ -93,6 +93,8 @@
   }
   /** Aktien-Element: Ziel für die Vorschau, die der Rahmen einhängt (data-vu-stock). */
   function stockAttrs(c) { return ' data-vu-stock="' + esc(c.symbol) + '" data-vu-stock-name="' + esc(shortName(c)) + '"'; }
+  /** Ziel eines Aktien-Elements: /aktie/#/<T> (v3.js#stockHref); nur die alte Discover-Aktienseite (#/s/…) trägt die Herkunft ?reihe=. */
+  function stockLink(ctx, sym, row) { var x = K().stockHref(ctx, sym); return row && x.charAt(0) === '#' ? x + '?reihe=' + encodeURIComponent(row) : x; }
   /** Poster (Standard-Format jeder Schiene): Logo, Merken, Name, Kuerzel, Mini-Chart 1 Jahr, eine Pille.
       o.proto (Startseite, Prototyp „poster“): Logo, Name, Kurslinie, Pille – ohne Merken und Kürzel. */
   function poster(c, ctx, o) {
@@ -100,7 +102,7 @@
     var p = PILLS[o.pill] || PILLS.r12, nm = shortName(c);
     var box = h('div', 'dr-poster' + (o.proto ? ' dp-poster' : '')); box.dataset.symbol = c.symbol; box.setAttribute('role', 'listitem');
     box.__card = c; if (o.row) box.dataset.row = o.row;
-    var href = esc(K().stockHref(ctx, c.symbol) + (o.row ? '?reihe=' + encodeURIComponent(o.row) : ''));
+    var href = esc(stockLink(ctx, c.symbol, o.row));
     if (o.proto) {
       var r12 = c.metrics && c.metrics.return12M;
       if (isNum(r12) && r12 < 0) box.classList.add('dp-down');
@@ -305,7 +307,7 @@
         var mx = Math.max.apply(null, list.map(function (x) { return Math.abs(x.v); })) || 1;
         box.innerHTML = list.map(function (x) {
           var w = Math.max(4, Math.round(Math.abs(x.v) / mx * 86)), c = x.c, txt = (x.v > 0 ? '+' : x.v < 0 ? '−' : '') + U().num(Math.abs(x.v), 1) + ' %';
-          return '<a class="dp-dv__r" role="listitem" href="' + esc(K().stockHref(ctx, c.symbol) + '?reihe=bekannte-namen') + '"' + stockAttrs(c) + ' aria-label="' + esc(shortName(c) + ' heute ' + txt) + '">' + U().logo(c.symbol) +
+          return '<a class="dp-dv__r" role="listitem" href="' + esc(stockLink(ctx, c.symbol, 'bekannte-namen')) + '"' + stockAttrs(c) + ' aria-label="' + esc(shortName(c) + ' heute ' + txt) + '">' + U().logo(c.symbol) +
             '<b>' + esc(shortName(c)) + '</b><span class="dp-dv__b" aria-hidden="true"><span>' + (x.v < 0 ? '<i class="dn" style="width:' + w + '%"></i>' : '') + '</span><em></em><span>' + (x.v > 0 ? '<i style="width:' + w + '%"></i>' : '') + '</span></span>' +
             '<span class="dp-dv__v' + (x.v > 0 ? ' up' : '') + '">' + esc(txt) + '</span></a>';
         }).join('');
@@ -584,7 +586,7 @@
       '<div class="dr-pv__chart"></div><div class="dr-bb__dates dr-pv__dates"><span></span><span></span></div>' +
       '<p class="dr-pv__hook">' + esc((c.hook && c.hook.text) || K().story(c)) + '</p>' +
       '<p class="vu-ltag dr-pv__in">Reihen werden geladen …</p><div class="dr-pv__rows"></div>' +
-      '<div class="dr-pv__act"><a class="vu-btn vu-btn--ink" href="' + esc(K().stockHref(ctx, c.symbol) + (o.row ? '?reihe=' + encodeURIComponent(o.row) : '')) + '" data-dv3-close>Aktie ansehen</a>' +
+      '<div class="dr-pv__act"><a class="vu-btn vu-btn--ink" href="' + esc(stockLink(ctx, c.symbol, o.row)) + '" data-dv3-close>Aktie ansehen</a>' +
       '<button type="button" class="vu-round dr-pv__heart">' + U().glyph('heart', 20) + '</button>' +
       '<a class="vu-round dr-pv__swipe" href="' + esc(o.row ? swipeHref(o.row) : '#/swipen') + '" aria-label="' + esc(o.row ? 'Reihe swipen' : 'Swipen') + '" data-dv3-close>' + icon('swipe', 20) + '</a></div>';
     var dates = body.querySelectorAll('.dr-pv__dates span');
@@ -641,7 +643,7 @@
     return i > 0 ? esc(t.slice(0, i)) + '<br><span>' + esc(t.slice(i + 1)) + '</span>' : '<span>' + esc(t) + '</span>';
   }
   function rankLine(c, i, ctx, o) {
-    var a = h('a', 'dr-rk'); a.href = K().stockHref(ctx, c.symbol) + '?reihe=' + encodeURIComponent(o.row); a.dataset.symbol = c.symbol;
+    var a = h('a', 'dr-rk'); a.href = stockLink(ctx, c.symbol, o.row); a.dataset.symbol = c.symbol; K().markStock(a, ctx, c.symbol, shortName(c));
     var p = PILLS[o.pill] || PILLS.r12;
     a.innerHTML = '<b class="dr-rk__n">' + (i + 1) + '</b>' + U().logo(c.symbol) + '<span class="dr-rk__t"><b>' + esc(shortName(c)) + '</b><span>' + esc((c.hook && c.hook.text) || K().story(c)) + '</span></span>' +
       '<span class="dr-rk__v">' + p[0](c) + '<small>' + esc(p[1]) + '</small></span>';
@@ -742,7 +744,7 @@
       page.querySelector('.dr-rsw__pos').textContent = (i + 1) + ' von ' + cards.length;
       page.querySelector('.dr-rsw__prog i').style.width = ((i + 1) / cards.length * 100).toFixed(1) + '%';
       var chips = of(c.symbol).filter(function (m) { return !isTheme(m.id) && m.id !== id && m.id !== 'sector-leaders'; }).slice(0, 3);
-      stage.innerHTML = '<a class="dr-rsw__card" href="' + esc(K().stockHref(ctx, c.symbol) + '?reihe=' + encodeURIComponent(id)) + '" data-symbol="' + esc(c.symbol) + '">' +
+      stage.innerHTML = '<a class="dr-rsw__card" href="' + esc(stockLink(ctx, c.symbol, id)) + '" data-symbol="' + esc(c.symbol) + '"' + stockAttrs(c) + '>' +
         '<span class="dr-rsw__id">' + U().logo(c.symbol, { xl: true }) + '<span><b>' + esc(nm) + '</b><small>' + esc(c.symbol) + '</small></span></span>' +
         '<span class="dr-rsw__v">' + p[0](c) + '<span>' + esc(pill === 'fromHigh' ? 'unter dem 52-Wochen-Hoch' : 'in 12 Monaten') + '</span></span>' +
         '<span class="dr-rsw__hook">' + esc((c.hook && c.hook.text) || K().story(c)) + '</span><span class="dr-rsw__chart"></span><span class="dr-bb__dates"><span></span><span></span></span>' +

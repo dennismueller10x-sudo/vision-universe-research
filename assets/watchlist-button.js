@@ -271,6 +271,13 @@
         var t = tickerOfPage();
         Array.prototype.forEach.call(doc.querySelectorAll(".vu-shead .vu-shead-actions"), function (actions) {
           var slot = actions.querySelector(".vu-shead-watch");
+          /* Kopf nach dem Klickentwurf (Owner 17.11.2026): genau ein Merken-Knopf.
+             - Hat die Seite ein eigenes, an die Konto-Watchlist gekoppeltes Herz (Discover .v2-watch-button, Quant .qx-watch; couple()),
+               bleibt es der Knopf, und hier entsteht kein zweites Lesezeichen.
+             - Sonst (nur das allgemeine Herz des Kopfs) ist mit Konten dieses Lesezeichen der Knopf (Konto-Watchlist, Rückmeldung,
+               Anmeldehinweis); das allgemeine Herz tritt zurück. Ohne Konten bleibt nur das Herz (lokale Liste). */
+          if (actions.querySelector(".v2-watch-button")) { if (slot) slot.remove(); return; }
+          Array.prototype.forEach.call(actions.querySelectorAll(".vu-shead-heart"), function (h) { h.hidden = true; h.style.display = "none"; });
           if (slot && slot.getAttribute("data-ticker") === t) return;
           if (slot) slot.remove();
           if (!t) return;

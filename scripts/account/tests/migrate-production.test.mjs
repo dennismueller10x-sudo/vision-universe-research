@@ -18,6 +18,13 @@ test('statisch: unbedenkliche Migrationen bleiben automatisch', () => {
     const sql = execFileSync('cat', [join(ROOT, 'supabase/migrations', f)], {encoding: 'utf8'});
     assert.deepEqual(destructiveFindings(sql, PROTECTED), [], f);
   }
+  // Vorbereitet, nicht ausgerollt (Supertrader Folgen/Melden, aus bis zur Anwaltspruefung): muss beim spaeteren
+  // Verschieben nach supabase/migrations/ ebenfalls automatisch und nicht destruktiv laufen.
+  for (const f of readdirSync(join(ROOT, 'supabase/prepared'))) {
+    assert.doesNotMatch(f, /^\d{14}_/, 'vorbereitete Datei ohne Zeitstempel (den bekommt sie erst beim Einschalten): ' + f);
+    const sql = execFileSync('cat', [join(ROOT, 'supabase/prepared', f)], {encoding: 'utf8'});
+    assert.deepEqual(destructiveFindings(sql, PROTECTED), [], f);
+  }
   assert.deepEqual(destructiveFindings('-- drop table x\ncreate table y (id int);', PROTECTED), [], 'Kommentar zaehlt nicht');
   assert.deepEqual(destructiveFindings('delete from public.plan_features where plan_id = $$free$$;', PROTECTED), [], 'Katalog ist keine Kundentabelle');
 });

@@ -366,7 +366,14 @@ for(const width of [1440,390]){
     if(plaetze.join('|')!=='Home|Discover|News|Ich'||await page.locator(dock+' button.menu').count()!==1)bad.push('DOCK:'+plaetze.join('|'));
     /* App-Konzept 2 (Prototyp #quant): der Quant-Start traegt seine Reiter im Inhalt (<html data-vu-tabs="inhalt">, nav.qp-tabs) -
        die fuenf Sprungmarken des Prototyps, dahinter die uebrigen Bereiche; die Reiterzeile des Rahmens ist dort ausgeblendet. */
-    if(await page.evaluate(()=>document.documentElement.getAttribute('data-vu-tabs')==='inhalt')){
+    /* Klickentwurf Modul-Aktienseiten (Owner 17.11.2026): Aktienseiten (Quant #/aktie/<T>, Elliott-Bild) haben keine Reiter;
+       mit Aktienkopf stehen am Ende die Pillen „Diese Aktie in anderen Modulen“. */
+    const modulAktie=elliottBild||/#\/(aktie|elliott)\//.test(page.url())||/[?&]view=(stock|quant)&/.test(page.url())||await page.locator('.vu-shead--k2').count()>0;
+    if(modulAktie&&await page.evaluate(()=>document.documentElement.getAttribute('data-vu-tabs')==='inhalt')){
+     if(await page.locator('main nav.qp-tabs').count())bad.push('REITER_AUF_AKTIENSEITE');
+     if(await page.locator('.vu-shead--k2').count()&&await page.locator('.vu-sothers').count()!==1)bad.push('PILLEN_ANDERE_MODULE_FEHLEN');
+    }
+    else if(await page.evaluate(()=>document.documentElement.getAttribute('data-vu-tabs')==='inhalt')){
      const inhalt=page.locator('main nav.qp-tabs');
      if(await inhalt.count()!==1||!await inhalt.isVisible())bad.push('REITER_IM_INHALT:false');
      else{const r=(await inhalt.locator('a').allTextContents()).map(t=>t.trim()).join('|');if(r!=='Heute|Landkarte|Anlagestile|Screener|Forschung|Aktien|Meldungen|Methodik|Technische Lagen|Fundamentaldaten')bad.push('REITER_IM_INHALT:'+r);}
@@ -698,10 +705,16 @@ for(const width of [1440,390]){
   /* Konzept Quant 2026-11 (QX03, #1819): Trefferzeile mit Profil (a.qk-pr); a.qx-row bleibt fuer die Ansicht ohne VUUI. */
   const treffer='main#qx-main a.qk-pr, main#qx-main a.qx-row';
   await page.locator(treffer).first().waitFor({timeout:30000}).catch(()=>bad.push('KEIN_TREFFER'));
-  const ziel=await page.locator(treffer).first().getAttribute('href').catch(()=>null);
+  /* App-Konzept 2 (Owner 16./17.11.2026): ein Tipp auf einen Treffer oeffnet die Aktien-Vorschau des Rahmens; die Quant-Aktienseite
+     erreicht man von dort ueber die Modul-Pille - hier direkt ueber ihre Adresse, damit der Verlauf der Hash-App geprueft bleibt. */
+  const tk=await page.locator(treffer).first().getAttribute('data-vu-stock').catch(()=>null);
   await page.locator(treffer).first().click().catch(()=>{});
+  if(!await page.locator('a[data-vsk-open]').first().waitFor({timeout:30000}).then(()=>true,()=>false))bad.push('VORSCHAU_NICHT_GEOEFFNET');
+  await page.keyboard.press('Escape');
+  const ziel=tk?'#/aktie/'+tk:null;
+  if(ziel)await page.evaluate(h=>{location.hash=h;},ziel);
   if(!await ansicht('aktie'))bad.push('AKTIE_NICHT_ERREICHT');
-  if(ziel&&!(await page.evaluate(()=>location.hash)).startsWith(ziel))bad.push('FALSCHE_AKTIE');
+  if(!ziel||!(await page.evaluate(()=>location.hash)).startsWith(ziel))bad.push('FALSCHE_AKTIE');
   await page.goBack();
   if(!await ansicht('screener'))bad.push('ZURUECK_NICHT_SCREENER:'+await page.evaluate(()=>location.hash));
   if(await marke()!=='Screener')bad.push('ZURUECK_MARKE:'+await marke());

@@ -36,7 +36,7 @@
   // Ziel aus der Startseite („Wo stehst du?“, Schluessel vu-start-path) mit dem naechsten Schritt.
   var GOALS = {
     anfaenger: { label: 'Dein Ziel: Mit einem Sparplan anfangen', step: 'Starte mit dem Vorsorge-Planer', href: '/vorsorge/#/plan' },
-    verstehen: { label: 'Dein Ziel: Eine Aktie verstehen', step: 'Starte mit NVIDIA im Überblick', href: '/discover/#/s/US_REAL/NVDA' },
+    verstehen: { label: 'Dein Ziel: Eine Aktie verstehen', step: 'Starte mit NVIDIA im Überblick', href: '/aktie/#/NVDA' },
     profi: { label: 'Dein Ziel: Wie ein Profi analysieren', step: 'Starte mit den Methoden', href: '/supertrader/strategies/' }
   };
   var NO_GOAL = { label: 'Noch kein Ziel gewählt', step: 'Wähle deinen Einstieg in drei Schritten', href: '/willkommen/start/' };

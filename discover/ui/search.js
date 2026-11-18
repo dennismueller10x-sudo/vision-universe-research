@@ -44,6 +44,14 @@
       global.localStorage.setItem(RECENT_KEY, JSON.stringify(list.slice(0, 6)));
     } catch (_) { /* ohne Speicher keine Liste */ }
   }
+  /* App-Konzept 2 (Owner 16.11.2026): Ein Treffer, der eine US-Aktie ist (#/s/US_REAL/<T>), öffnet die Vorschau des Rahmens
+     (data-vu-stock, assets/vu-stock-sheet.js); „Ganz öffnen“ führt auf /aktie/#/<T>. Europa-Treffer bleiben auf ihrer Seite. */
+  function usTicker(href) { var m = /^#\/s\/US_REAL\/([A-Za-z0-9-]{1,12})(?:$|\?)/.exec(String(href || "")); return m ? m[1].toUpperCase() : null; }
+  function stockLink(a, href, name) {
+    var t = usTicker(href);
+    if (t) { a.setAttribute("href", "/aktie/#/" + t); a.setAttribute("data-vu-stock", t); a.setAttribute("data-vu-stock-name", name || t); }
+    return a;
+  }
   function forget() { try { global.localStorage.removeItem(RECENT_KEY); } catch (_) {} }
 
   /** Text mit markierten Suchbuchstaben (nur Textknoten, kein Markup aus Daten). */
@@ -109,7 +117,7 @@
         var del = el("button", { type: "button", class: "dx-search-link", text: "Löschen" });
         del.onclick = function () { forget(); leer(); };
         empty.append(section("Zuletzt gesucht", del), el("div", { class: "dx-chipwrap" }, last.map(function (r) {
-          var a = el("a", { class: "vu-chip", href: r.href }, [svgIcon("search", 15), document.createTextNode(r.n)]);
+          var a = stockLink(el("a", { class: "vu-chip", href: r.href }, [svgIcon("search", 15), document.createTextNode(r.n)]), r.href, r.n);
           a.onclick = function () { schliessen(); };
           return a;
         })));
@@ -119,7 +127,7 @@
       if (D.GlobalUniverse) Promise.all(KNOWN.map(function (s) { return D.GlobalUniverse.search(s).then(function (x) { return (x.entries || []).filter(function (e) { return e.s === s; })[0] || null; }).catch(function () { return null; }); }))
         .then(function (hits) {
           hits.filter(Boolean).forEach(function (hit) {
-            var a = el("a", { class: "vu-lrow vu-lrow--nochart dx-known", href: hit.href }, [logo(hit.s), el("div", { class: "vu-lrow__name" }, [el("b", { text: hit.n }), el("span", { text: hit.a || hit.s })]), pill(hit.r)]);
+            var a = stockLink(el("a", { class: "vu-lrow vu-lrow--nochart dx-known", href: hit.href }, [logo(hit.s), el("div", { class: "vu-lrow__name" }, [el("b", { text: hit.n }), el("span", { text: hit.a || hit.s })]), pill(hit.r)]), hit.href, hit.n);
             a.onclick = function () { remember(hit); schliessen(); };
             known.append(a);
           });
@@ -204,7 +212,9 @@
       if (!hit) return;
       remember(hit);
       schliessen();
-      location.hash = hit.href;
+      var t = usTicker(hit.href), K = D.V3 && D.V3.kit;
+      if (t && K && K.openStock) K.openStock({ universeId: "US_REAL" }, t, hit.n || t);
+      else location.hash = hit.href;
     }
 
     function oeffnenOverlay() {

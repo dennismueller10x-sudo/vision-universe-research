@@ -179,7 +179,7 @@ const VISUAL = [
   ['Vorsorge', '/vorsorge/#/', '.vs-chg', 'Richtungszeichen 1J'],
   ['Vorsorge', '/vorsorge/#/etf/VT', '.vs-bilanz', 'Bilanz der Einordnung'],
   ['Hedgefonds', '/hedgefonds/#/', '.hf-card-val .hf-chg', 'Richtung der Fondsgroesse'],
-  ['Hedgefonds', '/hedgefonds/#/aktie/NVDA', '.hf-story-r .vu-verdict', 'Investoren in drei Sätzen mit Urteil (Konzept EHV, HX03)'],
+  ['Hedgefonds', '/hedgefonds/#/aktie/NVDA', '.hf-k2-card .vu-verdict', 'Investoren in drei Sätzen mit Urteil (Konzept EHV, HX03; Klickentwurf 17.11.2026)'],
   ['Elliott', '/elliott/', '.ek-kopf .ek-seg2', 'Zählbare Aktien nach Richtung als geteilter Balken in der Kopfkachel (App-Konzept 2, vormals .el-ebar, EX02)'],
   ['Fundamental', '/fundamental/#/PLTR', '.fu-kt .fu-k-v', 'Kennzahlen-Streifen (Konzept „Verstehen. Finden.“, FX02)'],
   ['Fundamental', '/fundamental/#/PLTR', '.fu-fin-big .vu-chg', 'Finanz-Chart mit Richtung zum Vorjahr'],

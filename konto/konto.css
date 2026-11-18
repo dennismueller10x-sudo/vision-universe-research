@@ -655,3 +655,13 @@ a.ka-row:active{transform:scale(.97)}
 .ka-ak .vu-chg--down{background:#c4281c;color:#fff}
 .ka-ak .vu-chg--flat{background:var(--ak-box);color:inherit}
 .ka-forgot{min-height:44px}
+/* Supertrader-Meldungen (/konto/einstellungen/#supertrader-meldungen, konto/supertrader-meldungen.js) */
+.ka-st-list{list-style:none;margin:8px 0 16px;padding:0}
+.ka-st-row{display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 0;border-top:1px solid var(--vu-line,rgba(127,127,127,.25))}
+.ka-st-row:first-child{border-top:0}
+.ka-st-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.ka-st-t .ka-link{font-weight:800;display:inline-flex;align-items:center;min-height:44px}
+.ka-st-btn{flex:none;min-height:44px;padding:0 16px;font-size:14px}
+.ka-st .ka-legend{display:block;margin-top:12px}
+.ka-st-t small{font-size:13px;line-height:1.35}
+.ka-st-list{margin-top:4px}

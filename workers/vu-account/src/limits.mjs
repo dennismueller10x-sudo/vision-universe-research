@@ -20,6 +20,7 @@ export const LIMITS = Object.freeze({
   watchlist: {limit: 120, windowSec: 60},
   planIntent: {limit: 30, windowSec: 3600}, // Tarifwahl merken/verwerfen je Konto // Merken/Entfernen je Konto (Lesezeichen in den Produktwelten)
   searches: {limit: 60, windowSec: 60}, // Gespeicherte Suchen anlegen/aendern/entfernen je Konto
+  follows: {limit: 60, windowSec: 60}, // Supertrader-Methoden folgen/entfolgen je Konto
 });
 
 export function createLimiter({binding, now = () => Date.now()} = {}) {

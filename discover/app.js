@@ -112,7 +112,7 @@
     if(parts[0]==='c'&&parts[1]==='US_REAL'&&parts[2]){const t=V.Themes.byRow(parts[2]);if(t){location.replace(V.Themes.href(t));return;}}
     if(parts[0]==='strategien'&&parts[1]){location.replace('#/c/'+ctx.universeId+'/'+parts[1]);return;}// Seite einer Reihe (Konzept „Reihe für Reihe“, n-row)
     if(D.EuropeView.bindRoute(parts,ctx))return;
-    const home=!/^(s|settings|suche|aktien|watchlist|welten|strategien|thema|c|einzeln|swipen|maerkte|daten|reihen)$/.test(parts[0]||''),intro=keepIntro=home?document.querySelector('#v2-shell .v2-home>[data-static]'):null,root=shell();const H=document.documentElement;if(!home){H.removeAttribute('data-vu-bleed');if(H.getAttribute('data-vu-tabs')==='inhalt')H.setAttribute('data-vu-tabs','discover');}else H.setAttribute('data-vu-tabs','inhalt');root.setAttribute('aria-busy','true');root.classList.toggle('dv3-main',home||/^(welten|strategien|thema|swipen|watchlist|suche|reihen|c)$/.test(parts[0])||(parts[0]==='maerkte'&&!parts[1]));
+    const home=!/^(s|settings|suche|aktien|watchlist|welten|strategien|thema|c|einzeln|swipen|maerkte|daten|reihen)$/.test(parts[0]||''),intro=keepIntro=home?document.querySelector('#v2-shell .v2-home>[data-static]'):null,root=shell();const H=document.documentElement;if(!home){H.removeAttribute('data-vu-bleed');if(parts[0]==='s')H.setAttribute('data-vu-tabs','inhalt');else if(H.getAttribute('data-vu-tabs')==='inhalt')H.setAttribute('data-vu-tabs','discover');}else H.setAttribute('data-vu-tabs','inhalt');root.setAttribute('aria-busy','true');root.classList.toggle('dv3-main',home||/^(welten|strategien|thema|swipen|watchlist|suche|reihen|c)$/.test(parts[0])||(parts[0]==='maerkte'&&!parts[1]));
     document.title='Discover — Vision Universe®';if(!y)global.scrollTo(0,0);
     try {
       // Startseite: Kopf, Maerkte und Themen zeichnen sofort; home.js wartet vor den Karten auf das Intraday-Verzeichnis.
@@ -187,6 +187,13 @@
       theme.onChange(state=>{syncThemeChrome(state);document.dispatchEvent(new Event('vu-theme-change'));});syncThemeChrome({resolved:theme.resolved()});
       document.querySelector('vu-navigation')?.renderSettings();
       setupSearch();global.addEventListener('hashchange',function(){return global.VUUI.transition(route);});
+      // App-Konzept 2 (Owner 16.11.2026): Jeder Tipp auf eine US-Aktie öffnet die Vorschau des Rahmens (data-vu-stock, assets/vu-stock-sheet.js),
+      // „Ganz öffnen“ die gemeinsame Aktienseite /aktie/#/<T>. Auffangnetz für Discover-Links, die noch auf die alte Aktienseite zeigen
+      // (#/s/US_REAL/<T>): vor dem Rahmen (Capture) bekommen sie Ziel und Merkmal. Direktaufrufe von #/s/US_REAL/<T> bleiben unverändert,
+      // ebenso Vor/Zurück und „Nächste Aktie“ der Reihen-Leiste auf dieser alten Seite (Wege innerhalb der Seite).
+      document.addEventListener('click',e=>{const a=e.target&&e.target.closest&&e.target.closest('a[href^="#/s/US_REAL/"]');if(!a||a.hasAttribute('data-vu-stock')||a.closest('.dv3-rowctx,.dv3-endcard'))return;const m=/^#\/s\/US_REAL\/([A-Za-z0-9-]{1,12})(?:$|\?)/.exec(a.getAttribute('href'));if(!m)return;const t=m[1].toUpperCase(),b=a.querySelector('b');a.setAttribute('href','/aktie/#/'+t);a.setAttribute('data-vu-stock',t);a.setAttribute('data-vu-stock-name',(b&&b.textContent.trim())||t);},true);
+      // „Zuletzt angesehen“ (Weiterschauen): ein Tipp auf eine Aktie zählt wie bisher der Besuch der Discover-Aktienseite.
+      document.addEventListener('click',e=>{if(e.button||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;const a=e.target&&e.target.closest&&e.target.closest('[data-vu-stock][href],[data-vu-stock][data-vu-href]');const t=a&&a.getAttribute('data-vu-stock');if(t&&D.memory&&/^[A-Z0-9][A-Z0-9-]{0,11}$/.test(t))D.memory.recordView(t,{universeId:'US_REAL',companyName:a.getAttribute('data-vu-stock-name')||null});},true);
       global.VUUI.bindIntent(function(url){if(url.origin!==location.origin||url.pathname!=='/discover/')return null;const p=url.hash.replace(/^#\/?/,'').split('/');return p[0]==='s'&&p[1]===ctx.universeId&&/^[A-Z0-9.-]{1,24}$/.test(p[2]||'')?p[2]:null;},function(t){return S.loadJSON(BASE+'stocks/'+ctx.universeId+'/'+t+'.json');});
       if('scrollRestoration' in history)history.scrollRestoration='manual';
       document.addEventListener('vu-currency-change',()=>route(1));

@@ -39,7 +39,9 @@ test("TX01 Start nach Prototyp #technical (App-Konzept 2, Owner 14./15.11.2026):
   assert.ok(order.every((x, i) => x > 0 && (!i || x > order[i - 1])), "Reihenfolge: " + order.join(","));
   for (const t of ["Heute", "Muster", "Screener", "Chart", "Lernen"]) assert.ok(app.includes('["' + t + '", "'), "Reiter " + t);
   assert.match(html, /h\.setAttribute\("data-vu-tabs","inhalt"\)/, "Reiter im Inhalt schon vor dem ersten Bild");
-  assert.match(app, /if \(route\.view !== "home"\) tkTabsMode\(false\)/, "andere Ansichten zeigen die Reiter des Rahmens");
+  assert.match(app, /if \(stockView\) tkTabsMode\(true\);\s*else if \(route\.view !== "home"\) tkTabsMode\(false\);/, "andere Ansichten zeigen die Reiter des Rahmens, die Aktienseite #/chart/<T> keine (Klickentwurf 17.11.2026)");
+  assert.match(app, /var stockView = route\.view === "chart" && !!route\.ticker/);
+  assert.match(html, /\/\^#\\\/\?chart\\\/\[\^\\\/\?\]\+\/\.test\(location\.hash\)\)h\.setAttribute\("data-vu-tabs","inhalt"\)/, "Aktienseite ohne Reiterzeile schon vor dem ersten Bild");
   assert.match(app, /"data-vu-stock": row\.s, "data-vu-stock-name": name/, "Heute neu: Aktien-Vorschau");
   assert.match(app, /href: "\/aktie\/#\/" \+ encodeURIComponent\(row\.s\)/);
   assert.doesNotMatch(home, /Bestenlisten|U\.tile\(|tc-tiles3|setupSheet|Quiz|Punkte/);
@@ -49,6 +51,21 @@ test("TX02 Chart-Seite: Urteil, Zonen, drei Sätze, Zonen-Kacheln, Befunde heute
   for (const s of ["Was der Chart sagt", "Der Chart in drei Sätzen", "\"200-Tage-Linie\")", "Befunde heute", "Was die Regeln heute im Chart finden.", "Verlauf der letzten 12 Monate", "Kerzen, Linien, RSI, MACD · PRO",
     "\"Ungültig laut Regel\"", "Hilft dieses Muster?", "\"Verlauf bei \"", "-mal gestoppt", "-mal gehalten"]) assert.ok(app.includes(s), s);
   assert.doesNotMatch(app, /"Wichtige Preise"|"In drei Sätzen"|"Relevante Niveaus"/);
+});
+
+test("Klickentwurf Modul-Aktienseiten (#modul-technical, Owner 17.11.2026): Reihenfolge der Chart-Seite, Karussell, Zonen-Karte, Verlauf, Kapitel-Liste, Pillen vor der Fußzeile", () => {
+  const simple = app.slice(app.indexOf("  function renderSimple(body, X) {"), app.indexOf("  function zoneCard(lv, close, sh) {"));
+  const order = ["tk-say", "explainBtn, sh(\"Kursverlauf\")", "host, guideHost, legend, togs", "sh(\"Der Chart in drei Sätzen\", [storyInfo]), story", "zoneCard(lv, S.close[t], sh)", "bh[0], bh[1], verlauf", "sh(\"Kapitel\"), chapters, foot"].map((x) => simple.indexOf(x));
+  assert.ok(order.every((x, i) => x > 0 && (!i || x > order[i - 1])), "Reihenfolge: " + order.join(","));
+  assert.match(simple, /class: "tk-rail tk-story", role: "list"/, "drei Sätze als Karussell");
+  assert.match(simple, /U\.ring\(g\.value, \{ size: 54/, "Schwung mit Ring");
+  assert.match(simple, /befundeHeute\(X, 6\)/, "alle Befunde (bis 6) als Karten");
+  assert.match(simple, /X\.histOf\(\)\.slice\(\)\.reverse\(\)/, "Verlauf aus derselben Rechnung wie das Kapitel");
+  assert.match(simple, /dataQuality\(X\.inst, X\.D, false\); dq\.classList\.add\("tk-krow"\)/, "Datenqualität als Zeile der Kapitel-Kachel");
+  assert.match(app, /main\.classList\.toggle\("tk-ak", akView\)/);
+  assert.match(app, /var simple = \{ range: "1J", zones: true, trend: false, avg: true/, "Zonen und 200-Tage-Linie zu Beginn an");
+  const css = readFileSync("technical/technical.css", "utf8");
+  for (const x of [".tk-ak .tk-story-c{width:220px", ".tk-ak .tk-zc-m{position:relative;height:120px", ":root:not([data-theme=dark]) .tk-ak .tk-zc-u", ".tc.tk-ak{max-width:760px}"]) assert.ok(css.includes(x), x);
 });
 
 test("TX03 Studio: darunter Befunde und Zonen wie auf der Chart-Seite", () => {

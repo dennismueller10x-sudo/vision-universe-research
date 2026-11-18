@@ -528,7 +528,7 @@ test("the journey starts with the market and ends at a share", () => {
     "the market is placed after the reader's own titles");
   assert.match(home, /regime && regime\.state === "AVAILABLE"[\s\S]*?tiles\.push\(/, "the market state is not one of the today tiles");
   /* ... and the journey ends at a share: the cards link to the stock page. */
-  assert.match(app["ui.js"], /function tickerChips[\s\S]*?routes\.stock\(t\)/);
+  assert.match(app["ui.js"], /function tickerChips[\s\S]*?routes\.aktie\(t\)/);
 });
 
 test("Kursstaerke und Anlegerrendite stehen als eigene Begriffe da", () => {

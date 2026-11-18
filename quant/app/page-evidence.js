@@ -313,7 +313,7 @@
       });
       if (tr.nextCondition) rows.push(["Als Nächstes", "für „" + tr.nextCondition.label + "“ fehlen " + tr.nextCondition.open + " von " + tr.nextCondition.total + " Bedingungen"]);
     }
-    return el("a", { class: "q-watch-tl", href: href }, [el("p", { class: "q-watch-tl-head" }, [el("b", { text: name || ticker }), el("small", { text: ticker })]),
+    return el("a", { class: "q-watch-tl", href: href, dataset: /^\/aktie\/#\//.test(href || "") && global.QX && global.QX.stockData ? global.QX.stockData(ticker, name) : {} }, [el("p", { class: "q-watch-tl-head" }, [el("b", { text: name || ticker }), el("small", { text: ticker })]),
       rows.length ? el("dl", {}, [].concat.apply([], rows.map(function (r) { return [el("dt", { text: r[0] }), el("dd", { text: r[1] })]; })))
         : el("p", { class: "qx-small", text: tr && tr.reason === "NOT_IN_SETUP_UNIVERSE" ? "Der Radar verfolgt diese Aktie nicht (nicht im Setup-Universum)." : "Noch kein Verlauf veröffentlicht." })]);
   }

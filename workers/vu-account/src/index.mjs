@@ -23,6 +23,7 @@ import * as backtests from './backtests.mjs';
 import * as watchlist from './watchlist.mjs';
 import * as push from './push.mjs';
 import * as searches from './searches.mjs';
+import * as supertrader from './supertrader.mjs';
 import {runScheduled, needsAttention} from './cancellation.mjs';
 import {createBrevo, runBrevo} from './brevo.mjs';
 import * as pages from './public-pages.mjs';
@@ -92,6 +93,9 @@ const ROUTES = [
   ['POST', '/v1/searches', searches.create, {csrf: true}],
   ['PATCH', '/v1/searches', searches.update, {csrf: true}],
   ['POST', '/v1/searches/remove', searches.remove, {csrf: true}],
+  ['GET', '/v1/supertrader/follows', supertrader.list],
+  ['POST', '/v1/supertrader/follows', supertrader.follow, {csrf: true}],
+  ['POST', '/v1/supertrader/follows/remove', supertrader.unfollow, {csrf: true}],
   ['GET', '/v1/plans', billing.plans],
   ['GET', '/v1/entitlements/check', billing.entitlementCheck],
   ['POST', '/v1/billing/checkout', billing.checkout, {csrf: true}],
@@ -194,7 +198,7 @@ export function createApp({env, fetchImpl = globalThis.fetch.bind(globalThis), n
     try { brevoResult = await runBrevo({store, brevo, cfg, log, now}); }
     catch (e) { log('error', 'BREVO_RUN_FAILED', {code: String(e.code || e.message).slice(0, 120)}); }
     let pushResult;
-    try { pushResult = await push.runPush({fcm, service: sb.service, fetchImpl, now}); }
+    try { pushResult = await push.runPush({fcm, service: sb.service, fetchImpl, now, stageAlerts: cfg.supertraderAlerts.enabled}); }
     catch { pushResult = {failed: true}; log('error', 'PUSH_RUN_FAILED', {}); }
     return {...result, brevo: brevoResult, push: pushResult};
   }

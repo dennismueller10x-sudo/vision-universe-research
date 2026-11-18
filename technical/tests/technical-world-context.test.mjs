@@ -168,7 +168,9 @@ test("Seite: kein Quant-/Supertrader-Block auf Chart, Befunden und Studio; Engin
   const html = readFileSync(join(root, "technical/index.html"), "utf8"), app = readFileSync(join(root, "technical/app.js"), "utf8");
   assert.ok(!html.includes("/technical/engine/world-context.js"), "Modul nicht mehr eingebunden");
   assert.doesNotMatch(app, /worldsSection|loadWorlds|tc-worlds|Diese Aktie in Quant und Supertrader|factor-evidence\.js/);
-  assert.match(app, /Quant und Supertrader zur selben Aktie: oben in der Leiste/);
+  /* Klickentwurf 17.11.2026: die anderen Module derselben Aktie stehen als Pillen des gemeinsamen Kopfs vor der Fußzeile (keine Leiste mehr). */
+  assert.match(app, /X\.head\.others\.place\(body, foot\)/);
+  assert.doesNotMatch(app, /oben in der Leiste/);
   const wc = readFileSync(join(root, "technical/engine/world-context.js"), "utf8");
   assert.doesNotMatch(wc, /"ref_"\s*\+/);
   assert.doesNotMatch(wc, /Math\.random|mock|demo/i);

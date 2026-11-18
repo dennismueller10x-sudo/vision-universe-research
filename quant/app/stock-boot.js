@@ -40,6 +40,8 @@
   data.catch(function(){});
   function mount(){
     var root=doc.getElementById('qx-app');if(!root||!live)return false;
+    /* Klickentwurf 17.11.2026: die Modul-Aktienseite zeigt die Reiterzeile des Rahmens nicht (page-stock.js setzt dasselbe). */
+    doc.documentElement.setAttribute('data-vu-tabs','inhalt');
     var main=root.querySelector('main');if(!main){main=el('main','qx-main');root.appendChild(main);}main.id='qx-main';main.tabIndex=-1;main.setAttribute('aria-busy','true');main.dataset.view='aktie';main.dataset.ready='false';
     var article=el('article','qx-stock q-stock qv-stock'),heroHost=el('div','qx-hero-host'),hero=el('div','qx-stock-hero qv-head'),body=el('div','qx-body-host');
     heroHost.setAttribute('aria-busy','true');heroHost.appendChild(hero);
@@ -48,12 +50,12 @@
     view={ticker:ticker,main:main,article:article,heroHost:heroHost,hero:hero,bodyHost:body,headApi:null,question:null,authoritative:false};
     Promise.all([data,api.styleReady]).then(function(values){
       var record=values[0];if(!values[1]||!live||!article.isConnected||view.authoritative)return;
-      var action=el('span','qx-boot-action');action.setAttribute('aria-hidden','true');action.style.cssText='display:block;width:136px;height:46px;border-radius:999px;background:var(--vu-hair)';
+      var action=el('span','qx-boot-action');action.setAttribute('aria-hidden','true');action.style.cssText='display:block;width:46px;height:46px;border-radius:50%;background:var(--vu-hair)';
       var head=w.VUStockNavigator.head(hero,{ctx:parsed.ctx,current:'quant',name:record.name,price:record.price,back:{href:'#/aktien',label:'Aktien'},actions:action});view.headApi=head;var quote=head.el.querySelector('.vu-shead-pricebox');quote.classList.add('qx-quote','q-stock-price');quote.setAttribute('aria-live','polite');
-      var meta=head.el.querySelector('.vu-shead-meta');meta.classList.add('qx-stock-id');meta.replaceChildren(el('b','',ticker));if(record.industry)meta.appendChild(el('span','',record.industry));
+      var meta=head.el.querySelector('.vu-shead-meta'),SN=w.VUStockNavigator,rest=SN.subLine&&SN.shortName?SN.subLine(record.name,SN.shortName(record.name),'',null)[0]:null,dot=function(){meta.appendChild(doc.createTextNode(' · '));};meta.classList.add('qx-stock-id');meta.replaceChildren();if(rest){meta.appendChild(el('span','',rest));dot();}meta.appendChild(el('b','',ticker));if(record.industry){dot();meta.appendChild(el('span','',record.industry));}
       var kinds={ETF:'ETF',PREFERRED:'Vorzugsaktie',ADR:'ADR (Hinterlegungsschein)'};
-      if(record.securityType&&record.securityType!=='COMMON_STOCK')meta.appendChild(el('span','dx-index-badge qx-tag',kinds[record.securityType]||'keine Stammaktie'));
-      if(record.listingCount>1)meta.appendChild(el('span','dx-index-badge qx-tag','eine von '+record.listingCount+' Aktiengattungen'));
+      if(record.securityType&&record.securityType!=='COMMON_STOCK'){dot();meta.appendChild(el('span','dx-index-badge qx-tag',kinds[record.securityType]||'keine Stammaktie'));}
+      if(record.listingCount>1){dot();meta.appendChild(el('span','dx-index-badge qx-tag','eine von '+record.listingCount+' Aktiengattungen'));}
       var question=el('h2',record.questionClass,record.question);view.question=question;
       if(record.questionClass==='qv3-step-q'){var kicker=el('p','qv3-step-k');kicker.appendChild(el('span','','Überblick'));card.appendChild(kicker);}card.appendChild(question);
       var skeleton=el('div','vu-skeleton');skeleton.setAttribute('aria-hidden','true');skeleton.append(el('i'),el('i'),el('i'));card.appendChild(skeleton);
@@ -64,5 +66,5 @@
   if(!mount()){
     var observer=new MutationObserver(function(){if(mount())observer.disconnect();});observer.observe(doc.documentElement,{childList:true,subtree:true});
   }
-  w.addEventListener('hashchange',function(){if(!/^#\/aktie\//i.test(w.location.hash)||w.VUCore.StockContext.parse(w.location.href)?.ctx.ticker!==ticker){live=false;if(view&&!view.authoritative&&view.headApi)view.headApi.dispose();}});
+  w.addEventListener('hashchange',function(){if(!view||!view.authoritative){var H=doc.documentElement;if(!/^#\/aktie\/[^/?]+(?:\?|$)/i.test(w.location.hash)&&H.getAttribute('data-vu-tabs')==='inhalt')H.removeAttribute('data-vu-tabs');}if(!/^#\/aktie\//i.test(w.location.hash)||w.VUCore.StockContext.parse(w.location.href)?.ctx.ticker!==ticker){live=false;if(view&&!view.authoritative&&view.headApi)view.headApi.dispose();}});
 })(typeof window!=='undefined'?window:globalThis);

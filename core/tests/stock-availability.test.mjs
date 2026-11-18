@@ -1,7 +1,7 @@
 /* Core · Verfuegbarkeits-Manifest des Aktien-Navigators (scripts/core/stock-availability.mjs, VU3 Stufe 2.1). */
 import test from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, readFileSync, readdirSync, rmSync } from "node:fs";
+import { mkdtempSync, readFileSync, readdirSync, rmSync, existsSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -49,6 +49,13 @@ test("Bestand · Manifest aus den veroeffentlichten Artefakten, nur in --out, im
     assert.equal(state(SC.fromUs(ohne)).discover, "available");
     assert.equal(state(SC.fromUs(ohne)).supertrader, "unavailable");
     assert.equal(state(SC.fromUs(evidence.supertrader.US[0])).supertrader, "available");
+    /* Die Seite der 13 Methoden liest sf-candidates/ticker: ein Kuerzel mit Eintrag dort und Seite ist belegt (Klickentwurf 17.11.2026). */
+    const sfDir = join(ROOT, "supertrader/data/sf-candidates/ticker");
+    if (existsSync(sfDir)) {
+      const sf = readdirSync(sfDir).filter((f) => f.endsWith(".json")).flatMap((f) => JSON.parse(readFileSync(join(sfDir, f), "utf8")).views || []).map((v) => v.ticker)
+        .find((t) => existsSync(join(ROOT, "supertrader/stock", t, "index.html")) && !existsSync(join(ROOT, "supertrader/data/stock", t + ".json")));
+      if (sf) assert.equal(state(SC.fromUs(sf)).supertrader, "available", sf);
+    }
     /* Ein Name je Aktie (VU3-Finalisierung): der Anzeigename des Security-Masters steht im Ausschnitt. */
     const master = JSON.parse(readFileSync(join(ROOT, "quant/data/market/security-master/company-names.json"), "utf8")).rows.find((x) => x.ticker === "PLTR");
     const pl = JSON.parse(readFileSync(join(out, SC.availabilityShard(SC.fromUs("PLTR")) + ".json"), "utf8"));

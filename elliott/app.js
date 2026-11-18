@@ -58,13 +58,13 @@
   function loadStack() {
     if (!stackPromise) {
       global.QX_HOST = "elliott";     // vor dem Buendel: app.js startet dann keinen eigenen Router
-      document.head.append(el("script", { src: "/elliott/aktie.js?v=ak2-3" }));   // Aktienbild, App-Konzept 2
+      document.head.append(el("script", { src: "/elliott/aktie.js?v=ak2-5" }));   // Aktienbild, App-Konzept 2
       stackPromise = fetchRes("/quant/index.html").then(function (r) { return r.text(); }).then(function (html) {
         var gate = new DOMParser().parseFromString(html, "text/html").querySelector("script[data-content]");
         return gate ? fetchRes(gate.getAttribute("data-content")).then(function (r) { return r.text(); }) : html;
       }).then(function (html) {
         var doc = new DOMParser().parseFromString(html, "text/html"), loads = [];
-        Array.prototype.slice.call(doc.querySelectorAll('link[rel="stylesheet"]')).concat([{ getAttribute: function () { return "/elliott/wellen.css?v=ak2-3"; } }]).forEach(function (l) {
+        Array.prototype.slice.call(doc.querySelectorAll('link[rel="stylesheet"]')).concat([{ getAttribute: function () { return "/elliott/wellen.css?v=ak2-5"; } }]).forEach(function (l) {
           var href = l.getAttribute("href");
           if (!href || /site-navigation\.css/.test(href)) return;
           var link = el("link", { rel: "stylesheet", href: href, media: "not all", dataset: { qxHost: "1" } });
@@ -113,7 +113,8 @@
   function showDetail(s) {
     ensureDetailHost();
     if (state.view !== "detail") { state.homeScroll = global.scrollY; }
-    state.view = "detail"; tabsMode(false);
+    /* 17.11.: Aktienbild ohne Reiterzeile, Profi mit */
+    state.view = "detail"; tabsMode(!/ansicht=profi/.test(s.detailQuery || ""));
     root.hidden = true; detail.hidden = false;
     var q = new URLSearchParams(s.detailQuery || "");
     document.title = s.ticker + " · Elliott · Vision Universe®";
@@ -171,7 +172,7 @@
   function card(c, n) {
     var up = c.dir === "UP", inv = c.inv && c.inv.p > 0 ? c.inv : null;
     var spark = sparkOf(c.t);
-    return el("a", { class: "el-card", href: M.detailHref(c.t), "aria-label": M.ariaLabel(c), dataset: { id: c.id, symbol: c.t, role: c.role } }, [
+    return el("a", { class: "el-card", href: M.detailHref(c.t), "aria-label": M.ariaLabel(c), "data-vu-stock": c.t, "data-vu-stock-name": c.n || c.t, dataset: { id: c.id, symbol: c.t, role: c.role } }, [
       el("div", { class: "el-c-top" }, [n ? el("span", { class: "el-c-n num", text: String(n) }) : null,
         el("span", { class: "el-c-name" }, [el("b", { class: "el-name", text: c.n }), el("span", { class: "el-sub", text: [c.t, M.price(c), ROLE_SHORT[c.role] || M.roleLabel(c.role)].filter(Boolean).join(" · "), title: M.ROLE_NOTE[c.role] })]), spark]),
       el("div", { class: "el-pills" }, [el("span", { class: "el-pill", text: c.wave ? "Welle " + c.wave : TYPE_SHORT[c.type] || "Lesart" }),
@@ -328,7 +329,7 @@
   }
   function countList(rows) { return el("ul", { class: "el-clist vu-box", role: "list" }, rows.map(function (r) {
     var d = M.dirOf(r), inv = M.invalidLine(r);
-    return el("li", {}, [el("a", { class: "el-cr el-hit", href: M.detailHref(r.t), dataset: { symbol: r.t }, "aria-label": [r.n + " (" + r.t + ")", M.countLine(r), DIRW[d] || "Richtung offen", inv].filter(Boolean).join(", ") }, [
+    return el("li", {}, [el("a", { class: "el-cr el-hit", href: M.detailHref(r.t), "data-vu-stock": r.t, "data-vu-stock-name": M.shortName(r.n, r.t), dataset: { symbol: r.t }, "aria-label": [r.n + " (" + r.t + ")", M.countLine(r), DIRW[d] || "Richtung offen", inv].filter(Boolean).join(", ") }, [
       frag(U.logo(r.t)), el("span", { class: "el-cr-t" }, [el("b", { text: M.shortName(r.n, r.t), title: r.n }), el("span", { text: M.countLine(r) })]),
       el("span", { class: "el-cr-r" }, [frag(d === "up" ? U.verdict("strong", "nach oben") : d === "down" ? U.verdict("weak", "nach unten") : U.verdict("none", "Richtung offen")), inv ? el("small", { class: "el-cr-inv num", text: inv }) : null])])]);
   })); }
@@ -410,12 +411,19 @@
       el("span", { class: "ek-nc-h" }, [frag(U.logo(c.t)), el("span", { class: "ek-f1" }, [el("b", { class: "ek-b8", text: name }), el("span", { class: "ek-xs ek-mut", text: KIND[c.chg.k][0] + " · " + (c.wave ? "Welle " + c.wave : TYPE_SHORT[c.type] || "Lesart") })])]),
       sparkOf(c.t, 1), el("span", { class: "ek-nc-f" }, [moveOf(c.t), el("span", { class: "ek-xs ek-b7", text: (c.dir === "UP" ? "▲ " : "▼ ") + DIR[c.dir] })]), inv ? el("span", { class: "ek-xs ek-mut ek-nc-i", text: inv }) : null]);
   }
-  /* Karte „Zählbar heute“: wie „Heute neu“, führt in das Elliott-Bild der Aktie (/elliott/#/<T>). */
+  /* Karte „Zählbar heute“: ein Tipp öffnet wie „Heute neu“ die Aktien-Vorschau des Rahmens (App-Konzept 2, Owner 16.11.2026: jeder Tipp
+     auf eine Aktie); das Ziel bleibt das Elliott-Bild der Aktie (/elliott/#/<T>) für Strg/Cmd-Klick und Aktien ohne Vorschau. */
   function countTile(r) {
-    var d = M.dirOf(r), inv = M.invalidLine(r), name = M.shortName(r.n, r.t);
-    return el("a", { class: "el-cr ek-tile ek-tap ek-nc", role: "listitem", href: M.detailHref(r.t), dataset: { symbol: r.t }, "aria-label": [r.n + " (" + r.t + ")", M.countLine(r), DIRW[d] || "Richtung offen", inv].filter(Boolean).join(", ") }, [
+    var d = M.dirOf(r), inv = M.invalidLine(r), name = M.shortName(r.n, r.t), g = inv ? M.gapOfRow(r) : null;
+    return el("a", { class: "el-cr ek-tile ek-tap ek-nc", role: "listitem", href: M.detailHref(r.t), "data-vu-stock": r.t, "data-vu-stock-name": name, dataset: { symbol: r.t }, "aria-label": [r.n + " (" + r.t + ")", M.countLine(r), DIRW[d] || "Richtung offen", inv, g ? g.short : null].filter(Boolean).join(", ") }, [
       el("span", { class: "ek-nc-h" }, [frag(U.logo(r.t)), el("span", { class: "ek-f1" }, [el("b", { class: "ek-b8", text: name, title: r.n }), el("span", { class: "ek-xs ek-mut", text: M.countLine(r) })])]),
-      sparkOf(r.t, 1), el("span", { class: "ek-nc-f" }, [moveOf(r.t), el("span", { class: "ek-xs ek-b7", text: (d === "up" ? "▲ " : d === "down" ? "▼ " : "◆ ") + (DIRW[d] || "Richtung offen") })]), inv ? el("span", { class: "ek-xs ek-mut ek-nc-i", text: inv }) : null]);
+      sparkOf(r.t, 1), el("span", { class: "ek-nc-f" }, [moveOf(r.t), el("span", { class: "ek-xs ek-b7", text: (d === "up" ? "▲ " : d === "down" ? "▼ " : "◆ ") + (DIRW[d] || "Richtung offen") })]), inv ? el("span", { class: "ek-xs ek-mut ek-nc-i", text: inv }) : null,
+      g ? gapBar(g) : null, g ? el("span", { class: "ek-xs ek-mut ek-nc-i ek-gap-t", text: g.short }) : null]);
+  }
+  /* Kurs gegen Ungültig-Marke (wie im Elliott-Bild, klein): Wochenschluss und Marke aus der Zeile des Wellen-Index, nichts nachgeladen.
+     Fehlt eine Zahl, entsteht kein Balken (M.gapOfRow liefert null). */
+  function gapBar(g) {
+    return el("span", { class: "ek-gap is-" + g.side, style: "--p:" + (g.pos * 100).toFixed(1), "aria-hidden": "true" }, [el("span", { class: "ek-gap-tr" }, [el("i", { class: "ek-gap-fill" })]), el("i", { class: "ek-gap-mk" }), el("i", { class: "ek-gap-dot" })]);
   }
   /* Wellenlagen (Prototyp #technical „Muster im Markt“): je Lage ein Schema (keine echten Kurse), Zahl der Lesarten, Richtung als Pille.
      Punkte im Feld 122 × 56 für „aufwärts“; „abwärts“ ist dasselbe Bild gespiegelt. Der zuletzt laufende Abschnitt ist hervorgehoben. */

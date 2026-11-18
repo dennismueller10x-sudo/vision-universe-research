@@ -25,7 +25,7 @@ test('„+ Firma“: bis zu drei weitere Firmen, in der Adresse als &mit=A~B, ei
 });
 
 test('Hinweis „Volle Historie …“ steht unten, nach dem Inhalt', () => {
-  assert.match(APP, /isOverview \? \[stockHead\(t, co\)\]\.concat\(content, st, fallback\) : content\.concat\(st, fallback\)/);
+  assert.match(APP, /isOverview \? \[stockHead\(t, co, ctx\.others\)\]\.concat\(content, st, fallback\) : content\.concat\(st, fallback\)/);
 });
 
 test('Startseite: Ranglisten-Schiene in der Reihenfolge des Mockups, jede eine bestehende Rangliste (Regeln unverändert)', () => {
