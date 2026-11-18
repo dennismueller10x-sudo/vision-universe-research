@@ -305,6 +305,7 @@ jobs:
           # Eingaben nur ueber env: (ADR-005); beim Takt gilt die Produktionsseite wie beim Zeitplan.
           IN_SITE: ${{ (github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && inputs.site || 'https://research.visionuniverse.de' }}
         run: |
+          set -o pipefail
           node scripts/market/assert-intraday-delivery.mjs \
             --site="$IN_SITE" \
             | tee /tmp/wacht.txt
