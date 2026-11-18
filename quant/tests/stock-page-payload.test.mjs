@@ -131,7 +131,11 @@ test("technicalTickerDocs: der Scherben ist der Ausgangspunkt, kein Titel geht v
      ueber einem Zehntel des Scherbens - die feste Quote 1/10 war eine Faustregel fuer "nur ein Titel". Geprueft wird das
      jetzt genau: Die Einzelansicht ist das Objekt des Titels plus Kopf (gemessen 204 Byte), nichts von den anderen Titeln. */
   const shard = shardFile("NV"), docs = technicalTickerDocs(shard);
-  assert.equal(Object.keys(docs).length, Object.keys(shard.instruments).length);
+  /* Auch ein Titel ohne Technical-Daten (unavailable, z. B. eine Neuaufnahme ohne Historie, NVT am 18.11.2026) bekommt
+     seine Einzelansicht - sie sagt dem Leser ehrlich, warum nichts da ist. */
+  const erwartet = new Set([...Object.keys(shard.instruments), ...Object.keys(shard.unavailable || {})]
+    .filter((t) => /^[A-Z0-9.-]{1,12}$/.test(t)));
+  assert.deepEqual(Object.keys(docs).sort(), [...erwartet].sort());
   assert.ok(Object.keys(shard.instruments).length >= 10, "Scherben NV unplausibel klein");
   for (const t of Object.keys(shard.instruments)) {
     const own = JSON.stringify(shard.instruments[t]).length, doc = JSON.stringify(docs[t]).length;
