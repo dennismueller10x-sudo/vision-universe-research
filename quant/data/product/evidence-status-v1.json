@@ -1,6 +1,6 @@
 {
  "schemaVersion": "evidence-status-1.0.0",
- "generatedAt": "2026-11-17T13:40:56.244Z",
+ "generatedAt": "2026-11-18T00:58:56.791Z",
  "kinds": [
   {
    "id": "HISTORICAL_REPLAY",
@@ -35,7 +35,7 @@
     "outOfSample": "nicht anwendbar - beschreibt, prüft keine Regel"
    },
    "coverage": {
-    "universe": 5648,
+    "universe": 5654,
     "covered": 5313,
     "available": 4467,
     "sufficient": {
@@ -48,7 +48,7 @@
      "m6": 836
     },
     "reasons": {
-     "NOT_COVERED": 335,
+     "NOT_COVERED": 341,
      "NO_PRICE_CONDITION_TODAY": 761,
      "NO_COMPARABLE_CASE": 85
     }
@@ -169,7 +169,7 @@
      "id": "PIT",
      "label": "Stände unverändert (contentHash)",
      "required": "bestanden",
-     "measured": "35 von 35 geprüft",
+     "measured": "36 von 36 geprüft",
      "state": "PASS"
     },
     {
@@ -183,14 +183,14 @@
      "id": "HISTORYDATES",
      "label": "veröffentlichte Stichtage",
      "required": "120",
-     "measured": "35",
+     "measured": "36",
      "state": "FAIL"
     },
     {
      "id": "HISTORYSPAN",
      "label": "Spanne der Historie",
      "required": "180 Tage",
-     "measured": "67 Tage",
+     "measured": "68 Tage",
      "state": "FAIL"
     },
     {
@@ -337,7 +337,7 @@
    "setupRules": 9
   },
   "HISTORICAL_REPLAY_COVERAGE": {
-   "universe": 5648,
+   "universe": 5654,
    "covered": 5313,
    "available": 4467,
    "sufficient": {
@@ -350,7 +350,7 @@
     "m6": 836
    },
    "reasons": {
-    "NOT_COVERED": 335,
+    "NOT_COVERED": 341,
     "NO_PRICE_CONDITION_TODAY": 761,
     "NO_COMPARABLE_CASE": 85
    }
