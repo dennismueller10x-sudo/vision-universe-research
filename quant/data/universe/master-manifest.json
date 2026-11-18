@@ -1,7 +1,7 @@
 {
   "version": "company-master-1.0.0",
   "masterId": "VU_COMPANY_MASTER",
-  "generatedAt": "2026-11-18T06:28:41.251Z",
+  "generatedAt": "2026-11-18T12:50:05.341Z",
   "asOf": "2026-11-18",
   "provider": "tiingo",
   "source": {
@@ -2692,13 +2692,13 @@
   },
   "run": {
     "source": "github-actions",
-    "runId": "44249965844",
-    "commit": "3d85ece8c50494fbdd1a7afccb23f5c684c6209c",
-    "normalizeMs": 99,
+    "runId": "44307535120",
+    "commit": "3689f2f6a96bb24c731e5b2f93fc5ad320629fd7",
+    "normalizeMs": 112,
     "syncMs": 119,
-    "shardsWritten": 0,
-    "shardsUnchanged": 646,
-    "publishedBytes": 10130654
+    "shardsWritten": 16,
+    "shardsUnchanged": 630,
+    "publishedBytes": 10132448
   },
   "identifiers": {
     "cikMap": {
@@ -2714,8 +2714,8 @@
     "withIssuerId": 6469,
     "distinctIssuers": 5485,
     "withCik": 6469,
-    "withName": 7598,
-    "withoutName": 241,
+    "withName": 7615,
+    "withoutName": 224,
     "note": "isin/cusip/figi/lei bleiben null: keine der vorhandenen Quellen fuehrt sie, und eine neue kostenpflichtige Quelle ist ausgeschlossen (§32). Die Felder stehen im Schema, damit ein spaeterer Anbieter sie fuellen kann, ohne das Modell zu aendern."
   },
   "quality": {
@@ -2761,7 +2761,7 @@
           ]
         }
       ],
-      "missingName": 241,
+      "missingName": 224,
       "missingExchange": 0,
       "missingCurrency": 0,
       "missingCountry": 0,
