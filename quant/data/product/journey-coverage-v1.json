@@ -1,7 +1,7 @@
 {
  "schemaVersion": "journey-coverage-1.1.0",
- "generatedAt": "2026-11-18T00:59:58.000Z",
- "universe": 6314,
+ "generatedAt": "2026-11-18T03:28:51.000Z",
+ "universe": 6315,
  "sample": 500,
  "sampling": "jeder 12. Titel der alphabetisch sortierten Liste - deterministisch, damit zwei Laeufe vergleichbar sind",
  "evidenceAsOf": "2026-11-17",
@@ -32,80 +32,80 @@
   {
    "id": "factorStrength",
    "label": "Wie stark ist die Aktie",
-   "answered": 475,
+   "answered": 477,
    "findings": 0,
    "findingReasons": {},
-   "withheld": 25,
-   "share": 0.95,
+   "withheld": 23,
+   "share": 0.954,
    "reasons": {
-    "NOT_COVERED_BY_FACTOR_EVIDENCE": 25
+    "NOT_COVERED_BY_FACTOR_EVIDENCE": 23
    }
   },
   {
    "id": "change",
    "label": "Was hat sich veraendert",
-   "answered": 473,
+   "answered": 476,
    "findings": 0,
    "findingReasons": {},
-   "withheld": 27,
-   "share": 0.946,
+   "withheld": 24,
+   "share": 0.952,
    "reasons": {
-    "NO_COMPARABLE_OBSERVATION": 27
+    "NO_COMPARABLE_OBSERVATION": 24
    }
   },
   {
    "id": "setup",
    "label": "Baut sich eine Situation auf",
-   "answered": 458,
+   "answered": 456,
    "findings": 0,
    "findingReasons": {},
-   "withheld": 42,
-   "share": 0.916,
+   "withheld": 44,
+   "share": 0.912,
    "reasons": {
-    "INSUFFICIENT_HISTORY": 40,
+    "INSUFFICIENT_HISTORY": 42,
     "TECHNICAL_WINDOW_OUTSIDE_CALENDAR": 2
    }
   },
   {
    "id": "setupChange",
    "label": "Was diesen Zustand aendern wuerde",
-   "answered": 458,
+   "answered": 456,
    "findings": 0,
    "findingReasons": {},
-   "withheld": 42,
-   "share": 0.916,
+   "withheld": 44,
+   "share": 0.912,
    "reasons": {
-    "INSUFFICIENT_HISTORY": 40,
+    "INSUFFICIENT_HISTORY": 42,
     "TECHNICAL_WINDOW_OUTSIDE_CALENDAR": 2
    }
   },
   {
    "id": "patterns",
    "label": "Chance und Risiko in aehnlichen Lagen",
-   "answered": 430,
-   "findings": 75,
+   "answered": 429,
+   "findings": 72,
    "findingReasons": {
-    "NO_PATTERN_HOLDS": 75
+    "NO_PATTERN_HOLDS": 72
    },
-   "withheld": 70,
-   "share": 0.86,
+   "withheld": 71,
+   "share": 0.858,
    "reasons": {
-    "NOT_COVERED_BY_PATTERN_MATCH": 70
+    "NOT_COVERED_BY_PATTERN_MATCH": 71
    }
   },
   {
    "id": "strategy",
    "label": "Welcher Anlagestil passt",
-   "answered": 443,
+   "answered": 444,
    "findings": 155,
    "findingReasons": {
     "NO_PROFILE_FITS_WELL": 155
    },
-   "withheld": 57,
-   "share": 0.886,
+   "withheld": 56,
+   "share": 0.888,
    "reasons": {
-    "NO_EVIDENCE": 32,
-    "NOT_COVERED_BY_FACTOR_EVIDENCE": 24,
+    "NO_EVIDENCE": 33,
+    "NOT_COVERED_BY_FACTOR_EVIDENCE": 22,
     "NOT_AN_EQUITY_LISTING": 1
    }
   },
@@ -124,13 +124,13 @@
   {
    "id": "technical",
    "label": "Kursstruktur",
-   "answered": 458,
+   "answered": 456,
    "findings": 0,
    "findingReasons": {},
-   "withheld": 42,
-   "share": 0.916,
+   "withheld": 44,
+   "share": 0.912,
    "reasons": {
-    "INSUFFICIENT_HISTORY": 40,
+    "INSUFFICIENT_HISTORY": 42,
     "TECHNICAL_WINDOW_OUTSIDE_CALENDAR": 2
    }
   },
@@ -148,38 +148,37 @@
  "answeredStationsPerTitle": {
   "4": 7,
   "5": 1,
-  "6": 29,
+  "6": 31,
   "7": 7,
-  "8": 16,
-  "9": 2,
-  "10": 26,
-  "11": 412
+  "8": 14,
+  "9": 1,
+  "10": 25,
+  "11": 414
  },
  "shapes": {
-  "full": 439,
-  "reduced": 61,
+  "full": 440,
+  "reduced": 60,
   "minimal": 0,
-  "noticeBoxesBefore": 375,
+  "noticeBoxesBefore": 374,
   "noticeBoxesAfter": 149,
   "worstPageNoticeBoxes": 4,
-  "dataPoorPages": 61,
+  "dataPoorPages": 60,
   "dataPoorNoticeBoxesBefore": 347,
-  "dataPoorNoticeBoxesAfter": 121,
+  "dataPoorNoticeBoxesAfter": 122,
   "substantiveStationsPerTitle": {
    "3": 7,
    "4": 13,
-   "5": 18,
-   "6": 1,
-   "7": 21,
-   "8": 1,
+   "5": 19,
+   "6": 2,
+   "7": 19,
    "9": 1,
-   "10": 26,
-   "11": 412
+   "10": 25,
+   "11": 414
   },
   "causes": {
-   "SHORT_HISTORY": 67,
+   "SHORT_HISTORY": 68,
    "NO_WEEKLY_SERIES": 21,
-   "NO_FIGURES": 57,
+   "NO_FIGURES": 56,
    "NOT_AN_EQUITY_LISTING": 1,
    "RARELY_TRADED": 2,
    "NO_SERIES": 1

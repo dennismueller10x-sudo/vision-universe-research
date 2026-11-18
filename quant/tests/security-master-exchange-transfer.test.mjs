@@ -22,6 +22,7 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const Master = require(join(root, "quant", "engines", "us-security-master.js"));
 const Base = require(join(root, "quant", "engines", "instrument-classification.js"));
 const Identity = require(join(root, "core", "identity.js"));
+const CompanyMaster = require(join(root, "quant", "engines", "company-master.js"));
 const { loadExchangeTransfer, DEFAULT_EXCHANGE_TRANSFER_FILE } =
   await import(join(root, "scripts", "market", "lib", "security-master-exchange-transfer.mjs"));
 
@@ -48,6 +49,11 @@ const rowsOf = (res, t) => res.rows.filter((r) => r.ticker === t);
 test("XT1 · TXSE ist regulaerer US-Platz; das Register folgt core/identity.js", () => {
   assert.equal(Master.US_PRIMARY_EXCHANGES.TXSE, true);
   assert.equal(Base.US_EXCHANGES.TXSE, "US");
+  /* Company Master: ohne MIC kein Primaerlisting, ohne Primaerlisting keine Scherbe (Lauf 44222296403: 7807 statt 7808). */
+  assert.equal(CompanyMaster.PRIMARY_EXCHANGES.TXSE, "TXSE");
+  for (const ex of Object.keys(Master.US_PRIMARY_EXCHANGES).filter((e) => !/^NASDAQ /.test(e))) {
+    assert.ok(CompanyMaster.PRIMARY_EXCHANGES[ex], "Company Master kennt den regulaeren US-Platz " + ex);
+  }
   const r = committed().records[0];
   assert.equal(r.securityId, Identity.securityIdForTicker("TXCP"));
   assert.equal(r.cik, "0001077428");
