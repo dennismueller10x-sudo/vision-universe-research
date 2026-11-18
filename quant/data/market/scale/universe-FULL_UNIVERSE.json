@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-11-17T12:35:04.330Z",
+  "generatedAt": "2026-11-18T02:19:50.628Z",
   "gate": "FULL_UNIVERSE",
   "targetSize": null,
-  "actualSize": 7807,
+  "actualSize": 7808,
   "method": "APPEND_ONLY_EXPANSION_FROM_US_SECURITY_MASTER",
   "provider": "tiingo",
   "universeSource": {
@@ -34,7 +34,7 @@
     "Energy": 8,
     "Utilities": 7,
     "Real Estate": 8,
-    "UNKNOWN": 7707
+    "UNKNOWN": 7708
   },
   "byExchange": {
     "NASDAQ": 4687,
@@ -43,7 +43,8 @@
     "AMEX": 242,
     "BATS": 223,
     "EXPM": 1,
-    "NYSE ARCA": 23
+    "NYSE ARCA": 23,
+    "TXSE": 1
   },
   "unresolved": [],
   "substitutions": [],
@@ -51,7 +52,8 @@
     "2000 Titel aus GATE_2000 uebernommen (Gates sind geschachtelt).",
     "5684 regelbasierte Kandidaten im Anbieteruniversum.",
     "2119 Titel aus dem US-Wertpapierstamm angehaengt (us-security-master-1.0.0); der Bestand von 5684 Titeln blieb unveraendert.",
-    "4 Titel aus dem US-Wertpapierstamm angehaengt (us-security-master-1.3.0); der Bestand von 7803 Titeln blieb unveraendert."
+    "4 Titel aus dem US-Wertpapierstamm angehaengt (us-security-master-1.3.0); der Bestand von 7803 Titeln blieb unveraendert.",
+    "1 Titel aus dem US-Wertpapierstamm angehaengt (us-security-master-1.3.0); der Bestand von 7807 Titeln blieb unveraendert."
   ],
   "securities": [
     {
@@ -148386,16 +148388,35 @@
       "industryStatus": "SOURCE_MISSING",
       "startDate": "2023-10-09",
       "selection": "appendedFrom:US_SECURITY_MASTER"
+    },
+    {
+      "securityId": "ref_TXCP",
+      "ticker": "TXCP",
+      "company": null,
+      "exchange": "TXSE",
+      "country": "US",
+      "currency": "USD",
+      "assetType": "Stock",
+      "instrumentType": "COMMON_STOCK",
+      "active": true,
+      "providerSymbol": "TXCP",
+      "provider": "tiingo",
+      "sector": null,
+      "sectorStatus": "SOURCE_MISSING",
+      "industry": null,
+      "industryStatus": "SOURCE_MISSING",
+      "startDate": "2026-11-11",
+      "selection": "appendedFrom:US_SECURITY_MASTER"
     }
   ],
   "expansion": {
-    "baselineSize": 7803,
-    "appended": 4,
+    "baselineSize": 7807,
+    "appended": 1,
     "appendedByExchange": {
-      "NASDAQ": 4
+      "TXSE": 1
     },
     "securityMasterVersion": "us-security-master-1.3.0",
-    "securityMasterGeneratedAt": "2026-11-17T00:00:00Z",
+    "securityMasterGeneratedAt": "2026-11-18T00:00:00Z",
     "skipped": {
       "notAdded": 0,
       "notEligible": 0,
@@ -148404,12 +148425,12 @@
       "alreadyInBaseline": 0,
       "duplicateWithinAppend": 0,
       "inactive": 0,
-      "notInAllowList": 109332
+      "notInAllowList": 109349
     },
     "invariants": {
-      "baselineEntries": 7803,
-      "resultEntries": 7807,
-      "appended": 4,
+      "baselineEntries": 7807,
+      "resultEntries": 7808,
+      "appended": 1,
       "baselineFieldChanges": 0,
       "baselineEntriesDropped": 0,
       "checked": [
