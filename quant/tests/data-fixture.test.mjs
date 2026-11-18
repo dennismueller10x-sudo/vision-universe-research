@@ -27,7 +27,7 @@ test("DF-1 · nur Datendateien, Binaerdateien unveraendert, Spiegelwurzel: einge
   assert.equal(existsSync(join(root, "a/data/y.json")), false, "nicht Eingefrorenes fehlt sichtbar");
   assert.ok(lstatSync(join(root, "a/config")).isSymbolicLink() && lstatSync(join(root, "a/code.js")).isSymbolicLink());
   assert.ok(lstatSync(join(root, "b")).isSymbolicLink(), "fremde Datenwurzel bleibt das Repository");
-  assert.equal(dataDirOf("quant/data/product/x.json"), "quant/data");
+  assert.equal(dataDirOf("p/data/product/x.json"), "p/data");
   rmSync(root, { recursive: true, force: true });
   assert.equal(readFileSync(join(src, "a/config/c.json"), "utf8"), "{}", "Aufraeumen loescht keine Ziele");
   rmSync(src, { recursive: true, force: true });
