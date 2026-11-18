@@ -94,10 +94,17 @@ const kpi = await page.textContent('#wl-kpis');
 check(/4\s*\/\s*500/.test(kpi.replace(/\s+/g, ' ')), 'Kennzahl beobachtet 4 / 500 (Free im Early Access)');
 const text = await page.textContent('#wl-list');
 check(!/Gesamtscore\s*\d/.test(text), 'kein Gesamtscore-Wert');
-const estc = page.locator('.wl-row', {hasText: 'ESTC'});
+/* Regel, nicht Titel (wie core/tests/watchlist-view.test.mjs seit #2090): ob ein bestimmter Titel heute ein Setup hat,
+   wandert mit jedem Datenlauf (ESTC seit dem 17.11. ohne Setup). Ohne freigegebene Strategie zeigt keine Zeile eine Eignung;
+   jede Zeile mit Supertrader-Eintrag nennt ihn „Forschung“. */
 const strategies = await page.evaluate(async () => (await (await fetch('/core/data/watchlist-summary-v1/meta.json')).json()).sources.supertrader.strategies);
 const released = Object.values(strategies).some(s => s.released);
-if (!released) check(/Forschung/.test(await estc.textContent()) && !/Supertrader gültig/.test(text), 'Supertrader ohne Freigabe nur als Forschung');
+if (!released) {
+  const rowTexts = await page.locator('.wl-row').allTextContents();
+  const valid = rowTexts.filter(t => /erfüllt die Regel einer Methode|Supertrader gültig/.test(t));
+  const research = rowTexts.filter(t => /Forschung/.test(t)).length;
+  check(!valid.length, 'Supertrader ohne Freigabe nur als Forschung (' + research + ' Zeile(n) mit Forschungs-Eintrag, keine mit Eignung)');
+}
 check((await page.locator('.wl-row .wl-factors i').count()) >= 21, 'Faktorbalken je Zeile');
 check(/Schluss \d{2}\.\d{2}\.\d{2}/.test(text), 'Kurs mit Datenstand');
 await audit(page, 'Watchlist Desktop');
