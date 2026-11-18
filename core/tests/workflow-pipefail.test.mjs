@@ -16,6 +16,9 @@ const FILES = readdirSync(DIR).filter((f) => /\.ya?ml$/.test(f)).sort();
 /* Test- und Prüfbefehle: Testläufer und die Prüfskripte nach Namenskonvention (verify-, preflight-, assert-, check-). */
 const CHECK = /(node --test|python3? -m unittest|pytest|\bverify-[\w-]*\.mjs|\bpreflight[\w-]*\.mjs|\bassert-[\w-]*\.mjs|\bcheck-[\w-]*\.mjs)/;
 const PIPE = /\|\s*(tail|head|tee)\b/;
+/* Deploys (Steuerung 18.11.2026): wrangler deploy/secret put in irgendeine Pipe (sed zum Maskieren, tee, tail) - ohne
+   pipefail zaehlt der Exit-Code des letzten Befehls, ein gescheitertes Deploy saehe gruen aus. */
+const DEPLOY = /\bwrangler(@[\w.]+)?\s+(deploy|secret\s+put|pages\s+deploy)\b/;
 
 /** Schritte als Textblöcke: alle Listeneinträge unter einem `steps:`-Schlüssel. */
 export function steps(text) {
@@ -50,13 +53,15 @@ export function findings(text) {
     for (const line of joined.split("\n")) {
       if (/^\s*#/.test(line)) continue;
       const cmd = CHECK.exec(line), pipe = PIPE.exec(line);
-      if (cmd && pipe && pipe.index > cmd.index) res.push(line.trim().slice(0, 140));
+      if (cmd && pipe && pipe.index > cmd.index) { res.push(line.trim().slice(0, 140)); continue; }
+      const dep = DEPLOY.exec(line);
+      if (dep && /(?<!\|)\|(?!\|)/.test(line.slice(dep.index))) res.push(line.trim().slice(0, 140));   // eine Pipe, kein ||
     }
   }
   return res;
 }
 
-test("PF-1 · Kein Prüfbefehl in einer Pipe nach tail/head/tee ohne pipefail", () => {
+test("PF-1 · Kein Prüf- oder Deploybefehl in einer Pipe ohne pipefail", () => {
   const all = [];
   for (const f of FILES) for (const x of findings(readFileSync(join(DIR, f), "utf8"))) all.push(`${f}: ${x}`);
   assert.deepEqual(all, [], "set -o pipefail setzen oder den Exit-Code durchreichen");
@@ -71,4 +76,9 @@ test("PF-2 · Die Prüfung erkennt den Fehler und seine Behebungen", () => {
   assert.equal(findings(step("# node --test x | tail")).length, 0, "Kommentar");
   assert.equal(findings(`jobs:\n  a:\n    steps:\n      - name: T\n        shell: bash\n        run: node --test x | tail -1\n`).length, 0);
   assert.equal(steps(step("echo a")).length, 2);
+  assert.equal(findings(step("npx --yes wrangler@4.147.0 deploy 2>&1 | sed -E 's/x/y/g'")).length, 1, "Deploy durch sed");
+  assert.equal(findings(step("printf '%s' \"$K\" | npx wrangler secret put K 2>&1 \\\n  | sed -E 's/x/y/'")).length, 1, "secret put");
+  assert.equal(findings(step("set -o pipefail\nnpx wrangler deploy 2>&1 | tee /tmp/d.log")).length, 0);
+  assert.equal(findings(step("npx wrangler deploy --dry-run")).length, 0, "ohne Pipe");
+  assert.equal(findings(step("npx wrangler deploy || echo nein")).length, 0, "|| ist keine Pipe");
 });

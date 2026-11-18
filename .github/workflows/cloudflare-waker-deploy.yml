@@ -78,6 +78,8 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
+          # pipefail: der Exit-Code von wrangler zaehlt, nicht der von sed (18.11.2026).
+          set -o pipefail
           npx --yes wrangler@4.147.0 deploy 2>&1 | sed -E 's/[0-9a-f]{32}/<maskiert>/g'
 
       # `wrangler secret list` gibt Namen und Typen aus, nie Werte. Die
