@@ -819,6 +819,32 @@ def _canonical_nur_vorhandene(ciks):
         cmd_canonical(_unterbefehl("canonical", "--ciks", ",".join(ciks[i:i + schritt]), "--only-existing"))
 
 
+def cmd_universe_follow(args):
+    """Umfangsfolge der SEC-Abdeckung (Steuerung 18.11.2026): ohne Abruf, ohne Faktenspeicher.
+
+    Aendert ein Eignungslauf das Produktuniversum, stimmen die Aggregate
+    (coverage-report, history-coverage, overlap, quality, gaps) und der
+    Abgleich nicht mehr zum Company Master, bis der naechste SEC-Tageslauf
+    sie neu rechnet. Beides entsteht aber allein aus den committeten
+    Emittenten-Scherben und dem Universum - derselbe Weg wie Schritt 1 und 2
+    von daily-downstream, nur ohne neu gelesene Emittenten.
+    """
+    from quant.sec import universe_coverage
+
+    registry = MetricRegistry.load()
+    per_issuer = universe_coverage.load_issuer_shards(ROOT)
+    if not per_issuer:
+        raise SystemExit("Keine Emittenten-Scherben unter quant/data/fundamentals - nichts nachzuziehen.")
+    universe = universe_coverage.load_universe(ROOT)
+    if not universe["present"]:
+        raise SystemExit("Kein Company Master unter quant/data/universe/instruments. "
+                         "Erst node scripts/universe/build-company-master.mjs.")
+    reports = universe_coverage.reports_from_records(ROOT, per_issuer, registry=registry, universe=universe)
+    _write_universe_reports(reports, registry)
+    cmd_reconcile(_unterbefehl("reconcile"))
+    return 0
+
+
 def cmd_daily_downstream(args):
     """Nach Persistenz und Reload: abhaengige Artefakte nur fuer die aktualisierten Emittenten.
 
@@ -1857,6 +1883,10 @@ def build_parser():
     dd = subparsers.add_parser("daily-downstream",
                                help="nach Persistenz und Reload: Scherben, Aggregate, Abgleich, Manifest, Health Report")
     dd.set_defaults(func=cmd_daily_downstream)
+
+    uf = subparsers.add_parser("universe-follow",
+                               help="Umfangsfolge: SEC-Aggregate und Abgleich aus den Scherben fuer das neue Universum (kein Abruf)")
+    uf.set_defaults(func=cmd_universe_follow)
 
     fr = subparsers.add_parser("final-report", help="Abschlussbericht §25/§26 aus den Artefakten rendern")
     fr.add_argument("--out", default=str(ROOT / "docs" / "VU_SEC_FINAL_RECOVERY_REPORT.md"))

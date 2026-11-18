@@ -23,6 +23,7 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 import { rejudge } from "../../scripts/market/apply-name-layer-class.mjs";
+import { followState, sha256File } from "../../scripts/quant/lib/follow-artifact.mjs";
 
 const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -115,7 +116,7 @@ test("DEBT6 · Ausgeliefert: keine DEBT-Zeile im Produkt, PRHIZ als Instrument a
   if (common) assert.notEqual(common.securityClass, "DEBT", "die Stammaktie des Emittenten bleibt Aktie");
 });
 
-test("DEBT7 · Faktorevidenz: Grundgesamtheit ist das Produktuniversum, Anleihen nehmen der Stammaktie nicht den Boersenwert", { skip: !existsSync(join(root, "quant/data/product/factor-evidence-v1/summary.json")) }, async () => {
+test("DEBT7 · Faktorevidenz: Grundgesamtheit ist das Produktuniversum, Anleihen nehmen der Stammaktie nicht den Boersenwert", { skip: !existsSync(join(root, "quant/data/product/factor-evidence-v1/summary.json")) }, async (t) => {
   const { gunzipSync } = await import("node:zlib");
   const dir = join(root, "quant/data/product/factor-evidence-v1");
   const debt = new Set(json(ELIG).decisions.filter((d) => d.instrument_type === "DEBT").map((d) => d.ticker));
@@ -141,6 +142,12 @@ test("DEBT7 · Faktorevidenz: Grundgesamtheit ist das Produktuniversum, Anleihen
      keine Faktorzeile und stehen getrennt unter identityQuarantined. Die
      Grundgesamtheit ist also das Universum ohne genau diese Titel - nicht
      mehr und nicht weniger. */
+  /* Zaehlung nur gegen das Produktuniversum, an dem die Faktorevidenz gebaut ist (Steuerung 18.11.2026): nach einem
+     Eignungslauf wartet der Test sichtbar auf die Materialisierung, laenger als 6 h ist ein Fehler. */
+  const folge = followState({ artifactSha: summary.source?.productUniverse?.sha256, currentSha: sha256File(join(root, ELIG)),
+                              changedAt: json(ELIG).generatedAt });
+  assert.notEqual(folge.state, "STALE", folge.reason);
+  if (folge.state === "WAITING") { t.skip(folge.reason); return; }
   const universum = json("quant/data/market/scale/universe-ELIGIBLE_US_EQUITY.json");
   const register = new Set(json("quant/config/ticker-reuse-quarantine.json").records.map((r) => r.securityId));
   const imRegister = (universum.securities || []).filter((s) => register.has(s.securityId || s.m)).length;

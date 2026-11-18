@@ -201,7 +201,7 @@ jobs:
         id: folgen
         if: steps.commit.outputs.changed == 'true' || inputs.umfangsfolgen == true
         env:
-          PUSH_OWNED_PATHS: quant/data/market/discover-series/ quant/data/market/discover-series-long/ quant/data/market/intraday/ quant/data/universe/ quant/data/market/capabilities/ quant/data/product/capabilities-v1.json quant/data/product/capabilities-summary-v1.json quant/data/market/security-master/company-names.json quant/data/market/security-master/company-names-summary.json
+          PUSH_OWNED_PATHS: quant/data/market/discover-series/ quant/data/market/discover-series-long/ quant/data/market/intraday/ quant/data/universe/ quant/data/market/capabilities/ quant/data/product/capabilities-v1.json quant/data/product/capabilities-summary-v1.json quant/data/market/security-master/company-names.json quant/data/market/security-master/company-names-summary.json quant/data/fundamentals/
           SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT || 'VisionUniverseResearch info@visionuniverse.de' }}
         run: |
           set -euo pipefail
@@ -215,6 +215,9 @@ jobs:
           node scripts/universe/build-universe-indexes.mjs
           node scripts/universe/build-issuer-master.mjs
           node scripts/universe/verify-company-master.mjs
+          # SEC-Abdeckung zum neuen Universum (18.11.2026): Aggregate und Abgleich aus den committeten Emittenten-Scherben,
+          # ohne Abruf und ohne Faktenspeicher. Sonst sind sie bis zum naechsten SEC-Tageslauf vom alten Universum (test_daily rot).
+          python3 scripts/quant/cli.py universe-follow
           # Faehigkeitsmatrix und Produkt-Projektion (Quelle von productUniverse fuer Strategie, Watchlist, Radar):
           # dieselben Schritte wie im Marktdatenlauf, ohne Kursabruf.
           node scripts/market/build-capability-matrix.mjs

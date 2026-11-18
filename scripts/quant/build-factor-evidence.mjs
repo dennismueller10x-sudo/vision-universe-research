@@ -328,7 +328,7 @@ function main() {
   /* Wiederverwendete Kuerzel (quant/config/ticker-reuse-quarantine.json, #1206) stehen weiter im Universum,
    * tragen aber eine ungesicherte Identitaet (heute ein ETF unter dem Kuerzel der alten Gesellschaft). Sie
    * bekommen keine Faktorzeile und zaehlen in keinem Rang mit; die Zahl steht im Bericht. */
-  const universum = resolveProductUniverse(ROOT).securities;
+  const produktuniversum = resolveProductUniverse(ROOT), universum = produktuniversum.securities;
   const identityQuarantined = universum.filter((s) => s.identityStatus === "IDENTITY_QUARANTINED").map((s) => s.securityId).sort();
   const imProdukt = new Set(universum.filter((s) => s.identityStatus !== "IDENTITY_QUARANTINED").map((s) => s.securityId));
   const vorFilter = priceFactors.securities.length;
@@ -1183,7 +1183,9 @@ function main() {
       priceFactors: { engine: priceFactors.engine, generatedAt: priceFactors.generatedAt, securities: priceFactors.securities.length, benchmark: priceFactors.benchmark },
       fundamentals: { schema: "vu-consumer-fundamentals-1.0.0", issuersRead: [...docCache.values()].filter(Boolean).length },
       peerTaxonomy: { version: taxonomy.version, rows: taxonomy.rows.length, snapshotMode: taxonomy.snapshotMode },
-      quotes: { source: "technical-product-artifact-1.0.0", tickers: closeByTicker.size }
+      quotes: { source: "technical-product-artifact-1.0.0", tickers: closeByTicker.size },
+      /* An welchem Produktuniversum gebaut (Steuerung 18.11.2026): der Test prueft nur gegen genau diesen Stand. */
+      productUniverse: { file: produktuniversum.file, sha256: produktuniversum.sha256 }
     },
     /* WER HIER BEWUSST NICHT STEHT.
        Ein Papier, das belegt keine Aktie ist, bekommt keine Aktienfaktoren -

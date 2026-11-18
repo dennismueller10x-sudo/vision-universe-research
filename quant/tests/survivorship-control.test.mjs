@@ -15,6 +15,7 @@ import { tmpdir } from "node:os";
 import { spawnSync } from "node:child_process";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
+import { followState, sha256File } from "../../scripts/quant/lib/follow-artifact.mjs";
 
 const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -37,9 +38,16 @@ test("identity: a reused ticker's series belongs to the later listing, never to 
   assert.equal(SC.ownsSeries({ start: "2009-05-19", end: "2016-11-02" }, { from: "2003-12-19", to: "2016-11-01" }), false, "Reihe beginnt vor dem Listing");
 });
 
-test("published inventory: none of the inactive security-master rows is counted with history by ticker alone", () => {
+test("published inventory: none of the inactive security-master rows is counted with history by ticker alone", (t) => {
   const s = read("quant/data/product/survivorship-control-v1.json");
   const sm = s.securityMaster;
+  /* Nur gegen den Stamm, an dem das Inventar gebaut ist (Steuerung 18.11.2026). Der Stamm traegt einen Tagesstempel;
+     wann er sich geaendert hat, sagen Eignung und Namensschicht (beide bei jeder Stammaenderung neu gebaut, mit Uhrzeit). */
+  const seit = [read("quant/data/market/security-master/eligibility.json").generatedAt,
+                read("quant/data/market/security-master/company-names.json").generatedAt].filter(Boolean).sort().pop() || null;
+  const folge = followState({ artifactSha: sm.sourceSha256, currentSha: sha256File(join(ROOT, sm.source)), changedAt: seit });
+  assert.notEqual(folge.state, "STALE", folge.reason);
+  if (folge.state === "WAITING") { t.skip(folge.reason); return; }
   /* Die Zahl kommt aus dem Security Master, gegen den das Inventar gebaut ist (inaktive EQUITY_COMMON-Zeilen):
      191 bis zum Stand 2026-10, 282 seit dem Stand 2026-11-04 (SEC-Delistingbeleg setzt weitere Zeilen INACTIVE). */
   const master = read(sm.source);
