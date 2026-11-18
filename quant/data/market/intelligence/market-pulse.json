@@ -2,7 +2,7 @@
  "schemaVersion": "vu-market-pulse-1.1.0",
  "methodVersion": "market-pulse-1.0.0",
  "configVersion": "vu-market-pulse-config-1.0.0",
- "generatedAt": "2026-11-18T12:23:03.780Z",
+ "generatedAt": "2026-11-18T15:23:05.478Z",
  "kind": "DESCRIPTIVE_MARKET_PULSE",
  "notes": {
   "quantMarketRegime": "FAIL_CLOSED - nicht verwendet, nicht imitiert",
@@ -105,7 +105,7 @@
   "disclaimer": "Einordnung des Marktumfelds aus festen Regeln – keine Anlageberatung, keine Kauf- oder Verkaufsempfehlung, keine Prognose."
  },
  "evaluation": {
-  "generatedAt": "2026-11-18T12:23:03.780Z",
+  "generatedAt": "2026-11-18T15:23:05.478Z",
   "dataAsOf": "2026-11-17",
   "previousDataAsOf": "2026-11-16",
   "schedule": {
@@ -824,13 +824,13 @@
  "instruments": {
   "N225": {
    "kind": "PRICE",
-   "asOf": "2026-11-17",
-   "last": 58860.43,
-   "observations": 19241,
+   "asOf": "2026-11-18",
+   "last": 59024.28,
+   "observations": 19242,
    "changes": {
-    "1M": -9.9,
-    "3M": -12.75,
-    "1Y": 16.96
+    "1M": -9.08,
+    "3M": -9.65,
+    "1Y": 21.19
    },
    "high52w": {
     "date": "2026-06-25",
@@ -840,18 +840,18 @@
     "date": "2025-11-19",
     "value": 48537.7
    },
-   "rangePosition": 43.3,
-   "dist50": -8.67,
-   "dist200": -5.36,
+   "rangePosition": 44,
+   "dist50": -8.26,
+   "dist200": -5.13,
    "trend": "NEGATIVE",
-   "drawdown52w": -18.66,
-   "vol20": 33.04,
+   "drawdown52w": -18.44,
+   "vol20": 33,
    "volContext": {
     "median": 18.7,
     "p25": 15.6,
     "p75": 24.1,
     "samples": 1219,
-    "from": "2021-11-18",
+    "from": "2021-11-19",
     "state": "HIGHER"
    },
    "roles": []
@@ -1462,9 +1462,9 @@
   },
   "US_EFFR": {
    "kind": "RATE",
-   "asOf": "2026-11-16",
+   "asOf": "2026-11-17",
    "last": 3.88,
-   "observations": 6627,
+   "observations": 6628,
    "changes": {
     "1M": 0,
     "3M": 25,
@@ -1479,8 +1479,8 @@
     "value": 3.62
    },
    "rangePosition": 96.3,
-   "vs200": 19.7,
-   "vs50": 4.5,
+   "vs200": 19.5,
+   "vs50": 4,
    "roles": []
   },
   "QQQ": {
