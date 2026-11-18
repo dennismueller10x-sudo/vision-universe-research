@@ -44,6 +44,11 @@ den Stand nennen („Schlusskurs vom …“) und die nächsten Termine. Grundlag
    mit `"daten": "<TICKER>"`. Ton: sachlich, konkret, kein Hype, keine Empfehlung, kein Kursziel (auch keine Kursziele
    Dritter), keine Aufforderung. Wörtliche Zitate nur mit Sprecher und Medium, englische als „(übersetzt)“.
    Privatpersonen, gegen die nur Vorwürfe bestehen, nicht namentlich nennen.
+4b. **Diagramme (Owner 18.11.2026).** Wo der Text Zahlen nennt, kommt mindestens ein Diagramm dazu, in der Regel eins
+   bis zwei je Artikel: `abschnitte[].diagramm` (Objekt oder Liste) mit `titel`, `art` (`saeulen` für Zeitreihen wie
+   Quartalsumsätze, `balken` für Vergleiche wie Sparten oder Börsenwerte), `einheit`, `werte` (`[["Q3 26", 16.9, true], …]`,
+   `true` = hervorgehoben in Neongrün, meist der jüngste oder der Hauptwert), `quelle` und optional `hinweis` (z. B. „Ausblick“
+   oder „eigene Rechnung“). Nur Zahlen aus den Quellen des Artikels oder aus unseren Daten; keine Kursreihen in Dollar.
 5. **Daten und App-Screens.** `node products/insights/snapshot.mjs <datei>`, dann `node products/insights/screens.mjs <datei>`.
 6. **Bilder (Pflicht, jeder Artikel).** Jeder Artikel bekommt einen Aufmacher mit Bezug zur Firma und mindestens ein
    Bild im Text (`abschnitte[].bild` mit `text` als Bildunterschrift). Reihenfolge der Quellen:

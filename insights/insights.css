@@ -408,3 +408,23 @@ html[data-vu-bleed] .in-body{padding-top:0!important}
 :root:not([data-theme=dark]) .in-buehne--nacht .vu-btn--line{border-color:rgb(0 0 0/.34);color:#000}
 :root:not([data-theme=dark]) .in-buehne--nacht .in-buehne-cover{box-shadow:0 12px 28px rgb(0 0 0/.22)}
 :root:not([data-theme=dark]) .in-hud{background:var(--vu-lime);border-color:transparent;color:#000}
+
+/* Diagramme im Artikel (Owner 18.11.2026) */
+.in-dia{margin:22px 0;padding:18px 18px 14px;border-radius:22px;background:var(--vu-card);border:1px solid var(--vu-hair)}
+.in-dia-kopf{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:14px}
+.in-dia-kopf b{font-size:15px;font-weight:900;letter-spacing:-.01em;line-height:1.2}
+.in-dia-kopf span{font-size:12px;color:var(--vu-mute);white-space:nowrap}
+.in-dia-fuss{margin:10px 0 0;font-size:11.5px;color:var(--vu-mute);line-height:1.35}
+.in-dia-saeulen{display:flex;align-items:flex-end;gap:8px;height:190px}
+.in-dia-saeule{flex:1;min-width:0;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:5px}
+.in-dia-saeule i{display:block;width:100%;max-width:56px;border-radius:8px 8px 3px 3px;background:var(--vu-ink)}
+.in-dia-saeule i.hi,.in-dia-zeile i.hi{background:var(--vu-lime)}
+.in-dia-saeule b{font-size:12.5px;font-weight:900;font-variant-numeric:tabular-nums;white-space:nowrap}
+.in-dia-saeule span{font-size:11.5px;color:var(--vu-mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.in-dia-zeilen{display:grid;gap:8px}
+.in-dia-zeile{display:grid;grid-template-columns:minmax(0,38%) 1fr auto;align-items:center;gap:10px}
+.in-dia-zeile span{font-size:13px;font-weight:700;line-height:1.2;overflow-wrap:anywhere}
+.in-dia-zeile i{display:block;height:16px;border-radius:5px;background:var(--vu-ink)}
+.in-dia-zeile i.minus{background:var(--vu-mute)}
+.in-dia-zeile b{font-size:13px;font-weight:900;font-variant-numeric:tabular-nums;white-space:nowrap}
+@media(max-width:560px){.in-dia{padding:14px 12px 12px}.in-dia-saeulen{gap:5px;height:160px}.in-dia-saeule b{font-size:11px}.in-dia-saeule span{font-size:10.5px}}
