@@ -30,6 +30,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 import zlib from "node:zlib";
+import { createHash } from "node:crypto";
 import { weekKey } from "./lib/weekly-total-return.mjs";
 import { fromBars } from "./lib/daily-prices.mjs";
 import { splitAdjustedCloses } from "../market/publish-discover-series.mjs";
@@ -62,7 +63,10 @@ const log = (m) => console.log(`[survivorship +${Math.round((Date.now() - t0) / 
 
 /* ---------- 1. Security Master: inaktive Stammaktien ---------- */
 function securityMasterInventory() {
-  const sm = json("quant/data/market/security-master/us-security-master.json");
+  /* sourceSha256: an welchem Stamm das Inventar gebaut ist. Der Test prueft nur gegen genau diesen Stand; zwischen
+     einer Stammaenderung und der naechsten Materialisierung wartet er sichtbar statt rot (Steuerung 18.11.2026). */
+  const smBytes = readFileSync(join(ROOT, "quant/data/market/security-master/us-security-master.json"));
+  const sm = JSON.parse(smBytes.toString("utf8"));
   const active = new Set(sm.rows.filter((r) => r.active_status !== "INACTIVE").map((r) => r.ticker));
   const inactive = sm.rows.filter((r) => r.active_status === "INACTIVE" && r.instrument_type === "EQUITY_COMMON");
   const seriesOf = (r) => {
@@ -74,7 +78,8 @@ function securityMasterInventory() {
   const rows = inactive.map((r) => SC.classifyInactiveRow(r, { activeTickers: active, seriesOf }));
   const classes = SC.emptyClasses();
   for (const r of rows) classes[r.cls]++;
-  return { source: "quant/data/market/security-master/us-security-master.json", snapshot: sm.generatedAt || null, rowsTotal: sm.rows.length,
+  return { source: "quant/data/market/security-master/us-security-master.json", snapshot: sm.generatedAt || null,
+    sourceSha256: createHash("sha256").update(smBytes).digest("hex"), rowsTotal: sm.rows.length,
     inactiveCommon: rows.length, classes, cik: { mapped: 0, reason: "Die CIK-Zuordnung (quant/data/universe/cik-map.json) gilt dem heutigen Emittenten eines Kürzels; für ein früheres Listing desselben Kürzels wäre sie ein Ticker-Join und wird nicht verwendet." },
     backtestEligible: classes.A + classes.B, rows: rows.map((r) => [r.listingId, r.ticker, r.start, r.end, r.cls, r.reason, r.seriesOwner]),
     columns: ["listingId", "ticker", "start", "end", "class", "reason", "seriesOwner"] };
