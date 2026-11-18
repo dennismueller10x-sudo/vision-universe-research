@@ -53,9 +53,11 @@
     S.chart.mount(host, st.ticker, { label: st.view.name, onRange: function (r) {
       if (state !== st) return;
       var mv = doc.getElementById("ak-move"), since = doc.getElementById("ak-since"), note = doc.getElementById("ak-chart-note");
-      if (mv && isNum(r.pct)) mv.innerHTML = D.move(r.pct, true);
+      /* 1T: die amtliche Tagesveränderung zum Vortagesschluss (wie bisher), nicht der letzte 5-Minuten-Kurs. */
+      var pct = r.id === "1T" && st.view.price && isNum(st.view.price.changePct) ? st.view.price.changePct : r.pct;
+      if (mv && isNum(pct)) mv.innerHTML = D.move(pct, true);
       if (since) since.textContent = r.label;
-      if (note && isNum(r.pct)) note.textContent = F.pct(r.pct, 1) + " · " + r.label;
+      if (note && isNum(pct)) note.textContent = F.pct(pct, 1) + " · " + r.label;
     } }).then(function (c) { if (state === st) st.chart = c; else if (c) c.dispose(); });
   }
 

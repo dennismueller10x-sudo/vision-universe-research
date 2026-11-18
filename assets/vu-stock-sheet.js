@@ -376,7 +376,7 @@
       '<button type="button" class="k-rnd k-tap k-heart" data-vsk-heart="' + esc(v.ticker) + '" aria-pressed="' + (opt.saved ? "true" : "false") + '" aria-label="' + esc(v.ticker) + ' merken" style="width:44px;height:44px">' + HEART + "</button></div>" +
       /* Owner 18.11.2026: Kurs mit Pille über dem Chart; die Pille folgt dem Zeitraum der Leiste darunter. */
       (v.price && isNum(v.price.value) ? '<div class="k-fl k-g8 k-mt12" style="align-items:center;flex-wrap:wrap"><span class="k-num" style="font-size:26px">' + esc(money(v.price.value, v.price.currency)) + '</span><span data-vsk-move>' + move(v.price.changePct) + '</span></div><div class="k-xs k-mut k-b7 k-mt4" data-vsk-since>1 Tag · zum Vortag</div>' : "") +
-      '<div class="k-bleed" data-vsk-chart style="margin-top:8px">' + (opt.values ? line(opt.values, opt.width || 430, 130, { fill: true, base: true, sw: 2.2 }) : "") + "</div>" +
+      '<div data-vsk-chart style="margin-top:8px">' + (opt.values ? line(opt.values, opt.width || 430, 130, { fill: true, base: true, sw: 2.2 }) : "") + "</div>" +
       (cards.length ? '<div class="k-fl k-g6 k-mt12" style="align-items:stretch">' + cards.map(function (c) {
         return '<div class="k-f1 k-card" style="padding:10px;border-radius:16px"><div class="k-xs k-mut k-b7">' + c[0] + '</div><div class="k-sm k-b8 k-mt4' + (c[1].tone === "strong" ? " k-lc" : "") + '" style="line-height:1.1">' + esc(c[1].word) + "</div></div>";
       }).join("") + "</div>" : "") +
@@ -512,7 +512,7 @@
       var initial = "1J";
       try { var mem = root.localStorage.getItem(RANGE_KEY); if (mem) initial = C.canonRange(mem === "MAX" ? "Max" : mem); } catch (e) { /* ohne Gedächtnis */ }
       if (C.RANGES.indexOf(initial) < 0) initial = "1J";
-      return C.mount(host, { ranges: ranges, initial: initial, fullBar: true, currency: "USD", label: o.label || ticker, height: o.height,
+      return C.mount(host, { ranges: ranges, initial: initial, fullBar: true, bleed: o.bleed, currency: "USD", label: o.label || ticker, height: o.height,
         onSelect: function (id) { try { root.localStorage.setItem(RANGE_KEY, id === "Max" ? "MAX" : id); } catch (e) { /* ohne Gedächtnis */ } },
         onRange: function (id, g) { if (o.onRange) o.onRange(Object.assign({ id: id }, C.rangeChange(id, g))); } });
     });
@@ -610,9 +610,10 @@
       el.setAttribute("data-vsk-ticker", t);
       bindHearts(el);
       var chartHost = el.querySelector("[data-vsk-chart]");
-      if (chartHost) mountChart(chartHost, t, { height: 170, onRange: function (r) {
+      if (chartHost) mountChart(chartHost, t, { height: 170, bleed: false, onRange: function (r) {
         var mv = el.querySelector("[data-vsk-move]"), since = el.querySelector("[data-vsk-since]");
-        if (mv && isNum(r.pct)) mv.innerHTML = move(r.pct);
+        var pct = r.id === "1T" && v.price && isNum(v.price.changePct) ? v.price.changePct : r.pct;
+        if (mv && isNum(pct)) mv.innerHTML = move(pct);
         if (since) since.textContent = r.label;
       } }).then(function (c) { if (!c) loadSeries(t).then(function (p) { if (el.isConnected) drawPreviewChart(el, p); }); });
       var cmp = el.querySelector("[data-vsk-compare]");
