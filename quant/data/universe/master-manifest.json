@@ -1,8 +1,8 @@
 {
   "version": "company-master-1.0.0",
   "masterId": "VU_COMPANY_MASTER",
-  "generatedAt": "2026-11-17T12:38:31.145Z",
-  "asOf": "2026-11-17",
+  "generatedAt": "2026-11-18T02:36:13.901Z",
+  "asOf": "2026-11-18",
   "provider": "tiingo",
   "source": {
     "kind": "COMMITTED_GATE_UNIVERSES",
@@ -14,17 +14,17 @@
       "rows": 108573,
       "note": "Zeilenzahl des Anbieterverzeichnisses, aus dem diese Auszuege stammen."
     },
-    "providerRowsSeen": 7814,
+    "providerRowsSeen": 7815,
     "provenance": [
       {
         "file": "quant/data/market/scale/universe-ELIGIBLE_US_EQUITY.json",
         "gate": "ELIGIBLE_US_EQUITY",
-        "securities": 6314
+        "securities": 6315
       },
       {
         "file": "quant/data/market/scale/universe-FULL_UNIVERSE.json",
         "gate": "FULL_UNIVERSE",
-        "securities": 7807
+        "securities": 7808
       },
       {
         "file": "quant/data/market/scale/universe-GATE_100.json",
@@ -89,11 +89,11 @@
     "maxInstrumentsNote": "Bewusst null, und das ist die wichtigste Zeile dieser Datei. Es gibt keine Zielgroesse: nicht 500, nicht 7.000, nicht 50.000. Wie gross das Universum ist, entscheidet das Anbieterverzeichnis. Eine Zahl an dieser Stelle waere genau die Begrenzung, die der Master aufloest."
   },
   "totals": {
-    "providerRows": 7814,
-    "ingested": 7814,
+    "providerRows": 7815,
+    "ingested": 7815,
     "droppedByIngestRules": 0,
-    "inMaster": 7814,
-    "published": 7813,
+    "inMaster": 7815,
+    "published": 7814,
     "withheldFromPublication": 1
   },
   "shards": {
@@ -2122,7 +2122,7 @@
       },
       {
         "shard": "TX",
-        "count": 8
+        "count": 9
       },
       {
         "shard": "TY",
@@ -2688,17 +2688,17 @@
   },
   "previousState": {
     "from": "publishedShards",
-    "instruments": 7809
+    "instruments": 7813
   },
   "run": {
     "source": "github-actions",
-    "runId": "44084796037",
-    "commit": "72d02dd12c721e8f4f3dfe4c91145bcd3cd01df4",
-    "normalizeMs": 104,
-    "syncMs": 118,
-    "shardsWritten": 13,
-    "shardsUnchanged": 633,
-    "publishedBytes": 10098542
+    "runId": "44224291775",
+    "commit": "841a1787d62a1bf9b2a95166b6ebfeb689c71faa",
+    "normalizeMs": 105,
+    "syncMs": 114,
+    "shardsWritten": 5,
+    "shardsUnchanged": 641,
+    "publishedBytes": 10100161
   },
   "identifiers": {
     "cikMap": {
@@ -2714,8 +2714,8 @@
     "withIssuerId": 6461,
     "distinctIssuers": 5481,
     "withCik": 6461,
-    "withName": 7586,
-    "withoutName": 227,
+    "withName": 7590,
+    "withoutName": 224,
     "note": "isin/cusip/figi/lei bleiben null: keine der vorhandenen Quellen fuehrt sie, und eine neue kostenpflichtige Quelle ist ausgeschlossen (§32). Die Felder stehen im Schema, damit ein spaeterer Anbieter sie fuellen kann, ohne das Modell zu aendern."
   },
   "quality": {
@@ -2761,7 +2761,7 @@
           ]
         }
       ],
-      "missingName": 227,
+      "missingName": 224,
       "missingExchange": 0,
       "missingCurrency": 0,
       "missingCountry": 0,
