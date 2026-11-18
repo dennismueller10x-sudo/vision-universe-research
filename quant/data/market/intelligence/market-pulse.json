@@ -2,7 +2,7 @@
  "schemaVersion": "vu-market-pulse-1.1.0",
  "methodVersion": "market-pulse-1.0.0",
  "configVersion": "vu-market-pulse-config-1.0.0",
- "generatedAt": "2026-11-18T18:23:35.040Z",
+ "generatedAt": "2026-11-18T21:23:03.542Z",
  "kind": "DESCRIPTIVE_MARKET_PULSE",
  "notes": {
   "quantMarketRegime": "FAIL_CLOSED - nicht verwendet, nicht imitiert",
@@ -105,7 +105,7 @@
   "disclaimer": "Einordnung des Marktumfelds aus festen Regeln – keine Anlageberatung, keine Kauf- oder Verkaufsempfehlung, keine Prognose."
  },
  "evaluation": {
-  "generatedAt": "2026-11-18T18:23:35.040Z",
+  "generatedAt": "2026-11-18T21:23:03.542Z",
   "dataAsOf": "2026-11-17",
   "previousDataAsOf": "2026-11-16",
   "schedule": {
@@ -172,10 +172,10 @@
     "key": "US10Y",
     "label": "US-Rendite 10 Jahre",
     "from": "5,12 %",
-    "to": "5,10 %",
+    "to": "5,07 %",
     "change": "CONTEXT",
-    "delta": -2,
-    "deltaText": "−2 bp",
+    "delta": -5,
+    "deltaText": "−5 bp",
     "symbol": "US10Y"
    }
   ],
@@ -673,11 +673,11 @@
     {
      "key": "US10Y",
      "label": "US-Rendite 10 Jahre",
-     "text": "+1 bp · 0,0-fach typisch",
-     "change": 1,
-     "ratio": 0.04,
+     "text": "−8 bp · 0,3-fach typisch",
+     "change": -8,
+     "ratio": -0.33,
      "notable": false,
-     "asOf": "2026-11-17",
+     "asOf": "2026-11-18",
      "kind": "BP"
     },
     {
@@ -1301,13 +1301,13 @@
   },
   "US2Y": {
    "kind": "YIELD",
-   "asOf": "2026-11-17",
+   "asOf": "2026-11-18",
    "last": 4.8,
-   "observations": 9225,
+   "observations": 9226,
    "changes": {
-    "1M": 6,
+    "1M": 3,
     "3M": 61,
-    "1Y": 120
+    "1Y": 122
    },
    "high52w": {
     "date": "2026-09-28",
@@ -1318,19 +1318,19 @@
     "value": 3.38
    },
    "rangePosition": 92.2,
-   "vs200": 66.2,
-   "vs50": 8.8,
+   "vs200": 65.6,
+   "vs50": 8,
    "roles": []
   },
   "US5Y": {
    "kind": "YIELD",
-   "asOf": "2026-11-17",
-   "last": 4.9,
-   "observations": 9225,
+   "asOf": "2026-11-18",
+   "last": 4.89,
+   "observations": 9226,
    "changes": {
-    "1M": 1,
-    "3M": 53,
-    "1Y": 118
+    "1M": -5,
+    "3M": 54,
+    "1Y": 119
    },
    "high52w": {
     "date": "2026-09-30",
@@ -1340,20 +1340,20 @@
     "date": "2026-02-27",
     "value": 3.51
    },
-   "rangePosition": 88,
-   "vs200": 61.6,
-   "vs50": 3.4,
+   "rangePosition": 87.3,
+   "vs200": 60.1,
+   "vs50": 1.7,
    "roles": []
   },
   "US10Y": {
    "kind": "YIELD",
-   "asOf": "2026-11-17",
-   "last": 5.1,
-   "observations": 9225,
+   "asOf": "2026-11-18",
+   "last": 5.07,
+   "observations": 9226,
    "changes": {
-    "1M": 1,
-    "3M": 39,
-    "1Y": 97
+    "1M": -8,
+    "3M": 42,
+    "1Y": 95
    },
    "high52w": {
     "date": "2026-10-05",
@@ -1363,27 +1363,27 @@
     "date": "2026-02-27",
     "value": 3.97
    },
-   "rangePosition": 84.3,
-   "vs200": 51.4,
-   "vs50": 4.1,
+   "rangePosition": 82.1,
+   "vs200": 48,
+   "vs50": 0.5,
    "roles": [
     {
      "dimension": "CROSS_ASSET",
      "state": "OBSERVED",
      "stateLabel": "Auffällige Bewegungen",
-     "text": "Teil des Cross-Asset-Kontexts. Über einen Monat: +1 bp – das 0,0-Fache einer typischen Monatsbewegung, also im üblichen Rahmen."
+     "text": "Teil des Cross-Asset-Kontexts. Über einen Monat: −8 bp – das 0,3-Fache einer typischen Monatsbewegung, also im üblichen Rahmen."
     }
    ]
   },
   "US30Y": {
    "kind": "YIELD",
-   "asOf": "2026-11-17",
-   "last": 5.46,
-   "observations": 8231,
+   "asOf": "2026-11-18",
+   "last": 5.41,
+   "observations": 8232,
    "changes": {
-    "1M": 3,
-    "3M": 18,
-    "1Y": 73
+    "1M": -7,
+    "3M": 22,
+    "1Y": 67
    },
    "high52w": {
     "date": "2026-10-07",
@@ -1393,9 +1393,9 @@
     "date": "2026-02-27",
     "value": 4.64
    },
-   "rangePosition": 79.6,
-   "vs200": 37.1,
-   "vs50": 4.8,
+   "rangePosition": 74.8,
+   "vs200": 31.8,
+   "vs50": -0.6,
    "roles": []
   },
   "DE2Y": {
@@ -1801,9 +1801,9 @@
    },
    "US10Y": {
     "symbol": "US10Y",
-    "asOf": "2026-11-17",
+    "asOf": "2026-11-18",
     "horizon": 21,
-    "samples": 2497
+    "samples": 2498
    },
    "GOLD": {
     "symbol": "XAUUSD",
