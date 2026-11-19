@@ -122,7 +122,7 @@ on:
         type: boolean
         default: false
       notfall:
-        description: 'Voll-Release auch im Boersenfenster (Mo-Fr 14:30-21:00 UTC); sonst warten Nicht-Intraday-Aenderungen bis 21:00 UTC'
+        description: 'Voll-Release auch im Boersenfenster (Mo-Fr 14:00-21:00 UTC); sonst warten Nicht-Intraday-Aenderungen bis 21:00 UTC'
         type: boolean
         default: false
 
@@ -484,7 +484,7 @@ jobs:
   # geaendert, bekommt das ausgelieferte Paket nur die neuen Dateien (kein Bau, kein Browser-Smoke, ~3 Minuten statt ~20).
   # Jede Unsicherheit (kein Basis-Paket, andere Dateien geaendert, Smoke rot) heisst: fertig=false, der Voll-Release laeuft wie bisher.
   # Gleiche Concurrency-Gruppe wie der Voll-Release; ein wartender Lauf nimmt immer den Kopf von main, geht also keinen Stand verloren.
-  # INTRADAY-VORRANG (19.11.2026): Mo-Fr 14:30-21:00 UTC startet kein Voll-Release wegen Nicht-Intraday-Dateien (AUFSCHUB); der Schnellweg
+  # INTRADAY-VORRANG (19.11.2026): Mo-Fr 14:00-21:00 UTC (ab 14:00, weil ein Voll-Release bis 22 Min dauert; Befund 19.11.) startet kein Voll-Release wegen Nicht-Intraday-Dateien (AUFSCHUB); der Schnellweg
   # liefert dann nur die Intraday-Dateien (--fenster=auto), der Rest geht ab 21:00 UTC in einem Voll-Release raus. Ausnahmen bleiben Voll:
   # Veroeffentlicher aktiv (Company Intelligence), kein Basis-Paket, notfall=true, Acceptance, Company-Intelligence-OFF.
   intraday-schnell:
@@ -571,7 +571,7 @@ jobs:
       - name: Aufschub im Boersenfenster
         if: steps.weiche.outputs.mode == 'AUFSCHUB'
         run: |
-          echo "::notice::Boersenfenster (Mo-Fr 14:30-21:00 UTC), nur Nicht-Intraday-Aenderungen offen: der Voll-Release wartet bis 21:00 UTC (Notfall per workflow_dispatch mit notfall=true)."
+          echo "::notice::Boersenfenster (Mo-Fr 14:00-21:00 UTC), nur Nicht-Intraday-Aenderungen offen: der Voll-Release wartet bis 21:00 UTC (Notfall per workflow_dispatch mit notfall=true)."
       - name: Voll-Release noetig
         if: steps.bereit.outputs.fertig != 'true' && steps.weiche.outputs.mode != 'AUFSCHUB'
         run: echo "::notice::Schnellweg nicht moeglich (Basis ${{ steps.basis.outcome }}, Veroeffentlicher-Pruefung ${{ steps.pub.outputs.frei }}, Weiche ${{ steps.weiche.outcome }}/${{ steps.weiche.outputs.mode }}, Smoke ${{ steps.bereit.outcome }}); Voll-Release folgt."

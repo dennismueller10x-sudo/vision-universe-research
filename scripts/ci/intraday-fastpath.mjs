@@ -78,12 +78,13 @@ export function isIntraday(path) {
 export function isIgnored(path) {
   return IGNORED_PREFIXES.some((p) => path.startsWith(p)) || IGNORED_PATTERNS.some((r) => r.test(path));
 }
-/* BOERSENFENSTER (Steuerung 19.11.2026): Mo-Fr 14:30 bis 21:00 UTC. In dieser Zeit blockierte ein Voll-Release (~15-30 Minuten) die
+/* BOERSENFENSTER (Steuerung 19.11.2026): Mo-Fr 14:00 bis 21:00 UTC (Boerse 14:30; die letzte halbe Stunde davor ist der Vorlauf, weil ein Voll-Release bis 22 Minuten dauert). In dieser Zeit blockierte ein Voll-Release (~15-30 Minuten) die
    gemeinsame Gruppe pages-production; der Intraday-Stand lag 25-31 Minuten hinter der Boerse. Im Fenster liefert der Schnellweg
    deshalb auch dann nur die Intraday-Dateien aus, wenn andere Dateien warten; der Voll-Release dafuer kommt nach 21:00 UTC (der
    Wecker stoesst bis 21:55 an) oder sofort mit workflow_dispatch notfall=true. Zeitumstellung: die Grenzen sind UTC, im Sommer
-   (US-Handel ab 13:30 UTC) ist das Fenster anzupassen. */
-export const FENSTER = {von: 14 * 60 + 30, bis: 21 * 60};
+   (US-Handel ab 13:30 UTC) ist das Fenster anzupassen. Befund 19.11.: ein Voll-Release (Technical-Screener per workflow_run) startete 14:23 und
+   lief bis 14:45; die erste Live-Lieferung kam erst 14:47 (Watchdog auslieferungVerspaetet). Deshalb beginnt das Fenster um 14:00. */
+export const FENSTER = {von: 14 * 60, bis: 21 * 60};
 export function imFenster(jetzt = new Date()) {
   const wt = jetzt.getUTCDay();
   if (wt < 1 || wt > 5) return false;

@@ -141,9 +141,11 @@ test('FP-6d overlay/smoke: Datendateien (neu, geaendert, geloescht) byte-gleich,
   assert.ok((await pruefe(repo, site, liste)).fehler.some((f) => /Pruefsumme/.test(f)));
 });
 
-test('FP-7 Boersenfenster: Mo-Fr 14:30 bis 21:00 UTC, Grenzen und Wochenende', () => {
+test('FP-7 Boersenfenster: Mo-Fr 14:00 bis 21:00 UTC, Grenzen und Wochenende', () => {
   const t = (iso) => imFenster(new Date(iso));
-  assert.equal(t('2026-11-18T14:29:59Z'), false);
+  assert.equal(t('2026-11-18T13:59:59Z'), false);
+  assert.equal(t('2026-11-18T14:00:00Z'), true);
+  assert.equal(t('2026-11-18T14:23:00Z'), true, 'Befund 19.11.: Voll-Release 14:23 haette aufgeschoben werden muessen');
   assert.equal(t('2026-11-18T14:30:00Z'), true);
   assert.equal(t('2026-11-18T20:59:59Z'), true);
   assert.equal(t('2026-11-18T21:00:00Z'), false);
