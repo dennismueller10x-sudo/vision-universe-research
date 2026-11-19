@@ -158,6 +158,32 @@ export function judgeWithDirectory(decision, entry, member, companyName, opts, c
   return null;
 }
 
+/* Belegte Nicht-Aktien (quant/config/confirmed-non-equity.json, Steuerung 19.11.2026): Endet die Notierung eines belegten ETF,
+   verschwindet seine Verzeichniszeile, und der Stamm fuehrt ihn ohne Namen als EQUITY_COMMON (MEMY, 17.11.). Das Register haelt
+   den Beleg fest; es greift nur ohne heutige Verzeichniszeile (die entscheidet wie bisher) und nur je securityId. */
+export const REGISTER_SOURCE = "CONFIRMED_NON_EQUITY_REGISTER";
+export function loadConfirmedNonEquity(root) {
+  const f = join(root, "quant", "config", "confirmed-non-equity.json");
+  if (!existsSync(f)) return new Map();
+  const doc = JSON.parse(readFileSync(f, "utf8"));
+  const out = new Map();
+  for (const r of doc.records || []) {
+    if (!r.securityId || !r.instrumentType || !r.evidence || !r.approval) throw new Error("CONFIRMED_NON_EQUITY_RECORD_INCOMPLETE:" + (r.ticker || "?"));
+    out.set(r.securityId, r);
+  }
+  return out;
+}
+export function judgeWithRegister(decision, rec) {
+  if (!rec || decision.product_eligibility === "EXCLUDED") return null;
+  if (rec.ticker && rec.ticker !== decision.ticker) return null;            // Schluessel securityId, Ticker als Gegenprobe
+  const d = Master.decideProductEligibility({ instrumentType: rec.instrumentType, classificationStatus: "CLASSIFIED" });
+  if (d.status !== "EXCLUDED") return null;
+  return { rule: "REGISTER:" + rec.instrumentType, next: { ...decision, instrument_type: rec.instrumentType, classification_status: "CLASSIFIED",
+    classification_confidence: "HIGH", product_eligibility: d.status, product_eligibility_reason: d.reason,
+    evidence_source: String(decision.evidence_source || "") + "+" + REGISTER_SOURCE,
+    review_flags: (decision.review_flags || []).filter((f) => f !== "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED").concat(["CONFIRMED_NON_EQUITY_REGISTER:" + decision.instrument_type]) } };
+}
+
 /** Zaehler aus den Entscheidungen (nicht fortgeschrieben) — wie apply-name-layer-class.mjs. */
 export function countDecisions(decisions) {
   const counts = { universeMembers: decisions.length, ELIGIBLE: 0, SEPARATE_CLASS: 0, EXCLUDED: 0, REVIEW: 0 }, excludedByClass = {}, separateByClass = {};
@@ -213,10 +239,18 @@ async function main() {
      Regel wie build-us-eligibility.mjs withName(); die Titel bleiben markiert (identityStatus). */
   const reuse = loadTickerReuseQuarantine(root);
   const reuseIds = reuse ? reuse.records : new Map();
+  const belegt = loadConfirmedNonEquity(root);
   let matched = 0, skippedReuse = 0;
   elig.decisions = elig.decisions.map((d) => {
     if (reuseIds.has(d.securityId)) { skippedReuse++; return d; }
     const e = byId.get(d.securityId); if (e) matched++;
+    const reg = !e && judgeWithRegister(d, belegt.get(d.securityId));
+    if (reg) {
+      changes.push({ securityId: d.securityId, ticker: d.ticker, from: { instrumentType: d.instrument_type, productEligibility: d.product_eligibility, activeStatus: d.active_status },
+        to: { instrumentType: reg.next.instrument_type, productEligibility: reg.next.product_eligibility, activeStatus: reg.next.active_status },
+        source: REGISTER_SOURCE, evidence: belegt.get(d.securityId).evidence, approval: belegt.get(d.securityId).approval, rule: reg.rule, ruleVersion: RULE_VERSION, classifier: Master.VERSION });
+      return reg.next;
+    }
     const j = judgeWithDirectory(d, e, memberOf.get(d.securityId), names.get(d.securityId), opts, classes);
     if (!j) return d;
     changes.push({ securityId: d.securityId, ticker: d.ticker, from: { instrumentType: d.instrument_type, productEligibility: d.product_eligibility, activeStatus: d.active_status },

@@ -4,7 +4,8 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { createRequire } from "node:module";
-import { parseDirectory, directoryIndex, judgeWithDirectory, classRuleHolds, countDecisions, DEFAULT_CLASSES, KNOWN_CLASSES }
+import { parseDirectory, directoryIndex, judgeWithDirectory, classRuleHolds, countDecisions, DEFAULT_CLASSES, KNOWN_CLASSES,
+  judgeWithRegister, loadConfirmedNonEquity, REGISTER_SOURCE }
   from "../../scripts/market/apply-exchange-directory.mjs";
 
 const require = createRequire(import.meta.url);
@@ -128,4 +129,24 @@ test("ED9 · ETF-Kennung der Boerse genuegt, wenn der Name keine andere Klasse b
   assert.equal(hodl.next.product_eligibility, "EXCLUDED");
   assert.equal(judge(dec("COIA", { exchange: "NYSE ARCA" })), null, "ohne Klasse ETF unveraendert");
   assert.equal(judge(dec("FNGU", { exchange: "NASDAQ" }), null, ALL).next.instrument_type, "ETN", "ETN bleibt ETN");
+});
+
+test("ED10 · Register belegter Nicht-Aktien: ohne Verzeichniszeile bleibt der ETF ausgeschlossen, nur je securityId (MEMY, 19.11.2026)", () => {
+  const rec = { securityId: "ref_MEMY", ticker: "MEMY", instrumentType: "ETF", evidence: "x", approval: "y" };
+  const d = { securityId: "ref_MEMY", ticker: "MEMY", instrument_type: "EQUITY_COMMON", product_eligibility: "ELIGIBLE",
+              product_eligibility_reason: "US_COMMON_EQUITY_ON_PRIMARY_VENUE", evidence_source: "SECURITY_MASTER_REJUDGED",
+              review_flags: ["NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED"], active_status: "ACTIVE" };
+  const j = judgeWithRegister(d, rec);
+  assert.equal(j.next.product_eligibility, "EXCLUDED");
+  assert.equal(j.next.product_eligibility_reason, "CONFIRMED_NON_EQUITY:ETF");
+  assert.equal(j.next.instrument_type, "ETF");
+  assert.match(j.next.evidence_source, new RegExp(REGISTER_SOURCE));
+  assert.ok(j.next.review_flags.includes("CONFIRMED_NON_EQUITY_REGISTER:EQUITY_COMMON"));
+  assert.equal(judgeWithRegister({ ...d, ticker: "OTHER" }, rec), null, "Ticker als Gegenprobe");
+  assert.equal(judgeWithRegister({ ...d, product_eligibility: "EXCLUDED" }, rec), null, "schon ausgeschlossen");
+  assert.equal(judgeWithRegister(d, undefined), null, "ohne Eintrag nichts");
+  assert.equal(judgeWithRegister(d, { ...rec, instrumentType: "EQUITY_COMMON" }), null, "nur Nicht-Aktien");
+  const reg = loadConfirmedNonEquity(new URL("../../", import.meta.url).pathname);
+  for (const r of reg.values()) assert.ok(r.evidence && r.approval && /^ref_/.test(r.securityId), r.ticker + " ohne Beleg oder Freigabe");
+  assert.ok(reg.has("ref_MEMY"));
 });
