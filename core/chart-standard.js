@@ -40,7 +40,7 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function () {
   "use strict";
 
-  var VERSION = "chart-standard-1.5.0";
+  var VERSION = "chart-standard-1.6.0";
 
   /* Kanonische Kennungen und Fenster (Kalendertage). */
   var PRIMARY = ["1T", "1W", "1M", "6M", "1J", "3J", "5J", "MAX"]; /* Owner 18.11.2026: eine Leiste überall, 6M und 3J in der Hauptleiste */
@@ -159,6 +159,17 @@
   /* ------------------------------------------------------------ 1T */
 
   function hm(t) { return String(t).slice(0, 5); }
+  /** Heutige Sitzung aus den Ticks des Stroms (mindestens zwei Minutenpunkte nach der Eroeffnung), sonst null. Der Bezug (Vortagesschluss) bleibt leer. */
+  function fromStream(snap, stream, today) {
+    if (!today || !Array.isArray(stream)) return null;
+    var open = hm((snap && snap.sessionOpenLocal) || "09:30"), close = hm((snap && (snap.sessionCloseLocal || snap.closeLocal)) || "16:00");
+    var pts = stream.filter(function (p) { return Array.isArray(p) && isNum(p[1]) && hm(p[0]) >= open && hm(p[0]) < close; });
+    if (pts.length < 2) return null;
+    var copy = {}; Object.keys(snap || {}).forEach(function (k) { copy[k] = snap[k]; });
+    copy.points = pts; copy.pointCount = pts.length; copy.sessionDate = today; copy.previousClose = null;
+    copy.regularComplete = false; copy.isComplete = false; copy.fromStream = true; copy.fromStreamSince = pts[0][0];
+    return copy;
+  }
   function dayDe(d) { var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(d || "")); return m ? m[3] + "." + m[2] + "." + m[1] : ""; }
 
   /**
@@ -169,7 +180,9 @@
    *
    * @param {object} snap Intraday-Snapshot (points [[HH:MM, kurs]], sessionDate, sessionOpenLocal, sessionCloseLocal)
    * @param {object} [opt] today: Sitzungstag heute (YYYY-MM-DD, Ortszeit der Boerse); prev: Snapshot der letzten vollen Sitzung,
-   *                       falls der heutige noch zu wenig Punkte hat
+   *                       falls der heutige noch zu wenig Punkte hat; stream: heutige Ticks [[HH:MM, kurs]] (Minutenraster, dieselbe
+   *                       Reihe wie discover/ui/live-hub.js), wenn der Tages-Snapshot hinter der laufenden Sitzung zurueckliegt
+   *                       (Eroeffnung bis zum ersten heutigen Snapshot): dann ist 1T die heutige Sitzung aus dem Strom - in allen Welten gleich
    * @returns {{available:boolean, mode:"today"|"last"|"none", snap:object|null, points:Array, sessionDate:string|null, label:string, reason:string}}
    */
   function intradayView(snap, opt) {
@@ -187,6 +200,8 @@
     if (cur && (!today || cur.sessionDate >= today)) {
       return { available: true, mode: "today", snap: cur, points: cur.points, sessionDate: cur.sessionDate, label: "heute", reason: "" };
     }
+    var st = fromStream(snap, o.stream, today);
+    if (st) return { available: true, mode: "today", snap: st, points: st.points, sessionDate: st.sessionDate, label: "heute", reason: "" };
     var last = cur && today && cur.sessionDate < today ? cur : prev;
     if (last) {
       return { available: true, mode: "last", snap: last, points: last.points, sessionDate: last.sessionDate,
