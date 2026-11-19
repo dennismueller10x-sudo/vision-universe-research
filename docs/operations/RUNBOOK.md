@@ -81,6 +81,7 @@ Die Seite zeigt seit 03.10. selbst an, wenn der Feed älter ist als sein Maximal
 - Universum: `quant/data/market/security-master/eligibility.json` (`decisions[]`: `product_eligibility`, `active_status`)
 - Company Master: `quant/data/universe/instruments/<shard>.json`, mit Scherbe aus `core/identity.js#shardKey`
 - Index: `quant/data/market/index-membership/<INDEX>.json` (`unmatched`)
+- Neuer Quartalsbericht fehlt in Discover/Quant: Der SEC-Tageslauf (06:15 UTC) holt ihn am Folgetag; findet er ein neues 10-K/10-Q/20-F/40-F, stößt er `sec-consumer-fundamentals.yml` selbst an (`scripts/quant/sec/consumer_trigger.py`, seit 19.11.2026), sonst läuft der Consumer montags. Von Hand: Dispatch des Consumers.
 
 ## 7. Deployment während eines Datenlaufs
 
