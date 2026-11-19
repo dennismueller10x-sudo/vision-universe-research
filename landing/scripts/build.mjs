@@ -171,6 +171,14 @@ async function buildConcepts(output) {
       .replace(/(<body[^>]*>)/,`$1<a class="kz-badge" href="../">Technik ${id.slice(1)} · ${name} <span>‹ alle Techniken</span></a>`);
     await mkdir(resolve(output,'konzepte',id),{recursive:true}); await writeFile(resolve(output,'konzepte',id,'index.html'),html);
   }
+  // Bausteine (Owner 19.11.2026): Live-Seite unverändert, nur Menü und Bewegung wie DLS, Fortschritt wie Rockstar, Wisch-Reihen.
+  {
+    const html = basis.replace('<html lang="de"','<html lang="de" class="bx"')
+      .replace('</head>','<link rel="stylesheet" href="../t/bausteine.css"></head>')
+      .replace('</body>','<script src="../t/bausteine.js" defer></script></body>')
+      .replace(/(<body[^>]*>)/,'$1<a class="kz-badge" href="../">Live-Seite + Bausteine <span>‹ alle Konzepte</span></a>');
+    await mkdir(resolve(output,'konzepte','x'),{recursive:true}); await writeFile(resolve(output,'konzepte','x','index.html'),html);
+  }
   // Referenz-Konzepte (Owner 19.11.2026): Technik von dls-consulting.de (D) und rockstargames.com (R) auf die Live-Seite übertragen.
   for (const [id,name,cls] of [['d','Technik wie DLS','tk rf rf-d'],['r','Technik wie Rockstar Games','rf rf-r']]) {
     const css = (cls.includes('tk')?'<link rel="stylesheet" href="../t/techniken.css">':'')+'<link rel="stylesheet" href="../t/referenz.css">';
