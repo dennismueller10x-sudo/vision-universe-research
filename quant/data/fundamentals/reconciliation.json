@@ -15,20 +15,20 @@
   "overlap": {
     "note": "Gezaehlt auf Papierebene gegen PRODUCT_TITLES. Der Join laeuft ueber securityId == masterMemberId -> issuerId -> CIK, nie ueber das Kuerzel allein (\u00a73).",
     "denominator": {
-      "PRODUCT_TITLES": 6340
+      "PRODUCT_TITLES": 6339
     },
-    "PRODUCT_TITLES": 6340,
-    "R2_HISTORY_AVAILABLE": 6336,
+    "PRODUCT_TITLES": 6339,
+    "R2_HISTORY_AVAILABLE": 6335,
     "R2_HISTORY_UNAVAILABLE": 4,
     "TECHNICAL_HISTORY_ELIGIBLE": 5694,
-    "TECHNICAL_INSUFFICIENT_HISTORY": 646,
+    "TECHNICAL_INSUFFICIENT_HISTORY": 645,
     "R2_AND_FUNDAMENTAL": 5578,
-    "R2_WITHOUT_FUNDAMENTAL": 758,
+    "R2_WITHOUT_FUNDAMENTAL": 757,
     "TECHNICAL_WITHOUT_FUNDAMENTAL": 557,
     "PIT_AND_R2": 5438,
     "PIT_R2_AND_TECHNICAL": 5045,
     "PIT_R2_TECHNICAL_AND_CORE_FUNDAMENTALS": 4414,
-    "MARKET_HISTORY_AVAILABLE": 6336,
+    "MARKET_HISTORY_AVAILABLE": 6335,
     "TECHNICAL_COVERED": 5694,
     "FUNDAMENTAL_COMPANY_FACTS_AVAILABLE": 5580,
     "PIT_READY": 5440,
@@ -41,10 +41,10 @@
     "PIT_TECHNICAL_AND_HISTORICAL_PRICE": 5045,
     "percentOfProductUniverse": {
       "MARKET_HISTORY_AVAILABLE": 99.9369,
-      "TECHNICAL_COVERED": 89.8107,
-      "FUNDAMENTAL_COMPANY_FACTS_AVAILABLE": 88.0126,
-      "PIT_READY": 85.8044,
-      "TECHNICAL_AND_FUNDAMENTAL": 81.0252
+      "TECHNICAL_COVERED": 89.8249,
+      "FUNDAMENTAL_COMPANY_FACTS_AVAILABLE": 88.0265,
+      "PIT_READY": 85.818,
+      "TECHNICAL_AND_FUNDAMENTAL": 81.038
     },
     "acceptedMarketDataState": {
       "status": "CANONICAL_PER_INSTRUMENT",
@@ -60,16 +60,16 @@
         "TECHNICAL_HISTORY_ELIGIBLE_PERCENT": 84.42
       },
       "computed": {
-        "HISTORICAL_CHART_AVAILABLE": 6336,
+        "HISTORICAL_CHART_AVAILABLE": 6335,
         "TECHNICAL_HISTORY_ELIGIBLE": 5694,
-        "PRODUCT_TITLES": 6340
+        "PRODUCT_TITLES": 6339
       },
       "delta": {
-        "HISTORICAL_CHART_AVAILABLE": 0,
+        "HISTORICAL_CHART_AVAILABLE": -1,
         "TECHNICAL_HISTORY_ELIGIBLE": 0
       },
-      "reconciled": true,
-      "explanation": null,
+      "reconciled": false,
+      "explanation": "Die eigene Rechnung weicht vom abgenommenen Stand ab. Moegliche Ursachen, in dieser Reihenfolge zu pruefen: (1) das Produktuniversum hier ist nicht dasselbe wie das, gegen das die Kennzahlen gerechnet wurden, (2) eine Ausnahmeliste wurde unvollstaendig gelesen, (3) der Identitaetsjoin trifft nicht jeden Titel. KEIN neuer Nenner ohne geklaerte Ursache (\u00a74).",
       "explainedDelta": null,
       "note": "R2_SERIES_AVAILABLE (7.802) zaehlt gegen den WERTPAPIERSTAMM (7.803), nicht gegen das Produktuniversum (7.004) - es ist die Ablagedeckung und keine Produktkennzahl. Sie wird hier gefuehrt und NICHT in die Schnittmengen gerechnet.",
       "evidenceSources": [
@@ -374,5 +374,5 @@
       }
     }
   },
-  "generatedAtUtc": "2026-11-19T06:30:56+00:00"
+  "generatedAtUtc": "2026-11-19T06:33:55+00:00"
 }
