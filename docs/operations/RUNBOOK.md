@@ -88,6 +88,8 @@ Die Seite zeigt seit 03.10. selbst an, wenn der Feed älter ist als sein Maximal
 Ein Deployment mitten in einem Datenlauf liefert den letzten vollständig gepushten Stand. Teilstände gibt es nicht, weil der Push den Commit atomar setzt.
 Nach dem Datenlauf löst `workflow_run` das nächste Deployment aus.
 
+**Intraday-Vorrang (19.11.2026):** Mo–Fr 14:30–21:00 UTC (Grenzen in UTC, im Sommer anpassen) startet kein Voll-Release wegen Nicht-Intraday-Dateien. Gemessen am 18.11.: Voll-Releases von 12–30 Minuten liefen im Fenster fast lückenlos in der Gruppe `pages-production`, der Intraday-Stand lag 25–31 Minuten hinter der Börse. Jetzt liefert der Schnellweg im Fenster nur die Intraday- und byte-gleichen Datendateien (`intraday-fastpath.mjs klassifiziere --fenster=auto`); liegen nur andere Dateien an, meldet er `AUFSCHUB` und `package` überspringt den Lauf. Alles Aufgeschobene geht ab 21:00 UTC mit dem ersten Wecker-Dispatch (bis 21:55) als ein Voll-Release raus. Voll bleiben: ein aktiver Company-Intelligence-Veröffentlicher, fehlendes Basis-Paket, `workflow_dispatch` mit `notfall=true`, Acceptance oder `company_intelligence_off`. Rest-Risiko: ein Voll-Release, der kurz vor 14:30 startet, hält die Gruppe noch bis rund 15:00.
+
 ## 8. `core` ist rot, aber der PR hat nichts damit zu tun
 
 1. Welcher Test? Schritt „Zustandstests (Querverträge über erzeugte Daten)“ im Job `core`: steht dort „Datenbefund, nicht dieser PR“, ist es kein Fehler des PR (Warnung, Check bleibt grün). Rot ist der Check nur, wenn der PR einen Eingang des Tests berührt (`core/tests/state/manifest.json`, `blockingWhenPrTouches`).

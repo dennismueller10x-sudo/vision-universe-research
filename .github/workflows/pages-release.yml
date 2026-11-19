@@ -121,6 +121,10 @@ on:
         description: 'Emergency Company Intelligence gate off in Discover and Quant; no R2 consumer read'
         type: boolean
         default: false
+      notfall:
+        description: 'Voll-Release auch im Boersenfenster (Mo-Fr 14:30-21:00 UTC); sonst warten Nicht-Intraday-Aenderungen bis 21:00 UTC'
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -172,7 +176,7 @@ jobs:
     # scripts/ci/push-with-retry.sh). Dann gibt es auch nichts zu bauen.
     needs: intraday-schnell
     if: >-
-      !cancelled() && needs.intraday-schnell.outputs.fertig != 'true' && (github.event_name != 'workflow_run' ||
+      !cancelled() && needs.intraday-schnell.outputs.fertig != 'true' && needs.intraday-schnell.outputs.aufschub != 'true' && (github.event_name != 'workflow_run' ||
       (github.event.workflow_run.conclusion == 'success' && (github.event.workflow_run.name != 'Pipeline taeglich (Buendel pipeline-daily)' || contains(github.event.workflow_run.display_title, '[seite]'))))
     steps:
       - uses: actions/checkout@v4
@@ -480,10 +484,13 @@ jobs:
   # geaendert, bekommt das ausgelieferte Paket nur die neuen Dateien (kein Bau, kein Browser-Smoke, ~3 Minuten statt ~20).
   # Jede Unsicherheit (kein Basis-Paket, andere Dateien geaendert, Smoke rot) heisst: fertig=false, der Voll-Release laeuft wie bisher.
   # Gleiche Concurrency-Gruppe wie der Voll-Release; ein wartender Lauf nimmt immer den Kopf von main, geht also keinen Stand verloren.
+  # INTRADAY-VORRANG (19.11.2026): Mo-Fr 14:30-21:00 UTC startet kein Voll-Release wegen Nicht-Intraday-Dateien (AUFSCHUB); der Schnellweg
+  # liefert dann nur die Intraday-Dateien (--fenster=auto), der Rest geht ab 21:00 UTC in einem Voll-Release raus. Ausnahmen bleiben Voll:
+  # Veroeffentlicher aktiv (Company Intelligence), kein Basis-Paket, notfall=true, Acceptance, Company-Intelligence-OFF.
   intraday-schnell:
     if: >-
       github.event_name != 'pull_request' && github.event_name != 'push' &&
-      !(github.event_name == 'workflow_dispatch' && (inputs.company_intelligence_acceptance || inputs.company_intelligence_off)) &&
+      !(github.event_name == 'workflow_dispatch' && (inputs.company_intelligence_acceptance || inputs.company_intelligence_off || inputs.notfall)) &&
       (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success')
     runs-on: ubuntu-latest
     timeout-minutes: 12
@@ -492,6 +499,7 @@ jobs:
       actions: read
     outputs:
       fertig: ${{ steps.bereit.outputs.fertig }}
+      aufschub: ${{ steps.weiche.outputs.mode == 'AUFSCHUB' }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -549,7 +557,7 @@ jobs:
         run: |
           set -euo pipefail
           git fetch --no-tags --depth=1 origin "$BASE"
-          node scripts/ci/intraday-fastpath.mjs klassifiziere --base="$BASE" --head=HEAD --list="$RUNNER_TEMP/fast-liste.txt"
+          node scripts/ci/intraday-fastpath.mjs klassifiziere --base="$BASE" --head=HEAD --fenster=auto --list="$RUNNER_TEMP/fast-liste.txt"
       - name: Intraday-Dateien ueber das Paket legen und pruefen
         id: bereit
         if: steps.weiche.outputs.mode == 'FAST'
@@ -560,8 +568,12 @@ jobs:
           node scripts/ci/intraday-fastpath.mjs overlay --repo=. --site="$S" --list="$RUNNER_TEMP/fast-liste.txt"
           node scripts/ci/intraday-fastpath.mjs smoke --repo=. --site="$S" --list="$RUNNER_TEMP/fast-liste.txt"
           echo "fertig=true" >> "$GITHUB_OUTPUT"
+      - name: Aufschub im Boersenfenster
+        if: steps.weiche.outputs.mode == 'AUFSCHUB'
+        run: |
+          echo "::notice::Boersenfenster (Mo-Fr 14:30-21:00 UTC), nur Nicht-Intraday-Aenderungen offen: der Voll-Release wartet bis 21:00 UTC (Notfall per workflow_dispatch mit notfall=true)."
       - name: Voll-Release noetig
-        if: steps.bereit.outputs.fertig != 'true'
+        if: steps.bereit.outputs.fertig != 'true' && steps.weiche.outputs.mode != 'AUFSCHUB'
         run: echo "::notice::Schnellweg nicht moeglich (Basis ${{ steps.basis.outcome }}, Veroeffentlicher-Pruefung ${{ steps.pub.outputs.frei }}, Weiche ${{ steps.weiche.outcome }}/${{ steps.weiche.outputs.mode }}, Smoke ${{ steps.bereit.outcome }}); Voll-Release folgt."
       - uses: actions/configure-pages@v5
         if: steps.bereit.outputs.fertig == 'true'
