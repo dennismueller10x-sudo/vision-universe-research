@@ -135,7 +135,11 @@ VERZEICHNIS_ETF_0611, VERZEICHNIS_WARRANT_0611 = 269, {"BNCWW"}
 #   Technik 5666 + 7 gealtert (ANGX, BRKRP, KLAR, LBRX, ORIQ, PAII, SPEG) + 21 technisch bereite Zugaenge = 5694
 #           (10 Zugaenge noch zu kurz: AUXX, AXNX, CATL, FFTT, MEMY, MTAK, OCLT, RNAQ, SVIA, TXCP)
 #   R2-Ablage 7802 + 29 = 7831 (Ablagedeckung gegen den Wertpapierstamm, keine Produktkennzahl)
+# Danach (19.11., Freigabe eligibility-exclusion-2026-11-19-memy, Register quant/config/confirmed-non-equity.json): MEMY ist ein
+# ETF und geht wieder aus dem Produkt (Steuerung). Titel 6340 - 1 = 6339, Charts 6336 - 1 = 6335 (MEMY war darstellbar),
+# Technik 5694 unveraendert (MEMY war zu kurz); der Verzeichnisbeleg bleibt entfallen (Beleg jetzt aus dem Register).
 ZUGANG_1911 = 31
+ETF_RAUS_1911 = {"MEMY"}
 VERZEICHNIS_WIEDER_STAMMAKTIE_1911 = {"MEMY"}
 ZUGANG_NICHT_DARSTELLBAR_1911 = {"FFTT"}
 ZUGANG_ZU_KURZ_1911 = {"AUXX", "AXNX", "CATL", "FFTT", "MEMY", "MTAK", "OCLT", "RNAQ", "SVIA", "TXCP"}
@@ -336,10 +340,12 @@ class AusnahmelistenSindVollstaendigTests(unittest.TestCase):
                          POLICY_STAND_1010["TECHNICAL_HISTORY_ELIGIBLE"])
         self.assertEqual(POLICY_STAND_1010, {k: ABGENOMMEN_1010[k] for k in POLICY_STAND_1010})
         # Uebergang 10.10. -> 06.11. (Eignungs-Bereinigung, Deltabericht Lauf 42201411281)
-        self.assertEqual(POLICY_STAND_1010["PRODUCT_TITLES"] - ETF_RAUS_0611 + NEU_0611 + WTIB_1111 + ZUGANG_1911,
+        self.assertEqual(POLICY_STAND_1010["PRODUCT_TITLES"] - ETF_RAUS_0611 + NEU_0611 + WTIB_1111 + ZUGANG_1911 - len(ETF_RAUS_1911),
                          AKTUELLER_POLICY_STAND["PRODUCT_TITLES"])
         self.assertEqual(POLICY_STAND_1010["HISTORICAL_CHART_AVAILABLE"] - ETF_RAUS_0611 + NEU_0611 + WTIB_1111
-                         + ZUGANG_1911 - len(ZUGANG_NICHT_DARSTELLBAR_1911), AKTUELLER_POLICY_STAND["HISTORICAL_CHART_AVAILABLE"])
+                         + ZUGANG_1911 - len(ZUGANG_NICHT_DARSTELLBAR_1911) - len(ETF_RAUS_1911),
+                         AKTUELLER_POLICY_STAND["HISTORICAL_CHART_AVAILABLE"])
+        self.assertTrue(ETF_RAUS_1911 <= ZUGANG_ZU_KURZ_1911, "MEMY war technisch zu kurz: kein Abgang aus der Technik-Zahl")
         self.assertEqual(POLICY_STAND_1010["TECHNICAL_HISTORY_ELIGIBLE"] - ETF_TECHNISCH_BEREIT_0611 + GEALTERT_0611 + GEALTERT_1111
                          + len(GEALTERT_1611) + len(GEALTERT_1911) + ZUGANG_1911 - len(ZUGANG_ZU_KURZ_1911),
                          AKTUELLER_POLICY_STAND["TECHNICAL_HISTORY_ELIGIBLE"])

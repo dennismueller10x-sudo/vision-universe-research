@@ -1,0 +1,35 @@
+{
+ "schema": "vu-eligibility-catchup-1",
+ "id": "eligibility-exclusion-2026-11-19-memy",
+ "prevSha256": "d49db37a62061842dc61ab3501bb326ea351edce9ca633070a42e6f363bd73ca",
+ "sourceRun": "Freigabe 19.11.2026 fuer genau einen Titel; angewendet ueber security-master-eligibility.yml (approved_catchup, freigabe) mit dem Register quant/config/confirmed-non-equity.json",
+ "decidedBy": "Steuerung 19.11.2026: MEMY ist ein ETF; ETFs sind seit dem 06.11. aus dem Produkt (eligibility-cleanup-2026-11-06). Er ist nur durch die unvollstaendige Ruecknahme der Bereinigung vom 17.11. hineingerutscht. Zurueck auf EXCLUDED:ETF; nichts wird endgueltig geloescht.",
+ "productUniverseBefore": 6340,
+ "productUniverseAfter": 6339,
+ "counts": {
+  "changes": 1,
+  "leaveProduct": 1,
+  "enterProduct": 0
+ },
+ "leaveReasons": {
+  "CONFIRMED_NON_EQUITY:ETF": 1
+ },
+ "enterReasons": {},
+ "changes": [
+  {
+   "securityId": "ref_MEMY",
+   "ticker": "MEMY",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  }
+ ],
+ "evidence": [
+  {
+   "securityId": "ref_MEMY",
+   "ticker": "MEMY",
+   "note": "Boersenverzeichnis ETF = Y, angewendet in eligibility-cleanup-2026-11-06 (einer der 269 ETFs). Anbieterzeile tiingo:BATS:MEMY:2026-01-20 endet am 2026-11-17; ohne Verzeichniszeile fuehrte der Stamm MEMY ohne Namen als EQUITY_COMMON."
+  }
+ ]
+}
