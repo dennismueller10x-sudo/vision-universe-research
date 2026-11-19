@@ -115,3 +115,13 @@ test("UF-4 · der Parser erkennt Schreiber, nicht Leser", () => {
   assert.equal(writesEligibility(schreiber), true);
   assert.equal(writesEligibility(add), true);
 });
+
+test("UF-5 · nach der Umfangsfolge misst der Teil deckung Abnahme und Fundamentalschicht-Abgleich neu (Steuerung 19.11.2026)", () => {
+  const s = steps(OWNER_SRC).find((x) => /pipeline-weekly/.test(x.body) && /deckung/.test(x.name));
+  assert.ok(s, "kein Schritt, der pipeline-weekly Teil deckung anstoesst");
+  assert.match(s.body, /if: steps\.folgen\.outcome == 'success'/, "nur nach erfolgreicher Umfangsfolge");
+  assert.match(s.body, /gh workflow run pipeline-weekly\.yml --ref main -f teil=deckung/);
+  const weekly = readFileSync(join(WF_DIR, "pipeline-weekly.yml"), "utf8");
+  assert.match(weekly, /scripts\/diagnose\/coverage-delta\.mjs/, "deckung erklaert jede Abweichung je Titel vor dem Commit");
+  assert.match(weekly, /python3 scripts\/quant\/cli\.py reconcile/, "deckung rechnet den Fundamentalschicht-Abgleich neu");
+});
