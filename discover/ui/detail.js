@@ -715,6 +715,26 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
                         detail.exchange ? "Notiert an der " + detail.exchange : null].filter(Boolean);
     if (beschreibung.length) section.appendChild(el("p", { class: "dx-chapter-lead", text: beschreibung.join(" · ") }));
     else section.appendChild(el("p", { class: "dx-chapter-lead dx-why-empty", text: "Für diesen Titel ist keine Beschreibung des Geschäfts hinterlegt — erfunden wird keine." }));
+    if (g.status === "QUARTER_ONLY" && g.quartal) {
+      /* Neu an der Börse: nur Quartale. Beschriftet als Quartal, nie als zwölf Monate, ohne KGV. */
+      var KQ = D.Klartext, ql = (g.quartal.fp || "") + " " + g.quartal.fy;
+      var gq = el("div", { class: "dx-firma" });
+      [{ label: "Umsatz (Quartal " + ql + ")", wert: geld(g.umsatzQuartal), v: g.umsatzWachstumQuartal },
+       { label: (g.gewinnQuartal < 0 ? "Verlust" : "Gewinn") + " (Quartal " + ql + ")", wert: geld(g.gewinnQuartal), v: g.gewinnWachstumQuartal }]
+        .forEach(function (z) {
+          gq.appendChild(el("div", {}, [
+            el("span", { text: z.label }),
+            el("b", { class: "num", text: z.wert }),
+            isNum(z.v) ? el("em", { class: tonVon(z.v), text: KQ.prozent(z.v) + " gegenüber dem gleichen Quartal des Vorjahres" }) : null
+          ]));
+        });
+      section.appendChild(gq);
+      section.appendChild(el("p", { class: "dx-kapitel-fuss dx-kapitel-fuss--link" }, [
+        document.createTextNode("Neu an der Börse: nur Quartalszahlen, noch kein Geschäftsjahr und keine zwölf Monate · "),
+        el("a", { href: "#/daten", text: "Daten & Quellen" })
+      ]));
+      return section;
+    }
     if (g.status !== "CALCULATED") {
       section.appendChild(el("p", { class: "dx-why-empty",
         text: g.message || "Für diesen Titel liegen keine Geschäftszahlen vor. Vision Universe " +
