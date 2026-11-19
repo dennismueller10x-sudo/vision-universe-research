@@ -1,0 +1,62 @@
+/* Konzept „Einfach“: große Bilder, eine Aussage pro Bildschirm. Farben und Bausteine wie live. */
+.kz-badge{position:fixed;left:12px;bottom:12px;z-index:90;display:inline-flex;gap:8px;align-items:center;padding:9px 14px;border-radius:99px;background:var(--lime);color:#000;font-weight:900;font-size:13px;box-shadow:0 10px 30px -10px rgba(0,0,0,.4)}
+.kz-badge span{font-weight:700;opacity:.7}
+@media(max-width:600px){.kz-badge span{display:none}}
+.ez .jbar,.ez .dock{display:none !important}
+.ez mark{background:var(--lime);padding:0 .08em}
+
+.ez-hero{display:flex;flex-direction:column;align-items:center;text-align:center;padding-top:56px;padding-bottom:40px}
+.ez-hero .claimline{justify-content:center}
+.ez-hero h1{margin-top:14px;font-size:clamp(46px,8vw,112px);font-weight:900;letter-spacing:-.06em;line-height:.92;max-width:12ch;text-wrap:balance}
+.ez-lead{margin-top:18px;font-size:clamp(19px,2vw,26px);font-weight:700;color:#333;max-width:30ch}
+.ez-acts{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:14px 20px;margin-top:26px}
+.ez-acts .stores{margin:0}.ez-acts .stores .b img{height:46px;width:auto}
+.ez-hero .stage.mob{display:block !important;position:relative;width:min(560px,100%);height:640px;margin-top:30px}
+
+
+.ez-sec{padding-top:110px;padding-bottom:10px}
+.ez-h{font-size:clamp(36px,5.6vw,80px);font-weight:900;letter-spacing:-.055em;line-height:.95;text-align:center;text-wrap:balance}
+.ez-c{margin-top:28px;text-align:center}
+
+.ez-three{display:grid;gap:22px;margin-top:44px}
+@media(min-width:800px){.ez-three{grid-template-columns:repeat(3,1fr);gap:28px}}
+.ez-three figure,.ez-more figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:16px}
+.ez-three .reel9{width:min(340px,100%)}
+.ez-three figcaption{text-align:center;font-size:clamp(20px,1.8vw,26px);font-weight:900;letter-spacing:-.03em;line-height:1.15}
+.ez-three figcaption small,.ez-read small{display:block;margin-bottom:4px;font-size:12.5px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
+.reel9 .play{transition:transform .25s var(--ease)}.reel9:hover .play{transform:translate(-50%,-50%) scale(1.1)}
+
+.ez-split{display:grid;gap:30px;align-items:center}
+.ez-split .ez-txt{text-align:center}
+.ez-split .ez-txt .ez-lead{margin-left:auto;margin-right:auto}
+.ez-split .lnk{display:inline-block;margin-top:20px}
+@media(min-width:900px){
+  .ez-split{grid-template-columns:1.1fr .9fr;gap:60px}
+  .ez-split .ez-txt,.ez-split .ez-h{text-align:left}
+  .ez-split .ez-txt .ez-lead{margin-left:0}
+  .ez-rev .ez-txt{order:2}
+}
+.ez-split .reel9{width:min(380px,100%)}
+
+.ez-more{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:44px}
+@media(min-width:800px){.ez-more{grid-template-columns:repeat(5,1fr)}}
+.ez-more .reel9{width:100%;border-radius:20px;box-shadow:0 0 0 4px #000,0 30px 50px -30px rgba(0,0,0,.6)}
+.ez-more figcaption{font-weight:900;font-size:17px}
+
+.ez-read{display:grid;grid-template-columns:repeat(2,minmax(0,300px));justify-content:center;gap:24px;margin-top:44px}
+.ez-read a{display:flex;flex-direction:column;gap:12px;text-align:center;font-weight:900;font-size:18px}
+.ez-read img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:10px;box-shadow:0 30px 50px -28px rgba(0,0,0,.55);transition:transform .3s var(--ease)}
+.ez-read a:hover img{transform:translateY(-6px) rotate(-1deg)}
+.ez main>[data-ch]{margin-top:90px}
+.ez .reel9 .play{left:auto;top:auto;right:16px;bottom:16px;transform:none;width:58px;height:58px}
+.ez .reel9:hover .play{transform:scale(1.1)}
+.ez-hero .ez-lead{margin-top:26px}
+.ez-three .reel9{width:min(300px,100%)}
+@media(max-width:799px){
+  .ez-three,.ez-more{display:grid;grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:72%;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding:6px 20px 16px;margin-left:-20px;margin-right:-20px}
+  .ez-more{grid-auto-columns:46%}
+  .ez-three::-webkit-scrollbar,.ez-more::-webkit-scrollbar{display:none}
+  .ez-three figure,.ez-more figure{scroll-snap-align:center}
+  .ez-split .reel9{width:min(300px,86%);justify-self:center}
+  .ez-sec{padding-top:80px}
+}
