@@ -49,12 +49,12 @@
     "acceptedMarketDataState": {
       "status": "CANONICAL_PER_INSTRUMENT",
       "owner": "R2-/Marktdaten-Workstream",
-      "sourceRunId": "44466448235",
+      "sourceRunId": "44475538323",
       "provenance": "quant/data/market/history/CANONICAL_SOURCE.json",
       "accepted": {
-        "PRODUCT_TITLES": 6340,
+        "PRODUCT_TITLES": 6339,
         "R2_SERIES_AVAILABLE": 7831,
-        "HISTORICAL_CHART_AVAILABLE": 6336,
+        "HISTORICAL_CHART_AVAILABLE": 6335,
         "HISTORICAL_CHART_AVAILABLE_PERCENT": 99.96,
         "TECHNICAL_HISTORY_ELIGIBLE": 5694,
         "TECHNICAL_HISTORY_ELIGIBLE_PERCENT": 84.42
@@ -65,11 +65,11 @@
         "PRODUCT_TITLES": 6339
       },
       "delta": {
-        "HISTORICAL_CHART_AVAILABLE": -1,
+        "HISTORICAL_CHART_AVAILABLE": 0,
         "TECHNICAL_HISTORY_ELIGIBLE": 0
       },
-      "reconciled": false,
-      "explanation": "Die eigene Rechnung weicht vom abgenommenen Stand ab. Moegliche Ursachen, in dieser Reihenfolge zu pruefen: (1) das Produktuniversum hier ist nicht dasselbe wie das, gegen das die Kennzahlen gerechnet wurden, (2) eine Ausnahmeliste wurde unvollstaendig gelesen, (3) der Identitaetsjoin trifft nicht jeden Titel. KEIN neuer Nenner ohne geklaerte Ursache (\u00a74).",
+      "reconciled": true,
+      "explanation": null,
       "explainedDelta": null,
       "note": "R2_SERIES_AVAILABLE (7.802) zaehlt gegen den WERTPAPIERSTAMM (7.803), nicht gegen das Produktuniversum (7.004) - es ist die Ablagedeckung und keine Produktkennzahl. Sie wird hier gefuehrt und NICHT in die Schnittmengen gerechnet.",
       "evidenceSources": [
@@ -374,5 +374,5 @@
       }
     }
   },
-  "generatedAtUtc": "2026-11-19T06:33:55+00:00"
+  "generatedAtUtc": "2026-11-19T07:39:46+00:00"
 }
