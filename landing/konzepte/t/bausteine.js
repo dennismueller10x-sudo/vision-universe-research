@@ -7,7 +7,7 @@
   var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   function $$(s, c) { return [].slice.call((c || document).querySelectorAll(s)); }
 
-  /* 1 Menü wie DLS: die vorhandene Menü-Taste bekommt „Menü“, das Menü klappt als schwarze Karte auf */
+  /* 1 Menü wie DLS: die vorhandene Menü-Taste bekommt „Menü“, das vorhandene Menü klappt als Karte auf */
   var mb = document.querySelector(".nav [data-menu]");
   if (mb) mb.insertAdjacentHTML("beforeend", '<span class="bx-mt">Menü</span>');
 
@@ -40,7 +40,7 @@
     tick();
   }
 
-  /* 4 Wisch-Reihen: News und „Heute neu“ werden Reihen mit Pfeilen wie bei DLS */
+  /* 4 Wisch-Reihen: News und „Heute neu“ werden Reihen mit Pfeilen wie bei DLS (Filme bleiben der Fächer) */
   function arrows(track, host) {
     var w = document.createElement("span"); w.className = "bx-arr";
     w.innerHTML = '<button type="button" aria-label="Zurück">‹</button><button type="button" aria-label="Weiter">›</button>';
@@ -55,6 +55,4 @@
   if (nt) { nt.classList.add("bx-row"); if (st) { st.classList.add("bx-rh"); arrows(nt, st); } }
   var hl = document.querySelector(".hlnews"), hk = document.querySelector(".hl > .kap");
   if (hl && hk) { hk.classList.add("bx-rh"); arrows(hl, hk); }
-  var fan = document.querySelector("#filme .fan"), fh = document.querySelector("#filme .hh");
-  if (fan && fh) { fan.classList.add("bx-row", "bx-films"); fh.classList.add("bx-rh"); arrows(fan, fh); }
 })();

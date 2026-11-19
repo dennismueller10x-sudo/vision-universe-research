@@ -1,56 +1,37 @@
-/* Bausteine auf der unveränderten Live-Seite: Menü wie DLS, Bewegung wie DLS, Fortschritt wie Rockstar, Wisch-Reihen. */
+/* Bausteine auf der unveränderten Live-Seite. Nur vorhandene Elemente, Farben und Formen der Seite. */
 .kz-badge{position:fixed;left:12px;bottom:12px;z-index:90;display:inline-flex;gap:8px;align-items:center;padding:9px 14px;border-radius:99px;background:var(--lime);color:#000;font-weight:900;font-size:13px;box-shadow:0 10px 30px -10px rgba(0,0,0,.4)}
 .kz-badge span{font-weight:700;opacity:.7}
+@media(max-width:600px){.kz-badge{font-size:12px}.kz-badge span{display:none}}
 
-/* 1 Menü wie DLS */
+/* 1 Menü wie DLS: Menüleiste weg, rechts nur die vorhandene Menü-Taste und der vorhandene Knopf „Benachrichtigen“.
+   Das vorhandene weiße Menü klappt oben rechts als Karte auf. */
 .bx .nav .links,.bx .nav .appchip{display:none !important}
-.bx .nav .right{gap:0;padding:4px;border-radius:99px;background:#000}
-.bx .nav .right .btn{display:inline-flex !important;order:2;min-height:40px;padding:0 6px 0 16px;background:var(--lime);color:#000;font-size:14.5px;box-shadow:none}
-.bx .nav .right .btn .dot{width:30px;height:30px;background:#000;color:var(--lime)}
-.bx .nav [data-menu]{display:inline-flex !important;order:1;align-items:center;gap:8px;width:auto;height:40px;padding:0 14px;border:0;border-radius:99px;background:transparent;color:#fff;font-weight:800;font-size:14.5px;box-shadow:none}
-.bx .nav [data-menu] svg{width:18px;height:18px}
-.bx .sheet{background:transparent}
-.bx .sheet .in{left:auto;right:max(12px,calc((100vw - 1240px)/2 + 20px));top:74px;width:min(400px,calc(100vw - 24px));max-height:calc(100vh - 90px);border-radius:24px;background:#000;color:#fff;box-shadow:0 30px 60px -20px rgba(0,0,0,.55);transform-origin:top right;animation:bxin .3s var(--ease)}
-@keyframes bxin{from{opacity:0;transform:translateY(-8px) scale(.96)}to{opacity:1;transform:none}}
-.bx .sheet .hd .logo{filter:invert(1)}
-.bx .sheet .x{background:var(--lime);color:#000}
-.bx .sheet .mlist{border-top-color:#222}
-.bx .sheet .mlist>a,.bx .sheet .mlist summary{border-bottom-color:#222;color:#fff}
-.bx .sheet .msub a{color:#fff}.bx .sheet .msub small{color:#9a9a9a}
-.bx .sheet .mlist>a:hover,.bx .sheet .mlist summary:hover{color:var(--lime)}
+.bx .nav .right .btn{display:inline-flex !important}
+.bx .nav .menu{display:inline-flex !important;align-items:center;gap:8px;width:auto;padding:0 16px 0 13px;border-radius:99px;font-weight:800;font-size:14.5px}
+@media(min-width:960px){
+  .bx .sheet{background:transparent}
+  .bx .sheet .in{left:auto;right:max(12px,calc((100vw - 1240px)/2 + 20px));top:72px;width:400px;max-height:calc(100vh - 90px);border-radius:28px;box-shadow:0 30px 60px -20px rgba(0,0,0,.35),inset 0 0 0 1.5px var(--hair);transform-origin:top right;animation:bxin .3s var(--ease)}
+}
 @media(max-width:959px){.bx .nav .right .btn{display:none !important}}
+@keyframes bxin{from{opacity:0;transform:translateY(-8px) scale(.97)}to{opacity:1;transform:none}}
 
-/* 2 Bewegung wie DLS */
+/* 2 Bewegung wie DLS: Inhalte fahren beim Scrollen ein */
 .bx-in{opacity:0;transform:translateY(34px);transition:opacity .8s var(--ease) var(--d,0ms),transform .9s var(--ease) var(--d,0ms)}
 .bx-in.bx-on{opacity:1;transform:none}
 .bx-h1{clip-path:inset(0 0 100% 0);transform:translateY(24px);transition:clip-path 1.1s var(--ease),transform 1.1s var(--ease)}
 .bx-h1.bx-on{clip-path:inset(-20% -5% -20% -5%);transform:none}
-.bx .ntile,.bx .hlc,.bx .hlm,.bx .sbar{transition:transform .35s var(--ease),box-shadow .35s var(--ease)}
-.bx .ntile:hover,.bx .hlc:hover,.bx .hlm:hover{transform:translateY(-4px);box-shadow:inset 0 0 0 1.5px #000,0 18px 30px -18px rgba(0,0,0,.35)}
-.bx .ntile img,.bx .hlc img{transition:transform .6s var(--ease)}
-.bx .ntile{overflow:hidden}.bx .ntile:hover img,.bx .hlc:hover img{transform:scale(1.04)}
-.bx .btn{transition:transform .25s var(--ease)}.bx .btn:hover{transform:translateY(-2px)}
-.bx .btn .dot{transition:transform .3s var(--ease)}.bx .btn:hover .dot{transform:translateX(3px)}
 
-/* 3 Fortschritt wie Rockstar */
-.bx .jbar a{position:relative;overflow:hidden;isolation:isolate}
-.bx .jbar a .bx-bar{position:absolute;left:0;bottom:0;height:3px;width:calc(var(--p,0) * 100%);background:#000;border-radius:99px;z-index:-1;transition:width .15s linear}
-.bx .jbar a.cur{background:var(--lime)}
-.bx .jbar a.cur .bx-bar{height:100%;background:rgba(0,0,0,.14);border-radius:0}
+/* 3 Fortschritt wie Rockstar: der aktive (grüne) Punkt der Sprungleiste füllt sich mit einem schwarzen Balken */
+.bx .jbar a{position:relative;overflow:hidden}
+.bx .jbar a .bx-bar{position:absolute;left:0;bottom:0;height:3px;width:calc(var(--p,0) * 100%);background:#000;pointer-events:none}
 
-/* 4 Wisch-Reihen mit Pfeilen */
+/* 4 Wisch-Reihen mit Pfeilen (Pfeile in der Form der vorhandenen Menü-Taste) */
 .bx-rh{display:flex !important;align-items:center;justify-content:space-between;gap:12px}
 .bx-arr{display:inline-flex;gap:8px;flex:none}
-.bx-arr button{width:38px;height:38px;border-radius:10px;border:1.5px solid #000;background:#fff;font-size:20px;line-height:1;cursor:pointer;transition:background .2s,opacity .2s}
-.bx-arr button:hover:not(:disabled){background:var(--lime)}
-.bx-arr button:disabled{opacity:.25;cursor:default}
-.hh.bx-rh{align-items:flex-end}
+.bx-arr button{display:inline-grid;place-items:center;width:44px;height:44px;border-radius:50%;border:0;background:#fff;box-shadow:inset 0 0 0 1.5px var(--hair);font-size:22px;line-height:1;cursor:pointer}
+.bx-arr button:hover:not(:disabled){box-shadow:inset 0 0 0 1.5px #000}
+.bx-arr button:disabled{opacity:.3;cursor:default}
 .ntiles.bx-row{display:grid !important;grid-template-columns:none !important;grid-auto-flow:column;grid-auto-columns:minmax(240px,calc((100% - 42px)/4));overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding-bottom:6px}
-.ntiles.bx-row::-webkit-scrollbar,.bx-films::-webkit-scrollbar{display:none}
+.ntiles.bx-row::-webkit-scrollbar{display:none}
 .ntiles.bx-row .ntile{scroll-snap-align:start}
 @media(max-width:700px){.ntiles.bx-row{grid-auto-columns:78%}.bx-arr{display:none}}
-.bx-films{height:auto !important;display:flex !important;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding:10px 2px 20px}
-.bx-films button,.bx-films:hover button,.bx-films button:hover{position:relative !important;left:0 !important;margin:0 !important;flex:none;width:190px;transform:none !important;scroll-snap-align:start}
-.bx-films button:hover{box-shadow:0 0 0 3px var(--lime),0 30px 50px -28px rgba(0,0,0,.6)}
-.bx-films{background:none !important;box-shadow:none !important}
-@media(max-width:600px){.kz-badge{font-size:12px}.kz-badge span{display:none}}
