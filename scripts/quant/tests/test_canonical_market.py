@@ -126,6 +126,20 @@ VERZEICHNIS_ETF_0611, VERZEICHNIS_WARRANT_0611 = 269, {"BNCWW"}
 # 16.11.2026 (Deckungslauf 43683449015, 15.11.): Technisch bereit 5661 + 5 = 5666. AGNCZ, FCHL, SOCA, SSM, UMBFP sind ueber
 # 300 Bars gealtert (AGED_PAST_THRESHOLD: am 11.09. 255/256 Bars, am 11.11. noch in tooShortSymbols, am 15.11. nicht mehr);
 # kein Titel neu zu kurz, Produkt (6309) und Charts (6306) unveraendert, Abgleich reconciliation.json Delta 0.
+# 19.11.2026 (Deckungslauf 44466448235, pipeline-weekly Teil deckung; coverage-delta.mjs "GEHT AUF"): 31 Titel neu im Produkt.
+#   30 freigegebene Zugaenge (eligibility-expansion-2026-11-17: AZR, FGC, IRLA, SRTM; -2026-11-18-txcp: TXCP;
+#      -2026-11-18-neuzugaenge-1: 25 Titel der Dauerregel) und MEMY: einer der 269 ETFs der Bereinigung vom 06.11., wieder
+#      Stammaktie (EXCLUDED -> ELIGIBLE, Rest der am 17.11. zurueckgenommenen Bereinigung; der Verzeichnisbeleg entfaellt wie bei WTIB).
+#   Titel   6309 + 31 = 6340;  Verzeichnisbelege 434 - 1 (MEMY) = 433
+#   Charts  6306 + 30 = 6336   (FFTT ist neu, aber noch nicht darstellbar: < 2 Bars)
+#   Technik 5666 + 7 gealtert (ANGX, BRKRP, KLAR, LBRX, ORIQ, PAII, SPEG) + 21 technisch bereite Zugaenge = 5694
+#           (10 Zugaenge noch zu kurz: AUXX, AXNX, CATL, FFTT, MEMY, MTAK, OCLT, RNAQ, SVIA, TXCP)
+#   R2-Ablage 7802 + 29 = 7831 (Ablagedeckung gegen den Wertpapierstamm, keine Produktkennzahl)
+ZUGANG_1911 = 31
+VERZEICHNIS_WIEDER_STAMMAKTIE_1911 = {"MEMY"}
+ZUGANG_NICHT_DARSTELLBAR_1911 = {"FFTT"}
+ZUGANG_ZU_KURZ_1911 = {"AUXX", "AXNX", "CATL", "FFTT", "MEMY", "MTAK", "OCLT", "RNAQ", "SVIA", "TXCP"}
+GEALTERT_1911 = {"ANGX", "BRKRP", "KLAR", "LBRX", "ORIQ", "PAII", "SPEG"}
 VERZEICHNIS_WIEDER_STAMMAKTIE_1111 = {"WTIB"}
 GEALTERT_1611 = {"AGNCZ", "FCHL", "SOCA", "SSM", "UMBFP"}
 VERZEICHNIS_AUSGESCHLOSSEN_0611 = ABNAHME["verzeichnisAusgeschlossen"]
@@ -135,7 +149,7 @@ ENTFERNTE_DEBT_TITEL = {
     "MFICL", "MHNC", "PRHIZ", "RWTN", "SAX", "SRJN", "SSSSL", "TMUSI",
     "TMUSL", "TMUSZ", "TPTS", "TRINI", "TRINZ", "UNMA",
 }
-CHART_AUSNAHMEN = {"GLMD", "BNRG", "JAB"}
+CHART_AUSNAHMEN = {"GLMD", "BNRG", "JAB"} | ZUGANG_NICHT_DARSTELLBAR_1911
 # BRTM stand am 20.09. hier (Listing 10.09., < 2 Bars abgelegt); heute 17 Bars.
 CHART_AUSNAHMEN_0920 = CHART_AUSNAHMEN | {"BRTM"}
 
@@ -294,14 +308,16 @@ class AusnahmelistenSindVollstaendigTests(unittest.TestCase):
                 and c["from"]["productEligibility"] != "EXCLUDED"}
         self.assertEqual(len(raus), VERZEICHNIS_AUSGESCHLOSSEN_0611)
         self.assertEqual(VERZEICHNIS_AUSGESCHLOSSEN - len(VERZEICHNIS_WIEDER_STAMMAKTIE) + VERZEICHNIS_ETF_0611
-                         + len(VERZEICHNIS_WARRANT_0611) - len(VERZEICHNIS_WIEDER_STAMMAKTIE_1111),
-                         VERZEICHNIS_AUSGESCHLOSSEN_0611)
-        self.assertFalse((VERZEICHNIS_WIEDER_STAMMAKTIE | VERZEICHNIS_WIEDER_STAMMAKTIE_1111) & raus)
+                         + len(VERZEICHNIS_WARRANT_0611) - len(VERZEICHNIS_WIEDER_STAMMAKTIE_1111)
+                         - len(VERZEICHNIS_WIEDER_STAMMAKTIE_1911), VERZEICHNIS_AUSGESCHLOSSEN_0611)
+        self.assertFalse((VERZEICHNIS_WIEDER_STAMMAKTIE | VERZEICHNIS_WIEDER_STAMMAKTIE_1111
+                          | VERZEICHNIS_WIEDER_STAMMAKTIE_1911) & raus)
         self.assertTrue(VERZEICHNIS_WARRANT_0611 <= raus)
         bereinigung = lade(ROOT / "docs/data/security-master/eligibility-cleanup-2026-11-06.json")
         etf = {x["ticker"] for x in bereinigung["leave"]}
         self.assertEqual(len(etf), VERZEICHNIS_ETF_0611)
-        self.assertTrue(etf - VERZEICHNIS_WIEDER_STAMMAKTIE_1111 <= raus, "ETF der Bereinigung ohne Verzeichnisbeleg im Abgleich")
+        self.assertTrue(etf - VERZEICHNIS_WIEDER_STAMMAKTIE_1111 - VERZEICHNIS_WIEDER_STAMMAKTIE_1911 <= raus,
+                        "ETF der Bereinigung ohne Verzeichnisbeleg im Abgleich")
         for c in abgleich["changes"]:
             if c.get("source") == "NASDAQ_TRADER_SYMBOL_DIRECTORY":
                 self.assertTrue(c.get("securityName") and c.get("rule"), c["ticker"] + " ohne Beleg")
@@ -310,7 +326,7 @@ class AusnahmelistenSindVollstaendigTests(unittest.TestCase):
         self.assertFalse(raus & set(m["CHART_AVAILABILITY"]["notRenderableSymbols"]))
         self.assertFalse(raus & set(m["TECHNICAL_HISTORY_ELIGIBILITY"]["tooShortSymbols"]))
         self.assertNotIn("TBHC", m["TECHNICAL_HISTORY_ELIGIBILITY"]["tooShortSymbols"])
-        self.assertFalse(GEALTERT_1611 & set(m["TECHNICAL_HISTORY_ELIGIBILITY"]["tooShortSymbols"]))
+        self.assertFalse((GEALTERT_1611 | GEALTERT_1911) & set(m["TECHNICAL_HISTORY_ELIGIBILITY"]["tooShortSymbols"]))
         technisch_bereit_raus, gealtert = 137, 1
         self.assertEqual(VERZEICHNIS_AUSGESCHLOSSEN - technisch_bereit_raus, 30)  # schon am Bezug zu kurz
         # Uebergang 04.10. -> 10.10. (167 Verzeichnisbelege), unveraendert als Rechnung festgehalten
@@ -320,11 +336,13 @@ class AusnahmelistenSindVollstaendigTests(unittest.TestCase):
                          POLICY_STAND_1010["TECHNICAL_HISTORY_ELIGIBLE"])
         self.assertEqual(POLICY_STAND_1010, {k: ABGENOMMEN_1010[k] for k in POLICY_STAND_1010})
         # Uebergang 10.10. -> 06.11. (Eignungs-Bereinigung, Deltabericht Lauf 42201411281)
-        self.assertEqual(POLICY_STAND_1010["PRODUCT_TITLES"] - ETF_RAUS_0611 + NEU_0611 + WTIB_1111, AKTUELLER_POLICY_STAND["PRODUCT_TITLES"])
-        self.assertEqual(POLICY_STAND_1010["HISTORICAL_CHART_AVAILABLE"] - ETF_RAUS_0611 + NEU_0611 + WTIB_1111,
-                         AKTUELLER_POLICY_STAND["HISTORICAL_CHART_AVAILABLE"])
+        self.assertEqual(POLICY_STAND_1010["PRODUCT_TITLES"] - ETF_RAUS_0611 + NEU_0611 + WTIB_1111 + ZUGANG_1911,
+                         AKTUELLER_POLICY_STAND["PRODUCT_TITLES"])
+        self.assertEqual(POLICY_STAND_1010["HISTORICAL_CHART_AVAILABLE"] - ETF_RAUS_0611 + NEU_0611 + WTIB_1111
+                         + ZUGANG_1911 - len(ZUGANG_NICHT_DARSTELLBAR_1911), AKTUELLER_POLICY_STAND["HISTORICAL_CHART_AVAILABLE"])
         self.assertEqual(POLICY_STAND_1010["TECHNICAL_HISTORY_ELIGIBLE"] - ETF_TECHNISCH_BEREIT_0611 + GEALTERT_0611 + GEALTERT_1111
-                         + len(GEALTERT_1611), AKTUELLER_POLICY_STAND["TECHNICAL_HISTORY_ELIGIBLE"])
+                         + len(GEALTERT_1611) + len(GEALTERT_1911) + ZUGANG_1911 - len(ZUGANG_ZU_KURZ_1911),
+                         AKTUELLER_POLICY_STAND["TECHNICAL_HISTORY_ELIGIBLE"])
         eignung = lade(ROOT / "quant/data/market/security-master/eligibility.json")
         etf_raus = [d for d in eignung["decisions"] if d["product_eligibility"] == "EXCLUDED"
                     and d.get("product_eligibility_reason") == "CONFIRMED_NON_EQUITY:ETF"]
