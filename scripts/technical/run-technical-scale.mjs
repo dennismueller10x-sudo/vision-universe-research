@@ -33,6 +33,7 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import { loadSuccessions, withPredecessor } from "../market/lib/ticker-succession-bars.mjs";
 
 const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -166,8 +167,13 @@ function elliottBucket(elliott) {
   return { bucket: "MEDIUM_CONFIDENCE", reason: null };
 }
 
+/* Tickerwechsel (ADR-009, 19.11.2026): Nachfolger tragen die Bars ihres Vorgaengers vor dem Stichtag, wie Faktoren und
+   Discover-Reihe (scripts/market/lib/ticker-succession-bars.mjs). Sonst gilt TXCP mit 6 Bars als INSUFFICIENT_HISTORY. */
+const succ = loadSuccessions(root);
+
 for (const sec of universe.securities) {
-  const payload = store.readBars(sec.securityId, "working");
+  const payload = withPredecessor(store.readBars(sec.securityId, "working"), sec, succ,
+                                  (e) => store.readBars(e.from, "working")).payload;
   if (!payload || !(payload.bars || []).length) {
     coverage.SOURCE_MISSING++;
     elliottCoverage.NOT_RUN++;

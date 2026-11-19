@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 import { gzipSync } from "node:zlib";
 import { applyConfirmations } from "../market/lib/corporate-action-confirmations.mjs";
+import { loadSuccessions, withPredecessor } from "../market/lib/ticker-succession-bars.mjs";
 
 const require = createRequire(import.meta.url);
 const rootDefault = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -203,6 +204,7 @@ export function materialize(options = {}) {
   if (options.tickers) { const wanted = new Set(options.tickers); members = members.filter(m => wanted.has(m.s)); }
   else if (limit) members = members.slice(0, limit);
   const pathFor = (securityId) => join(sourceDir, "tiingo", "daily", securityId + ".json");
+  const succ = loadSuccessions(rootDefault);   // Register ist Konfiguration im Repository, auch bei --root
 
   rmSync(target, { recursive: true, force: true }); mkdirSync(target, { recursive: true });
   const signalPayloads = Object.fromEntries(signalLookbacks.map(n => [n, []]));
@@ -288,7 +290,11 @@ export function materialize(options = {}) {
     if (!existsSync(file)) { rows[member.s] = { technical: "SOURCE_MISSING", signals: "SOURCE_MISSING", elliott: "NOT_RUN" }; unavailableSignals(member.s, "SOURCE_MISSING"); noteUnavailable(member.s, "SOURCE_MISSING", null); reasons.SOURCE_MISSING = (reasons.SOURCE_MISSING || 0) + 1; continue; }
     stats.historiesFound++;
     let input;
-    try { input = validatedInput(load(file), member); }
+    /* Tickerwechsel (ADR-009, 19.11.2026): die Vorgaengerreihe vor dem Stichtag gehoert zum selben Wertpapier; ihre Bars
+       tragen danach die ID des Nachfolgers, damit die Herkunftspruefung je Bar gilt (scripts/market/lib/ticker-succession-bars.mjs). */
+    const loadJoined = () => withPredecessor(load(file), { securityId: member.m, ticker: member.s }, succ,
+      (e) => (existsSync(pathFor(e.from)) ? load(pathFor(e.from)) : null), { relabel: true }).payload;
+    try { input = validatedInput(loadJoined(), member); }
     catch (error) { const reason = String(error.message).split(":")[0]; rows[member.s] = { technical: reason, signals: reason, elliott: "NOT_RUN" }; unavailableSignals(member.s, reason); noteUnavailable(member.s, reason, null); reasons[reason] = (reasons[reason] || 0) + 1; continue; }
     stats.historiesValidated++; stats.adjustedProvenance++; stats.corporateActionsValidated++;
     stats.splitFactors += input.provenance.splitEvents;
