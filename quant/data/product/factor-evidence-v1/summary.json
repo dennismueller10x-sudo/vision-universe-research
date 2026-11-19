@@ -3,7 +3,7 @@
  "methodologyVersion": "vu-factor-evidence-2.0.0",
  "derivedFrom": "quant-v2.4.1",
  "changeMethodologyVersion": "vu-change-1.0.0",
- "generatedAt": "2026-11-19T00:21:03.000Z",
+ "generatedAt": "2026-11-19T07:10:17.000Z",
  "asOf": "2026-11-18",
  "publication": {
   "compositeAllowed": false,
@@ -799,14 +799,21 @@
   "velocityWindowDays": 30,
   "velocityToleranceDays": 10,
   "scoreMomentumOpen": true,
-  "recomputationDrift": null
+  "recomputationDrift": {
+   "asOf": "2026-11-18",
+   "publishedHash": "68d387ce5a321875",
+   "recomputedHash": "3380194422100c4c",
+   "rowsDiffering": 530,
+   "rowsTotal": 5939,
+   "note": "Die veroeffentlichte Beobachtung bleibt unveraendert. Sie wurde an diesem Stichtag veroeffentlicht und wird nicht durch eine heutige Neuberechnung ersetzt."
+  }
  },
  "scope": "CANONICAL_PRODUCT_UNIVERSE",
  "source": {
   "priceFactors": {
    "engine": "market-factors-1.0.0",
    "generatedAt": "2026-11-18T23:36:10.502Z",
-   "securities": 5948,
+   "securities": 5947,
    "benchmark": {
     "id": "SPY",
     "bars": 8510,
@@ -837,7 +844,7 @@
   },
   "productUniverse": {
    "file": "quant/data/market/security-master/eligibility.json",
-   "sha256": "d49db37a62061842dc61ab3501bb326ea351edce9ca633070a42e6f363bd73ca"
+   "sha256": "9efacf856e1b4bc075cd2518c5f2a85d64aeb0175acba75189cf1fed52969da1"
   }
  },
  "notAnEquityListing": {
@@ -862,59 +869,59 @@
   ]
  },
  "counts": {
-  "productUniverse": 6327,
-  "priceFactorSecurities": 5948,
-  "priceFactorRowsOutsideProductUniverse": 13,
+  "productUniverse": 6326,
+  "priceFactorSecurities": 5947,
+  "priceFactorRowsOutsideProductUniverse": 14,
   "notAnEquityListing": 8,
   "identityQuarantined": 13,
-  "published": 5940,
+  "published": 5939,
   "withFundamentals": 5319,
   "withMarketCap": 3927,
-  "quotesFromPublishedSeries": 539,
+  "quotesFromPublishedSeries": 538,
   "withMarketCapFromPublishedSeries": 187
  },
  "factorStates": {
   "quality": {
    "AVAILABLE": 4137,
-   "UNAVAILABLE": 1803,
+   "UNAVAILABLE": 1802,
    "NOT_APPLICABLE": 0
   },
   "growth": {
    "AVAILABLE": 3360,
-   "UNAVAILABLE": 2580,
+   "UNAVAILABLE": 2579,
    "NOT_APPLICABLE": 0
   },
   "momentum": {
    "AVAILABLE": 5454,
-   "UNAVAILABLE": 486,
+   "UNAVAILABLE": 485,
    "NOT_APPLICABLE": 0
   },
   "value": {
    "AVAILABLE": 2788,
-   "UNAVAILABLE": 3152,
+   "UNAVAILABLE": 3151,
    "NOT_APPLICABLE": 0
   },
   "profitability": {
    "AVAILABLE": 2544,
-   "UNAVAILABLE": 3396,
+   "UNAVAILABLE": 3395,
    "NOT_APPLICABLE": 0
   },
   "revisions": {
    "AVAILABLE": 0,
-   "UNAVAILABLE": 5940,
+   "UNAVAILABLE": 5939,
    "NOT_APPLICABLE": 0
   },
   "risk": {
    "AVAILABLE": 5454,
-   "UNAVAILABLE": 486,
+   "UNAVAILABLE": 485,
    "NOT_APPLICABLE": 0
   }
  },
  "reasonCounts": {
-  "BLOCKED_EXTERNAL": 5940,
+  "BLOCKED_EXTERNAL": 5939,
   "INSUFFICIENT_COMPONENTS": 3746,
-  "INPUT_NOT_MATERIALIZED": 5728,
-  "INSUFFICIENT_WEIGHTED_COVERAGE": 1806,
+  "INPUT_NOT_MATERIALIZED": 5723,
+  "INSUFFICIENT_WEIGHTED_COVERAGE": 1805,
   "REPORTING_CURRENCY_NOT_LISTING_CURRENCY": 359,
   "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING": 248,
   "MANDATORY_COMPONENT_MISSING": 14,
@@ -933,10 +940,10 @@
   "growth:operatingMarginExpansion3y": 3448,
   "growth:revenueGrowthAcceleration": 4179,
   "momentum:priceReturn12m1m": 5454,
-  "momentum:priceReturn6m": 5732,
-  "momentum:priceReturn3m": 5897,
+  "momentum:priceReturn6m": 5731,
+  "momentum:priceReturn3m": 5896,
   "momentum:distanceTo52wHigh": 5456,
-  "momentum:distanceToSma200": 5543,
+  "momentum:distanceToSma200": 5542,
   "value:fcfYield": 2123,
   "value:earningsYield": 2745,
   "value:ebitdaYield": 982,
@@ -973,7 +980,7 @@
  "screening": {
   "schemaVersion": "factor-evidence-screening-1.0.0",
   "namespace": "quantV2.factorEvidence",
-  "rows": 5940,
+  "rows": 5939,
   "fields": [
    "quantV2.factorEvidence.quality",
    "quantV2.factorEvidence.growth",
@@ -1029,7 +1036,7 @@
  ],
  "gapCounts": {
   "SHARE_COUNT_CONCEPT_KNOWN": 4740,
-  "IDENTITY_UNRESOLVED": 476,
+  "IDENTITY_UNRESOLVED": 475,
   "REPORTING_CURRENCY_NOT_LISTING_CURRENCY": 501,
   "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING": 248,
   "STALE_PRICE_SERIES_ZERO_VOLATILITY": 19,
@@ -1037,6 +1044,6 @@
   "SHARE_COUNT_SCALE_SUSPECT": 4,
   "NOT_AN_EQUITY_LISTING:PREFERRED": 8
  },
- "runtimeMs": 15589,
- "contentHash": "29e845c936fcc1a9"
+ "runtimeMs": 23780,
+ "contentHash": "71d1ea3762f7005e"
 }
