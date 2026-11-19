@@ -1,0 +1,100 @@
+/* Technik-Konzepte (Owner 19.11.2026): Inhalt, Texte, Bilder und Farben wie www.visionuniverse.de; nur Technik neu. */
+.kz-badge{position:fixed;left:12px;bottom:12px;z-index:90;display:inline-flex;gap:8px;align-items:center;padding:9px 14px;border-radius:99px;background:var(--lime);color:#000;font-weight:900;font-size:13px;box-shadow:0 10px 30px -10px rgba(0,0,0,.4)}
+.kz-badge span{font-weight:700;opacity:.7}
+
+/* Alle Varianten: Menü wie bei DLS (Pille oben rechts, Karte klappt auf) */
+.tk .nav .links,.tk .nav .appchip,.tk .jbar{display:none !important}
+.tk .nav .right{gap:0;padding:4px;border-radius:99px;background:#000}
+.tk .nav .right .btn{display:inline-flex !important;order:2;min-height:40px;padding:0 6px 0 16px;background:var(--lime);color:#000;font-size:14.5px}
+.tk .nav .right .btn .dot{width:30px;height:30px;background:#000;color:var(--lime)}
+.tk .nav [data-menu]{display:inline-flex !important;order:1;align-items:center;gap:8px;width:auto;height:40px;padding:0 14px;border:0;border-radius:99px;background:transparent;color:#fff;font-weight:800;font-size:14.5px;box-shadow:none}
+.tk .nav [data-menu] svg{width:18px;height:18px}
+.tk .sheet{background:transparent}
+.tk .sheet .in{left:auto;right:max(12px,calc((100vw - 1240px)/2 + 20px));top:74px;width:min(400px,calc(100vw - 24px));max-height:calc(100vh - 90px);border-radius:24px;background:#000;color:#fff;box-shadow:0 30px 60px -20px rgba(0,0,0,.55);animation:tkin .25s var(--ease)}
+@keyframes tkin{from{opacity:0;transform:translateY(-8px) scale(.98)}to{opacity:1;transform:none}}
+.tk .sheet .hd .logo{filter:invert(1)}
+.tk .sheet .x{background:var(--lime);color:#000}
+.tk .sheet .mlist{border-top-color:#222}
+.tk .sheet .mlist>a,.tk .sheet .mlist summary{border-bottom-color:#222;color:#fff}
+.tk .sheet .msub a{color:#fff}.tk .sheet .msub small{color:#9a9a9a}
+@media(max-width:959px){.tk .nav .right .btn{display:none !important}.tk .nav .right{background:#000}}
+
+/* Hero als eigener Bereich (T1, T3, T4, T5) */
+.tk-hero{padding-top:12px}
+.tk-hero .step.first{min-height:0;padding-bottom:40px}
+.tk-t1 .stick,.tk-t3 .stick,.tk-t4 .stick,.tk-t5 .stick{display:none !important}
+.tk-t1 .story,.tk-t3 .story,.tk-t4 .story,.tk-t5 .story{display:block;max-width:1240px}
+@media(min-width:1000px){
+  .tk-hero .step.first{display:grid;grid-template-columns:1.1fr .9fr;column-gap:40px;align-items:center}
+  .tk-hero .step.first>*{grid-column:1}.tk-hero .step.first .stage.mob{display:block !important;grid-column:2;grid-row:1/span 8}
+}
+
+/* Kapitel als Bühne: Text links, eigenes iPhone rechts (T1, T3, T5) */
+@media(min-width:1000px){
+  .tk-t1 .step:not(.first),.tk-t3 .step:not(.first),.tk-t5 .step:not(.first){display:grid;grid-template-columns:1.1fr .9fr;column-gap:40px;align-content:center;min-height:0}
+  .tk-t1 .step:not(.first)>*,.tk-t3 .step:not(.first)>*,.tk-t5 .step:not(.first)>*{grid-column:1}
+  .tk-t1 .step:not(.first)>.aphone,.tk-t3 .step:not(.first)>.aphone,.tk-t5 .step:not(.first)>.aphone{display:block !important;grid-column:2;grid-row:1/span 12;align-self:center;justify-self:center;--pw:270px}
+}
+
+/* T1 Karussell */
+.tk-nav{display:flex;align-items:center;gap:10px;position:sticky;top:66px;z-index:20;padding-top:10px;padding-bottom:10px;background:rgba(255,255,255,.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.tk-dots{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex:1}.tk-dots::-webkit-scrollbar{display:none}
+.tk-dots button{flex:none;padding:8px 14px;border-radius:99px;border:0;background:#f2f2f2;font-weight:800;font-size:14px;cursor:pointer;white-space:nowrap}
+.tk-dots button.on{background:#000;color:#fff}
+.tk-arr{flex:none;width:40px;height:40px;border-radius:50%;border:1.5px solid #000;background:#fff;font-size:22px;line-height:1;cursor:pointer}
+.tk-arr:hover{background:var(--lime);border-color:var(--lime)}
+.tk-t1 .steps{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overflow-y:hidden}
+.tk-t1 .steps::-webkit-scrollbar{display:none}
+.tk-t1 .step:not(.first){flex:0 0 100%;scroll-snap-align:start;padding-top:28px;padding-bottom:40px}
+
+/* T2 Vollbild-Folien */
+html.tk-t2{scroll-snap-type:y proximity}
+.tk-t2 .step,.tk-t2 main>section.full,.tk-t2 main>section.joinw{min-height:100svh;scroll-snap-align:start;display:flex;flex-direction:column;justify-content:center}
+.tk-t2 .step{padding-top:110px}
+.tk-rail{position:fixed;right:14px;top:50%;transform:translateY(-50%);z-index:40;display:grid;gap:8px}
+.tk-rail button{position:relative;width:12px;height:12px;padding:0;border:0;border-radius:50%;background:#d0d0d0;cursor:pointer}
+.tk-rail button.on{background:#000;box-shadow:0 0 0 4px var(--lime)}
+.tk-rail span{position:absolute;right:22px;top:50%;transform:translateY(-50%);padding:4px 10px;border-radius:99px;background:#000;color:#fff;font-size:12px;font-weight:800;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .2s}
+.tk-rail button:hover span,.tk-rail button.on span{opacity:1}
+@media(max-width:700px){.tk-rail span{display:none}.tk-rail{right:6px}.tk-rail button{width:9px;height:9px}}
+
+/* T3 Bühne mit Reitern */
+.tk-tabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;position:sticky;top:66px;z-index:20;padding-top:12px;padding-bottom:12px;background:rgba(255,255,255,.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.tk-tabs::-webkit-scrollbar{display:none}
+.tk-tabs button{position:relative;flex:none;padding:10px 16px 12px;border-radius:14px;border:0;background:#f2f2f2;font-weight:800;font-size:14.5px;cursor:pointer;overflow:hidden}
+.tk-tabs button.on{background:#000;color:#fff}
+.tk-tabs i{position:absolute;left:0;bottom:0;height:3px;width:0;background:var(--lime)}
+.tk-tabs .run i{animation:tkbar 7s linear forwards}
+@keyframes tkbar{to{width:100%}}
+.tk-t3 .step:not(.first){display:none !important}
+.tk-t3 .step.tk-on{display:block !important;animation:tkfade .5s var(--ease)}
+@media(min-width:1000px){.tk-t3 .step.tk-on{display:grid !important}}
+@keyframes tkfade{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.tk-t3 .step:not(.first){padding-top:26px;padding-bottom:30px}
+
+/* T4 Akkordeon */
+.tk-t4 .step:not(.first){min-height:0;padding:0;border-bottom:1px solid var(--hair)}
+.tk-t4 .step:not(.first)>*:not(.tk-acc){display:none !important}
+.tk-t4 .step.tk-open>*:not(.tk-acc):not(.kap):not(.tagm):not(h2){display:block !important}
+.tk-t4 .step.tk-open>.wd,.tk-t4 .step.tk-open>.aphone{margin-top:18px}
+.tk-t4 .step.tk-open{padding-bottom:30px}
+@media(min-width:1000px){.tk-t4 .step.tk-open{display:grid;grid-template-columns:1.1fr .9fr;column-gap:40px}.tk-t4 .step.tk-open>*{grid-column:1}.tk-t4 .step.tk-open>.aphone{grid-column:2;grid-row:2/span 12;--pw:260px;justify-self:center}.tk-t4 .step.tk-open>.tk-acc{grid-column:1/-1}}
+.tk-acc{display:grid;grid-template-columns:auto 1fr 44px;gap:14px;align-items:center;width:100%;padding:18px 0;border:0;background:none;text-align:left;cursor:pointer}
+.tk-acc .tagm{margin:0}
+.tk-acc b{font-size:clamp(18px,2vw,26px);font-weight:900;letter-spacing:-.03em;line-height:1.15}
+.tk-acc i{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:#000;color:var(--lime);font-style:normal;font-size:24px;transition:transform .3s var(--ease)}
+.tk-open .tk-acc i{transform:rotate(45deg);background:var(--lime);color:#000}
+@media(max-width:700px){.tk-acc{grid-template-columns:1fr 40px}.tk-acc .tagm{grid-column:1/-1}}
+
+/* T5 Seitwärts beim Runterscrollen (Bühne bleibt stehen) */
+.tk-t5 .story{position:relative;height:calc(var(--n,11) * 70vh + 100vh)}
+.tk-t5 .story>.steps{position:sticky;top:120px;display:flex;height:calc(100vh - 130px);overflow:visible;transition:transform .08s linear;will-change:transform}
+.tk-t5 .story{overflow-x:clip}
+.tk-t5 .step:not(.first){flex:0 0 100%;min-height:0;align-content:center;padding-top:0;padding-bottom:0}
+@media(max-width:999px){.tk-t5 .step:not(.first){overflow-y:auto}.tk-t5 .step:not(.first)>.aphone{--pw:180px}}
+/* Korrekturen */
+.tk-hero .step.first{overflow:visible}
+.tk-hero .stage.mob .hc{white-space:nowrap}
+@media(min-width:1000px){.tk-hero .step.first .stage.mob{width:100%;max-width:560px;height:620px}}
+.tk-t5 .story{padding-left:0;padding-right:0;overflow:hidden;overflow:clip}
+.tk-t5 .step:not(.first){padding-left:32px;padding-right:32px}

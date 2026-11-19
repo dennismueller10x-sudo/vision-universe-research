@@ -159,6 +159,18 @@ async function buildConcepts(output) {
   for (const c of CONCEPTS.l) await make('l', c);
   // Präsentation mit Konzept A und B (Handarbeit unter landing/konzepte/) ersetzt die alte Liste.
   await cp(resolve(root,'konzepte'),resolve(output,'konzepte'),{recursive:true});
+  // Technik-Konzepte (Owner 19.11.2026): www.visionuniverse.de unverändert (konzepte/t/basis.html = Stand main), nur die Technik neu.
+  const TECH = [['t1','Karussell'],['t2','Vollbild-Folien'],['t3','Bühne mit Reitern'],['t4','Akkordeon'],['t5','Seitwärts-Bühne']];
+  const basis = (await readFile(resolve(root,'konzepte/t/basis.html'),'utf8'))
+    .replace('<link rel="stylesheet" href="/assets/site-navigation.css">','').replace('<vu-navigation></vu-navigation>','').replace('<script src="/assets/site-navigation.js"></script>','')
+    .replace('"./web/site.css"','"../t/basis-site.css"').replace('"./web/site.js"','"../t/basis-site.js"')
+    .replace(/(src|href|data-img|data-src|data-vid|poster)="\.\//g,'$1="../../');
+  for (const [id,name] of TECH) {
+    const html = basis.replace('<html lang="de"',`<html lang="de" class="tk tk-${id}"`)
+      .replace('</head>','<link rel="stylesheet" href="../t/techniken.css"><script src="../t/techniken.js" defer></script></head>')
+      .replace(/(<body[^>]*>)/,`$1<a class="kz-badge" href="../">Technik ${id.slice(1)} · ${name} <span>‹ alle Techniken</span></a>`);
+    await mkdir(resolve(output,'konzepte',id),{recursive:true}); await writeFile(resolve(output,'konzepte',id,'index.html'),html);
+  }
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
