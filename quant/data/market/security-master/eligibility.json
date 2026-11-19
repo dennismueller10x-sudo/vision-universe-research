@@ -1,16 +1,16 @@
 {
- "generatedAt": "2026-11-18T05:02:51.909Z",
+ "generatedAt": "2026-11-19T06:33:40.742Z",
  "version": "us-security-master-1.3.0",
  "classificationRuleVersion": "us-security-master-rules-1.3.3",
  "coverageEngine": "coverage-metrics-1.0.0",
- "today": "2026-11-18",
+ "today": "2026-11-19",
  "phase": "POST_BACKFILL_CLEANUP_NO_PRICE_REQUESTS",
  "tiingoPriceRequests": 0,
  "scope": "US_LISTED_EQUITIES_PRODUCT_ELIGIBILITY",
  "rootEvidence": "PROVIDER_SUPPORTED_TICKERS",
  "securityMasterRejected": null,
  "securityMasterRejudged": {
-  "file": "/home/runner/work/_temp/erw/next1/us-security-master.json",
+  "file": "quant/data/market/security-master/us-security-master.json",
   "found": "us-security-master-1.3.0",
   "expected": "us-security-master-1.3.0",
   "rows": 8089,
@@ -27,15 +27,15 @@
   "file": "quant/data/market/security-master/company-names.json",
   "present": true,
   "version": "company-names-1.0.0",
-  "generatedAt": "2026-11-18T02:36:13.267Z",
-  "sha256": "6bd4f4f767785d42a3e207a8bd43f2eacbfad07fe815a4f53068f5c3ef0e5ffd",
-  "names": 7553,
+  "generatedAt": "2026-11-18T12:50:04.666Z",
+  "sha256": "31129055960377124cf55883a41f37607e4257d2b277b62c42e078c5fa9b6c2b",
+  "names": 7578,
   "reclassified": {
    "EQUITY_COMMON->TRUST": 117,
    "EQUITY_COMMON->REIT": 19,
    "EQUITY_COMMON->ADR": 7,
    "EQUITY_COMMON->ETF": 126,
-   "EQUITY_COMMON->SPAC": 229,
+   "EQUITY_COMMON->SPAC": 233,
    "EQUITY_COMMON->PREFERRED": 6,
    "EQUITY_COMMON->TEST_SECURITY": 3,
    "EQUITY_COMMON->DEBT": 22,
@@ -60,14 +60,14 @@
  },
  "counts": {
   "universeMembers": 7833,
-  "ELIGIBLE": 5238,
-  "SEPARATE_CLASS": 787,
-  "EXCLUDED": 1493,
-  "REVIEW": 315,
-  "productUniverse": 6340
+  "ELIGIBLE": 5232,
+  "SEPARATE_CLASS": 791,
+  "EXCLUDED": 1494,
+  "REVIEW": 316,
+  "productUniverse": 6339
  },
  "excludedByClass": {
-  "ETF": 396,
+  "ETF": 397,
   "DEBT": 147,
   "TEST_SECURITY": 44,
   "WARRANT": 461,
@@ -80,11 +80,11 @@
   "TRUST": 87,
   "REIT": 15,
   "ADR": 7,
-  "SPAC": 228,
+  "SPAC": 232,
   "PREFERRED": 450
  },
  "reviewByReason": {
-  "UNCONFIRMED:LISTING_INACTIVE": 311,
+  "UNCONFIRMED:LISTING_INACTIVE": 312,
   "UNCONFIRMED:CLASS_PREFERRED_SEPARATE_FROM_PRIMARY_COMMON_EQUITY": 35,
   "UNCONFIRMED:OTC_VENUE_OUT_OF_CURRENT_POLICY": 6,
   "UNCONFIRMED:CLASS_WARRANT_NOT_AN_EQUITY": 13,
@@ -16330,8 +16330,8 @@
    "classification_status": "CLASSIFIED",
    "classification_confidence": "HIGH",
    "active_status": "ACTIVE",
-   "product_eligibility": "ELIGIBLE",
-   "product_eligibility_reason": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "product_eligibility": "REVIEW",
+   "product_eligibility_reason": "UNCONFIRMED:LISTING_INACTIVE",
    "evidence_source": "SECURITY_MASTER_REJUDGED",
    "review_flags": [
     "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED",
@@ -116388,16 +116388,16 @@
    "ticker": "MEMY",
    "securityId": "ref_MEMY",
    "exchange": "BATS",
-   "instrument_type": "EQUITY_COMMON",
+   "instrument_type": "ETF",
    "classification_status": "CLASSIFIED",
    "classification_confidence": "HIGH",
    "active_status": "ACTIVE",
-   "product_eligibility": "ELIGIBLE",
-   "product_eligibility_reason": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
-   "evidence_source": "SECURITY_MASTER_REJUDGED",
+   "product_eligibility": "EXCLUDED",
+   "product_eligibility_reason": "CONFIRMED_NON_EQUITY:ETF",
+   "evidence_source": "SECURITY_MASTER_REJUDGED+CONFIRMED_NON_EQUITY_REGISTER",
    "review_flags": [
-    "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED",
-    "MASTER_REJUDGED:EQUITY_COMMON"
+    "MASTER_REJUDGED:EQUITY_COMMON",
+    "CONFIRMED_NON_EQUITY_REGISTER:EQUITY_COMMON"
    ],
    "start_date": "2026-01-20"
   },
@@ -132228,16 +132228,15 @@
    "ticker": "CATL",
    "securityId": "ref_CATL",
    "exchange": "NASDAQ",
-   "instrument_type": "EQUITY_COMMON",
+   "instrument_type": "SPAC",
    "classification_status": "CLASSIFIED",
    "classification_confidence": "HIGH",
    "active_status": "ACTIVE",
-   "product_eligibility": "ELIGIBLE",
-   "product_eligibility_reason": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
-   "evidence_source": "SECURITY_MASTER_REJUDGED",
+   "product_eligibility": "SEPARATE_CLASS",
+   "product_eligibility_reason": "CONFIRMED_SEPARATE_CLASS:SPAC",
+   "evidence_source": "SECURITY_MASTER_REJUDGED+NAME_LAYER",
    "review_flags": [
-    "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED",
-    "MASTER_REJUDGED:EQUITY_COMMON"
+    "NAME_LAYER_RECLASSIFIED:EQUITY_COMMON"
    ],
    "start_date": "2026-09-17"
   },
@@ -132364,16 +132363,15 @@
    "ticker": "MTAK",
    "securityId": "ref_MTAK",
    "exchange": "NASDAQ",
-   "instrument_type": "EQUITY_COMMON",
+   "instrument_type": "SPAC",
    "classification_status": "CLASSIFIED",
    "classification_confidence": "HIGH",
    "active_status": "ACTIVE",
-   "product_eligibility": "ELIGIBLE",
-   "product_eligibility_reason": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
-   "evidence_source": "SECURITY_MASTER_REJUDGED",
+   "product_eligibility": "SEPARATE_CLASS",
+   "product_eligibility_reason": "CONFIRMED_SEPARATE_CLASS:SPAC",
+   "evidence_source": "SECURITY_MASTER_REJUDGED+NAME_LAYER",
    "review_flags": [
-    "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED",
-    "MASTER_REJUDGED:EQUITY_COMMON"
+    "NAME_LAYER_RECLASSIFIED:EQUITY_COMMON"
    ],
    "start_date": "2026-09-17"
   },
@@ -132432,16 +132430,15 @@
    "ticker": "OCLT",
    "securityId": "ref_OCLT",
    "exchange": "NASDAQ",
-   "instrument_type": "EQUITY_COMMON",
+   "instrument_type": "SPAC",
    "classification_status": "CLASSIFIED",
    "classification_confidence": "HIGH",
    "active_status": "ACTIVE",
-   "product_eligibility": "ELIGIBLE",
-   "product_eligibility_reason": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
-   "evidence_source": "SECURITY_MASTER_REJUDGED",
+   "product_eligibility": "SEPARATE_CLASS",
+   "product_eligibility_reason": "CONFIRMED_SEPARATE_CLASS:SPAC",
+   "evidence_source": "SECURITY_MASTER_REJUDGED+NAME_LAYER",
    "review_flags": [
-    "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED",
-    "MASTER_REJUDGED:EQUITY_COMMON"
+    "NAME_LAYER_RECLASSIFIED:EQUITY_COMMON"
    ],
    "start_date": "2026-09-11"
   },
@@ -132500,16 +132497,15 @@
    "ticker": "RNAQ",
    "securityId": "ref_RNAQ",
    "exchange": "NASDAQ",
-   "instrument_type": "EQUITY_COMMON",
+   "instrument_type": "SPAC",
    "classification_status": "CLASSIFIED",
    "classification_confidence": "HIGH",
    "active_status": "ACTIVE",
-   "product_eligibility": "ELIGIBLE",
-   "product_eligibility_reason": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
-   "evidence_source": "SECURITY_MASTER_REJUDGED",
+   "product_eligibility": "SEPARATE_CLASS",
+   "product_eligibility_reason": "CONFIRMED_SEPARATE_CLASS:SPAC",
+   "evidence_source": "SECURITY_MASTER_REJUDGED+NAME_LAYER",
    "review_flags": [
-    "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED",
-    "MASTER_REJUDGED:EQUITY_COMMON"
+    "NAME_LAYER_RECLASSIFIED:EQUITY_COMMON"
    ],
    "start_date": "2026-09-15"
   },
@@ -132566,10 +132562,10 @@
   }
  ],
  "exchangeDirectoryApplied": {
-  "at": "2026-11-18T05:02:52.929Z",
+  "at": "2026-11-19T06:33:42.075Z",
   "ruleVersion": "exchange-directory-class-1.0.0",
   "source": "NASDAQ_TRADER_SYMBOL_DIRECTORY",
-  "directoryAsOf": "2026-11-17",
+  "directoryAsOf": "2026-11-18",
   "classes": [
    "DEBT",
    "ETN",
@@ -132579,11 +132575,11 @@
    "UNIT",
    "ETF"
   ],
-  "changed": 507,
+  "changed": 508,
   "skippedTickerReuse": 13,
   "byTransition": {
    "EQUITY_COMMON/REVIEW -> EQUITY_COMMON/ELIGIBLE": 30,
-   "EQUITY_COMMON/ELIGIBLE -> ETF/EXCLUDED": 248,
+   "EQUITY_COMMON/ELIGIBLE -> ETF/EXCLUDED": 249,
    "EQUITY_COMMON/REVIEW -> ETF/EXCLUDED": 2,
    "PREFERRED/REVIEW -> PREFERRED/SEPARATE_CLASS": 25,
    "EQUITY_COMMON/ELIGIBLE -> DEBT/EXCLUDED": 110,
@@ -132600,10 +132596,10 @@
   },
   "countsBefore": {
    "universeMembers": 7833,
-   "ELIGIBLE": 5614,
-   "SEPARATE_CLASS": 778,
+   "ELIGIBLE": 5609,
+   "SEPARATE_CLASS": 782,
    "EXCLUDED": 1060,
-   "REVIEW": 381,
+   "REVIEW": 382,
    "productUniverse": 6773
   },
   "script": "scripts/market/apply-exchange-directory.mjs"
