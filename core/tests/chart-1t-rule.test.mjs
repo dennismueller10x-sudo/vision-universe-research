@@ -34,6 +34,21 @@ test("1T: Punktzahl und Zeitraum je Titel sind welt-unabhaengig (Messwerte 18.11
     assert.ok(welten[0].points.every((p) => p[0] >= "09:30" && p[0] < "16:00"), sym);
   }
 });
+test("1T: Snapshot vom Vortag plus heutige Ticks -> alle drei Welten liefern dieselbe heutige Reihe", () => {
+  const gestern = snap("2026-11-17", grid(36), { previousClose: 150 });
+  const ticks = [["09:25", 160], ["09:30", 161], ["09:31", 161.5], ["09:32", 161.2]];
+  /* Quant/Technical: Vortags-Snapshot + eigene Tick-Reihe; Discover: der Hub hat daraus schon einen Strom-Snapshot gebaut. */
+  const quant = CS.intradayView(gestern, { today: "2026-11-18", stream: ticks });
+  const technical = CS.intradayView(JSON.parse(JSON.stringify(gestern)), { today: "2026-11-18", stream: ticks });
+  const hubSnap = snap("2026-11-18", ticks.slice(1), { fromStream: true, previousClose: null });
+  const discover = CS.intradayView(hubSnap, { today: "2026-11-18" });
+  for (const v of [quant, technical, discover]) { assert.equal(v.mode, "today"); assert.equal(v.points.length, 3); assert.equal(v.sessionDate, "2026-11-18"); assert.equal(v.label, "heute"); }
+  assert.deepEqual(quant.points, discover.points); assert.deepEqual(quant.points, technical.points);
+  assert.equal(quant.snap.previousClose, null); /* Vortagesschluss kommt aus der Tagesreihe, nicht aus dem alten Snapshot */
+  /* ohne ausreichend Ticks: letzte Sitzung, nie leer */
+  const wenig = CS.intradayView(gestern, { today: "2026-11-18", stream: ticks.slice(0, 2) });
+  assert.equal(wenig.mode, "last"); assert.equal(wenig.points.length, 36);
+});
 test("Alle drei Welten rufen dieselbe Funktion", () => {
   for (const f of ["../../discover/ui/detail.js", "../../quant/app/chart.js"])
     assert.match(readFileSync(new URL(f, import.meta.url), "utf8"), /intradayView/, f);
