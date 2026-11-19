@@ -157,8 +157,8 @@ async function buildConcepts(output) {
   };
   for (const c of CONCEPTS.s) await make('s', c);
   for (const c of CONCEPTS.l) await make('l', c);
-  const list = (k, title) => `<h2>${title}</h2><ul>${CONCEPTS[k].map(([id,n,t]) => `<li><a href="./${id}/"><b>${id.toUpperCase()} · ${n}</b><span>${t}</span></a></li>`).join('')}</ul>`;
-  await writeFile(resolve(output,'konzepte/index.html'), `<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex, nofollow"><title>Konzepte · Vision Universe</title><link rel="stylesheet" href="../web/site.css"><link rel="stylesheet" href="../web/konzepte.css"></head><body class="kz-list"><main class="w"><h1>Konzepte</h1><p>Entwürfe zum Vergleichen, nur in der Vorschau. Aktuell live: <a href="../">Startseite</a> · <a href="../start/">Landingpage</a></p>${list('s','Startseite')}${list('l','Landingpage')}</main></body></html>`);
+  // Präsentation mit Konzept A und B (Handarbeit unter landing/konzepte/) ersetzt die alte Liste.
+  await cp(resolve(root,'konzepte'),resolve(output,'konzepte'),{recursive:true});
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
