@@ -27,7 +27,7 @@
 (function (global) {
   "use strict";
   var isNode = (typeof module !== "undefined" && module.exports);
-  var VERSION = "technical-chart-explain-1.1.0";
+  var VERSION = "technical-chart-explain-1.2.0";
   var EMA_EVENT_BARS = 5;
   var FIB_RATIOS = [0.382, 0.5, 0.618];
   var FIB_SCALES = ["scale-3", "scale-2"];
@@ -56,6 +56,24 @@
         from: { price: a.pivotPrice, time: String(a.pivotTime).slice(0, 10) }, to: { price: b.pivotPrice, time: String(b.pivotTime).slice(0, 10) }, levels: levels };
     }
     return null;
+  }
+
+  /* Fibonacci auf dem SICHTBAREN Chart (Owner 19.11.2026): wie „Auto-Fibonacci“ in Chartprogrammen. Hoch und Tief des
+     Ausschnitts (je Punkt hi/lo, sonst Schluss); kam das Tief zuerst, ist es ein Anstieg und 0 % liegt am Hoch. Gilt in jedem
+     Zeitraum (1T bis Max) und nach dem Zoomen, weil es nur die gezeigten Punkte braucht. */
+  var FIB_DRAW = [0, 0.236, 0.382, 0.5, 0.618, 0.786, 1];
+  function fibOfWindow(points) {
+    var hiV = -Infinity, loV = Infinity, hiT = null, loT = null, hiI = -1, loI = -1;
+    (points || []).forEach(function (p, i) {
+      if (!p) return;
+      var h = isNum(p.hi) ? p.hi : p.v, l = isNum(p.lo) ? p.lo : p.v;
+      if (isNum(h) && h > hiV) { hiV = h; hiT = p.t; hiI = i; }
+      if (isNum(l) && l < loV) { loV = l; loT = p.t; loI = i; }
+    });
+    if (hiI < 0 || loI < 0 || !(hiV > loV) || hiI === loI) return null;
+    var up = loI < hiI, span = hiV - loV;
+    return { up: up, from: up ? { price: loV, time: loT } : { price: hiV, time: hiT }, to: up ? { price: hiV, time: hiT } : { price: loV, time: loT },
+      levels: FIB_DRAW.map(function (r) { return { ratio: r, price: up ? hiV - r * span : loV + r * span }; }) };
   }
 
   function step(id, title, text, meaning, tone, layer, short) {
@@ -208,7 +226,7 @@
       note: "Das ist eine Beschreibung des Charts, keine Vorhersage und keine Handlungsempfehlung." };
   }
 
-  var api = { VERSION: VERSION, FIB_RATIOS: FIB_RATIOS, FIB_SCALES: FIB_SCALES, EMA_EVENT_BARS: EMA_EVENT_BARS, explain: explain, fibSwing: fibSwing, emaSummary: emaSummary };
+  var api = { VERSION: VERSION, FIB_RATIOS: FIB_RATIOS, FIB_SCALES: FIB_SCALES, EMA_EVENT_BARS: EMA_EVENT_BARS, explain: explain, fibSwing: fibSwing, fibOfWindow: fibOfWindow, FIB_DRAW: FIB_DRAW, emaSummary: emaSummary };
   if (isNode) module.exports = api;
   else { global.VUTechnical = global.VUTechnical || {}; global.VUTechnical.ChartExplain = api; }
 })(typeof window !== "undefined" ? window : globalThis);

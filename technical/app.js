@@ -1814,9 +1814,67 @@
       for (i = 0; i < P.length; i++) if (P[i].t.slice(0, 10) >= iso) return P[i].x;
       return null;
     }
+    /* Fibonacci (Owner 19.11.2026): immer auf dem SICHTBAREN Ausschnitt, in jedem Zeitraum und nach dem Zoomen
+       (ChartExplain.fibOfWindow, an der gezeichneten Kurslinie). Nur „Chart erklären“ zeigt im Tageschart den gemessenen Schwung, damit Bild und Text passen. */
+    var px = function (v) { return de(v, Math.abs(v) < 100 ? 2 : 0); };
+    function drawFib(layer, top, g, dailyGrain, plotBottom, right) {
+      if (!simple.fib || !VT.ChartExplain || !VT.ChartExplain.fibOfWindow) return null;
+      var guided = !!guide.saved && dailyGrain && !g.intraday, fb = guided ? fibData() : null;
+      if (fb && xOf(g, fb.from.time) === null) fb = null;
+      /* Gemessen an der gezeichneten Kurslinie (Schluesse), damit 0 % und 100 % genau auf ihrem Hoch und Tief liegen. */
+      if (!fb) fb = VT.ChartExplain.fibOfWindow(g.pts);
+      if (!fb) return null;
+      var at = function (time) { if (g.intraday) { for (var i = 0; i < g.pts.length; i++) if (g.pts[i].t === time) return g.pts[i].x; return null; } return xOf(g, String(time).slice(0, 10)); };
+      var fx = at(fb.from.time); if (fx === null) fx = g.pts[0].x;
+      var span = Math.abs(fb.to.price - fb.from.price);
+      fb.levels.forEach(function (l) {
+        var y = g.y(l.price); if (!(y >= 0 && y <= plotBottom)) return;
+        var edge = l.ratio === 0 || l.ratio === 1;
+        layer.appendChild(svgEl("line", { class: "tc-fib" + (edge ? " tc-fib--edge" : ""), x1: fx.toFixed(1), y1: y.toFixed(1), x2: right.toFixed(1), y2: y.toFixed(1), "stroke-dasharray": edge ? "" : "2 3" }));
+        var tx = svgEl("text", { class: "tc-fib-label", x: (right - 4).toFixed(1), y: (y - 3).toFixed(1), "text-anchor": "end" });
+        tx.textContent = M.num(l.ratio * 100, l.ratio === 0.5 || edge ? 0 : 1) + " % · " + (span < 50 ? de(l.price, 2) : px(l.price)); top.appendChild(tx);
+      });
+      [fb.from, fb.to].forEach(function (a) {
+        var x = at(a.time), y = g.y(a.price); if (x === null || !(y >= 0 && y <= plotBottom)) return;
+        layer.appendChild(svgEl("circle", { class: "tc-fib-pt", cx: x.toFixed(1), cy: y.toFixed(1), r: 4 }));
+      });
+      return guided && fb.scale ? "gepunktet: Fibonacci-Marken des letzten großen Schwungs"
+        : "Fibonacci vom " + (fb.up ? "Tief zum Hoch" : "Hoch zum Tief") + " des sichtbaren Ausschnitts (zoomen misst neu)";
+    }
+    /* 1T (Owner 19.11.2026): auch im Tagesverlauf Zonen, Fibonacci des Tages und die Linien als heutige Marke (Wert des letzten
+       Tagesschlusses), statt nur der EMA-Baender. Trendlinie und Katalog-Indikatoren brauchen Kerzen und bleiben Tag/Woche/Monat. */
+    function paintIntraday(svg, g) {
+      paintEmaIntraday(svg, g);
+      var emaText = legend.textContent, plotBottom = g.h - g.padBottom, right = g.w - g.padR, note = emaText ? [emaText.replace(/\.$/, "")] : [];
+      var layer = svgEl("g", { class: "tc-layers tc-layers--day" }), top = svgEl("g", { class: "tc-layers tc-layers--top" }), outside = [];
+      if (simple.zones) [[R, "negative", "Widerstand"], [Su, "positive", "Unterstützung"]].forEach(function (z) {
+        var zone = z[0]; if (!zone) return;
+        var y1 = g.y(zone.zoneHigh), y2 = g.y(zone.zoneLow), a = Math.max(0, Math.min(y1, y2)), b = Math.min(plotBottom, Math.max(y1, y2));
+        if (b <= 0 || a >= plotBottom) { outside.push(z[2] + " " + px(zone.zoneLow) + "–" + px(zone.zoneHigh)); return; }
+        layer.appendChild(svgEl("rect", { class: "tc-zone tc-zone--" + z[1], x: 2, y: a.toFixed(1), width: Math.max(0, right - 2), height: Math.max(2, b - a).toFixed(1) }));
+        var tx = svgEl("text", { class: "tc-zone-label", x: 6, y: (a + 12).toFixed(1) }); tx.textContent = z[2] + " " + px(zone.zoneLow) + "–" + px(zone.zoneHigh); layer.appendChild(tx);
+      });
+      LINE_DEF.forEach(function (L) {
+        if (!simple[L[0]]) return;
+        var m = lineSeries(L[0], true), last = null; if (!m) return;
+        Object.keys(m).forEach(function (d) { if (isNum(m[d]) && (!last || d > last)) last = d; });
+        if (!last) return;
+        var y = g.y(m[last]);
+        if (!(y >= 0 && y <= plotBottom)) { outside.push(L[1] + " " + px(m[last])); return; }
+        layer.appendChild(svgEl("line", { class: "tc-avg tc-line", x1: 2, x2: right.toFixed(1), y1: y.toFixed(1), y2: y.toFixed(1), stroke: L[4], "stroke-dasharray": L[5] || "" }));
+        var tx = svgEl("text", { class: "tc-fib-label", x: 6, y: (y - 3).toFixed(1) }); tx.textContent = L[1] + " " + px(m[last]); top.appendChild(tx);
+      });
+      var fibNote = drawFib(layer, top, g, false, plotBottom, right); if (fibNote) note.push((simple.fib ? fibNote.replace(" des sichtbaren Ausschnitts (zoomen misst neu)", " des Tages") : fibNote));
+      if (simple.trend) note.push("Trendlinie gilt ab 1W");
+      if (outside.length) note.push("heute außerhalb der Spanne: " + outside.join(", "));
+      var line = svg.querySelector(".vu-chart-line");
+      if (layer.childNodes.length) svg.insertBefore(layer, line || null);
+      if (top.childNodes.length) svg.appendChild(top);
+      put(legend, note.length ? note.join(" · ") + "." : "");
+    }
     function paintLayers(svg, g, rangeId) {
       if (!svg || !g || !g.pts) { put(legend, ""); return; }
-      if (g.intraday) { paintEmaIntraday(svg, g); put(panes, Object.keys(simple.ind).some(function (k) { return simple.ind[k]; }) ? el("p", { class: "tc-note", text: "Indikatoren gelten für Tag, Woche und Monat; im Tagesverlauf (1T) fehlen dafür noch die 5-Minuten-Kerzen." }) : ""); return; }
+      if (g.intraday) { paintIntraday(svg, g); put(panes, Object.keys(simple.ind).some(function (k) { return simple.ind[k]; }) ? el("p", { class: "tc-note", text: "Indikatoren gelten für Tag, Woche und Monat; im Tagesverlauf (1T) fehlen dafür noch die 5-Minuten-Kerzen." }) : ""); return; }
       var dailyGrain = svg.parentNode && svg.parentNode.dataset && svg.parentNode.dataset.grain === "daily";
       var plotBottom = g.h - g.padBottom, right = g.w - g.padR, note = [];
       var layer = svgEl("g", { class: "tc-layers" }), top = svgEl("g", { class: "tc-layers tc-layers--top" });
@@ -1828,7 +1886,7 @@
         var top = Math.max(0, Math.min(y1, y2)), bot = Math.min(plotBottom, Math.max(y1, y2));
         layer.appendChild(svgEl("rect", { class: "tc-zone tc-zone--" + z[1], x: 2, y: top.toFixed(1), width: Math.max(0, right - 2), height: Math.max(2, bot - top).toFixed(1) }));
         var ly = top + 12; if (zoneLabelY !== null && Math.abs(ly - zoneLabelY) < 14) ly = zoneLabelY + 14; zoneLabelY = ly;
-        var tx = svgEl("text", { class: "tc-zone-label", x: 6, y: ly.toFixed(1) }); tx.textContent = z[2] + " " + de(zone.zoneLow) + "–" + de(zone.zoneHigh); layer.appendChild(tx);
+        var tx = svgEl("text", { class: "tc-zone-label", x: 6, y: ly.toFixed(1) }); tx.textContent = z[2] + " " + px(zone.zoneLow) + "–" + px(zone.zoneHigh); layer.appendChild(tx);
       });
       if (simple.trend && dailyGrain) {
         var lines = []; formationLayers(X.analysis, S, { trend: true, muster: false }, null, g.pts[0].t.slice(0, 10), lines, [], []);
@@ -1840,7 +1898,7 @@
           layer.appendChild(svgEl("line", { class: "tc-trend tc-trend--" + l.tone, x1: x1.toFixed(1), y1: y1.toFixed(1), x2: x3.toFixed(1), y2: y3.toFixed(1), "stroke-dasharray": l.dash || "" }));
         });
         note.push("Trendlinien gelten für den Tageschart");
-      }
+      } else if (simple.trend) note.push("Trendlinie nur im Tageschart (bis 3J)");
       /* Gleitende Durchschnitte (Owner 18.11.2026): 20/50/150/200 Tage; im Wochenchart (5J, Max) dieselbe Zeitspanne als
          4/10/30/40 Wochen. Tag: chartSeries der Materialisierung (volle Historie), sonst indicators.js auf den Tagesbalken. */
       var lineNote = [];
@@ -1879,20 +1937,8 @@
             : "Bänder im Wochenchart: schnelle EMAs 3–15 Wochen neongrün, langsame 30–60 Wochen grau");
         } else if (!dailyGrain && emaWeekly === undefined) loadEmaWeekly();
       }
-      var fb = simple.fib && dailyGrain ? fibData() : null;
-      if (fb) {
-        var fx = xOf(g, fb.from.time); if (fx === null) fx = g.pts[0].x;
-        fb.levels.forEach(function (l) {
-          var y = g.y(l.price); if (!inView(y)) return;
-          layer.appendChild(svgEl("line", { class: "tc-fib", x1: fx.toFixed(1), y1: y.toFixed(1), x2: right.toFixed(1), y2: y.toFixed(1), "stroke-dasharray": "2 3" }));
-          var tx2 = svgEl("text", { class: "tc-fib-label", x: (fx + 4).toFixed(1), y: (y - 3).toFixed(1) }); tx2.textContent = M.num(l.ratio * 100, l.ratio === 0.5 ? 0 : 1) + " % · " + de(l.price); top.appendChild(tx2);
-        });
-        [[fb.from, "Start"], [fb.to, fb.developing ? "bisher" : "Ende"]].forEach(function (a) {
-          var x = xOf(g, a[0].time), y = g.y(a[0].price); if (x === null || !inView(y)) return;
-          layer.appendChild(svgEl("circle", { class: "tc-fib-pt", cx: x.toFixed(1), cy: y.toFixed(1), r: 4 }));
-        });
-        note.push("gepunktet: Fibonacci-Marken des letzten großen Schwungs");
-      }
+      var fibNote = drawFib(layer, top, g, dailyGrain, plotBottom, right);
+      if (fibNote) note.push(fibNote);
       var line = svg.querySelector(".vu-chart-line");
       if (layer.childNodes.length) svg.insertBefore(layer, line || null);
       if (top.childNodes.length) svg.appendChild(top);
