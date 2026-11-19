@@ -342,6 +342,14 @@ async function main() {
       /* Wochenchart (5J): Baender aus der langen Wochenreihe ueber die ganze Breite; Ebenen fangen keine Klicks ab. */
       await page.locator('.tc-simple-chart .qc-ranges button[data-range="5Y"]').click();
       await page.waitForFunction(() => { const f = document.querySelector(".tc-simple-chart .tc-ema--fast"), s = f && f.ownerSVGElement; return f && s && f.getBBox().width > s.getBBox().width * 0.8; }, null, { timeout: 15000 });
+      /* Fibonacci auf dem sichtbaren Ausschnitt in jedem Zeitraum (Owner 19.11.2026): 0 % bis 100 %, auch im Wochenchart. */
+      const fibWasOn = await page.locator('.tc-togs [data-layer="fib"][aria-pressed="true"]').count() === 1;
+      if (!fibWasOn) await page.locator('.tc-togs [data-layer="fib"]').click();
+      for (const r of ["5Y", "1M"]) {
+        await page.locator('.tc-simple-chart .qc-ranges button[data-range="' + r + '"]').click();
+        await page.waitForFunction(() => document.querySelectorAll(".tc-simple-chart svg .tc-fib").length >= 5, null, { timeout: 15000 });
+      }
+      if (!fibWasOn) await page.locator('.tc-togs [data-layer="fib"]').click();
       await page.locator('.tc-simple-chart .qc-ranges button[data-range="1Y"]').click();
       for (let i = 3; i < 6; i++) await page.locator(".tc-guide-nav .vu-btn--ink").click();
       assert(/Fibonacci/i.test(await page.locator(".tc-guide h3").innerText()), "Chart erklären: Schritt 5 ist nicht Fibonacci");
