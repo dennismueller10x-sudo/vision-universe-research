@@ -1,7 +1,7 @@
 {
  "schemaVersion": "vu-technical-meta-1.0.0",
  "asOf": "2026-11-18",
- "generatedFrom": "2026-11-19T00:09:33.258Z",
+ "generatedFrom": "2026-11-19T13:23:42.345Z",
  "versions": {
   "row": "technical-screen-row-1.15.0",
   "query": "technical-query-1.13.0",
@@ -9,16 +9,16 @@
   "formations": "technical-formations-1.4.0"
  },
  "counts": {
-  "rows": 5669,
-  "fresh": 5306,
+  "rows": 5670,
+  "fresh": 5307,
   "stale": 363,
-  "withVolume": 5619,
+  "withVolume": 5620,
   "withWeekly": 5645,
   "with200Weeks": 4743,
   "noBundle": 0,
   "suspectJump": 189,
   "suspectJumpConfirmed": 0,
-  "weeklyMonthlyFromDailyHistory": 5669
+  "weeklyMonthlyFromDailyHistory": 5670
  },
  "skipped": {
   "IDENTITY_QUARANTINED": 4
@@ -27,7 +27,7 @@
   "ASCENDING_CHANNEL:DETECTED": 74,
   "SUPPORT_TRENDLINE:DETECTED": 524,
   "ASCENDING_CHANNEL:CONFIRMED": 43,
-  "RECTANGLE:DETECTED": 123,
+  "RECTANGLE:DETECTED": 124,
   "DOUBLE_TOP:DETECTED": 175,
   "SYMMETRICAL_TRIANGLE:CONFIRMED": 245,
   "RESISTANCE_TRENDLINE:DETECTED": 1683,
@@ -88,10 +88,10 @@
   "chart": "/quant/data/product/technical-signals-v1/by-ticker/<T>.json.gz",
   "stock": "/technical/data/stock/<shardKey>.json"
  },
- "runtimeSec": 44,
+ "runtimeSec": 50,
  "stock": {
   "schema": "vu-technical-stock-1.0.0",
-  "count": 5669,
+  "count": 5670,
   "shards": [
    "AA",
    "AB",
