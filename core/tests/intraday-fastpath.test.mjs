@@ -4,7 +4,7 @@ import {execFileSync} from 'node:child_process';
 import {mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join, dirname} from 'node:path';
-import {klassifiziere, overlay, pruefe, isIntraday, INTRADAY_DIR, INTRADAY_FILES} from '../../scripts/ci/intraday-fastpath.mjs';
+import {klassifiziere, imFenster, overlay, pruefe, isIntraday, INTRADAY_DIR, INTRADAY_FILES} from '../../scripts/ci/intraday-fastpath.mjs';
 
 const I = INTRADAY_DIR, WD = INTRADAY_FILES[0];
 test('FP-1 nur Intraday-Dateien (und Nicht-Auslieferung wie docs) ergeben FAST', () => {
@@ -139,4 +139,36 @@ test('FP-6d overlay/smoke: Datendateien (neu, geaendert, geloescht) byte-gleich,
   assert.deepEqual((await pruefe(repo, site, liste)).fehler, []);
   writeFileSync(join(site, DD + 'rows/a.json'), '{"n":3}');
   assert.ok((await pruefe(repo, site, liste)).fehler.some((f) => /Pruefsumme/.test(f)));
+});
+
+test('FP-7 Boersenfenster: Mo-Fr 14:30 bis 21:00 UTC, Grenzen und Wochenende', () => {
+  const t = (iso) => imFenster(new Date(iso));
+  assert.equal(t('2026-11-18T14:29:59Z'), false);
+  assert.equal(t('2026-11-18T14:30:00Z'), true);
+  assert.equal(t('2026-11-18T20:59:59Z'), true);
+  assert.equal(t('2026-11-18T21:00:00Z'), false);
+  assert.equal(t('2026-11-21T16:00:00Z'), false, 'Samstag');
+  assert.equal(t('2026-11-22T16:00:00Z'), false, 'Sonntag');
+  assert.equal(t('2026-11-20T16:00:00Z'), true, 'Freitag');
+});
+test('FP-7b Im Fenster liefert der Schnellweg nur Intraday, Nicht-Intraday-Dateien warten (AUFSCHUB), ausserhalb bleibt es VOLL', () => {
+  const mix = [I + '/index.json', 'discover/ui/overview.css'];
+  assert.equal(klassifiziere(mix).mode, 'FULL');
+  const f = klassifiziere(mix, {fenster: true});
+  assert.equal(f.mode, 'FAST');
+  assert.equal(f.aufgeschoben, 1);
+  assert.equal(klassifiziere(['discover/ui/overview.css'], {fenster: true}).mode, 'AUFSCHUB');
+  assert.equal(klassifiziere(['docs/x.md'], {fenster: true}).mode, 'FULL', 'ohne andere Dateien nichts aufzuschieben');
+  assert.equal(klassifiziere([I + '/index.json'], {fenster: true}).mode, 'FAST');
+});
+test('FP-7c Workflow: AUFSCHUB hebt den Voll-Release auf, notfall und Veroeffentlicher bleiben Voll', () => {
+  const wf = readFileSync(new URL('../../.github/workflows/pages-release.yml', import.meta.url), 'utf8');
+  const job = wf.slice(wf.indexOf('  intraday-schnell:'), wf.indexOf('  deploy-schnell:'));
+  assert.match(job, /aufschub: \$\{\{ steps\.weiche\.outputs\.mode == 'AUFSCHUB' \}\}/);
+  assert.match(job, /klassifiziere --base="\$BASE" --head=HEAD --fenster=auto/);
+  assert.match(job, /inputs\.notfall/, 'notfall ueberspringt den Schnellweg und damit den Aufschub');
+  const pkg = wf.slice(wf.indexOf('  package:'), wf.indexOf('    steps:', wf.indexOf('  package:')));
+  assert.match(pkg, /needs\.intraday-schnell\.outputs\.aufschub != 'true'/);
+  assert.match(wf, /notfall:\n\s+description:/);
+  assert.ok(job.indexOf('Veroeffentlicher seit dem Basis-Paket') < job.indexOf('--fenster=auto'), 'Veroeffentlicher-Pruefung kommt vor der Weiche');
 });
