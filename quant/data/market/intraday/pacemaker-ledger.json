@@ -10,7 +10,7 @@
     "blockMaxMs": 20700000,
     "branch": "main"
   },
-  "updatedAt": "2026-11-19T18:38:14.829Z",
+  "updatedAt": "2026-11-19T18:42:21.349Z",
   "cycles": [
     {
       "cycle": 1,
@@ -1936,10 +1936,10 @@
       "written": 1285,
       "requests": 1428,
       "notPublishable": 67,
-      "addAt": "2026-11-19T18:34:08.833Z",
-      "commitAt": "2026-11-19T18:34:09.142Z",
-      "pushAt": "2026-11-19T18:34:11.584Z",
-      "sha": "93e1055928",
+      "addAt": "2026-11-19T18:38:14.829Z",
+      "commitAt": "2026-11-19T18:38:15.135Z",
+      "pushAt": "2026-11-19T18:38:17.534Z",
+      "sha": "aa421d8032",
       "changed": true,
       "ok": true,
       "reason": null,
@@ -1975,11 +1975,50 @@
           "fetchEndAt": "2026-11-19T18:38:14.828Z",
           "ok": true,
           "written": 427,
-          "requests": 476
+          "requests": 476,
+          "sha": "aa421d8032",
+          "pushAt": "2026-11-19T18:38:17.534Z",
+          "changed": true
         }
       ],
       "snapshotAt": "2026-11-19T18:38:14.810Z",
-      "pushed": true
+      "pushed": true,
+      "watchdog": {
+        "verdict": "PASS",
+        "codes": []
+      }
+    },
+    {
+      "cycle": 21,
+      "runId": "44529135764",
+      "triggerAt": "2026-11-19T18:38:18.117Z",
+      "marketStateAtTrigger": "OPEN",
+      "localTimeAtTrigger": "13:38:18",
+      "fetchStartAt": "2026-11-19T18:38:18.117Z",
+      "fetchEndAt": "2026-11-19T18:42:21.347Z",
+      "session": "2026-11-19",
+      "written": 434,
+      "requests": 476,
+      "notPublishable": 17,
+      "addAt": null,
+      "commitAt": null,
+      "pushAt": null,
+      "sha": null,
+      "changed": false,
+      "ok": true,
+      "reason": null,
+      "parts": [
+        {
+          "part": 1,
+          "of": 3,
+          "fetchStartAt": "2026-11-19T18:38:18.117Z",
+          "fetchEndAt": "2026-11-19T18:42:21.347Z",
+          "ok": true,
+          "written": 434,
+          "requests": 476
+        }
+      ],
+      "snapshotAt": "2026-11-19T18:42:21.330Z"
     }
   ]
 }
