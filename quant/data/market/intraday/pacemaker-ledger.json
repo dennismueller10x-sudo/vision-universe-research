@@ -10,74 +10,8 @@
     "blockMaxMs": 20700000,
     "branch": "main"
   },
-  "updatedAt": "2026-11-19T16:06:01.445Z",
+  "updatedAt": "2026-11-19T16:10:07.328Z",
   "cycles": [
-    {
-      "cycle": 9,
-      "runId": "44309302163",
-      "triggerAt": "2026-11-18T16:10:00.736Z",
-      "marketStateAtTrigger": "OPEN",
-      "localTimeAtTrigger": "11:10:00",
-      "fetchStartAt": "2026-11-18T16:10:00.736Z",
-      "fetchEndAt": "2026-11-18T16:22:15.678Z",
-      "session": "2026-11-18",
-      "written": 1301,
-      "requests": 1431,
-      "notPublishable": 78,
-      "addAt": "2026-11-18T16:22:15.680Z",
-      "commitAt": "2026-11-18T16:22:15.976Z",
-      "pushAt": "2026-11-18T16:22:18.386Z",
-      "sha": "224dd88497",
-      "changed": true,
-      "ok": true,
-      "reason": null,
-      "parts": [
-        {
-          "part": 1,
-          "of": 3,
-          "fetchStartAt": "2026-11-18T16:10:00.736Z",
-          "fetchEndAt": "2026-11-18T16:14:03.732Z",
-          "ok": true,
-          "written": 428,
-          "requests": 477,
-          "sha": "e0c4c89384",
-          "pushAt": "2026-11-18T16:14:06.656Z",
-          "changed": true
-        },
-        {
-          "part": 2,
-          "of": 3,
-          "fetchStartAt": "2026-11-18T16:14:06.656Z",
-          "fetchEndAt": "2026-11-18T16:18:09.606Z",
-          "ok": true,
-          "written": 435,
-          "requests": 477,
-          "sha": "75f0332812",
-          "pushAt": "2026-11-18T16:18:12.702Z",
-          "changed": true
-        },
-        {
-          "part": 3,
-          "of": 3,
-          "fetchStartAt": "2026-11-18T16:18:12.702Z",
-          "fetchEndAt": "2026-11-18T16:22:15.678Z",
-          "ok": true,
-          "written": 438,
-          "requests": 477,
-          "sha": "224dd88497",
-          "pushAt": "2026-11-18T16:22:18.386Z",
-          "changed": true
-        }
-      ],
-      "snapshotAt": "2026-11-18T16:22:15.662Z",
-      "pushed": true,
-      "watchdog": {
-        "verdict": "FAIL",
-        "codes": [
-          "auslieferungZuWeitHinterher"
-        ]
-      }
-    },
     {
       "cycle": 10,
       "runId": "44309302163",
@@ -1990,15 +1924,15 @@
       "marketStateAtTrigger": "OPEN",
       "localTimeAtTrigger": "10:57:52",
       "fetchStartAt": "2026-11-19T15:57:52.282Z",
-      "fetchEndAt": "2026-11-19T16:06:01.444Z",
+      "fetchEndAt": "2026-11-19T16:10:07.327Z",
       "session": "2026-11-19",
-      "written": 855,
-      "requests": 952,
-      "notPublishable": 64,
-      "addAt": "2026-11-19T16:01:55.450Z",
-      "commitAt": "2026-11-19T16:01:55.790Z",
-      "pushAt": "2026-11-19T16:01:58.236Z",
-      "sha": "88eb8176a5",
+      "written": 1285,
+      "requests": 1428,
+      "notPublishable": 96,
+      "addAt": "2026-11-19T16:06:01.445Z",
+      "commitAt": "2026-11-19T16:06:01.747Z",
+      "pushAt": "2026-11-19T16:06:04.156Z",
+      "sha": "12e0fd8933",
       "changed": true,
       "ok": true,
       "reason": null,
@@ -2022,10 +1956,22 @@
           "fetchEndAt": "2026-11-19T16:06:01.444Z",
           "ok": true,
           "written": 420,
+          "requests": 476,
+          "sha": "12e0fd8933",
+          "pushAt": "2026-11-19T16:06:04.156Z",
+          "changed": true
+        },
+        {
+          "part": 3,
+          "of": 3,
+          "fetchStartAt": "2026-11-19T16:06:04.156Z",
+          "fetchEndAt": "2026-11-19T16:10:07.327Z",
+          "ok": true,
+          "written": 430,
           "requests": 476
         }
       ],
-      "snapshotAt": "2026-11-19T16:06:01.434Z",
+      "snapshotAt": "2026-11-19T16:10:07.310Z",
       "pushed": true
     }
   ]
