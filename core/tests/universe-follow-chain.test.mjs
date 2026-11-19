@@ -124,4 +124,6 @@ test("UF-5 · nach der Umfangsfolge misst der Teil deckung Abnahme und Fundament
   const weekly = readFileSync(join(WF_DIR, "pipeline-weekly.yml"), "utf8");
   assert.match(weekly, /scripts\/diagnose\/coverage-delta\.mjs/, "deckung erklaert jede Abweichung je Titel vor dem Commit");
   assert.match(weekly, /python3 scripts\/quant\/cli\.py reconcile/, "deckung rechnet den Fundamentalschicht-Abgleich neu");
+  assert.match(weekly, /Auf eine laufende Materialisierung warten[\s\S]*product-intelligence-materialization\.yml/,
+    "deckung wartet auf eine laufende Materialisierung (sonst Halbstand in der Regressionssuite, Lauf 44473651117)");
 });
