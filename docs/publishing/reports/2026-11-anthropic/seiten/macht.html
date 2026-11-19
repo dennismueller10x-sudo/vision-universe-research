@@ -13,7 +13,7 @@
       <div>
         <div class="kick">Größte Anteilseigner nach dem Börsengang, Anteil am Kapital</div>
         <div style="margin-top:3mm" data-k="eigner"></div>
-        <div class="xs mu" style="margin-top:2mm">Amazon, Google: laut Prospekt, nach Angebot und Privatplatzierung, bei 74 $. Fonds, Gründer und Nvidia: eigene Rechnung aus den Aktienzahlen im Prospekt (13,09 Mrd. Aktien). Amazon käme bei voller Wandlung seiner Anleihen ohne Obergrenze auf 23,8 %. Weitere Anteile (Microsoft, AMD, Broadcom, Micron, TSMC) nennt der Prospekt nicht in Prozent.</div>
+        <div class="xs mu" style="margin-top:2mm">Amazon, Google: laut Prospekt, nach Angebot und Privatplatzierung, bei 74 $. Fonds, Gründer und Nvidia: eigene Rechnung zum Ausgabepreis von 83 $ (rund 13,20 Mrd. Aktien). Amazon käme bei voller Wandlung seiner Anleihen ohne Obergrenze auf 23,8 %. Weitere Anteile (Microsoft, AMD, Broadcom, Micron, TSMC) nennt der Prospekt nicht in Prozent.</div>
       </div>
       <div class="body">
         <p><b>Der Treuhandrat.</b> Der Long-Term Benefit Trust besteht aus bis zu fünf Treuhändern ohne finanzielles Interesse an Anthropic; sie dürfen keine Anthropic-Aktien halten. Über seine Class-T-Aktie wählt er die Mehrheit des Vorstands: vier von sieben Sitzen, darunter Netflix-Mitgründer Reed Hastings. Ins Tagesgeschäft redet er laut Prospekt nicht hinein.</p>
@@ -28,7 +28,7 @@
   <div data-foot></div>
 </section>
 <script>
-(function(){const de=VUM.de,A=VUM.D.ant,p=(n)=>de(n/A.aktien*100,1);
+(function(){const de=VUM.de,A=VUM.D.ant,p=(n)=>de(n/A.aktienAusgabe*100,1);
 VUM.k('klassen',()=>[
  ['Class T','1 Aktie','Long-Term Benefit Trust','wählt die Mehrheit des Vorstands','lime'],
  ['Class F','1 Aktie','Gesellschaft der 7 Gründer','50,1 % aller Stimmen','ink'],
@@ -37,7 +37,7 @@ VUM.k('klassen',()=>[
 ].map(r=>`<div class="card${r[4]?' '+r[4]:''}" style="padding:4mm"><div style="font-size:16pt;font-weight:900;letter-spacing:-.02em;${r[4]==='ink'?'color:var(--lime)':''}">${r[0]}</div><div style="font-size:8pt;font-weight:900;margin-top:1mm">${r[1]}</div><div class="xs" style="margin-top:2mm;font-weight:700;${r[4]==='ink'?'color:#e6e6e6':''}">${r[2]}</div><div class="xs" style="margin-top:1mm;${r[4]==='ink'?'color:#bdbdbd':r[4]?'':'color:#5c5c5c'}">${r[3]}</div></div>`).join(''));
 VUM.k('vorstand',()=>[['Reed Hastings','Treuhandrat (T)',1],['Vas Narasimhan','Treuhandrat (T)',1],['Christopher Liddell','Treuhandrat (T)',1],['Sitz frei','Treuhandrat (T)',1],['Dario Amodei','Vorstandschef, Gründer',0],['Daniela Amodei','Vorsitzende, Gründerin',0],['Yasmin Razavi','Class A + F',0]].map(r=>`<div style="background:${r[2]?'var(--lime)':'#000'};color:${r[2]?'#000':'#fff'};border-radius:6px;padding:3mm 2.5mm;min-height:17mm"><div style="font-size:8.6pt;font-weight:900;line-height:1.15">${r[0]}</div><div style="font-size:6.6pt;font-weight:700;margin-top:1mm;opacity:.8">${r[1]}</div></div>`).join(''));
 VUM.k('eigner',()=>VUC.hbars([
- {l:'Amazon',s:'Class N',v:14.7},{l:'Google',s:'Class N',v:13.7},{l:'Die 7 Gründer',s:'zusammen, rund',v:12.8,c:'#000'},{l:'Gemeinwohl-Fonds',v:+p(846840960).replace(',','.')},{l:'Nvidia',s:'Privatplatzierung',v:+p(135135135).replace(',','.')},
+ {l:'Amazon',s:'Class N',v:14.7},{l:'Google',s:'Class N',v:13.7},{l:'Die 7 Gründer',s:'zusammen, rund',v:12.7,c:'#000'},{l:'Gemeinwohl-Fonds',v:+p(846840960).replace(',','.')},{l:'Nvidia',s:'Privatplatzierung',v:+p(120481928).replace(',','.')},
 ],{w:300,rh:23,lw:176,sx:84,vw:44,fmt:v=>de(v,1)+' %'}));
 })();
 </script>

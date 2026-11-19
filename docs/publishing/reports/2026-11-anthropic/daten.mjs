@@ -31,6 +31,11 @@ const ANT = {
 ANT.ttm = ANT.quartale.slice(-4).reduce((a, q) => a + q[1], 0); // Q4 2025 bis Q3 2026, eigene Rechnung
 ANT.mcap = ANT.spanne.map((p) => (ANT.aktien * p) / 1e6); // Mio. $
 ANT.mcapMitte = (ANT.aktien * 74) / 1e6;
+// Ausgabepreis 83 $ (18.11.2026): +155 Mio. Aktien Aufstockung (S-1MEF: 178,25 Mio. zusätzlich, davon 23,25 Mio. Mehrzuteilung),
+// Privatplatzierung 26,0 Mrd. $ zu 83 $ ≈ 313.253.012 statt 351.351.348 Class-N-Aktien. Eigene Rechnung.
+ANT.preis = 83;
+ANT.aktienAusgabe = ANT.aktien + 155000000 - (351351348 - 313253012);
+ANT.mcapAusgabe = (ANT.aktienAusgabe * ANT.preis) / 1e6;
 
 const VERGLEICH = ['NVDA', 'MSFT', 'GOOGL', 'AMZN', 'AVGO', 'META', 'TSLA', 'PLTR', 'SPCX'];
 const CYBER = ['CRWD', 'PANW', 'FTNT', 'ZS', 'NET'];

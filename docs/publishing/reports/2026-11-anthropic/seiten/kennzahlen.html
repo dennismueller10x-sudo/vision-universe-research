@@ -8,7 +8,7 @@
       <div style="background:#111;border:1px solid #262626;border-radius:10px;padding:4mm"><div class="kick" style="color:#9a9a9a">Umsatz je Quartal, Mrd. $</div><div style="margin-top:2.5mm" data-k="kzumsatz"></div></div>
       <div style="background:#111;border:1px solid #262626;border-radius:10px;padding:4mm"><div class="kick" style="color:#9a9a9a">Kunden ab 100.000 $ im Jahr</div><div style="margin-top:2.5mm" data-k="kzkunden"></div></div>
     </div>
-    <div class="xs" style="color:#8c8c8c;margin-top:2mm">Quelle aller Unternehmenszahlen: Prospekt (S-1/A Nr. 3) vom 17.11.2026, GAAP, wenn nicht anders vermerkt. Börsenwert: eigene Rechnung, 13,09 Mrd. Aktien aller Klassen nach Angebot und Privatplatzierung × Preisspanne. Kunden: Umsatz der jeweils letzten zwölf Monate, Angaben „rund“ bzw. „über“ laut Prospekt.</div>
+    <div class="xs" style="color:#8c8c8c;margin-top:2mm">Quelle aller Unternehmenszahlen: Prospekt (S-1/A Nr. 3) vom 17.11.2026, GAAP, wenn nicht anders vermerkt. Ausgabepreis und Erlös: AP und CNN, 18.11.2026. Börsenwert: eigene Rechnung, rund 13,20 Mrd. Aktien aller Klassen nach aufgestocktem Angebot und Privatplatzierung × 83 $. Kunden: Umsatz der jeweils letzten zwölf Monate, Angaben „rund“ bzw. „über“ laut Prospekt.</div>
   </div>
   <div data-foot></div>
 </section>
@@ -16,9 +16,9 @@
 (function(){const D=VUM.D,A=D.ant,de=VUM.de;
 const t=(v,l,s,hl)=>`<div style="background:${hl==='lime'?'var(--lime)':hl==='ton'?'#d97757':'#111'};color:${hl?'#000':'#fff'};border:1px solid ${hl?'transparent':'#262626'};border-radius:10px;padding:6mm 4.5mm 5.5mm"><div style="font-size:24pt;font-weight:900;letter-spacing:-.045em;line-height:1">${v}</div><div style="font-size:9.6pt;font-weight:900;margin-top:2.5mm">${l}</div><div style="font-size:7.8pt;margin-top:.8mm;opacity:.75">${s}</div></div>`;
 VUM.k('kz',()=>[
- t('70–78&nbsp;$','Preisspanne je Aktie','Nasdaq, Kürzel ANT','lime'),
- t(de(A.mcap[0]/1e3,0)+'–'+de(A.mcap[1]/1e3,0)+'&nbsp;Mrd.&nbsp;$','Börsenwert in der Spanne','eigene Rechnung, alle Aktienklassen','lime'),
- t('825&nbsp;Mio.','Aktien im Angebot','dazu 26,0 Mrd. $ Privatplatzierung'),
+ t('83&nbsp;$','Ausgabepreis je Aktie','über der Spanne von 70–78 $; Nasdaq, ANT','lime'),
+ t('≈&nbsp;'+de(A.mcapAusgabe/1e6,2)+'&nbsp;Bio.&nbsp;$','Börsenwert zum Ausgabepreis','≈ '+de(A.mcapAusgabe/1e3,0)+' Mrd. $, eigene Rechnung','lime'),
+ t('81,3&nbsp;Mrd.&nbsp;$','Erlös aus dem Angebot','rund 980 Mio. Aktien; laut AP größter Börsengang'),
  t('16,96&nbsp;Mrd.&nbsp;$','Umsatz im 3. Quartal','Juli bis Sept. 2026, +1.127 % zum Vorjahr'),
  t('33,2&nbsp;Mrd.&nbsp;$','Umsatz in neun Monaten','Jan. bis Sept. 2026, +1.206 %'),
  t('≈&nbsp;81&nbsp;Mrd.&nbsp;$','Run-Rate am 31.10.2026','Hochrechnung, laut Anthropic keine Prognose','ton'),
