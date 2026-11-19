@@ -31,6 +31,7 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync, rmSync } from "node
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import { loadSuccessions, withPredecessor } from "./lib/ticker-succession-bars.mjs";
 
 const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -163,8 +164,20 @@ function countField(name, status) {
   c[status] = (c[status] || 0) + 1;
 }
 
+/* Tickerwechsel (ADR-009, 19.11.2026): Ein Nachfolger traegt die Bars seines Vorgaengers vor dem Stichtag, wie Discover-Reihe und
+   Wochenreihe (scripts/market/lib/ticker-succession-bars.mjs). Sonst rechnet der Faktorlauf nur auf den Bars seit dem Wechsel
+   (TXCP: 6 statt 972, insufficient_history) und der Titel fehlt in Faktoren, Discover und Suche. */
+const succ = loadSuccessions(root);
+const successorsJoined = [];
+
 for (const sec of universe.securities) {
-  const payload = store.readBars(sec.securityId, "working");
+  let payload = store.readBars(sec.securityId, "working");
+  const nachfolge = withPredecessor(payload, sec, succ, (e) => store.readBars(e.from, "working"));
+  if (nachfolge.joined) {
+    payload = nachfolge.payload;
+    successorsJoined.push({ ticker: sec.ticker, ...nachfolge.joined });
+    console.log(`  ${sec.ticker}: Nachfolge von ${nachfolge.joined.from}, ${nachfolge.joined.predecessorBars} + ${nachfolge.joined.successorBars || 0} Bars`);
+  }
   if (!payload || !Array.isArray(payload.bars) || !payload.bars.length) {
     skipped.push({ ticker: sec.ticker, reason: "SOURCE_MISSING",
                    message: "Keine Kursreihe in der Arbeitsablage." });
@@ -409,7 +422,10 @@ const coverage = {
   skippedByReason: skipped.reduce((acc, s) => {
     acc[s.reason] = (acc[s.reason] || 0) + 1; return acc;
   }, {}),
-  fieldCoverage
+  fieldCoverage,
+  /* Nachfolger, deren Reihe mit der des Vorgaengers verbunden ist (ADR-009). */
+  successorsJoined: successorsJoined.map((j) => ({ ticker: j.ticker, from: j.from, effective: j.effective,
+                                                   predecessorBars: j.predecessorBars, successorBars: j.successorBars }))
 };
 
 /* Die Deckungsbilanz wird IMMER ausgeliefert. Sie ist klein, sie beantwortet

@@ -69,3 +69,11 @@ test("TS-6 · identity.js bleibt ohne Tickerwechsel-Regel (Supertrader pinnt ihr
   const src = readFileSync(join(ROOT, "core", "identity.js"), "utf8");
   assert.ok(!/succession|Nachfolge/i.test(src));
 });
+
+test("TS-7 · Faktoren, Discover-Reihe und Wochenreihe verbinden die Nachfolge (19.11.2026: TXCP fehlte in Faktoren und Suche)", () => {
+  const ROOT = new URL("../../", import.meta.url);
+  for (const f of ["scripts/market/build-market-factors.mjs", "scripts/market/publish-discover-series.mjs", "scripts/market/publish-long-series.mjs"]) {
+    const src = readFileSync(new URL(f, ROOT), "utf8");
+    assert.match(src, /withPredecessor\(/, f + " liest die Arbeitsablage ohne Tickernachfolge");
+  }
+});
