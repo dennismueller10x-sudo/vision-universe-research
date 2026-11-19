@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated": true,
-  "generated_at_utc": "2026-11-18T06:28:42.465Z",
+  "generated_at_utc": "2026-11-19T06:29:01.134Z",
   "generator": "scripts/universe/build-sec-universe.mjs",
   "description": "SEC-Universum aus dem kanonischen Company Master. NICHT von Hand pflegen - Aenderungen gehoeren in den Master oder in die CIK-Zuordnung. quant/config/sec-universe.json bleibt der handgepflegte Validierungssatz und steht hier an erster Stelle; eine Regression an diesen fuenf Titeln faellt damit weiterhin zuerst auf. Das Feld `cik` ist wie dort ein Hinweis: die Pipeline loest den Ticker gegen die SEC-Ticker-Map auf. Fuer ein generiertes Universum gehoert `--skip-unresolved` dazu - ein Kuerzel, das die SEC nicht kennt, ist hier der Normalfall und kein Konfigurationsfehler.",
   "sources": {
@@ -27,7 +27,7 @@
     "candidates": 5473,
     "companies": 5474,
     "validationSet": 5,
-    "withDeliveredStockPage": 5273,
+    "withDeliveredStockPage": 5280,
     "excluded": {
       "noCik": 1226,
       "notUs": 0,
@@ -5440,6 +5440,17 @@
       "role": "deliveredStockPage"
     },
     {
+      "ticker": "AUXX",
+      "name": "Gold X2 Mining Inc.",
+      "cik": "0001961592",
+      "instrumentId": "vu_866ecb2a7bc25e",
+      "exchange": "NYSE",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Traegt heute eine Aktienseite.",
+      "role": "deliveredStockPage"
+    },
+    {
       "ticker": "AVA",
       "name": "Avista Corporation",
       "cik": "0000104918",
@@ -9794,6 +9805,17 @@
       "role": "deliveredStockPage"
     },
     {
+      "ticker": "CAE",
+      "name": "Cae Inc",
+      "cik": "0001173382",
+      "instrumentId": "vu_7aaa527840995e",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Traegt heute eine Aktienseite.",
+      "role": "deliveredStockPage"
+    },
+    {
       "ticker": "CAES",
       "name": "Cantor Equity Partners VII, Inc.",
       "cik": "0002087965",
@@ -10129,6 +10151,20 @@
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Traegt heute eine Aktienseite.",
+      "role": "deliveredStockPage"
+    },
+    {
+      "ticker": "CATL",
+      "name": "Catalyst Acquisition Corp.",
+      "cik": "0002104391",
+      "instrumentId": "vu_a024fb2f64c9c6",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Traegt heute eine Aktienseite.",
+      "alsoTickers": [
+        "CATLU"
+      ],
       "role": "deliveredStockPage"
     },
     {
@@ -30373,17 +30409,6 @@
       "role": "deliveredStockPage"
     },
     {
-      "ticker": "KPTI",
-      "name": "Karyopharm Therapeutics Inc.",
-      "cik": "0001503802",
-      "instrumentId": "vu_1acb3f9364e9b3",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "role": "deliveredStockPage"
-    },
-    {
       "ticker": "KR",
       "name": "The Kroger Co.",
       "cik": "0000056873",
@@ -35717,6 +35742,20 @@
       "role": "deliveredStockPage"
     },
     {
+      "ticker": "MTAK",
+      "name": "Market Technology Acquisition Corp",
+      "cik": "0002133136",
+      "instrumentId": "vu_92e1823272a42e",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Traegt heute eine Aktienseite.",
+      "alsoTickers": [
+        "MTAKU"
+      ],
+      "role": "deliveredStockPage"
+    },
+    {
       "ticker": "MTAL",
       "name": "Metals Acquisition Corp. II",
       "cik": "0002107724",
@@ -38000,6 +38039,17 @@
       "role": "deliveredStockPage"
     },
     {
+      "ticker": "NRG",
+      "name": "Nrg Energy, Inc.",
+      "cik": "0001013871",
+      "instrumentId": "vu_37ff05bfef9a9d",
+      "exchange": "NYSE",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Traegt heute eine Aktienseite.",
+      "role": "deliveredStockPage"
+    },
+    {
       "ticker": "NRGV",
       "name": "Energy Vault Holdings, Inc.",
       "cik": "0001828536",
@@ -38615,6 +38665,17 @@
       "role": "deliveredStockPage"
     },
     {
+      "ticker": "NVT",
+      "name": "nVent Electric plc",
+      "cik": "0001720635",
+      "instrumentId": "vu_f5826d9a60e8ae",
+      "exchange": "NYSE",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Traegt heute eine Aktienseite.",
+      "role": "deliveredStockPage"
+    },
+    {
       "ticker": "NVTS",
       "name": "Navitas Semiconductor Corp",
       "cik": "0001821769",
@@ -39194,6 +39255,20 @@
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Traegt heute eine Aktienseite.",
+      "role": "deliveredStockPage"
+    },
+    {
+      "ticker": "OCLT",
+      "name": "OceanLight Acquisition Corp",
+      "cik": "0002137679",
+      "instrumentId": "vu_42fe797151e88b",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Traegt heute eine Aktienseite.",
+      "alsoTickers": [
+        "OCLTU"
+      ],
       "role": "deliveredStockPage"
     },
     {
@@ -46138,6 +46213,20 @@
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Traegt heute eine Aktienseite.",
+      "role": "deliveredStockPage"
+    },
+    {
+      "ticker": "RNAQ",
+      "name": "Rainier Acquisition Corp",
+      "cik": "0002147219",
+      "instrumentId": "vu_bd01154d344f29",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Traegt heute eine Aktienseite.",
+      "alsoTickers": [
+        "RNAQU"
+      ],
       "role": "deliveredStockPage"
     },
     {
@@ -60380,17 +60469,6 @@
       "role": "universe"
     },
     {
-      "ticker": "AUXX",
-      "name": "Gold X2 Mining Inc.",
-      "cik": "0001961592",
-      "instrumentId": "vu_866ecb2a7bc25e",
-      "exchange": "NYSE",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Aus dem Company Master; US-Emittent mit CIK.",
-      "role": "universe"
-    },
-    {
       "ticker": "AXINU",
       "name": "Axiom Intelligence Acquisition Corp 1",
       "cik": "0002057030",
@@ -60565,17 +60643,6 @@
       "role": "universe"
     },
     {
-      "ticker": "CAE",
-      "name": "Cae Inc",
-      "cik": "0001173382",
-      "instrumentId": "vu_7aaa527840995e",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Aus dem Company Master; US-Emittent mit CIK.",
-      "role": "universe"
-    },
-    {
       "ticker": "CAPNR",
       "name": "Cayson Acquisition Corp",
       "cik": "0002024203",
@@ -60586,20 +60653,6 @@
       "why": "Aus dem Company Master; US-Emittent mit CIK.",
       "alsoTickers": [
         "CAPNU"
-      ],
-      "role": "universe"
-    },
-    {
-      "ticker": "CATL",
-      "name": "Catalyst Acquisition Corp.",
-      "cik": "0002104391",
-      "instrumentId": "vu_a024fb2f64c9c6",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Aus dem Company Master; US-Emittent mit CIK.",
-      "alsoTickers": [
-        "CATLU"
       ],
       "role": "universe"
     },
@@ -61342,6 +61395,17 @@
       "role": "universe"
     },
     {
+      "ticker": "KPTI",
+      "name": "Karyopharm Therapeutics Inc.",
+      "cik": "0001503802",
+      "instrumentId": "vu_1acb3f9364e9b3",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "role": "universe"
+    },
+    {
       "ticker": "KTH",
       "name": "Structured Products Corp Corts Tr For Peco Energy Cap Tr Iii",
       "cik": "0001283464",
@@ -61594,20 +61658,6 @@
       "role": "universe"
     },
     {
-      "ticker": "MTAK",
-      "name": "Market Technology Acquisition Corp",
-      "cik": "0002133136",
-      "instrumentId": "vu_92e1823272a42e",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Aus dem Company Master; US-Emittent mit CIK.",
-      "alsoTickers": [
-        "MTAKU"
-      ],
-      "role": "universe"
-    },
-    {
       "ticker": "NATH",
       "name": "Nathans Famous, Inc.",
       "cik": "0000069733",
@@ -61648,17 +61698,6 @@
       "name": "Nuveen Variable Rate Preferred & Income Fund",
       "cik": "0001865389",
       "instrumentId": "vu_f6d209ec52ced0",
-      "exchange": "NYSE",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Aus dem Company Master; US-Emittent mit CIK.",
-      "role": "universe"
-    },
-    {
-      "ticker": "NRG",
-      "name": "Nrg Energy, Inc.",
-      "cik": "0001013871",
-      "instrumentId": "vu_37ff05bfef9a9d",
       "exchange": "NYSE",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
@@ -61724,17 +61763,6 @@
       "role": "universe"
     },
     {
-      "ticker": "NVT",
-      "name": "nVent Electric plc",
-      "cik": "0001720635",
-      "instrumentId": "vu_f5826d9a60e8ae",
-      "exchange": "NYSE",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Aus dem Company Master; US-Emittent mit CIK.",
-      "role": "universe"
-    },
-    {
       "ticker": "OBTC",
       "name": "Osprey Bitcoin Trust",
       "cik": "0001767057",
@@ -61743,20 +61771,6 @@
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Aus dem Company Master; US-Emittent mit CIK.",
-      "role": "universe"
-    },
-    {
-      "ticker": "OCLT",
-      "name": "OceanLight Acquisition Corp",
-      "cik": "0002137679",
-      "instrumentId": "vu_42fe797151e88b",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Aus dem Company Master; US-Emittent mit CIK.",
-      "alsoTickers": [
-        "OCLTU"
-      ],
       "role": "universe"
     },
     {
@@ -61938,20 +61952,6 @@
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Aus dem Company Master; US-Emittent mit CIK.",
-      "role": "universe"
-    },
-    {
-      "ticker": "RNAQ",
-      "name": "Rainier Acquisition Corp",
-      "cik": "0002147219",
-      "instrumentId": "vu_bd01154d344f29",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Aus dem Company Master; US-Emittent mit CIK.",
-      "alsoTickers": [
-        "RNAQU"
-      ],
       "role": "universe"
     },
     {

@@ -803,9 +803,9 @@
       "cik": "0001956741",
       "name": "Zone Frontier Inc.",
       "sic": "2842",
-      "rawFacts": 2638,
-      "mappedFacts": 914,
-      "unmappedFacts": 1794,
+      "rawFacts": 2902,
+      "mappedFacts": 989,
+      "unmappedFacts": 1977,
       "calendarYears": 4,
       "industry": null,
       "industryMetrics": {},
@@ -815,28 +815,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 5,
-      "quarterlyPeriods": 16,
+      "quarterlyPeriods": 17,
       "firstPeriodEnd": "2022-06-30",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 4.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 12,
+          "quarterlyPeriods": 13,
           "firstAvailablePeriod": "2024-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 2.0
         },
         "eps_diluted": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 6,
+          "quarterlyPeriods": 7,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "free_cash_flow": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 12,
+          "quarterlyPeriods": 13,
           "firstAvailablePeriod": "2024-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 2.0,
@@ -856,21 +856,21 @@
         },
         "net_income": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 12,
+          "quarterlyPeriods": 13,
           "firstAvailablePeriod": "2024-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 2.0
         },
         "operating_cash_flow": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 12,
+          "quarterlyPeriods": 13,
           "firstAvailablePeriod": "2024-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 2.0
         },
         "revenue": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 13,
+          "quarterlyPeriods": 14,
           "firstAvailablePeriod": "2024-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 2.0
@@ -884,14 +884,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 15,
+          "quarterlyPeriods": 16,
           "firstAvailablePeriod": "2022-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 4.0
         },
         "total_assets": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 11,
+          "quarterlyPeriods": 12,
           "firstAvailablePeriod": "2023-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 3.0
@@ -914,47 +914,48 @@
         }
       },
       "quality": {
-        "HIGH": 102
+        "HIGH": 107,
+        "MEDIUM": 2
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 102,
-        "resolvedValues": 102
+        "datableValues": 109,
+        "resolvedValues": 109
       },
       "qualitySummary": {
         "rules_version": "1.1.0",
-        "total": 1834,
+        "total": 2035,
         "by_severity": {
-          "INFO": 1794,
-          "WARNING": 40
+          "INFO": 1977,
+          "WARNING": 58
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 23,
+          "CONCEPT_DISAGREEMENT": 31,
           "PERIOD_MISMATCH": 3,
-          "RESTATEMENT_CONFLICT": 5,
+          "RESTATEMENT_CONFLICT": 15,
           "UNEXPECTED_DURATION": 9,
-          "UNKNOWN_CONCEPT": 1794
+          "UNKNOWN_CONCEPT": 1977
         }
       },
       "latestFiling": {
-        "accession": "0001213900-26-113383",
-        "filing_date": "2026-10-28",
-        "form": "10-K/A",
-        "periodic_filings": 12,
-        "acceptance_datetime": "2026-10-28T21:15:49.000Z"
+        "accession": "0001213900-26-121558",
+        "filing_date": "2026-11-18",
+        "form": "10-Q",
+        "periodic_filings": 13,
+        "acceptance_datetime": "2026-11-18T11:07:52.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.14.0",
-        "formula": "1.2.0",
+        "normalization_logic": "1.15.0",
+        "formula": "1.3.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.7.0"
+          "mapping_version": "1.8.0"
         }
       },
-      "sourceDigest": "79dfb5e622f9190c7cec10de8ef96cd6220134f0a9e23eae935197a369164e59",
+      "sourceDigest": "87e6b03838a56323c36cc3ed2cfce02488f796a7391cb3483afcc27109460e7b",
       "issuerId": "iss_cik_0001956741"
     }
   ]
