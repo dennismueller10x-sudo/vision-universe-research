@@ -180,7 +180,7 @@ async function buildConcepts(output) {
     await mkdir(resolve(output,'konzepte','x'),{recursive:true}); await writeFile(resolve(output,'konzepte','x','index.html'),html);
   }
   // Referenz-Konzepte (Owner 19.11.2026): Technik von dls-consulting.de (D) und rockstargames.com (R) auf die Live-Seite übertragen.
-  for (const [id,name,cls] of [['d','Technik wie DLS','tk rf rf-d'],['r','Technik wie Rockstar Games','rf rf-r']]) {
+  for (const [id,name,cls] of [['d','Mockup: Aufbau wie DLS','rf rf-d'],['r','Mockup: Aufbau wie Rockstar Games','rf rf-r']]) {
     const css = (cls.includes('tk')?'<link rel="stylesheet" href="../t/techniken.css">':'')+'<link rel="stylesheet" href="../t/referenz.css">';
     const html = basis.replace('<html lang="de"',`<html lang="de" class="${cls}"`)
       .replace('</head>',css+'</head>')
