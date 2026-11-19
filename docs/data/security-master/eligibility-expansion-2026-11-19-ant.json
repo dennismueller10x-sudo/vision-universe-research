@@ -1,0 +1,26 @@
+{
+ "schema": "vu-eligibility-catchup-1",
+ "id": "eligibility-expansion-2026-11-19-ant",
+ "prevSha256": "9efacf856e1b4bc075cd2518c5f2a85d64aeb0175acba75189cf1fed52969da1",
+ "sourceRun": "security-master-eligibility.yml (approved_catchup, freigabe, erweiterung=ANT, commit) am Abend des 19.11.2026, sobald die Tiingo-Anbieterliste ANT fuehrt; gegen main nach #2139",
+ "decidedBy": "Steuerung 19.11.2026 (Auftrag Strang AX): Anthropic, PBC ist seit dem 19.11.2026 an der Nasdaq Global Select Market notiert (Ticker ANT). Positivliste nur fuer diesen einen Titel; ehrliche Anzeige 'zu kurze Historie' bis genug Handelstage vorliegen.",
+ "productUniverseBefore": 6339,
+ "productUniverseAfter": 6340,
+ "counts": {
+  "changes": 0,
+  "leaveProduct": 0,
+  "enterProduct": 1,
+  "membersAdded": 1
+ },
+ "changes": [],
+ "membersAdded": [
+  "ref_ANT"
+ ],
+ "evidence": [
+  {
+   "securityId": "ref_ANT",
+   "ticker": "ANT",
+   "note": "Anthropic, PBC, CIK 0002130357. SEC EDGAR: 424B4 vom 19.11.2026 11:05 UTC (Acc. 0001628280-26-074944), Ausgabepreis 83,00 USD, 'approved to list our Class A common stock on the Nasdaq Global Select Market under the symbol ANT'; 8-A12B vom 17.11.2026; EFFECT 19.11.2026. Erster Handelstag 19.11.2026."
+  }
+ ]
+}
