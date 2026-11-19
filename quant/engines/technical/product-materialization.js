@@ -7,6 +7,44 @@
   var Hash = isNode ? require("../hash.js") : global.VUHash;
   var VERSION = "technical-product-artifact-1.0.0";
   var DISPLAY_BARS = 270;
+  /* Chart-Historie (Owner 19.11.2026: jeder Indikator in jedem Zeitraum). Rein additiv neben `bars` und `bundle`:
+     `daily` = die HISTORY_DAILY_BARS Tageskerzen VOR dem Anzeigefenster (Anlaufzeit, damit 200-Tage-Linie, EMA-Baender
+     und alle Indikatoren ueber das ganze Jahr reichen; der Leser haengt `bars` an), `weekly` = die ganze Reihe als
+     Wochenkerzen (3J, 5J, 10J, Max). Dieselbe SPLIT_ADJUSTED-Reihe wie `bars`. Bewusst kein 3-Jahres-Tagesfenster:
+     die Scherben werden je Lauf neu committet, Wochenkerzen kosten ein Fuenftel. */
+  var HISTORY_DAILY_BARS = 250, HISTORY_SCHEMA = "technical-chart-history-1.0.0";
+  function r4(v) { return Number.isFinite(v) ? Math.round(v * 1e4) / 1e4 : null; }
+  function isoWeek(date) {
+    var d = new Date(String(date).slice(0, 10) + "T00:00:00Z"), day = (d.getUTCDay() + 6) % 7;
+    d.setUTCDate(d.getUTCDate() - day + 3);
+    var y = d.getUTCFullYear(), first = new Date(Date.UTC(y, 0, 4));
+    return y + "-W" + String(1 + Math.round(((d - first) / 864e5 - 3 + ((first.getUTCDay() + 6) % 7)) / 7)).padStart(2, "0");
+  }
+  /* Wochenkerze je ISO-Woche: Eroeffnung des ersten, Hoch/Tief ueber alle, Schluss des letzten Tages, Volumen summiert;
+     Datum = letzter Handelstag der Woche (wie die Wochenpunkte der langen Kursreihe). */
+  function weeklyBars(series) {
+    var out = { timestamps: [], open: [], high: [], low: [], close: [], volume: [] }, key = null, n = -1;
+    for (var i = 0; i < series.timestamps.length; i++) {
+      var k = isoWeek(series.timestamps[i]);
+      if (k !== key) { key = k; n++; out.timestamps.push(null); out.open.push(series.open[i]); out.high.push(series.high[i]); out.low.push(series.low[i]); out.close.push(null); out.volume.push(0); }
+      out.timestamps[n] = String(series.timestamps[i]).slice(0, 10);
+      if (series.high[i] > out.high[n]) out.high[n] = series.high[i];
+      if (series.low[i] < out.low[n]) out.low[n] = series.low[i];
+      out.close[n] = series.close[i];
+      out.volume[n] += Number.isFinite(series.volume[i]) ? series.volume[i] : 0;
+    }
+    ["open", "high", "low", "close"].forEach(function (c) { out[c] = out[c].map(r4); });
+    out.volume = out.volume.map(function (v) { return Math.round(v); });
+    return out;
+  }
+  function chartHistory(series, from) {
+    var start = Math.max(0, from - HISTORY_DAILY_BARS);
+    function sl(a, f) { return a.slice(start, from).map(f || function (v) { return v; }); }
+    return { schemaVersion: HISTORY_SCHEMA,
+      daily: { timestamps: sl(series.timestamps, function (d) { return String(d).slice(0, 10); }), open: sl(series.open, r4), high: sl(series.high, r4),
+        low: sl(series.low, r4), close: sl(series.close, r4), volume: sl(series.volume) },
+      weekly: weeklyBars(series) };
+  }
 
   function shardKey(ticker) {
     var t = String(ticker || "").toUpperCase();
@@ -94,6 +132,7 @@
       dataMode: "real", isMock: false, source: "tiingo", sourceRevision: provenance.observedAt,
       priceSeriesType: "SPLIT_ADJUSTED", benchmarkId: input.benchmarkId || null,
       bars: compactBars(series, from), bundle: compactBundle(bundle, from, series.timestamps[from]),
+      history: chartHistory(series, from),
       snapshotId: "pts_" + Hash.hashValue({ ticker: ticker, dataHash: bundle.dataHash,
         methodology: bundle.methodologyVersion, parameters: bundle.parametersHash }),
       provenance: {
@@ -121,7 +160,8 @@
     });
   }
 
-  var api = { VERSION: VERSION, DISPLAY_BARS: DISPLAY_BARS, shardKey: shardKey,
+  var api = { VERSION: VERSION, DISPLAY_BARS: DISPLAY_BARS, HISTORY_DAILY_BARS: HISTORY_DAILY_BARS, HISTORY_SCHEMA: HISTORY_SCHEMA,
+    weeklyBars: weeklyBars, chartHistory: chartHistory, isoWeek: isoWeek, shardKey: shardKey,
     compactBars: compactBars, compactBundle: compactBundle, project: project, validateShard: validateShard };
   if (isNode) module.exports = api;
   else { global.VUTechnical = global.VUTechnical || {}; global.VUTechnical.ProductMaterialization = api; }

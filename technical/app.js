@@ -1588,11 +1588,36 @@
         : h(U.blank(X.st.frozenSince ? "Der Kurs steht still; ohne Kursänderung gibt es keine Befunde." : "Im Tageschart finden die Regeln derzeit keinen Befund.")), all.length];
   }
   var MONTHS = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"];
+  /* ISO-Woche eines Datums: der Wochenchart (lange Kursreihe) und die Wochenkerzen der Materialisierung treffen sich je Woche. */
+  function isoWeekKey(t) {
+    var d = new Date(String(t).slice(0, 10) + "T00:00:00Z"); if (!isFinite(d)) return "";
+    d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 6) % 7) + 3);
+    var y = d.getUTCFullYear(), first = new Date(Date.UTC(y, 0, 4));
+    return y + "-W" + (1 + Math.round(((d - first) / 864e5 - 3 + ((first.getUTCDay() + 6) % 7)) / 7));
+  }
+  function ohlcvOk(x) {
+    return !!x && Array.isArray(x.timestamps) && x.timestamps.length > 1 && ["open", "high", "low", "close", "volume"].every(function (k) { return Array.isArray(x[k]) && x[k].length === x.timestamps.length; });
+  }
+  /* Tageskerzen VOR dem Anzeigefenster (inst.history.daily) + die 270 Tagesbalken: Anlaufzeit fuer lange Linien. */
+  function chartDaily(h, S) {
+    var d = h && h.daily, n = S.dates.length;
+    if (!ohlcvOk(d) || !n || String(d.timestamps[d.timestamps.length - 1]).slice(0, 10) >= String(S.dates[0]).slice(0, 10)) return S;
+    var cat = function (k, sk) { return d[k].concat(S[sk || k]); };
+    return { dates: cat("timestamps", "dates"), open: cat("open"), high: cat("high"), low: cat("low"), close: cat("close"), volume: cat("volume") };
+  }
+  function chartWeekly(h) {
+    var w = h && h.weekly;
+    return ohlcvOk(w) ? { dates: w.timestamps, open: w.open, high: w.high, low: w.low, close: w.close, volume: w.volume } : null;
+  }
   function renderSimple(body, X) {
     var S = X.S, n = S.close.length, t = n - 1, F = X.F, lv = X.levels || {}, R = lv.nearestResistance, Su = lv.nearestSupport;
     var sum = chartSummary(S.close[t], F.sma50, F.sma200);
     var host = el("div", { class: "tc-chart-host tc-simple-chart" }), legend = el("p", { class: "tc-note tc-chart-note" });
     var widget = null, VT = global.VUTechnical, s150Cache = null, fibCache;
+    /* Chart-Historie (Owner 19.11.2026: jeder Indikator in jedem Zeitraum): H = Tageskerzen (250 vor dem Fenster + 270, Anlaufzeit
+       langer Linien), W = Wochenkerzen der ganzen Reihe, beide aus inst.history der Materialisierung. Ohne sie gilt S. */
+    var H = chartDaily(X.inst && X.inst.history, S), W = chartWeekly(X.inst && X.inst.history);
+    var wk = isoWeekKey, gkey = function (t) { return String(t).slice(0, 10); };
     function sma150() { if (!s150Cache && VT.Indicators) s150Cache = VT.Indicators.compute(S, "sma", { period: 150 }).values; return s150Cache; }
     var emaCache;
     /* EMA-Cluster (quant/engines/technical/ema-cluster.js) auf den Tagesbalken der Analyse; ohne gueltige OHLC nur Schluesse. */
@@ -1614,14 +1639,20 @@
     /* Baender je Datum: [min, max] des schnellen und des langsamen Buendels.
        Tag: chartSeries.emaFastMin/-Max/emaSlowMin/-Max der Materialisierung (volle Historie, ueber die ganze Breite),
        sonst die Engine auf den 270 Tagesbalken (nach Anlaufzeit). Woche: Engine im Zeitrahmen 1W auf der langen Wochenreihe. */
-    function bandsFrom(rows) {
+    function bandsFrom(rows, keyFn) {
       var byDate = {}, from = null;
-      rows.forEach(function (r) { if (r.fast && r.slow) { byDate[r.date] = { fast: [r.fast.min, r.fast.max], slow: [r.slow.min, r.slow.max], fv: r.fast.values, sv: r.slow.values }; if (!from) from = r.date; } });
+      rows.forEach(function (r) { if (r.fast && r.slow) { byDate[keyFn ? keyFn(r.date) : r.date] = { fast: [r.fast.min, r.fast.max], slow: [r.slow.min, r.slow.max], fv: r.fast.values, sv: r.slow.values }; if (!from) from = r.date; } });
       return from ? { byDate: byDate, from: from } : null;
     }
     var emaDailyCache;
     function emaBandsDaily() {
       if (emaDailyCache !== undefined) return emaDailyCache;
+      if (H !== S && VT.EmaCluster) {
+        emaDailyCache = null;
+        try { emaDailyCache = bandsFrom(VT.EmaCluster.calculate({ asOf: String(H.dates[H.dates.length - 1]).slice(0, 10),
+          bars: H.dates.map(function (d, i) { return { date: String(d).slice(0, 10), close: H.close[i] }; }) }).rows); } catch (e) { emaDailyCache = null; }
+        if (emaDailyCache) return emaDailyCache;
+      }
       var cs = X.cs || {}, k = ["emaFastMin", "emaFastMax", "emaSlowMin", "emaSlowMax"];
       if (k.every(function (x) { return Array.isArray(cs[x]) && cs[x].length === S.dates.length; })) {
         var byDate = {}, from = null;
@@ -1641,11 +1672,18 @@
       loadWeekly(X.T).then(function (w) {
         var pts = (w && w.status === "CALCULATED" && Array.isArray(w.points) ? w.points : []).filter(function (p) { return p && typeof p[0] === "string" && isNum(p[1]) && p[1] > 0; });
         if (pts.length < 2 || !VT.EmaCluster) return;
-        try { emaWeekly = bandsFrom(VT.EmaCluster.calculate({ timeframe: "1W", asOf: pts[pts.length - 1][0].slice(0, 10), bars: pts.map(function (p) { return { date: p[0].slice(0, 10), close: p[1] }; }) }).rows); } catch (e) { emaWeekly = null; }
+        try { emaWeekly = bandsFrom(VT.EmaCluster.calculate({ timeframe: "1W", asOf: pts[pts.length - 1][0].slice(0, 10), bars: pts.map(function (p) { return { date: p[0].slice(0, 10), close: p[1] }; }) }).rows, wk); } catch (e) { emaWeekly = null; }
         if (emaWeekly) draw();
       }).catch(function () {});
     }
-    function emaBandsWeekly() { return emaWeekly || null; }
+    function emaBandsWeekly() {
+      /* Wochenkerzen der Materialisierung, sonst die lange Wochenreihe (nachgeladen). */
+      if (emaWeekly === undefined && W && VT.EmaCluster) {
+        try { emaWeekly = bandsFrom(VT.EmaCluster.calculate({ timeframe: "1W", asOf: String(W.dates[W.dates.length - 1]).slice(0, 10),
+          bars: W.dates.map(function (d, i) { return { date: String(d).slice(0, 10), close: W.close[i] }; }) }).rows, wk); } catch (e) { emaWeekly = null; }
+      }
+      return emaWeekly || null;
+    }
     /* Tagesverlauf (1T): die Baender des letzten Tagesschlusses als waagrechte Zonen ueber den ganzen Tag. */
     function paintEmaIntraday(svg, g) {
       var old = svg.querySelector(".tc-layers"); if (old) old.parentNode.removeChild(old);
@@ -1677,17 +1715,17 @@
       }
       return wkData;
     }
-    function byDate(dates, values) { var m = {}; dates.forEach(function (d, i) { if (isNum(values[i])) m[String(d).slice(0, 10)] = values[i]; }); return m; }
+    function byDate(dates, values) { var m = {}; dates.forEach(function (d, i) { if (isNum(values[i])) m[gkey(d)] = values[i]; }); return m; }
     var lineCache = {};
     function lineSeries(key, daily) {
       var ck = key + (daily ? "D" : "W"); if (lineCache[ck]) return lineCache[ck];
       var L = LINE_DEF.filter(function (x) { return x[0] === key; })[0], cs = X.cs || {}, arr = null;
       if (daily) {
-        arr = { sma20: cs.sma20, sma50: cs.sma50, stage: cs.sma150, avg: cs.sma200 }[key];
-        if (!Array.isArray(arr) || arr.length !== S.dates.length) arr = VT.Indicators.compute(S, "sma", { period: L[2] }).values;
-        return (lineCache[ck] = byDate(S.dates, arr));
+        arr = H === S ? { sma20: cs.sma20, sma50: cs.sma50, stage: cs.sma150, avg: cs.sma200 }[key] : null;
+        if (!Array.isArray(arr) || arr.length !== H.dates.length) arr = VT.Indicators.compute(H, "sma", { period: L[2] }).values;
+        return (lineCache[ck] = byDate(H.dates, arr));
       }
-      var w = weekly(); if (!w) return null;
+      var w = W || weekly(); if (!w) return null;
       return (lineCache[ck] = byDate(w.dates, VT.Indicators.compute(w, "sma", { period: L[3] }).values));
     }
     var FAMILY = { TREND: "Trend", MOMENTUM: "Schwung", VOLATILITY: "Schwankung", VOLUME: "Volumen" };
@@ -1720,7 +1758,7 @@
     function catalog() { return VT.Indicators && VT.Indicators.CATALOG || []; }
     function indResult(id, daily) {
       var ck = id + (daily ? "D" : "W"); if (indCache[ck] !== undefined) return indCache[ck];
-      var src = daily ? S : weekly(); if (!src) return null;
+      var src = daily ? H : (W || weekly()); if (!src) return null;
       var r = VT.Indicators.compute(src, id), out = null;
       if (r && !r.error && r.values) {
         var series = [];
@@ -1751,9 +1789,9 @@
         if (c.overlay) {
           r.series.forEach(function (sr, q) {
             var m = byDate(r.dates, sr.values), d = "";
-            if (/Price$/.test(sr.key)) { g.pts.forEach(function (p) { var v = m[p.t.slice(0, 10)]; if (isNum(v)) layer.appendChild(svgEl("circle", { class: "tc-ind-dot", cx: p.x.toFixed(1), cy: g.y(v).toFixed(1), r: 2.4, fill: color })); }); return; }
-            g.pts.forEach(function (p) { var v = m[p.t.slice(0, 10)]; if (isNum(v)) d += (d ? "L" : "M") + p.x.toFixed(1) + " " + Math.max(0, Math.min(plotBottom, g.y(v))).toFixed(1) + " "; });
-            if (d) layer.appendChild(svgEl("path", { class: "tc-ind-line", d: d.trim(), fill: "none", stroke: color, "stroke-width": q ? 1.1 : 1.6, "stroke-dasharray": q ? "3 2" : "" }));
+            if (/Price$/.test(sr.key)) { g.pts.forEach(function (p) { var v = m[gkey(p.t)]; if (isNum(v)) layer.appendChild(svgEl("circle", { class: "tc-ind-dot", "data-ind": id, cx: p.x.toFixed(1), cy: g.y(v).toFixed(1), r: 2.4, fill: color })); }); return; }
+            g.pts.forEach(function (p) { var v = m[gkey(p.t)]; if (isNum(v)) d += (d ? "L" : "M") + p.x.toFixed(1) + " " + Math.max(0, Math.min(plotBottom, g.y(v))).toFixed(1) + " "; });
+            if (d) layer.appendChild(svgEl("path", { class: "tc-ind-line", "data-ind": id, d: d.trim(), fill: "none", stroke: color, "stroke-width": q ? 1.1 : 1.6, "stroke-dasharray": q ? "3 2" : "" }));
           });
         } else paneEls.push(paneFor(c, r, g, color));
       });
@@ -1768,19 +1806,19 @@
     function paneFor(c, r, g, color) {
       var H = 86, top = 16, maps = r.series.map(function (sr) { return { key: sr.key, m: byDate(r.dates, sr.values) }; }), lo = Infinity, hi = -Infinity, last = null, fx = FIXED[c.id];
       if (fx) { lo = fx[0]; hi = fx[1]; }
-      else g.pts.forEach(function (p) { maps.forEach(function (mp) { var v = mp.m[p.t.slice(0, 10)]; if (isNum(v)) { lo = Math.min(lo, v); hi = Math.max(hi, v); } }); });
+      else g.pts.forEach(function (p) { maps.forEach(function (mp) { var v = mp.m[gkey(p.t)]; if (isNum(v)) { lo = Math.min(lo, v); hi = Math.max(hi, v); } }); });
       var svg = svgEl("svg", { class: "tc-pane-svg", viewBox: "0 0 " + g.w + " " + H, preserveAspectRatio: "none", role: "img", "aria-label": c.name });
       if (!(hi > lo)) { hi = lo + 1; }
       var y = function (v) { return top + (hi - v) / (hi - lo) * (H - top - 6); };
       if (lo < 0 && hi > 0 && !fx) svg.appendChild(svgEl("line", { x1: 0, x2: g.w - g.padR, y1: y(0).toFixed(1), y2: y(0).toFixed(1), class: "tc-pane-zero" }));
       if (fx) fx[2].forEach(function (m) { svg.appendChild(svgEl("line", { x1: 0, x2: g.w - g.padR, y1: y(m).toFixed(1), y2: y(m).toFixed(1), class: "tc-pane-zero" })); });
       maps.forEach(function (mp, q) {
-        if (mp.key === "histogram") { g.pts.forEach(function (p) { var v = mp.m[p.t.slice(0, 10)]; if (isNum(v)) { var y0 = y(Math.max(lo, Math.min(hi, 0))), y1 = y(v); svg.appendChild(svgEl("rect", { x: (p.x - 1).toFixed(1), y: Math.min(y0, y1).toFixed(1), width: 2, height: Math.max(0.5, Math.abs(y1 - y0)).toFixed(1), fill: "#9b9b9b" })); } }); return; }
+        if (mp.key === "histogram") { g.pts.forEach(function (p) { var v = mp.m[gkey(p.t)]; if (isNum(v)) { var y0 = y(Math.max(lo, Math.min(hi, 0))), y1 = y(v); svg.appendChild(svgEl("rect", { x: (p.x - 1).toFixed(1), y: Math.min(y0, y1).toFixed(1), width: 2, height: Math.max(0.5, Math.abs(y1 - y0)).toFixed(1), fill: "#9b9b9b" })); } }); return; }
         var d = "";
-        g.pts.forEach(function (p) { var v = mp.m[p.t.slice(0, 10)]; if (isNum(v)) { d += (d ? "L" : "M") + p.x.toFixed(1) + " " + y(v).toFixed(1) + " "; if (!q) last = v; } });
+        g.pts.forEach(function (p) { var v = mp.m[gkey(p.t)]; if (isNum(v)) { d += (d ? "L" : "M") + p.x.toFixed(1) + " " + y(v).toFixed(1) + " "; if (!q) last = v; } });
         if (d) svg.appendChild(svgEl("path", { d: d.trim(), fill: "none", stroke: q ? "#6e6e6e" : color, "stroke-width": q ? 1.1 : 1.6, "stroke-dasharray": q ? "3 2" : "", "vector-effect": "non-scaling-stroke" }));
       });
-      return el("div", { class: "tc-pane-box" }, [el("div", { class: "tc-pane-h" }, [el("b", { text: shortInd(c) }), el("span", { class: "num", text: isNum(last) ? M.num(last, Math.abs(last) < 10 ? 2 : 1) : "–" }),
+      return el("div", { class: "tc-pane-box", "data-ind": c.id }, [el("div", { class: "tc-pane-h" }, [el("b", { text: shortInd(c) }), el("span", { class: "num", text: isNum(last) ? M.num(last, Math.abs(last) < 10 ? 2 : 1) : "–" }),
         el("button", { type: "button", class: "tc-pane-x", "aria-label": c.name + " ausblenden", text: "×", onclick: function () { simple.ind[c.id] = false; syncActive(); draw(); } })]), svg]);
     }
     /* Fenster „Indikatoren“: alle Katalogeintraege nach Familie, Suche, Schalter. */
@@ -1844,6 +1882,7 @@
     /* 1T (Owner 19.11.2026): auch im Tagesverlauf Zonen, Fibonacci des Tages und die Linien als heutige Marke (Wert des letzten
        Tagesschlusses), statt nur der EMA-Baender. Trendlinie und Katalog-Indikatoren brauchen Kerzen und bleiben Tag/Woche/Monat. */
     function paintIntraday(svg, g) {
+      gkey = function (t) { return String(t).slice(0, 10); };
       paintEmaIntraday(svg, g);
       var emaText = legend.textContent, plotBottom = g.h - g.padBottom, right = g.w - g.padR, note = emaText ? [emaText.replace(/\.$/, "")] : [];
       var layer = svgEl("g", { class: "tc-layers tc-layers--day" }), top = svgEl("g", { class: "tc-layers tc-layers--top" }), outside = [];
@@ -1876,6 +1915,7 @@
       if (!svg || !g || !g.pts) { put(legend, ""); return; }
       if (g.intraday) { paintIntraday(svg, g); put(panes, Object.keys(simple.ind).some(function (k) { return simple.ind[k]; }) ? el("p", { class: "tc-note", text: "Indikatoren gelten für Tag, Woche und Monat; im Tagesverlauf (1T) fehlen dafür noch die 5-Minuten-Kerzen." }) : ""); return; }
       var dailyGrain = svg.parentNode && svg.parentNode.dataset && svg.parentNode.dataset.grain === "daily";
+      gkey = dailyGrain ? function (t) { return String(t).slice(0, 10); } : wk;
       var plotBottom = g.h - g.padBottom, right = g.w - g.padR, note = [];
       var layer = svgEl("g", { class: "tc-layers" }), top = svgEl("g", { class: "tc-layers tc-layers--top" });
       function inView(y) { return y >= 0 && y <= plotBottom; }
@@ -1898,7 +1938,7 @@
           layer.appendChild(svgEl("line", { class: "tc-trend tc-trend--" + l.tone, x1: x1.toFixed(1), y1: y1.toFixed(1), x2: x3.toFixed(1), y2: y3.toFixed(1), "stroke-dasharray": l.dash || "" }));
         });
         note.push("Trendlinien gelten für den Tageschart");
-      } else if (simple.trend) note.push("Trendlinie nur im Tageschart (bis 3J)");
+      } else if (simple.trend) note.push("Trendlinie nur im Tageschart (bis 1J)");
       /* Gleitende Durchschnitte (Owner 18.11.2026): 20/50/150/200 Tage; im Wochenchart (5J, Max) dieselbe Zeitspanne als
          4/10/30/40 Wochen. Tag: chartSeries der Materialisierung (volle Historie), sonst indicators.js auf den Tagesbalken. */
       var lineNote = [];
@@ -1906,7 +1946,7 @@
         if (!simple[L[0]]) return;
         var m = lineSeries(L[0], dailyGrain); if (!m) return;
         var d = "";
-        g.pts.forEach(function (p) { var v = m[p.t.slice(0, 10)]; if (isNum(v)) d += (d ? "L" : "M") + p.x.toFixed(1) + " " + Math.max(0, Math.min(plotBottom, g.y(v))).toFixed(1) + " "; });
+        g.pts.forEach(function (p) { var v = m[gkey(p.t)]; if (isNum(v)) d += (d ? "L" : "M") + p.x.toFixed(1) + " " + Math.max(0, Math.min(plotBottom, g.y(v))).toFixed(1) + " "; });
         if (d) layer.appendChild(svgEl("path", { class: "tc-avg tc-line", d: d.trim(), fill: "none", stroke: L[4], "stroke-dasharray": L[5] || "" }));
         lineNote.push(dailyGrain ? L[1] : L[3] + "-Wochen-Linie");
       });
@@ -1922,7 +1962,7 @@
           ["slow", "fast"].forEach(function (k) {
             var up = [], lo = [], lines = [[], [], [], [], [], []], vk = k === "fast" ? "fv" : "sv";
             g.pts.forEach(function (p) {
-              var r = bands.byDate[p.t.slice(0, 10)]; if (!r) return;
+              var r = bands.byDate[gkey(p.t)]; if (!r) return;
               var xx = p.x.toFixed(1); up.push(xx + " " + cy(r[k][1])); lo.push(xx + " " + cy(r[k][0]));
               if (r[vk]) r[vk].forEach(function (v, q) { if (isNum(v)) lines[q].push(xx + " " + cy(v)); });
             });
@@ -1947,7 +1987,7 @@
     function draw() { if (widget && widget.draw && widget.range()) widget.draw(widget.range()); }
     loadChartWidget().then(function (Chart) {
       if (!Chart || !Chart.create) { put(host, stateBox("Chart nicht verfügbar", "Die Chart-Komponente konnte nicht geladen werden.")); return; }
-      var eod = S.dates.map(function (d, i) { return [d, S.close[i]]; });
+      var eod = H.dates.map(function (d, i) { return [d, H.close[i]]; });
       /* Der Strom kommt nur, wenn die gemeinsame Freigabe ihn fuer diesen Ticker erlaubt (sonst bleibt es beim Snapshot). */
       var RT = global.VURealtimeCapability && global.VUDisplayPolicy ? global.VURealtimeCapability.create({ loadJSON: fetchJSON, displayPolicy: global.VUDisplayPolicy }) : null;
       widget = Chart.create({ ticker: X.T, eod: eod, currency: "USD", adjusted: true, onPaint: paintLayers, zoom: true, fx: false,
