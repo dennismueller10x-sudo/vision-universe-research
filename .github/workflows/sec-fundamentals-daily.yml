@@ -59,6 +59,8 @@ on:
 
 permissions:
   contents: write
+  # Kette: ein neuer 10-Q/10-K stoesst den Consumer an (Schritt "Consumer nachziehen")
+  actions: write
 
 # Dieselbe Gruppe wie der Backfill: zwei Laeufe, die denselben
 # Faktenspeicher und dieselbe Ablage schreiben, laufen nie gleichzeitig.
@@ -236,6 +238,26 @@ jobs:
             "SEC Fundamentals daily: ${{ steps.updated.outputs.status }}, ${{ steps.updated.outputs.count }} Emittenten aktualisiert (Lauf ${{ github.run_id }})" \
             quant/data/fundamentals quant/data/universe quant/data/sec \
             docs/VU_SEC_FINAL_RECOVERY_REPORT.md
+
+      # Kette (19.11.2026, Steuerung): Der Consumer lief nur montags; ein 10-Q vom Dienstag (NVIDIA Q3 FY27,
+      # gemeldet 17.11.) kaeme in Discover und die Quant-Faktoren erst am naechsten Montag. Enthaelt der Lauf neue
+      # 10-K/10-Q/20-F/40-F (consumer_trigger.py), stoesst er den Consumer an - einmal, nicht doppelt. Die SEC baut
+      # companyfacts.zip nachts (zuletzt 04:26 UTC), der Tageslauf liegt danach. Zeitplan unveraendert (schedule.json).
+      - name: Consumer nachziehen (neue 10-K/10-Q)
+        if: steps.updated.outputs.dry != 'true' && github.ref == 'refs/heads/main' && env.VU_EVENT != 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python3 scripts/quant/sec/consumer_trigger.py --run quant/data/fundamentals/daily/latest-run.json | tee "$RUNNER_TEMP/consumer-trigger.json"
+          if [ "$(python3 -c 'import json,sys;print(json.load(open(sys.argv[1]))["trigger"])' "$RUNNER_TEMP/consumer-trigger.json")" != "True" ]; then
+            echo "Kein neuer Bericht - Consumer bleibt beim Montagslauf"; exit 0
+          fi
+          # ein wartender oder laufender Consumer liest ohnehin das neueste Archiv - kein zweiter Anstoss
+          offen="$(gh run list --workflow sec-consumer-fundamentals.yml --branch main --limit 10 --json status \
+            --jq '[.[] | select(.status=="queued" or .status=="in_progress" or .status=="waiting" or .status=="pending")] | length')"
+          if [ "$offen" != "0" ]; then echo "Consumer laeuft schon ($offen) - kein zweiter Anstoss"; exit 0; fi
+          gh workflow run sec-consumer-fundamentals.yml --ref main
 
       - name: Health Report
         if: always()
