@@ -24,6 +24,7 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { createRequire } from "node:module";
+import { ohneVorubergehende5xx } from "./transient-5xx.mjs";
 const require = createRequire(import.meta.url);
 const { chromium } = require(process.env.PLAYWRIGHT_PATH || "playwright");
 
@@ -78,8 +79,11 @@ if (!gated || gate) {
   const step = async (label, fn) => {
     const e0 = errs.length, f0 = failed.length;
     try { await fn(); } catch (e) { problems.push(label + ": " + String(e.message).split("\n")[0].slice(0, 200)); }
-    if (errs.length > e0) problems.push(label + ": Konsole " + errs.slice(e0).join(" | "));
-    if (failed.length > f0) problems.push(label + ": Anfragen " + failed.slice(f0).join(", "));
+    /* Ein einzelner 5xx waehrend einer Auslieferung wird nachgeladen (transient-5xx.mjs); 4xx und anhaltende 5xx bleiben Befund. */
+    const rest = await ohneVorubergehende5xx({ failed: failed.slice(f0), errs: errs.slice(e0), holen: async (p) => (await ctx.request.get(SITE + p)).status() });
+    if (rest.erholt.length) lines.push(label + ": vorübergehend 5xx, beim Nachladen ok: " + rest.erholt.join(", "));
+    if (rest.errs.length) problems.push(label + ": Konsole " + rest.errs.join(" | "));
+    if (rest.failed.length) problems.push(label + ": Anfragen " + rest.failed.join(", "));
     const sw = await page.evaluate(() => document.documentElement.scrollWidth).catch(() => 0);
     if (sw > 391) problems.push(label + ": seitliches Scrollen (" + sw + " px)");
   };
