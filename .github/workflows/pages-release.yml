@@ -544,7 +544,16 @@ jobs:
           test -n "$BASE_AT"
           hits=0
           for wf in company-intelligence-profile-source company-intelligence-profile-catalogue company-intelligence-refreeze-auto company-intelligence-refresh company-intelligence-universe-release pages-release-marker; do
-            n=$(gh api "repos/$REPO/actions/workflows/$wf.yml/runs?per_page=10" --jq "[.workflow_runs[] | select(.status != \"completed\" or .updated_at > \"$BASE_AT\")] | length")
+            # Der Dauerlauf company-intelligence-refresh (alle 4 h, ~75 min inkl. Live-Pruefung) zaehlt nur noch, wenn er NACH dem
+            # Basis-Paket MIT Fehler endete: seine Veroeffentlichung meldet der Pages-Release-Marker (unten, gleiche Regel), sein
+            # Erfolg ist live geprueft. Vorher machte jeder Takt waehrend des Laufs einen Voll-Release (Befund 19.11.: 16:15-17:45
+            # und 20:20-21:10 UTC, Voll-Releases 17-30 min, Auslieferung bis 20 min hinter dem Repository).
+            if [ "$wf" = company-intelligence-refresh ]; then
+              filter="[.workflow_runs[] | select(.status == \"completed\" and .conclusion != \"success\" and .updated_at > \"$BASE_AT\")] | length"
+            else
+              filter="[.workflow_runs[] | select(.status != \"completed\" or .updated_at > \"$BASE_AT\")] | length"
+            fi
+            n=$(gh api "repos/$REPO/actions/workflows/$wf.yml/runs?per_page=10" --jq "$filter")
             echo "$wf: $n"; hits=$((hits + n))
           done
           if [ "$hits" -eq 0 ]; then echo "frei=true" >> "$GITHUB_OUTPUT"; else echo "::notice::Veroeffentlicher seit dem Basis-Paket aktiv ($hits Laeufe): Voll-Release."; fi

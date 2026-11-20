@@ -69,6 +69,16 @@ test('FP-5 Schnellweg nur ohne laufende Company-Intelligence-Veroeffentlicher (W
   assert.match(job, /id: bereit\n\s+if: steps\.weiche\.outputs\.mode == 'FAST'/);
 });
 
+test('FP-5b Dauerlauf company-intelligence-refresh sperrt den Schnellweg nicht, solange er laeuft (Befund 19.11.)', async () => {
+  const {readFileSync} = await import('node:fs');
+  const wf = readFileSync(new URL('../../.github/workflows/pages-release.yml', import.meta.url), 'utf8');
+  const job = wf.slice(wf.indexOf('\n  intraday-schnell:\n'), wf.indexOf('\n  deploy-schnell:\n'));
+  assert.match(job, /if \[ "\$wf" = company-intelligence-refresh \]/);
+  assert.match(job, /\.status == \\"completed\\" and \.conclusion != \\"success\\" and \.updated_at > /, 'refresh zaehlt nur fehlgeschlagen und nach dem Basis-Paket');
+  assert.match(job, /else\n\s+filter="\[\.workflow_runs\[\] \| select\(\.status != \\"completed\\" or /, 'alle anderen Veroeffentlicher bleiben bei laeuft-noch');
+  assert.ok(job.includes('pages-release-marker'), 'Marker meldet die Veroeffentlichung des refresh');
+});
+
 /* FP-6 (13.11.2026, Entscheidung B): Allowlist nur fuer Verzeichnisse, die der Bau byte-gleich durchreicht.
    Bau-Quellen = alles, was pages-release.yml vor dem Siegel ausfuehrt. Nennt eine davon eine Datei oder ein Verzeichnis
    innerhalb der Allowlist, bleibt der Bau nicht byte-gleich -> Test schlaegt an: Pfad nach FAST_EXCLUDE oder Bau aendern. */
