@@ -284,7 +284,10 @@ for (const sym of SYMBOLE) {
        ist ehrlicher, als ihn aus Texten zu erraten. */
     const rahmen = document.querySelector(".dx-intraday");
     const meta = document.querySelector(".dx-chart-hero-span");
+    const wort = document.querySelector(".dx-chart-hero-wort");
     return {
+      /* 1T zeigt die letzte volle Sitzung (core/chart-standard.js#intradayView): der Chart steht dann still, das ist richtig. */
+      letzteSitzung: !!(wort && /letzte Sitzung/.test(wort.textContent)),
       intradayChart: !!document.querySelector(".dx-intraday-chart"),
       aktiverZeitraum: knopf ? knopf.textContent.trim() : null,
       eintagVerfuegbar: gesperrt ? !gesperrt.disabled : null,
@@ -464,9 +467,14 @@ if (sitzung.phase === "REGULAR") {
                     ohneTagesverlauf.map((s) => s.symbol + ": Zeitraum " + s.surface.aktiverZeitraum +
                                                 ", 1T " + (s.surface.eintagVerfuegbar ? "frei" : "gesperrt") +
                                                 (s.surface.eintagGrund ? " (" + s.surface.eintagGrund + ")" : ""))) && alleOk;
-  alleOk = pruefung("chartBewegt", "der Chart zeichnet sich neu, ohne Neuladen",
-                    mitChart.length >= 2,
-                    { charts: mitChart.map((s) => s.symbol),
+  /* Zeigt 1T die letzte Sitzung (Eroeffnung bis 10 Minuten Handel, duenne Titel), steht der Chart still - das wird dann erwartet. */
+  const stehend = bericht.symbols.filter((s) => s.surface.intradayChart && s.surface.letzteSitzung);
+  const beweglich = bericht.symbols.filter((s) => !(s.surface.intradayChart && s.surface.letzteSitzung));
+  const beweglichMitChart = mitChart.filter((s) => beweglich.includes(s));
+  alleOk = pruefung("chartBewegt", "der Chart zeichnet sich neu, ohne Neuladen (letzte Sitzung: er steht still)",
+                    beweglichMitChart.length >= Math.min(2, beweglich.length) && stehend.every((s) => s.chartUpdatesAfterLoad === 0),
+                    { charts: beweglichMitChart.map((s) => s.symbol),
+                      letzteSitzung: stehend.map((s) => s.symbol),
                       ohneTagesverlauf: ohneTagesverlauf.map((s) => s.symbol) }) && alleOk;
 }
 if (sitzung.phase === "REGULAR") {
