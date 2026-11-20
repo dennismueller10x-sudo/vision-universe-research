@@ -48,6 +48,17 @@ test("Discover · Rangfolge-Universum und Aktienindex stammen aus demselben Stan
    jede Stufe liefert ueber den Core-Vertrag, mit derselben Identitaet und
    demselben Kurs. "Nicht verfuegbar" ist nur mit strukturellem Grund
    zulaessig (kein CIK = keine SEC-Fundamentals), nie als stilles Loch. */
+/* Zweiter struktureller Grund (20.11.2026, IBN): Der Emittent hat eine CIK,
+   die SEC liefert aber keine einzige XBRL-Zahl (rawFacts 0 im Issuer-Katalog
+   des SEC-Laufs, typisch fuer auslaendische Emittenten ohne us-gaap-Fakten).
+   Belegt aus den Daten, nicht aus einer Liste. */
+function ohneSecFakten(cik) {
+  if (!cik) return false;
+  const datei = "quant/data/fundamentals/issuers/" + String(cik).slice(-3) + ".json";
+  if (!existsSync(join(ROOT, datei))) return false;
+  const e = (json(datei).issuers || []).find((x) => x.cik === cik);
+  return !!e && e.rawFacts === 0;
+}
 test("Stock · Security -> Kurs -> Chart -> Fundamentals -> Quant fuer jeden Startseitentitel", async () => {
   const home = json("discover/data/home/US_REAL.json");
   const titel = [...new Set((home.surfaces || []).flatMap((s) => (s.cards || []).map((k) => k.symbol)))];
@@ -69,7 +80,7 @@ test("Stock · Security -> Kurs -> Chart -> Fundamentals -> Quant fuer jeden Sta
     if (!seite.ok) fehler.push(t + ": Aktienseite fehlt");
     else if (seite.data.price.value !== letzter[1]) fehler.push(t + ": Seite " + seite.data.price.value + " / Chartende " + letzter[1]);
     const fu = await c.getFundamentals(t);
-    if (fu.state !== "AVAILABLE" && fu.reason !== "NO_CIK") fehler.push(t + ": Fundamentals " + fu.reason);
+    if (fu.state !== "AVAILABLE" && fu.reason !== "NO_CIK" && !ohneSecFakten(sec.data.cik)) fehler.push(t + ": Fundamentals " + fu.reason);
     const q = await c.getQuantData(t);
     if (q.state !== "AVAILABLE") fehler.push(t + ": Quant " + q.reason);
     else if (!q.data.identityConsistent) fehler.push(t + ": Quant-Zeile gehoert zu " + q.data.securityId);
