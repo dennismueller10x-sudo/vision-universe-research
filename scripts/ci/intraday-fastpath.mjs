@@ -100,6 +100,10 @@ export function klassifiziere(changed, {fenster = false} = {}) {
     return {mode: 'AUFSCHUB', reason: 'Fenster: ' + wartet + ', keine Intraday-Aenderung', aufgeschoben: other.length};
   }
   if (other.length) return {mode: 'FULL', reason: 'andere Dateien geaendert: ' + other.slice(0, 5).join(', ') + (other.length > 5 ? ' (+' + (other.length - 5) + ')' : '')};
+  /* Messung 20.11.2026: vor Boersenbeginn (13:45, 14:05, 14:20 UTC) liefen Voll-Releases von ~15 min, obwohl nichts Neues
+     vorlag; der von 14:20 hielt die Gruppe bis 14:35 und der erste Live-Takt (14:24) wartete. Im Fenster gibt es dann nichts
+     auszuliefern: kein Voll-Release (Notfall bleibt workflow_dispatch notfall=true). Ausserhalb des Fensters bleibt FULL. */
+  if (!intraday.length && fenster) return {mode: 'AUFSCHUB', reason: 'Fenster: keine Aenderung seit dem Basis-Release, nichts auszuliefern', aufgeschoben: 0};
   if (!intraday.length) return {mode: 'FULL', reason: 'keine Intraday-Aenderung seit dem Basis-Release (nichts zu beschleunigen)'};
   return {mode: 'FAST', reason: intraday.length + ' Intraday-/Datendateien'};
 }
