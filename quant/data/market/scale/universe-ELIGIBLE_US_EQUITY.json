@@ -1,17 +1,17 @@
 {
- "generatedAt": "2026-11-19T06:33:40.742Z",
+ "generatedAt": "2026-11-20T05:29:43.978Z",
  "gate": "ELIGIBLE_US_EQUITY",
  "derivedFrom": "quant/data/market/scale/universe-FULL_UNIVERSE.json",
- "derivedFromSha256": "b787b1dc439aceaa9e87ca66bf46ecd32b30cc4f9ade3ad253947b6f94641049",
+ "derivedFromSha256": "887f7b8b305652a8eec9fbd26666c6b46f3e66a7ac080b08a12285828d5cc0d3",
  "version": "us-security-master-1.3.0",
- "today": "2026-11-19",
+ "today": "2026-11-20",
  "method": "PRODUCT_ELIGIBILITY_LAYER",
  "provider": "tiingo",
- "actualSize": 6339,
+ "actualSize": 6340,
  "counts": {
-  "ELIGIBLE": 5232,
+  "ELIGIBLE": 5229,
   "SEPARATE_CLASS": 791,
-  "REVIEW": 316,
+  "REVIEW": 320,
   "EXCLUDED_NOT_LISTED_HERE": 1494
  },
  "note": "Abgeleitet, nicht gepflegt. Die Mitgliedschaft steht in universe-FULL_UNIVERSE.json und bleibt dort vollstaendig. Verdachtsfaelle (REVIEW) sind enthalten und markiert.",
@@ -20834,7 +20834,7 @@
    "industryStatus": "SOURCE_MISSING",
    "startDate": "1995-06-07",
    "selection": "inheritedFrom:GATE_2000",
-   "productEligibility": "ELIGIBLE"
+   "productEligibility": "REVIEW"
   },
   {
    "securityId": "ref_PAAS",
@@ -93214,7 +93214,7 @@
    "industryStatus": "SOURCE_MISSING",
    "startDate": "2021-08-20",
    "selection": "ruleBased",
-   "productEligibility": "ELIGIBLE"
+   "productEligibility": "REVIEW"
   },
   {
    "securityId": "ref_SLNHP",
@@ -112994,7 +112994,7 @@
    "industryStatus": "SOURCE_MISSING",
    "startDate": "2025-12-11",
    "selection": "appendedFrom:US_SECURITY_MASTER",
-   "productEligibility": "ELIGIBLE"
+   "productEligibility": "REVIEW"
   },
   {
    "securityId": "ref_HERZ",
@@ -115794,7 +115794,7 @@
    "industryStatus": "SOURCE_MISSING",
    "startDate": "2023-10-09",
    "selection": "appendedFrom:US_SECURITY_MASTER",
-   "productEligibility": "ELIGIBLE"
+   "productEligibility": "REVIEW"
   },
   {
    "securityId": "ref_LTGO",
@@ -126793,6 +126793,26 @@
    "industry": null,
    "industryStatus": "SOURCE_MISSING",
    "startDate": "2016-02-02",
+   "selection": "appendedFrom:US_SECURITY_MASTER",
+   "productEligibility": "ELIGIBLE"
+  },
+  {
+   "securityId": "ref_ANT",
+   "ticker": "ANT",
+   "company": null,
+   "exchange": "NASDAQ",
+   "country": "US",
+   "currency": "USD",
+   "assetType": "Stock",
+   "instrumentType": "COMMON_STOCK",
+   "active": true,
+   "providerSymbol": "ANT",
+   "provider": "tiingo",
+   "sector": null,
+   "sectorStatus": "SOURCE_MISSING",
+   "industry": null,
+   "industryStatus": "SOURCE_MISSING",
+   "startDate": "2026-11-19",
    "selection": "appendedFrom:US_SECURITY_MASTER",
    "productEligibility": "ELIGIBLE"
   }
