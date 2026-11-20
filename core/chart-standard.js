@@ -40,7 +40,7 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function () {
   "use strict";
 
-  var VERSION = "chart-standard-1.6.0";
+  var VERSION = "chart-standard-1.7.0";
 
   /* Kanonische Kennungen und Fenster (Kalendertage). */
   var PRIMARY = ["1T", "1W", "1M", "6M", "1J", "3J", "5J", "MAX"]; /* Owner 18.11.2026: eine Leiste überall, 6M und 3J in der Hauptleiste */
@@ -159,12 +159,16 @@
   /* ------------------------------------------------------------ 1T */
 
   function hm(t) { return String(t).slice(0, 5); }
+  function minutes(t) { var m = /^(\d\d):(\d\d)/.exec(String(t)); return m ? Number(m[1]) * 60 + Number(m[2]) : NaN; }
+  /* Heute zaehlt erst, wenn die Sitzung mindestens 10 Minuten zeigt (Eroeffnung bis dahin: letzte Sitzung). Alle Welten, dieselbe Schwelle. */
+  var MIN_SPAN_MIN = 10;
+  function spanOk(pts) { return pts.length >= 2 && minutes(pts[pts.length - 1][0]) - minutes(pts[0][0]) >= MIN_SPAN_MIN; }
   /** Heutige Sitzung aus den Ticks des Stroms (mindestens zwei Minutenpunkte nach der Eroeffnung), sonst null. Der Bezug (Vortagesschluss) bleibt leer. */
   function fromStream(snap, stream, today) {
     if (!today || !Array.isArray(stream)) return null;
     var open = hm((snap && snap.sessionOpenLocal) || "09:30"), close = hm((snap && (snap.sessionCloseLocal || snap.closeLocal)) || "16:00");
     var pts = stream.filter(function (p) { return Array.isArray(p) && isNum(p[1]) && hm(p[0]) >= open && hm(p[0]) < close; });
-    if (pts.length < 2) return null;
+    if (!spanOk(pts)) return null;
     var copy = {}; Object.keys(snap || {}).forEach(function (k) { copy[k] = snap[k]; });
     copy.points = pts; copy.pointCount = pts.length; copy.sessionDate = today; copy.previousClose = null;
     copy.regularComplete = false; copy.isComplete = false; copy.fromStream = true; copy.fromStreamSince = pts[0][0];
@@ -197,16 +201,19 @@
       return copy;
     }
     var today = o.today || null, cur = regular(snap), prev = regular(o.prev);
+    function today_(sn) { return { available: true, mode: "today", snap: sn, points: sn.points, sessionDate: sn.sessionDate, label: "heute", reason: "" }; }
+    function last_(sn) {
+      return { available: true, mode: "last", snap: sn, points: sn.points, sessionDate: sn.sessionDate,
+        label: "letzte Sitzung (" + dayDe(sn.sessionDate).slice(0, 6) + ")", reason: "" };
+    }
     if (cur && (!today || cur.sessionDate >= today)) {
-      return { available: true, mode: "today", snap: cur, points: cur.points, sessionDate: cur.sessionDate, label: "heute", reason: "" };
+      if (spanOk(cur.points) || !prev) return today_(cur);
+      return last_(prev); /* heute erst wenige Minuten: die letzte volle Sitzung */
     }
     var st = fromStream(snap, o.stream, today);
-    if (st) return { available: true, mode: "today", snap: st, points: st.points, sessionDate: st.sessionDate, label: "heute", reason: "" };
+    if (st) return today_(st);
     var last = cur && today && cur.sessionDate < today ? cur : prev;
-    if (last) {
-      return { available: true, mode: "last", snap: last, points: last.points, sessionDate: last.sessionDate,
-        label: "letzte Sitzung (" + dayDe(last.sessionDate).slice(0, 6) + ")", reason: "" };
-    }
+    if (last) return last_(last);
     return none;
   }
 
