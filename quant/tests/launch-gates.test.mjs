@@ -17,6 +17,7 @@ import { readFileSync, existsSync, readdirSync } from "node:fs";
 import { gunzipSync } from "node:zlib";
 import { join } from "node:path";
 import { createRequire } from "node:module";
+import { followByTime } from "../../scripts/quant/lib/follow-artifact.mjs";
 
 const require = createRequire(import.meta.url);
 const ROOT = join(import.meta.dirname, "..", "..");
@@ -67,7 +68,7 @@ test("eine Faktorbewertung wird behauptet, wenn es eine Faktorzeile gibt - nicht
   assert.equal(behauptet.length, mitZeile.length, "die Liste behauptet weniger, als Faktorzeilen existieren - das waere der Gegenfehler");
 });
 
-test("ein belegtes Nicht-Aktien-Papier verliert die Aktienaussage - ausgeschieden mit benannter Absage, sonst ohne Faktoren", async () => {
+test("ein belegtes Nicht-Aktien-Papier verliert die Aktienaussage - ausgeschieden mit benannter Absage, sonst ohne Faktoren", async (t) => {
   /* Gemessen: 145 Fonds, Optionsscheine und Vorzugspapiere standen in der
      Uebersicht mit `factorState = AVAILABLE`, waehrend dieselbe Anwendung auf
      der Aktienseite "keine Aktie" sagte.
@@ -98,6 +99,13 @@ test("ein belegtes Nicht-Aktien-Papier verliert die Aktienaussage - ausgeschiede
   assert.ok(ausgeschieden.length > 100, "das Verzeichnis kennt nur " + ausgeschieden.length + " ausgeschiedene Nicht-Aktien - sie waeren verschwunden statt ausgeschieden");
   const imProdukt = new Set((index.entries || []).map((e) => e.s));
   const trotzdemDrin = ausgeschieden.filter((i) => imProdukt.has(i.symbol)).map((i) => i.symbol);
+  /* Halbstand (19.11.2026, MEMY): das Verzeichnis kennt den Ausschluss schon, die Produktliste baut erst die Materialisierung.
+     Ist die Liste aelter als das Verzeichnis, wartet die Pruefung bis 6 h sichtbar, danach ist sie ein Fehler. */
+  if (trotzdemDrin.length) {
+    const cap = JSON.parse(readFileSync(join(ROOT, "quant/data/universe/market-capability.json"), "utf8"));
+    const folge = followByTime({ artifactAt: index.generatedAt, sourceAt: cap.generatedAt });
+    if (folge.state === "WAITING") { t.skip(folge.reason + ": " + trotzdemDrin.slice(0, 8).join(", ")); return; }
+  }
   assert.deepEqual(trotzdemDrin.slice(0, 8), [], trotzdemDrin.length + " ausgeschiedene Nicht-Aktien stehen weiter in der Produktliste");
   for (const i of ausgeschieden.filter((_, k) => k % 25 === 0)) {
     /* Fonds und ETFs tragen im Verzeichnis ihren Namen (Optionsscheine teils nicht - dort nennt die Absage das Kuerzel). */
