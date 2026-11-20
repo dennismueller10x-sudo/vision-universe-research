@@ -520,13 +520,17 @@ jobs:
           # 19.11.2026 (Lauf 44598115694): dieser Schritt hing 11 min bis zum Job-Timeout, der Takt fiel auf einen Voll-Release.
           # Jeder Netzaufruf bekommt ein Zeitlimit und einen zweiten Versuch; bleibt es dabei, endet der Schritt fehlerhaft
           # (continue-on-error) und der Voll-Release folgt wie bisher.
-          nett() { local n=0; until timeout 120 "$@"; do n=$((n + 1)); [ "$n" -ge 2 ] && return 1; echo "::warning::Zeitlimit oder Fehler, zweiter Versuch"; sleep 5; done; }
-          row=$(nett gh api "repos/$REPO/actions/artifacts?name=github-pages&per_page=10" \
-            --jq '[.artifacts[] | select(.expired==false)] | sort_by(.created_at) | reverse | .[0] | [.archive_download_url, .created_at] | @tsv')
+          # Jeder Versuch laeuft in eigener Shell: der Redirect legt die Datei je Versuch NEU an (20.11.2026: der Abbruch nach 120 s
+          # liess ein halbes ZIP stehen, der zweite Versuch hing daran an: "extra bytes at beginning", Voll-Release 15:06-15:24 UTC).
+          # Normale Dauer des Schritts 31-78 s; Download 200 s, Liste 60 s, zwei Versuche bleiben unter dem Job-Timeout.
+          nett() { local n=0 t=$1; shift; until timeout "$t" bash -c "$1"; do n=$((n + 1)); [ "$n" -ge 2 ] && return 1; echo "::warning::Zeitlimit oder Fehler, zweiter Versuch"; sleep 5; done; }
+          export REPO B
+          row=$(nett 60 'gh api "repos/$REPO/actions/artifacts?name=github-pages&per_page=10" \
+            --jq "[.artifacts[] | select(.expired==false)] | sort_by(.created_at) | reverse | .[0] | [.archive_download_url, .created_at] | @tsv"')
           url=${row%%$'\t'*}; at=${row##*$'\t'}
           test -n "$url" && [ "$url" != null ]
           echo "at=$at" >> "$GITHUB_OUTPUT"
-          nett gh api "$url" > "$B/artifact.zip"
+          export url; nett 200 'gh api "$url" > "$B/artifact.zip"'
           unzip -q "$B/artifact.zip" -d "$B"
           tar -xf "$B/artifact.tar" -C "$B/site"
           test -f "$B/site/release-delivery.json"
