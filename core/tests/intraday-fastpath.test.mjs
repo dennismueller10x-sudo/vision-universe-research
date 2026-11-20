@@ -79,6 +79,15 @@ test('FP-5b Dauerlauf company-intelligence-refresh sperrt den Schnellweg nicht, 
   assert.ok(job.includes('pages-release-marker'), 'Marker meldet die Veroeffentlichung des refresh');
 });
 
+test('FP-5c Basis-Paket holen: Zeitlimit und zweiter Versuch je Netzaufruf (Lauf 44598115694)', async () => {
+  const {readFileSync} = await import('node:fs');
+  const wf = readFileSync(new URL('../../.github/workflows/pages-release.yml', import.meta.url), 'utf8');
+  const job = wf.slice(wf.indexOf('\n  intraday-schnell:\n'), wf.indexOf('\n  deploy-schnell:\n'));
+  assert.match(job, /nett\(\) \{[^\n]*timeout 120 "\$@"[^\n]*-ge 2/);
+  assert.match(job, /row=\$\(nett gh api "repos\/\$REPO\/actions\/artifacts/);
+  assert.match(job, /nett gh api "\$url" > "\$B\/artifact\.zip"/);
+});
+
 /* FP-6 (13.11.2026, Entscheidung B): Allowlist nur fuer Verzeichnisse, die der Bau byte-gleich durchreicht.
    Bau-Quellen = alles, was pages-release.yml vor dem Siegel ausfuehrt. Nennt eine davon eine Datei oder ein Verzeichnis
    innerhalb der Allowlist, bleibt der Bau nicht byte-gleich -> Test schlaegt an: Pfad nach FAST_EXCLUDE oder Bau aendern. */
