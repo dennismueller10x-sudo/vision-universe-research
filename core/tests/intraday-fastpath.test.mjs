@@ -79,13 +79,15 @@ test('FP-5b Dauerlauf company-intelligence-refresh sperrt den Schnellweg nicht, 
   assert.ok(job.includes('pages-release-marker'), 'Marker meldet die Veroeffentlichung des refresh');
 });
 
-test('FP-5c Basis-Paket holen: Zeitlimit und zweiter Versuch je Netzaufruf (Lauf 44598115694)', async () => {
+test('FP-5c Basis-Paket holen: Zeitlimit, zweiter Versuch je Netzaufruf, Datei je Versuch neu (Laeufe 44598115694, 44759980300)', async () => {
   const {readFileSync} = await import('node:fs');
   const wf = readFileSync(new URL('../../.github/workflows/pages-release.yml', import.meta.url), 'utf8');
   const job = wf.slice(wf.indexOf('\n  intraday-schnell:\n'), wf.indexOf('\n  deploy-schnell:\n'));
-  assert.match(job, /nett\(\) \{[^\n]*timeout 120 "\$@"[^\n]*-ge 2/);
-  assert.match(job, /row=\$\(nett gh api "repos\/\$REPO\/actions\/artifacts/);
-  assert.match(job, /nett gh api "\$url" > "\$B\/artifact\.zip"/);
+  assert.match(job, /nett\(\) \{[^\n]*timeout "\$t" bash -c "\$1"[^\n]*-ge 2/, 'jeder Versuch in eigener Shell');
+  assert.match(job, /row=\$\(nett 60 'gh api "repos\/\$REPO\/actions\/artifacts/);
+  /* Der Redirect steht INNERHALB des Versuchs: ein abgebrochener Versuch darf kein halbes ZIP hinterlassen, an das der naechste anhaengt. */
+  assert.match(job, /nett 200 'gh api "\$url" > "\$B\/artifact\.zip"'/);
+  assert.ok(!/^\s*nett gh api "\$url" >/m.test(job), 'kein Redirect ausserhalb des Versuchs');
 });
 
 /* FP-6 (13.11.2026, Entscheidung B): Allowlist nur fuer Verzeichnisse, die der Bau byte-gleich durchreicht.
