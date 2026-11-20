@@ -6,15 +6,15 @@
     "youngListingYears": 2
   },
   "denominator": {
-    "PRODUCT_TITLES": 6339
+    "PRODUCT_TITLES": 6340
   },
   "TITLES_WITH_SUFFICIENT_FUNDAMENTALS": 4970,
-  "TITLES_WITH_GAP": 1369,
+  "TITLES_WITH_GAP": 1370,
   "byCause": [
     {
       "cause": "VERY_YOUNG_LISTING",
-      "count": 504,
-      "percent": 7.9508,
+      "count": 505,
+      "percent": 7.9653,
       "recoverability": "RESOLVES_WITH_TIME",
       "examples": [
         {
@@ -52,7 +52,7 @@
     {
       "cause": "NO_CIK",
       "count": 351,
-      "percent": 5.5372,
+      "percent": 5.5363,
       "recoverability": "REQUIRES_REVIEW",
       "examples": [
         {
@@ -90,7 +90,7 @@
     {
       "cause": "SPECIAL_SECURITY_STRUCTURE",
       "count": 320,
-      "percent": 5.0481,
+      "percent": 5.0473,
       "recoverability": "BY_DESIGN",
       "examples": [
         {
@@ -128,7 +128,7 @@
     {
       "cause": "SEC_DATA_PRESENT_BUT_NOT_NORMALIZED",
       "count": 110,
-      "percent": 1.7353,
+      "percent": 1.735,
       "recoverability": "SEC_RECOVERABLE",
       "examples": [
         {
@@ -166,7 +166,7 @@
     {
       "cause": "INSUFFICIENT_HISTORY",
       "count": 56,
-      "percent": 0.8834,
+      "percent": 0.8833,
       "recoverability": "EXTERNAL_PROVIDER_CANDIDATE",
       "examples": [
         {
@@ -204,7 +204,7 @@
     {
       "cause": "FOREIGN_ISSUER",
       "count": 28,
-      "percent": 0.4417,
+      "percent": 0.4416,
       "recoverability": "SEC_RECOVERABLE",
       "examples": [
         {
@@ -243,7 +243,7 @@
   "byRecoverability": {
     "SEC_RECOVERABLE": 2,
     "EXTERNAL_PROVIDER_CANDIDATE": 98,
-    "RESOLVES_WITH_TIME": 544,
+    "RESOLVES_WITH_TIME": 545,
     "BY_DESIGN": 374,
     "REQUIRES_REVIEW": 351
   },
@@ -262,7 +262,7 @@
   "byRecoverabilityCoarse": {
     "SEC_RECOVERABLE": 138,
     "EXTERNAL_PROVIDER_CANDIDATE": 56,
-    "RESOLVES_WITH_TIME": 504,
+    "RESOLVES_WITH_TIME": 505,
     "BY_DESIGN": 320,
     "REQUIRES_REVIEW": 351
   },
@@ -281,14 +281,14 @@
   "priorities": {
     "note": "Die Gruppen ueberschneiden sich bewusst; jede beantwortet eine eigene Frage. Ihre Summe ist deshalb KEINE Titelzahl.",
     "denominator": {
-      "PRODUCT_TITLES": 6339
+      "PRODUCT_TITLES": 6340
     },
     "groups": [
       {
         "priority": "PRIORITY_1_TECHNICAL_WITHOUT_ANY_FUNDAMENTALS",
         "description": "Technisch gedeckt, aber keinerlei Fundamentaldaten",
-        "COUNT": 557,
-        "PERCENT": 8.7869,
+        "COUNT": 558,
+        "PERCENT": 8.8013,
         "TOP_CAUSES": [
           {
             "cause": "SPECIAL_SECURITY_STRUCTURE",
@@ -300,7 +300,7 @@
           },
           {
             "cause": "VERY_YOUNG_LISTING",
-            "count": 12
+            "count": 13
           }
         ],
         "SEC_RECOVERABLE_COUNT": 0,
@@ -310,7 +310,7 @@
         "priority": "PRIORITY_2_FUNDAMENTALS_WITHOUT_CORE_METRICS",
         "description": "Fundamentaldaten vorhanden, aber zentrale Kennzahlen fehlen",
         "COUNT": 1062,
-        "PERCENT": 16.7534,
+        "PERCENT": 16.7508,
         "TOP_CAUSES": [
           {
             "cause": "VERY_YOUNG_LISTING",
@@ -340,7 +340,7 @@
         "priority": "PRIORITY_3_HISTORY_TOO_SHORT",
         "description": "Fundamentaldaten vorhanden, Historie zu kurz",
         "COUNT": 470,
-        "PERCENT": 7.4144,
+        "PERCENT": 7.4132,
         "TOP_CAUSES": [
           {
             "cause": "VERY_YOUNG_LISTING",
@@ -358,7 +358,7 @@
         "priority": "PRIORITY_4_PIT_INSUFFICIENT",
         "description": "Nicht zeitpunktgenau abfragbar",
         "COUNT": 140,
-        "PERCENT": 2.2086,
+        "PERCENT": 2.2082,
         "TOP_CAUSES": [
           {
             "cause": "SEC_DATA_PRESENT_BUT_NOT_NORMALIZED",
@@ -379,8 +379,8 @@
       {
         "priority": "PRIORITY_5_EDGE_CASES",
         "description": "Spezial- und Randfaelle",
-        "COUNT": 1107,
-        "PERCENT": 17.4633,
+        "COUNT": 1111,
+        "PERCENT": 17.5237,
         "TOP_CAUSES": [
           {
             "cause": "SPECIAL_SECURITY_STRUCTURE",
@@ -392,7 +392,7 @@
           },
           {
             "cause": "VERY_YOUNG_LISTING",
-            "count": 195
+            "count": 196
           },
           {
             "cause": "SEC_DATA_PRESENT_BUT_NOT_NORMALIZED",
@@ -408,5 +408,5 @@
       }
     ]
   },
-  "generatedAtUtc": "2026-11-19T07:39:46+00:00"
+  "generatedAtUtc": "2026-11-20T05:29:55+00:00"
 }

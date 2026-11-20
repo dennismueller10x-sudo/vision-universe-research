@@ -15,25 +15,25 @@
   "overlap": {
     "note": "Gezaehlt auf Papierebene gegen PRODUCT_TITLES. Der Join laeuft ueber securityId == masterMemberId -> issuerId -> CIK, nie ueber das Kuerzel allein (\u00a73).",
     "denominator": {
-      "PRODUCT_TITLES": 6339
+      "PRODUCT_TITLES": 6340
     },
-    "PRODUCT_TITLES": 6339,
-    "R2_HISTORY_AVAILABLE": 6335,
+    "PRODUCT_TITLES": 6340,
+    "R2_HISTORY_AVAILABLE": 6336,
     "R2_HISTORY_UNAVAILABLE": 4,
-    "TECHNICAL_HISTORY_ELIGIBLE": 5694,
+    "TECHNICAL_HISTORY_ELIGIBLE": 5695,
     "TECHNICAL_INSUFFICIENT_HISTORY": 645,
     "R2_AND_FUNDAMENTAL": 5578,
-    "R2_WITHOUT_FUNDAMENTAL": 757,
-    "TECHNICAL_WITHOUT_FUNDAMENTAL": 557,
+    "R2_WITHOUT_FUNDAMENTAL": 758,
+    "TECHNICAL_WITHOUT_FUNDAMENTAL": 558,
     "PIT_AND_R2": 5438,
     "PIT_R2_AND_TECHNICAL": 5045,
     "PIT_R2_TECHNICAL_AND_CORE_FUNDAMENTALS": 4414,
-    "MARKET_HISTORY_AVAILABLE": 6335,
-    "TECHNICAL_COVERED": 5694,
+    "MARKET_HISTORY_AVAILABLE": 6336,
+    "TECHNICAL_COVERED": 5695,
     "FUNDAMENTAL_COMPANY_FACTS_AVAILABLE": 5580,
     "PIT_READY": 5440,
     "TECHNICAL_AND_FUNDAMENTAL": 5137,
-    "TECHNICAL_WITHOUT_FUNDAMENTALS": 557,
+    "TECHNICAL_WITHOUT_FUNDAMENTALS": 558,
     "FUNDAMENTALS_WITHOUT_TECHNICAL": 443,
     "HISTORICAL_PRICE_AND_FUNDAMENTAL": 5578,
     "PIT_AND_TECHNICAL": 5045,
@@ -41,10 +41,10 @@
     "PIT_TECHNICAL_AND_HISTORICAL_PRICE": 5045,
     "percentOfProductUniverse": {
       "MARKET_HISTORY_AVAILABLE": 99.9369,
-      "TECHNICAL_COVERED": 89.8249,
-      "FUNDAMENTAL_COMPANY_FACTS_AVAILABLE": 88.0265,
-      "PIT_READY": 85.818,
-      "TECHNICAL_AND_FUNDAMENTAL": 81.038
+      "TECHNICAL_COVERED": 89.8265,
+      "FUNDAMENTAL_COMPANY_FACTS_AVAILABLE": 88.0126,
+      "PIT_READY": 85.8044,
+      "TECHNICAL_AND_FUNDAMENTAL": 81.0252
     },
     "acceptedMarketDataState": {
       "status": "CANONICAL_PER_INSTRUMENT",
@@ -60,17 +60,27 @@
         "TECHNICAL_HISTORY_ELIGIBLE_PERCENT": 84.42
       },
       "computed": {
-        "HISTORICAL_CHART_AVAILABLE": 6335,
-        "TECHNICAL_HISTORY_ELIGIBLE": 5694,
-        "PRODUCT_TITLES": 6339
+        "HISTORICAL_CHART_AVAILABLE": 6336,
+        "TECHNICAL_HISTORY_ELIGIBLE": 5695,
+        "PRODUCT_TITLES": 6340
       },
       "delta": {
-        "HISTORICAL_CHART_AVAILABLE": 0,
-        "TECHNICAL_HISTORY_ELIGIBLE": 0
+        "HISTORICAL_CHART_AVAILABLE": 1,
+        "TECHNICAL_HISTORY_ELIGIBLE": 1
       },
       "reconciled": true,
       "explanation": null,
-      "explainedDelta": null,
+      "explainedDelta": {
+        "class": "APPROVED_UNIVERSE_ADDITION",
+        "count": 1,
+        "members": [
+          "ref_ANT"
+        ],
+        "approvals": [
+          "eligibility-expansion-2026-11-19-ant"
+        ],
+        "text": "1 freigegebene Zugaenge seit der Abnahme (eligibility-expansion-2026-11-19-ant) automatisch angenommen; die naechste Deckungsmessung (pipeline-weekly, Teil deckung) nimmt sie in den Stand auf."
+      },
       "note": "R2_SERIES_AVAILABLE (7.802) zaehlt gegen den WERTPAPIERSTAMM (7.803), nicht gegen das Produktuniversum (7.004) - es ist die Ablagedeckung und keine Produktkennzahl. Sie wird hier gefuehrt und NICHT in die Schnittmengen gerechnet.",
       "evidenceSources": [
         {
@@ -78,7 +88,7 @@
           "kind": "providerPriceHistory",
           "symbolsWithReportRow": 3446,
           "symbolsImpliedPass": 2238,
-          "symbolsNotInThisRun": 2149,
+          "symbolsNotInThisRun": 2150,
           "runSize": 5684
         },
         {
@@ -118,85 +128,85 @@
   },
   "coreMetrics": {
     "denominator": {
-      "TECHNICAL_UNIVERSE": 5694
+      "TECHNICAL_UNIVERSE": 5695
     },
     "metrics": {
       "TECHNICAL_WITH_REVENUE": {
         "COUNT": 4418,
-        "PERCENT_OF_TECHNICAL_UNIVERSE": 77.5904
+        "PERCENT_OF_TECHNICAL_UNIVERSE": 77.5768
       },
       "TECHNICAL_WITH_NET_INCOME": {
         "COUNT": 5024,
-        "PERCENT_OF_TECHNICAL_UNIVERSE": 88.2332
+        "PERCENT_OF_TECHNICAL_UNIVERSE": 88.2177
       },
       "TECHNICAL_WITH_EPS": {
         "COUNT": 4773,
-        "PERCENT_OF_TECHNICAL_UNIVERSE": 83.8251
+        "PERCENT_OF_TECHNICAL_UNIVERSE": 83.8104
       },
       "TECHNICAL_WITH_OPERATING_CASH_FLOW": {
         "COUNT": 5013,
-        "PERCENT_OF_TECHNICAL_UNIVERSE": 88.04
+        "PERCENT_OF_TECHNICAL_UNIVERSE": 88.0246
       },
       "TECHNICAL_WITH_FCF": {
         "COUNT": 4536,
-        "PERCENT_OF_TECHNICAL_UNIVERSE": 79.6628
+        "PERCENT_OF_TECHNICAL_UNIVERSE": 79.6488
       },
       "TECHNICAL_WITH_ASSETS": {
         "COUNT": 5038,
-        "PERCENT_OF_TECHNICAL_UNIVERSE": 88.4791
+        "PERCENT_OF_TECHNICAL_UNIVERSE": 88.4636
       },
       "TECHNICAL_WITH_DEBT": {
         "COUNT": 2860,
-        "PERCENT_OF_TECHNICAL_UNIVERSE": 50.2283
+        "PERCENT_OF_TECHNICAL_UNIVERSE": 50.2195
       },
       "TECHNICAL_WITH_EQUITY": {
         "COUNT": 5010,
-        "PERCENT_OF_TECHNICAL_UNIVERSE": 87.9874
+        "PERCENT_OF_TECHNICAL_UNIVERSE": 87.9719
       }
     }
   },
   "history": {
     "denominator": {
-      "TECHNICAL_UNIVERSE": 5694
+      "TECHNICAL_UNIVERSE": 5695
     },
     "annual": {
       "TECHNICAL_WITH_ANNUAL_1Y": {
         "COUNT": 5017,
-        "PERCENT_OF_TECHNICAL_UNIVERSE": 88.1103
+        "PERCENT_OF_TECHNICAL_UNIVERSE": 88.0948
       },
       "TECHNICAL_WITH_ANNUAL_3Y": {
         "COUNT": 4888,
-        "PERCENT_OF_TECHNICAL_UNIVERSE": 85.8447
+        "PERCENT_OF_TECHNICAL_UNIVERSE": 85.8297
       },
       "TECHNICAL_WITH_ANNUAL_5Y": {
         "COUNT": 4457,
-        "PERCENT_OF_TECHNICAL_UNIVERSE": 78.2754
+        "PERCENT_OF_TECHNICAL_UNIVERSE": 78.2616
       },
       "TECHNICAL_WITH_ANNUAL_10Y": {
         "COUNT": 3167,
-        "PERCENT_OF_TECHNICAL_UNIVERSE": 55.62
+        "PERCENT_OF_TECHNICAL_UNIVERSE": 55.6102
       },
       "TECHNICAL_WITH_ANNUAL_15Y": {
         "COUNT": 2294,
-        "PERCENT_OF_TECHNICAL_UNIVERSE": 40.288
+        "PERCENT_OF_TECHNICAL_UNIVERSE": 40.2809
       }
     },
     "quarterly": {
       "TECHNICAL_WITH_QUARTERLY_1Y": {
         "COUNT": 5028,
-        "PERCENT_OF_TECHNICAL_UNIVERSE": 88.3035
+        "PERCENT_OF_TECHNICAL_UNIVERSE": 88.288
       },
       "TECHNICAL_WITH_QUARTERLY_3Y": {
         "COUNT": 4233,
-        "PERCENT_OF_TECHNICAL_UNIVERSE": 74.3414
+        "PERCENT_OF_TECHNICAL_UNIVERSE": 74.3284
       },
       "TECHNICAL_WITH_QUARTERLY_5Y": {
         "COUNT": 3721,
-        "PERCENT_OF_TECHNICAL_UNIVERSE": 65.3495
+        "PERCENT_OF_TECHNICAL_UNIVERSE": 65.338
       },
       "TECHNICAL_WITH_QUARTERLY_10Y": {
         "COUNT": 2756,
-        "PERCENT_OF_TECHNICAL_UNIVERSE": 48.4018
+        "PERCENT_OF_TECHNICAL_UNIVERSE": 48.3933
       }
     }
   },
@@ -374,5 +384,5 @@
       }
     }
   },
-  "generatedAtUtc": "2026-11-19T07:39:46+00:00"
+  "generatedAtUtc": "2026-11-20T05:29:55+00:00"
 }
