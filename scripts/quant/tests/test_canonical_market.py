@@ -140,6 +140,11 @@ VERZEICHNIS_ETF_0611, VERZEICHNIS_WARRANT_0611 = 269, {"BNCWW"}
 # Technik 5694 unveraendert (MEMY war zu kurz); der Verzeichnisbeleg bleibt entfallen (Beleg jetzt aus dem Register).
 ZUGANG_1911 = 31
 ETF_RAUS_1911 = {"MEMY"}
+# 20.11.2026 (Deckungslauf 44694414000; coverage-delta.mjs "GEHT AUF"): ANT neu im Produkt (eligibility-expansion-2026-11-19-ant,
+#   AX), noch ohne Reihe: weder darstellbar noch technisch bereit. Sechs Titel ueber 300 Bars gealtert.
+#   Titel 6339 + 1 = 6340;  Charts 6335 + 0 = 6335 (ANT nicht darstellbar);  Technik 5694 + 6 = 5700
+ZUGANG_2011 = {"ANT"}
+GEALTERT_2011 = {"BRCB", "FOFO", "GEMI", "LGN", "MLCI", "ONCH"}
 VERZEICHNIS_WIEDER_STAMMAKTIE_1911 = {"MEMY"}
 ZUGANG_NICHT_DARSTELLBAR_1911 = {"FFTT"}
 ZUGANG_ZU_KURZ_1911 = {"AUXX", "AXNX", "CATL", "FFTT", "MEMY", "MTAK", "OCLT", "RNAQ", "SVIA", "TXCP"}
@@ -153,7 +158,7 @@ ENTFERNTE_DEBT_TITEL = {
     "MFICL", "MHNC", "PRHIZ", "RWTN", "SAX", "SRJN", "SSSSL", "TMUSI",
     "TMUSL", "TMUSZ", "TPTS", "TRINI", "TRINZ", "UNMA",
 }
-CHART_AUSNAHMEN = {"GLMD", "BNRG", "JAB"} | ZUGANG_NICHT_DARSTELLBAR_1911
+CHART_AUSNAHMEN = {"GLMD", "BNRG", "JAB"} | ZUGANG_NICHT_DARSTELLBAR_1911 | ZUGANG_2011
 # BRTM stand am 20.09. hier (Listing 10.09., < 2 Bars abgelegt); heute 17 Bars.
 CHART_AUSNAHMEN_0920 = CHART_AUSNAHMEN | {"BRTM"}
 
@@ -330,7 +335,8 @@ class AusnahmelistenSindVollstaendigTests(unittest.TestCase):
         self.assertFalse(raus & set(m["CHART_AVAILABILITY"]["notRenderableSymbols"]))
         self.assertFalse(raus & set(m["TECHNICAL_HISTORY_ELIGIBILITY"]["tooShortSymbols"]))
         self.assertNotIn("TBHC", m["TECHNICAL_HISTORY_ELIGIBILITY"]["tooShortSymbols"])
-        self.assertFalse((GEALTERT_1611 | GEALTERT_1911) & set(m["TECHNICAL_HISTORY_ELIGIBILITY"]["tooShortSymbols"]))
+        self.assertFalse((GEALTERT_1611 | GEALTERT_1911 | GEALTERT_2011) & set(m["TECHNICAL_HISTORY_ELIGIBILITY"]["tooShortSymbols"]))
+        self.assertTrue(ZUGANG_2011 <= set(m["TECHNICAL_HISTORY_ELIGIBILITY"]["tooShortSymbols"]), "ANT ist noch zu kurz")
         technisch_bereit_raus, gealtert = 137, 1
         self.assertEqual(VERZEICHNIS_AUSGESCHLOSSEN - technisch_bereit_raus, 30)  # schon am Bezug zu kurz
         # Uebergang 04.10. -> 10.10. (167 Verzeichnisbelege), unveraendert als Rechnung festgehalten
@@ -340,14 +346,14 @@ class AusnahmelistenSindVollstaendigTests(unittest.TestCase):
                          POLICY_STAND_1010["TECHNICAL_HISTORY_ELIGIBLE"])
         self.assertEqual(POLICY_STAND_1010, {k: ABGENOMMEN_1010[k] for k in POLICY_STAND_1010})
         # Uebergang 10.10. -> 06.11. (Eignungs-Bereinigung, Deltabericht Lauf 42201411281)
-        self.assertEqual(POLICY_STAND_1010["PRODUCT_TITLES"] - ETF_RAUS_0611 + NEU_0611 + WTIB_1111 + ZUGANG_1911 - len(ETF_RAUS_1911),
-                         AKTUELLER_POLICY_STAND["PRODUCT_TITLES"])
+        self.assertEqual(POLICY_STAND_1010["PRODUCT_TITLES"] - ETF_RAUS_0611 + NEU_0611 + WTIB_1111 + ZUGANG_1911 - len(ETF_RAUS_1911)
+                         + len(ZUGANG_2011), AKTUELLER_POLICY_STAND["PRODUCT_TITLES"])
         self.assertEqual(POLICY_STAND_1010["HISTORICAL_CHART_AVAILABLE"] - ETF_RAUS_0611 + NEU_0611 + WTIB_1111
                          + ZUGANG_1911 - len(ZUGANG_NICHT_DARSTELLBAR_1911) - len(ETF_RAUS_1911),
                          AKTUELLER_POLICY_STAND["HISTORICAL_CHART_AVAILABLE"])
         self.assertTrue(ETF_RAUS_1911 <= ZUGANG_ZU_KURZ_1911, "MEMY war technisch zu kurz: kein Abgang aus der Technik-Zahl")
         self.assertEqual(POLICY_STAND_1010["TECHNICAL_HISTORY_ELIGIBLE"] - ETF_TECHNISCH_BEREIT_0611 + GEALTERT_0611 + GEALTERT_1111
-                         + len(GEALTERT_1611) + len(GEALTERT_1911) + ZUGANG_1911 - len(ZUGANG_ZU_KURZ_1911),
+                         + len(GEALTERT_1611) + len(GEALTERT_1911) + ZUGANG_1911 - len(ZUGANG_ZU_KURZ_1911) + len(GEALTERT_2011),
                          AKTUELLER_POLICY_STAND["TECHNICAL_HISTORY_ELIGIBLE"])
         eignung = lade(ROOT / "quant/data/market/security-master/eligibility.json")
         etf_raus = [d for d in eignung["decisions"] if d["product_eligibility"] == "EXCLUDED"
