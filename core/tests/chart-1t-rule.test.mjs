@@ -36,7 +36,7 @@ test("1T: Punktzahl und Zeitraum je Titel sind welt-unabhaengig (Messwerte 18.11
 });
 test("1T: Snapshot vom Vortag plus heutige Ticks -> alle drei Welten liefern dieselbe heutige Reihe", () => {
   const gestern = snap("2026-11-17", grid(36), { previousClose: 150 });
-  const ticks = [["09:25", 160], ["09:30", 161], ["09:31", 161.5], ["09:32", 161.2]];
+  const ticks = [["09:25", 160], ["09:30", 161], ["09:36", 161.5], ["09:42", 161.2]];
   /* Quant/Technical: Vortags-Snapshot + eigene Tick-Reihe; Discover: der Hub hat daraus schon einen Strom-Snapshot gebaut. */
   const quant = CS.intradayView(gestern, { today: "2026-11-18", stream: ticks });
   const technical = CS.intradayView(JSON.parse(JSON.stringify(gestern)), { today: "2026-11-18", stream: ticks });
@@ -48,6 +48,12 @@ test("1T: Snapshot vom Vortag plus heutige Ticks -> alle drei Welten liefern die
   /* ohne ausreichend Ticks: letzte Sitzung, nie leer */
   const wenig = CS.intradayView(gestern, { today: "2026-11-18", stream: ticks.slice(0, 2) });
   assert.equal(wenig.mode, "last"); assert.equal(wenig.points.length, 36);
+  /* Eroeffnung, erst wenige Minuten: Quant (Tick-Reihe), Technical und Discover (Hub-Strom-Snapshot + snapshotVorStrom) zeigen alle die letzte Sitzung */
+  const kurz = [["09:30", 161], ["09:34", 161.4]];
+  const q = CS.intradayView(gestern, { today: "2026-11-18", stream: kurz });
+  const d = CS.intradayView(snap("2026-11-18", kurz, { fromStream: true }), { today: "2026-11-18", prev: gestern });
+  for (const v of [q, d]) { assert.equal(v.mode, "last"); assert.equal(v.points.length, 36); assert.equal(v.label, "letzte Sitzung (17.11.)"); }
+  assert.deepEqual(q.points, d.points);
 });
 test("Alle drei Welten rufen dieselbe Funktion", () => {
   for (const f of ["../../discover/ui/detail.js", "../../quant/app/chart.js"])

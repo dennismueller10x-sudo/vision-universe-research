@@ -1632,7 +1632,7 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
     var CS = CStd();
     if (!CS || !CS.intradayView || !snap) return null;
     var res = (p && p.resolution) || (D.LiveHub && D.LiveHub.resolution ? D.LiveHub.resolution() : null);
-    return CS.intradayView(snap, { today: res && ((res.displaySession && res.displaySession.sessionDate) || res.localDate) || null });
+    return CS.intradayView(snap, { today: res && ((res.displaySession && res.displaySession.sessionDate) || res.localDate) || null, prev: p && p.snapshotVorStrom || null });
   }
 
   function intradayAlsZeilen(p) {
