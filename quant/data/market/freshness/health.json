@@ -1,94 +1,85 @@
 {
   "schemaVersion": "freshness-health-1.0.0",
   "contractVersion": "freshness-contract-1.0.0",
-  "checkedAt": "2026-11-19T23:38:17.548Z",
+  "checkedAt": "2026-11-20T22:41:05.610Z",
   "target": "repository",
   "market": {
     "state": "AFTER_HOURS",
-    "localDate": "2026-11-19",
-    "localTime": "18:38:17",
-    "lastCompletedSession": "2026-11-19",
-    "currentSession": "2026-11-19",
-    "expectedIntradaySession": "2026-11-19"
+    "localDate": "2026-11-20",
+    "localTime": "17:41:05",
+    "lastCompletedSession": "2026-11-20",
+    "currentSession": "2026-11-20",
+    "expectedIntradaySession": "2026-11-20"
   },
   "intraday": {
-    "indexGeneratedAt": "2026-11-19T21:00:10.622Z",
+    "indexGeneratedAt": "2026-11-20T22:40:41.507Z",
     "indexSchema": "intraday-index-1.1.0",
     "displaySession": {
-      "sessionDate": "2026-11-19",
+      "sessionDate": "2026-11-20",
       "kind": "current",
-      "isRunning": true,
-      "isComplete": false
+      "isRunning": false,
+      "isComplete": true
     },
     "dataSession": {
-      "sessionDate": "2026-11-19",
-      "asOf": "2026-11-19T20:55:00.000Z",
-      "asOfLocal": "15:55",
+      "sessionDate": "2026-11-20",
+      "asOf": "2026-11-20T21:55:00.000Z",
+      "asOfLocal": "16:55",
       "regularComplete": false,
-      "snapshots": 1380,
-      "fetchedAfterClose": false,
-      "afterCloseSnapshots": 0,
-      "finalSlotSnapshots": 0,
-      "universe": false
+      "snapshots": 4819,
+      "fetchedAfterClose": true,
+      "afterCloseSnapshots": 4819,
+      "finalSlotSnapshots": 4300,
+      "universe": true
     },
-    "dataState": "STALE",
-    "dataReason": "closeMissing",
-    "dataLabel": "Heute · Stand 15:55 · nicht aktuell",
-    "entries": 1394,
+    "dataState": "LAST_SESSION",
+    "dataReason": "sessionCompleteNoLateTrades",
+    "dataLabel": "Heute · Schluss · letzter Kurs 16:55",
+    "entries": 1381,
     "byState": {
       "LIVE": 0,
-      "LAST_SESSION": 0,
-      "STALE": 1394,
+      "LAST_SESSION": 1367,
+      "STALE": 14,
       "UNAVAILABLE": 0
     },
     "byReason": {
-      "closeMissing": 1377,
-      "lastSessionMissing": 17
+      "lastCompletedSession": 1333,
+      "sessionCompleteNoLateTrades": 34,
+      "lastSessionMissing": 14
     },
     "staleSample": [
-      "A",
-      "AAMI",
-      "AAOI",
-      "AAON",
-      "AAPL",
-      "ABBV",
-      "ABLV",
-      "ABNB",
-      "ABT",
-      "ABTC",
-      "ABX",
-      "ACCO",
-      "ACEL",
-      "ACHC",
-      "ACHR",
-      "ACM",
-      "ACMR",
-      "ACN",
-      "ACNB",
-      "ACTG",
-      "ACU",
-      "AD",
-      "ADBE",
-      "ADC",
-      "ADI"
+      "AIFA",
+      "CPHC",
+      "DGICB",
+      "EGG",
+      "GROV",
+      "JVA",
+      "KITT",
+      "MCGA",
+      "MERC",
+      "MTC",
+      "NRP",
+      "NXPL",
+      "ONEG",
+      "UTZ"
     ],
     "universeSessions": [
-      "2026-11-18"
+      "2026-11-19",
+      "2026-11-20"
     ],
-    "universeCoversLastSession": false,
-    "state": "STALE"
+    "universeCoversLastSession": true,
+    "state": "OK"
   },
   "daily": {
     "universeAsOf": "2026-11-19",
-    "generatedAt": "2026-11-19T23:38:11.794Z",
+    "generatedAt": "2026-11-20T07:18:54.872Z",
     "state": "LAST_SESSION",
     "basis": "series",
     "summaryState": "LAST_SESSION",
-    "reason": "lastCompletedSession",
-    "label": "Schluss Heute",
+    "reason": "closePendingWithinGrace",
+    "label": "Schluss Do., 19.11. · Freitag folgt",
     "seriesState": "LAST_SESSION",
     "summaryContradictsSeries": false,
-    "expectedSession": "2026-11-19",
+    "expectedSession": "2026-11-20",
     "sample": {
       "sample": 40,
       "byState": {
@@ -98,15 +89,13 @@
         "UNAVAILABLE": 0
       },
       "byReason": {
-        "lastCompletedSession": 40
+        "closePendingWithinGrace": 40
       },
       "staleSample": [],
       "seriesIndexCount": 6327
     }
   },
-  "overall": "STALE",
-  "findings": [
-    "Intraday STALE: Datenstand 2026-11-19, erwartet 2026-11-19 (closeMissing)"
-  ],
+  "overall": "OK",
+  "findings": [],
   "note": "Health-Check des Freshness-Vertrags (quant/engines/realtime/freshness.js). Keine Kurse - nur Zustaende, Zaehlungen, Gruende."
 }
