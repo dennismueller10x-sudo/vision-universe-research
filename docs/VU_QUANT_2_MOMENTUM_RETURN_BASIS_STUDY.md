@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| Stand der Messung | 2026-11-20T00:17:05.000Z |
+| Stand der Messung | 2026-11-20T05:46:29.000Z |
 | Bestand | `CANONICAL_HISTORY` |
 | Studienlogik | `1.0.0` · Reihen `vu-return-series-1.0.0` · Vergleich `vu-return-basis-comparison-1.0.0` |
 | Entscheidung | **PENDING_METHOD_DECISION** |
@@ -17,7 +17,7 @@ Gemessen, nicht geschätzt. Ein Titel ohne Reihe zählt als fehlend und nicht al
 
 | Größe | Titel |
 |---|---:|
-| `CANONICAL_PRODUCT_UNIVERSE` | 6.339 |
+| `CANONICAL_PRODUCT_UNIVERSE` | 6.340 |
 | `CANONICAL_HISTORY_UNIVERSE` | 6.337 |
 | `RAW_CLOSE_AVAILABLE` | 6.337 |
 | `SPLIT_FACTOR_AVAILABLE` | 6.337 |
@@ -32,7 +32,7 @@ Gemessen, nicht geschätzt. Ein Titel ohne Reihe zählt als fehlend und nicht al
 
 | Grund | Titel |
 |---|---:|
-| `NO_SERIES` | 2 |
+| `NO_SERIES` | 3 |
 
 Quellen: `CANONICAL_STORE` 6.337. Bereinigungsstufe: `adjusted` 6.337.
 
@@ -45,11 +45,11 @@ Aus **einem** Satz Bars entstehen zwei Reihen, und keine davon ist eine Umdeutun
 
 Bewusst **nicht** die adjClose-Spalte für A: sie ist gesamtrenditebereinigt und trüge damit genau das in die Kursanalyse, was dort nicht hineingehört.
 
-**Beide Basen baubar:** 6.337 Titel von 6.339 im Produktuniversum, 6.337 davon mit gefundener Reihe.
+**Beide Basen baubar:** 6.337 Titel von 6.340 im Produktuniversum, 6.337 davon mit gefundener Reihe.
 
 | Ausschlussgrund | Titel |
 |---|---:|
-| `NO_SERIES` | 2 |
+| `NO_SERIES` | 3 |
 
 ### Der Nachweis, dass Reihe B eine Gesamtrendite-Reihe ist
 
@@ -194,7 +194,7 @@ Klassifikation: **SIC_DIVISION**, aus `quant/data/product/factor-evidence-v1 (pe
 | Sektor | Titel | Δ Rendite (Median) | Δ Rang (Median) | Δ Perzentil (Median) | Δ Perzentil (P95) |
 |---|---:|---:|---:|---:|---:|
 | REITs | 188 | 5,37 % | -123 | 2,13 | 9,10 |
-| (unclassified) | 771 | 4,58 % | -101 | 1,76 | 8,83 |
+| (unclassified) | 772 | 4,57 % | -101 | 1,75 | 8,83 |
 | Energy | 147 | 2,33 % | 0 | 0,00 | 5,34 |
 | Consumer Staples | 117 | 0,56 % | 1 | -0,02 | 3,71 |
 | Utilities | 145 | 2,48 % | 5 | -0,09 | 3,85 |
@@ -203,7 +203,7 @@ Klassifikation: **SIC_DIVISION**, aus `quant/data/product/factor-evidence-v1 (pe
 | Communication | 128 | 0,00 % | 15 | -0,26 | 4,20 |
 | Consumer Discretionary | 433 | 0,00 % | 18 | -0,31 | 3,56 |
 | (other) | 498 | 0,00 % | 20 | -0,34 | 3,70 |
-| Industrials | 442 | 0,00 % | 20 | -0,34 | 3,67 |
+| Industrials | 441 | 0,00 % | 20 | -0,35 | 3,68 |
 | Materials | 296 | 0,00 % | 23 | -0,40 | 3,35 |
 | Health Care | 923 | 0,00 % | 23 | -0,40 | 3,52 |
 | Technology | 721 | 0,00 % | 25 | -0,44 | 3,59 |
@@ -214,7 +214,7 @@ Klassifikation: **SIC_DIVISION**, aus `quant/data/product/factor-evidence-v1 (pe
 
 | Sektor | Titel | Δ Rendite (Median) | Δ Rang (Median) | Δ Perzentil (Median) | Δ Perzentil (P95) |
 |---|---:|---:|---:|---:|---:|
-| (unclassified) | 771 | 4,58 % | -101 | 1,76 | 8,83 |
+| (unclassified) | 772 | 4,57 % | -101 | 1,75 | 8,83 |
 | H · Finance, Insurance, And Real Estate | 1.121 | 2,04 % | 0 | 0,00 | 6,15 |
 | E · Transportation, Communications, Electric, Gas, And Sanitary Services | 395 | 1,48 % | 6 | -0,10 | 4,09 |
 | F · Wholesale Trade | 100 | 0,00 % | 16 | -0,28 | 3,77 |
@@ -223,7 +223,7 @@ Klassifikation: **SIC_DIVISION**, aus `quant/data/product/factor-evidence-v1 (pe
 | I · Services | 886 | 0,00 % | 24 | -0,42 | 3,60 |
 | B · Mining | 240 | 0,00 % | 26 | -0,44 | 3,70 |
 | A · Agriculture, Forestry, And Fishing | 20 | 0,00 % | 53 | -0,91 | 3,97 |
-| C · Construction | 62 | 0,00 % | 55 | -0,96 | 3,41 |
+| C · Construction | 61 | 0,00 % | 64 | -1,11 | 3,41 |
 
 Sektoren mit weniger als zehn Titeln sind ausgelassen: aus vier Titeln einen Sektorbefund zu machen wäre eine Zahl ohne Aussage.
 
@@ -234,20 +234,20 @@ Die Momentumnote wird auf beiden Basen aus denselben sechs Komponenten und dense
 | | |
 |---|---:|
 | Grundlage | `EVIDENCE_AT_OR_BEFORE_CUTOFF` |
-| veröffentlichtes Evidence vom | 2026-11-18 (-1 Tage nach dem Stichtag) |
+| veröffentlichtes Evidence vom | 2026-11-19 (0 Tage nach dem Stichtag) |
 | ausgeschlossen, weil Fundamentaldaten erst nach dem Stichtag öffentlich | 0 |
-| ρ Simulation (Gesamtrendite) zur veröffentlichten Note | 0,9310 |
-| ρ Simulation (Kursrendite) zur veröffentlichten Note | 0,9405 |
-| bewertete Titel: veröffentlicht / Kurs / gesamt | 5.433 / 5.742 / 5.742 |
+| ρ Simulation (Gesamtrendite) zur veröffentlichten Note | 0,9363 |
+| ρ Simulation (Kursrendite) zur veröffentlichten Note | 0,9446 |
+| bewertete Titel: veröffentlicht / Kurs / gesamt | 5.434 / 5.742 / 5.742 |
 
 **Die Momentumnote selbst, Kurs gegen gesamt:** ρ 0,9943 · Median 53 Ränge · P95 279,9 · Maximum 3.760 · 275 Titel bewegen sich um mindestens 5 Perzentilpunkte, 80 um mindestens 10.
 
 | Strategie | Treffer auf Kursrendite | auf Gesamtrendite | fallen heraus | kommen hinzu | Wechselanteil |
 |---|---:|---:|---:|---:|---:|
-| Momentum Leader (`momentum-leader`) | 356 | 350 | 18 | 12 | 8,4 % |
-| Quality Momentum (`quality-momentum`) | 52 | 51 | 1 | 0 | 1,9 % |
-| Future Leader (`future-leader`) | 22 | 23 | 0 | 1 | 4,4 % |
-| Value Momentum (`value-momentum`) | 224 | 223 | 5 | 4 | 4,0 % |
+| Momentum Leader (`momentum-leader`) | 355 | 349 | 18 | 12 | 8,5 % |
+| Quality Momentum (`quality-momentum`) | 51 | 49 | 2 | 0 | 3,9 % |
+| Future Leader (`future-leader`) | 21 | 22 | 0 | 1 | 4,6 % |
+| Value Momentum (`value-momentum`) | 217 | 215 | 6 | 4 | 4,6 % |
 
 Keine Produktionsstrategie wurde dabei überschrieben. Die Simulation läuft neben der Produktion.
 
