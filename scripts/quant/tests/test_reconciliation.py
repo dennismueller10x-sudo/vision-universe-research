@@ -267,8 +267,8 @@ class FreigegebeneZugaengeTests(unittest.TestCase):
     def test_alles_andere_bleibt_rot(self):
         faelle = [
             (11, 9, 12, self.zug(["ref_A"]), "freigegebene Zugaenge im Produkt 1"),          # ein Titel ohne Freigabe
-            (11, 9, 12, self.zug(["ref_A", "ref_B"], ohne_kurs=["ref_B"]), "ohne Kurshistorie"),
-            (11, 8, 12, self.zug(["ref_A", "ref_B"], nicht_tech=["ref_B"]), "nicht technisch bereit"),
+            (11, 9, 12, self.zug(["ref_A", "ref_B"], ohne_kurs=["ref_B"]), "schon in einer Ausnahmeliste"),
+            (11, 8, 12, self.zug(["ref_A", "ref_B"], nicht_tech=["ref_B"]), "schon in einer Ausnahmeliste"),
             (10, 9, 12, self.zug(["ref_A", "ref_B"]), "nicht genau die Zahl"),               # ein Altbestand verliert Kurse
         ]
         for preis, tech, gesamt, z, grund in faelle:

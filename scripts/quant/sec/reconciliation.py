@@ -553,9 +553,13 @@ def _zugaenge_im_stand(records, preis_ids, tech_ids):
 def erklaerte_zugaenge(akzeptiert, preis, technisch, gesamt, zugaenge):
     """Erklaerte Klasse APPROVED_UNIVERSE_ADDITION: Die Abweichung ist genau durch freigegebene Zugaenge erklaert.
 
-    Angenommen nur, wenn (1) der Produktumfang um genau die Zahl der freigegebenen Zugaenge gewachsen ist, die heute im
-    Produkt stehen, (2) jeder davon Kurshistorie hat und technisch bereit ist und (3) Kurs- und Technik-Abweichung beide
-    genau diese Zahl sind. Gibt (zugaenge, befund) zurueck; befund ist None oder der Grund der Ablehnung.
+    Die Deckung je Titel ist die Umkehrung der Ausnahmelisten der Messung (build-universe-indexes.mjs): wer in keiner Liste
+    steht, gilt als gedeckt. Ein Zugang nach der Messung steht in keiner Liste und zaehlt deshalb bis zur naechsten Messung
+    als gedeckt, auch ohne Reihe (20.11.2026: ANT). Die Regel prueft deshalb die Rechnung, nicht die Reihe des Zugangs:
+    angenommen nur, wenn (1) der Produktumfang um genau die Zahl der freigegebenen Zugaenge gewachsen ist, die heute im
+    Produkt stehen, (2) keiner davon schon in einer Ausnahmeliste der Messung steht (sonst waere er gemessen und muesste
+    im Stand sein) und (3) Kurs- und Technik-Abweichung beide genau diese Zahl sind. Ob ein Zugang eine Reihe hat, sagt erst
+    die naechste Messung (Umfangsfolge, pipeline-weekly Teil deckung). Gibt (zugaenge, befund) zurueck.
     """
     basis = akzeptiert.get("PRODUCT_TITLES")
     if not isinstance(basis, int) or gesamt <= basis or zugaenge is None:
@@ -565,7 +569,7 @@ def erklaerte_zugaenge(akzeptiert, preis, technisch, gesamt, zugaenge):
     if len(z["members"]) != n:
         return z, "Produktumfang +%d, freigegebene Zugaenge im Produkt %d" % (n, len(z["members"]))
     if z["ohneKurshistorie"] or z["nichtTechnisch"]:
-        return z, "Zugaenge ohne Kurshistorie oder nicht technisch bereit: " + ", ".join(z["ohneKurshistorie"] + z["nichtTechnisch"])
+        return z, "Zugaenge stehen schon in einer Ausnahmeliste der Messung: " + ", ".join(z["ohneKurshistorie"] + z["nichtTechnisch"])
     if (preis - akzeptiert["HISTORICAL_CHART_AVAILABLE"], technisch - akzeptiert["TECHNICAL_HISTORY_ELIGIBLE"]) != (n, n):
         return z, "Kurs- oder Technik-Abweichung ist nicht genau die Zahl der Zugaenge (%d)" % n
     return z, None
@@ -608,8 +612,9 @@ def _accepted_state(market, preis, technisch, gesamt, zugaenge=None):
             stimmt = True
             hinweis = {"class": "APPROVED_UNIVERSE_ADDITION", "count": len(z["members"]),
                        "members": z["members"], "approvals": z["freigaben"],
-                       "text": "%d freigegebene Zugaenge seit der Abnahme (%s) automatisch angenommen; die naechste "
-                               "Deckungsmessung (pipeline-weekly, Teil deckung) nimmt sie in den Stand auf."
+                       "text": "%d freigegebene Zugaenge seit der Abnahme (%s) automatisch angenommen; noch nicht gemessen "
+                               "(die Umkehrung zaehlt sie bis dahin als gedeckt). Die naechste Deckungsmessung (pipeline-weekly, "
+                               "Teil deckung) nimmt sie mit ihrer Reihe in den Stand auf."
                                % (len(z["members"]), ", ".join(z["freigaben"]))}
         elif befund:
             hinweis = {"class": "NOT_AUTO_ACCEPTED", "reason": befund}
