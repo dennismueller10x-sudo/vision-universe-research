@@ -261,6 +261,17 @@ jobs:
           if [ "$offen" != "0" ]; then echo "Materialisierung laeuft schon ($offen) - kein zweiter Anstoss"; exit 0; fi
           gh workflow run product-intelligence-materialization.yml --ref main -f force=true
 
+      - name: Umfangsfolgen - Deckung und Fundamentalschicht-Abgleich neu messen (pipeline-weekly, Teil deckung)
+        # Steuerung 19.11.2026: Der abgenommene Marktdatenstand (coverage-metrics.json, reconciliation.json) zieht bei jeder
+        # Eignungsaenderung im selben Zug nach. Sonst ist der Abgleich der Fundamentalschicht bis zur naechsten Messung rot und
+        # blockiert jeden PR auf Fundamental-Pfaden (19.11.: 6309 abgenommen, 6340 im Produkt). Der Teil erklaert jede
+        # Abweichung je Titel (coverage-delta.mjs) und bricht bei Unerklaertem vor dem Commit ab.
+        if: steps.folgen.outcome == 'success' && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        # Ein zweiter Anstoss waehrend einer laufenden Messung wartet in der Gruppe market-data-main und misst danach erneut.
+        run: gh workflow run pipeline-weekly.yml --ref main -f teil=deckung
+
       - name: Umfangsfolgen - Vorsorge-Ingest anstossen (ausgeschiedene ETFs)
         # Vorsorge las Reihen ausgeschiedener ETFs aus den Discover-Reihen (05.11.2026, 121 ETFs). Der Ingest holt
         # alles, was noch nicht im Vorsorge-Universum steht (Zusatz-ETFs aus dem Company Master), und baut neu.

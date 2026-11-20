@@ -382,11 +382,29 @@ jobs:
       needs.auswahl.outputs.deckung == 'true'
     permissions:
       contents: write
+      actions: read
     concurrency:
       group: market-data-${{ github.ref_name }}
       cancel-in-progress: false
     runs-on: ubuntu-latest
     steps:
+      # Halbstand vermeiden (19.11.2026, Lauf 44473651117): die Umfangsfolge stoesst Materialisierung und Deckung zugleich an.
+      # Die Regressionssuite unten prueft auch die Produktartefakte der Materialisierung; laeuft sie davor, sieht sie das alte
+      # Universum (MEMY noch in launch-gates und pattern-unavailability). Deshalb erst nach einer laufenden Materialisierung messen.
+      - name: Auf eine laufende Materialisierung warten (hoechstens 120 min)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          REF: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 120); do
+            offen="$(gh run list --workflow product-intelligence-materialization.yml --branch "$REF" --limit 10 --json status \
+              --jq '[.[] | select(.status=="queued" or .status=="in_progress" or .status=="waiting" or .status=="pending")] | length')"
+            if [ "$offen" = "0" ]; then echo "keine Materialisierung offen"; exit 0; fi
+            echo "Materialisierung offen ($offen), warte ($i/120)"; sleep 60
+          done
+          echo "::error::Materialisierung nach 120 min noch offen - Deckung misst nicht auf einem Halbstand"; exit 1
       - uses: actions/checkout@v4
         with:
           # Spitze des Zweigs, nicht der Ausloese-Commit (wartende Laeufe, Audit 03.10.2026)

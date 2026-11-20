@@ -145,3 +145,17 @@ test("Linienbündel an echten AAPL-Bars: emaSummary liest nur ema-cluster.js#cal
   assert.equal(CE.emaSummary({ rows: [{ quality: "WARMUP" }], events: [] }), null);
   assert.equal(CE.emaSummary(null), null);
 });
+
+test("Fibonacci auf dem sichtbaren Ausschnitt (fibOfWindow): Anstieg, Rückgang, Hoch/Tief je Punkt, Randfälle", () => {
+  const up = CE.fibOfWindow([{ t: "a", v: 100 }, { t: "b", v: 80 }, { t: "c", v: 95 }, { t: "d", v: 130 }, { t: "e", v: 120 }]);
+  assert.equal(up.up, true);
+  assert.deepEqual([up.from.time, up.from.price, up.to.time, up.to.price], ["b", 80, "d", 130]);
+  assert.deepEqual(up.levels.map((l) => l.ratio), [0, 0.236, 0.382, 0.5, 0.618, 0.786, 1]);
+  assert.equal(up.levels[0].price, 130); assert.equal(up.levels[3].price, 105); assert.equal(up.levels[6].price, 80);
+  const down = CE.fibOfWindow([{ t: "a", v: 50, hi: 60, lo: 49 }, { t: "b", v: 30, hi: 31, lo: 20 }]);
+  assert.equal(down.up, false);
+  assert.deepEqual([down.from.price, down.to.price, down.levels[0].price, down.levels[6].price], [60, 20, 20, 60]);
+  assert.equal(CE.fibOfWindow([]), null);
+  assert.equal(CE.fibOfWindow([{ t: "a", v: 5 }, { t: "b", v: 5 }]), null);
+  assert.equal(CE.fibOfWindow(null), null);
+});

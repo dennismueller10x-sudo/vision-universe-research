@@ -793,9 +793,9 @@
       "cik": "0002033991",
       "name": "Texas Ventures Acquisition III Corp",
       "sic": "6770",
-      "rawFacts": 483,
-      "mappedFacts": 190,
-      "unmappedFacts": 307,
+      "rawFacts": 597,
+      "mappedFacts": 233,
+      "unmappedFacts": 381,
       "calendarYears": 2,
       "industry": null,
       "industryMetrics": {},
@@ -807,9 +807,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 2,
-      "quarterlyPeriods": 9,
+      "quarterlyPeriods": 10,
       "firstPeriodEnd": "2024-07-25",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 1.0,
       "metrics": {
         "capital_expenditures": {
@@ -848,14 +848,14 @@
         },
         "net_income": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 6,
+          "quarterlyPeriods": 7,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
         },
         "operating_cash_flow": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 6,
+          "quarterlyPeriods": 7,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
@@ -876,14 +876,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 9,
+          "quarterlyPeriods": 10,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0
         },
         "total_assets": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 7,
+          "quarterlyPeriods": 8,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0
@@ -906,43 +906,44 @@
         }
       },
       "quality": {
-        "HIGH": 35
+        "HIGH": 39
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 35,
-        "resolvedValues": 35
+        "datableValues": 39,
+        "resolvedValues": 39
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 315,
+        "rules_version": "1.1.0",
+        "total": 389,
         "by_severity": {
-          "INFO": 307,
+          "INFO": 381,
           "WARNING": 8
         },
         "by_code": {
           "UNEXPECTED_DURATION": 8,
-          "UNKNOWN_CONCEPT": 307
+          "UNKNOWN_CONCEPT": 381
         }
       },
       "latestFiling": {
-        "accession": "0001104659-26-096115",
-        "filing_date": "2026-08-14",
+        "accession": "0001104659-26-129771",
+        "filing_date": "2026-11-18",
         "form": "10-Q",
-        "periodic_filings": 6
+        "periodic_filings": 7,
+        "acceptance_datetime": "2026-11-18T21:43:10.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
-        "formula": "1.2.0",
+        "normalization_logic": "1.15.0",
+        "formula": "1.3.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.8.0"
         }
       },
-      "sourceDigest": "0f4635f6fe22fc0ca87d6935509e8ac4bfe01118eb70f2bb8c1f4db4221d5c63",
+      "sourceDigest": "870580540b184f20ed9b617d3aad11857046729548999e40edb744616ae6d497",
       "issuerId": "iss_cik_0002033991"
     }
   ]

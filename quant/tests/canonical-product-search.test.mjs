@@ -5,6 +5,7 @@ import {createRequire} from 'node:module';
 import vm from 'node:vm';
 import {readFileSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
+import {fixtureRoot} from '../../scripts/quant/lib/data-fixture.mjs';
 /* Frontend-Rebuild (quant/app): Prüfintention erhalten – der Suchtest lief
    gegen openSearch() aus vu2/experience.js, das geloescht ist. Die neue
    Oberflaeche hat zwei Suchen: den Suchdialog (quant/app/app.js, Taste "/",
@@ -13,7 +14,10 @@ import {fileURLToPath} from 'node:url';
    gegen dieselben Zusagen geprueft: veraltete Antworten werden verworfen,
    Laden, leer und Fehler sind drei verschiedene Saetze. */
 const require=createRequire(import.meta.url),Service=require('../api/product-services.js'),Policy=require('../engines/display-policy.js'),Query=require('../engines/query.js');
-const root=new URL('../../',import.meta.url);
+/* Eingefrorener Datenstand (Steuerung 18.11.2026, Muster #1991): quant/tests/fixtures/canonical-product-search/data.json.gz,
+   Erzeuger scripts/quant/freeze-test-fixture.mjs. Universum, Eignung und Faehigkeitsliste stammen aus einem Lauf; die Breite des
+   Live-Stands meldet DQ-PQ-11. Code und Oberflaeche (quant/app) kommen weiter aus dem Repository. */
+const root=fixtureRoot(fileURLToPath(new URL('fixtures/canonical-product-search/data.json.gz',import.meta.url))).url;
 function api(mutate=()=>{},reads=[]){return Service.create({loadJSON:async p=>{reads.push(p);const d=JSON.parse(await readFile(new URL(p.slice(1),root),'utf8'));mutate(p,d);return d;},displayPolicy:Policy,queryEngine:Query});}
 test('canonical search resolves stable identities beyond the five-row panel without financial reads',async()=>{
  const reads=[],service=api(()=>{},reads),r=await service.searchInstruments('TSLA');assert.equal(r.state,'AVAILABLE');const hit=r.entries.find(e=>e.ticker==='TSLA');assert.match(hit.securityId,/^vu_/);assert.equal(hit.masterMemberId,'ref_TSLA');assert.ok(reads.every(p=>p.startsWith('/quant/data/universe/')));assert.ok(reads.length<15);

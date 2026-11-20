@@ -69,7 +69,12 @@ test("Stock · Security -> Kurs -> Chart -> Fundamentals -> Quant fuer jeden Sta
     if (!seite.ok) fehler.push(t + ": Aktienseite fehlt");
     else if (seite.data.price.value !== letzter[1]) fehler.push(t + ": Seite " + seite.data.price.value + " / Chartende " + letzter[1]);
     const fu = await c.getFundamentals(t);
-    if (fu.state !== "AVAILABLE" && fu.reason !== "NO_CIK") fehler.push(t + ": Fundamentals " + fu.reason);
+    /* Ein Startseitentitel ohne SEC-Zahlen (20-F-Filer wie IBN, nicht im Companyfacts-Archiv) ist zulaessig, solange die
+       Aktienseite es SELBST benennt (fundamentals.available=false, reason und message). Die Startseite rotiert taeglich
+       (19.11. 23:54: IBN kam hinein); der Pfad verlangt Ehrlichkeit, nicht Vollstaendigkeit. */
+    const benannt = fu.reason === "FUNDAMENTALS_MISSING" && seite.ok && seite.data.fundamentals && seite.data.fundamentals.available === false
+      && typeof seite.data.fundamentals.reason === "string" && typeof seite.data.fundamentals.message === "string" && seite.data.fundamentals.message.length > 0;
+    if (fu.state !== "AVAILABLE" && fu.reason !== "NO_CIK" && !benannt) fehler.push(t + ": Fundamentals " + fu.reason);
     const q = await c.getQuantData(t);
     if (q.state !== "AVAILABLE") fehler.push(t + ": Quant " + q.reason);
     else if (!q.data.identityConsistent) fehler.push(t + ": Quant-Zeile gehoert zu " + q.data.securityId);

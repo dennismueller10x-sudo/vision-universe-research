@@ -288,7 +288,7 @@ async function main() {
       await page.waitForSelector(".tc-simple-chart .qc-chart svg .vu-chart-line", { timeout: 45000 });
       assert(await page.locator(".tc-chart .tc-up rect, .tc-chart .tc-down rect").count() === 0, "Kerzen in der Einsteigeransicht");
       const leiste = await page.locator(".tc-simple-chart .qc-ranges button:not([hidden])").allInnerTexts();
-      assert(leiste.join(",") === "1T,1W,1M,1J,5J,Max,Mehr", "Zeitraumleiste nicht 1T 1W 1M 1J 5J Max: " + leiste.join(","));
+      assert(leiste.join(",") === "1T,1W,1M,6M,1J,3J,5J,Max,Mehr", "Zeitraumleiste nicht 1T 1W 1M 6M 1J 3J 5J Max: " + leiste.join(","));
       /* Klickentwurf Modul-Aktienseiten (Owner 17.11.2026): gemeinsamer Kopf ohne Reiterzeile, Pillen der anderen Module vor der Fußzeile. */
       assert(await page.locator(".vu-shead.vu-shead--k2").count() === 1, "gemeinsamer Aktienkopf fehlt");
       assert(await page.evaluate(() => document.documentElement.getAttribute("data-vu-tabs") === "inhalt" && document.querySelector("vu-navigation").shadowRoot.querySelector("nav.tabs").hidden), "Aktienseite zeigt die Reiterzeile des Rahmens");
@@ -317,9 +317,39 @@ async function main() {
       assert(/Linien/i.test(await page.locator(".tc-guide h3").innerText()), "Chart erklären: Schritt 3 ist nicht das Linienbündel");
       assert(await page.locator('.tc-togs [data-layer="ema"][aria-pressed="true"]').count() === 1, "EMA-Bänder nicht eingeschaltet");
       assert(await page.locator(".tc-simple-chart .tc-layers .tc-ema--fast").count() === 1 && await page.locator(".tc-simple-chart .tc-layers .tc-ema--slow").count() === 1, "EMA-Bänder nicht gezeichnet");
+      /* EMA-Faecher: sechs schnelle und sechs langsame Linien (Owner 18.11.2026). */
+      assert(await page.locator(".tc-simple-chart .tc-ema-line--fast").count() === 6 && await page.locator(".tc-simple-chart .tc-ema-line--slow").count() === 6, "EMA-Fächer: nicht 6 + 6 Linien");
+      /* Fingerzoom (nur Technical): + verkleinert den Ausschnitt, Zurücksetzen zeigt wieder den ganzen Zeitraum. */
+      const nPts = () => page.evaluate(() => (document.querySelector(".tc-simple-chart svg").__vuGeometry || {}).pts.length);
+      const full = await nPts();
+      await page.locator(".tc-simple-chart .qc-zoom-btn", { hasText: "+" }).click();
+      await page.waitForFunction((n) => (document.querySelector(".tc-simple-chart svg").__vuGeometry || {}).pts.length < n, full);
+      assert(/im Ausschnitt/.test(await page.locator(".tc-simple-chart .qc-head").innerText()), "Zoom: Kopf nennt keinen Ausschnitt");
+      await page.locator(".tc-simple-chart .qc-zoom-reset").click();
+      await page.waitForFunction((n) => (document.querySelector(".tc-simple-chart svg").__vuGeometry || {}).pts.length === n, full);
+      /* Linien, Katalog-Indikatoren und Boersenwaehrung (Owner 18.11.2026). */
+      for (const k of ["sma20", "sma50", "stage", "avg"]) assert(await page.locator('.tc-togs [data-layer="' + k + '"]').count() === 1, "Chip fehlt: " + k);
+      assert(await page.locator(".tc-simple-chart .qc-fx button, .tc-simple-chart .qc-fx select").count() === 0, "Währungsumschalter im Technical-Chart");
+      await page.locator(".tc-ind-open").click();
+      await page.waitForSelector(".tc-ind-row");
+      assert(await page.locator(".tc-ind-row").count() === 92, "Indikatoren-Fenster: nicht 92 Einträge");
+      await page.locator(".tc-ind-search").fill("Relative Strength Index");
+      await page.locator(".tc-ind-row").first().click();
+      await page.keyboard.press("Escape");
+      await page.waitForSelector(".tc-pane-box");
+      await page.locator(".tc-pane-x").first().click();
+      await page.waitForFunction(() => !document.querySelector(".tc-pane-box"));
       /* Wochenchart (5J): Baender aus der langen Wochenreihe ueber die ganze Breite; Ebenen fangen keine Klicks ab. */
       await page.locator('.tc-simple-chart .qc-ranges button[data-range="5Y"]').click();
       await page.waitForFunction(() => { const f = document.querySelector(".tc-simple-chart .tc-ema--fast"), s = f && f.ownerSVGElement; return f && s && f.getBBox().width > s.getBBox().width * 0.8; }, null, { timeout: 15000 });
+      /* Fibonacci auf dem sichtbaren Ausschnitt in jedem Zeitraum (Owner 19.11.2026): 0 % bis 100 %, auch im Wochenchart. */
+      const fibWasOn = await page.locator('.tc-togs [data-layer="fib"][aria-pressed="true"]').count() === 1;
+      if (!fibWasOn) await page.locator('.tc-togs [data-layer="fib"]').click();
+      for (const r of ["5Y", "1M"]) {
+        await page.locator('.tc-simple-chart .qc-ranges button[data-range="' + r + '"]').click();
+        await page.waitForFunction(() => document.querySelectorAll(".tc-simple-chart svg .tc-fib").length >= 5, null, { timeout: 15000 });
+      }
+      if (!fibWasOn) await page.locator('.tc-togs [data-layer="fib"]').click();
       await page.locator('.tc-simple-chart .qc-ranges button[data-range="1Y"]').click();
       for (let i = 3; i < 6; i++) await page.locator(".tc-guide-nav .vu-btn--ink").click();
       assert(/Fibonacci/i.test(await page.locator(".tc-guide h3").innerText()), "Chart erklären: Schritt 5 ist nicht Fibonacci");

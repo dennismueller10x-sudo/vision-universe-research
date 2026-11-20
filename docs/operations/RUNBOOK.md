@@ -81,12 +81,15 @@ Die Seite zeigt seit 03.10. selbst an, wenn der Feed älter ist als sein Maximal
 - Universum: `quant/data/market/security-master/eligibility.json` (`decisions[]`: `product_eligibility`, `active_status`)
 - Company Master: `quant/data/universe/instruments/<shard>.json`, mit Scherbe aus `core/identity.js#shardKey`
 - Index: `quant/data/market/index-membership/<INDEX>.json` (`unmatched`)
+- Neuer Quartalsbericht fehlt in Discover/Quant: Der SEC-Tageslauf (06:15 UTC) holt ihn am Folgetag; findet er ein neues 10-K/10-Q/20-F/40-F, stößt er `sec-consumer-fundamentals.yml` selbst an (`scripts/quant/sec/consumer_trigger.py`, seit 19.11.2026), sonst läuft der Consumer montags. Von Hand: Dispatch des Consumers.
 
 ## 7. Deployment während eines Datenlaufs
 
 `pages-release.yml` baut immer vom Kopf von `main` und hat eine eigene Concurrency-Gruppe (`pages-production`).
 Ein Deployment mitten in einem Datenlauf liefert den letzten vollständig gepushten Stand. Teilstände gibt es nicht, weil der Push den Commit atomar setzt.
 Nach dem Datenlauf löst `workflow_run` das nächste Deployment aus.
+
+**Intraday-Vorrang (19.11.2026):** Mo–Fr 14:00–21:00 UTC (Börse 14:30; Beginn 14:00, weil ein Voll-Release bis 22 Minuten dauert; Grenzen in UTC, im Sommer anpassen) startet kein Voll-Release wegen Nicht-Intraday-Dateien. Gemessen am 18.11.: Voll-Releases von 12–30 Minuten liefen im Fenster fast lückenlos in der Gruppe `pages-production`, der Intraday-Stand lag 25–31 Minuten hinter der Börse. Jetzt liefert der Schnellweg im Fenster nur die Intraday- und byte-gleichen Datendateien (`intraday-fastpath.mjs klassifiziere --fenster=auto`); liegen nur andere Dateien an, meldet er `AUFSCHUB` und `package` überspringt den Lauf. Alles Aufgeschobene geht ab 21:00 UTC mit dem ersten Wecker-Dispatch (bis 21:55) als ein Voll-Release raus. Voll bleiben: ein aktiver Company-Intelligence-Veröffentlicher, fehlendes Basis-Paket, `workflow_dispatch` mit `notfall=true`, Acceptance oder `company_intelligence_off`. Befund 19.11.: ein Voll-Release (Technical-Screener, `workflow_run`) startete 14:23 und hielt die Gruppe bis 14:45; deshalb beginnt das Fenster um 14:00. Rest-Risiko: ein Voll-Release, der vor 14:00 startet und länger als 30 Minuten läuft.
 
 ## 8. `core` ist rot, aber der PR hat nichts damit zu tun
 
@@ -157,6 +160,8 @@ Offen, braucht eine UI-Schutz-Revision mit Owner-Freigabe (`scripts/vu2/browser-
 **Behebung (ohne Handarbeit an Daten):** Workflow `company-intelligence-profile-source.yml`, Eingaben `publish=true`, `recover_full_scope=true`, `sources=false`. Er verlangt Ausgangslage Rollback und Gate zu oder verfügbar, stellt den Universe-Umfang her, liest vollständig zurück und öffnet das Gate erst danach (`production_release=enable` allein öffnet nur das Gate und stellt nichts her). Nie zwischen 23 und 00 UTC; vorher prüfen, dass kein Lauf desselben Workflows und keine Quant-Läufe in der Concurrency-Gruppe `company-intelligence-continuous-production` laufen. Erfolgreich am 16.11. und am 17.11. (Lauf 44064174614, 10:22–11:53 UTC, 4.988 Unternehmen).
 
 **Gehärtet (PR #2053, #2060, #2062):** Live-Lesen wiederholt transiente Fehler (8 Versuche, Pausen 1/2/4/8/15/30/30 s, Retry-After bis 30 s); 60 s Wartezeit nach dem Deploy; 2 statt 4 gleichzeitige Zugriffe; ein transienter Netzfehler gilt als Ausbreitungsfall und schließt das Gate nicht. Hash-, Inhalts- und Generationsfehler bleiben fail-closed. Kindprozesse der Profil-Stichprobe melden Exit-Signal und stderr-Ende (`source-onboarding-stderr.txt` im Artefakt).
+
+**Vierte Abschaltung 18.11.2026 (13:52 UTC):** Kein Hosting-Fehler. Pages-Lauf 44312137021 (Push), Job `company-intelligence-live`: Propagation bewiesen (AVAILABLE, Generation 9239ce28…), dann Playwright `scrollIntoViewIfNeeded: Element is not attached to the DOM / not stable` in `live-production-qa.mjs` (Scrollen vor dem Screenshot) → `REAL/BROWSER_ERROR_NOT_TIMEOUT`, Rollback, Gate zu. Behoben: Scrollen ist begrenzt wiederholbar und nie ein Prüfpunkt (`scrollForScreenshot`).
 
 **Nebenbefund:** Die Universums-Bereinigung (#2054) löste `UNEXPLAINED_PUBLIC_IDENTITY_REMAPPING` aus und wurde mit #2055 zurückgenommen; der Schutz in `universe-regression.mjs` bleibt unverändert.
 

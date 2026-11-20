@@ -1,7 +1,7 @@
 {
  "schemaVersion": "backtest-certification-1.0.0",
- "generatedAt": "2026-11-18T05:54:23.030Z",
- "asOf": "2026-11-18",
+ "generatedAt": "2026-11-20T00:59:56.116Z",
+ "asOf": "2026-11-20",
  "methodology": "backtest-certification-1.1.0",
  "kinds": [
   {
@@ -280,7 +280,7 @@
        "label": "Überlebende-Kontrolle",
        "category": "STRUCTURAL",
        "state": "FAIL",
-       "value": "Hauptstudie: nur heute gelistete Titel. 3082 delistete Listings ab 2016 gehen in die Sensitivitätsrechnung ein, nicht in dieses Ergebnis.",
+       "value": "Hauptstudie: nur heute gelistete Titel. 3081 delistete Listings ab 2016 gehen in die Sensitivitätsrechnung ein, nicht in dieses Ergebnis.",
        "required": null,
        "reason": "MAIN_STUDY_SURVIVORS_ONLY"
       },
@@ -334,7 +334,7 @@
        "label": "Unabhängigkeit der Fälle",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "1844 Wochen, 142 Quartale, effektiv ≈ 20505 unabhängige Fälle",
+       "value": "1844 Wochen, 142 Quartale, effektiv ≈ 20506 unabhängige Fälle",
        "required": null,
        "reason": null
       },
@@ -381,7 +381,7 @@
        "id": "survivorship",
        "category": "STRUCTURAL",
        "reason": "MAIN_STUDY_SURVIVORS_ONLY",
-       "value": "Hauptstudie: nur heute gelistete Titel. 3082 delistete Listings ab 2016 gehen in die Sensitivitätsrechnung ein, nicht in dieses Ergebnis.",
+       "value": "Hauptstudie: nur heute gelistete Titel. 3081 delistete Listings ab 2016 gehen in die Sensitivitätsrechnung ein, nicht in dieses Ergebnis.",
        "required": null
       },
       {
@@ -401,7 +401,7 @@
       "uniquePeriods": 1844,
       "independentClusters": 142,
       "clusterUnit": "Quartal",
-      "effectiveN": 20505,
+      "effectiveN": 20506,
       "designEffect": 4.37
      },
      "returnType": "TOTAL_RETURN",
@@ -468,7 +468,7 @@
        "label": "Überlebende-Kontrolle",
        "category": "STRUCTURAL",
        "state": "FAIL",
-       "value": "Hauptstudie: nur heute gelistete Titel. 3082 delistete Listings ab 2016 gehen in die Sensitivitätsrechnung ein, nicht in dieses Ergebnis.",
+       "value": "Hauptstudie: nur heute gelistete Titel. 3081 delistete Listings ab 2016 gehen in die Sensitivitätsrechnung ein, nicht in dieses Ergebnis.",
        "required": null,
        "reason": "MAIN_STUDY_SURVIVORS_ONLY"
       },
@@ -522,7 +522,7 @@
        "label": "Unabhängigkeit der Fälle",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "1845 Wochen, 142 Quartale, effektiv ≈ 24769 unabhängige Fälle",
+       "value": "1845 Wochen, 142 Quartale, effektiv ≈ 24750 unabhängige Fälle",
        "required": null,
        "reason": null
       },
@@ -549,7 +549,7 @@
        "label": "Vorteil gegenüber der Base Rate im Testzeitraum",
        "category": "QUALITY",
        "state": "FAIL",
-       "value": "Δ -0.0024",
+       "value": "Δ -0.0025",
        "required": null,
        "reason": "EDGE_NOT_CONFIRMED_OUT_OF_SAMPLE"
       }
@@ -569,7 +569,7 @@
        "id": "survivorship",
        "category": "STRUCTURAL",
        "reason": "MAIN_STUDY_SURVIVORS_ONLY",
-       "value": "Hauptstudie: nur heute gelistete Titel. 3082 delistete Listings ab 2016 gehen in die Sensitivitätsrechnung ein, nicht in dieses Ergebnis.",
+       "value": "Hauptstudie: nur heute gelistete Titel. 3081 delistete Listings ab 2016 gehen in die Sensitivitätsrechnung ein, nicht in dieses Ergebnis.",
        "required": null
       },
       {
@@ -597,7 +597,7 @@
        "id": "edgeOutOfSample",
        "category": "QUALITY",
        "reason": "EDGE_NOT_CONFIRMED_OUT_OF_SAMPLE",
-       "value": "Δ -0.0024",
+       "value": "Δ -0.0025",
        "required": null
       }
      ],
@@ -610,16 +610,16 @@
       "uniquePeriods": 1845,
       "independentClusters": 142,
       "clusterUnit": "Quartal",
-      "effectiveN": 24769,
-      "designEffect": 3.6
+      "effectiveN": 24750,
+      "designEffect": 3.61
      },
      "returnType": "TOTAL_RETURN",
      "baseRate": {
       "positiveShare": 0.5678,
-      "base": 0.5702,
-      "delta": -0.0024,
+      "base": 0.5703,
+      "delta": -0.0025,
       "ci": [
-       -0.0082,
+       -0.0083,
        0.0033
       ]
      }
@@ -677,7 +677,7 @@
        "label": "Überlebende-Kontrolle",
        "category": "STRUCTURAL",
        "state": "FAIL",
-       "value": "Hauptstudie: nur heute gelistete Titel. 3082 delistete Listings ab 2016 gehen in die Sensitivitätsrechnung ein, nicht in dieses Ergebnis.",
+       "value": "Hauptstudie: nur heute gelistete Titel. 3081 delistete Listings ab 2016 gehen in die Sensitivitätsrechnung ein, nicht in dieses Ergebnis.",
        "required": null,
        "reason": "MAIN_STUDY_SURVIVORS_ONLY"
       },
@@ -731,7 +731,7 @@
        "label": "Unabhängigkeit der Fälle",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "1844 Wochen, 142 Quartale, effektiv ≈ 26887 unabhängige Fälle",
+       "value": "1844 Wochen, 142 Quartale, effektiv ≈ 26863 unabhängige Fälle",
        "required": null,
        "reason": null
       },
@@ -778,7 +778,7 @@
        "id": "survivorship",
        "category": "STRUCTURAL",
        "reason": "MAIN_STUDY_SURVIVORS_ONLY",
-       "value": "Hauptstudie: nur heute gelistete Titel. 3082 delistete Listings ab 2016 gehen in die Sensitivitätsrechnung ein, nicht in dieses Ergebnis.",
+       "value": "Hauptstudie: nur heute gelistete Titel. 3081 delistete Listings ab 2016 gehen in die Sensitivitätsrechnung ein, nicht in dieses Ergebnis.",
        "required": null
       },
       {
@@ -805,8 +805,8 @@
       "uniquePeriods": 1844,
       "independentClusters": 142,
       "clusterUnit": "Quartal",
-      "effectiveN": 26887,
-      "designEffect": 3.22
+      "effectiveN": 26863,
+      "designEffect": 3.23
      },
      "returnType": "TOTAL_RETURN",
      "baseRate": {
@@ -872,7 +872,7 @@
        "label": "Überlebende-Kontrolle",
        "category": "STRUCTURAL",
        "state": "FAIL",
-       "value": "Hauptstudie: nur heute gelistete Titel. 3082 delistete Listings ab 2016 gehen in die Sensitivitätsrechnung ein, nicht in dieses Ergebnis.",
+       "value": "Hauptstudie: nur heute gelistete Titel. 3081 delistete Listings ab 2016 gehen in die Sensitivitätsrechnung ein, nicht in dieses Ergebnis.",
        "required": null,
        "reason": "MAIN_STUDY_SURVIVORS_ONLY"
       },
@@ -926,7 +926,7 @@
        "label": "Unabhängigkeit der Fälle",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "1843 Wochen, 142 Quartale, effektiv ≈ 25303 unabhängige Fälle",
+       "value": "1843 Wochen, 142 Quartale, effektiv ≈ 25328 unabhängige Fälle",
        "required": null,
        "reason": null
       },
@@ -953,7 +953,7 @@
        "label": "Vorteil gegenüber der Base Rate im Testzeitraum",
        "category": "QUALITY",
        "state": "FAIL",
-       "value": "Δ -0.001",
+       "value": "Δ -0.0011",
        "required": null,
        "reason": "EDGE_NOT_CONFIRMED_OUT_OF_SAMPLE"
       }
@@ -973,7 +973,7 @@
        "id": "survivorship",
        "category": "STRUCTURAL",
        "reason": "MAIN_STUDY_SURVIVORS_ONLY",
-       "value": "Hauptstudie: nur heute gelistete Titel. 3082 delistete Listings ab 2016 gehen in die Sensitivitätsrechnung ein, nicht in dieses Ergebnis.",
+       "value": "Hauptstudie: nur heute gelistete Titel. 3081 delistete Listings ab 2016 gehen in die Sensitivitätsrechnung ein, nicht in dieses Ergebnis.",
        "required": null
       },
       {
@@ -1008,7 +1008,7 @@
        "id": "edgeOutOfSample",
        "category": "QUALITY",
        "reason": "EDGE_NOT_CONFIRMED_OUT_OF_SAMPLE",
-       "value": "Δ -0.001",
+       "value": "Δ -0.0011",
        "required": null
       }
      ],
@@ -1021,17 +1021,17 @@
       "uniquePeriods": 1843,
       "independentClusters": 142,
       "clusterUnit": "Quartal",
-      "effectiveN": 25303,
+      "effectiveN": 25328,
       "designEffect": 3.41
      },
      "returnType": "TOTAL_RETURN",
      "baseRate": {
-      "positiveShare": 0.567,
+      "positiveShare": 0.5669,
       "base": 0.568,
-      "delta": -0.001,
+      "delta": -0.0011,
       "ci": [
-       -0.0067,
-       0.0047
+       -0.0068,
+       0.0046
       ]
      }
     },
@@ -1088,7 +1088,7 @@
        "label": "Überlebende-Kontrolle",
        "category": "STRUCTURAL",
        "state": "FAIL",
-       "value": "Hauptstudie: nur heute gelistete Titel. 3082 delistete Listings ab 2016 gehen in die Sensitivitätsrechnung ein, nicht in dieses Ergebnis.",
+       "value": "Hauptstudie: nur heute gelistete Titel. 3081 delistete Listings ab 2016 gehen in die Sensitivitätsrechnung ein, nicht in dieses Ergebnis.",
        "required": null,
        "reason": "MAIN_STUDY_SURVIVORS_ONLY"
       },
@@ -1142,7 +1142,7 @@
        "label": "Unabhängigkeit der Fälle",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "1839 Wochen, 142 Quartale, effektiv ≈ 11493 unabhängige Fälle",
+       "value": "1839 Wochen, 142 Quartale, effektiv ≈ 11499 unabhängige Fälle",
        "required": null,
        "reason": null
       },
@@ -1189,7 +1189,7 @@
        "id": "survivorship",
        "category": "STRUCTURAL",
        "reason": "MAIN_STUDY_SURVIVORS_ONLY",
-       "value": "Hauptstudie: nur heute gelistete Titel. 3082 delistete Listings ab 2016 gehen in die Sensitivitätsrechnung ein, nicht in dieses Ergebnis.",
+       "value": "Hauptstudie: nur heute gelistete Titel. 3081 delistete Listings ab 2016 gehen in die Sensitivitätsrechnung ein, nicht in dieses Ergebnis.",
        "required": null
       },
       {
@@ -1230,13 +1230,13 @@
       "uniquePeriods": 1839,
       "independentClusters": 142,
       "clusterUnit": "Quartal",
-      "effectiveN": 11493,
-      "designEffect": 4.93
+      "effectiveN": 11499,
+      "designEffect": 4.92
      },
      "returnType": "TOTAL_RETURN",
      "baseRate": {
-      "positiveShare": 0.5817,
-      "base": 0.5678,
+      "positiveShare": 0.5816,
+      "base": 0.5677,
       "delta": 0.0139,
       "ci": [
        0.0054,
@@ -1247,7 +1247,7 @@
    ],
    "source": {
     "asOf": "2026-11-20",
-    "generatedAt": "2026-11-18T05:51:44.469Z",
+    "generatedAt": "2026-11-20T00:56:51.710Z",
     "returnType": "TOTAL_RETURN",
     "studySchemaVersion": "signal-backtest-study-2.0.0",
     "studyEngineVersion": "signal-backtest-2.0.0",
@@ -1333,7 +1333,7 @@
      "label": "Stände unverändert (contentHash)",
      "category": "HARD",
      "state": "PASS",
-     "value": "36 von 36 geprüft",
+     "value": "38 von 38 geprüft",
      "required": null,
      "reason": null
     },
@@ -1351,7 +1351,7 @@
      "label": "veröffentlichte Stichtage",
      "category": "HISTORY",
      "state": "FAIL",
-     "value": 36,
+     "value": 38,
      "required": 120,
      "reason": "SETUP_HISTORY_TOO_SHORT"
     },
@@ -1360,7 +1360,7 @@
      "label": "Spanne der Historie",
      "category": "HISTORY",
      "state": "FAIL",
-     "value": "68 Tage",
+     "value": "70 Tage",
      "required": "180 Tage",
      "reason": "SETUP_HISTORY_SPAN_TOO_SHORT"
     },
@@ -1444,14 +1444,14 @@
      "id": "historyDates",
      "category": "HISTORY",
      "reason": "SETUP_HISTORY_TOO_SHORT",
-     "value": 36,
+     "value": 38,
      "required": 120
     },
     {
      "id": "historySpan",
      "category": "HISTORY",
      "reason": "SETUP_HISTORY_SPAN_TOO_SHORT",
-     "value": "68 Tage",
+     "value": "70 Tage",
      "required": "180 Tage"
     },
     {
@@ -1499,8 +1499,8 @@
    ],
    "eta": {
     "historyDates": {
-     "remaining": 84,
-     "date": "2027-03-15"
+     "remaining": 82,
+     "date": "2027-03-14"
     },
     "firstCompletedM6": "2027-03-26"
    },
@@ -1536,19 +1536,19 @@
     }
    },
    "progress": {
-    "historyDates": 36,
-    "spanDays": 68,
+    "historyDates": 38,
+    "spanDays": 70,
     "transitions": {
-     "SETUP_CONFIRMED": 254,
-     "SETUP_NEW": 3028,
-     "SETUP_WEAKENED": 3583
+     "SETUP_CONFIRMED": 262,
+     "SETUP_NEW": 3132,
+     "SETUP_WEAKENED": 3786
     },
     "completedM6": 0,
-    "contractTradesCompleted": 2383
+    "contractTradesCompleted": 2552
    },
    "replay": {
     "role": "PIT-Nachweis der Engine (rekonstruiert, keine Ergebnisquelle)",
-    "parity": "5481/5481",
+    "parity": "5781/5781",
     "mismatches": 0
    }
   },
@@ -1589,7 +1589,7 @@
      "label": "Monate mit Faktor-Snapshots",
      "category": "HISTORY",
      "state": "FAIL",
-     "value": "3 (36 Stände seit 2026-09-23)",
+     "value": "3 (38 Stände seit 2026-09-23)",
      "required": 24,
      "reason": "FACTOR_HISTORY_TOO_SHORT"
     },
@@ -1643,7 +1643,7 @@
      "id": "factorHistory",
      "category": "HISTORY",
      "reason": "FACTOR_HISTORY_TOO_SHORT",
-     "value": "3 (36 Stände seit 2026-09-23)",
+     "value": "3 (38 Stände seit 2026-09-23)",
      "required": 24
     }
    ],
@@ -1655,7 +1655,7 @@
      "latest": "2026-11-14",
      "maxGapDays": 11,
      "medianGapDays": 7,
-     "staleDays": 4
+     "staleDays": 6
     },
     "NDX": {
      "snapshots": 9,
@@ -1664,7 +1664,7 @@
      "latest": "2026-11-14",
      "maxGapDays": 11,
      "medianGapDays": 7,
-     "staleDays": 4
+     "staleDays": 6
     },
     "DJIA": {
      "snapshots": 9,
@@ -1673,15 +1673,15 @@
      "latest": "2026-11-14",
      "maxGapDays": 11,
      "medianGapDays": 7,
-     "staleDays": 4
+     "staleDays": 6
     }
    },
    "factor": {
     "version": "vu-factor-evidence-2.0.0",
-    "snapshots": 36,
+    "snapshots": 38,
     "months": 3,
     "earliest": "2026-09-23",
-    "latest": "2026-11-17",
+    "latest": "2026-11-19",
     "maxGapDays": 3,
     "medianGapDays": 1,
     "staleDays": 1
@@ -1693,7 +1693,7 @@
     },
     "factor": {
      "remaining": 21,
-     "date": "2028-08-17"
+     "date": "2028-08-19"
     }
    }
   },
@@ -1793,7 +1793,7 @@
    "eta": {
     "factor": {
      "remaining": 21,
-     "date": "2028-08-17"
+     "date": "2028-08-19"
     }
    }
   }
@@ -1820,7 +1820,7 @@
   },
   "DELISTED_IDENTIFIED": 4262,
   "DELISTED_WITH_HISTORY": 3412,
-  "DELISTED_BACKTEST_ELIGIBLE": 3058,
+  "DELISTED_BACKTEST_ELIGIBLE": 3057,
   "tickerReuseAmbiguous": 739,
   "securityMasterClasses": {
    "A": 82,

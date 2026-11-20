@@ -38,12 +38,12 @@ test("Technical lädt genau die Skripte des gemeinsamen Charts", () => {
 });
 
 test("Eine Leiste: Hauptleiste von vu-chart, Chartstandard und Aktienchart sind gleich", () => {
-  assert.deepEqual([...VUChart.RANGES], ["1T", "1W", "1M", "1J", "5J", "Max"]);
+  assert.deepEqual([...VUChart.RANGES], ["1T", "1W", "1M", "6M", "1J", "3J", "5J", "Max"]);
   assert.deepEqual(CS.PRIMARY.map((x) => VUChart.canonRange(x)), [...VUChart.RANGES]);
   const src = read("quant/app/chart.js");
-  assert.match(src, /var PRIMARY_IDS = \["1D", "5D", "1M", "1Y", "5Y", "MAX"\]/, "Hauptleiste im Aktienchart abgewichen");
+  assert.match(src, /var PRIMARY_IDS = \["1D", "5D", "1M", "6M", "1Y", "3Y", "5Y", "MAX"\]/, "Hauptleiste im Aktienchart abgewichen");
   const labels = [...src.matchAll(/\{ id: "(\w+)", label: "(\w+)"/g)].map((m) => m[2]);
-  assert.deepEqual(labels.slice(0, 6).map((x) => VUChart.canonRange(x)), [...VUChart.RANGES]);
+  assert.deepEqual(labels.slice(0, 8).map((x) => VUChart.canonRange(x)), [...VUChart.RANGES]);
 });
 
 test("Eine Währungsvorgabe: Dollar, an einer Stelle", () => {

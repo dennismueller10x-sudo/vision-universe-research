@@ -1,6 +1,6 @@
 {
   "version": "company-master-1.0.0",
-  "generatedAt": "2026-11-18T06:28:42.208Z",
+  "generatedAt": "2026-11-20T05:29:51.041Z",
   "source": {
     "cikMap": "OK",
     "config": "quant/config/sec-universe.json"
@@ -8,15 +8,15 @@
   "note": "Drei Zustaende, nicht zwei. AMBIGUOUS heisst: es gaebe eine Wahl, und sie wird nicht getroffen (§3). Keine geratene CIK.",
   "totals": {
     "CIK_RESOLVED": 6469,
-    "CIK_UNRESOLVED": 1370,
+    "CIK_UNRESOLVED": 1371,
     "CIK_AMBIGUOUS": 0,
-    "instruments": 7839
+    "instruments": 7840
   },
   "unresolvedByEligibility": {
-    "EXCLUDED": 610,
-    "REVIEW": 262,
+    "EXCLUDED": 611,
+    "REVIEW": 263,
     "SEPARATE_CLASS": 386,
-    "ELIGIBLE": 112
+    "ELIGIBLE": 111
   },
   "resolved": [
     {
@@ -16834,6 +16834,15 @@
       "reason": "Kuerzel steht nicht in den SEC-Verzeichnissen."
     },
     {
+      "member": "ref_ANT",
+      "instrumentId": "vu_8d16b236f4fbf7",
+      "symbol": "ANT",
+      "exchange": "NASDAQ",
+      "securityClass": "EQUITY_COMMON",
+      "productEligibility": "ELIGIBLE",
+      "reason": "Kuerzel steht nicht in den SEC-Verzeichnissen."
+    },
+    {
       "member": "ref_ANV",
       "instrumentId": "vu_638d0170cb7246",
       "symbol": "ANV",
@@ -17811,15 +17820,6 @@
       "symbol": "BLACW",
       "exchange": "NASDAQ",
       "securityClass": "WARRANT",
-      "productEligibility": "EXCLUDED",
-      "reason": "Kuerzel steht nicht in den SEC-Verzeichnissen."
-    },
-    {
-      "member": "ref_BLDX",
-      "instrumentId": "vu_0e425efeda1819",
-      "symbol": "BLDX",
-      "exchange": "NYSE",
-      "securityClass": "ETF",
       "productEligibility": "EXCLUDED",
       "reason": "Kuerzel steht nicht in den SEC-Verzeichnissen."
     }

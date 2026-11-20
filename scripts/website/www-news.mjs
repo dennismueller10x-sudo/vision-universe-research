@@ -113,6 +113,13 @@ export function regions(state) {
   const tile = (R, x) => `<a class="ntile" href="${link(x.href)}">${x.img ? `<img src="${R}web/img/news/${x.img}" alt="" loading="lazy">` : "<span class=\"noimg\"></span>"}<span class="k">${esc(x.rubrik)} · ${dmy(x.datum)}</span><b>${esc(x.titel)}</b></a>`;
   const compact = (R) => `<div class="ncompact"><div class="nfix">${hero(R).split('<div class="hlfix">')[1].replace(/<\/div>$/, "")}</div>`
     + `<div class="ntiles">${artikel.slice(0, 8).map((x) => tile(R, x)).join("")}</div></div>`;
+  // News-Seite (Owner 18.11.2026): eine Kachel je Zeile, nach Tagen gruppiert, das Neueste oben.
+  const DAYS = ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"];
+  const MONTHS = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"];
+  const dayName = (iso) => { const d = new Date(iso + "T12:00:00Z"); return `${DAYS[d.getUTCDay()]}, ${d.getUTCDate()}. ${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}`; };
+  const row = (R, x) => `<a class="nrow" href="${link(x.href)}">${x.img ? `<img src="${R}web/img/news/${x.img}" alt="" loading="lazy">` : "<span class=\"noimg\"></span>"}<span class="nr-t"><small>${esc(x.rubrik)}</small><b>${esc(x.titel)}</b><span class="nr-p">${esc(x.teaser)}</span></span></a>`;
+  const byDay = (R) => { const days = []; for (const x of artikel) { const last = days[days.length - 1]; if (last && last.d === x.datum) last.a.push(x); else days.push({ d: x.datum, a: [x] }); }
+    return days.map((g) => `<div class="nday"><h2>${dayName(g.d)}</h2><div class="nrows">${g.a.map((x) => row(R, x)).join("")}</div></div>`).join(""); };
   const grid = (R, n, ids) => `<div class="newsgrid">${lead(R, a0)}${heftCard(R, heft, ids ? "magazin" : "")}${reportCard(R, report, ids ? "report" : "")}<div class="n3">${artikel.slice(1, 1 + n).map((x) => box(R, x)).join("")}</div></div>`;
   return {
     "index.html": { hero: hero("./"), start: stand(a0) + compact("./") },
@@ -127,7 +134,8 @@ export function regions(state) {
       what: ["Die Firma und ihr Geschäft", "Umsatz, Gewinn und Bewertung über viele Jahre", "Chart und was die großen Anleger tun", "Was für die Aktie spricht und was dagegen"],
       titel: report.titel, unterzeile: report.unterzeile, cover: report.cover, coverAlt: "den ganzen Report", pages: report.preview, inhalt: report.alles }) } } : {}),
     // News-Seite (Owner 17.11.2026): nur Artikel; Magazin und Aktienreports haben eigene Seiten im Menü.
-    "news/index.html": { page: `<section class="full nfirst">${stand(a0)}<div class="newsgrid nonly">${lead("../", a0)}</div></section><section class="full"><h2>Alle Artikel</h2><div class="alist">${artikel.slice(1).map((x) => box("../", x, true)).join("")}</div></section>` }
+    // Großer gestalteter Kopf steht fest in news/index.html (kein Tagesbild oben); hier nur die Artikel als kleine Kacheln.
+    "news/index.html": { page: `<section class="full nfirst">${stand(a0)}${byDay("../")}</section>` }
   };
 }
 

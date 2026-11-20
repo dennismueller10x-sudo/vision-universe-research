@@ -69,3 +69,72 @@ test("TS-6 · identity.js bleibt ohne Tickerwechsel-Regel (Supertrader pinnt ihr
   const src = readFileSync(join(ROOT, "core", "identity.js"), "utf8");
   assert.ok(!/succession|Nachfolge/i.test(src));
 });
+
+test("TS-7 · Faktoren, Discover-Reihe und Wochenreihe verbinden die Nachfolge (19.11.2026: TXCP fehlte in Faktoren und Suche)", () => {
+  const ROOT = new URL("../../", import.meta.url);
+  for (const f of ["scripts/market/build-market-factors.mjs", "scripts/market/publish-discover-series.mjs", "scripts/market/publish-long-series.mjs"]) {
+    const src = readFileSync(new URL(f, ROOT), "utf8");
+    assert.match(src, /withPredecessor\(/, f + " liest die Arbeitsablage ohne Tickernachfolge");
+  }
+});
+
+/* TS-8 (Steuerung 19.11.2026): kein Leser von Kursreihen rutscht durch. Jede Datei, die Bars je Titel aus der Arbeitsablage
+   (readBars), der R2-Historie (getSeries) oder der runner-privaten Tageshistorie (tiingo/daily) liest, verbindet die
+   Tickernachfolge ueber scripts/market/lib/ticker-succession-bars.mjs - oder steht hier mit Grund. Ein neuer Leser ohne
+   beides macht den Test rot. */
+const OHNE_NACHFOLGE = {
+  "quant/engines/history-store.js": "Ablage selbst: liest und schreibt je gespeichertem Schluessel",
+  "quant/engines/market-store.js": "Ablage selbst: liest und schreibt je gespeicherter ID",
+  "scripts/market/ingest-tiingo.mjs": "Schreiber: fuehrt die eigene Reihe je ID fort",
+  "scripts/market/ingest-intraday.mjs": "Schreiber: Intraday je ID",
+  "scripts/market/sync-history-store.mjs": "Ablage-Abgleich je Schluessel",
+  "scripts/market/repair-total-return-history.mjs": "Reparatur der gespeicherten Reihe je ID",
+  "scripts/market/refresh-benchmark-history.mjs": "nur die Vergleichsreihe SPY",
+  "scripts/market/guard-listing-continuity.mjs": "Pruefung der gespeicherten Reihe je Listing",
+  "scripts/market/run-scale-gate.mjs": "Ablagedeckung je gespeicherter ID",
+  "scripts/vu2/verify-history-handoff.mjs": "Uebergabepruefung der Ablage je ID",
+  "scripts/core/equity-quality.mjs": "Datenqualitaet der gespeicherten Reihe je ID",
+  "scripts/diagnose/adjustment-steps.mjs": "Diagnose einer gespeicherten Reihe",
+  "scripts/diagnose/coverage-delta.mjs": "Ablagedeckung gegen den Bezugstag je ID",
+  "scripts/technical/build-technical-intelligence.mjs": "nur Indexmitglieder (kein Nachfolger im Register)",
+  "scripts/quant/lib/daily-prices.mjs": "Forschung/Backtest je securityId; Vorgaengerreihe offen (Teil B, Register der Forschungsreihen)",
+  "scripts/quant/build-signal-backtest.mjs": "Forschung, liest ueber daily-prices",
+  "scripts/quant/build-setup-backtest.mjs": "Forschung, liest ueber daily-prices",
+  "scripts/quant/build-pattern-research.mjs": "Forschung, liest ueber daily-prices",
+  "scripts/quant/replay-setup-history.mjs": "Forschung: kausales Replay je securityId",
+  "scripts/quant/build-emerging-leaders-study.mjs": "Forschung: Studie je Ticker in der R2-Historie",
+  "scripts/quant/build-survivorship-control.mjs": "Forschung: Survivorship-Inventar je gespeicherter Reihe"
+};
+const LESER = /readBars\(|getSeries\(|"tiingo", "daily"/;
+
+test("TS-8 · jeder Leser von Kursreihen verbindet die Nachfolge oder ist mit Grund ausgenommen", () => {
+  const { readdirSync, statSync } = require("node:fs");
+  const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+  const dateien = [];
+  const walk = (rel) => {
+    for (const e of readdirSync(join(ROOT, rel))) {
+      const r = rel + "/" + e;
+      if (statSync(join(ROOT, r)).isDirectory()) { if (!["tests", "node_modules", "supertrader"].includes(e)) walk(r); }
+      else if (/\.(mjs|cjs|js)$/.test(e)) dateien.push(r);
+    }
+  };
+  walk("scripts"); walk("quant/engines");
+  const leser = dateien.filter((f) => LESER.test(readFileSync(join(ROOT, f), "utf8")));
+  const offen = leser.filter((f) => !/withPredecessor\(/.test(readFileSync(join(ROOT, f), "utf8")) && !OHNE_NACHFOLGE[f]);
+  assert.deepEqual(offen, [], "Leser ohne Tickernachfolge: withPredecessor verwenden oder mit Grund in OHNE_NACHFOLGE eintragen");
+  for (const f of Object.keys(OHNE_NACHFOLGE)) assert.ok(leser.includes(f), f + " liest keine Kursreihen mehr: Eintrag entfernen");
+  for (const f of ["scripts/market/build-market-factors.mjs", "scripts/technical/run-technical-scale.mjs",
+                   "scripts/technical/materialize-product-intelligence.mjs"]) assert.ok(leser.includes(f) && !OHNE_NACHFOLGE[f], f);
+});
+
+test("TS-9 · relabel: Vorgaenger-Bars tragen die ID des Nachfolgers, die Nutzlast nennt den Nachfolger", () => {
+  const succ = { TS, map: TS.tickerSuccessions(REG) };
+  const p = { ticker: "TXCP", securityId: "ref_TXCP", bars: [{ date: "2026-11-11", securityId: "ref_TXCP", close: 99 }] };
+  const r = withPredecessor(p, { securityId: "ref_TXCP", ticker: "TXCP" }, succ,
+    () => ({ ticker: "TCBI", securityId: "ref_TCBI", bars: [{ date: "2026-11-06", securityId: "ref_TCBI", close: 101 }] }), { relabel: true });
+  assert.deepEqual(r.payload.bars.map((b) => b.securityId), ["ref_TXCP", "ref_TXCP"]);
+  assert.equal(r.payload.ticker, "TXCP"); assert.equal(r.payload.securityId, "ref_TXCP");
+  const ohne = withPredecessor(p, { securityId: "ref_TXCP", ticker: "TXCP" }, succ,
+    () => ({ bars: [{ date: "2026-11-06", securityId: "ref_TCBI", close: 101 }] }));
+  assert.equal(ohne.payload.bars[0].securityId, "ref_TCBI", "ohne relabel bleibt die Bar unveraendert");
+});

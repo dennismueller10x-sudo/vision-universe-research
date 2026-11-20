@@ -43,5 +43,7 @@ export function productRules({ root = REPO_ROOT, now = new Date() } = {}) {
   } else rules.push(PQ.requiredSearchTitles(null));
   rules.push(PQ.totalReturnMeasurement(maybe('quant/data/providers/total-return-verification.json')));
   rules.push(PQ.factorCoverage(maybe('quant/data/market/factors/factors-FULL_UNIVERSE.json')));
+  rules.push(PQ.serviceCoverage(maybe('quant/data/universe/market-capability.json'), maybe('quant/data/product/technical-signals-v1/summary.json'),
+    maybeGz('quant/data/product/technical-signals-v1/signals-20.json.gz')));
   return rules;
 }

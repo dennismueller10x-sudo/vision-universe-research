@@ -1337,8 +1337,50 @@ div.tc-signal{grid-template-columns:44px minmax(0,1fr) auto}
 .tk-ak .tk-story-v .tk-story-n--bars{font-size:30px}
 /* EMA-Bänder (ema-cluster.js): schnelles Bündel 3–15, langsames 30–60 Tage */
 .tc-layers .tc-ema{stroke:none}
-.tc-layers .tc-ema--fast{fill:#000;opacity:.32}
-.tc-layers .tc-ema--slow{fill:var(--vu-mute,#6e6e6e);opacity:.2}
-:root[data-theme=dark] .tc-layers .tc-ema--fast{fill:var(--vu-lime,#c8f531);opacity:.5}
-:root[data-theme=dark] .tc-layers .tc-ema--slow{fill:#9b9b9b;opacity:.28}
+/* Faecher deutlich (Owner 18.11.2026): schnelles Buendel neongruen mit dunkelgruenen Linien, langsames grau mit schwarzen Linien. */
+.tc-layers .tc-ema--fast{fill:var(--vu-lime,#c8f531);opacity:.55}
+.tc-layers .tc-ema--slow{fill:#6e6e6e;opacity:.18}
+.tc-layers .tc-ema-line{stroke-width:.9;vector-effect:non-scaling-stroke}
+.tc-layers .tc-ema-line--fast{stroke:#4f6b00;opacity:.85}
+.tc-layers .tc-ema-line--slow{stroke:#000;opacity:.45}
+.tc-layers .tc-ema-edge{stroke-width:1.6}
+.tc-layers .tc-ema-edge--fast{stroke:#4f6b00}
+.tc-layers .tc-ema-edge--slow{stroke:#000;opacity:.7}
+:root[data-theme=dark] .tc-layers .tc-ema--fast{opacity:.35}
+:root[data-theme=dark] .tc-layers .tc-ema--slow{fill:#9b9b9b;opacity:.22}
+:root[data-theme=dark] .tc-layers .tc-ema-line--fast,:root[data-theme=dark] .tc-layers .tc-ema-edge--fast{stroke:var(--vu-lime,#c8f531)}
+:root[data-theme=dark] .tc-layers .tc-ema-line--slow,:root[data-theme=dark] .tc-layers .tc-ema-edge--slow{stroke:#bdbdbd}
+/* Fingerzoom (quant/app/chart.js, Option zoom, nur Technical) */
+.qc-zoom{display:flex;align-items:center;gap:6px;margin:6px 0 2px}
+.qc-zoom[hidden],.qc-zoom-btn[hidden]{display:none}
+.qc-zoom-btn{min-width:44px;height:36px;padding:0 12px;border:0;border-radius:999px;background:var(--vu-card,#f4f4f4);color:var(--vu-ink,#000);font:800 17px/1 var(--vu-font,Inter,sans-serif);cursor:pointer}
+.qc-zoom-reset{font-size:13px;background:var(--vu-ink,#000);color:var(--vu-inv,#fff)}
+.qc-zoom-hint{margin-left:auto;font-size:12px;color:var(--vu-mute,#6e6e6e)}
+.qc-chart.is-zoomed .qc-zoom-hint{display:none}
 svg .tc-layers{pointer-events:none}
+/* Linien und Katalog-Indikatoren auf der Chart-Seite (Owner 18.11.2026) */
+.tc-layers .tc-line{stroke-width:1.7;fill:none}
+:root[data-theme=dark] .tc-layers .tc-line[stroke="#000"]{stroke:#fff}
+.tc-layers .tc-ind-line{fill:none}
+.tc-panes:empty{display:none}
+.tc-panes{display:grid;gap:6px;margin-top:6px}
+.tc-pane-box{background:var(--vu-card,#f4f4f4);border-radius:14px;padding:6px 8px 4px}
+.tc-pane-h{display:flex;align-items:center;gap:8px;font-size:12.5px}
+.tc-pane-h b{font-weight:800}
+.tc-pane-h .num{color:var(--vu-mute,#6e6e6e);font-weight:700}
+.tc-pane-x{margin-left:auto;width:28px;height:28px;border:0;border-radius:50%;background:var(--vu-hair,#e9e9e9);color:var(--vu-ink,#000);font-size:15px;cursor:pointer}
+.tc-pane-svg{display:block;width:100%;height:86px}
+.tc-pane-zero{stroke:var(--vu-hair,#e9e9e9);stroke-dasharray:3 3}
+.tc-active:empty{display:none}
+.tc-active{margin-top:6px}
+.tc-ind-search{width:100%;min-height:44px;border:0;border-radius:999px;background:var(--vu-card,#f4f4f4);color:var(--vu-ink,#000);padding:0 16px;font:600 15px/1 var(--vu-font,Inter,sans-serif);margin:8px 0 4px}
+.tc-ind-fam{margin-top:12px}
+.tc-ind-box{background:var(--vu-card,#f4f4f4);border-radius:18px;padding:2px 12px;margin-top:6px}
+.tc-ind-row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;width:100%;padding:10px 0;border:0;border-top:1px solid var(--vu-hair,#e9e9e9);background:none;color:inherit;font:inherit;text-align:left;cursor:pointer;min-height:48px}
+.tc-ind-row:first-child{border-top:0}
+.tc-ind-t b{display:block;font-size:14px;font-weight:800;line-height:1.25}
+.tc-ind-t small{display:block;font-size:12px;color:var(--vu-mute,#6e6e6e);line-height:1.35;margin-top:2px}
+.tc-ind-sw{width:46px;height:28px;border-radius:999px;background:var(--vu-hair,#e9e9e9);position:relative;flex:none}
+.tc-ind-sw:before{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:var(--vu-mute,#6e6e6e);transition:left .15s}
+.tc-ind-sw.is-on{background:var(--vu-lime,#c8f531)}
+.tc-ind-sw.is-on:before{left:21px;background:#000}

@@ -8,6 +8,7 @@ import { readFileSync, existsSync, mkdirSync, writeFileSync, rmSync, mkdtempSync
 import { join, dirname } from "node:path";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
+import { followState } from "../../scripts/quant/lib/follow-artifact.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const CN = await import("../../scripts/market/build-company-names.mjs");
@@ -192,12 +193,16 @@ test("CN5 · Anbieter-Stammdaten: nur bei gleichem Symbol; kein Name -> kein Nam
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
-test("CN6 · Das ausgelieferte Artefakt: Produktuniversum, kein Ticker als Name, gleiche securityId = gleicher Name", { skip: !vorhanden }, () => {
+test("CN6 · Das ausgelieferte Artefakt: Produktuniversum, kein Ticker als Name, gleiche securityId = gleicher Name", { skip: !vorhanden }, (t) => {
   const layer = readJSON(LAYER);
   const u = resolveProductUniverse(root);
   assert.equal(layer.version, CN.VERSION);
   assert.deepEqual(layer.sourcePriority, CN.SOURCE_PRIORITY);
-  assert.equal(layer.master.sha256, u.sha256, "Namensschicht gehoert zu diesem Master");
+  /* Folgeartefakt oder Halbstand (scripts/quant/lib/follow-artifact.mjs, 18.11.2026): Ein Eignungslauf aendert den Master vor der
+     Namensschicht, die erst die Umfangsfolge neu baut. Bis 6 h danach wartet der Abgleich sichtbar, laenger ist ein Fehler. */
+  const folge = followState({ artifactSha: layer.master.sha256, currentSha: u.sha256, changedAt: u.generatedAt });
+  if (folge.state === "WAITING") { t.skip(folge.reason); return; }
+  assert.equal(layer.master.sha256, u.sha256, "Namensschicht gehoert zu diesem Master (" + folge.reason + ")");
   const ids = new Set(u.securities.map((s) => s.securityId));
   assert.equal(layer.rows.filter((r) => r.inProductUniverse).length, ids.size);
   assert.equal(layer.rows.length, u.counts.universeMembers, "eine Zeile je Master-Entscheidung");

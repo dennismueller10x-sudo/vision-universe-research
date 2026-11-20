@@ -19,9 +19,9 @@ function layer(pref) {
   return { L, ecb: new Map(ecb.points) };
 }
 
-test("Reihenfolge: Hauptleiste 1T 1W 1M 1J 5J MAX, vorhandene weitere dahinter", () => {
+test("Reihenfolge: Hauptleiste 1T 1W 1M 6M 1J 3J 5J MAX, vorhandene weitere dahinter", () => {
   const quant = ["1D", "5D", "1M", "3M", "6M", "YTD", "1Y", "3Y", "5Y", "10Y", "MAX"];
-  assert.deepEqual(CS.order(quant), ["1D", "5D", "1M", "1Y", "5Y", "MAX", "3M", "6M", "YTD", "3Y", "10Y"]);
+  assert.deepEqual(CS.order(quant), ["1D", "5D", "1M", "6M", "1Y", "3Y", "5Y", "MAX", "3M", "YTD", "10Y"]);
   assert.equal(CS.canonical("5D"), "1W");
   assert.equal(CS.canonical("Max"), "MAX");
 });

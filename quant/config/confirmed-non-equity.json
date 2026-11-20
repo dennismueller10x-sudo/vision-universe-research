@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "confirmed-non-equity-1.0.0",
+  "consumer": "scripts/market/apply-exchange-directory.mjs (Eignungskette, security-master-eligibility.yml)",
+  "effect": "Ein einmal belegtes Nicht-Aktien-Papier bleibt EXCLUDED mit seiner Gattung, auch wenn das Boersenverzeichnis seine Zeile nicht mehr fuehrt (beendete Notierung). Ohne Eintrag stuft der Stamm einen Titel ohne Verzeichniszeile und ohne Namen als EQUITY_COMMON ein, und er rutscht zurueck ins Produkt.",
+  "rule": "Nur mit Beleg (Verzeichniszeile mit ETF = Y oder belegter Wertpapierbezeichnung) und Freigabe. Gilt nur, solange das Verzeichnis keine Zeile fuehrt; eine heutige Zeile entscheidet wie bisher. Nie allein ueber den Ticker: Schluessel ist die securityId.",
+  "decidedBy": "Steuerung 19.11.2026: MEMY ist ein ETF; ETFs sind seit dem 06.11. aus dem Produkt. Zurueck auf EXCLUDED:ETF ueber den normalen Eignungsweg mit einer Freigabe fuer genau diesen Titel.",
+  "records": [
+    {
+      "securityId": "ref_MEMY",
+      "ticker": "MEMY",
+      "instrumentType": "ETF",
+      "evidence": "Boersenverzeichnis (NASDAQ_TRADER_SYMBOL_DIRECTORY, ETF = Y), angewendet in eligibility-cleanup-2026-11-06 (CONFIRMED_NON_EQUITY:ETF, einer der 269 ETFs). Anbieterzeile tiingo:BATS:MEMY:2026-01-20 endet am 2026-11-17; danach fehlte die Verzeichniszeile und der Stamm fuehrte MEMY ohne Namen als EQUITY_COMMON.",
+      "approval": "docs/data/security-master/eligibility-exclusion-2026-11-19-memy.json"
+    }
+  ]
+}

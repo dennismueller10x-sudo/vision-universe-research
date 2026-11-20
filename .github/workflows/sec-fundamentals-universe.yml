@@ -140,9 +140,13 @@ jobs:
           if a["status"] != "CANONICAL_PER_INSTRUMENT":
               sys.exit(f"Gerechnet wurde aus {a['status']} - das ist eine Stichprobe "
                        "und keine Deckung.")
+          h = a.get("explainedDelta") or {}
           if not a["reconciled"]:
-              sys.exit(f"Abweichung vom abgenommenen Stand: {a['delta']}. "
+              grund = f" Keine automatische Annahme: {h['reason']}." if h.get("class") == "NOT_AUTO_ACCEPTED" else ""
+              sys.exit(f"Abweichung vom abgenommenen Stand: {a['delta']}.{grund} "
                        f"{a['explanation']}")
+          if h.get("class") == "APPROVED_UNIVERSE_ADDITION":
+              print(f"HINWEIS APPROVED_UNIVERSE_ADDITION: {h['text']}")
           print(f"Abgestimmt gegen Lauf {a['sourceRunId']}: "
                 f"{a['computed']['HISTORICAL_CHART_AVAILABLE']} Kurshistorien, "
                 f"{a['computed']['TECHNICAL_HISTORY_ELIGIBLE']} technisch geeignet.")

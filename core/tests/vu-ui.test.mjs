@@ -42,7 +42,7 @@ test("UI4 C04/C05: ohne Kurs kein Kursblock, Perspektiven-Adressen nach N5", () 
 });
 
 test("UI5 C06: eine Zeitleiste, Kleinformat ohne erfundene Punkte", () => {
-  assert.deepEqual([...C.RANGES], ["1T", "1W", "1M", "1J", "5J", "Max"]);
+  assert.deepEqual([...C.RANGES], ["1T", "1W", "1M", "6M", "1J", "3J", "5J", "Max"]);
   assert.equal(C.sparkline([1]), "");
   assert.equal(C.sparkline([1, NaN]), "");
   const s = C.sparkline([1, 2, 3]);

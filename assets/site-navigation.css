@@ -202,7 +202,7 @@ html.vu-menu-open,html.vu-menu-open body{overflow:hidden}
 .vu-chart-empty{display:grid;place-items:center;min-height:180px;font-size:13px;color:var(--vu-muted)}
 .vu-ranges{display:flex;gap:2px;margin:10px 0 0;padding:4px;border-radius:999px;background:var(--vu-surface);overflow-x:auto;scrollbar-width:none}
 .vu-ranges::-webkit-scrollbar{display:none}
-.vu-ranges button,.vu-chart .vu-ranges button{flex:1 0 auto;min-width:44px;min-height:36px;padding:0 10px;border:0;border-radius:999px;background:transparent;color:var(--vu-text-secondary);font:750 13px/1 Inter,-apple-system,sans-serif;cursor:pointer}
+.vu-ranges button,.vu-chart .vu-ranges button{flex:1 0 auto;min-width:36px;min-height:36px;padding:0 6px;border:0;border-radius:999px;background:transparent;color:var(--vu-text-secondary);font:750 13px/1 Inter,-apple-system,sans-serif;cursor:pointer}
 .vu-ranges button[aria-pressed=true],.vu-chart .vu-ranges button[aria-pressed=true]{background:var(--vu-text);color:var(--vu-bg)}
 .vu-ranges button:disabled,.vu-chart .vu-ranges button:disabled{opacity:.38;cursor:default}
 @media(max-width:760px){.vu-chart--bleed{margin-inline:calc(-1 * var(--vu-gutter) + 4px)}}
@@ -257,6 +257,8 @@ html.vu-menu-open,html.vu-menu-open body{overflow:hidden}
 html{touch-action:manipulation}
 /* Shared product controls, including Quant's qx-main which has no vu-ui root. */
 html body :is(.vu-ui,.qx-main,#fu-main,#tc-main,#st-main,#v2-main) :is(button,select,input:not([type=checkbox]):not([type=radio]),summary,a[role=button]){min-width:44px;min-height:44px;touch-action:manipulation}
+/* Owner 18.11.2026: acht Zeiträume (1T … Max) passen auf ein Telefon; die Knöpfe bleiben 44 px hoch, dürfen aber schmaler sein. */
+html body :is(.vu-ui,.qx-main,#fu-main,#tc-main,#st-main,#v2-main) :is(.dx-tf,.vu-ranges,.qc-ranges) button:not([data-vu-wide]):not([data-vu-touch]){min-width:0}
 
 html body .qx-main .q-alert-list label{min-height:44px;box-sizing:border-box}
 

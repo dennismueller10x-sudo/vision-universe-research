@@ -48,7 +48,9 @@
     INSUFFICIENT_HISTORY: "INSUFFICIENT_HISTORY",
     /* Gewinne und Dividenden in einer anderen Waehrung als der US-Kurs:
        ein Verhaeltnis daraus waere eine Zahl ohne Bedeutung. */
-    NON_USD_REPORTING: "NON_USD_REPORTING"
+    NON_USD_REPORTING: "NON_USD_REPORTING",
+    /* Neu an der Boerse: nur Quartale, kein Geschaeftsjahr, keine zwoelf Monate */
+    QUARTER_ONLY: "QUARTER_ONLY"
   };
 
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
@@ -197,15 +199,60 @@
     return [u.eps_diluted, u.net_income, u.revenue].every(function (e) { var w = waehrungVon(e); return w === null || w === "USD"; });
   }
 
+  /* Nur Quartale: jüngstes Quartal mit Umsatz und Ergebnis, dazu das gleiche Quartal des Vorjahres, wenn es vorliegt. */
+  function ausQuartal(q, ttm) {
+    if (ttm && ttm.revenue && ttm.net_income) return null; /* Zwölfmonatswerte gehen vor, siehe unten */
+    var r = (q.revenue || []).slice(), n = (q.net_income || []).slice();
+    if (!r.length || !n.length) return null;
+    var lr = r[r.length - 1], ln = null;
+    for (var i = 0; i < n.length; i++) if (n[i].end === lr.end) ln = n[i];
+    if (!ln || !isNum(lr.v) || !isNum(ln.v)) return null;
+    function vorjahr(reihe) {
+      for (var j = 0; j < reihe.length; j++) if (reihe[j].fp === lr.fp && reihe[j].fy === lr.fy - 1) return reihe[j];
+      return null;
+    }
+    var rv = vorjahr(r), nv = vorjahr(n);
+    return {
+      engineVersion: ENGINE_VERSION,
+      quelle: "SEC_CONSUMER",
+      status: STATUS.QUARTER_ONLY,
+      basis: "Q",
+      quartal: { fy: lr.fy, fp: lr.fp, end: lr.end },
+      zeitraum: { von: null, bis: lr.end, durch: null },
+      umsatzTTM: null,
+      gewinnTTM: null,
+      umsatzQuartal: round(lr.v / 1e6, 2),
+      gewinnQuartal: round(ln.v / 1e6, 2),
+      einheit: "usd_m",
+      umsatzWachstum: null,
+      gewinnWachstum: null,
+      umsatzWachstumQuartal: rv ? round(wachstum(lr.v, rv.v), 4) : null,
+      gewinnWachstumQuartal: nv ? round(wachstum(ln.v, nv.v), 4) : null,
+      marge: null,
+      gewinnJeAktie: null,
+      kgv: null,
+      kgvStatus: STATUS.SOURCE_MISSING,
+      dividendenRendite: null,
+      dividendenRenditeStatus: STATUS.SOURCE_MISSING,
+      asOf: null,
+      message: "Neu an der Börse: Es liegen nur Quartalszahlen vor, noch kein Geschäftsjahr und keine zwölf Monate. Vision Universe zeigt das jüngste Quartal als Quartal."
+    };
+  }
+
   function ausConsumerBundle(model, opt) {
     opt = opt || {};
-    if (!model || !model.years || !model.years.length) {
+    if (!model) {
       return leer(STATUS.SOURCE_MISSING, "Für diesen Titel liegen keine Geschäftszahlen vor.");
     }
     var M = 1e6;
     var ttm = model.ttm || {};
     var q = model.quarterly || {};
     var a = model.annual || {};
+    if (!model.years || !model.years.length) {
+      /* Neu an der Boerse: weder ein Geschaeftsjahr noch zwoelf Monate. Das jüngste Quartal wird als Quartal gezeigt,
+         nie als Zwölfmonatswert (Steuerung 18.11.2026, SpaceX). */
+      return ausQuartal(q, ttm) || leer(STATUS.SOURCE_MISSING, "Für diesen Titel liegen keine Geschäftszahlen vor.");
+    }
     function jahr(metrik, fy) {
       var reihe = a[metrik] || [];
       for (var i = 0; i < reihe.length; i++) if (reihe[i].fy === fy) return reihe[i];

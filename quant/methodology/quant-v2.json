@@ -1,6 +1,6 @@
 {
- "methodologyVersion": "quant-v2.4.0",
- "modelProfileId": "quant-v2.4.0-full-7f",
+ "methodologyVersion": "quant-v2.4.1",
+ "modelProfileId": "quant-v2.4.1-full-7f",
  "modelVersion": "2.0.0",
  "label": "VU Quant Score 2.0 · Full 7F",
  "status": "SPECIFIED_NOT_ACTIVE",
@@ -70,7 +70,7 @@
      "id": "operatingMarginDrawdown",
      "weight": 0.2,
      "input": "max(peak-to-trough decline of annualOperatingMargin, -min(0, median annualOperatingMargin)), margins capped to [-1, 1]; rising margins count 0",
-     "window": "last 5 fiscal years; minimum 4",
+     "window": "last 3 fiscal years; minimum 3",
      "direction": "lower"
     }
    ],
@@ -780,6 +780,23 @@
   "broad component coverage and cross-sectional validation"
  ],
  "versionHistory": [
+  {
+   "version": "quant-v2.4.1",
+   "date": "2026-11-18",
+   "change": "Quality: operatingMarginDrawdown counts only the last three fiscal years (minimum three) instead of up to five (minimum four). Rule, capping and the loss-making rule are unchanged.",
+   "why": "Owner question after quant-v2.4.0 (NVDA): a margin drawdown four or five years back (NVDA fiscal 2023, AMZN 2022) still weighed on today's Quality. Backtest on rebuilt PIT documents (research.yml quality-marge-pit, set iv, run 44282658125; 185 monthly rank dates 2010-2025, median 1,665 titles, price return without costs; research, not certified): IC 12 months without margin -0.004, five-year window 0.024, three-year window 0.032; 3 months 0.000 / 0.019 / 0.024. Paired difference three-year minus five-year: 12 months +0.009 (Newey-West t 2.04, Holm 0.29), 3 months +0.005 (t 2.16, Holm 0.25), so not worse; both windows beat no margin component (Holm <= 0.012). Q5-Q1 separates in no variant. Rule set by Steuerung before the run: switch unless the three-year window is significantly worse in IC.",
+   "measuredImpact": {
+    "universe": 4100,
+    "factor": "quality",
+    "spearmanRankCorrelation": 0.9673,
+    "medianAbsoluteChange": 1.0,
+    "p90AbsoluteChange": 4.78,
+    "titlesMoving5Points": 388,
+    "titlesMoving10Points": 96,
+    "examples": {"NVDA": [48.1, 53.39], "AMZN": [51.39, 55.53], "INTC": [43.82, 46.34], "AAPL": [58.94, 58.63], "KO": [54.75, 54.85]},
+    "basis": "build-factor-evidence.mjs before/after on the same inputs, 2026-11-18"
+   }
+  },
   {
    "version": "quant-v2.4.0",
    "date": "2026-11-16",
