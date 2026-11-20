@@ -67,6 +67,8 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           INPUT_FINANCIAL: ${{ inputs.financial }}
           VU_EVENT: ${{ inputs.zeitplan && 'schedule' || github.event_name }}
+          # Ein Takt (4 h), serielle Concurrency-Gruppe: 1 h genuegt gegen Doppellast. Bei 2,5 h ueberspringt ein Lauf von mehr als 90 min den naechsten Takt (20.11.: 04:17-Lauf 80 min, 08:17 uebersprungen).
+          CI_GATE_GUARD_HOURS: '1'
         run: node scripts/company_intelligence/scheduler-gate.mjs
   refresh:
     needs: gate
