@@ -1388,6 +1388,8 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
     }
     var mobil = global.innerWidth < 860;
     var snapNativ = vortagAusReihe(mitLaufendemKurs(p), state.dailyPoints);
+    var eintag = eintagSicht(p, snapNativ);
+    if (eintag && eintag.available) snapNativ = eintag.snap;
     /* EINMAL UMRECHNEN, DANN NUR NOCH DAMIT RECHNEN.
 
        Kopf, Achse und Tooltip muessen dieselbe Waehrung benutzen. Die
@@ -1428,13 +1430,14 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
       : p.label;
     var quellenText = quelle && quelle.sourceText ? quelle.sourceText : "5-Minuten-Kurse";
     if (snap.fromStream) quellenText = "Live-Kurse im Minutentakt (Kursreferenz aus einem Teilmarkt)";
-    var eingefroren = !!(quelle && quelle.isFrozen);
+    var eingefroren = !!(quelle && quelle.isFrozen) || !!(eintag && eintag.mode === "last");
+    var letzteSitzung = eintag && eintag.mode === "last" ? eintag.label : null;
 
     var kopf = dollarKopf ? el("div", { class: "dx-chart-hero dx-chart-hero--c04", "data-range": "1D" }, [
       el("div", { class: "dx-chart-hero-preis" }, [
         el("b", { class: "num", text: isNum(letzterKurs) ? alsAngezeigt(letzterKurs, waehrung) : "" }),
         el("span", { class: "num " + C().toneClass(tagesDelta), title: isNum(snap.previousClose) ? "seit Vortagesschluss" : "seit dem ersten Kurs des Tages", text: isNum(tagesDelta) ? prozentGross(tagesDelta) : "" }),
-        el("span", { class: "dx-chart-hero-wort" })
+        el("span", { class: "dx-chart-hero-wort", text: letzteSitzung || "" })
       ]),
       el("div", { class: "dx-chart-hero-meta" }, [
         C().liveLabel(etikett, snap),
@@ -1445,7 +1448,7 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
       el("div", { class: "dx-chart-hero-preis" }, [
         el("b", { class: "num", text: isNum(letzterKurs) ? alsAngezeigt(letzterKurs, waehrung) : "" }),
         el("span", { class: "num " + C().toneClass(tagesDelta), text: isNum(tagesDelta) ? prozentGross(tagesDelta) : "" }),
-        el("span", { class: "dx-chart-hero-wort", text: eingefroren ? "am " + C().dateShort(snap.sessionDate) : "heute" })
+        el("span", { class: "dx-chart-hero-wort", text: letzteSitzung || (eingefroren ? "am " + C().dateShort(snap.sessionDate) : "heute") })
       ]),
       el("div", { class: "dx-chart-hero-meta" }, [
         el("span", { class: "dx-chart-hero-span", text: (isNum(snap.previousClose) ? "seit Vortagesschluss " + alsAngezeigt(snap.previousClose, waehrung) : "seit dem ersten Kurs des Tages") + " · " + quellenText }),
@@ -1624,9 +1627,18 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
     svgNode.addEventListener("touchend", ende, { passive: true });
   }
 
+  /* Die 1T-Regel steht in core/chart-standard.js#intradayView (eine Funktion fuer Discover, Quant und Technical). */
+  function eintagSicht(p, snap) {
+    var CS = CStd();
+    if (!CS || !CS.intradayView || !snap) return null;
+    var res = (p && p.resolution) || (D.LiveHub && D.LiveHub.resolution ? D.LiveHub.resolution() : null);
+    return CS.intradayView(snap, { today: res && ((res.displaySession && res.displaySession.sessionDate) || res.localDate) || null, prev: p && p.snapshotVorStrom || null });
+  }
+
   function intradayAlsZeilen(p) {
     if (!p || !p.snapshot || !Array.isArray(p.snapshot.points)) return [];
-    var snap = p.snapshot;
+    var snap = p.snapshot, sicht = eintagSicht(p, snap);
+    if (sicht) { if (sicht.available) snap = sicht.snap; else if (sicht.mode !== "thin") return []; }
     return snap.points.map(function (pt) {
       return { date: snap.sessionDate, timestamp: snap.sessionDate + "T" + pt[0], close: pt[1],
                open: pt[1], high: pt[1], low: pt[1], volume: null };

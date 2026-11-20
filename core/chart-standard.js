@@ -40,7 +40,7 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function () {
   "use strict";
 
-  var VERSION = "chart-standard-1.4.0";
+  var VERSION = "chart-standard-1.8.0";
 
   /* Kanonische Kennungen und Fenster (Kalendertage). */
   var PRIMARY = ["1T", "1W", "1M", "6M", "1J", "3J", "5J", "MAX"]; /* Owner 18.11.2026: eine Leiste überall, 6M und 3J in der Hauptleiste */
@@ -153,6 +153,69 @@
     var cut = cutoffOf(points, c);
     if (cut === null) return [];
     return points.filter(function (p) { return Date.parse(String(p[0]).slice(0, 10)) >= cut; });
+  }
+
+
+  /* ------------------------------------------------------------ 1T */
+
+  function hm(t) { return String(t).slice(0, 5); }
+  function regularPts(pts, snap) {
+    var open = hm((snap && snap.sessionOpenLocal) || "09:30"), close = hm((snap && (snap.sessionCloseLocal || snap.closeLocal)) || "16:00");
+    return (pts || []).filter(function (p) { return Array.isArray(p) && isNum(p[1]) && hm(p[0]) >= open && hm(p[0]) < close; });
+  }
+  /** Heutige Sitzung aus den Ticks des Stroms (mindestens zwei Minutenpunkte nach der Eroeffnung), sonst null. Der Bezug (Vortagesschluss) bleibt leer. */
+  function fromStream(snap, stream, today) {
+    if (!today || !Array.isArray(stream)) return { n: 0, snap: null };
+    var pts = regularPts(stream, snap);
+    if (pts.length < 2) return { n: pts.length, snap: null };
+    var copy = {}; Object.keys(snap || {}).forEach(function (k) { copy[k] = snap[k]; });
+    copy.points = pts; copy.pointCount = pts.length; copy.sessionDate = today; copy.previousClose = null;
+    copy.regularComplete = false; copy.isComplete = false; copy.fromStream = true; copy.fromStreamSince = pts[0][0];
+    return { n: pts.length, snap: copy };
+  }
+  function dayDe(d) { var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(d || "")); return m ? m[3] + "." + m[2] + "." + m[1] : ""; }
+
+  /**
+   * DIE 1T-REGEL, EINE FUNKTION FUER ALLE WELTEN (Steuerung 18.11.2026).
+   * Boerse offen und heute schon gehandelt: 1T = heutige Sitzung ab Eroeffnung, live fortgeschrieben.
+   * Vor Eroeffnung bzw. heute noch kein Handel: 1T = letzte volle Sitzung mit dem Etikett "letzte Sitzung (Datum)".
+   * Nie eine leere Kurve hinter einem freien Knopf: mit weniger als zwei Punkten ist 1T nicht verfuegbar.
+   *
+   * @param {object} snap Intraday-Snapshot (points [[HH:MM, kurs]], sessionDate, sessionOpenLocal, sessionCloseLocal)
+   * @param {object} [opt] today: Sitzungstag heute (YYYY-MM-DD, Ortszeit der Boerse); prev: Snapshot der letzten vollen Sitzung,
+   *                       falls der heutige noch zu wenig Punkte hat; stream: heutige Ticks [[HH:MM, kurs]] (Minutenraster, dieselbe
+   *                       Reihe wie discover/ui/live-hub.js), wenn der Tages-Snapshot hinter der laufenden Sitzung zurueckliegt
+   *                       (Eroeffnung bis zum ersten heutigen Snapshot): dann ist 1T die heutige Sitzung aus dem Strom - in allen Welten gleich
+   * @returns {{available:boolean, mode:"today"|"last"|"none", snap:object|null, points:Array, sessionDate:string|null, label:string, reason:string}}
+   */
+  function intradayView(snap, opt) {
+    var o = opt || {}, none = { available: false, mode: "none", snap: null, points: [], sessionDate: null, label: "", reason: "Für diese Aktie liegt kein Tagesverlauf vor." };
+    function withPts(sn) {
+      if (!sn || !Array.isArray(sn.points) || !sn.sessionDate) return null;
+      var copy = {}; Object.keys(sn).forEach(function (k) { copy[k] = sn[k]; });
+      copy.points = regularPts(sn.points, sn);
+      return copy;
+    }
+    var today = o.today || null, cur = withPts(snap), prev = withPts(o.prev);
+    if (prev && prev.points.length < 2) prev = null;
+    function today_(sn) { return { available: true, mode: "today", snap: sn, points: sn.points, sessionDate: sn.sessionDate, label: "heute", reason: "" }; }
+    function last_(sn) {
+      return { available: true, mode: "last", snap: sn, points: sn.points, sessionDate: sn.sessionDate,
+        label: "letzte Sitzung (" + dayDe(sn.sessionDate).slice(0, 6) + ")", reason: "" };
+    }
+    /* Genau ein heutiger Punkt: die Linie braucht den zweiten, der Kopf bleibt live (kein Rueckfall auf den alten Schluss). */
+    function thin_(sn) { return { available: false, mode: "thin", snap: sn, points: sn.points, sessionDate: sn.sessionDate, label: "heute", reason: "Der Verlauf beginnt gleich." }; }
+    if (cur && (!today || cur.sessionDate >= today)) {
+      if (cur.points.length >= 2) return today_(cur);
+      if (cur.points.length === 1) return thin_(cur);
+      return prev ? last_(prev) : none;
+    }
+    var st = fromStream(snap, o.stream, today);
+    if (st.snap) return today_(st.snap);
+    if (st.n === 1) return thin_(cur || { points: [], sessionDate: today });
+    var last = cur && cur.points.length >= 2 && today && cur.sessionDate < today ? cur : prev;
+    if (last) return last_(last);
+    return none;
   }
 
   /* ------------------------------------------------------------ Waehrung */
@@ -293,7 +356,7 @@
   return {
     VERSION: VERSION, DEFAULT_DISPLAY: DEFAULT_DISPLAY, PRIMARY: PRIMARY, EXTRA: EXTRA, DEFAULT_RANGE: DEFAULT_RANGE, DAYS: DAYS, RANGE_KEY: RANGE_KEY,
     canonical: canonical, order: order, startRange: startRange, rememberedRange: rememberedRange, rememberRange: rememberRange,
-    intradayEntry: intradayEntry, covers: covers, slice: slice,
+    intradayEntry: intradayEntry, intradayView: intradayView, covers: covers, slice: slice,
     displayCurrency: displayCurrency, displaySeries: displaySeries, displaySnapshot: displaySnapshot,
     displayLevel: displayLevel, displayHead: displayHead, currencyControl: currencyControl,
     currencyNote: currencyNote, ensureDisplay: ensureDisplay

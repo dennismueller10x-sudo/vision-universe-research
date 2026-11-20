@@ -153,9 +153,11 @@
   }
   /* Dieselbe Regel wie discover/ui/detail.js mitLaufendemKurs: der letzte
      Punkt wird ersetzt oder ein neuer angehaengt - nichts interpoliert. */
-  function withLive(p, live) {
+  function withLive(p, live, today) {
     var snap = p && p.snapshot;
     if (!snap || !live || !live.fresh || !isNum(live.price) || snap.regularComplete) return snap;
+    /* Ein Snapshot vom Vortag bekommt keinen Kurs von heute angehaengt: den Tag fuehrt dann der Strom (core/chart-standard.js#intradayView). */
+    if (today && snap.sessionDate && snap.sessionDate < today) return snap;
     var zeit = ortszeit(live.at, snap.timezone);
     if (!zeit) return snap;
     var pts = (snap.points || []).slice(), last = pts.length ? pts[pts.length - 1] : null;
@@ -174,7 +176,10 @@
      discover/ui/detail.js#vortagAusReihe (ADR-002). */
   function vortagAusReihe(snap, punkte) {
     if (!snap || !snap.sessionDate || !punkte || !punkte.length) return snap;
-    if (punkte[punkte.length - 1][0] < snap.sessionDate) return snap;
+    /* Verlauf aus dem Strom: die Tagesreihe endet am Vortag - genau der Vortagesschluss (hoechstens ein langes Wochenende zurueck). */
+    var vortagGenuegt = snap.fromStream && punkte[punkte.length - 1][0] < snap.sessionDate &&
+      (Date.parse(snap.sessionDate) - Date.parse(punkte[punkte.length - 1][0])) / 86400000 <= 4;
+    if (punkte[punkte.length - 1][0] < snap.sessionDate && !vortagGenuegt) return snap;
     var vor = null;
     for (var i = 0; i < punkte.length && punkte[i][0] < snap.sessionDate; i++) vor = punkte[i][1];
     if (!isNum(vor) || !(vor > 0) || vor === snap.previousClose) return snap;
@@ -199,7 +204,7 @@
     var Hub = global.VUDiscover && global.VUDiscover.LiveHub;
     var SS = global.VURealtime && global.VURealtime.SourceState;
     var eod = (o.eod || []).filter(function (p) { return p && typeof p[0] === "string" && isNum(p[1]); });
-    var st = { std: null, cur: o.currency || "USD", range: null, intraday: null, long: null, longLoading: false, longPromise: null, longDone: false, longFailed: false, touched: false, disposed: false, unsub: null, relay: null, trade: null };
+    var st = { std: null, cs: null, cur: o.currency || "USD", range: null, intraday: null, long: null, longLoading: false, longPromise: null, longDone: false, longFailed: false, touched: false, disposed: false, unsub: null, relay: null, trade: null, stream: null };
 
     /* VU3 (docs/design/VU3_UI_SYSTEM.md, Kurschart): das Bild zeichnet
        assets/vu-chart.js (VUChart.render) - dieselbe Linie, Startlinie,
@@ -249,7 +254,11 @@
     RANGES.forEach(function (r) { if (PRIMARY_IDS.indexOf(r.id) < 0) rangeButton(r, false); });
 
     function available(id) {
-      if (id === "1D") return !!(st.intraday && st.intraday.snapshot && Array.isArray(st.intraday.snapshot.points) && st.intraday.snapshot.points.length >= 2);
+      if (id === "1D") {
+        if (!(st.intraday && st.intraday.snapshot && Array.isArray(st.intraday.snapshot.points))) return false;
+        var v = view(withLive(st.intraday, st.trade, heute()));
+        return v ? v.available : st.intraday.snapshot.points.length >= 2;
+      }
       var r = RANGES.filter(function (x) { return x.id === id; })[0];
       var pts = source(r);
       return slice(pts, r).length >= 2 && covered(pts, r);
@@ -380,17 +389,30 @@
       delete box.dataset.direction;
     }
 
+    /* Die 1T-Regel steht in core/chart-standard.js#intradayView (eine Funktion fuer Discover, Quant und Technical). */
+    function heute() {
+      var res = Hub && Hub.resolution ? Hub.resolution() : null;
+      return res && ((res.displaySession && res.displaySession.sessionDate) || res.localDate) || null;
+    }
+    function view(snap) {
+      var CS = st.cs || (global.VUCore && global.VUCore.ChartStandard);
+      if (!CS || !CS.intradayView || !snap) return null;
+      var day = heute();
+      return CS.intradayView(snap, { today: day, stream: st.stream && st.stream.day === day ? st.stream.pts : null });
+    }
     /* Der Tagesstand (letzter Kurs, Bezug, Quelle) - fuer den 1T-Chart und fuer den Kurs im Kopf der Seite, auch
        wenn ein anderer Zeitraum gezeigt wird (Start 1J, UI-Konzept 23.10.2026). */
     function intradayFacts() {
-      var p = st.intraday, snap = vortagAusReihe(withLive(p, st.trade), o.adjusted ? eod : null);
+      var p = st.intraday, snap = withLive(p, st.trade, heute());
+      var tv = view(snap); if (tv && tv.available) snap = tv.snap;
+      snap = vortagAusReihe(snap, o.adjusted ? eod : null);
       var pts = (snap.points || []).filter(function (x) { return x && isNum(x[1]); });
       var last = pts.length ? pts[pts.length - 1][1] : null;
       var base = isNum(snap.previousClose) ? snap.previousClose : (pts.length ? pts[0][1] : null);
       var delta = isNum(last) && isNum(base) && base > 0 ? (last / base - 1) * 100 : null;
       var q = SS ? SS.bestimme({ resolution: Hub && Hub.resolution ? Hub.resolution() : null, snapshot: p.snapshot, live: st.trade, now: new Date() }) : null;
       var frozen = !!(q && q.isFrozen) || snap.regularComplete === true;
-      return { p: p, snap: snap, pts: pts, last: last, base: base, delta: delta, q: q, frozen: frozen };
+      return { view: tv, p: p, snap: snap, pts: pts, last: last, base: base, delta: delta, q: q, frozen: frozen };
     }
     /* Nur ein LAUFENDER Tag aktualisiert den Kurs im Kopf der Seite. Nach
        Schluss gilt der offizielle Schlusskurs der Tagesreihe - der letzte
@@ -407,12 +429,12 @@
       var f = intradayFacts(), p = f.p, snap = f.snap, pts = f.pts, last = f.last, base = f.base, delta = f.delta, q = f.q, frozen = f.frozen;
       /* Ein Stand, der nicht live ist (STALE: Schluss fehlt, Takt steht),
          heisst nicht "heute" - er traegt sein Datum und seine Uhrzeit. */
-      var datiert = frozen || !!(q && q.state === "STALE");
+      var datiert = frozen || !!(q && q.state === "STALE") || !!(f.view && f.view.mode === "last");
       /* Eine Zeile: Veraenderung, Bezug, Zeitpunkt. Ein Stand, der nicht live ist, nennt Datum und Uhrzeit. */
       var bis = snap.lastRegularLocal || snap.asOfLocal;
       reportRange(isNum(snap.previousClose) ? delta : null, null);
       head(last, delta, isNum(snap.previousClose) ? "seit Vortagesschluss" : "seit dem ersten Kurs des Tages",
-        (datiert ? dateDe(snap.sessionDate).slice(0, 6) + (bis ? ", bis " + String(bis).slice(0, 5) + " Uhr New York" : "") : "heute" + (bis ? ", " + String(bis).slice(0, 5) + " Uhr New York" : "")) +
+        (datiert ? (f.view && f.view.mode === "last" ? f.view.label + ", " : "") + dateDe(snap.sessionDate).slice(0, 6) + (bis ? ", bis " + String(bis).slice(0, 5) + " Uhr New York" : "") : "heute" + (bis ? ", " + String(bis).slice(0, 5) + " Uhr New York" : "")) +
         (q && q.state === "STALE" ? " · nicht aktuell" : q && q.state === "FINAL_SESSION" ? " · Sitzung beendet" : ""));
       /* Uhrzeiten New York als Zeitpunkte des Sitzungstags; die Achse reicht bis zum Handelsschluss. */
       var day = String(snap.sessionDate || "").slice(0, 10), iso = function (hm) { return day + "T" + String(hm).slice(0, 5) + ":00"; };
@@ -614,6 +636,15 @@
     /* Live nur bei offener Boerse und laufendem Tag, eine Verbindung je
        Seite, nur fuer diesen Titel. Der Client laesst ausschliesslich
        bestaetigte Trades durch; ein Kursangebot bewegt nichts. */
+    /* Heutige Ticks im Minutenraster (wie discover/ui/live-hub.js#reiheFuehren): nur bestaetigte Trades, nur der Sitzungstag. */
+    function streamFuehren(t) {
+      if (!t || !isNum(t.price) || !(t.price > 0)) return;
+      var day = heute(), zeit = ortszeit(t.at, "America/New_York");
+      if (!day || !zeit) return;
+      var r = st.stream && st.stream.day === day ? st.stream : (st.stream = { day: day, pts: [] });
+      var l = r.pts.length ? r.pts[r.pts.length - 1] : null;
+      if (l && l[0] === zeit) l[1] = t.price; else if (!l || l[0] < zeit) r.pts.push([zeit, t.price]);
+    }
     function startRelay() {
       var RC = global.VULiveRelayClient;
       if (st.relay || st.disposed || !RC || !o.realtime || typeof global.WebSocket !== "function") return;
@@ -626,6 +657,7 @@
           onChange: function (snap) {
             var last = snap && snap.isLive && snap.last;
             st.trade = last ? { fresh: true, price: last.price, at: new Date(last.timestamp).toISOString(), priceType: "TRADE" } : null;
+            streamFuehren(st.trade);
             if (st.range === "1D" && !st.disposed) draw("1D"); else reportIntraday();
           } });
         st.relay = client;
@@ -643,7 +675,8 @@
     /* fx: false (Technical, Owner 18.11.2026): immer Boersenwaehrung, kein Umschalter im Chart. Analyse-Ebenen (Zonen,
        Linien, Baender) rechnen in der Boersenwaehrung; eine umgerechnete Kurslinie laege neben ihnen. Die
        Anzeigewaehrung bleibt die zentrale Einstellung (Konto, Menue) fuer alle anderen Charts. */
-    if (o.fx !== false) display().then(function (CS) { if (CS && !st.disposed) { st.std = CS; redraw(); st.unfx = CS.currencyControl(fxHost, redraw); } });
+    if (o.fx === false) display().then(function (CS) { if (CS && !st.disposed) { st.cs = CS; if (st.range === "1D") redraw(); } });
+    if (o.fx !== false) display().then(function (CS) { if (CS && !st.disposed) { st.std = CS; st.cs = CS; redraw(); st.unfx = CS.currencyControl(fxHost, redraw); } });
 
     return {
       node: node,
