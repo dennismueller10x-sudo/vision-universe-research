@@ -644,10 +644,10 @@
       "cik": "0001838163",
       "name": "Brand Engagement Network Inc.",
       "sic": "7373",
-      "rawFacts": 3717,
-      "mappedFacts": 1466,
-      "unmappedFacts": 2344,
-      "calendarYears": 6,
+      "rawFacts": 3720,
+      "mappedFacts": 1462,
+      "unmappedFacts": 2368,
+      "calendarYears": 5,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1231",
@@ -764,41 +764,43 @@
         "resolvedValues": 173
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 2443,
+        "rules_version": "1.1.0",
+        "total": 2470,
         "by_severity": {
-          "INFO": 2344,
+          "INFO": 2368,
           "ERROR": 3,
-          "WARNING": 96
+          "WARNING": 99
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 18,
           "FUTURE_DATA_LEAK": 3,
+          "FUTURE_PERIOD_END": 3,
           "NEGATIVE_WHERE_IMPOSSIBLE": 1,
           "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 69,
           "UNEXPECTED_DURATION": 7,
-          "UNKNOWN_CONCEPT": 2344
+          "UNKNOWN_CONCEPT": 2368
         }
       },
       "latestFiling": {
-        "accession": "0001493152-26-038527",
-        "filing_date": "2026-08-14",
-        "form": "10-Q",
-        "periodic_filings": 24
+        "accession": "0001493152-26-053306",
+        "filing_date": "2026-11-19",
+        "form": "10-K/A",
+        "periodic_filings": 25,
+        "acceptance_datetime": "2026-11-19T22:15:48.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
-        "formula": "1.2.0",
+        "normalization_logic": "1.15.0",
+        "formula": "1.3.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.8.0"
         }
       },
-      "sourceDigest": "10110f87bb8f45708541db056fb66416df0ff353d6043eab9815b471d2c7bebb",
+      "sourceDigest": "998fb1c689c837ecfb3ec6cf8e4db60bbb0d3fb8996fde1be9e3ee229a2c49fe",
       "issuerId": "iss_cik_0001838163"
     },
     {
