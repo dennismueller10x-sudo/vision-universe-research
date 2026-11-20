@@ -1437,7 +1437,7 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
       el("div", { class: "dx-chart-hero-preis" }, [
         el("b", { class: "num", text: isNum(letzterKurs) ? alsAngezeigt(letzterKurs, waehrung) : "" }),
         el("span", { class: "num " + C().toneClass(tagesDelta), title: isNum(snap.previousClose) ? "seit Vortagesschluss" : "seit dem ersten Kurs des Tages", text: isNum(tagesDelta) ? prozentGross(tagesDelta) : "" }),
-        el("span", { class: "dx-chart-hero-wort" })
+        el("span", { class: "dx-chart-hero-wort", text: letzteSitzung || "" })
       ]),
       el("div", { class: "dx-chart-hero-meta" }, [
         C().liveLabel(etikett, snap),
