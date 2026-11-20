@@ -584,7 +584,7 @@ jobs:
       - name: Aufschub im Boersenfenster
         if: steps.weiche.outputs.mode == 'AUFSCHUB'
         run: |
-          echo "::notice::Boersenfenster (Mo-Fr 14:00-21:00 UTC), nur Nicht-Intraday-Aenderungen offen: der Voll-Release wartet bis 21:00 UTC (Notfall per workflow_dispatch mit notfall=true)."
+          echo "::notice::Boersenfenster (Mo-Fr 14:00-21:00 UTC): kein Voll-Release (keine Aenderung oder nur Nicht-Intraday-Aenderungen offen, die bis 21:00 UTC warten; Notfall per workflow_dispatch mit notfall=true)."
       - name: Voll-Release noetig
         if: steps.bereit.outputs.fertig != 'true' && steps.weiche.outputs.mode != 'AUFSCHUB'
         run: echo "::notice::Schnellweg nicht moeglich (Basis ${{ steps.basis.outcome }}, Veroeffentlicher-Pruefung ${{ steps.pub.outputs.frei }}, Weiche ${{ steps.weiche.outcome }}/${{ steps.weiche.outputs.mode }}, Smoke ${{ steps.bereit.outcome }}); Voll-Release folgt."

@@ -179,7 +179,11 @@ test('FP-7b Im Fenster liefert der Schnellweg nur Intraday, Nicht-Intraday-Datei
   assert.equal(f.mode, 'FAST');
   assert.equal(f.aufgeschoben, 1);
   assert.equal(klassifiziere(['discover/ui/overview.css'], {fenster: true}).mode, 'AUFSCHUB');
-  assert.equal(klassifiziere(['docs/x.md'], {fenster: true}).mode, 'FULL', 'ohne andere Dateien nichts aufzuschieben');
+  assert.equal(klassifiziere(['docs/x.md'], {fenster: false}).mode, 'FULL', 'ausserhalb des Fensters bleibt FULL');
+  const leer = klassifiziere(['docs/x.md'], {fenster: true});
+  assert.equal(leer.mode, 'AUFSCHUB', 'im Fenster ohne Aenderung kein Voll-Release (Messung 20.11.)');
+  assert.equal(leer.aufgeschoben, 0);
+  assert.equal(klassifiziere([], {fenster: true}).mode, 'AUFSCHUB');
   assert.equal(klassifiziere([I + '/index.json'], {fenster: true}).mode, 'FAST');
 });
 test('FP-7c Workflow: AUFSCHUB hebt den Voll-Release auf, notfall und Veroeffentlicher bleiben Voll', () => {
