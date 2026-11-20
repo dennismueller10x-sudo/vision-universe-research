@@ -40,7 +40,7 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function () {
   "use strict";
 
-  var VERSION = "chart-standard-1.7.0";
+  var VERSION = "chart-standard-1.8.0";
 
   /* Kanonische Kennungen und Fenster (Kalendertage). */
   var PRIMARY = ["1T", "1W", "1M", "6M", "1J", "3J", "5J", "MAX"]; /* Owner 18.11.2026: eine Leiste überall, 6M und 3J in der Hauptleiste */
@@ -159,20 +159,19 @@
   /* ------------------------------------------------------------ 1T */
 
   function hm(t) { return String(t).slice(0, 5); }
-  function minutes(t) { var m = /^(\d\d):(\d\d)/.exec(String(t)); return m ? Number(m[1]) * 60 + Number(m[2]) : NaN; }
-  /* Heute zaehlt erst, wenn die Sitzung mindestens 10 Minuten zeigt (Eroeffnung bis dahin: letzte Sitzung). Alle Welten, dieselbe Schwelle. */
-  var MIN_SPAN_MIN = 10;
-  function spanOk(pts) { return pts.length >= 2 && minutes(pts[pts.length - 1][0]) - minutes(pts[0][0]) >= MIN_SPAN_MIN; }
+  function regularPts(pts, snap) {
+    var open = hm((snap && snap.sessionOpenLocal) || "09:30"), close = hm((snap && (snap.sessionCloseLocal || snap.closeLocal)) || "16:00");
+    return (pts || []).filter(function (p) { return Array.isArray(p) && isNum(p[1]) && hm(p[0]) >= open && hm(p[0]) < close; });
+  }
   /** Heutige Sitzung aus den Ticks des Stroms (mindestens zwei Minutenpunkte nach der Eroeffnung), sonst null. Der Bezug (Vortagesschluss) bleibt leer. */
   function fromStream(snap, stream, today) {
-    if (!today || !Array.isArray(stream)) return null;
-    var open = hm((snap && snap.sessionOpenLocal) || "09:30"), close = hm((snap && (snap.sessionCloseLocal || snap.closeLocal)) || "16:00");
-    var pts = stream.filter(function (p) { return Array.isArray(p) && isNum(p[1]) && hm(p[0]) >= open && hm(p[0]) < close; });
-    if (!spanOk(pts)) return null;
+    if (!today || !Array.isArray(stream)) return { n: 0, snap: null };
+    var pts = regularPts(stream, snap);
+    if (pts.length < 2) return { n: pts.length, snap: null };
     var copy = {}; Object.keys(snap || {}).forEach(function (k) { copy[k] = snap[k]; });
     copy.points = pts; copy.pointCount = pts.length; copy.sessionDate = today; copy.previousClose = null;
     copy.regularComplete = false; copy.isComplete = false; copy.fromStream = true; copy.fromStreamSince = pts[0][0];
-    return copy;
+    return { n: pts.length, snap: copy };
   }
   function dayDe(d) { var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(d || "")); return m ? m[3] + "." + m[2] + "." + m[1] : ""; }
 
@@ -191,28 +190,30 @@
    */
   function intradayView(snap, opt) {
     var o = opt || {}, none = { available: false, mode: "none", snap: null, points: [], sessionDate: null, label: "", reason: "Für diese Aktie liegt kein Tagesverlauf vor." };
-    function regular(sn) {
+    function withPts(sn) {
       if (!sn || !Array.isArray(sn.points) || !sn.sessionDate) return null;
-      var open = hm(sn.sessionOpenLocal || "09:30"), close = hm(sn.sessionCloseLocal || sn.closeLocal || "16:00");
-      var pts = sn.points.filter(function (p) { return Array.isArray(p) && isNum(p[1]) && hm(p[0]) >= open && hm(p[0]) < close; });
-      if (pts.length < 2) return null;
       var copy = {}; Object.keys(sn).forEach(function (k) { copy[k] = sn[k]; });
-      copy.points = pts;
+      copy.points = regularPts(sn.points, sn);
       return copy;
     }
-    var today = o.today || null, cur = regular(snap), prev = regular(o.prev);
+    var today = o.today || null, cur = withPts(snap), prev = withPts(o.prev);
+    if (prev && prev.points.length < 2) prev = null;
     function today_(sn) { return { available: true, mode: "today", snap: sn, points: sn.points, sessionDate: sn.sessionDate, label: "heute", reason: "" }; }
     function last_(sn) {
       return { available: true, mode: "last", snap: sn, points: sn.points, sessionDate: sn.sessionDate,
         label: "letzte Sitzung (" + dayDe(sn.sessionDate).slice(0, 6) + ")", reason: "" };
     }
+    /* Genau ein heutiger Punkt: die Linie braucht den zweiten, der Kopf bleibt live (kein Rueckfall auf den alten Schluss). */
+    function thin_(sn) { return { available: false, mode: "thin", snap: sn, points: sn.points, sessionDate: sn.sessionDate, label: "heute", reason: "Der Verlauf beginnt gleich." }; }
     if (cur && (!today || cur.sessionDate >= today)) {
-      if (spanOk(cur.points) || !prev) return today_(cur);
-      return last_(prev); /* heute erst wenige Minuten: die letzte volle Sitzung */
+      if (cur.points.length >= 2) return today_(cur);
+      if (cur.points.length === 1) return thin_(cur);
+      return prev ? last_(prev) : none;
     }
     var st = fromStream(snap, o.stream, today);
-    if (st) return today_(st);
-    var last = cur && today && cur.sessionDate < today ? cur : prev;
+    if (st.snap) return today_(st.snap);
+    if (st.n === 1) return thin_(cur || { points: [], sessionDate: today });
+    var last = cur && cur.points.length >= 2 && today && cur.sessionDate < today ? cur : prev;
     if (last) return last_(last);
     return none;
   }

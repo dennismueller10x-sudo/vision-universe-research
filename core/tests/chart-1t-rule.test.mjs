@@ -18,11 +18,14 @@ test("1T: heute noch kein Handel -> letzte volle Sitzung mit Etikett", () => {
   const v = CS.intradayView(snap("2026-11-17", grid(78)), { today: "2026-11-18" });
   assert.equal(v.mode, "last"); assert.equal(v.label, "letzte Sitzung (17.11.)"); assert.equal(v.points.length, 78);
 });
-test("1T: heute zu wenig Punkte, letzte Sitzung bekannt -> letzte Sitzung; sonst abgeschaltet, nie leer", () => {
-  const dunn = snap("2026-11-18", grid(1));
-  const mitVor = CS.intradayView(dunn, { today: "2026-11-18", prev: snap("2026-11-17", grid(78)) });
+test("1T: heute ein Punkt -> Verlauf beginnt gleich (Kopf bleibt live); kein heutiger Punkt -> letzte Sitzung; sonst abgeschaltet, nie leer", () => {
+  const ein = snap("2026-11-18", grid(1)), vor = snap("2026-11-17", grid(78));
+  const thin = CS.intradayView(ein, { today: "2026-11-18", prev: vor });
+  assert.equal(thin.mode, "thin"); assert.equal(thin.available, false);
+  const nurVorboerse = snap("2026-11-18", [["08:05", 99], ["09:25", 99.5]]);
+  const mitVor = CS.intradayView(nurVorboerse, { today: "2026-11-18", prev: vor });
   assert.equal(mitVor.mode, "last"); assert.equal(mitVor.sessionDate, "2026-11-17");
-  const ohne = CS.intradayView(dunn, { today: "2026-11-18" });
+  const ohne = CS.intradayView(nurVorboerse, { today: "2026-11-18" });
   assert.equal(ohne.available, false); assert.equal(ohne.points.length, 0); assert.ok(ohne.reason);
 });
 test("1T: Punktzahl und Zeitraum je Titel sind welt-unabhaengig (Messwerte 18.11.2026: NVDA 4, AFG 3 Punkte)", () => {
@@ -46,14 +49,34 @@ test("1T: Snapshot vom Vortag plus heutige Ticks -> alle drei Welten liefern die
   assert.deepEqual(quant.points, discover.points); assert.deepEqual(quant.points, technical.points);
   assert.equal(quant.snap.previousClose, null); /* Vortagesschluss kommt aus der Tagesreihe, nicht aus dem alten Snapshot */
   /* ohne ausreichend Ticks: letzte Sitzung, nie leer */
-  const wenig = CS.intradayView(gestern, { today: "2026-11-18", stream: ticks.slice(0, 2) });
+  const wenig = CS.intradayView(gestern, { today: "2026-11-18", stream: [] });
   assert.equal(wenig.mode, "last"); assert.equal(wenig.points.length, 36);
-  /* Eroeffnung, erst wenige Minuten: Quant (Tick-Reihe), Technical und Discover (Hub-Strom-Snapshot + snapshotVorStrom) zeigen alle die letzte Sitzung */
+  /* Eroeffnung: ab 2 heutigen Punkten ist 1T heute (Steuerung 20.11., Live-Kopf hat Vorrang); genau 1 Punkt: Verlauf beginnt gleich, nie der alte Schluss */
   const kurz = [["09:30", 161], ["09:34", 161.4]];
   const q = CS.intradayView(gestern, { today: "2026-11-18", stream: kurz });
   const d = CS.intradayView(snap("2026-11-18", kurz, { fromStream: true }), { today: "2026-11-18", prev: gestern });
-  for (const v of [q, d]) { assert.equal(v.mode, "last"); assert.equal(v.points.length, 36); assert.equal(v.label, "letzte Sitzung (17.11.)"); }
+  for (const v of [q, d]) { assert.equal(v.mode, "today"); assert.equal(v.points.length, 2); }
   assert.deepEqual(q.points, d.points);
+  const eins = [["09:36", 161]];
+  const q1 = CS.intradayView(gestern, { today: "2026-11-18", stream: eins });
+  const d1 = CS.intradayView(snap("2026-11-18", eins, { fromStream: true }), { today: "2026-11-18", prev: gestern });
+  for (const v of [q1, d1]) { assert.equal(v.mode, "thin"); assert.equal(v.available, false); }
+  /* ohne jeden heutigen Handel: letzte Sitzung */
+  const keiner = CS.intradayView(gestern, { today: "2026-11-18", stream: [] });
+  assert.equal(keiner.mode, "last");
+});
+test("Live-Kopf hat Vorrang: sobald heute ein Kurs da ist, zeigt 1T nie die letzte Sitzung (der Kopf nennt dann nie den alten Schluss), egal welche Welt", () => {
+  const gestern = snap("2026-11-17", grid(78), { previousClose: 150 });
+  for (const n of [1, 2, 5]) {
+    const ticks = Array.from({ length: n }, (_, i) => ["09:" + String(31 + i).padStart(2, "0"), 161 + i]);
+    const quant = CS.intradayView(gestern, { today: "2026-11-18", stream: ticks });
+    const discover = CS.intradayView(snap("2026-11-18", ticks, { fromStream: true }), { today: "2026-11-18", prev: gestern });
+    for (const v of [quant, discover]) assert.notEqual(v.mode, "last", "n=" + n);
+    assert.equal(quant.mode, discover.mode, "n=" + n);
+  }
+  /* Und die Strom-Pruefung haelt den Kopf gegen den Live-Kurs fest */
+  const qa = readFileSync(new URL("../../scripts/discover/browser-qa-stream-verlauf.mjs", import.meta.url), "utf8");
+  assert.match(qa, /Kopfkurs ist der Live-Kurs/);
 });
 test("Alle drei Welten rufen dieselbe Funktion", () => {
   for (const f of ["../../discover/ui/detail.js", "../../quant/app/chart.js"])

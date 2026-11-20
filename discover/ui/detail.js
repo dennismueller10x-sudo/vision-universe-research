@@ -1663,7 +1663,7 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
   function intradayAlsZeilen(p) {
     if (!p || !p.snapshot || !Array.isArray(p.snapshot.points)) return [];
     var snap = p.snapshot, sicht = eintagSicht(p, snap);
-    if (sicht) { if (!sicht.available) return []; snap = sicht.snap; }
+    if (sicht) { if (sicht.available) snap = sicht.snap; else if (sicht.mode !== "thin") return []; }
     return snap.points.map(function (pt) {
       return { date: snap.sessionDate, timestamp: snap.sessionDate + "T" + pt[0], close: pt[1],
                open: pt[1], high: pt[1], low: pt[1], volume: null };
