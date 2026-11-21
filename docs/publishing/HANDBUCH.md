@@ -10,6 +10,7 @@ Reports unter `/reports/` (Abschnitt 8).
 | Erstes Konzept (5 Seiten Magazin, 5 Seiten Aktienreport AMD), eingefroren | `docs/publishing/konzept-2026-11/` |
 | Insights: Artikel, Build, Tests | `products/insights/`, Seiten unter `insights/` und `reports/` |
 | Bildaufträge (Higgsfield) | `brand-media/publishing/` |
+| Marktbriefing (Closing Bell): Konzept, Quellen- und Frischeregeln | Abschnitt 10 |
 
 
 Heft: Stand 09.11.2026, nach dem Umbau gemäß Codex-Prüfung ([Prüfbericht](ausgaben/2026-11-09-nr01/PRUEFBERICHT_CODEX.md)).
@@ -279,3 +280,73 @@ Bereichsseite hat strukturierte Daten; `llms.txt` gibt es nicht.
 **Freischaltung selbst** (Owner-Entscheidung, danach ein PR): weitere Präfixe in `PUBLIC_PREFIXES`
 (`scripts/access-gate/build.mjs`), `robots`-Meta der freigegebenen Seiten auf `index`; IndexNow und Search Console melden
 die neuen Adressen beim nächsten Ausrollen von selbst.
+
+## 10. Marktbriefing (Closing Bell): Konzept
+
+Stand 21.11.2026, Konzept nach einem Muster vom 20.11.2026 (12 Karten 1080×1350, noch nicht im Repo).
+Ziel: nach jedem US-Handelstag ein Briefing aus Grafikkarten, das ohne Handarbeit entsteht und an drei Stellen
+verwertet wird: Seite im News-Bereich, Instagram-Karussell und Reel oder Video (Reel-Pipeline, `docs/studio/README.md`).
+
+**Grundsatz:** Format wie eine Börsensendung, Inhalte aus eigenen Daten und Primärquellen. Kein Thema, keine Zahl und
+keine Grafik wird aus anderen Sendungen, YouTube-Kanälen oder X-Konten übernommen.
+
+**Drei Kartenarten**
+
+| Art | Herkunft | Beispiele aus dem Muster |
+|---|---|---|
+| Markt | eigene Daten (`marketPulse`, Intraday, Movers, Renditen, Rohstoffe, Krypto) | Indizes über ETF-Proxies, Tagesverlauf, Anleihen, größte Anstiege und Rückgänge |
+| Eigene Auswertung | feste Rechenregeln über eigene Zeitreihen und SEC-Daten | Häufung von Tagen mit −5 % seit 2008, Marktbreite, KGV am Hoch gegen heute, Investitionen der Hyperscaler gegen operativen Cashflow (95 % gegen 26 % im Jahr 2015) |
+| Angabe Dritter | Primärquellen oder seriöse Medien, auf das Original zurückverfolgt | Reuters (Nvidia/SEC), BofA-Fondsmanager-Umfrage, CME FedWatch, Konjunkturdaten |
+
+Ziel: mindestens die Hälfte der Karten sind Markt oder eigene Auswertung. Jede Karte trägt oben „Eigene Auswertung“ oder
+„Angabe Dritter“ und unten Quelle mit Datum.
+
+**Quellenregeln**
+- Feste Quellenliste: Notenbanken, Statistikämter, SEC-Filings, Nachrichtenagenturen, öffentliches Research von Herausgebern
+  (FactSet Insight, Check Point und ähnliche); Bank-Research nur über seriöse Medien. Keine YouTuber, keine X-Konten als Quelle.
+- Jede Grafik wird mit unseren Vorlagen neu gezeichnet, nie ein Screenshot.
+- Höchstens zwei Karten je Quelle und Briefing.
+- Eine Zahl, die nur eine einzige Sekundärquelle ohne genannten Datenanbieter nennt, wird nicht verwendet.
+- Wortwahl nach `docs/legal/WORTWAHL.md`: „Größte Anstiege/Rückgänge“, keine eigene Prognose; Kursziele von Banken nur als
+  Angabe Dritter mit dem Zusatz „keine Prognose von Vision Universe“.
+
+**Frischeregeln (Owner 21.11.2026: tagesaktuell; 2–3 Tage nur für das erste Muster)**
+- Markt und eigene Auswertung: nur aus der jüngsten Handelssitzung. Hängt eine Datenart hinter ihrer Frische in
+  `core/registry/domains.json`, entsteht kein Briefing, sondern ein Alarm.
+- Angabe Dritter: veröffentlicht am Handelstag selbst (bis zum Erzeugen des Briefings); der Zeitraum der Daten steht in
+  der Quellenzeile. Monatliche Berichte (Umfragen, Cyberlage) und Konjunkturdaten laufen genau an ihrem Erscheinungstag.
+- SEC-Fundamentaldaten: jüngste Meldung; ist ein Quartal gemeldet, aber noch nicht bei der SEC, sagt die Karte das.
+- Im Muster fielen schon nach der vorläufigen 3-Tage-Regel drei Karten heraus: FactSet-Bewertung (Stand 05.11.), Goldman-Hedgefondsdaten
+  (bis 06.11.), Check-Point-Ransomware (veröffentlicht 11.11.).
+
+**Tägliche Quellen:** Kurse, Intraday und Movers aus Tiingo (Abendlauf 22:30 UTC), Marktbreite aus dem Faktorlauf
+(gegen 23:40 UTC), Renditen aus US Treasury und Bundesbank, SEC-Fundamentaldaten aus dem täglichen EDGAR-Lauf. Themen
+Dritter liefert ein täglicher Recherchelauf nach US-Handelsschluss, aufgebaut wie der Insights-Tageslauf (Skill
+`insights-tageslauf`): Nachrichtenagenturen, Fed und Statistikämter am Erscheinungstag, Unternehmensmeldungen, Research-Herausgeber.
+
+**Zeitpunkt:** Tagesschlüsse liegen ab 22:30 UTC vor; das Briefing entsteht danach oder morgens als Rückblick. Eine
+Opening Bell zum US-Handelsbeginn braucht schnellere Kursdaten als die heutigen (Intraday stündlich, IEX verzögert).
+
+**Bekannte Lücken:** echte Indexstände (heute ETF-Proxies), Sektor-ETFs für eine Heatmap, VIX, Zahlen- und
+Wirtschaftskalender (FMP-Endpunkte geprüft in `scripts/market/probe-free-sources.mjs`).
+
+**Generator (Stand 21.11.2026)**
+- Engine `products/news/briefing/engine.js` (Kartenregeln, Frische, Prüfung der Themen Dritter), Darstellung
+  `products/news/briefing/render.js` (jede Karte ein SVG 1080×1350), Build `products/news/briefing/build.mjs`, Tests
+  `products/news/tests/marktbriefing.test.mjs`.
+- Lauf: `content.yml` Teil `marktbriefing`, Mo–Fr 23:50 UTC über den Wecker (`core/registry/schedule.json`), nur im
+  Datenzweig (`news/marktbriefing/`, Datenart `marktbriefing`). Seite `/news/marktbriefing/` (vorerst `noindex`) mit
+  Archiv je Sitzung.
+- Themen Dritter liest der Build aus `news/marktbriefing/radar/<sitzung>.json` (`items[]` mit title, publisher, source,
+  published, url, optional sub, quote, columns, bars, stats; optional `editorial` mit eigenem Titel der Titelkarte).
+  Die Engine verwirft, was nicht vom Handelstag ist, nicht aus der Quellenliste kommt oder keine URL hat.
+- Karussell und Video: `node products/news/briefing/export-png.mjs <briefing.json> <ordner>` schreibt die Karten als PNG.
+- Die Investitionskarte erscheint nur, wenn ein Hyperscaler in den letzten 3 Tagen neue Zahlen bei der SEC gemeldet hat.
+
+**Ausbau in Ergebnissen (je ein PR)**
+1. Generator für Markt- und eigene Auswertungskarten aus den Repo-Artefakten, mit Frischeprüfung, als Seite im News-Bereich (erledigt, siehe oben).
+2. Themen-Radar für Angaben Dritter: täglicher Rechercheauftrag über die Quellenliste, Prüfung von Datum und Original,
+   Ergebnis als Daten-Datei, die der Generator liest.
+3. Karussell und Reel jeden Abend ins Approval Center (Veröffentlichung nur nach Freigabe, wie bei Reels).
+4. Lücken schließen: Sektor-ETFs, VIX, Kalender.
+

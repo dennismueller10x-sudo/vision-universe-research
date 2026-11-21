@@ -16,7 +16,7 @@ on:
       teil:
         description: 'Welcher Teil laufen soll'
         type: choice
-        options: [alle, news, ratings, hedgefonds, morning, analysten, analysten-probe, search-console]
+        options: [alle, news, marktbriefing, ratings, hedgefonds, morning, analysten, analysten-probe, search-console]
         default: alle
 
 permissions:
@@ -47,6 +47,30 @@ jobs:
       - name: News in den Datenzweig (nur main)
         if: github.ref == 'refs/heads/main'
         run: scripts/ci/push-data-branch.sh data/live dashboard/data/news_feed.json
+
+  # Marktbriefing (Closing Bell, docs/publishing/HANDBUCH.md §10): nach US-Schluss aus Market Pulse, Tagesschluessen und
+  # SEC-Daten; Ergebnis nur im Datenzweig (BRANCH_ONLY). Nicht frisch -> Exit 3, nichts geschrieben (Alarm statt alter Zahlen).
+  marktbriefing:
+    if: ((github.event_name == 'schedule' || inputs.zeitplan != '') && (github.event.schedule || inputs.zeitplan) == '50 23 * * 1-5') || ((github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && (inputs.teil == 'alle' || inputs.teil == 'marktbriefing'))
+    runs-on: ubuntu-latest
+    concurrency:
+      group: content-marktbriefing-${{ github.ref_name }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      # Eigener Stand zuerst (Archiv und fruehere Ausgaben), sonst spiegelt push-data-branch.sh sie weg; dazu der Market Pulse.
+      - name: Datenzweig in den Arbeitsbaum (marktbriefing, marketPulse)
+        run: scripts/ci/seed-data-branch.sh marktbriefing,marketPulse
+      - name: Marktbriefing bauen
+        run: node products/news/briefing/build.mjs
+      - name: Marktbriefing in den Datenzweig (nur main)
+        if: github.ref == 'refs/heads/main'
+        run: scripts/ci/push-data-branch.sh data/live news/marktbriefing
 
   ratings:
     if: ((github.event_name == 'schedule' || inputs.zeitplan != '') && (github.event.schedule || inputs.zeitplan) == '0 8 * * 0') || ((github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && (inputs.teil == 'alle' || inputs.teil == 'ratings'))
