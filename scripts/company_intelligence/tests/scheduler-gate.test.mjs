@@ -167,9 +167,9 @@ test('API-Fehler, fehlerhafte Antwort, ungueltige Konfiguration: fail-safe',asyn
   assert.deepEqual([r.run,r.financial],[true,true]);
 });
 
-test('Konfiguration der Produktion liefert financialHours 8',async()=>{
+test('Konfiguration der Produktion liefert financialHours 7',async()=>{
   const cfg=join(repoRoot,'company-intelligence/config/continuous-refresh.json');
-  assert.equal(gate.loadConfig(cfg).financialHours,8);
+  assert.equal(gate.loadConfig(cfg).financialHours,7);
 });
 
 const refreshWorkflowPath=join(repoRoot,'.github/workflows/company-intelligence-refresh.yml');
