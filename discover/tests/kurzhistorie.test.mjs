@@ -62,3 +62,18 @@ test("ausgelieferte Kurzhistorie-Seiten: kein Score, kein Rang, keine Reihe, im 
   }
   assert.ok(n >= 0);
 });
+
+/* Neuemittent nach dem Beginn des heutigen Listings (listing-continuity keptFrom), nicht nach der Stamm-Erstnotiz.
+   Solange die Titel unter 30 Handelstagen sind, tragen ihre Seiten den richtigen Ersttag; danach gibt es die volle Seite. */
+test("ANT und AXNX: Ersttag nach Listing-Beginn, nicht nach der Stamm-Erstnotiz 2018", () => {
+  const dir = new URL("../data/stocks/US_REAL/", import.meta.url).pathname;
+  const erwartet = { ANT: "2026-11-19", AXNX: "2026-10-13" };
+  for (const [t, tag] of Object.entries(erwartet)) {
+    const f = dir + t + ".json";
+    if (!existsSync(f)) continue; /* schon die volle Seite (>= 30 Handelstage) oder noch ohne Intraday */
+    const d = JSON.parse(readFileSync(f, "utf8"));
+    if (!d.kurzhistorie) continue;
+    assert.equal(d.kurzhistorie.firstTradeDate, tag, t);
+    assert.ok(d.kurzhistorie.firstTradeDate > "2026-01-01", t + ": nicht die Stamm-Erstnotiz");
+  }
+});
