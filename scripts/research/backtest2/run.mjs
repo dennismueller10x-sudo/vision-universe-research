@@ -154,10 +154,13 @@ export function report(res) {
 async function main() {
   const a = args(process.argv), t = Date.now();
   const cal = JSON.parse(fs.readFileSync(path.join(ROOT, 'quant/data/market/multi-asset/series/SPY.json'), 'utf8')).points.map((p) => p[0]);
-  const end = a.to || lastCompleteMonthEnd(cal.filter((d) => d >= '2007-01-01'));
+  const bench = loadBenchmarks();
+  // Ende: letzter vollständiger Monat, höchstens bis zum letzten gemeinsamen Benchmark-Stichtag (sonst vergleicht die letzte
+  // Bestätigungsrunde Strategie-Wochen mit fehlenden Index-Wochen)
+  const benchEnd = Object.values(bench).map((p) => p.at(-1)[0]).sort()[0];
+  const end = a.to || [lastCompleteMonthEnd(cal.filter((d) => d >= '2007-01-01')), cal.findLast((d) => d <= benchEnd)].sort()[0];
   const { market: m, counts } = loadMarket({ workDir: a.workDir, delistedDir: a.delistedDir, delistedRawDir: a.delistedRawDir, to: end, limit: a.smoke ? 400 : 0 });
   const signals = buildSignals(m);
-  const bench = loadBenchmarks();
   const grid = a.smoke ? SMOKE_GRID : Q.GRID, list = Q.combos(grid);
   const w = Q.windowDates(m, Q.FIRST_YEAR, 9999), nYears = +end.slice(0, 4) - Q.FIRST_YEAR + 1;
   console.log(`Signale: ${SOURCES.map((k) => k + ' ' + signals[k].items.length).join(', ')}; Kombinationen ${list.length}; Fenster ${w.start} … ${w.end}`);
