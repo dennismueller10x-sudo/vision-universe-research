@@ -34,12 +34,7 @@
 
   /* ------------------------------------------------------------ Namen */
   /** Kurzname wie im Mockup (nm): Rechtsform und Zusaetze am Ende weg. */
-  function shortName(c) {
-    var x = String((c && (c.displayName || c.companyName)) || (c && c.symbol) || '');
-    for (var i = 0; i < 3; i++) x = x.replace(/,?\s+(Class [A-Z]|Inc\.?|Holdings?|Ltd\.?|Limited|Corporation|Corp\.?|Co\.?|Company|plc|N\.V\.|S\.A\.|A\.S\.|AG|SE|- New|\(Cayman\)|Group Holding|Therapeutics|Technology Group|L\.P\.|LP)$/i, '');
-    x = x.replace(/\s*&$/, ''); /* „Eli Lilly & Co“ -> „Eli Lilly“, nicht „Eli Lilly &“ */
-    return x || (c && c.symbol) || '';
-  }
+  function shortName(c) { return R().shortName(c); }
   /** Ziel „Alle N“ einer Reihe. Themenreihen fuehren in ihre Themenwelt. */
   function rowHref(id) {
     var T = D.Views && D.Views.Themes, t = T && T.byRow(id);
@@ -137,13 +132,7 @@
 
   /* ------------------------------------------------------------ Aktie des Tages (Prototyp „bleed“) */
   /** Karten fuer das Billboard: die Eingangsflaeche (mit Gruenden), dann die Reihe „Heute im Blick“, Schaufenster-Regel, hoechstens 5. */
-  function billboardCards(hero, row) {
-    var seen = {}, out = [];
-    ((hero && hero.cards) || []).concat((row && row.cards) || []).forEach(function (c) {
-      if (out.length < 5 && c && !seen[c.symbol] && R().showcase(c)) { seen[c.symbol] = 1; out.push(c); }
-    });
-    return out;
-  }
+  function billboardCards(hero, row) { return R().billboardCards(hero, row); }
   function heroWidth() { return Math.round(Math.max(320, Math.min(global.innerWidth || 390, 672))); }
   /** Zweite Zeile unter dem Satz: Zeitraum der Pille und der erste Grund (z. B. „in 12 Monaten · Ausbruch mit Volumen“). */
   function heroWhy(c) {
