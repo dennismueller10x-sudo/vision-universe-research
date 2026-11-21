@@ -14,6 +14,17 @@ const require=createRequire(import.meta.url),{chromium}=require('playwright');
 const {fetchWithRetry}=require('../../company-intelligence/api/contract.js');
 const args=process.argv.slice(2),arg=(k,f)=>args.includes(k)?args[args.indexOf(k)+1]:f;
 const routine=args.includes('--routine');
+/* Kapitel sichtbar machen: Oeffnen der umschliessenden Profi-Ansicht und Sichtbarkeit der Ueberschrift sind ein
+   begrenzt wiederholbarer Schritt (3 Versuche je 15 s), nie ein Pruefpunkt. Eine Neudarstellung der Discover-Seite nach dem
+   Oeffnen schliesst das <details> wieder (21.11.2026, Pages-Lauf 44861854189: h2 62x "hidden", dann Rollback). Danach wie bisher. */
+async function showChapter(page,attempts=3){
+ for(let n=1;;n++){
+  await openCompanyIntelligence(page);
+  try{await page.waitForSelector('.ci-company-intelligence h2',{state:'visible',timeout:15000});return;}
+  catch(e){if(n>=attempts||e?.name!=='TimeoutError')throw e;}
+ }
+}
+
 const origin=arg('--url','https://research.visionuniverse.de').replace(/\/$/,''),out=arg('--out','/tmp/company-intelligence-live');
 assert(origin==='https://research.visionuniverse.de','EXISTING_PRODUCTION_ORIGIN_REQUIRED');mkdirSync(out,{recursive:true});
 const expectedSha=process.env.EXPECTED_PRODUCTION_SHA||null;
@@ -58,7 +69,7 @@ try{
   activePage=page;active={ticker,errors,responses,diagnostics};
   await page.addInitScript(({key,state})=>localStorage.setItem(key,JSON.stringify(state)),{key:STORAGE_KEY,state});
   page.on('pageerror',e=>errors.push(e.message));page.on('response',r=>{if(r.url().includes('/company-intelligence/data/'))responses.push({url:r.url(),status:r.status()});});
-  await page.goto(origin+'/discover/#/s/US_REAL/'+ticker,{waitUntil:'domcontentloaded'});await openCompanyIntelligence(page);await page.waitForSelector('.ci-company-intelligence h2');
+  await page.goto(origin+'/discover/#/s/US_REAL/'+ticker,{waitUntil:'domcontentloaded'});await showChapter(page);
   const chapter=page.locator('.ci-company-intelligence');assert(!(await chapter.innerText()).includes('derzeit nicht verfügbar'),ticker);assert.deepEqual(errors,[]);assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
   assertConsumerResponses(responses,ticker);
   assert.equal(await page.locator('vu-navigation').count(),1);assert(await chapter.locator('a').count()>0);await scrollForScreenshot(chapter);await page.screenshot({path:out+'/'+ticker+'-390.png'});
