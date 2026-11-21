@@ -58,8 +58,12 @@ test("L3: Datensatz - Spalte = Schluss / tiefstes Tagestief (252) - 1 auf den Ba
     for (const [tk, x] of Object.entries(inst)) {
       const i = pos.get(tk); if (i === undefined || c.frozenSince[i]) continue;
       const b = upTo(x.bars, c.asOf[i]); if (!b) continue;
-      const n = b.low.length, lo = Math.min(...b.low.slice(Math.max(0, n - 252))), want = b.close[n - 1] / lo - 1;
-      assert.ok(Math.abs(c.distLow52w[i] - want) <= 5e-5 + 1e-4 * Math.abs(want), tk + " " + c.distLow52w[i] + " vs " + want);
+      const n = b.low.length, lo = Math.min(...b.low.slice(Math.max(0, n - 252))), close = b.close[n - 1], want = close / lo - 1;
+      /* Die Bars der Signaldatei sind auf Cent gerundet, der Erzeuger rechnet auf den ungerundeten Kursen. Ein halber Cent
+         auf Schluss und Tief wirkt als (1 + want) * (0,005/Schluss + 0,005/Tief) - bei einem Abstand nahe 0 mehr als die
+         Rundung der Spalte (21.11.2026: ASGI 0,0027 gegen 0,00265 bei 18,92 / 18,87). */
+      const preisRundung = (1 + Math.abs(want)) * (0.005 / close + 0.005 / lo);
+      assert.ok(Math.abs(c.distLow52w[i] - want) <= 5e-5 + 1e-4 * Math.abs(want) + preisRundung, tk + " " + c.distLow52w[i] + " vs " + want);
       checked++;
     }
   }
