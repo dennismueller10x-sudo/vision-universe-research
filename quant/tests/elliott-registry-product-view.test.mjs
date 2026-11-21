@@ -8,8 +8,9 @@ import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { gzipSync, gunzipSync } from "node:zlib";
 import { fileURLToPath } from "node:url";
+import { researchSeriesRoot } from "../../scripts/quant/lib/data-fixture.mjs";
 
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+const ROOT = researchSeriesRoot()  /* B2c: eingefrorene Forschungsreihen */;
 const Reg = await import(join(ROOT, "scripts/technical/elliott-registry/register.mjs"));
 const PV = await import(join(ROOT, "scripts/technical/elliott-registry/product-view.mjs"));
 const Ver = await import(join(ROOT, "scripts/technical/elliott-registry/verify.mjs"));

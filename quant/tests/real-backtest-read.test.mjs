@@ -6,9 +6,10 @@ import {tmpdir} from 'node:os';
 import {resolve,join} from 'node:path';
 import {gunzipSync} from 'node:zlib';
 import {execFileSync} from 'node:child_process';
+import { researchSeriesRoot } from "../../scripts/quant/lib/data-fixture.mjs";
 const require=createRequire(import.meta.url),Service=require('../api/product-services.js'),Policy=require('../engines/display-policy.js'),Query=require('../engines/query.js');
 const A=require('../engines/weekly-real-adapter.cjs'),B=require('../engines/weekly-benchmark.cjs'),C=require('../api/real-backtest-contract.js'),{run}=require('../../scripts/quant/run-real-weekly-backtest.cjs'),{materialize}=require('../../scripts/quant/materialize-real-backtest-read.cjs');
-const repo=resolve(import.meta.dirname,'../..'),out=mkdtempSync(join(tmpdir(),'vu-backtest-read-'));
+const repo=researchSeriesRoot(),/* B2c */out=mkdtempSync(join(tmpdir(),'vu-backtest-read-'));
 /* Datenwurzel = Repository, nur die langen Reihen enden am letzten SPY-Tag. SPY (Datenzweig, multi-asset) und die langen
    Reihen (samstags) ziehen zu verschiedenen Zeiten nach; sonst fehlt der Marktvergleich am letzten Bewertungstag und der
    Test haengt am Wochentag statt am Vertrag (Daten loesen Alarm aus). Alles andere ist ein Symlink ins Repository. */
@@ -82,7 +83,7 @@ test('materializer resumes exact snapshots; rejects corrupted saved summaries an
 });
 
 test('private filesystem store is bounded, cannot expose repository data or traverse paths',async()=>{
- const Store=require('../../server/quant-backtest-store.cjs');assert.throws(()=>Store.create({directory:repo}),/PUBLIC_BACKTEST_STORAGE_FORBIDDEN/);
+ const Store=require('../../server/quant-backtest-store.cjs');assert.throws(()=>Store.create({directory:resolve(import.meta.dirname,'../..')}),/PUBLIC_BACKTEST_STORAGE_FORBIDDEN/);/* das echte Repository, nicht die Spiegelwurzel (B2c) */
  const store=Store.create({directory:out});const release=await store.loadJSON('release.json');assert.equal(release.generation,report.generation);
  await assert.rejects(store.loadJSON('../../etc/passwd'),/INVALID_BACKTEST_PATH/);await assert.rejects(store.loadDetail('release.json'),/INVALID_BACKTEST_PATH/);
  const api=Service.create({loadJSON,displayPolicy:Policy,queryEngine:Query,realBacktestPreview:{enabled:true,audience:'INTERNAL_REVIEW'},realBacktestStore:store});assert.equal((await api.getRealBacktest('NVDA',{section:'equity'})).state,'AVAILABLE_LIMITED');
