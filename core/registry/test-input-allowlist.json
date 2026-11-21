@@ -142,6 +142,14 @@
       "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
     },
     {
+      "file": "core/tests/research-series-guard.test.mjs",
+      "kategorie": "schema-vertrag",
+      "liest": [
+        "quant/data"
+      ],
+      "grund": "21.11.2026 (Teil B1): prueft den Loeschschutz gegen die echten Quellen der Forschungsreihen (V10-Rahmen, Register, Elliott-Ledger, Tests mit Wochenreihen-Pfad). Die Faelle vom 17.11. (ALOT, HVII, AFBI, ANSC, GBTG, AACT) muessen geschuetzt sein; eine fehlende Quelle bricht ab. Muss den Live-Stand der Quellen lesen, sonst schuetzt der Schutz nichts."
+    },
+    {
       "file": "core/tests/sf8-data-quality.test.mjs",
       "kategorie": "fixture-offen",
       "liest": [

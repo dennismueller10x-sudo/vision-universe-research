@@ -37,6 +37,7 @@ import { loadPreviewConfig, resolveScope, expandPreviewConfig } from "./preview-
 import { applySupplements } from "./lib/split-evidence-supplements.mjs";
 import { applyConfirmations } from "./lib/corporate-action-confirmations.mjs";
 import { loadSuccessions, withPredecessor } from "./lib/ticker-succession-bars.mjs";
+import { assertNoResearchSeries } from "./lib/research-series.mjs";
 
 const require = createRequire(import.meta.url);
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -170,6 +171,8 @@ export function publishDiscoverSeries(opt) {
   if (opt.pruneOnly) {
     const imUmfang = new Set(resolved.securities.map((s) => s.securityId + ".json"));
     let entfernt = 0;
+    /* Loeschschutz (Teil B1): keine Forschungsreihe verlassen, Abbruch vor dem ersten Loeschen. */
+    if (existsSync(outDir)) assertNoResearchSeries(root, readdirSync(outDir).filter((n) => n !== "index.json" && n.endsWith(".json") && !imUmfang.has(n)), outDir);
     if (existsSync(outDir)) for (const name of readdirSync(outDir)) {
       if (name === "index.json" || !name.endsWith(".json")) continue;
       if (imUmfang.has(name)) { erwartet.add(name); written.push(name.replace(/^ref_/, "").replace(/\.json$/, "")); continue; }
@@ -249,6 +252,7 @@ export function publishDiscoverSeries(opt) {
   /* Was nicht mehr im Umfang steht, verschwindet - eine Reihe, die
      einmal freigegeben war, bleibt nicht aus Versehen liegen. */
   if (!opt.dryRun && existsSync(outDir)) {
+    assertNoResearchSeries(root, readdirSync(outDir).filter((n) => n !== "index.json" && !erwartet.has(n) && n.endsWith(".json")), outDir);
     for (const name of readdirSync(outDir)) {
       if (name === "index.json" || erwartet.has(name)) continue;
       if (name.endsWith(".json")) { rmSync(join(outDir, name)); log(`    entfernt: ${name} (nicht mehr im Umfang)`); }
