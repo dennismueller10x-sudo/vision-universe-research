@@ -13,6 +13,8 @@ name: Produktuniversum (Eignung aus dem Security Master, mit Gate)
 # neu gebaut, und die Materialisierung wird
 # mit force neu angestossen (Technical-Signale). Sonst scheitern alle Laeufe mit Public-Data-Hygiene, auch
 # der naechtliche Marktdatenlauf vor seiner Materialisierung (Befund 05.11.2026: 131 ETFs nach dem Nachholen).
+# Zeitplan: core/registry/schedule.json (Wecker, Eintrag security-master-eligibility-schnellweg), RUNBOOK §10.
+run-name: ${{ inputs.zeitplan && format('{0} · Takt {1}', github.workflow, inputs.zeitplan) || '' }}
 on:
   workflow_run:
     workflows: ['Security Master + Firmennamen (wöchentlich)']
@@ -20,6 +22,14 @@ on:
     branches: [main]
   workflow_dispatch:
     inputs:
+      zeitplan:
+        description: 'Vom Cloudflare-Wecker gesetzt (Cron des Termins, core/registry/schedule.json); manuell leer lassen'
+        type: string
+        default: ''
+      schnell_tage:
+        description: 'Schnellweg fuer Boersengaenge (nur mit neuzugaenge): nur Titel, deren Anbieter-Beginn hoechstens so viele Tage zurueckliegt (1-30), hoechstens schnellMembersAdded je Lauf'
+        type: string
+        default: ''
       commit:
         description: 'Ergebnis committen (nur bei Gate COMMIT)'
         type: boolean
@@ -82,10 +92,12 @@ jobs:
         if: inputs.erweiterung != '' || inputs.neuzugaenge == true || github.event_name == 'workflow_run'
         env:
           IN_ERWEITERUNG: ${{ inputs.erweiterung }}
+          IN_SCHNELL: ${{ inputs.schnell_tage }}
           SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
         run: |
           set -euo pipefail
           case "${IN_ERWEITERUNG:-}" in *[!A-Za-z0-9,.\ -]*) echo "::error::erweiterung: nur Ticker, Komma, Leerzeichen"; exit 2;; esac
+          case "${IN_SCHNELL:-}" in ''|*[!0-9]*) [ -z "${IN_SCHNELL:-}" ] || { echo "::error::schnell_tage: nur eine Zahl"; exit 2; };; esac
           heute="$(date -u +%F)"; X="$RUNNER_TEMP/erw"; N=quant/data/market/security-master
           mkdir -p "$X/work0" "$X/next0" "$X/scale" "$X/out" "$X/work1" "$X/next1" "$X/prev"
           if [ -z "${IN_ERWEITERUNG:-}" ]; then
@@ -103,7 +115,13 @@ jobs:
               --scale-dir "$X/scale" --out "$X/out" --today "$heute"
           else
             max="$(node -e 'console.log(require("./core/registry/eligibility-gate.json").limits.autoMembersAdded)')"
-            node scripts/market/expand-us-universe.mjs --auto "$max" --sec "$X/sec-tickers.json" --sec-submissions \
+            recent=()
+            if [ -n "${IN_SCHNELL:-}" ]; then
+              # Schnellweg (Boersengaenge): dieselbe Kette und derselbe SEC-Abgleich, nur Titel der letzten Tage, kleine Obergrenze
+              max="$(node -e 'console.log(require("./core/registry/eligibility-gate.json").limits.schnellMembersAdded)')"
+              recent=(--recent-days "$IN_SCHNELL")
+            fi
+            node scripts/market/expand-us-universe.mjs --auto "$max" --sec "$X/sec-tickers.json" --sec-submissions "${recent[@]}" \
               --master "$X/work0/us-security-master.json" --scale-dir "$X/scale" --out "$X/out" --today "$heute"
             echo "ELIG_AUTO_ADDED=$X/out/expansion.json" >> "$GITHUB_ENV"
           fi

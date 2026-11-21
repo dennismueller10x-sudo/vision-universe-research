@@ -6,7 +6,9 @@
     "eligibleToExcluded": 15,
     "productUniverseDeltaPct": 1.0,
     "universeMembersChanged": 0,
-    "autoMembersAdded": 25
+    "autoMembersAdded": 25,
+    "schnellMembersAdded": 3
   },
-  "autoMembersAdded": "Dauerregel (Steuerung 18.11.2026): neue Titel, die expand-us-universe --auto im selben Lauf nennt (expansion.json auto.added), hoechstens so viele je Lauf. Abgaenge zaehlen weiter gegen universeMembersChanged."
+  "autoMembersAdded": "Dauerregel (Steuerung 18.11.2026): neue Titel, die expand-us-universe --auto im selben Lauf nennt (expansion.json auto.added), hoechstens so viele je Lauf. Abgaenge zaehlen weiter gegen universeMembersChanged.",
+  "schnellMembersAdded": "Schnellweg fuer Boersengaenge (Steuerung 21.11.2026): werktaeglicher Lauf mit neuzugaenge und schnell_tage, hoechstens so viele Zugaenge je Lauf (zaehlt wie autoMembersAdded ueber expansion.json auto.added; der Gate-Grenzwert autoMembersAdded bleibt die Obergrenze)."
 }
