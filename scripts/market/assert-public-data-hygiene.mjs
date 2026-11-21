@@ -93,6 +93,33 @@ if (existsSync(seriesDir)) {
   }
 }
 
+/* Kurzreihen (neu an der Boerse, 1-29 Schlusskurse, discover-series-kurz): derselbe Umfang, dieselbe Grundlage wie die
+   Tagesreihen, und nie 30 oder mehr Punkte (ab 30 gehoert die Reihe nach discover-series). */
+const kurzDir = join(root, "quant", "data", "market", "discover-series-kurz");
+if (existsSync(kurzDir)) {
+  let kurzScope = new Set();
+  try {
+    kurzScope = previewConfig ? resolveScope(root, previewConfig).tickers : new Set();
+  } catch (err) {
+    findings.push("quant/data/market/discover-series-kurz/ exists but the preview scope cannot be resolved: " + err.message);
+  }
+  for (const name of readdirSync(kurzDir).filter((n) => n.endsWith(".json") && n !== "index.json")) {
+    const payload = json(join("quant", "data", "market", "discover-series-kurz", name));
+    const punkte = payload && Array.isArray(payload.points) ? payload.points.length : 0;
+    if (!punkte) continue;
+    if (!payload.ticker || !kurzScope.has(payload.ticker)) {
+      findings.push(`quant/data/market/discover-series-kurz/${name}: real closes for ticker ` +
+                    `'${payload.ticker || "unknown"}' outside the declared preview scope`);
+    }
+    if (!payload.publishBasis) {
+      findings.push(`quant/data/market/discover-series-kurz/${name}: published without a stated basis`);
+    }
+    if (payload.short !== true || punkte >= 30) {
+      findings.push(`quant/data/market/discover-series-kurz/${name}: not a short series (${punkte} points, short=${payload.short})`);
+    }
+  }
+}
+
 /* Lange Discover-Reihen (Wochenschluss, 5J/Max): derselbe Umfang, dieselbe
    Grundlage wie die Tagesreihen - und nur Wochenpunkte [Datum, Schluss],
    keine OHLC, kein Volumen. */

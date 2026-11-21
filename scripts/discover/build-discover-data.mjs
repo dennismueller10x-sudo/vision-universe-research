@@ -1832,7 +1832,13 @@ function kurzhistorieSeiten(universe) {
       info = Kurzhistorie.ausIntraday(readJSON(f));
       if (info) break;
     }
-    if (!info) continue;
+    /* Die veroeffentlichte Kurzreihe (publish-discover-series.mjs, discover-series-kurz): Kurs und Tagesveraenderung aus der
+       EINEN Tagesreihe (ADR-002), ab 2 Schlusskursen auch der Chart. Ohne sie gilt der Intraday-Punkt. */
+    const kurzFile = join(root, "quant", "data", "market", "discover-series-kurz", sec.securityId + ".json");
+    const kurzReihe = existsSync(kurzFile) ? readJSON(kurzFile) : null;
+    const kurzPunkte = kurzReihe && kurzReihe.short === true && Array.isArray(kurzReihe.points) && kurzReihe.points.length ? kurzReihe.points : null;
+    if (!info && !kurzPunkte) continue;
+    const kurzDated = kurzPunkte ? kurzPunkte.map((p) => ({ date: p[0], close: p[1] })) : null;
     const metrics = flatMetrics({});
     const stock = Contract.normalizeStock({
       symbol: sec.ticker, instrumentId: inst.instrumentId || null, securityId: sec.securityId,
@@ -1842,21 +1848,25 @@ function kurzhistorieSeiten(universe) {
       universeId: "US_REAL", dataMode: "real", provider: "tiingo",
       exchange: sec.exchange || inst.exchange || null,
       sector: null, sectorStatus: "SOURCE_MISSING",
-      price: Contract.field(info.close),
-      changePercent: info.changePercent === null ? Contract.field(null, "INSUFFICIENT_HISTORY") : Contract.field(info.changePercent),
+      price: kurzDated ? Contract.field(PublishedClose.roundClose(kurzDated[kurzDated.length - 1].close)) : Contract.field(info.close),
+      changePercent: kurzDated && kurzDated.length > 1
+        ? Contract.field(round((kurzDated[kurzDated.length - 1].close / kurzDated[kurzDated.length - 2].close - 1) * 100, 4))
+        : (!kurzDated && info.changePercent !== null) ? Contract.field(info.changePercent) : Contract.field(null, "INSUFFICIENT_HISTORY"),
       sparkline: null, sparklineStatus: "INSUFFICIENT_HISTORY", performancePath: null,
-      hasPriceSeries: false,
-      priceSeries: withheldSeries("INSUFFICIENT_HISTORY", Kurzhistorie.LABEL),
+      hasPriceSeries: !!(kurzDated && kurzDated.length >= 2),
+      priceSeries: kurzDated && kurzDated.length >= 2
+        ? microSeries(kurzDated, kurzReihe.provider || "tiingo", kurzReihe.priceSeriesType || "SPLIT_ADJUSTED")
+        : withheldSeries("INSUFFICIENT_HISTORY", Kurzhistorie.LABEL),
       was: BUSINESS_DESCRIPTIONS[sec.ticker] || null, recognitionTier: null, marketCap: null, bars: null,
       metrics, metricStatus: withheldMetricStatus(metrics, null),
       dataQuality: "WARNING", dataQualityReason: "insufficient_history_for_factors",
-      asOf: info.sessionDate, updatedAt: universe.generatedAt
+      asOf: kurzDated ? kurzDated[kurzDated.length - 1].date : info.sessionDate, updatedAt: universe.generatedAt
     });
     stock.scoreDetail = scoreAll(metrics, {});
     stock.rawValues = {};
-    stock.seriesPath = null;
+    stock.seriesPath = kurzDated && kurzDated.length >= 2 ? "/quant/data/market/discover-series-kurz/" + sec.securityId + ".json" : null;
     stock.instrumentType = inst.instrumentType || null;
-    out.push({ stock, info, firstTradeDate: erstTag });
+    out.push({ stock, info: info || { sessionDate: kurzDated[kurzDated.length - 1].date, lastLocal: null }, firstTradeDate: erstTag, bars: kurzDated ? kurzDated.length : null });
   }
   return out;
 }
@@ -2393,10 +2403,16 @@ for (const universe of universes) {
     written++;
   }
   if (universe.kind === "real") {
-    for (const { stock, info, firstTradeDate } of KURZ_SEITEN.get(universe.universeId) || []) {
+    for (const { stock, info, firstTradeDate, bars } of KURZ_SEITEN.get(universe.universeId) || []) {
       const detail = buildDetail(universe, stock, instruments, universe.barsByTicker, memberships);
       detail.geschaeftszahlen = Unternehmen.leer("INSUFFICIENT_HISTORY", Kurzhistorie.LABEL + ".");
-      detail.kurzhistorie = Kurzhistorie.block(info, { firstTradeDate });
+      detail.kurzhistorie = Kurzhistorie.block(info, { firstTradeDate, bars });
+      /* Ab 2 veroeffentlichten Schlusskursen traegt die Seite den Chart: dieselbe Datei, dieselbe Chart-Engine, keine Kopie. */
+      if (stock.seriesPath && bars >= 2) {
+        detail.series = { available: true, source: "discover-series", path: stock.seriesPath,
+                          priceSeriesType: stock.priceSeries.priceSeriesType || "SPLIT_ADJUSTED", dataMode: stock.dataMode,
+                          bars, from: stock.priceSeries.from || null, reason: null, message: null, long: null };
+      }
       detail.discoveryEligible = true;
       write(`stocks/${universe.universeId}/${stock.symbol}.json`, detail);
       symbols.add(stock.symbol);

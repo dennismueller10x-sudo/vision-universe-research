@@ -73,7 +73,7 @@
       "timestamp": ["generatedAt"],
       "records": "coverage.computed",
       "expectedRecords": "coverage.requested",
-      "role": "Tagesschlusskurse (Tiingo EOD, roh + splitFactor + Dividende) in der Arbeitsablage und der dauerhaften Ablage (R2); veroeffentlicht als discover-series (1J, split-bereinigt), golden-preview (volle OHLC), discover-series-long (Wochen). Probe: Faktorlauf ueber denselben Abruf.",
+      "role": "Tagesschlusskurse (Tiingo EOD, roh + splitFactor + Dividende) in der Arbeitsablage und der dauerhaften Ablage (R2); veroeffentlicht als discover-series (1J, split-bereinigt), discover-series-kurz (Neuemittent, 1-29 Schlusskurse), golden-preview (volle OHLC), discover-series-long (Wochen). Probe: Faktorlauf ueber denselben Abruf.",
       "producer": "scripts/market/ingest-tiingo.mjs -> publish-discover-series.mjs -> build-market-factors.mjs",
       "workflow": "market-data-refresh.yml",
       "schedule": "Mo-Fr 22:30 UTC",

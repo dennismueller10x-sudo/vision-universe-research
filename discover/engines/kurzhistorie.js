@@ -55,7 +55,9 @@
       label: LABEL,
       minBars: MIN_BARS,
       firstTradeDate: opts.firstTradeDate || null,
-      stand: info ? { sessionDate: info.sessionDate, lokal: info.lastLocal, art: "INTRADAY_LETZTER_PUNKT" } : null,
+      /* Mit veroeffentlichter Kurzreihe (>= 1 Schlusskurs) gilt der Tagesschluss (ADR-002), sonst der letzte Intraday-Punkt. */
+      stand: info ? { sessionDate: info.sessionDate, lokal: info.lastLocal || null, art: opts.bars ? "TAGESSCHLUSS" : "INTRADAY_LETZTER_PUNKT" } : null,
+      bars: opts.bars || null,
       message: "Neu an der Börse: " + LABEL + ". Es gibt noch keine Scores, keine Rangliste und keine Renditekennzahlen."
     };
   }
