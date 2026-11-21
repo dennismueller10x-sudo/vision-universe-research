@@ -63,7 +63,13 @@ Gesamtzeitraums mit Spannweite, und welche Stellschrauben am meisten ausmachen. 
 
 ## 5. Ausführung und Veröffentlichung
 
-- Vorher: Gegentest der Depotführung auf künstlichen Kursen (`scripts/research/backtest2/sizing-check.mjs`, erweitert): jede Kombination
-  aus Positionen, Gewichtung und Ausstieg rechnet bei bekanntem Kursprozess das erwartete Ergebnis; Kassenabgleich bestanden.
+- Umsetzung: `scripts/research/backtest2/` (Markt, Signale, Depotführung, Suche, Lauf mit Workern). Workflow `research.yml`, Teil
+  `portfolio`, Modus `backtest2-smoke` (400 Titel, kleines Gitter, nur Funktionsprobe) und `backtest2` (voller Lauf).
+- **Stufe 1** (dieser Stand): Signalquellen nur aus Kursen: Marktführer (relative Stärke), Trendvorlage nach Minervini in
+  veröffentlichter Lesart, Ausbruch 20 und 55 Tage (Turtle-Einstieg auf Schlussbasis), Trendvorlage mit 55-Tage-Ausbruch.
+  **Stufe 2** (eigener PR, vor einem Urteil über Supertrader oder Quant): die zertifizierten Supertrader-Module C01–C13 und die
+  Quant-Profile mit Fundamentaldaten als weitere Quellen im selben Gitter.
+- Vorher: Gegentests der Depotführung auf künstlichen Kursen mit bekanntem Ergebnis (`scripts/research/backtest2/backtest2.test.mjs`:
+  Kauf zur Folgeeröffnung, Kosten, Stopp-Kurs, Insolvenz, Filter, Positionszahl, Universum, Walk-forward sieht nur Lernjahre).
 - Läufe über GitHub Actions auf dem eingefrorenen Snapshot (R2); Ergebnisse zuerst versiegelt an den Owner.
 - Öffentliche Renditezahlen nur nach Owner-Freigabe und Abstimmung mit der Rechtsberatung; Rechte an abgeleiteten Kennzahlen (Tiingo) vorher klären.
