@@ -1,68 +1,69 @@
-# Backtest 2.0 – Protokoll (Entwurf, 21.11.2026)
+# Backtest 2.0 – Protokoll (Entwurf, Fassung 2 vom 21.11.2026)
 
-**Forschung, nicht zertifiziert.** Status: **ENTWURF**. Das Protokoll wird vor dem ersten Lauf eingefroren (SHA-256 im Lauf-Manifest und
-hier eingetragen). Danach ändern sich Regeln, Rahmen und Auswahl nicht mehr; jede spätere Änderung ist eine neue, als nachträglich
-gekennzeichnete Variante. Anlass: [BEFUND-POSITIONSGROESSE.md](BEFUND-POSITIONSGROESSE.md).
+**Forschung, nicht zertifiziert.** Status: **ENTWURF**. Eingefroren wird vor dem ersten Lauf (SHA-256 im Lauf-Manifest und hier).
+Anlass: [BEFUND-POSITIONSGROESSE.md](BEFUND-POSITIONSGROESSE.md).
+
+Fassung 2 (Owner 21.11.2026: „Wir müssen das machen, was funktioniert“): kein fester Depotrahmen mehr. Positionszahl, Gewichtung,
+Haltedauer, Stopps und Marktfilter sind **freie Stellschrauben**, die die Suche selbst einstellt. Fassung 1 legte 10 Positionen zu
+höchstens 10 % fest; das war eine Faustregel, kein Befund, und ist entfallen.
 
 ## 1. Frage
 
-Hätte eine feste, vorab beschriebene Regel aus Supertrader oder Quant in der Vergangenheit nach Kosten mehr erzielt als ein
-gewöhnlicher Index-ETF, insgesamt oder in bestimmten Marktphasen, und zu welchem Risiko?
+Welche Regel, gebaut aus den Methoden von Supertrader und Quant mit frei gewählter Depotführung, hätte nach Kosten mehr erzielt als ein
+gewöhnlicher Index-ETF (SPY, QQQ), und **hält dieser Vorsprung auf Jahren, die die Suche nicht gesehen hat?**
 
-Die Antwort ist offen. Gesucht wird keine Variante, die gewinnt, sondern das ehrliche Ergebnis jeder Regel. Alle Ergebnisse werden
-berichtet, auch die schlechten.
+## 2. Suchraum (frei)
 
-## 2. Gemeinsamer Depotrahmen (für jede Methode gleich)
-
-Der Rahmen ersetzt die bisherige je Methode verschiedene Kapitalbehandlung. Er ist eine Konvention, keine Quellenregel; die
-Einstiegs- und Ausstiegsregeln der Methoden bleiben unverändert (Fachmodelle werden nicht geändert).
-
-| Baustein | Festlegung |
+| Stellschraube | Werte |
 |---|---|
-| Startkapital | 100.000 $, kein Hebel, keine Leerverkäufe (C10 entfällt), Cash unverzinst |
-| Positionen | höchstens 10 gleichzeitig |
-| Größe | Risiko 1 % des Depots bis zur Stopp-Marke der Methode, **höchstens 10 % des Depots je Titel**; ohne Stopp-Marke 10 % |
-| Nachkauf (Pyramide) | nur wenn die Quelle ihn vorsieht, innerhalb der 10-%-Kappe |
-| Auswahl bei mehr Kandidaten als freien Plätzen | relative Stärke 6 Monate (126 Sitzungen) zum Vortag, absteigend; Gleichstand nach securityId |
-| Universum | zum Vortag: Rohkurs ≥ 10 $ **und** Rang ≤ 1.000 nach Ø Dollarumsatz 20 Sitzungen unter allen US-Stammaktien des Snapshots |
-| Marktfilter | nur wo die Quelle ihn verlangt (O'Neil/Minervini: Marktrichtung, Weinstein: Stufe des Gesamtmarkts); sonst keiner. Zusätzlich je Methode die Variante F1 aus E3 (SPY über SMA200, sonst keine neuen Einstiege) |
-| Kosten | wie E3: 1 bp Gebühr + 5 bp Slippage + halber Spread nach ADV20 je Seite (`quant/engines/portfolio-construction.cjs#halfSpreadBps`) |
-| Delistings | Endwerte wie E3: Übernahme 100 %, unbekannt 70 %, Insolvenz 0 % |
-| Tagesbalken-Mehrdeutigkeit | beide Lesarten (pessimistisch und optimistisch) werden gerechnet und als Spanne berichtet; Urteil nur, wenn beide gleich ausfallen |
+| Signalquelle | jede auf Tagesbalken rechenbare Methode aus C01–C13; jedes Quant-Profil; Referenz „Marktführer“ (relative Stärke 6 Monate, über der 200-Tage-Linie); Kombinationen aus zwei Quellen (Schnittmenge oder Vereinigung) |
+| Positionen | 1, 3, 5, 8, 10, 15, 20, 30 |
+| Gewichtung | gleich; nach Risiko bis zur Stopp-Marke; nach Signalstärke; Kappe je Titel 100 %, 50 %, 25 %, 15 % |
+| Nachkauf | aus, wie Quelle |
+| Ausstieg | Regel der Methode; nachgezogener Stopp 10 / 15 / 25 / 35 % ab Hoch; Schluss unter 50- bzw. 200-Tage-Linie; feste Haltedauer 1 Woche, 1, 3, 6, 12, 24 Monate |
+| Marktfilter | keiner; SPY über SMA200; SPY über SMA50 |
+| Universum | Top 500, 1.000, 3.000 nach Ø Dollarumsatz 20 Sitzungen; Kurs ≥ 5 $ oder ≥ 10 $ |
 
-## 3. Kandidaten
+Fest bleiben nur Dinge, die keine Wahl sind, sondern Wirklichkeit: Kosten (1 bp Gebühr + 5 bp Slippage + halber Spread nach ADV20 je
+Seite, `quant/engines/portfolio-construction.cjs#halfSpreadBps`), Endwerte delisteter Titel (Übernahme 100 %, unbekannt 70 %, Insolvenz 0 %),
+kein Hebel, kein Blick in die Zukunft (Entscheidung zum Schluss, Ausführung zur nächsten Eröffnung), Tagesbalken-Mehrdeutigkeit in beiden
+Lesarten (Urteil nur, wenn beide gleich ausfallen).
 
-- Supertrader: alle auf Tagesbalken rechenbaren Methoden aus C01–C13 (`docs/SUPERTRADER_9_HANDOVER.md` §4), je einzeln, ohne Auswahl
-  nach Ergebnis. C09/C10 entfallen (Minutendaten erst ab 2017 bzw. Leerverkauf). Methoden mit Status `SOURCE_BLOCKED` laufen mit der
-  dokumentierten Lesart und tragen den Vermerk.
-- Quant: die sechs Profile aus E3 mit N = 10 und 20, Umschichtung 13 und 26 Wochen (wie E3), im selben Rahmen (Kappe 10 %).
-- Referenz „Marktführer halten“: Kauf der 10 Titel mit der höchsten relativen Stärke 6 Monate über der 200-Tage-Linie, Ausstieg bei
-  Schluss unter der 200-Tage-Linie oder Verlust von 25 % ab Hoch seit Kauf. Sie beantwortet die Frage, ob eine einfache Regel die
-  großen Gewinner (zum Beispiel Nvidia 2023) erkannt und gehalten hätte.
+Die Suche ist ein Gitter über diese Werte, ergänzt um eine zufällige Stichprobe; die Zahl aller geprüften Kombinationen wird gezählt und
+geht in die Korrektur (§4) ein.
 
-## 4. Zeiträume und Vergleich
+## 3. Finden und Bestätigen (Walk-forward)
 
-- Gesamt 2008-01-01 bis zum letzten vollständigen Monat vor dem Einfrieren; Teilzeiträume 2008–2015 und 2016–Ende getrennt berichtet.
-- Ehrlicher Vermerk: 2008–2015 wurde im Holdout vom 06.11.2026 bereits geöffnet, 2016–2026 in E3 und im Labor. Es gibt **keinen
-  unberührten Zeitraum** mehr; die Unabhängigkeit kommt allein aus dem vorab eingefrorenen Rahmen, der für alle Methoden gleich ist.
-- Marktphasen: SPY über bzw. unter seiner 200-Tage-Linie; je Phase Rendite von Methode und Benchmark.
-- Vergleich (Gesamtrendite, gleiche Stichtage): SPY, QQQ, RSP (`vorsorge/data/series/*.json`).
-- Kennzahlen: CAGR, Volatilität, Sharpe (rf = 0), maximaler Verlust, Trefferquote, Ø Haltedauer, Umschlag, Kosten, Anteil der
-  Rendite aus den 5 besten Titeln.
+Die Suche darf alles einstellen, aber nur auf den Lernjahren. Bestätigt wird auf den folgenden Jahren, die sie nicht gesehen hat:
 
-## 5. Urteil
+| Runde | Lernen | Bestätigen |
+|---|---|---|
+| 1 | 2008–2013 | 2014–2016 |
+| 2 | 2008–2016 | 2017–2019 |
+| 3 | 2008–2019 | 2020–2022 |
+| 4 | 2008–2022 | 2023–Ende |
 
-Je Methode genau eines, nach Holm-Korrektur über alle Kandidaten und beide Lesarten (Monte-Carlo-p wie E3, 9.999 Replikate):
+Je Runde wählt eine feste Regel die beste Kombination der Lernjahre (höchste Rendite nach Kosten über SPY bei einem maximalen Verlust,
+der nicht schlechter als −50 % ist). Gezählt wird nur die aneinandergereihte Bestätigungskurve 2014–Ende: Sie zeigt, was ein Kunde mit
+diesem Vorgehen tatsächlich erlebt hätte. Zusätzlich je Kombination die Ergebnisse über den Gesamtzeitraum, beschreibend.
 
-- **schlägt SPY** (Gesamtzeitraum, beide Teilzeiträume nicht negativ gegenüber SPY, Holm-p ≤ 0,05);
-- **schlägt SPY nur in Phasen** (in einer Marktphase Holm-p ≤ 0,05, im Gesamtzeitraum nicht);
-- **nur risikobereinigt** (Sharpe höher und maximaler Verlust kleiner als SPY, Rendite nicht);
-- **schlägt nicht**; **nicht bestimmbar** (Lesarten widersprechen sich oder Daten fehlen).
+Ehrlicher Vermerk: Alle Jahre ab 2008 wurden in früheren Studien schon geöffnet (Holdout 06.11.2026, E3, Labor). Die Unabhängigkeit kommt
+aus dem Walk-forward selbst: Die Auswahl jeder Runde sieht die Bestätigungsjahre nicht.
 
-## 6. Ausführung und Veröffentlichung
+## 4. Urteil
 
-- Läufe über GitHub Actions auf dem eingefrorenen Snapshot (R2), Ergebnisse zuerst versiegelt an den Owner wie E3 und Holdout.
-- Öffentliche Renditezahlen nur nach Owner-Freigabe (CLAUDE.md, „öffentliche Aussagen über Rendite“) und Abstimmung mit der
-  Rechtsberatung; Rechte an abgeleiteten Kennzahlen (Tiingo) vorher klären.
-- Vor dem ersten Lauf: Gegentest des Rahmens auf künstlichen Kursen (`scripts/research/backtest2/sizing-check.mjs` erweitert um
-  den Rahmen): 10 Positionen, Kappe 10 %, Abgleich bestanden.
+- **schlägt den Index:** Die Bestätigungskurve 2014–Ende liegt nach Kosten über SPY, mit p ≤ 0,05 nach Korrektur für die Zahl aller
+  geprüften Kombinationen (Deflated Sharpe und Monte-Carlo wie E3).
+- **schlägt nur in Phasen:** Vorsprung belegt nur, wenn SPY über bzw. unter seiner 200-Tage-Linie liegt.
+- **nur risikobereinigt:** Sharpe höher und Verlust kleiner, Rendite nicht.
+- **schlägt nicht.**
+
+Berichtet werden: die Bestätigungskurve, die je Runde gewählte Kombination (zeigt, ob die Wahl stabil ist), die besten 20 Kombinationen des
+Gesamtzeitraums mit Spannweite, und welche Stellschrauben am meisten ausmachen. Alle Ergebnisse, auch die schlechten.
+
+## 5. Ausführung und Veröffentlichung
+
+- Vorher: Gegentest der Depotführung auf künstlichen Kursen (`scripts/research/backtest2/sizing-check.mjs`, erweitert): jede Kombination
+  aus Positionen, Gewichtung und Ausstieg rechnet bei bekanntem Kursprozess das erwartete Ergebnis; Kassenabgleich bestanden.
+- Läufe über GitHub Actions auf dem eingefrorenen Snapshot (R2); Ergebnisse zuerst versiegelt an den Owner.
+- Öffentliche Renditezahlen nur nach Owner-Freigabe und Abstimmung mit der Rechtsberatung; Rechte an abgeleiteten Kennzahlen (Tiingo) vorher klären.
