@@ -32,11 +32,47 @@ export const GRID = Object.freeze({
 /** Alle Kombinationen in fester Reihenfolge; die Nummer ist die Kennung. */
 export function combos(grid = GRID) {
   const out = [];
-  for (const source of grid.source) for (const positions of grid.positions) for (const sz of grid.sizing) for (const exit of grid.exit) for (const filter of grid.filter) for (const u of grid.universe) {
-    if (positions === 1 && sz.sizing === 'RISK' && sz.cap < 1) continue; // eine Position: Kappe < 100 % ist nur Cash-Quote
-    out.push({ id: out.length, source, positions, sizing: sz.sizing, cap: sz.cap, exit, filter, uniTop: u.uniTop, minPrice: u.minPrice });
-  }
+  grid.source.forEach((source, a) => grid.positions.forEach((positions, b) => grid.sizing.forEach((sz, c) => grid.exit.forEach((exit, d) => grid.filter.forEach((filter, e) => grid.universe.forEach((u, f) => {
+    if (positions === 1 && sz.sizing === 'RISK' && sz.cap < 1) return; // eine Position: Kappe < 100 % ist nur Cash-Quote
+    out.push({ id: out.length, source, positions, sizing: sz.sizing, cap: sz.cap, exit, filter, uniTop: u.uniTop, minPrice: u.minPrice, ix: [a, b, c, d, e, f] });
+  }))))));
   return out;
+}
+
+/**
+ * Nachbarn einer Kombination (Protokoll Fassung 3, robuste Auswahl): eine geordnete Stellschraube eine Stufe verschoben,
+ * alles andere gleich. Geordnet sind Positionen, Gewichtung, Universum und der Ausstieg innerhalb derselben Art
+ * (Stopp 15 -> 25 %, Haltedauer 63 -> 126 Tage); Signalquelle und Filter sind keine Skala und bleiben fest.
+ */
+export function neighbors(list, grid = GRID) {
+  const byKey = new Map(list.map((c) => [c.ix.join(','), c.id]));
+  return list.map((c) => {
+    const out = [];
+    for (const d of [1, 2, 3, 5]) for (const step of [-1, 1]) {
+      const ix = [...c.ix]; ix[d] += step;
+      if (d === 3 && grid.exit[ix[3]]?.kind !== c.exit.kind) continue;
+      const id = byKey.get(ix.join(',')); if (id !== undefined) out.push(id);
+    }
+    return out;
+  });
+}
+
+/** Robuste Auswahl: mind. `minPositions`; Wert = Median der Lern-Überrendite von Kombination und Nachbarn; max. Verlust wie Fassung 2. */
+export function selectRoundRobust(stats, list, nbrs, nYears, round, m, spy, { minPositions = 10 } = {}) {
+  const yEnd = Math.min(round.learn[1], FIRST_YEAR + nYears - 1) - FIRST_YEAR;
+  const w = windowDates(m, round.learn[0], round.learn[1]);
+  const spyC = cagr(valueAt(spy, w.start), valueAt(spy, w.end), w.start, w.end);
+  const ex = (k) => { const e = stats[k * nYears * YEAR_FIELDS + yEnd * YEAR_FIELDS + 3]; return e > 0 ? cagr(INITIAL, e, w.start, w.end) - spyC : -Infinity; };
+  let best = -1, bestScore = -Infinity, bestEx = null;
+  for (const c of list) {
+    if (c.positions < minPositions) continue;
+    const dd = stats[c.id * nYears * YEAR_FIELDS + yEnd * YEAR_FIELDS + 4];
+    if (!(dd >= MAX_LEARN_DRAWDOWN)) continue;
+    const vals = [c.id, ...nbrs[c.id]].map(ex).sort((a, b) => a - b), n = vals.length;
+    const score = n % 2 ? vals[n >> 1] : (vals[n / 2 - 1] + vals[n / 2]) / 2;
+    if (score > bestScore) { bestScore = score; best = c.id; bestEx = ex(c.id); }
+  }
+  return { combo: best, learnExcess: bestEx, neighborhoodMedian: bestScore, spyLearnCagr: spyC };
 }
 export const label = (c) => `${c.source} · ${c.positions} Pos · ${c.sizing === 'EQUAL' ? 'gleich' : 'Risiko, Kappe ' + Math.round(c.cap * 100) + ' %'} · ${exitLabel(c.exit)} · Filter ${c.filter} · Top ${c.uniTop}, ≥ ${c.minPrice} $`;
 export const exitLabel = (e) => e.kind === 'TRAIL' ? `Stopp ${Math.round(e.pct * 100)} % ab Hoch` : e.kind === 'SMA' ? `unter SMA${e.n}` : e.kind === 'HOLD' ? `halten ${e.days} Tage` : `Kanal ${e.n} Tage`;
