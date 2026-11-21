@@ -111,14 +111,24 @@ function notiere(ereignis, felder) {
  * Trigger-Sturm mit Wartezimmer. Der Auftrag verlangt Deduplication
  * (§17), und die gehoert an die Stelle, die das Wecken ausloest.
  */
-async function laeuftSchon(env, kopf, workflow, zustaende) {
+async function laeuftSchon(env, kopf, workflow, zustaende, ohnePullRequest) {
   const wf = workflow || WORKFLOW;
   for (const zustand of (zustaende || ["in_progress"])) {
+    /* Pages-Auslieferung: Ein Lauf auf einem PR-Zweig (event pull_request) hat seine eigene Concurrency-Gruppe
+       (pages-production-pr-N) und haelt die Auslieferung NICHT auf. 20.11.2026: ein PR-Lauf (16:39-16:51 UTC) liess zwei Takte
+       ausfallen, der Stand lag 20 Minuten hinter dem Repository (Waechter FAIL 17:00). Darum werden dort nur Laeufe gezaehlt,
+       die nicht von einem PR kommen; dazu braucht es die Liste statt nur total_count. */
     const url = "https://api.github.com/repos/" + env.GITHUB_REPO +
-                "/actions/workflows/" + wf + "/runs?status=" + zustand + "&per_page=1";
+                "/actions/workflows/" + wf + "/runs?status=" + zustand + "&per_page=" + (ohnePullRequest ? 50 : 1);
     const r = await fetch(url, { headers: kopf });
     if (!r.ok) return { bekannt: false, grund: "http" + r.status };
     const d = await r.json();
+    if (ohnePullRequest && Array.isArray(d.workflow_runs)) {
+      if (d.workflow_runs.some((l) => l && l.event !== "pull_request")) return { bekannt: true, laeuft: true, zustand };
+      /* Die Liste war voll und enthielt nur PR-Laeufe: es koennte dahinter einer stehen, dann lieber nicht anstossen. */
+      if (d.workflow_runs.length >= 50) return { bekannt: true, laeuft: true, zustand };
+      continue;
+    }
     if ((d.total_count || 0) > 0) return { bekannt: true, laeuft: true, zustand };
   }
   return { bekannt: true, laeuft: false };
@@ -203,7 +213,7 @@ async function sorgeFuerImBlick(env, kopf, scheduledTime) {
  * Pages-Lauf 7:33 statt 97 Sekunden.
  */
 async function sorgeFuerAuslieferung(env, kopf) {
-  const lage = await laeuftSchon(env, kopf, PAGES, ["in_progress", "queued"]);
+  const lage = await laeuftSchon(env, kopf, PAGES, ["in_progress", "queued"], true);
   if (!lage.bekannt) {
     notiere("auslieferungLageUnbekannt", { grund: lage.grund });
     return { ok: false, grund: "lageUnbekannt" };
