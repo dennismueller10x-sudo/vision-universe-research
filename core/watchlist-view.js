@@ -137,7 +137,18 @@
     if (!src) return { state: "UNAVAILABLE", reason: "SOURCE_MISSING" };
     if (!rule || rule.kind === "none") return { state: "OK", lag: null };
     if (rule.kind === "sessions") {
-      var cal = doc.calendar || {}, lag = sessionsDue(cal.sessions || [], dateIso || src.asOf, now);
+      var cal = doc.calendar || {}, day = dateIso || src.asOf;
+      /* Der Kalender beginnt nach dem aeltesten Quellstand (cal.after). Ein Datum davor (z. B. letzter Schluss einer
+         beendeten Reihe) liegt ausserhalb und waere sonst "0 Sitzungen" alt, also aktuell: es zaehlt ueber cal.before
+         (10 Sitzungen bis cal.after); noch frueher oder ohne cal.before ist es veraltet. */
+      var d10 = day ? String(day).slice(0, 10) : day, lag;
+      if (cal.after && d10 && d10 < cal.after) {
+        var bef = cal.before || [];
+        if (!bef.length || d10 < bef[0]) return { state: "STALE", lag: null, reason: "STALE" };
+        var tail = sessionsDue(cal.sessions || [], cal.after, now);
+        if (tail === null) return { state: "STALE", lag: null, reason: "STALE" };
+        lag = bef.filter(function (s) { return s > d10; }).length + tail;
+      } else lag = sessionsDue(cal.sessions || [], day, now);
       if (lag === null) return { state: "STALE", lag: null, reason: "STALE" };
       return { state: lag >= rule.staleAfter ? "STALE" : lag >= rule.warnAfter ? "WARN" : "OK", lag: lag };
     }
