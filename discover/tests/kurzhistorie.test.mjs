@@ -77,3 +77,11 @@ test("ANT und AXNX: Ersttag nach Listing-Beginn, nicht nach der Stamm-Erstnotiz 
     assert.ok(d.kurzhistorie.firstTradeDate > "2026-01-01", t + ": nicht die Stamm-Erstnotiz");
   }
 });
+
+test("block: mit veroeffentlichter Kurzreihe gilt der Tagesschluss (ADR-002), sonst der Intraday-Punkt", () => {
+  const i = K.ausIntraday(snap());
+  assert.equal(K.block(i, { firstTradeDate: "2026-11-19" }).stand.art, "INTRADAY_LETZTER_PUNKT");
+  const b = K.block({ sessionDate: "2026-11-20", lastLocal: null }, { firstTradeDate: "2026-11-19", bars: 2 });
+  assert.equal(b.stand.art, "TAGESSCHLUSS");
+  assert.equal(b.bars, 2);
+});

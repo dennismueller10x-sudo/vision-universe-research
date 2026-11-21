@@ -195,25 +195,7 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
     ]));
     root.appendChild(hero(detail, state));
 
-    /* Neu an der Börse (weniger als 30 Handelstage): schlanke Seite, kein Chart, keine Kapitel, keine Zahlen,
-       die es nicht gibt. Das Etikett steht sichtbar; die volle Seite beginnt bei 30 Handelstagen. */
-    if (detail.kurzhistorie) {
-      var kh = detail.kurzhistorie, stand = kh.stand || {};
-      root.appendChild(el("section", { class: "dx-chapter dx-chapter--kurzhistorie dx-fade", "data-kurzhistorie": "1" }, [
-        el("p", { class: "dx-kicker", text: "Neu an der Börse" }),
-        el("h2", { text: kh.label || "Zu kurze Historie" }),
-        (detail.price && isNum(detail.price.value)) ? el("p", { class: "dx-kurzhistorie-kurs" }, [
-          el("b", { class: "num", text: nativePrice(detail.price.value, "USD") }),
-          isNum(detail.changePercent && detail.changePercent.value)
-            ? el("span", { class: "num " + tonVon(detail.changePercent.value), text: " " + (detail.changePercent.value > 0 ? "+" : "") + detail.changePercent.value.toLocaleString("de-DE", { maximumFractionDigits: 2 }) + " % zum Vortag" })
-            : null
-        ]) : null,
-        el("p", { class: "dx-chapter-lead", text: (kh.firstTradeDate ? "Erster Handelstag: " + kh.firstTradeDate + ". " : "") +
-          (stand.sessionDate ? "Kurs: letzter Punkt der Sitzung vom " + stand.sessionDate + (stand.lokal ? ", " + stand.lokal + " Uhr (Ortszeit New York)" : "") + ". " : "") }),
-        el("p", { class: "dx-why-empty", text: "Es gibt noch keine Scores, keine Rangliste und keine Renditekennzahlen, und es wird nichts geschätzt. Sobald 30 Handelstage vorliegen, erscheint die volle Seite." })
-      ]));
-      return;
-    }
+    var kurz = !!detail.kurzhistorie; /* Neu an der Börse: Kopf, Chart (ab 2 Schlusskursen) und Etikett, keine Kapitel */
 
     /* Die Reihenfolge der Seite ist das Produkt.
 
@@ -231,6 +213,7 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
     root.appendChild(chartHost);
     chartHost.appendChild(el("h2", { text: "Kursverlauf" }));
     chartHost.appendChild(el("div", { class: "dx-chart", style: "height:320px" }));
+    if (kurz) root.appendChild(kurzhistorieHinweis(detail));
 
     /* Ein Kapitel, das fuer diesen Titel nichts zu sagen hat (kein Signal,
        keine Belege), gibt null zurueck - und faellt dann weg, statt die
@@ -250,6 +233,7 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
     /* Redesign 2027 (Folie D09): unter Kopf und Chart der Überblick nach dem Mockup (discover/ui/overview.js).
        Die bisherigen Kapitel (Belege, Fundamental Journey, Bewertung im Detail, Analyse, weitere Nachbarn) bleiben
        vollständig erreichbar – gebündelt in der Profi-Ansicht „Alle Kennzahlen“ (PRO). Nichts fällt weg. */
+    if (!kurz) {
     var uebersicht = D.Overview ? D.Overview.render(detail, options) : null;
     if (uebersicht) {
       kapitel(uebersicht);
@@ -284,6 +268,7 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
     if (DF.nextDiscovery) kapitel(DF.nextDiscovery(detail, options));
     }
     kapitel(provenance(detail));
+    }
 
     /* Der Tagesverlauf kommt aus demselben Hub wie die Karte: ein Strom je
        Titel. Er wird abgewartet, bevor der Chart entsteht - damit der
@@ -722,6 +707,26 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
    * Geschaeftszahlen. Dann steht hier kein leeres Raster und kein
    * Platzhalter, sondern ein Satz, der sagt, was fehlt und warum.
    */
+  /* Neu an der Börse (weniger als 30 Handelstage): Etikett, Kurs, Ersttag - ohne Scores, Rangliste und Renditekennzahlen. */
+  function kurzhistorieHinweis(detail) {
+    var kh = detail.kurzhistorie, stand = kh.stand || {};
+    var quelle = stand.art === "TAGESSCHLUSS"
+      ? (stand.sessionDate ? "Kurs: Schlusskurs vom " + stand.sessionDate + ". " : "")
+      : (stand.sessionDate ? "Kurs: letzter Punkt der Sitzung vom " + stand.sessionDate + (stand.lokal ? ", " + stand.lokal + " Uhr (Ortszeit New York)" : "") + ". " : "");
+    return el("section", { class: "dx-chapter dx-chapter--kurzhistorie dx-fade", "data-kurzhistorie": "1" }, [
+      el("p", { class: "dx-kicker", text: "Neu an der Börse" }),
+      el("h2", { text: kh.label || "Zu kurze Historie" }),
+      (detail.price && isNum(detail.price.value)) ? el("p", { class: "dx-kurzhistorie-kurs" }, [
+        el("b", { class: "num", text: nativePrice(detail.price.value, "USD") }),
+        isNum(detail.changePercent && detail.changePercent.value)
+          ? el("span", { class: "num " + tonVon(detail.changePercent.value), text: " " + (detail.changePercent.value > 0 ? "+" : "") + detail.changePercent.value.toLocaleString("de-DE", { maximumFractionDigits: 2 }) + " % zum Vortag" })
+          : null
+      ]) : null,
+      el("p", { class: "dx-chapter-lead", text: (kh.firstTradeDate ? "Erster Handelstag: " + kh.firstTradeDate + ". " : "") + quelle }),
+      el("p", { class: "dx-why-empty", text: "Es gibt noch keine Scores, keine Rangliste und keine Renditekennzahlen, und es wird nichts geschätzt. Sobald 30 Handelstage vorliegen, erscheint die volle Seite." })
+    ]);
+  }
+
   function unternehmen(detail) {
     var g = detail.geschaeftszahlen;
     if (!g) return null;

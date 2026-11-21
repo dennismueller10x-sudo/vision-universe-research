@@ -82,3 +82,23 @@ test("DS6 · preview-scope loest die heutige Konfiguration auf das Produktuniver
   assert.equal(r.universeSource.source, produkt.source);
   assert.ok(["INTEGRATED", "PENDING"].includes(r.universeSource.handover.status));
 });
+
+/* Kurzreihen (neu an der Boerse): derselbe Guard, eigenes Verzeichnis, nur kurz. */
+const kurz = (ticker, n = 2, extra = {}) => JSON.stringify({ ticker, short: true, publishBasis: "Test", provider: "tiingo",
+  points: Array.from({ length: n }, (_, i) => ["2026-09-" + String(i + 1).padStart(2, "0"), 100 + i]), ...extra });
+function mitKurz(config, fn) {
+  withFixture(config, (dir) => { mkdirSync(join(dir, "quant", "data", "market", "discover-series-kurz"), { recursive: true }); fn(dir); });
+}
+const KD = (dir, name) => join(dir, "quant", "data", "market", "discover-series-kurz", name);
+
+test("DS-K1 · Kurzreihe im Umfang mit Grundlage wird akzeptiert", () => {
+  mitKurz({ scope: ["AAPL"] }, (dir) => { writeFileSync(KD(dir, "ref_AAPL.json"), kurz("AAPL")); const r = run(dir); assert.equal(r.status, 0, r.stdout + r.stderr); });
+});
+test("DS-K2 · Kurzreihe ausserhalb des Umfangs oder ohne Grundlage wird abgelehnt", () => {
+  mitKurz({ scope: ["AAPL"] }, (dir) => { writeFileSync(KD(dir, "ref_TSLA.json"), kurz("TSLA")); assert.equal(run(dir).status, 1); });
+  mitKurz({ scope: ["AAPL"] }, (dir) => { writeFileSync(KD(dir, "ref_AAPL.json"), kurz("AAPL", 2, { publishBasis: undefined })); assert.equal(run(dir).status, 1); });
+});
+test("DS-K3 · eine Reihe mit 30 Punkten oder ohne Marke short gehoert nicht in discover-series-kurz", () => {
+  mitKurz({ scope: ["AAPL"] }, (dir) => { writeFileSync(KD(dir, "ref_AAPL.json"), kurz("AAPL", 30)); assert.equal(run(dir).status, 1); });
+  mitKurz({ scope: ["AAPL"] }, (dir) => { writeFileSync(KD(dir, "ref_AAPL.json"), kurz("AAPL", 2, { short: false })); assert.equal(run(dir).status, 1); });
+});
