@@ -219,7 +219,7 @@
     "/quant/engines/realtime/freshness.js", "/quant/engines/realtime/source-state.js", "/quant/engines/realtime/intraday-snapshot.js",
     "/discover/ui/live-hub.js", "/quant/engines/series-sampling.js", "/core/chart-history.js", "/quant/app/chart.js",
     /* Live-Strom: dieselbe Freigabe wie in Quant (quant/api/realtime-capability.js: Identitaet, Konfiguration, Anzeige-Freigabe je Ticker). */
-    "/quant/engines/hash.js", "/quant/engines/instrument-classification.js", "/quant/engines/company-master.js", "/quant/engines/instrument-directory.js",
+    "/quant/engines/hash.js", "/core/exchanges.js", "/quant/engines/instrument-classification.js", "/quant/engines/company-master.js", "/quant/engines/instrument-directory.js",
     "/quant/engines/display-policy.js", "/quant/engines/realtime/transport.js", "/quant/api/live-relay-client.js", "/quant/api/realtime-capability.js"];
   var chartWidgetReady = null;
   function loadChartWidget() {
