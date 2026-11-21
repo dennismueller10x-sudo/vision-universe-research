@@ -538,3 +538,19 @@ test("PR17 · technical-intelligence (pipeline-daily, vormals technical-intellig
   assert.match(y, /conclusion == 'success'/, "kein Neubau nach gescheitertem long-series-Lauf");
   assert.match(y, /push-with-retry\.sh/, "Push nur ueber das Skript");
 });
+
+test("PR18 · long-series: Discover-Neubau ueber push-with-retry statt nacktem git pull --rebase (Lauf 44865594790, 21.11.2026)", () => {
+  const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+  const wf = readFileSync(join(ROOT, ".github/workflows/long-series.yml"), "utf8");
+  const schritt = wf.slice(wf.indexOf("- name: Commit und Push"), wf.indexOf("- name: Ergebnis der Nachpruefung"));
+  assert.match(schritt, /PUSH_REGENERATE_PATHS:\s*"discover\/data\/ !discover\/data\/europe\/ !discover\/data\/europe-esef\/"/);
+  const befehl = (schritt.match(/PUSH_REGENERATE:\s*"([^"]+)"/) || [])[1];
+  assert.ok(befehl && /build-discover-data\.mjs/.test(befehl) && /verify-discover-data\.mjs/.test(befehl), "Neubau samt Pruefung");
+  assert.match(schritt, /scripts\/ci\/push-with-retry\.sh/);
+  assert.ok(!/^\s*git pull\b/m.test(schritt), "kein nacktes git pull --rebase vor dem Push (Konflikt in erzeugten Dateien bricht ab)");
+  /* long-series ist eingetragener Schreiber von discover/data (Erzeugerregister). */
+  const reg = JSON.parse(readFileSync(join(ROOT, "core/registry/domains.json"), "utf8"));
+  const domains = (Array.isArray(reg.domains) ? reg.domains : Object.values(reg.domains || {})).filter(Boolean);
+  const dom = domains.find((d) => d.artifact && d.artifact.startsWith("/discover/data/meta.json"));
+  assert.ok(dom && /long-series/.test(String(dom.workflow)), "long-series ist kein eingetragener Schreiber von discover/data/meta.json");
+});

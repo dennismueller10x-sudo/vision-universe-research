@@ -199,8 +199,16 @@ jobs:
         if: steps.plan.outputs.work == 'true'
         run: du -sh quant/data/market/discover-series-long
 
+      # discover/data/meta.json (und jede andere Discover-Datei) schreiben fuenf Laeufe ueber denselben Erzeuger. Lauf 44865594790
+      # (21.11.2026, 04:20 UTC) brach im nackten `git pull --rebase` an einem Konflikt in discover/data/meta.json ab, noch vor
+      # push-with-retry.sh: ein anderer Datenlauf war 3 Minuten zuvor auf main gelandet, die Wochenreihen gingen nicht hinaus. Kein
+      # Stand gewinnt: nach jedem Neuaufsetzen baut push-with-retry.sh Discover aus dem zusammengefuehrten Baum neu und prueft ihn
+      # (SIEBTENS), wie sec-consumer-fundamentals.yml. Europa hat einen eigenen Erzeuger und bleibt aussen vor.
       - name: Commit und Push
         if: steps.plan.outputs.work == 'true'
+        env:
+          PUSH_REGENERATE_PATHS: "discover/data/ !discover/data/europe/ !discover/data/europe-esef/"
+          PUSH_REGENERATE: "node scripts/discover/build-discover-data.mjs && node scripts/discover/verify-discover-data.mjs"
         run: |
           git config user.name "vision-universe-bot"
           git config user.email "actions@users.noreply.github.com"
@@ -209,21 +217,6 @@ jobs:
             echo "Keine Aenderung."
           else
             git commit -m "Lange Kursreihen: $(node -e 'const i=require("./quant/data/market/discover-series-long/index.json");console.log(i.count+" Wochenreihen, "+JSON.stringify(i.summary))')"
-            # Nur den eigenen Zweig holen. Ein blankes `git pull` holte am
-            # 03.10.2026 jeden Zweig des Repositorys (49 Minuten) und lief
-            # in die Job-Grenze - die Reihen waren gebaut, der Commit kam nie an.
-            git pull --rebase origin "${GITHUB_REF_NAME}"
-            # Nach einem Rebase koennen andere Daten-Workflows die Inputs
-            # geaendert haben. Den gemeinsamen Commit auf diesem Stand
-            # erneut pruefen, bevor irgendetwas veroeffentlicht wird.
-            node scripts/discover/build-discover-data.mjs
-            node scripts/discover/verify-discover-data.mjs
-            git add -A discover/data
-            if ! git diff --cached --quiet; then git commit --amend --no-edit; fi
-            # Ein anderer Daten-Workflow kann zwischen Rebase und Push auf
-            # main landen (03.10.2026: Supertrader-Signale, 25 s Abstand).
-            # Dasselbe Werkzeug wie der Marktdaten-Lauf: neu aufsetzen und
-            # mit Wartezeit erneut versuchen.
             scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
           fi
 
