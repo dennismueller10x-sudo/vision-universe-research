@@ -72,3 +72,33 @@ test("RS-5 · B2a: sichern, zuruecklesen, Manifest; geloescht wird nur Gesichert
   await assert.rejects(backupFiles(bad, r, plan), /READBACK_MISMATCH/, "Lesetest");
   rmSync(r, { recursive: true, force: true });
 });
+
+test("RS-6 · B2b: fehlt die Reihe im Repo, kommen dieselben Bytes aus der privaten Kopie (Hash pruefen, Ueberlagerung)", async () => {
+  const { restore, backupIndex, BACKUP_DIR } = await import("../../scripts/market/restore-research-series.mjs");
+  const { PREFIX, sha256 } = await import("../../scripts/market/backup-series.mjs");
+  const { createRequire } = await import("node:module");
+  const { resolveSeriesFile, readSeries } = createRequire(import.meta.url)("../../quant/engines/research-series-path.cjs");
+  const r = mkdtempSync(join(tmpdir(), "vu-rr-")), out = join(r, "priv");
+  const put = (p, c) => { mkdirSync(dirname(join(r, p)), { recursive: true }); writeFileSync(join(r, p), c); };
+  const L = "quant/data/market/discover-series-long/";
+  put(L + "ref_STAY.json", '{"s":1}');
+  const gone = '{"g":1}', store = new Map([[PREFIX + L + "ref_GONE.json", Buffer.from(gone)]]);
+  const mf = { schema: "vu-series-backup-manifest-1", files: [{ path: L + "ref_GONE.json", key: PREFIX + L + "ref_GONE.json", sha256: sha256(Buffer.from(gone)) }] };
+  put(BACKUP_DIR + "/2026-11-22-1.json", JSON.stringify(mf));
+  put(BACKUP_DIR + "/2026-11-22-0.json", JSON.stringify({ ...mf, dryRun: true, files: [{ path: L + "ref_DRY.json", key: "x", sha256: "y" }] }));
+  assert.deepEqual([...backupIndex(r).keys()], [L + "ref_GONE.json"], "Trockenlauf zaehlt nie");
+  const res = await restore({ get: async (k) => store.get(k) || null }, r, out, { overlay: true });
+  assert.equal(res.restored, 1);
+  assert.equal(readSeries(r, L + "ref_GONE.json", { VU_RESEARCH_SERIES_DIR: out }), gone, "Bytes gleich, also Hash gleich");
+  assert.equal(resolveSeriesFile(r, L + "ref_STAY.json", { VU_RESEARCH_SERIES_DIR: out }), join(r, L + "ref_STAY.json"), "Repo vor Kopie");
+  assert.equal(readFileSync(join(out, L, "ref_STAY.json"), "utf8"), '{"s":1}', "Ueberlagerung sieht Repo und Sicherung");
+  await assert.rejects(restore({ get: async () => Buffer.from("falsch") }, r, join(r, "p2")), /SERIES_RESTORE_HASH_MISMATCH/);
+  rmSync(r, { recursive: true, force: true });
+});
+
+test("RS-7 · B2b: der Forschungs-Loader nimmt die private Kopie, der festgenagelte Adapter bleibt unberuehrt", () => {
+  const loader = readFileSync(join(ROOT, "quant/engines/research-weekly-loader.cjs"), "utf8");
+  assert.match(loader, /require\('\.\/research-series-path\.cjs'\)/);
+  assert.equal((loader.match(/fs\.readFileSync\(path\.join\(root, rel/g) || []).length, 0, "kein Direktzugriff auf die Repo-Reihe mehr");
+  assert.doesNotMatch(readFileSync(join(ROOT, "quant/engines/weekly-real-adapter.cjs"), "utf8"), /research-series-path/);
+});
