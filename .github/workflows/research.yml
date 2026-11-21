@@ -1015,6 +1015,21 @@ jobs:
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
         run: node scripts/market/publish-long-series.mjs
 
+      # Teil B2b (Steuerung 21.11.2026): Reihen, die die Umfangsfolge nach privater Sicherung aus dem Repo entfernt hat,
+      # kommen byte-gleich aus R2 zurueck, damit offene Ereignisse ausgeschiedener Titel weiterlaufen. Ohne Belege: nichts.
+      - name: Private Kopien ausgeschiedener Reihen zurueckholen
+        if: steps.due.outputs.pending != ''
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: |
+          set -euo pipefail
+          # in den Checkout dieses Laufs (fehlende Dateien, nie ueberschrieben); der Schritt "Langreihen nicht committen" raeumt auf
+          node scripts/market/restore-research-series.mjs --out "$GITHUB_WORKSPACE"
+
       # Exit 0 = alles registriert, 3 = fruehere Wochen registriert, eine spaetere nicht (wird committet, Lauf
       # danach rot), sonst = nichts registriert (rot, nichts zu committen).
       - name: Registrieren (Identitaet pruefen, fehlende Wochen nachholen)

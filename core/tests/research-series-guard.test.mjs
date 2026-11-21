@@ -72,3 +72,33 @@ test("RS-5 · B2a: sichern, zuruecklesen, Manifest; geloescht wird nur Gesichert
   await assert.rejects(backupFiles(bad, r, plan), /READBACK_MISMATCH/, "Lesetest");
   rmSync(r, { recursive: true, force: true });
 });
+
+test("RS-6 · B2b: fehlt die Reihe im Checkout, legt der Restore dieselben Bytes zurueck (Hash pruefen, nie ueberschreiben)", async () => {
+  const { restore, backupIndex, BACKUP_DIR } = await import("../../scripts/market/restore-research-series.mjs");
+  const { PREFIX, sha256 } = await import("../../scripts/market/backup-series.mjs");
+  const r = mkdtempSync(join(tmpdir(), "vu-rr-"));
+  const put = (p, c) => { mkdirSync(dirname(join(r, p)), { recursive: true }); writeFileSync(join(r, p), c); };
+  const L = "quant/data/market/discover-series-long/";
+  put(L + "ref_STAY.json", '{"s":1}');
+  const gone = '{"g":1}', store = new Map([[PREFIX + L + "ref_GONE.json", Buffer.from(gone)], [PREFIX + L + "ref_STAY.json", Buffer.from("alt")]]);
+  const mf = { schema: "vu-series-backup-manifest-1", files: [
+    { path: L + "ref_GONE.json", key: PREFIX + L + "ref_GONE.json", sha256: sha256(Buffer.from(gone)) },
+    { path: L + "ref_STAY.json", key: PREFIX + L + "ref_STAY.json", sha256: sha256(Buffer.from("alt")) }] };
+  put(BACKUP_DIR + "/2026-11-22-1.json", JSON.stringify(mf));
+  put(BACKUP_DIR + "/2026-11-22-0.json", JSON.stringify({ ...mf, dryRun: true, files: [{ path: L + "ref_DRY.json", key: "x", sha256: "y" }] }));
+  assert.ok(!backupIndex(r).has(L + "ref_DRY.json"), "Trockenlauf zaehlt nie");
+  const res = await restore({ get: async (k) => store.get(k) || null }, r, r);
+  assert.equal(res.restored, 1);
+  assert.equal(readFileSync(join(r, L + "ref_GONE.json"), "utf8"), gone, "Bytes gleich, also sourceBytesHash gleich");
+  assert.equal(readFileSync(join(r, L + "ref_STAY.json"), "utf8"), '{"s":1}', "eine Reihe des Checkouts wird nie ueberschrieben");
+  rmSync(join(r, L + "ref_GONE.json"));
+  await assert.rejects(restore({ get: async () => Buffer.from("falsch") }, r, r), /SERIES_RESTORE_HASH_MISMATCH/);
+  rmSync(r, { recursive: true, force: true });
+});
+
+test("RS-7 · B2b: Forschungslaeufe legen die Kopien in den Checkout, die festgenagelten Loader bleiben unberuehrt", () => {
+  const wf = readFileSync(join(ROOT, ".github/workflows/research.yml"), "utf8");
+  assert.match(wf, /restore-research-series\.mjs --out "\$GITHUB_WORKSPACE"/, "Elliott-Registry holt fehlende Reihen zurueck");
+  for (const f of ["quant/engines/research-weekly-loader.cjs", "quant/engines/weekly-real-adapter.cjs"])
+    assert.doesNotMatch(readFileSync(join(ROOT, f), "utf8"), /restore-research-series|VU_RESEARCH_SERIES_DIR/, f + " bleibt unveraendert");
+});
