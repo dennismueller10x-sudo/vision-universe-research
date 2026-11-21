@@ -265,6 +265,14 @@ export async function buildRelease({root,output}){
    await writeFile(resolve(output,'quant/data/universe/capability-shards/'+key+'.json'),b);
   }
  }
+ /* Logo-Urheber (credits.json, 1,8 MB): die Aktienseite braucht einen Eintrag, nicht 4.200. Je shardKey ein Ausschnitt mit den
+    unveraenderten Eintraegen; die volle Datei bleibt daneben (discover/ui/logos.js faellt darauf zurueck). */
+ if(paths.includes('discover/logos/credits.json')){
+  const src=await load('discover/logos/credits.json'),parts={};
+  for(const [sym,entry] of Object.entries(src.credits||{})){const key=Master.shardKey(sym);if(!/^[A-Z0-9_]{1,2}$/.test(key))continue;(parts[key]??={version:src.version,generatedAt:src.generatedAt,shard:key,credits:{}}).credits[sym]=entry;}
+  await mkdir(resolve(output,'discover/logos/credits'),{recursive:true});
+  for(const [key,part] of Object.entries(parts)){const b=Buffer.from(JSON.stringify(part));if(b.length>CAPABILITY_SHARD_BUDGET*2)throw Error('CREDITS_SHARD_BUDGET_EXCEEDED');await writeFile(resolve(output,'discover/logos/credits/'+key+'.json'),b);}
+ }
  /* Auslieferungsansichten der Aktienseite (siehe oben). Jeder Schritt liest
     nur Quelldateien des Repositories und schreibt nur in den Release. */
  for(const p of technicalShards){
