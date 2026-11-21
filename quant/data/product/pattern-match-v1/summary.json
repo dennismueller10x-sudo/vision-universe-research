@@ -1,21 +1,21 @@
 {
  "schemaVersion": "pattern-match-1.0.0",
- "generatedAt": "2026-11-21T13:37:50.000Z",
+ "generatedAt": "2026-11-21T17:10:43.000Z",
  "asOf": "2026-11-20",
  "horizon": "H24",
  "horizonMonths": 24,
  "winnerThreshold": "W100",
  "winnerMinReturn": 1,
  "lossThreshold": -0.5,
- "baseRate": 0.108331,
+ "baseRate": 0.108628,
  "studies": {
   "price": {
    "methodologyVersion": "pattern-research-1.1.0",
-   "contentHash": "2626844314daf949"
+   "contentHash": "72bb3e727b1bfb94"
   },
   "fundamental": {
    "methodologyVersion": "pattern-research-fundamentals-1.0.0",
-   "contentHash": "2d0c606419f7a300"
+   "contentHash": "5724e13819dff57c"
   }
  },
  "caveats": {
@@ -32,18 +32,18 @@
    "INSUFFICIENT_SUPPORT": 9,
    "PARAMETER_SENSITIVE": 1,
    "NOT_SIGNIFICANT": 11,
-   "IN_SAMPLE_ONLY": 46
+   "IN_SAMPLE_ONLY": 45
   },
   "fundamental": {
    "PARAMETER_SENSITIVE": 3,
-   "IN_SAMPLE_ONLY": 111,
+   "IN_SAMPLE_ONLY": 109,
    "NOT_SIGNIFICANT": 34,
    "INSUFFICIENT_SUPPORT": 2
   }
  },
  "withheldNote": "Nur Muster mit dem Urteil ROBUST werden neben einem Titel gezeigt. Was zurueckgehalten wurde, steht hier gezaehlt statt zu verschwinden.",
- "instruments": 5343,
- "withoutFundamentals": 1098,
+ "instruments": 5157,
+ "withoutFundamentals": 948,
  "shards": [
   "AA",
   "AB",
@@ -275,7 +275,6 @@
   "IS",
   "IT",
   "IV",
-  "IW",
   "IX",
   "IZ",
   "JA",
@@ -462,11 +461,9 @@
   "QE",
   "QF",
   "QG",
-  "QH",
   "QL",
   "QM",
   "QN",
-  "QO",
   "QR",
   "QS",
   "QT",
@@ -689,16 +686,16 @@
  "candidates": 33,
  "unavailableSchemaVersion": "pattern-unavailable-1.0.0",
  "unavailable": {
-  "total": 997,
+  "total": 874,
   "requiredWeeks": 104,
   "reasons": {
-   "INSUFFICIENT_WEEKLY_HISTORY": 737,
-   "NO_WEEKLY_SERIES": 260
+   "INSUFFICIENT_WEEKLY_HISTORY": 625,
+   "NO_WEEKLY_SERIES": 249
   },
   "note": "Je Titel im eigenen Shard nachlesbar. Die Luecke ist eine Datengrenze der Studie (104 Wochen vorregistriert) und kein Fehlschlag des Titels."
  },
  "findingCount": {
-  "price": 96,
-  "fundamental": 187
+  "price": 97,
+  "fundamental": 189
  }
 }

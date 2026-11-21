@@ -1,6 +1,6 @@
 {
  "schemaVersion": "decision-intelligence-1.0.0",
- "generatedAt": "2026-11-21T13:55:14.197Z",
+ "generatedAt": "2026-11-21T17:22:58.683Z",
  "asOf": "2026-11-20",
  "measures": {
   "RADAR_EVENTS_TOTAL": 2003,
@@ -24,25 +24,25 @@
   "SETUPS_TRACKED": 794,
   "SETUP_TRANSITIONS": 10407,
   "SETUP_TRANSITIONS_LATEST": 178,
-  "BACKTEST_ELIGIBLE_RULES": 96,
-  "BACKTEST_WITHHELD_RULES": 84,
+  "BACKTEST_ELIGIBLE_RULES": 97,
+  "BACKTEST_WITHHELD_RULES": 83,
   "HISTORICAL_REPLAY_COVERAGE": {
-   "universe": 5680,
-   "covered": 5342,
-   "available": 4373,
+   "universe": 5473,
+   "covered": 5156,
+   "available": 4201,
    "sufficient": {
-    "m1": 2054,
-    "m3": 1991,
-    "m6": 1923,
-    "m12": 1837
+    "m1": 2004,
+    "m3": 1941,
+    "m6": 1873,
+    "m12": 1793
    },
    "broad": {
-    "m6": 687
+    "m6": 674
    },
    "reasons": {
-    "NOT_COVERED": 338,
-    "NO_PRICE_CONDITION_TODAY": 867,
-    "NO_COMPARABLE_CASE": 102
+    "NOT_COVERED": 317,
+    "NO_PRICE_CONDITION_TODAY": 857,
+    "NO_COMPARABLE_CASE": 98
    }
   },
   "WATCHLIST_TRACKABLE_TITLES": 5413,
@@ -77,7 +77,7 @@
   {
    "question": "was historisch bei derselben Lage geschah",
    "pass": true,
-   "measured": "1923 Titel mit ≥ 10 abgeschlossenen 6-Monats-Fällen"
+   "measured": "1873 Titel mit ≥ 10 abgeschlossenen 6-Monats-Fällen"
   },
   {
    "question": "wie belastbar diese Evidenz ist",
