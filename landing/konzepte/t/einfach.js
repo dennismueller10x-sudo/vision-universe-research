@@ -27,7 +27,7 @@
   var hl = $(".hl", hero); if (hl) hl.parentNode.removeChild(hl);
   var h1 = $("h1", hero);
   if (h1) {
-    var pts = ["Verdient die Firma Geld? Einfach erklärt.", "Wohin läuft der Kurs? In einem Satz.", "Was große Anleger kaufen und verkaufen.", "Aktien entdecken: wischen wie bei Instagram.", "Fragen stellen, in deinen eigenen Worten."];
+    var pts = ["Verdient die Firma Geld?", "Wohin läuft der Kurs?", "Was kaufen die Großen?", "Aktien entdecken", "Fragen in deinen Worten"];
     var ul = el("ul", "ez-checks");
     pts.forEach(function (t) { var li = el("li", "", '<i aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></i>'); li.appendChild(document.createTextNode(t)); ul.appendChild(li); });
     h1.parentNode.insertBefore(ul, h1.nextSibling);

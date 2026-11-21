@@ -105,3 +105,26 @@
   
 }
 .ez-card.step .tagm{height:auto;min-height:36px;white-space:normal;line-height:1.25;padding-top:7px;padding-bottom:7px}
+/* Handy: Boxen passen auf einen Bildschirm – Grafik verkleinert, Text kürzer */
+@media(max-width:999px){
+  .ez-card.step{gap:10px;padding:18px 18px 20px}
+  .ez-card.step .kap{font-size:11px}
+  .ez-card.step h2{font-size:25px}
+  .ez-card.step p.t{font-size:15px;-webkit-line-clamp:3}
+  .ez-card.step>.ez-main{zoom:.72;margin-top:6px}
+  .ez-card.step .lnk{margin-top:auto}
+}
+/* Start am Handy: kurze Haken in einer Zeile */
+@media(max-width:999px){
+  .ez-checks li{font-size:15px;white-space:nowrap}
+}
+/* Start am Handy, ruhiger: Haken über die volle Breite, Knopf, Stores; das iPhone der Live-Seite schaut darunter hervor */
+@media(max-width:999px){
+  .ez-top .step.first{grid-template-columns:1fr}
+  .ez-top .step.first .ez-checks{grid-column:1;grid-row:auto;gap:9px}
+  .ez-checks li{font-size:16px}
+  .ez-top .step.first .stage.mob{grid-column:1;grid-row:auto;order:9;width:100%;height:380px;justify-self:stretch}
+  .ez-top .step.first .stage.mob .hc{display:flex !important}
+  .ez-top .step.first .stage.mob .aphone{--pw:190px;position:absolute;left:50%;top:0;transform:translateX(-50%)}
+  .ez-top .step.first .stage.mob .hc.c5{display:none !important}
+}
