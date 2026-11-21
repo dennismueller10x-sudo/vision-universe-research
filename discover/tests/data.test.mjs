@@ -66,7 +66,8 @@ test("der Suchindex laedt in einem Stueck", { skip: !vorhanden }, () => {
     const file = join(DATA, "search", universe.universeId + ".json");
     assert.ok(existsSync(file));
     const index = readJSON(file);
-    assert.equal(index.entries.length, universe.securities);
+    /* Neu an der Boerse (Kurzhistorie-Seiten, ohne Score): im Suchindex, nicht in den Ranglisten gezaehlt. */
+    assert.equal(index.entries.length, universe.securities + (universe.kurzhistorie || 0));
     /* Die Groesse skaliert mit dem Universum, nicht mit einer festen Zahl:
        hoechstens ~160 Byte je Titel (5.950 Titel = ~850 KB roh, ~170 KB
        komprimiert) - geladen erst, wenn jemand die Suche oeffnet. Seit dem

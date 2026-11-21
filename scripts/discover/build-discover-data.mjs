@@ -57,6 +57,7 @@ const Fundamentals = require(join(root, "discover", "engines", "fundamentals.js"
 const Relevance = require(join(root, "discover", "engines", "relevance.js"));
 const DiscoveryEligibility = require(join(root, "discover", "engines", "discovery-eligibility.js"));
 const ImBlick = require(join(root, "discover", "engines", "im-blick.js"));
+const Kurzhistorie = require(join(root, "discover", "engines", "kurzhistorie.js"));
 
 const OUT = join(root, "discover", "data");
 const METHODOLOGY = readJSON(join(root, "discover", "methodology", "discover-v1.json"));
@@ -1792,6 +1793,60 @@ function technicalInstrumentIndex() {
   return new Map((index.instruments || []).map((i) => [i.instrumentId, i]));
 }
 
+/* Neu an der Boerse (Steuerung 21.11.2026, ANT): Titel des Produktuniversums, die noch keine 30 Schlusskurse haben, bekommen
+   eine schlanke Seite statt keiner - ohne Scores, ohne Rangliste, ohne Reihe. Quelle fuer den Kurs ist der Intraday-Snapshot
+   (quant/data/market/intraday/<Sitzung>/<securityId>.json); gibt es keinen, gibt es keine Seite (nichts wird erfunden).
+   Kandidaten: im Produktuniversum, ohne regulaere Karte, erster Handelstag hoechstens MAX_AGE_DAYS vor der letzten Sitzung. */
+const KURZ_SEITEN = new Map();
+function kurzhistorieSeiten(universe) {
+  const dir = join(root, "quant", "data", "market", "intraday");
+  if (!existsSync(dir)) return [];
+  const sitzungen = readdirSync(dir).filter((n) => /^\d{4}-\d{2}-\d{2}$/.test(n)).sort().reverse().slice(0, 5);
+  if (!sitzungen.length) return [];
+  const heute = sitzungen[0];
+  const haben = new Set(universe.stocks.map((s) => s.symbol));
+  const master = loadMasterIndex();
+  const out = [];
+  for (const sec of resolveProductUniverse(root).securities) {
+    if (haben.has(sec.ticker)) continue;
+    const inst = master.get(sec.ticker) || {};
+    if (!Kurzhistorie.jungGenug(inst.firstTradeDate, heute)) continue;
+    let info = null;
+    for (const tag of sitzungen) {
+      const f = join(dir, tag, sec.securityId + ".json");
+      if (!existsSync(f)) continue;
+      info = Kurzhistorie.ausIntraday(readJSON(f));
+      if (info) break;
+    }
+    if (!info) continue;
+    const metrics = flatMetrics({});
+    const stock = Contract.normalizeStock({
+      symbol: sec.ticker, instrumentId: inst.instrumentId || null, securityId: sec.securityId,
+      companyName: sec.displayName || sec.companyName || null,
+      companyNameStatus: (sec.displayName || sec.companyName) ? "CALCULATED" : "SOURCE_MISSING",
+      legalName: sec.companyName || null, nameSource: sec.nameSource || null,
+      universeId: "US_REAL", dataMode: "real", provider: "tiingo",
+      exchange: sec.exchange || inst.exchange || null,
+      sector: null, sectorStatus: "SOURCE_MISSING",
+      price: Contract.field(info.close),
+      changePercent: info.changePercent === null ? Contract.field(null, "INSUFFICIENT_HISTORY") : Contract.field(info.changePercent),
+      sparkline: null, sparklineStatus: "INSUFFICIENT_HISTORY", performancePath: null,
+      hasPriceSeries: false,
+      priceSeries: withheldSeries("INSUFFICIENT_HISTORY", Kurzhistorie.LABEL),
+      was: BUSINESS_DESCRIPTIONS[sec.ticker] || null, recognitionTier: null, marketCap: null, bars: null,
+      metrics, metricStatus: withheldMetricStatus(metrics, null),
+      dataQuality: "WARNING", dataQualityReason: "insufficient_history_for_factors",
+      asOf: info.sessionDate, updatedAt: universe.generatedAt
+    });
+    stock.scoreDetail = scoreAll(metrics, {});
+    stock.rawValues = {};
+    stock.seriesPath = null;
+    stock.instrumentType = inst.instrumentType || null;
+    out.push({ stock, info, firstTradeDate: inst.firstTradeDate });
+  }
+  return out;
+}
+
 function buildDetail(universe, stock, instruments, barsByTicker, memberships) {
   const entry = instruments.get(stock.symbol);
   let bundle = null;
@@ -2225,12 +2280,16 @@ for (const universe of universes) {
   /* Suchindex: klein genug fuer einen einzigen Abruf. */
   /* Welche Kuerzel eine Aktienseite tragen - der Vertrag mit dem Company
      Master (scripts/universe/build-sec-universe.mjs liest ihn, main). */
+  /* Neu an der Boerse: die schlanke Seite steht im Index, damit die Aktienseite sie statt der Master-Ansicht oeffnet. */
+  const kurzSeiten = universe.kind === "real" ? kurzhistorieSeiten(universe) : [];
+  KURZ_SEITEN.set(universe.universeId, kurzSeiten);
   write(`stock-index/${universe.universeId}.json`, {
     universeId: universe.universeId,
     count: universe.stocks.length,
+    kurzhistorie: kurzSeiten.map((k) => k.stock.symbol).sort(),
     note: "Kuerzel, fuer die eine Detailseite ausgeliefert wird. Alle uebrigen Titel des " +
           "Company Master bekommen ihre Seite aus dem Master (quant/data/universe/).",
-    symbols: universe.stocks.map((s) => s.symbol).sort()
+    symbols: universe.stocks.map((s) => s.symbol).concat(kurzSeiten.map((k) => k.stock.symbol)).sort()
   });
 
   write(`search/${universe.universeId}.json`, {
@@ -2252,7 +2311,11 @@ for (const universe of universes) {
          hundertfach, deshalb die Welt und sonst nichts - sie genuegt,
          damit ein Treffer aussieht wie die Reihe, aus der er kaeme. */
       w: s.world || null
-    }))
+    })).concat(kurzSeiten.map((k) => ({
+      /* Neu an der Boerse: auffindbar, ohne Score und Rendite (Kurzhistorie-Seite). */
+      i: k.stock.instrumentId || null, s: k.stock.symbol, n: k.stock.companyName, sec: null, m: 1,
+      a: null, l: null, d: null, h: 0, r: null, w: null
+    })))
   });
 }
 
@@ -2314,6 +2377,17 @@ for (const universe of universes) {
     detail.geschaeftszahlen = geschaeftszahlen(stock, secFakten, FUNDAMENTALS);
     write(`stocks/${universe.universeId}/${stock.symbol}.json`, detail);
     written++;
+  }
+  if (universe.kind === "real") {
+    for (const { stock, info, firstTradeDate } of KURZ_SEITEN.get(universe.universeId) || []) {
+      const detail = buildDetail(universe, stock, instruments, universe.barsByTicker, memberships);
+      detail.geschaeftszahlen = Unternehmen.leer("INSUFFICIENT_HISTORY", Kurzhistorie.LABEL + ".");
+      detail.kurzhistorie = Kurzhistorie.block(info, { firstTradeDate });
+      detail.discoveryEligible = true;
+      write(`stocks/${universe.universeId}/${stock.symbol}.json`, detail);
+      symbols.add(stock.symbol);
+      written++;
+    }
   }
   console.log(`     ${universe.universeId.padEnd(9)} ${written} Detailseiten`);
 }
@@ -2436,6 +2510,7 @@ const meta = {
     notTradingExcluded: u.stocks.filter((s) => s.discoveryEligible === false)
       .map((s) => ({ symbol: s.symbol, reason: s.ineligibleReason })),
     detailPages: detailSets.get(u.universeId).size,
+    kurzhistorie: (KURZ_SEITEN.get(u.universeId) || []).length,
     factorCoverage: u.factorCoverage || null,
     fundamentalsCoverage: u.fundamentalsCoverage || null,
     valuationContext: u.valuationContext || null,
