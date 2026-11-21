@@ -103,7 +103,7 @@ jobs:
               --scale-dir "$X/scale" --out "$X/out" --today "$heute"
           else
             max="$(node -e 'console.log(require("./core/registry/eligibility-gate.json").limits.autoMembersAdded)')"
-            node scripts/market/expand-us-universe.mjs --auto "$max" --sec "$X/sec-tickers.json" \
+            node scripts/market/expand-us-universe.mjs --auto "$max" --sec "$X/sec-tickers.json" --sec-submissions \
               --master "$X/work0/us-security-master.json" --scale-dir "$X/scale" --out "$X/out" --today "$heute"
             echo "ELIG_AUTO_ADDED=$X/out/expansion.json" >> "$GITHUB_ENV"
           fi

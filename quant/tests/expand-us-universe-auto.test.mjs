@@ -3,7 +3,7 @@
 // Aelteste Notierung zuerst; der Rest wartet (deferred). Der Bestand bleibt zeichengleich vorne.
 import test from "node:test";
 import assert from "node:assert/strict";
-import { appendOnlyMerge, indexSecTickers, autoRejectReason } from "../../scripts/market/expand-us-universe.mjs";
+import { appendOnlyMerge, indexSecTickers, autoRejectReason, firstFilingDate, reuseSuspected, REUSE_GRACE_DAYS } from "../../scripts/market/expand-us-universe.mjs";
 
 const baseline = [{ securityId: "ref_NVDA", ticker: "NVDA", exchange: "NASDAQ" }];
 const row = (ticker, start, over = {}) => ({ ticker, reconciliation_status: "ADDED", eligible_us_equity: true, instrument_type: "EQUITY_COMMON",
@@ -56,4 +56,25 @@ test("AU3 · Grenze 0 haengt nichts an; ohne --auto bleibt das bisherige Verhalt
 test("AU4 · SEC-Liste ohne Pflichtfelder bricht ab (fail closed)", () => {
   assert.throws(() => indexSecTickers({ fields: ["cik", "name"], data: [] }), /Felder/);
   assert.throws(() => indexSecTickers(null), /fields/);
+});
+
+test("AU5 · Kuerzel-Wiederverwendung: frueheste SEC-Einreichung mehr als ein Jahr nach dem Anbieter-Beginn -> zurueckgestellt (AXNX)", () => {
+  assert.equal(REUSE_GRACE_DAYS, 365);
+  /* Form wie https://data.sec.gov/submissions/CIK##########.json */
+  const neu = { filings: { recent: { filingDate: ["2026-11-02", "2026-09-30", "2024-02-14"] }, files: [] } };
+  const alt = { filings: { recent: { filingDate: ["2026-11-02"] }, files: [{ filingFrom: "1996-03-01", filingTo: "2010-12-31" }] } };
+  assert.equal(firstFilingDate(neu), "2024-02-14");
+  assert.equal(firstFilingDate(alt), "1996-03-01", "aeltere Einreichungen stehen in filings.files");
+  assert.equal(firstFilingDate(null), null);
+  assert.equal(reuseSuspected("2018-10-31", "2024-02-14"), true, "AXNX: Zeile seit 2018, Registrant erst 2024");
+  assert.equal(reuseSuspected("2026-10-13", "2026-09-01"), false, "Neuemittent: S-1 vor dem ersten Handelstag");
+  assert.equal(reuseSuspected("2018-10-31", "2019-06-01"), false, "innerhalb der Karenz");
+  const ff = new Map([["0000000001", "1996-03-01"], ["0000000002", "2026-09-30"]]);
+  assert.equal(autoRejectReason(row("ALT", "1996-01-10"), secBy, ff), null);
+  assert.equal(autoRejectReason(row("NEU", "2018-10-31"), secBy, ff), "tickerReuseSuspected");
+  assert.equal(autoRejectReason(row("MID", "2018-04-30", { exchange: "NYSE" }), secBy, ff), "secSubmissionsUnavailable", "ohne Beleg kein Zugang");
+  assert.equal(autoRejectReason(row("MID", "2018-04-30", { exchange: "NYSE" }), secBy), null, "ohne --sec-submissions wie bisher");
+  const r = appendOnlyMerge(baseline, master, { auto: { max: 10, secBy, firstFilingByCik: ff } });
+  assert.ok(!r.appended.some((e) => e.ticker === "MID"));
+  assert.equal(r.skipped.secSubmissionsUnavailable >= 1, true);
 });
