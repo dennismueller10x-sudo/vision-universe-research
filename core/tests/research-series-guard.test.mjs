@@ -2,7 +2,7 @@
 // Forschung verweist (scripts/market/lib/research-series.mjs, Quellen core/registry/research-series-sources.json).
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync, mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
+import { readFileSync, mkdtempSync, mkdirSync, writeFileSync, rmSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
@@ -101,4 +101,16 @@ test("RS-7 · B2b: Forschungslaeufe legen die Kopien in den Checkout, die festge
   assert.match(wf, /restore-research-series\.mjs --out "\$GITHUB_WORKSPACE"/, "Elliott-Registry holt fehlende Reihen zurueck");
   for (const f of ["quant/engines/research-weekly-loader.cjs", "quant/engines/weekly-real-adapter.cjs"])
     assert.doesNotMatch(readFileSync(join(ROOT, f), "utf8"), /restore-research-series|VU_RESEARCH_SERIES_DIR/, f + " bleibt unveraendert");
+});
+
+test("RS-8 · B3: jede Reihe der Bereinigung vom 21.11. liegt byte-gleich im Forschungs-Fixture", async () => {
+  const { RESEARCH_SERIES_FIXTURE } = await import("../../scripts/quant/lib/data-fixture.mjs");
+  const c = JSON.parse(readFileSync(join(ROOT, "docs/data/security-master/eligibility-cleanup-2026-11-21.json"), "utf8"));
+  let n = 0;
+  for (const { securityId } of c.leave) for (const d of ["quant/data/market/discover-series", "quant/data/market/discover-series-long"]) {
+    const repo = join(ROOT, d, securityId + ".json"), fx = join(ROOT, RESEARCH_SERIES_FIXTURE, d, securityId + ".json");
+    if (existsSync(repo)) assert.ok(existsSync(fx) && readFileSync(repo).equals(readFileSync(fx)), "nicht eingefroren: " + d + "/" + securityId);
+    if (existsSync(fx)) n++;
+  }
+  assert.ok(n >= c.leave.length, "Fixture haelt mindestens eine Reihe je Titel (" + n + ")");
 });
