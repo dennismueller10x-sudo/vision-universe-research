@@ -67,6 +67,19 @@ VU_ASK_TOTAL_USD = "100000"
 VU_ASK_MAX_OUTPUT_TOKENS = "1200"
 VU_ASK_REQUESTS_PER_IP_DAILY = "60"
 
+# ---- Konto-Limit und Bot-Schutz (beide AUS bis zur Freigabe; docs/accounts/PRODUKTIONSPLAN.md §7) ----
+# Konto-Limit: ein gueltiges Supabase-Zugriffstoken (Authorization: Bearer) zaehlt je Konto
+# VU_ASK_PER_ACCOUNT_DAILY statt je Anschluss/Browser VU_ASK_PER_USER_DAILY. Das globale
+# Tageslimit bleibt der oberste Deckel. Im Browser liegt das Token im HttpOnly-Cookie des
+# Konto-Hosts; dort greift es erst mit einem Ticket von vu-account (eigener PR).
+VU_ASK_ACCOUNT_LIMITS = "false"
+VU_ASK_PER_ACCOUNT_DAILY = "20"
+SUPABASE_URL = "https://qiytbnpoqvldsatpfkeh.supabase.co"
+# Turnstile: erst "true", wenn der Owner den Site-Key angelegt hat (Meta-Tag vu-ask-turnstile
+# in ask/index.html) UND das Secret TURNSTILE_SECRET hinterlegt ist. Dann ist jede
+# kostenpflichtige Frage bot-geprueft.
+VU_ASK_TURNSTILE = "false"
+
 # ---- Zugangsschranke (Beta) --------------------------------------------------
 # SHA-256 des Zugangspassworts. Nur der Hash steht hier - das Passwort hat
 # rund 80 Bit Zufall und laesst sich daraus nicht zurueckrechnen. Leer =

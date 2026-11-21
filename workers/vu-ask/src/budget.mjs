@@ -37,6 +37,7 @@ export const DEFAULTS = {
   totalUsd: 200,
   maxOutputTokens: 1200,
   requestsPerIpDaily: 40,
+  perAccountDaily: 0,   /* 0 = wie perUserDaily */
 };
 
 function num(v, fallback) {
@@ -54,6 +55,10 @@ export function limitsFrom(env) {
     totalUsd: num(env.VU_ASK_TOTAL_USD, DEFAULTS.totalUsd),
     maxOutputTokens: num(env.VU_ASK_MAX_OUTPUT_TOKENS, DEFAULTS.maxOutputTokens),
     requestsPerIpDaily: num(env.VU_ASK_REQUESTS_PER_IP_DAILY, DEFAULTS.requestsPerIpDaily),
+    /* Angemeldete Konten zaehlen je Konto, nicht je Anschluss/Browser
+       (VU_ASK_ACCOUNT_LIMITS, Standard aus). Das globale Tageslimit bleibt
+       der oberste Deckel. */
+    perAccountDaily: num(env.VU_ASK_PER_ACCOUNT_DAILY, 0) || num(env.VU_ASK_PER_USER_DAILY, DEFAULTS.perUserDaily),
   };
 }
 
@@ -88,7 +93,7 @@ export function worstCase(model, promptChars, maxOutputTokens) {
 export function admit({ limits, reserve, user, day, month, total }) {
   if (!limits.enabled) return { ok: false, reason: "DISABLED" };
   if (!Number.isFinite(reserve)) return { ok: false, reason: "UNPRICED_MODEL" };
-  if (user.llm >= limits.perUserDaily) return { ok: false, reason: "USER_DAILY_LIMIT" };
+  if (user.llm >= (user.limit ?? limits.perUserDaily)) return { ok: false, reason: "USER_DAILY_LIMIT" };
   if (day.llm >= limits.globalDaily) return { ok: false, reason: "GLOBAL_DAILY_LIMIT" };
   if (month.usd + reserve > limits.monthlyUsd) return { ok: false, reason: "MONTHLY_BUDGET" };
   if (total.usd + reserve > limits.totalUsd) return { ok: false, reason: "TOTAL_BUDGET" };

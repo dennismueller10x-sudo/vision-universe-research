@@ -12,6 +12,7 @@
    Entscheidung ueber Geld faellt im einen Durable Object (gate.mjs).
    ========================================================================= */
 import { AskGate } from "./gate.mjs";
+import { verifyAccessToken, createJwksCache } from "../../vu-account/src/jwt.mjs";
 
 export { AskGate };
 
@@ -32,7 +33,7 @@ function corsHeaders(origin, env) {
   return {
     "access-control-allow-origin": origin,
     "access-control-allow-methods": "GET, POST, OPTIONS",
-    "access-control-allow-headers": "content-type, x-vu-access",
+    "access-control-allow-headers": "content-type, x-vu-access, authorization",
     "access-control-max-age": "86400",
     vary: "origin",
   };
@@ -53,6 +54,25 @@ function sameSecret(a, b) {
   let diff = a.length ^ b.length;
   for (let i = 0; i < Math.max(a.length, b.length); i++) diff |= (a.charCodeAt(i) || 0) ^ (b.charCodeAt(i) || 0);
   return diff === 0;
+}
+
+/* KONTO-LIMIT (Schalter VU_ASK_ACCOUNT_LIMITS, Standard aus). Ein
+   gueltiges Supabase-Zugriffstoken (Authorization: Bearer, heute nur in der
+   App; im Browser liegt es im HttpOnly-Cookie des Konto-Hosts und braucht
+   spaeter ein Ticket von vu-account) macht aus der Anfrage ein Konto. Alles
+   Ungueltige oder Fehlende heisst anonym und zaehlt je Anschluss/Browser -
+   nie ein Fehler, nie mehr Kontingent als anonym ohne gueltiges Token. */
+const jwksCaches = new Map();
+export async function accountOf(request, env, now = Date.now()) {
+  if (String(env.VU_ASK_ACCOUNT_LIMITS || "false") !== "true" || !env.SUPABASE_URL) return null;
+  const header = request.headers.get("authorization") || "";
+  if (!header.startsWith("Bearer ") || header.length > 4096) return null;
+  const base = new URL(env.SUPABASE_URL).origin + "/auth/v1";
+  if (!jwksCaches.has(base)) jwksCaches.set(base, createJwksCache({ url: base + "/.well-known/jwks.json", fetchImpl: (...a) => fetch(...a) }));
+  try {
+    const claims = await verifyAccessToken(header.slice(7), { jwks: env.__jwks || jwksCaches.get(base), issuer: base, now });
+    return claims.sub;
+  } catch (e) { return null; }
 }
 
 function gate(env) { return env.VU_ASK_GATE.get(env.VU_ASK_GATE.idFromName("global")); }
@@ -88,8 +108,9 @@ export default {
     const origin = request.headers.get("origin");
     const cors = corsHeaders(origin, env);
     const ip = request.headers.get("cf-connecting-ip") || "unknown";
+    const account = (url.pathname === "/v1/ask" || url.pathname === "/v1/quota") ? await accountOf(request, env) : null;
     const forward = (path, init = {}) => gate(env).fetch("https://gate" + path, {
-      ...init, headers: { "content-type": "application/json", "x-vu-ip": ip },
+      ...init, headers: { "content-type": "application/json", "x-vu-ip": ip, ...(account ? { "x-vu-account": account } : {}) },
     }).then(async (res) => respond(res.status, await res.json(), cors));
 
     if (request.method === "OPTIONS") return new Response(null, { status: origin && cors["access-control-allow-origin"] ? 204 : 403, headers: cors });
