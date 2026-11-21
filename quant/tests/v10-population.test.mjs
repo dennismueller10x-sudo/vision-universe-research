@@ -6,12 +6,13 @@ import {resolve,join} from 'node:path';
 import {tmpdir} from 'node:os';
 import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
+import { researchSeriesRoot } from "../../scripts/quant/lib/data-fixture.mjs";
 // Mutationstests am Stamm des tmp-Root: ausdrücklich der Produktstamm (LIVE); ohne Angabe lesen Evidenz-Optionen die eingefrorene Generation 1.1.0.
 const LIVE={masterGeneration:'LIVE'};
 const require=createRequire(import.meta.url);
 const A=require('../engines/weekly-real-adapter.cjs'),R=require('../engines/research-weekly-loader.cjs');
 const Identity=require('../engines/research-identity-evidence.cjs'),Lifecycle=require('../engines/research-listing-lifecycle.cjs');
-const root=resolve(import.meta.dirname,'../..');
+const root=researchSeriesRoot()/* B2c: eingefrorene Forschungsreihen, falls das Repo sie nicht mehr fuehrt */;
 const EV=p=>JSON.parse(readFileSync(join(root,'docs/quant-recovery/v10/population',p),'utf8'));
 const seriesBytes=id=>readFileSync(join(root,'quant/data/market/discover-series-long',id+'.json'),'utf8');
 const outcome=fn=>{try{return {ok:true,value:JSON.stringify(fn())};}catch(e){return {ok:false,value:e.message};}};

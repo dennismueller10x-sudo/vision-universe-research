@@ -4,10 +4,11 @@ import {createRequire} from 'node:module';
 import fs from 'node:fs';
 import {tmpdir} from 'node:os';
 import {resolve,join} from 'node:path';
+import { researchSeriesRoot } from "../../scripts/quant/lib/data-fixture.mjs";
 const require=createRequire(import.meta.url),Reader=require('../../server/quant-backtest-reader.cjs'),Selection=require('../api/real-backtest-selection.js'),{materialize}=require('../../scripts/quant/materialize-real-backtest-read.cjs');
 /* Junge Notierung der Klasse C: ANDG (Stammaktie seit 17.12.2025) statt AAAC. AAAC ist ein ETF (Columbia AAA CLO ETF),
    seit der Eignung vom 05.11.2026 belegt aus dem Produktuniversum genommen; seine Reihe wird nicht mehr veroeffentlicht. */
-const root=resolve(import.meta.dirname,'../..'),output=fs.mkdtempSync(join(tmpdir(),'vu-selection-')),tickers=['NVDA','MSFT','XOM','ARM','AAPL','BGC','ANDG','AACT'];
+const root=researchSeriesRoot(),/* B2c */output=fs.mkdtempSync(join(tmpdir(),'vu-selection-')),tickers=['NVDA','MSFT','XOM','ARM','AAPL','BGC','ANDG','AACT'];
 materialize({root,output,ids:tickers.map(t=>'ref_'+t)});
 const service=Reader.create({directory:output,root,enabled:true,audience:'INTERNAL_REVIEW',allowedTickers:tickers}),client=Selection.create({service});
 test.after(()=>fs.rmSync(output,{recursive:true,force:true}));

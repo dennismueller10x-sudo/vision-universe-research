@@ -53,11 +53,11 @@ on:
           - quality-marge-pit
           - edge2-paper
       mode:
-        description: 'portfolio: Musterportfolios, versiegelter Holdout oder EMA DEV/Archiv/Walk-Forward auf vorhandenem Bestand'
+        description: 'portfolio: Musterportfolios, versiegelter Holdout, EMA DEV/Archiv/Walk-Forward oder Backtest 2.0 (backtest2-smoke zuerst)'
         required: false
         default: portfolios
         type: choice
-        options: [portfolios, holdout-quant, ema-cluster-dev, ema-cluster-archive, ema-cluster-complete]
+        options: [portfolios, holdout-quant, ema-cluster-dev, ema-cluster-archive, ema-cluster-complete, backtest2-smoke, backtest2]
       ema_archive_metadata: {description: 'EMA-Archiv/Vervollstaendigung: Pruefsummen und verschluesselte Dateischluessel, keine Klartextschluessel', required: false, default: '', type: string}
       reviewer_public_key_b64: {description: 'portfolio: Nur holdout-quant: oeffentlicher RSA-Schluessel (PEM, base64 in einer Zeile) der Steuerung', required: false, default: '', type: string}
       phase: {description: 'labor: dev, test oder holdout', required: false, default: dev}
@@ -259,7 +259,7 @@ jobs:
             printf '%s' "$REVIEWER_B64" | base64 -d > "$RUNNER_TEMP/holdout/reviewer.pem"
             openssl pkey -pubin -in "$RUNNER_TEMP/holdout/reviewer.pem" -noout || { echo "REVIEWER_KEY_NOT_A_PUBLIC_KEY"; exit 2; }
           fi
-          case "${IN_MODE:-}" in ema-cluster-dev|ema-cluster-archive|ema-cluster-complete) m="$IN_MODE";; esac
+          case "${IN_MODE:-}" in ema-cluster-dev|ema-cluster-archive|ema-cluster-complete|backtest2-smoke|backtest2) m="$IN_MODE";; esac
           echo "mode=${m:-portfolios}" >> "$GITHUB_OUTPUT"
           echo "Modus: ${m:-portfolios}"
 
@@ -327,7 +327,7 @@ jobs:
           echo "Reihen: $(find "$(dirname "$hit")" -maxdepth 1 -name '*.json' | wc -l)"
 
       - name: SEC-Fundamentaldaten wie erstmals eingereicht (oeffentlich, companyfacts.zip)
-        if: ${{ !startsWith(steps.m.outputs.mode, 'ema-cluster-') }}
+        if: ${{ !startsWith(steps.m.outputs.mode, 'ema-cluster-') && !startsWith(steps.m.outputs.mode, 'backtest2') }}
         run: |
           set -euo pipefail
           python3 scripts/quant/portfolio/build_pit_fundamentals.py --out "$RUNNER_TEMP/pit-fundamentals" --bulk --workers 4
@@ -411,6 +411,30 @@ jobs:
           printf '%s' "$REVIEWER_B64" | base64 -d > "$X/reviewer.pem"
           node scripts/technical/ema-cluster-archive.mjs --out "$X/upload" --reviewer-key "$X/reviewer.pem"
 
+      # Backtest 2.0 (docs/research/backtest2/PROTOKOLL.md): offene Suche mit Walk-forward-Bestaetigung. Ergebnis nur als
+      # Artefakt fuer den Owner (7 Tage), nichts wird committet. backtest2-smoke: 400 Titel, kleines Gitter, kein Ergebnis.
+      - name: Backtest 2.0 rechnen (Ergebnis nur als Artefakt)
+        if: startsWith(steps.m.outputs.mode, 'backtest2')
+        env:
+          MODE: ${{ steps.m.outputs.mode }}
+        run: |
+          set -euo pipefail
+          node --test scripts/research/backtest2/backtest2.test.mjs
+          mkdir -p "$RUNNER_TEMP/backtest2/upload"
+          smoke=""; if [ "$MODE" = "backtest2-smoke" ]; then smoke="--smoke"; fi
+          node --max-old-space-size=12288 scripts/research/backtest2/run.mjs \
+            --work-dir "$RUNNER_TEMP/canonical-history" --delisted-dir "$DELISTED_DIR" --delisted-raw-dir "$DELISTED_RAW_DIR" \
+            --out "$RUNNER_TEMP/backtest2/upload" --workers "$(nproc)" $smoke
+          rm -rf "$RUNNER_TEMP/priv" "$RUNNER_TEMP/canonical-history"
+
+      - uses: actions/upload-artifact@v4
+        if: startsWith(steps.m.outputs.mode, 'backtest2')
+        with:
+          name: ${{ steps.m.outputs.mode }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/backtest2/upload
+          retention-days: 7
+          if-no-files-found: error
+
       - uses: actions/upload-artifact@v4
         if: steps.m.outputs.mode == 'holdout-quant' || startsWith(steps.m.outputs.mode, 'ema-cluster-')
         with:
@@ -484,7 +508,7 @@ jobs:
           rm -rf "$RUNNER_TEMP/priv" "$RUNNER_TEMP/canonical-history"
 
       - name: E3-Phase rechnen (Protokoll eingefroren, Hash geprueft)
-        if: steps.m.outputs.mode != 'portfolios' && steps.m.outputs.mode != 'holdout-quant' && !startsWith(steps.m.outputs.mode, 'ema-cluster-') && !startsWith(steps.m.outputs.mode, 'edge2')
+        if: steps.m.outputs.mode != 'portfolios' && steps.m.outputs.mode != 'holdout-quant' && !startsWith(steps.m.outputs.mode, 'ema-cluster-') && !startsWith(steps.m.outputs.mode, 'edge2') && !startsWith(steps.m.outputs.mode, 'backtest2')
         env:
           PHASE: ${{ steps.m.outputs.mode }}
         run: |
@@ -497,7 +521,7 @@ jobs:
           rm -rf "$RUNNER_TEMP/priv" "$RUNNER_TEMP/canonical-history"
 
       - name: Tests und Datenhygiene
-        if: ${{ !startsWith(steps.m.outputs.mode, 'ema-cluster-') }}
+        if: ${{ !startsWith(steps.m.outputs.mode, 'ema-cluster-') && !startsWith(steps.m.outputs.mode, 'backtest2') }}
         run: |
           node --test quant/tests/portfolio-standard.test.mjs quant/tests/model-portfolios-result.test.mjs workers/vu-account/tests/backtests.test.mjs
           # Der Hygiene-Check scannt das ganze Repository. Fundstellen ausserhalb der eigenen Ausgabepfade bestehen schon auf main
@@ -510,7 +534,7 @@ jobs:
           fi
 
       - name: Ergebnis auf den aktuellen Zweig committen
-        if: steps.m.outputs.mode != 'holdout-quant' && !startsWith(steps.m.outputs.mode, 'ema-cluster-')
+        if: steps.m.outputs.mode != 'holdout-quant' && !startsWith(steps.m.outputs.mode, 'ema-cluster-') && !startsWith(steps.m.outputs.mode, 'backtest2')
         env:
           MODE: ${{ steps.m.outputs.mode }}
         run: |
@@ -1014,6 +1038,21 @@ jobs:
           VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
         run: node scripts/market/publish-long-series.mjs
+
+      # Teil B2b (Steuerung 21.11.2026): Reihen, die die Umfangsfolge nach privater Sicherung aus dem Repo entfernt hat,
+      # kommen byte-gleich aus R2 zurueck, damit offene Ereignisse ausgeschiedener Titel weiterlaufen. Ohne Belege: nichts.
+      - name: Private Kopien ausgeschiedener Reihen zurueckholen
+        if: steps.due.outputs.pending != ''
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: |
+          set -euo pipefail
+          # in den Checkout dieses Laufs (fehlende Dateien, nie ueberschrieben); der Schritt "Langreihen nicht committen" raeumt auf
+          node scripts/market/restore-research-series.mjs --out "$GITHUB_WORKSPACE"
 
       # Exit 0 = alles registriert, 3 = fruehere Wochen registriert, eine spaetere nicht (wird committet, Lauf
       # danach rot), sonst = nichts registriert (rot, nichts zu committen).

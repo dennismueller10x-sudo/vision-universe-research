@@ -1,56 +1,20 @@
 {
   "schemaVersion": "deploy-preconditions-1.0.0",
   "auftrag": "Owner-Freigabe 17.09.2026: Deployment nur bei gruenen Nachweisen",
-  "checkedAt": "2026-09-17T17:15:58.954Z",
+  "checkedAt": "2026-11-21T15:09:53.250Z",
   "maxAgeHours": 24,
   "conditions": [
     {
       "name": "ZERO_COST",
-      "status": "PASS",
-      "reason": "Kein Lauf ueber PROTECT. Hoechster Anteil: 0.1 %.",
-      "evidence": {
-        "highestRequestShare": 0.001,
-        "verdicts": [
-          {
-            "symbols": 1,
-            "verdict": "OK"
-          },
-          {
-            "symbols": 5,
-            "verdict": "OK"
-          },
-          {
-            "symbols": 10,
-            "verdict": "OK"
-          },
-          {
-            "symbols": 25,
-            "verdict": "OK"
-          },
-          {
-            "symbols": 50,
-            "verdict": "OK"
-          }
-        ]
-      }
+      "status": "FAIL",
+      "reason": "Der Lastbericht ist 1561.23 h alt (erlaubt: 24 h).",
+      "evidence": null
     },
     {
       "name": "TIINGO_DYNAMIC_SUBSCRIPTION",
-      "status": "PASS",
-      "reason": "Waehrend offener Sitzung beantwortet: DYNAMIC_SUPPORTED",
-      "evidence": {
-        "result": "DYNAMIC_SUPPORTED",
-        "session": "REGULAR",
-        "evidence": {
-          "baselineLeak": 0,
-          "addObserved": 74,
-          "aDuringAdd": 55,
-          "aAfterRemove": 0,
-          "bAfterRemove": 65,
-          "socketStayedOpen": true,
-          "explicitRejection": null
-        }
-      }
+      "status": "FAIL",
+      "reason": "Der Nachweis ist 1561.28 h alt.",
+      "evidence": null
     },
     {
       "name": "50_ACTIVE_SYMBOL_LOAD",
@@ -66,9 +30,9 @@
     {
       "name": "REALTIME_FALLBACK",
       "status": "PASS",
-      "reason": "223 Tests gruen, darunter Abriss, Ablehnung, erschoepftes Kontingent und geschlossene Boerse.",
+      "reason": "222 Tests gruen, darunter Abriss, Ablehnung, erschoepftes Kontingent und geschlossene Boerse.",
       "evidence": {
-        "total": 223,
+        "total": 222,
         "suites": [
           {
             "suite": "subscription-manager",
@@ -91,8 +55,8 @@
           {
             "suite": "worker/vu-live",
             "pattern": "worker/tests/vu-live.test.mjs",
-            "tests": 34,
-            "pass": 34,
+            "tests": 48,
+            "pass": 48,
             "fail": 0,
             "exitCode": 0,
             "ok": true
@@ -100,8 +64,8 @@
           {
             "suite": "discover/live-stream",
             "pattern": "discover/tests/live-stream.test.mjs",
-            "tests": 16,
-            "pass": 16,
+            "tests": 21,
+            "pass": 21,
             "fail": 0,
             "exitCode": 0,
             "ok": true
@@ -145,8 +109,8 @@
           {
             "suite": "realtime-capability",
             "pattern": "quant/tests/realtime-capability.test.mjs",
-            "tests": 25,
-            "pass": 25,
+            "tests": 5,
+            "pass": 5,
             "fail": 0,
             "exitCode": 0,
             "ok": true
@@ -175,15 +139,15 @@
     {
       "name": "SECRET_SCAN",
       "status": "PASS",
-      "reason": "24767 Dateien geprueft, keine Zugangsdaten.",
+      "reason": "29571 Dateien geprueft, keine Zugangsdaten.",
       "evidence": {
-        "files": 24767
+        "files": 29571
       }
     },
     {
       "name": "PAID_SERVICES_ENABLED",
       "status": "PASS",
-      "reason": "Nichts Kostenpflichtiges konfiguriert; die Durable-Object-Klasse ist SQLite-gestuetzt, wie es der kostenlose Tarif verlangt; und in 254 ausfuehrbaren Dateien steht kein Aufruf, der einen Tarif aendern koennte.",
+      "reason": "Nichts Kostenpflichtiges konfiguriert; die Durable-Object-Klasse ist SQLite-gestuetzt, wie es der kostenlose Tarif verlangt; und in 1846 ausfuehrbaren Dateien steht kein Aufruf, der einen Tarif aendern koennte.",
       "evidence": {
         "found": [],
         "sqliteBacked": true,
@@ -198,6 +162,6 @@
     "accountIdDerivable": true,
     "scopeVerdict": "WORKERS_READABLE"
   },
-  "verdict": "GO",
+  "verdict": "NO_GO",
   "note": "PASS bei TIINGO_DYNAMIC_SUBSCRIPTION heisst: die Frage wurde beantwortet. Ein Nein ist der Fall, fuer den der Modus reconnect gebaut ist; UNKNOWN und INCONCLUSIVE gehen nicht durch."
 }

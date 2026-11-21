@@ -2,9 +2,11 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { createRequire } from "node:module";
+import { researchSeriesRoot } from "../../scripts/quant/lib/data-fixture.mjs";
+import { pathToFileURL } from "node:url";
 
 const require = createRequire(import.meta.url);
-const root = new URL("../../", import.meta.url);
+const root = pathToFileURL(researchSeriesRoot() + "/")  /* B2c: eingefrorene Forschungsreihen, falls das Repo sie nicht mehr fuehrt */;
 const C = require("../engines/backtest-artifact-consistency.js");
 const json = (p) => JSON.parse(readFileSync(new URL(p, root), "utf8"));
 const CTR = require("../engines/canonical-total-return.js");

@@ -1384,3 +1384,10 @@ svg .tc-layers{pointer-events:none}
 .tc-ind-sw:before{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:var(--vu-mute,#6e6e6e);transition:left .15s}
 .tc-ind-sw.is-on{background:var(--vu-lime,#c8f531)}
 .tc-ind-sw.is-on:before{left:21px;background:#000}
+
+
+/* Startseite: Platz für die Bereiche, die erst nach index-v1.json / Evidenz gefüllt werden (Layoutsprung CLS bis 0,11 beim Laden) */
+.tk .tk-rail.tk-forms{min-height:160px}
+.tk .tk-rail[aria-label="Fertige Suchen"]{min-height:181px}
+.tk .tc-search-slot.tk-find{min-height:52px}
+.tk .vu-chips.tc-quick{min-height:44px}

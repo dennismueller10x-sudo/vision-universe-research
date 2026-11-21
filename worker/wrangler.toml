@@ -101,3 +101,10 @@ ALLOW_LOCAL_ORIGIN = "false"
 # [[routes]]
 # pattern = "live.visionuniverse.de"
 # custom_domain = true
+
+# Limit je IP und Minute vor dem Durable Object (docs/accounts/PRODUKTIONSPLAN.md §7).
+# Dahinter zaehlt der Eingangs-Worker je Isolate als Untergrenze.
+[[ratelimits]]
+name = "VU_LIVE_LIMITER"
+namespace_id = "1102"
+simple = { limit = 10, period = 60 }

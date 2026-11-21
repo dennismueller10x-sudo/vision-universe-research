@@ -3,7 +3,7 @@
  "methodologyVersion": "vu-factor-evidence-2.0.0",
  "derivedFrom": "quant-v2.4.1",
  "changeMethodologyVersion": "vu-change-1.0.0",
- "generatedAt": "2026-11-21T00:38:24.000Z",
+ "generatedAt": "2026-11-21T13:29:06.000Z",
  "asOf": "2026-11-20",
  "publication": {
   "compositeAllowed": false,
@@ -36,22 +36,22 @@
    "quality": 4124,
    "growth": 3365,
    "momentum": 5458,
-   "value": 2781,
-   "profitability": 2559,
+   "value": 2782,
+   "profitability": 2560,
    "revisions": 0,
    "risk": 5458
   },
   "scoreCuts": {
    "quality": {
-    "VERY_STRONG": 67.07,
+    "VERY_STRONG": 67.08,
     "STRONG": 59.99,
-    "NEUTRAL": 49.88,
-    "WEAK": 41.8
+    "NEUTRAL": 49.87,
+    "WEAK": 41.81
    },
    "growth": {
-    "VERY_STRONG": 75.2,
-    "STRONG": 64.06,
-    "NEUTRAL": 46.84,
+    "VERY_STRONG": 75.34,
+    "STRONG": 64.15,
+    "NEUTRAL": 46.85,
     "WEAK": 36.9
    },
    "momentum": {
@@ -61,15 +61,15 @@
     "WEAK": 32.32
    },
    "value": {
-    "VERY_STRONG": 76.82,
+    "VERY_STRONG": 76.84,
     "STRONG": 66.01,
-    "NEUTRAL": 49.27,
+    "NEUTRAL": 49.3,
     "WEAK": 37.87
    },
    "profitability": {
     "VERY_STRONG": 81.88,
     "STRONG": 68.92,
-    "NEUTRAL": 49.37,
+    "NEUTRAL": 49.34,
     "WEAK": 37.16
    },
    "revisions": null,
@@ -801,7 +801,14 @@
   "velocityWindowDays": 30,
   "velocityToleranceDays": 10,
   "scoreMomentumOpen": true,
-  "recomputationDrift": null
+  "recomputationDrift": {
+   "asOf": "2026-11-20",
+   "publishedHash": "704ca7dc218d40ca",
+   "recomputedHash": "22930f19f863a8f1",
+   "rowsDiffering": 3056,
+   "rowsTotal": 5939,
+   "note": "Die veroeffentlichte Beobachtung bleibt unveraendert. Sie wurde an diesem Stichtag veroeffentlicht und wird nicht durch eine heutige Neuberechnung ersetzt."
+  }
  },
  "scope": "CANONICAL_PRODUCT_UNIVERSE",
  "source": {
@@ -839,7 +846,7 @@
   },
   "productUniverse": {
    "file": "quant/data/market/security-master/eligibility.json",
-   "sha256": "0e1d43252ba0a4649d39786582b7696aeac0cbcf223c1b062329fef8f4f6cbf3"
+   "sha256": "c17a182410a693dece261f041793fb4c5b2b0b75078bd1b3011713c78311b410"
   }
  },
  "notAnEquityListing": {
@@ -892,13 +899,13 @@
    "NOT_APPLICABLE": 0
   },
   "value": {
-   "AVAILABLE": 2781,
-   "UNAVAILABLE": 3158,
+   "AVAILABLE": 2782,
+   "UNAVAILABLE": 3157,
    "NOT_APPLICABLE": 0
   },
   "profitability": {
-   "AVAILABLE": 2559,
-   "UNAVAILABLE": 3380,
+   "AVAILABLE": 2560,
+   "UNAVAILABLE": 3379,
    "NOT_APPLICABLE": 0
   },
   "revisions": {
@@ -914,9 +921,9 @@
  },
  "reasonCounts": {
   "BLOCKED_EXTERNAL": 5939,
-  "INSUFFICIENT_COMPONENTS": 3772,
+  "INSUFFICIENT_COMPONENTS": 3771,
   "INPUT_NOT_MATERIALIZED": 5688,
-  "INSUFFICIENT_WEIGHTED_COVERAGE": 1806,
+  "INSUFFICIENT_WEIGHTED_COVERAGE": 1805,
   "REPORTING_CURRENCY_NOT_LISTING_CURRENCY": 360,
   "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING": 248,
   "MANDATORY_COMPONENT_MISSING": 13,
@@ -929,7 +936,7 @@
   "quality:positiveFcfYears": 3443,
   "quality:operatingMarginDrawdown": 3399,
   "growth:revenueCagr3y": 3944,
-  "growth:epsCagr3y": 2003,
+  "growth:epsCagr3y": 2004,
   "growth:fcfCagr3y": 1945,
   "growth:revenueGrowthTtmYoy": 3258,
   "growth:operatingMarginExpansion3y": 3451,
@@ -939,16 +946,16 @@
   "momentum:priceReturn3m": 5898,
   "momentum:distanceTo52wHigh": 5461,
   "momentum:distanceToSma200": 5553,
-  "value:fcfYield": 2128,
+  "value:fcfYield": 2129,
   "value:earningsYield": 2753,
   "value:ebitdaYield": 963,
   "value:salesYield": 1058,
   "value:bookToMarket": 3259,
-  "profitability:roicTtm": 660,
+  "profitability:roicTtm": 659,
   "profitability:roicMedian3y": 535,
   "profitability:grossProfitabilityTtm": 1965,
   "profitability:operatingMarginTtm": 2539,
-  "profitability:fcfMarginTtm": 2347,
+  "profitability:fcfMarginTtm": 2348,
   "profitability:roaTtm": 3267,
   "risk:realizedVolatility252d": 5458,
   "risk:downsideVolatility252d": 5461,
@@ -1039,6 +1046,6 @@
   "SHARE_COUNT_SCALE_SUSPECT": 4,
   "NOT_AN_EQUITY_LISTING:PREFERRED": 8
  },
- "runtimeMs": 27047,
- "contentHash": "9da40db2959f9431"
+ "runtimeMs": 27512,
+ "contentHash": "9a15ed1725eeed02"
 }

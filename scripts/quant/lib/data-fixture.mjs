@@ -75,3 +75,46 @@ export function fixtureRoot(bundlePath) {
   process.on("exit", () => rmSync(root, { recursive: true, force: true }));   // entfernt die Symlinks, nicht ihre Ziele
   return { url: pathToFileURL(root + sep), live: false, meta };
 }
+
+/* =========================================================================
+   Eingefrorene Forschungsreihen (Teil B2c, Steuerung 21.11.2026).
+   quant/tests/fixtures/research-series/<Pfad> haelt byte-gleiche Kopien der
+   Kursreihen, die die Bereinigung (B3) aus dem Repo nimmt und die Forschungs-
+   Tests lesen (V10-Population, Elliott M11-P6, Backtests). researchSeriesRoot()
+   gibt die Repo-Wurzel zurueck, solange keine dieser Reihen fehlt (Verhalten
+   unveraendert). Fehlt eine, baut es eine Spiegelwurzel: alles verweist ins
+   Repo, und in discover-series/ und discover-series-long/ kommen die
+   fehlenden Dateien aus dem Fixture - dieselben Bytes, derselbe Hash.
+   ========================================================================= */
+export const RESEARCH_SERIES_FIXTURE = "quant/tests/fixtures/research-series";
+const OVERLAY_DIRS = ["quant/data/market/discover-series", "quant/data/market/discover-series-long"];
+
+export function researchSeriesRoot({ root = REPO, fixture = join(root, RESEARCH_SERIES_FIXTURE) } = {}) {
+  const fehlend = [];
+  for (const d of OVERLAY_DIRS) {
+    const fx = join(fixture, d);
+    if (!existsSync(fx)) continue;
+    for (const n of readdirSync(fx)) if (!existsSync(join(root, d, n))) fehlend.push([d, n]);
+  }
+  if (!fehlend.length) return root;
+  const dest = mkdtempSync(join(tmpdir(), "vu-research-root-"));
+  const ancestors = new Set();
+  for (const d of OVERLAY_DIRS) { const s = d.split("/"); for (let i = 1; i < s.length; i++) ancestors.add(s.slice(0, i).join("/")); }
+  const link = (rel) => {
+    for (const e of readdirSync(join(root, rel || "."))) {
+      const r = rel ? rel + "/" + e : e;
+      if (e === ".git") continue;
+      if (OVERLAY_DIRS.includes(r)) {
+        mkdirSync(join(dest, r), { recursive: true });
+        for (const n of readdirSync(join(root, r))) symlinkSync(join(root, r, n), join(dest, r, n));
+        continue;
+      }
+      if (ancestors.has(r)) { mkdirSync(join(dest, r), { recursive: true }); link(r); continue; }
+      symlinkSync(join(root, r), join(dest, r));
+    }
+  };
+  link("");
+  for (const [d, n] of fehlend) symlinkSync(join(fixture, d, n), join(dest, d, n));
+  process.on("exit", () => rmSync(dest, { recursive: true, force: true }));
+  return dest;
+}

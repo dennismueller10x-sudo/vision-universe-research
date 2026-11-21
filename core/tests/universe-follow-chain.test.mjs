@@ -127,3 +127,27 @@ test("UF-5 · nach der Umfangsfolge misst der Teil deckung Abnahme und Fundament
   assert.match(weekly, /Auf eine laufende Materialisierung warten[\s\S]*product-intelligence-materialization\.yml/,
     "deckung wartet auf eine laufende Materialisierung (sonst Halbstand in der Regressionssuite, Lauf 44473651117)");
 });
+
+test("UF-6 · die Umfangsfolge sichert jede zu loeschende Reihe privat, bevor sie loescht (Teil B2a)", () => {
+  const s = steps(OWNER_SRC).find((x) => /--prune-only/.test(x.body));
+  assert.ok(s, "kein Loeschschritt");
+  const b = s.body, sichern = b.indexOf("scripts/market/backup-series.mjs --plan"), manifest = b.indexOf("VU_SERIES_BACKUP_MANIFEST=");
+  for (const prune of ["publish-discover-series.mjs --prune-only", "publish-long-series.mjs --prune-only"]) {
+    const i = b.indexOf(prune);
+    assert.ok(sichern >= 0 && manifest > sichern && i > manifest, prune + " ohne vorherige Sicherung und Manifest");
+  }
+  assert.match(b, /VU_HISTORY_S3_BUCKET/, "ohne Speicherzugang keine Sicherung");
+});
+
+test("UF-7 · nur Umfangsfolgen: committete Eignung, keine Neuberechnung und kein Abruf; die Neuberechnung bleibt fail closed (21.11.2026)", () => {
+  const st = steps(OWNER_SRC), by = (re) => st.find((x) => re.test(x.name));
+  const nur = /!\(github\.event_name == 'workflow_dispatch' && !inputs\.zeitplan && inputs\.umfangsfolgen == true && inputs\.erweiterung == '' && inputs\.neuzugaenge != true && inputs\.approved_catchup != true\)/;
+  assert.match(by(/^Neuer Stand/).body, nur, "Neuer Stand laeuft bei reinem Nachziehen nicht (kein Verzeichnisabruf)");
+  assert.match(by(/^Gate/).body, nur, "Gate laeuft bei reinem Nachziehen nicht");
+  assert.match(by(/^Ergebnis/).body, nur, "ohne Gate keine Fehlmeldung");
+  const folgen = st.find((x) => /--prune-only/.test(x.body));
+  assert.match(folgen.body, /inputs\.umfangsfolgen == true/, "der Folge-Schritt laeuft mit umfangsfolgen");
+  assert.doesNotMatch(folgen.body, /RUNNER_TEMP\/elig\//, "der Folge-Schritt liest nicht den neu gerechneten Stand");
+  /* Eine Erweiterung, die Dauerregel oder eine Freigabeliste rechnen immer neu und gehen durchs Gate. */
+  assert.match(by(/^Erweiterung/).body, /inputs\.erweiterung != '' \|\| inputs\.neuzugaenge == true \|\| github\.event_name == 'workflow_run'/);
+});

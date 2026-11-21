@@ -88,3 +88,74 @@ Migrationsänderungen rollen nach dem Merge automatisch aus, solange sie keine Z
 
 `VU_CHECKOUT_ACCESS = "testers"` (eigener PR, rollt ohne Freigabe aus, weil es einschränkt): neue Abschlüsse sofort nur
 noch für Tester, bestehende Abos laufen bei Stripe weiter. Kein Free-Konto wird je automatisch kostenpflichtig.
+
+## 7. Kapazität und Last vor dem öffentlichen Start (Analyse 21.11.2026)
+
+Frage des Owners: *Wie sicher ist Seite und App bei vielen gleichzeitigen Zugriffen?* Antwort in einem Satz: **Bei Last schalten die kostenlosen Tarife ab (Rückfall oder Fehler), sie schicken keine Rechnung; für einen öffentlichen, kommerziellen Start sind drei Dinge nötig: Hosting der Seite wechseln (Nutzungsbedingungen), Cloudflare Workers Paid (5 $) und Supabase Pro (25 $).** Alles hier ist Analyse; es wurde nichts umgestellt, gekauft oder gegen Produktion getestet.
+
+### 7.1 Kapazitätstabelle je Teil
+
+| Teil | Grenze (Quelle) | Heute | Engpass bei N gleichzeitig / M im Monat | Beim Überschreiten |
+|---|---|---|---|---|
+| **Statische Seite** (GitHub Pages) | Seite ≤ 1 GB, **soft 100 GB/Monat**, 10 Builds/h (nicht bei eigenem Actions-Deploy), 429 möglich; **Bedingungen: nicht erlaubt „to run your online business“ oder „commercial SaaS“** (docs.github.com, 21.11.2026) | Release-Artefakt nahe am Limit (Architektur §2: Scherben allein +230 MB); Besuchsgewicht s. u. | Bandbreite: 100 GB ÷ 3–6 MB je Besuch ≈ **17.000–33.000 Besuche/Monat**. Rechtlich schon vorher: Pro-Abo + Konto = kommerziell | Soft: GitHub drosselt/mahnt (429, Mail), Abschaltung möglich. **Das ist der erste echte Blocker.** |
+| **Live-Relay vu-live** (1 Durable Object, Free) | 100.000 DO-Anfragen/Tag, 13.000 GB-s/Tag (je Konto); 1 Anfrage je Verbindung + 1 je 20 Client-Nachrichten; ausgehend frei; max. 50 Symbole, 1 Tiingo-Verbindung (`free-budget.js`, `vu-live.mjs`) | Mess: 17 Ereignisse/s bei 50 Titeln = ~0,1 % des Kontingents | Tiingo wächst **nicht** mit N (ein Abo je Symbol, nicht je Nutzer). Requests: je Besucher ≈ 1 Verbindung + wenige Nachrichten ⇒ ~20.000–50.000 Besucher/Tag bis 90.000 (Reserve 10.000). **Speicher 128 MB:** Lasttest (7.3) ≈ 20 KB/Client ⇒ **ca. 3.000–5.000 gleichzeitige** | Budgetwächter: ab 85 % keine neuen Symbole, Browser fällt auf Snapshot zurück; bei 100 % **schlagen DO-Anfragen fehl** (Ausfall, keine Rechnung). Kein Verbindungs-Deckel, kein Limit je IP (Lücke 7.4) |
+| **Konten** (`vu-account` + Supabase Free + Stripe) | Workers Free 100.000 Anfragen/Tag, 10 ms CPU, **für alle Worker im Konto zusammen**; Supabase Free 50.000 MAU, 500 MB, 5 GB Egress, **Pause nach 1 Woche Inaktivität, keine Backups**; Ratenbegrenzung 20/min je Schlüssel + Zähler je Isolate (`limits.mjs`) | 1 Konto, 0 Abos | Konten selbst genügsam (Doku §10: ~50.000 Anfragen/Tag bei 5.000 Konten). Engpass ist das **gemeinsame** Tageslimit mit vu-live/vu-ask/Waker (Waker allein 1.440/Tag) und Supabase Free (keine Backups, Pause) | Workers: ab 100.000/Tag Fehler 1015/Abschaltung für den Rest des Tages, **auch für Login/Checkout/Webhook**. Stripe-Webhooks würden verfehlt (Stripe wiederholt bis 3 Tage; Abgleich `reconcile-stripe` nötig). Supabase Free: Pause = Konten tot |
+| **vu-ask** (Haiku 4.5, 1 DO `AskGate`) | Prepaid-Guthaben (Auto-Reload AUS), 100 $/Monat Netz, **100 Fragen/Tag global, 10 je Nutzer, 60 Anfragen je IP/Tag**, Beta-Passwort, Origin-Prüfung, Turnstile optional (aus) | ~0,5–0,8 ct je neue Frage ⇒ Deckel 100 Fragen/Tag ≈ **0,65 $/Tag ≈ 20 $/Monat** | Bei öffentlichem Start sind 100 Fragen/Tag in Minuten weg: **ab ~50 aktiven Nutzern/Tag** „Kontingent aufgebraucht“. Je Nutzer wird per IP-Hash/Browser-ID gezählt, nicht je Konto; Cache-Treffer laufen trotzdem durch das DO (zählen gegen die 100.000) | Frage-Funktion antwortet „Kontingent aufgebraucht“ (sauberer Rückfall); Kosten sind dreifach gedeckelt. Verfügbarkeit wird zur Frage, Kosten nicht |
+| **vision-universe-social** (Instagram/OAuth, Owner-intern) | Workers Free, Admin-Schlüssel auf allen Routen außer `/health` und Meta-Callback | nur Owner | Keine Nutzerlast vorgesehen; zählt nur 1:1 gegen das gemeinsame 100.000-Limit | Ausfall betrifft nur Social-Posting, kein Nutzerpfad |
+
+**Gemeinsamer Engpass:** Cloudflare-Freigrenzen gelten **je Konto**, nicht je Worker. vu-live (Besucherverbindungen), vu-ask, vu-account, Waker und social teilen sich 100.000 Anfragen/Tag. Fällt die Grenze, fallen **Konten und Zahlungen mit**, obwohl sie wichtiger sind als der Live-Chart. Das ist das größte Einzelrisiko der Architektur.
+
+### 7.2 Seitengröße je Besuch (lokal gemessen, 21.11.2026)
+
+Chromium 390 px, lokaler Server mit gzip, Quellbaum ohne Release-Minify und ohne Release-Ausschnitte (**Obergrenze**, Produktion ist kleiner; Messung gegen echte Pages-Auslieferung offen):
+
+| Seite | Anfragen | Übertragen |
+|---|---|---|
+| `/` (Start) | 12 | 0,3 MB |
+| `/landing/` | 27 | 2,3 MB (Bilder) |
+| `/screener/` | 24 | 0,8 MB |
+| `/ask/` | 22 | 0,6 MB |
+| `/konto/` | 21 | 0,6 MB |
+| `/quant/` | 119 | 2,9 MB |
+| `/discover/` | 110 | 4,2 MB |
+| `/supertrader/` | 34 | 3,8 MB (`signals-core.json` 2,2 MB) |
+| `/aktie/?t=NVDA` | 145 | 5,9 MB (u. a. `logos/credits.json` 1,8 MB, `technical/instruments/NVDA.json` 0,7 MB) |
+
+Annahme **3 MB je Besuch (Mittel) ⇒ 100 GB ≈ 33.000 Besuche/Monat**. Schnelle Hebel ohne Fachänderung: `credits.json` und Bilder (JPG ≈ 300 KB, auf WebP/AVIF) nicht beim ersten Laden holen, `signals-core.json` als Shard. Bei Cloudflare ist Bandbreite nicht abgerechnet, die Seitengröße wird dann zum reinen Komfort-Thema.
+
+### 7.3 Lasttest (nur lokal, nichts gegen Produktion, Tiingo, Supabase, Stripe oder Cloudflare)
+
+- **Statisch, lokaler Node-Server (gzip):** `index.html`: 1.423 Anfragen/s bei 50 und 500 Verbindungen, 0 Fehler, p50 33 ms (50 gleichzeitig) bzw. 194 ms (500). 1,7 MB-Datei: 326/s. Aussage: der Teststand ist kein Maßstab für GitHub-CDN, zeigt aber, dass die Seite **keine serverseitige Logik** hat; die Last trägt allein der Hoster.
+- **vu-live, Durable-Object-Code im Original mit der Attrappe aus `worker/tests/harness.mjs`** (Sockets simuliert, 50 Symbole, 17 Ereignisse/s, 1–5 Titel je Client): 100 Clients 1,3 ms CPU je simulierter Sekunde, 1.000: 4,9 ms, 5.000: 18 ms, **10.000: 40 ms (4 % eines Kerns)**; Tiingo bleibt bei **50 Symbolen/1 Verbindung**. Heap 10 → 26 → 98 → 201 MB: **Rechenzeit ist kein Engpass, der 128-MB-Speicher ist es (~5.000 Clients, in der echten Laufzeit eher weniger)**. `wrangler dev` wurde nicht gestartet (nicht nötig, Ergebnis hängt an Plattformgrenzen, die schon dokumentiert sind). Skripte: nicht eingecheckt, in 20 Zeilen reproduzierbar mit `worker/tests/harness.mjs`.
+- **Konten/vu-ask:** Ratenbegrenzung, Budget und gleichzeitige Anfragen sind durch `workers/vu-account/tests` und `workers/vu-ask/tests` abgedeckt (Gate serialisiert in einem DO, Grenzen können nicht gemeinsam überschritten werden). Kein Lasttest gegen Supabase/Stripe.
+
+### 7.4 Missbrauchsschutz: Befund
+
+| Punkt | Stand | Lücke / Empfehlung |
+|---|---|---|
+| vu-live WebSocket | Origin Pflicht + Liste (research/visionuniverse.de) | Ein Nicht-Browser setzt `Origin` beliebig. **Kein Verbindungslimit je IP, kein Gesamtdeckel, keine Nachrichtenrate je Client.** Jede Verbindung kostet 1 DO-Anfrage, 100.000 Verbindungen/Tag = Abschaltung für das ganze Konto. Empfehlung: Deckel gleichzeitiger Clients (z. B. 2.000), Rate-Limit-Binding je IP vor dem DO (`/live`), Schließen bei >1 Nachricht/s |
+| vu-account | Binding 20/min + Limits je Kategorie (Login 10/5 min, Anmeldung 5/h …) | Zähler je Isolate ist nur Untergrenze; Binding gilt je Schlüssel (IP). Empfehlung: Turnstile auf Anmeldung/Kontaktformular, Bestätigungs-E-Mail-Pflicht beibehalten, Brevo (300 Mails/Tag Free) als Anmelde-Deckel mitdenken |
+| vu-ask | 3 Kostenschranken, Origin, Beta-Passwort, Turnstile bereit (`TURNSTILE_SECRET`) | Je Nutzer = je IP, nicht je Konto. Empfehlung: Turnstile **vor** dem Start einschalten; Limit je Konto (Free 3, Pro 20/Tag) über JWT; globales Tageslimit aus Preis ableiten (Pro 20 Fragen × 0,65 ct = 13 ct/Nutzer/Tag max.) |
+| Kosten-Deckel | Prepaid, Auto-Reload aus; Monatslimit; Cloudflare/Supabase Free schalten ab | Beim Wechsel auf Paid **Ausgabenlimit/Benachrichtigung setzen** (Workers Paid: 10 Mio. Anfragen inklusive, danach 0,30 $/Mio.) und Anfrage-Alarme (80 %) in Cloudflare |
+
+### 7.5 Plan mit Schwellen und Kosten
+
+| Stufe | Auslöser | Maßnahme (Owner-Freigabe: Geld, Umzug) | Kosten/Monat (grob) |
+|---|---|---|---|
+| **0 vor dem Start** | immer | Seite zu Cloudflare Pages/Workers-Assets (GitHub-Pages-Bedingungen verbieten das Geschäft; Bandbreite gratis; 20.000 Dateien Limit prüfen, Release hat deutlich mehr ⇒ ggf. R2 für Daten); **Workers Paid** (alle Worker, 10 Mio. Anfragen); **Supabase Pro** (Backups, keine Pause, 100.000 MAU, 250 GB Egress); Turnstile; Limits je Konto in vu-ask; Verbindungsdeckel vu-live | ≈ 5 $ + 25 $ + 0 = **~30 $** (+ Haiku-Guthaben nach Nutzung) |
+| **1 ab ~1.000 Nutzer/Tag** | DO-Anfragen > 50 % | vu-live auf DO Paid (inklusive in Workers Paid): 1 Mio. Anfragen + 400.000 GB-s inklusive, danach 0,15 $/Mio.; Reserve entfällt | ~ +0–5 $ |
+| **2 ab ~3.000 gleichzeitig** | Heap/Verbindungen | vu-live in Shards (je Symbolgruppe oder Nutzergruppe), Tiingo-Verbindung bleibt eine | ~ +0–10 $ |
+| **3 ab ~100.000 MAU** | Supabase | +0,00325 $/MAU; Compute-Upgrade (Small 15 $) | ~ +300 $ je 100.000 MAU weitere |
+| **4 vu-ask** | je 1.000 aktive Fragende/Tag à 3 Fragen | ≈ 20 $/Monat pro 1.000 (0,65 ct je neue Frage, Cache senkt) | linear, durch Tarife (Pro) gedeckt |
+| **Stripe** | je Zahlung | wie ACCOUNTS §10 (≈ 1,5 % + 0,25 € + 0,7 % Billing) | Umsatz-abhängig |
+
+**Reihenfolge:** (1) Owner entscheidet Hosting-Umzug; (2) vor Umzug Messung gegen Pages-Auslieferung (Artefaktgröße, Dateizahl, Seitengewicht); (3) Workers Paid + Supabase Pro vor Öffnung der Registrierung für alle; (4) Code-PR mit Deckeln/Turnstile/Konto-Limits (kein Geld, kann ohne Freigabe laufen); (5) Alarme für 80 % Kontingent.
+
+**Offen / nicht gemessen:** echtes Seitengewicht aus der Produktion; Cloudflare-Verbrauch des Kontos (kein Analytics-Zugriff); echter Speicher je WebSocket in der Plattform; Supabase-Auth-E-Mail-Limits (Seite nennt keines; Versand läuft über Brevo).
+
+### 7.6 Umgesetzt am 21.11.2026 (Deckel ohne Geld, PR „Worker-Deckel“)
+
+- **vu-live:** Verbindungsdeckel `MAX_CLIENTS` = 2.500 (Hälfte der gemessenen Speichergrenze); darüber nimmt das Objekt die Verbindung an, sendet `status BLOCKED / CAPACITY` und schließt (der Chart fällt auf den Snapshot zurück, `live-relay-client.js` wiederholt nicht). Limit je IP und Minute **vor** dem Durable Object (`VU_LIVE_LIMITER`, 10/min, Untergrenze je Isolate; ein ausgefallenes Binding sperrt niemanden aus). Nachrichtenrate je Client: über 30 Nachrichten in 10 s wird getrennt (ein Browser sendet etwa 1 je 15 s). Zusätzlich wird `Sec-Fetch-Site: cross-site` abgewiesen. Ein Nicht-Browser kann `Origin` weiter setzen; gegen ihn wirken Deckel und IP-Limit. `/health` zeigt `maxClients`, `rejectedFull`, `rejectedRate`.
+- **vu-ask:** Konto-Limit (`VU_ASK_ACCOUNT_LIMITS`, **aus**): gültiges Supabase-Token = Zählung je Konto (`VU_ASK_PER_ACCOUNT_DAILY`, 20) statt je Anschluss/Browser; ungültig = anonym; das globale Tageslimit bleibt oberster Deckel. Im Browser liegt das Token im HttpOnly-Cookie des Konto-Hosts, es greift dort erst mit einem Ticket von `vu-account` (offen, eigener PR); in der App sofort.
+- **Turnstile:** Schalter `VU_ASK_TURNSTILE` (**aus**). Einschalten braucht vom Owner: Site-Key im Meta-Tag `vu-ask-turnstile` in `ask/index.html` und Secret `TURNSTILE_SECRET`; danach `VU_ASK_TURNSTILE = "true"`.
+- Ausrollen: `frage-worker` rollt nach dem Merge selbst aus; `live-worker` nur per Dispatch oder Commit mit `[cf-deploy]` (Tor mit Realtime-Tests und Zero-Cost-Vertrag).

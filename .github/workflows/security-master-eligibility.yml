@@ -137,6 +137,9 @@ jobs:
           echo "ELIG_MASTER=$X/next1/us-security-master.json" >> "$GITHUB_ENV"
 
       - name: Neuer Stand (bestehender Erzeuger, nach RUNNER_TEMP)
+        # Nur Umfangsfolgen (Steuerung 21.11.2026): die committete Eignung bleibt, nichts wird neu gerechnet oder abgerufen
+        # (21.11.: nasdaqtrader.com HTTP 503 blockierte sonst das reine Nachziehen). Die Neuberechnung bleibt fail closed.
+        if: ${{ !(github.event_name == 'workflow_dispatch' && !inputs.zeitplan && inputs.umfangsfolgen == true && inputs.erweiterung == '' && inputs.neuzugaenge != true && inputs.approved_catchup != true) }}
         run: |
           set -euo pipefail
           N=quant/data/market/security-master
@@ -162,6 +165,7 @@ jobs:
           # Elliott-Registry, Backtest-Tests) verweist. Wieder eingeschaltet erst, wenn die Forschung private Kopien (R2) liest.
 
       - name: Gate (fail closed)
+        if: ${{ !(github.event_name == 'workflow_dispatch' && !inputs.zeitplan && inputs.umfangsfolgen == true && inputs.erweiterung == '' && inputs.neuzugaenge != true && inputs.approved_catchup != true) }}
         id: gate
         env:
           IN_APPROVED: ${{ inputs.approved_catchup }}
@@ -220,6 +224,10 @@ jobs:
         if: steps.commit.outputs.changed == 'true' || inputs.umfangsfolgen == true
         env:
           PUSH_OWNED_PATHS: quant/data/market/discover-series/ quant/data/market/discover-series-kurz/ quant/data/market/discover-series-long/ quant/data/market/intraday/ quant/data/universe/ quant/data/market/capabilities/ quant/data/product/capabilities-v1.json quant/data/product/capabilities-summary-v1.json quant/data/market/security-master/company-names.json quant/data/market/security-master/company-names-summary.json quant/data/fundamentals/
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
           SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT || 'VisionUniverseResearch info@visionuniverse.de' }}
         run: |
           set -euo pipefail
@@ -240,6 +248,12 @@ jobs:
           # dieselben Schritte wie im Marktdatenlauf, ohne Kursabruf.
           node scripts/market/build-capability-matrix.mjs
           node scripts/vu2/build-product-capabilities.mjs
+          # Teil B2a (Steuerung 21.11.2026): jede Reihe, die die Umfangsfolge gleich loescht, vorher privat sichern
+          # (R2, Praefix research-series-long/, Lesetest je Datei). Die Loeschschritte loeschen nur, was mit gleichem Hash
+          # im Manifest steht; sonst Abbruch vor dem Loeschen. Das Manifest wird als Beleg mitcommittet.
+          sicherung="$RUNNER_TEMP/series-backup.json"
+          node scripts/market/backup-series.mjs --plan --out "$sicherung"
+          export VU_SERIES_BACKUP_MANIFEST="$sicherung"
           node scripts/market/publish-discover-series.mjs --prune-only
           node scripts/market/publish-long-series.mjs --prune-only
           node scripts/market/ingest-intraday.mjs --index-only
@@ -251,6 +265,11 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
           # Nur vorhandene bzw. getrackte Pfade: ein noch leeres Verzeichnis (z. B. discover-series-kurz vor der ersten
           # Kurzreihe) lässt "git add" sonst mit "pathspec did not match" (128) scheitern und der Schritt bricht ab.
+          if [ "$(node -e 'console.log(require(process.argv[1]).count)' "$sicherung")" != "0" ]; then
+            mkdir -p docs/data/security-master/series-backup
+            cp "$sicherung" "docs/data/security-master/series-backup/$(date -u +%F)-${GITHUB_RUN_ID}.json"
+            git add docs/data/security-master/series-backup
+          fi
           for pfad in $PUSH_OWNED_PATHS discover/data; do
             if [ -e "$pfad" ] || git ls-files --error-unmatch -- "$pfad" >/dev/null 2>&1; then git add -A -- "$pfad"; fi
           done
@@ -303,7 +322,7 @@ jobs:
         run: gh workflow run research.yml --ref main -f teil=etf-universum -f nur_zusatz=true
 
       - name: Ergebnis
-        if: steps.gate.outputs.decision != 'COMMIT'
+        if: ${{ !(github.event_name == 'workflow_dispatch' && !inputs.zeitplan && inputs.umfangsfolgen == true && inputs.erweiterung == '' && inputs.neuzugaenge != true && inputs.approved_catchup != true) && steps.gate.outputs.decision != 'COMMIT' }}
         run: |
           echo "::error::Gate BLOCKED: Produktuniversum nicht uebernommen (Bericht im Artefakt und in der Zusammenfassung)."
           exit 1

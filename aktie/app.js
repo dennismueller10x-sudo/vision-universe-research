@@ -248,15 +248,28 @@
       (d ? '<div class="k-px k-mt8"><button type="button" class="k-tile k-tap k-fl k-g10" data-ak-sheet="discover" aria-haspopup="dialog" style="padding:12px 14px;text-align:left"><div class="k-hud" style="width:30px;height:30px;border-radius:9px">' + D.icon("discover", 17) + '</div><div class="k-f1"><b class="k-sm">Discover</b><div class="k-xs k-mut" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (d.best ? "Platz " + d.best.rank + " · " + esc(titleCase(d.best.title)) : "Anlass, Kurs und Unternehmen im Überblick") + "</div></div>" + (d.rows ? '<span class="k-pill">' + d.rows + (d.rows === 1 ? " Reihe" : " Reihen") + "</span>" : "") + "</button></div>" : "") +
       businessHtml(v) +
       (v.news.length ? '<div class="k-sh"><h2>Aus den News</h2><a class="k-tap" href="/insights/"><span>Alle ›</span></a></div><div class="k-rail">' + v.news.map(function (a) {
-        return '<a class="k-cover k-tap" href="' + esc(a.href) + '" style="width:270px;height:170px">' + (a.image ? '<img src="' + esc(a.image) + '" alt="" loading="lazy" decoding="async">' : "") + '<div class="sc"></div><div class="ct2">' + (a.tag ? '<span class="k-pill sm">' + esc(a.tag) + "</span>" : "") + '<div class="k-b8 k-mt4" style="line-height:1.1">' + esc(a.title) + "</div></div></a>";
+        return '<a class="k-cover k-tap" href="' + esc(a.href) + '" style="width:270px;height:170px">' + (a.image ? '<img data-src="' + esc(a.image) + '" alt="" decoding="async">' : "") + '<div class="sc"></div><div class="ct2">' + (a.tag ? '<span class="k-pill sm">' + esc(a.tag) + "</span>" : "") + '<div class="k-b8 k-mt4" style="line-height:1.1">' + esc(a.title) + "</div></div></a>";
       }).join("") + "</div>" : "") +
       (v.similar.length ? sh("Mehr wie " + v.short) + '<div class="k-rail">' + v.similar.map(poster).join("") + "</div>" : "") +
       (partner ? '<div class="k-px k-fl k-g8" style="margin-top:22px"><button type="button" class="k-btn k-f1 k-tap" data-ak-compare>Vergleichen</button></div>' : "") +
       '<div class="k-end"><button type="button" class="k-lk" data-ak-sheet="hinweise">Daten &amp; Hinweise' + (v.asOf.kurs ? " · Schluss " + F.dateShort(v.asOf.kurs) : "") + "</button></div>";
   }
+  /* Titelbilder der News erst laden, wenn sie (fast) im Bild sind: Chrome-eigenes loading=lazy holt sie auf dem Handy
+     weit vor dem Sichtbereich (3 Bilder, ca. 640 KB, beim Öffnen der Aktie). Ohne IntersectionObserver sofort laden. */
+  function lazyCovers(root) {
+    var imgs = root.querySelectorAll("img[data-src]");
+    if (!imgs.length) return;
+    function load(img) { img.src = img.getAttribute("data-src"); img.removeAttribute("data-src"); }
+    if (!("IntersectionObserver" in window)) { Array.prototype.forEach.call(imgs, load); return; }
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (e.isIntersecting) { io.unobserve(e.target); load(e.target); } });
+    }, { rootMargin: "0px 120px 200px 120px" });
+    Array.prototype.forEach.call(imgs, function (img) { io.observe(img); });
+  }
   function fill() {
     var st = state, v = st.view;
     main.innerHTML = pageHtml(v);
+    lazyCovers(main);
     main.setAttribute("aria-busy", "false");
     doc.title = v.name + " (" + v.ticker + ") · Aktie — Vision Universe®";
     S.ui.bindHearts(main);

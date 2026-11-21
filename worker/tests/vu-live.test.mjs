@@ -683,3 +683,88 @@ test("VL-S6 coalesced metadata stays aligned per subscribed security", async () 
   assert.deepEqual(frame.semantics.map(meta => meta.priceType), ["UNSPECIFIED", "TRADE"]);
   assert.ok(frame.v.every(row => row.length === 8), "legacy tuple length is unchanged");
 });
+
+/* ------------------------------------------------- Deckel und Limits (21.11.2026) */
+
+const GUTER_KOPF = { Upgrade: "websocket", Origin: "https://research.visionuniverse.de" };
+
+test("VL-D1 ab dem Verbindungsdeckel: Grund nennen, schliessen, nichts registrieren", async () => {
+  const h = baue({ env: { MAX_CLIENTS: "3" } });
+  for (let i = 0; i < 3; i++) await verbinde(h);
+  const voll = await verbinde(h);
+  const status = voll.letzte("status");
+  assert.equal(status.state, "BLOCKED", "live-relay-client.js beendet bei BLOCKED, ohne Wiederholschleife");
+  assert.equal(status.reason, "CAPACITY");
+  assert.equal(voll.geschlossen, true);
+  assert.equal(h.obj.clients.size, 3, "der abgewiesene Client belegt keinen Speicher");
+  assert.equal(h.obj.health().manager.rejectedFull, 1);
+  assert.equal(h.obj.health().manager.maxClients, 3);
+});
+
+test("VL-D2 ein Platz wird wieder frei, wenn jemand geht", async () => {
+  const h = baue({ env: { MAX_CLIENTS: "2" } });
+  const a = await verbinde(h); await verbinde(h);
+  a.close();
+  const c = await verbinde(h);
+  assert.equal(c.geschlossen, false);
+  assert.equal(c.letzte("hello") !== null, true);
+});
+
+test("VL-D3 mehr Nachrichten als ein Browser je 10 s schickt: getrennt", async () => {
+  const h = baue({ env: { CLIENT_MSG_MAX: "5" } });
+  const ws = await verbinde(h);
+  for (let i = 0; i < 5; i++) ws.send(JSON.stringify({ op: "ping" }));
+  assert.equal(ws.geschlossen, false);
+  ws.send(JSON.stringify({ op: "ping" }));
+  assert.equal(ws.geschlossen, true);
+  assert.equal(h.obj.clients.size, 0);
+  assert.equal(h.obj.health().manager.rejectedRate, 1);
+});
+
+test("VL-D4 ein Browser mit Ping alle 15 s und subscribe bleibt weit unter der Grenze", async () => {
+  const h = baue();
+  const ws = await verbinde(h);
+  ws.send(JSON.stringify({ op: "subscribe", symbols: ["NVDA"] }));
+  for (let i = 0; i < 20; i++) { h.uhr.vor(15000); ws.send(JSON.stringify({ op: "ping" })); }
+  assert.equal(ws.geschlossen, false);
+});
+
+test("VL-D5 Limit je IP: die elfte Verbindung in einer Minute geht gar nicht erst zum Objekt", async () => {
+  const h = baue();
+  let beruehrt = 0;
+  const env = Object.assign({}, h.env, {
+    VU_LIVE: { idFromName: (n) => n, get: () => ({ fetch: (r) => { beruehrt++; return h.obj.fetch(r); } }) }
+  });
+  const kopf = Object.assign({ "CF-Connecting-IP": "203.0.113.7" }, GUTER_KOPF);
+  let letzte;
+  for (let i = 0; i < 11; i++) letzte = await worker.fetch(anfrage("https://live.visionuniverse.de/live", kopf), env);
+  assert.equal(letzte.status, 429);
+  assert.equal((await letzte.json()).error, "rateLimited");
+  assert.equal(beruehrt, 10, "die abgewiesene Verbindung kostet keine Durable-Object-Anfrage");
+  const andere = await worker.fetch(anfrage("https://live.visionuniverse.de/live",
+    Object.assign({ "CF-Connecting-IP": "203.0.113.8" }, GUTER_KOPF)), env);
+  assert.equal(andere.status, 101, "eine andere Adresse ist nicht betroffen");
+});
+
+test("VL-D6 das Rate-Limit-Binding gilt zusaetzlich und faellt bei Fehlern nicht zu", async () => {
+  const h = baue();
+  const mit = (limit) => Object.assign({}, workerUmgebung(h), { VU_LIVE_LIMITER: { limit } });
+  const kopf = Object.assign({ "CF-Connecting-IP": "198.51.100.1" }, GUTER_KOPF);
+  const nein = await worker.fetch(anfrage("https://live.visionuniverse.de/live", kopf),
+    mit(async () => ({ success: false })));
+  assert.equal(nein.status, 429);
+  const kaputt = await worker.fetch(anfrage("https://live.visionuniverse.de/live",
+    Object.assign({ "CF-Connecting-IP": "198.51.100.2" }, GUTER_KOPF)), mit(async () => { throw new Error("x"); }));
+  assert.equal(kaputt.status, 101, "ein ausgefallenes Binding sperrt keine Nutzer aus");
+});
+
+test("VL-D7 ein Browser von einer fremden Website (Sec-Fetch-Site) wird zusaetzlich abgewiesen", async () => {
+  const h = baue();
+  const env = workerUmgebung(h);
+  const fremd = await worker.fetch(anfrage("https://live.visionuniverse.de/live",
+    Object.assign({ "Sec-Fetch-Site": "cross-site" }, GUTER_KOPF)), env);
+  assert.equal(fremd.status, 403);
+  const eigen = await worker.fetch(anfrage("https://live.visionuniverse.de/live",
+    Object.assign({ "Sec-Fetch-Site": "same-site" }, GUTER_KOPF)), env);
+  assert.equal(eigen.status, 101);
+});
