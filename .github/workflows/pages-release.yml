@@ -341,7 +341,19 @@ jobs:
           # headless_shell. Deshalb wie in allen anderen Workflows dieses
           # Repositories: unbedingt installieren, mit der gepinnten CLI.
           # Chromium kommt aus dem Image (PLAYWRIGHT_BROWSERS_PATH), gleiche Version wie oben.
-          NODE_PATH=/tmp/vu2-smoke/node_modules node scripts/vu2/production-smoke.mjs "$SITE_ROOT"
+          # 21.11.2026 (Zeitprofil der letzten 20 Voll-Releases: beide Smokes je ~110 s, nacheinander): dieser Smoke laeuft jetzt
+          # PARALLEL zu Pruefung der Auslieferung, Zugangssperre und zweitem Smoke, auf einer KOPIE des Pakets (die Sperre
+          # veraendert $SITE_ROOT an Ort und Stelle). Gleicher Smoke, gleiche Bytes wie vorher; das Ergebnis wird im Schritt
+          # "Ergebnis ... built release" vor dem Hochladen eingesammelt und haelt die Auslieferung bei Rot genauso an.
+          SMOKE1="$RUNNER_TEMP/smoke1"; rm -rf "$SMOKE1"; mkdir -p "$SMOKE1"
+          cp -a "$SITE_ROOT" "$SMOKE1/site"
+          (
+            set +e
+            NODE_PATH=/tmp/vu2-smoke/node_modules node scripts/vu2/production-smoke.mjs "$SMOKE1/site" > "$SMOKE1/log.txt" 2>&1
+            echo $? > "$SMOKE1/rc"
+          ) &
+          disown
+          echo "Smoke ueber das gebaute Release laeuft im Hintergrund (Kopie, Ergebnis siehe spaeterer Schritt)."
       # Ein Tab, der vor einem Release geoeffnet wurde, bleibt nach dem Wechsel benutzbar (Daten weg, Nachlade-Skript
       # getauscht, Eingabe laeuft, kein sessionStorage, veralteter Cache). Echter Code, echte Sperre, kleine Releases.
       - name: Deployment switch with an open tab (browser)
@@ -443,6 +455,20 @@ jobs:
           rc=$?
           rm -f "$RESEARCH_ACCESS_LOGIN_FILE"
           exit $rc
+      # Einsammeln des Smokes ueber das gebaute Release (Start: Schritt "Production smoke over the built release").
+      # Ohne Ergebnisdatei oder mit rc != 0 ist der Schritt rot: nichts wird hochgeladen, nichts ausgeliefert.
+      - name: Ergebnis des Production smoke over the built release (parallel gelaufen)
+        env:
+          RUNNER_TEMP_DIR: ${{ runner.temp }}
+        run: |
+          set -uo pipefail
+          D="$RUNNER_TEMP_DIR/smoke1"
+          for i in $(seq 1 600); do [ -s "$D/rc" ] && break; sleep 1; done
+          echo "::group::Production smoke over the built release (Protokoll)"; cat "$D/log.txt"; echo "::endgroup::"
+          test -s "$D/rc" || { echo "::error::Smoke ueber das gebaute Release hat kein Ergebnis geliefert"; exit 1; }
+          rc=$(cat "$D/rc")
+          rm -rf "$D"
+          exit "$rc"
       - name: Measure final public package without listing private paths
         env:
           SITE_ROOT: ${{ runner.temp }}/site
