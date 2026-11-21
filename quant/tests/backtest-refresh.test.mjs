@@ -10,7 +10,7 @@ const root=researchSeriesRoot(),/* B2c */folder=fs.mkdtempSync(join(tmpdir(),'vu
 /* Junge Notierung der Klasse C: ANDG (Stammaktie seit 17.12.2025) statt AAAC. AAAC ist ein ETF (Columbia AAA CLO ETF),
    seit der Eignung vom 05.11.2026 belegt aus dem Produktuniversum genommen; seine Reihe wird nicht mehr veroeffentlicht. */
 const ids=['ref_NVDA','ref_MSFT','ref_XOM','ref_ARM','ref_AAPL','ref_BGC','ref_ANDG','ref_AACT'];
-const copy=p=>{const to=join(fixture,p);fs.mkdirSync(dirname(to),{recursive:true});fs.cpSync(join(root,p),to,{recursive:true});};
+const copy=p=>{const to=join(fixture,p);fs.mkdirSync(dirname(to),{recursive:true});fs.cpSync(join(root,p),to,{recursive:true,dereference:true});/* B3: researchSeriesRoot() ist eine Spiegelwurzel aus Symlinks - echte Kopien, sonst schreibt der Test ins Repo */};
 for(const p of ['quant/engines','quant/api','quant/methodology','quant/data/universe/instruments','quant/data/market/security-master/us-security-master.json','quant/data/market/multi-asset/series/SPY.json','quant/data/market/multi-asset/instruments.json','quant/data/market/discover-series/ref_SPY.json','scripts/quant/materialize-real-backtest-read.cjs','scripts/quant/run-real-weekly-backtest.cjs','scripts/quant/contracts/weekly-execution-model-v2.json','quant/config/development-preview.json','quant/config/feature-gates.json'])copy(p);
 for(const id of ids)copy('quant/data/market/discover-series-long/'+id+'.json');
 const ptr=()=>fs.readFileSync(join(output,'release.json'),'utf8'),build=opts=>materialize({root:fixture,output,ids,...opts}),source=join(fixture,'quant/data/market/discover-series-long/ref_NVDA.json');
