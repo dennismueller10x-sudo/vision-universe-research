@@ -43,5 +43,17 @@ export async function bundleDiscover({root,output,readSource = p => readFile(res
   }
   await flush();html=html.replace(template[0],template[0].replace(template[2],body));
  }
+ // Vorladen der Startbuendel (Ladezeit 21.11.2026): die Skripte des Starts werden erst nach dem Parse-Ende
+ // eingehaengt (dx-start-Weiche in index.html), also nach dem parserblockierenden site-navigation.js. Ein Preload im
+ // Kopf startet ihre Uebertragung zusammen mit dem CSS; Reihenfolge und Ausfuehrung bleiben unveraendert, die
+ // Request-Zahl ebenfalls (der Preload wird vom spaeteren Skript-Tag verbraucht). Nur dx-start, nie die lazy-Gruppen.
+ const startPreload=chunks.filter(c=>/^discover\/delivery\/dx-start-\d+\.js$/.test(c.path)).map(c=>{
+  const tag=html.match(new RegExp('<script src="(/'+c.path.replace(/[.]/g,'\\.')+'\\?v=[0-9a-f]+)"></script>'));
+  return tag?'<link rel="preload" href="'+tag[1]+'" as="script">':'';
+ }).join('');
+ if(startPreload&&!/rel="preload" href="\/discover\/delivery\//.test(html)){
+  const at=html.indexOf('<link rel="stylesheet"');
+  if(at>=0)html=html.slice(0,at)+startPreload+html.slice(at);
+ }
  await writeFile(page,html);return chunks;
 }
