@@ -1798,6 +1798,17 @@ function technicalInstrumentIndex() {
    (quant/data/market/intraday/<Sitzung>/<securityId>.json); gibt es keinen, gibt es keine Seite (nichts wird erfunden).
    Kandidaten: im Produktuniversum, ohne regulaere Karte, erster Handelstag hoechstens MAX_AGE_DAYS vor der letzten Sitzung. */
 const KURZ_SEITEN = new Map();
+/* Beginn des heutigen Listings je Kuerzel (quant/data/market/listing-continuity-v1.json, Spalte keptFrom). */
+const LISTING_START = (function () {
+  const f = join(root, "quant", "data", "market", "listing-continuity-v1.json");
+  const map = new Map();
+  if (!existsSync(f)) return map;
+  const pu = readJSON(f).productUniverse || {};
+  const col = (pu.columns || []).indexOf("keptFrom"), tk = (pu.columns || []).indexOf("ticker");
+  if (col < 0 || tk < 0) return map;
+  for (const r of pu.rows || []) if (r[col]) map.set(r[tk], r[col]);
+  return map;
+})();
 function kurzhistorieSeiten(universe) {
   const dir = join(root, "quant", "data", "market", "intraday");
   if (!existsSync(dir)) return [];
@@ -1810,7 +1821,10 @@ function kurzhistorieSeiten(universe) {
   for (const sec of resolveProductUniverse(root).securities) {
     if (haben.has(sec.ticker)) continue;
     const inst = master.get(sec.ticker) || {};
-    if (!Kurzhistorie.jungGenug(inst.firstTradeDate, heute)) continue;
+    /* Wiederverwendetes Kuerzel (z. B. AXNX: Axonics bis 2024, Axonex ab 13.10.2026): der Anbieter fuehrt beide in einer Zeile,
+       der Stamm meldet die alte Erstnotiz. Massgeblich ist der Beginn des heutigen Listings laut Listing-Kontinuitaet (keptFrom). */
+    const erstTag = LISTING_START.get(sec.ticker) || inst.firstTradeDate;
+    if (!Kurzhistorie.jungGenug(erstTag, heute)) continue;
     let info = null;
     for (const tag of sitzungen) {
       const f = join(dir, tag, sec.securityId + ".json");
@@ -1842,7 +1856,7 @@ function kurzhistorieSeiten(universe) {
     stock.rawValues = {};
     stock.seriesPath = null;
     stock.instrumentType = inst.instrumentType || null;
-    out.push({ stock, info, firstTradeDate: inst.firstTradeDate });
+    out.push({ stock, info, firstTradeDate: erstTag });
   }
   return out;
 }
