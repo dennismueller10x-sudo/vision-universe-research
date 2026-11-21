@@ -171,15 +171,11 @@ async function buildConcepts(output) {
       .replace(/(<body[^>]*>)/,`$1<a class="kz-badge" href="../">Technik ${id.slice(1)} · ${name} <span>‹ alle Techniken</span></a>`);
     await mkdir(resolve(output,'konzepte',id),{recursive:true}); await writeFile(resolve(output,'konzepte',id,'index.html'),html);
   }
-  // Konzept „Einfach“ (Owner 19.11.2026): wenige große Bilder, eine Aussage pro Bildschirm; Start-iPhone, Filme, Anmeldung und Fuß wie live.
+  // Konzept „Einfach“ (Owner 21.11.2026): Module der Live-Seite unverändert, in Boxen zum Wischen gruppiert.
   {
-    const a = basis.indexOf('<div class="stage mob">'), b = basis.indexOf('\n<p class="t">', a);
-    const tpl = (await readFile(resolve(root,'konzepte/t/einfach.html'),'utf8'))
-      .replace(/(src|href|data-vid)="\.\//g,'$1="../../').replace('<!--HEROSTAGE-->', basis.slice(a,b));
-    const m0 = basis.indexOf('<main id="inhalt">'), m1 = basis.indexOf('<div data-ch data-lbl="Anmelden">');
-    const html = (basis.slice(0,m0) + '<main id="inhalt">' + tpl + basis.slice(m1))
-      .replace('<html lang="de"','<html lang="de" class="ez"')
+    const html = basis.replace('<html lang="de"','<html lang="de" class="ez"')
       .replace('</head>','<link rel="stylesheet" href="../t/einfach.css"></head>')
+      .replace('</body>','<script src="../t/einfach.js" defer></script></body>')
       .replace(/(<body[^>]*>)/,'$1<a class="kz-badge" href="../">Konzept: Einfach <span>‹ alle Konzepte</span></a>');
     await mkdir(resolve(output,'konzepte','e'),{recursive:true}); await writeFile(resolve(output,'konzepte','e','index.html'),html);
   }
