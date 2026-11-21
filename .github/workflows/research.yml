@@ -1027,12 +1027,8 @@ jobs:
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
         run: |
           set -euo pipefail
-          node scripts/market/restore-research-series.mjs --out "$RUNNER_TEMP/priv-series"
-          shopt -s nullglob
-          zurueck=("$RUNNER_TEMP/priv-series/$LONG"/*.json)
-          if [ "${#zurueck[@]}" -gt 0 ]; then cp -n "${zurueck[@]}" "$LONG"/; fi
-          echo "Zurueckgelegt: ${#zurueck[@]} Reihen"
-          echo "VU_RESEARCH_SERIES_DIR=$RUNNER_TEMP/priv-series" >> "$GITHUB_ENV"
+          # in den Checkout dieses Laufs (fehlende Dateien, nie ueberschrieben); der Schritt "Langreihen nicht committen" raeumt auf
+          node scripts/market/restore-research-series.mjs --out "$GITHUB_WORKSPACE"
 
       # Exit 0 = alles registriert, 3 = fruehere Wochen registriert, eine spaetere nicht (wird committet, Lauf
       # danach rot), sonst = nichts registriert (rot, nichts zu committen).

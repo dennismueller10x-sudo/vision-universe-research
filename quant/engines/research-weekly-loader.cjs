@@ -36,7 +36,6 @@
  *   and neither research registry module is even required.
  */
 'use strict';
-const { readSeries } = require('./research-series-path.cjs'); // B2b: Repo, sonst private Kopie (VU_RESEARCH_SERIES_DIR)
 const fs = require('node:fs');
 const path = require('node:path');
 const Adapter = require('./weekly-real-adapter.cjs');
@@ -514,7 +513,7 @@ function generationBase(root, masterGeneration) {
   const loader = (securityId, suppliedBytes) => {
     if (!/^ref_[A-Za-z0-9_.-]+$/.test(securityId)) throw Error('INVALID_SECURITY_ID');
     const rel = 'quant/data/market/discover-series-long/' + securityId + '.json';
-    const bytes = suppliedBytes === undefined ? readSeries(root, rel) : suppliedBytes;
+    const bytes = suppliedBytes === undefined ? fs.readFileSync(path.join(root, rel), 'utf8') : suppliedBytes;
     const rows = byId.get(securityId) || [];
     if (rows.length !== 1 || canonical.get(rows[0].canonical_id)?.size !== 1) throw Error('AMBIGUOUS_LISTING_IDENTITY');
     return { ...validate(JSON.parse(bytes), rows[0]), sourcePath: rel, sourceBytesHash: hash(bytes), masterVersion: master.version, masterGeneratedAt: master.generatedAt };
@@ -547,9 +546,8 @@ function createResearchLoader(root, options, generation) {
   const inner = (securityId, suppliedBytes, checkFn = check, ownPath = false) => {
     const record = evidence.bindings.get(securityId), caBound = !!ca && ca.byId.has(securityId);
     if (evidence.strictLocked && evidence.strictLocked.has(securityId)) throw Error('LARGECAP_STRICT_LOCKED'); // V13b: 1.0.1 record without 1.1.0 record
-    /* B2b: fuehrt das Repo die Reihe nicht mehr, bekommt der Adapter dieselben Bytes aus der privaten Kopie (der Adapter bleibt unberuehrt). */
-    if (!record && !caBound && !ownPath) return base(securityId, suppliedBytes !== undefined || fs.existsSync(path.join(root, rel(securityId))) ? suppliedBytes : readSeries(root, rel(securityId)));
-    const bytes = suppliedBytes === undefined ? readSeries(root, rel(securityId)) : suppliedBytes;
+    if (!record && !caBound && !ownPath) return base(securityId, suppliedBytes);
+    const bytes = suppliedBytes === undefined ? fs.readFileSync(path.join(root, rel(securityId)), 'utf8') : suppliedBytes;
     const rows = byId.get(securityId) || [];
     let result;
     if (record) result = loadBound(record, securityId, JSON.parse(bytes), rows, canonical, evidence.registryHash, checkFn, evidence.v12RegistryHash,
@@ -562,7 +560,7 @@ function createResearchLoader(root, options, generation) {
   };
   const loader = !lc ? (securityId, suppliedBytes) => inner(securityId, suppliedBytes) : (securityId, suppliedBytes) => {
     if (!/^ref_[A-Za-z0-9_.-]+$/.test(securityId)) throw Error('INVALID_SECURITY_ID');
-    const bytes = suppliedBytes === undefined ? readSeries(root, rel(securityId)) : suppliedBytes;
+    const bytes = suppliedBytes === undefined ? fs.readFileSync(path.join(root, rel(securityId)), 'utf8') : suppliedBytes;
     const doc = JSON.parse(bytes), rec = lc.byId.get(securityId);
     if (!rec) { // unchanged result, unless the series ends frozen: repeated closes are not trades
       const run = Array.isArray(doc.points) ? frozenTailRun(doc.points) : 0;

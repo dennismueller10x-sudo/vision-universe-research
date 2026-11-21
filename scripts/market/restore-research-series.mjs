@@ -6,12 +6,13 @@
    Liest alle Sicherungs-Belege docs/data/security-master/series-backup/*.json
    (B2a, je Lauf der Umfangsfolge), holt jede Datei aus R2
    (research-series-long/<Pfad>), prueft sha256 und legt sie unter
-   --out/<Pfad> ab. Danach:
-     - VU_RESEARCH_SERIES_DIR=<out>: research-weekly-loader liest eine im Repo
-       fehlende Reihe von dort (quant/engines/research-series-path.cjs),
-     - --overlay: zusaetzlich verweisen <out>/<Verzeichnis>/ auf jede Repo-Datei,
-       damit Werkzeuge mit einem ganzen Verzeichnis (Elliott-Registry
-       --weekly-dir) Repo und Sicherung zusammen sehen.
+   --out/<Pfad> ab. Ein Forschungslauf legt sie so in SEINEN Checkout zurueck
+   (--out = Repo-Wurzel des Runners; nie committet): die Loader
+   (research-weekly-loader, weekly-real-adapter - per Hash festgenagelt und
+   unveraendert) lesen dieselben Bytes am gewohnten Pfad, sourceBytesHash bleibt
+   gleich. Vorhandene Dateien werden nie ueberschrieben.
+     --overlay: zusaetzlich verweisen <out>/<Verzeichnis>/ auf jede Repo-Datei
+       (fuer ein getrenntes Verzeichnis statt des Checkouts).
    Ohne Belege tut der Lauf nichts. Eine Abweichung des Hashes bricht ab.
 
    node scripts/market/restore-research-series.mjs --out <dir> [--overlay]
