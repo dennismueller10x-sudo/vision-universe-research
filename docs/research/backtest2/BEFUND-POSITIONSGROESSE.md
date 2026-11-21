@@ -42,5 +42,6 @@ Kassenabgleich in allen Läufen bestanden.
 ## Folge
 
 Die bisherigen Supertrader-Backtests messen vor allem die Übertragung (Positionsgröße, Kapitalgrenze, Universum, Tagesbalken-Lesart),
-nicht die Methoden. Sie sind als Urteil über C01–C13 nicht belastbar. Backtest 2.0 rechnet alle Methoden in einem gemeinsamen,
-vorab festgelegten Depotrahmen neu ([PROTOKOLL.md](PROTOKOLL.md)). Die bisherigen Ergebnisse bleiben unverändert stehen.
+nicht die Methoden. Sie sind als Urteil über C01–C13 nicht belastbar. Backtest 2.0 rechnet alle Methoden neu und lässt die
+Depotführung (Positionszahl, Gewichtung, Ausstieg) frei suchen, mit Bestätigung auf ungesehenen Jahren ([PROTOKOLL.md](PROTOKOLL.md)).
+Die bisherigen Ergebnisse bleiben unverändert stehen.
