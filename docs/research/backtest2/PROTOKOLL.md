@@ -50,6 +50,14 @@ diesem Vorgehen tatsächlich erlebt hätte. Zusätzlich je Kombination die Ergeb
 Ehrlicher Vermerk: Alle Jahre ab 2008 wurden in früheren Studien schon geöffnet (Holdout 06.11.2026, E3, Labor). Die Unabhängigkeit kommt
 aus dem Walk-forward selbst: Die Auswahl jeder Runde sieht die Bestätigungsjahre nicht.
 
+### Stresstest 1995–2007 und Langfrist-Faktoren (Owner 21.11.2026)
+
+- **Stresstest 1995–2007** (Dotcom-Blase und -Crash): dieselbe Suche, gekennzeichnet „nur heutige Überlebende, zu gut gerechnet“,
+  weil delistete Titel erst ab 2005 im Archiv liegen. Er fließt nicht ins Urteil ein und dient nur als Ausschluss: Verliert eine
+  Kombination selbst mit diesem geschönten Datensatz stark, ist das ein Warnsignal.
+- **Langfrist-Faktoren 1926–heute** aus der Kenneth R. French Data Library (frei verfügbar; Owner-Freigabe der Quelle 21.11.2026):
+  eigene Auswertung auf Faktor-Ebene, getrennt von dieser Suche ([../longrun/BERICHT.md](../longrun/BERICHT.md)).
+
 ## 4. Urteil
 
 - **schlägt den Index:** Die Bestätigungskurve 2014–Ende liegt nach Kosten über SPY, mit p ≤ 0,05 nach Korrektur für die Zahl aller
