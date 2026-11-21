@@ -175,3 +175,34 @@ test('Datenlader auf echten Kursdateien (NVDA, MSFT, XOM aus den Test-Fixtures)'
     assert.ok(m.rank[s * m.T + m.dates.indexOf('2024-06-10')] <= 3);
   } finally { fs.rmSync(dir, { recursive: true, force: true }); }
 });
+
+test('Nachbarn: nur geordnete Stellschrauben, Ausstieg nur innerhalb derselben Art', () => {
+  const list = Q.combos(), nb = Q.neighbors(list);
+  const c = list.find((x) => x.source === 'LEADER_RS' && x.positions === 10 && x.sizing === 'EQUAL' && x.exit.kind === 'TRAIL' && x.exit.pct === 0.25 && x.filter === 'SMA200' && x.uniTop === 1000 && x.minPrice === 5);
+  const ns = nb[c.id].map((id) => list[id]);
+  assert.ok(ns.length >= 6);
+  for (const n of ns) {
+    assert.equal(n.source, c.source); assert.equal(n.filter, c.filter); assert.equal(n.exit.kind, c.exit.kind);
+    const diff = ['positions', 'sizing', 'cap', 'uniTop', 'minPrice'].filter((k) => n[k] !== c[k]).length + (n.exit.pct !== c.exit.pct ? 1 : 0);
+    assert.ok(diff >= 1 && diff <= 2, Q.label(n)); // Gewichtung ändert sizing und cap zugleich, Universum uniTop oder minPrice
+  }
+  assert.ok(ns.some((n) => n.positions === 8) && ns.some((n) => n.positions === 15));
+});
+
+test('Robuste Auswahl: nicht der Glückstreffer mit schlechter Nachbarschaft', () => {
+  const grid = { ...Q.GRID, source: ['LEADER_RS'], positions: [10, 15, 20], sizing: [Q.GRID.sizing[0]], exit: [Q.GRID.exit[8]], filter: ['NONE'], universe: [Q.GRID.universe[0]] };
+  const list = Q.combos(grid), nb = Q.neighbors(list, grid);
+  const m = { dates: calendar(4500, '2007-01-02') }, nYears = +m.dates.at(-1).slice(0, 4) - Q.FIRST_YEAR + 1;
+  const stats = new Float64Array(list.length * nYears * Q.YEAR_FIELDS);
+  const endMult = [1.5, 5, 0.5]; // 10 Pos solide, 15 Pos Glückstreffer, 20 Pos schlecht
+  list.forEach((c, k) => { for (let y = 0; y < nYears; y++) { const b = (k * nYears + y) * Q.YEAR_FIELDS; stats[b + 3] = INITIAL * endMult[k]; stats[b + 4] = -0.1; } });
+  const spy = m.dates.filter((_, i) => i % 5 === 0).map((d, i) => [d, 100 * 1.0015 ** i]);
+  assert.equal(Q.selectRound(stats, list.length, nYears, Q.ROUNDS[0], m, spy).combo, 1); // Fassung 2 nimmt den Glückstreffer
+  assert.equal(Q.selectRoundRobust(stats, list, nb, nYears, Q.ROUNDS[0], m, spy).combo, 0); // Fassung 3 nicht
+});
+
+test('Datenprüfung: nicht herausgerechneter Split 1:3 wird als Sprung erkannt, normale Tage nicht', async () => {
+  const { midJumps } = await import('./data.mjs');
+  const c = Float64Array.from({ length: 50 }, (_, t) => (t < 25 ? 30 * (1 + 0.01 * Math.sin(t)) : 10 * (1 + 0.01 * Math.sin(t))));
+  assert.deepEqual(midJumps({ c }), { up: 0, down: 1 });
+});

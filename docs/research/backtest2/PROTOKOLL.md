@@ -69,6 +69,23 @@ aus dem Walk-forward selbst: Die Auswahl jeder Runde sieht die Bestätigungsjahr
 Berichtet werden: die Bestätigungskurve, die je Runde gewählte Kombination (zeigt, ob die Wahl stabil ist), die besten 20 Kombinationen des
 Gesamtzeitraums mit Spannweite, und welche Stellschrauben am meisten ausmachen. Alle Ergebnisse, auch die schlechten.
 
+## 4a. Fassung 3: zweiter Versuch mit robuster Auswahl (21.11.2026, nach Einsicht)
+
+**Offen gekennzeichnet als zweiter Versuch, nach Einsicht in das Ergebnis von Lauf 44918416065.** Dort wählte die Regel aus §3 in drei
+von vier Runden Depots mit einer bis drei Aktien (Lern-Überrendite bis +54 % p. a.), die auf den Bestätigungsjahren zusammenbrachen
+(Bestätigungskurve −19,9 % p. a.); Urteil Fassung 2: schlägt nicht. Dieses Urteil bleibt stehen.
+
+Neue Auswahlregel (Owner 21.11.2026), gerechnet auf denselben Jahreskennzahlen, im selben Lauf neben Fassung 2 berichtet:
+- nur Kombinationen mit mindestens 10 Positionen und max. Verlust in den Lernjahren ≥ −50 %;
+- Wert = Median der Lern-Überrendite über SPY von Kombination und ihren Nachbarn (eine geordnete Stellschraube eine Stufe verschoben:
+  Positionen, Gewichtung, Universum, Ausstieg innerhalb derselben Art; Signalquelle und Filter fest); höchster Wert gewinnt.
+
+Begründung: Eine Einstellung, deren Nachbarn ebenfalls gut sind, ist weniger wahrscheinlich ein Zufallstreffer. Urteil und Statistik wie §4;
+weil die Regel nach Einsicht festgelegt wurde, gilt ein positives Ergebnis nur als Hinweis, der vorwärts bestätigt werden muss.
+
+**Datenprüfung im selben Lauf:** Sitzungssprünge ×2 bis ×5 (unterhalb DQ-K5) je Gruppe heutige / delistete Titel und die Spalten der
+delisteten Rohreihen; dazu Modus `backtest2-survivors` ohne delistete Titel als Vergleich (zu gut gerechnet, nicht für das Urteil).
+
 ## 5. Ausführung und Veröffentlichung
 
 - Umsetzung: `scripts/research/backtest2/` (Markt, Signale, Depotführung, Suche, Lauf mit Workern). Workflow `research.yml`, Teil
