@@ -31,6 +31,7 @@ Geltende Vertragstests (alle in Core-CI, laufen auf jedem PR):
 | `core/tests/docs-registry.test.mjs` (DOC) | höchstens 25 lebende Seiten (`core/registry/docs.json`, alle in `docs/README.md` verlinkt); jede andere Seite unter `docs/` liegt in `docs/archiv/` oder ist ein Beleg am Ort (von Code genannt, eingefroren, gepinnt) |
 | `core/tests/module-manifest.test.mjs` (MM) | Modul-Steckbrief `products/<id>/module.json` für jedes Produkt (Web bleibt unter `/<id>/`) (jede oberste Seite ist Produkt oder begründete Seite): Route, Menü, Zugang free/pro/intern, Status, Datenarten (Erzeuger, Zeitplan, Frische nur in `domains.json`); Menü (`assets/site-navigation.js`, `groups`), `core/registry/modules.json`, `/status/` und `system-health` entstehen daraus (`node scripts/core/build-modules.mjs`) |
 | `core/tests/schedule-registry.test.mjs` (SZ) | ein Zeitgeber: jeder Zeitplan steht in `core/registry/schedule.json`; `timer: waker`-Einträge haben keinen Cron im Workflow, aber Eingang `zeitplan`, Marke im `run-name` und die Zeitplan-Weiche |
+| `core/tests/exchange-registry.test.mjs` (EX) | eine Quelle für US-Handelsplätze: `core/exchanges.js` (regulär, MIC, Familie/SEC-Schreibweise, OTC); Stamm, Company Master, Klassifikation, Frische, Expansion und Freigabeliste lesen daraus; keine neue Börsentabelle außerhalb (benannte Ausnahmen) |
 
 Was von den Pfad-Gates bleibt:
 

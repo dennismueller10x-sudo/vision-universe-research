@@ -45,6 +45,7 @@ import { createRequire } from "node:module";
 import { createHash } from "node:crypto";
 
 const require = createRequire(import.meta.url);
+const Exchanges = require("../../core/exchanges.js");
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const Master = require(join(root, "quant", "engines", "us-security-master.js"));
 const SCALE = JSON.parse(readFileSync(join(root, "quant", "config", "tiingo-scale.json"), "utf8"));
@@ -129,12 +130,10 @@ export function toUniverseEntry(row) {
  *
  * @returns {object} {entries, appended, skipped, invariants}
  */
-/* Boersenfamilie: Anbieterplatz (Tiingo) und SEC-Bezeichnung (company_tickers_exchange.json). NYSE American und
-   NYSE Arca fuehrt die SEC als "NYSE". */
-const FAMILY_PROVIDER = { NASDAQ: "NASDAQ", "NASDAQ GLOBAL SELECT": "NASDAQ", "NASDAQ GLOBAL MARKET": "NASDAQ",
-  "NASDAQ CAPITAL MARKET": "NASDAQ", NYSE: "NYSE", "NYSE MKT": "NYSE", "NYSE AMERICAN": "NYSE", AMEX: "NYSE",
-  "NYSE ARCA": "NYSE", BATS: "CBOE", TXSE: "TXSE" };
-const FAMILY_SEC = { NASDAQ: "NASDAQ", NYSE: "NYSE", CBOE: "CBOE", TXSE: "TXSE" };
+/* Boersenfamilie: Anbieterplatz (Tiingo) und SEC-Bezeichnung (company_tickers_exchange.json) aus dem Boersenregister
+   core/exchanges.js. NYSE American und NYSE Arca fuehrt die SEC als "NYSE". */
+const FAMILY_PROVIDER = Exchanges.familyTable();
+const FAMILY_SEC = Exchanges.secFamilyTable();
 
 /** company_tickers_exchange.json -> Map Ticker -> {cik, name, exchange}. */
 export function indexSecTickers(sec) {
