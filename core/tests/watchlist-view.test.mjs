@@ -395,3 +395,31 @@ test("Euro-Anzeige nur vorbereitet: EZB-Kurs vom Kursdatum, Listing-Waehrung ble
   assert.equal(W.inEuro({ sources: { fx: { rates: { USD: ["2026-09-01", 1.1] } } } }, v.price).reason, "FX_RATE_NOT_MATCHING_PRICE_DATE");
   assert.equal(W.inEuro(real, { state: "UNAVAILABLE" }).reason, "NO_PRICE");
 });
+
+test("Beendete Notierung (B3): Eignung CONFIRMED_LISTING_ENDED -> Listing nicht aktiv, nicht in der Suche", () => {
+  const elig = JSON.parse(readFileSync(join(ROOT, "quant/data/market/security-master/eligibility.json"), "utf8"));
+  const ended = elig.decisions.filter(d => String(d.product_eligibility_reason || "").startsWith("CONFIRMED_LISTING_ENDED"));
+  if (!ended.length) return;
+  const c = real.cols, sids = new Set(ended.map(d => d.securityId));
+  const rows = c.i.map((id, k) => k).filter(k => sids.has(require("../identity.js").securityIdForTicker(c.s[k])) && c.act[k] === 1);
+  assert.equal(rows.length, 0, "eine beendete Notierung ist nie aktiv: " + rows.slice(0, 5).map(k => c.s[k]).join(","));
+  const t = ended[0].ticker, k = c.s.indexOf(t);
+  if (k < 0) return;
+  const v = W.view(ix, { instrumentId: c.i[k], ticker: t }, REAL_NOW);
+  assert.equal(v.identity.reason, "LISTING_INACTIVE");
+  assert.ok(v.identity.reasonText);
+  assert.equal(v.price.state, "UNAVAILABLE");
+  assert.ok(!(ix.search(t, 10) || []).some(r => r.s === t && r.i === c.i[k]), "nicht hinzufuegbar");
+  assert.equal(real.withheld["listing:LISTING_ENDED"] >= ended.length - 20, true);
+});
+
+test("Frische: ein Datum vor dem aeltesten Quellstand zaehlt in Sitzungen (calendar.before), nie als 0", () => {
+  const src = { freshness: { kind: "sessions", warnAfter: 1, staleAfter: 2 } };
+  const doc = { sources: { price: src }, calendar: { after: "2026-11-20", before: ["2026-11-17", "2026-11-18", "2026-11-19", "2026-11-20"], sessions: ["2026-11-23", "2026-11-24"] } };
+  const sat = new Date("2026-11-21T12:00:00Z");
+  assert.equal(W.freshness(doc, "price", "2026-11-20", sat).state, "OK");
+  assert.deepEqual(W.freshness(doc, "price", "2026-11-19", sat), { state: "WARN", lag: 1 });
+  assert.equal(W.freshness(doc, "price", "2026-11-18", sat).state, "STALE");
+  assert.equal(W.freshness(doc, "price", "2026-10-16", sat).state, "STALE", "vor calendar.before: veraltet");
+  assert.equal(W.freshness({ ...doc, calendar: { after: "2026-11-20", sessions: [] } }, "price", "2026-11-19", sat).state, "STALE", "ohne before: veraltet");
+});

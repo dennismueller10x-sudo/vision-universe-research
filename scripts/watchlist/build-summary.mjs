@@ -56,6 +56,11 @@ export function buildSummary(root,{now=new Date()}={}){
  const quarantine=loadTickerReuseQuarantine(root);
  const quarantined=quarantine?quarantine.records:new Map();
  const withheld={};
+ /* Beendete Notierungen (scripts/market/apply-ended-listings.mjs, Teil B3 21.11.2026): die Eignung belegt das Ende
+    (Stamm INACTIVE und Reihe zu Ende bzw. Uebernahme), der Company Master fuehrt `active` aber aus dem Anbieterauszug.
+    Ein gespeicherter Eintrag zeigt dann ehrlich "Listing nicht aktiv" statt eines alten Schlusses als aktuell. */
+ const elig=readJson(root,'quant/data/market/security-master/eligibility.json');
+ const ended=new Set((elig&&elig.decisions||[]).filter(d=>String(d.product_eligibility_reason||'').startsWith('CONFIRMED_LISTING_ENDED')).map(d=>d.securityId));
  for(const {shard} of manifest.shards.index){
   const part=readJson(root,'quant/data/universe/instruments/'+shard+'.json');if(!part)throw Error('COMPANY_MASTER_SHARD_MISSING:'+shard);
   for(const m of part.instruments||[]){
@@ -63,6 +68,7 @@ export function buildSummary(root,{now=new Date()}={}){
    const sid=Identity.securityIdForTicker(m.symbol),iq=quarantined.has(sid);
    const r={i:m.instrumentId,s:m.symbol,n:iq?null:m.companyName||null,x:m.exchange||null,cu:m.currency||null,act:m.active?1:0,
     del:m.delistedAt||null,el:m.productEligibility||null,sid,legacy:m.masterMemberId||null};
+   if(r.act===1&&ended.has(sid)){r.act=0;withheld['listing:LISTING_ENDED']=(withheld['listing:LISTING_ENDED']||0)+1;}
    if(iq){r.iq=true;r.why={identity:'IDENTITY_QUARANTINED'};withheld['identity:IDENTITY_QUARANTINED']=(withheld['identity:IDENTITY_QUARANTINED']||0)+1;}
    rows.push(r);
    if(!bySymbol.has(r.s))bySymbol.set(r.s,[]);bySymbol.get(r.s).push(r);
@@ -262,6 +268,10 @@ export function buildSummary(root,{now=new Date()}={}){
  const oldest=[sources.price,sources.supertrader,sources.technical].map(s=>s&&s.asOf).filter(Boolean).sort()[0]||null;
  const sessions=[];
  if(oldest&&calendar){let d=oldest;for(let k=0;k<40;k++){d=TS.nextTradingDay(d,{calendar});if(!d)break;sessions.push(d);}}
+ /* ... und die 10 Sitzungen bis einschliesslich des aeltesten Quellstands: ein Titel-Datum davor (letzter Schluss einer
+    ausgelaufenen Reihe) wird so in Sitzungen gezaehlt statt als "0 Sitzungen alt" (core/watchlist-view.js#freshness). */
+ const before=[];
+ if(oldest&&calendar){let d=oldest;before.push(d);for(let k=0;k<9;k++){d=TS.previousTradingDay(d,{calendar});if(!d)break;before.unshift(d);}}
 
  // ---- spaltenweise ausgeben
  const FIELDS=['i','s','n','x','cu','act','del','el','c','cd','pu','d1','dp','rf','rk','rp','re','fp','fc','fn','ew','ewd','q','qdq','qd','mc','td','tf','h52','h52w','h52m','dh','rv','vs','rsi','a200','st','sts','why'];
@@ -269,7 +279,7 @@ export function buildSummary(root,{now=new Date()}={}){
  const cols={};for(const f of FIELDS)cols[f]=rows.map(r=>r[f]===undefined?null:r[f]);
  const slices=sources.supertrader&&sources.supertrader.slices;
  if(slices){cols.stp=rows.map(r=>slices.has(r.s)&&r.act===1&&!r.iq?1:0);delete sources.supertrader.slices;}
- const doc={schemaVersion:SCHEMA,generatedAt:now.toISOString(),count:rows.length,calendar:{exchange:'XNYS',after:oldest,sessions},
+ const doc={schemaVersion:SCHEMA,generatedAt:now.toISOString(),count:rows.length,calendar:{exchange:'XNYS',after:oldest,before,sessions},
   sources,skipped,withheld,fields:Object.keys(cols),cols};
  const report={rows:rows.length,priced:rows.filter(r=>r.c).length,quant:rows.filter(r=>r.q).length,technical:rows.filter(r=>r.td).length,
   supertrader:rows.filter(r=>r.sts&&r.sts.length).length,skipped,withheld};
