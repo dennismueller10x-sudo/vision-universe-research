@@ -57,7 +57,67 @@
   {
    "id": "company-intelligence-refresh",
    "workflow": "company-intelligence-refresh.yml",
-   "cron": "17 */4 * * *",
+   "cron": "17 */4 * * 0,6",
+   "timer": "waker",
+   "inputs": {
+    "verification": false,
+    "universe": false
+   }
+  },
+  {
+   "id": "company-intelligence-refresh-werktag-1",
+   "workflow": "company-intelligence-refresh.yml",
+   "cron": "17 0 * * 1-5",
+   "timer": "waker",
+   "inputs": {
+    "verification": false,
+    "universe": false
+   }
+  },
+  {
+   "id": "company-intelligence-refresh-werktag-2",
+   "workflow": "company-intelligence-refresh.yml",
+   "cron": "10 3 * * 1-5",
+   "timer": "waker",
+   "inputs": {
+    "verification": false,
+    "universe": false
+   }
+  },
+  {
+   "id": "company-intelligence-refresh-werktag-3",
+   "workflow": "company-intelligence-refresh.yml",
+   "cron": "0 7 * * 1-5",
+   "timer": "waker",
+   "inputs": {
+    "verification": false,
+    "universe": false
+   }
+  },
+  {
+   "id": "company-intelligence-refresh-werktag-4",
+   "workflow": "company-intelligence-refresh.yml",
+   "cron": "35 9 * * 1-5",
+   "timer": "waker",
+   "inputs": {
+    "verification": false,
+    "universe": false
+   }
+  },
+  {
+   "id": "company-intelligence-refresh-werktag-5",
+   "workflow": "company-intelligence-refresh.yml",
+   "cron": "10 12 * * 1-5",
+   "timer": "waker",
+   "inputs": {
+    "verification": false,
+    "universe": false
+   }
+  },
+  {
+   "id": "company-intelligence-refresh-werktag-6",
+   "workflow": "company-intelligence-refresh.yml",
+   "cron": "40 20 * * 1-5",
    "timer": "waker",
    "inputs": {
     "verification": false,
@@ -67,7 +127,13 @@
   {
    "id": "company-intelligence-refresh-watchdog",
    "workflow": "company-intelligence-refresh-watchdog.yml",
-   "cron": "47 2-22/4 * * *",
+   "cron": "47 2-22/4 * * 0,6",
+   "timer": "waker"
+  },
+  {
+   "id": "company-intelligence-refresh-watchdog-werktag",
+   "workflow": "company-intelligence-refresh-watchdog.yml",
+   "cron": "47 2,6,10,22 * * 1-5",
    "timer": "waker"
   },
   {
@@ -172,7 +238,7 @@
   {
    "id": "freshness-monitor-7",
    "workflow": "freshness-monitor.yml",
-   "cron": "41 0,6,12,18 * * 0,6",
+   "cron": "41 2,6,12,18 * * 0,6",
    "timer": "waker"
   },
   {

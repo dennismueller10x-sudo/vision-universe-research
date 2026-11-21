@@ -685,9 +685,9 @@
       "cik": "0002125551",
       "name": "Alpex Acquisition Corp",
       "sic": "6770",
-      "rawFacts": 79,
-      "mappedFacts": 25,
-      "unmappedFacts": 48,
+      "rawFacts": 143,
+      "mappedFacts": 48,
+      "unmappedFacts": 86,
       "calendarYears": 2,
       "industry": null,
       "industryMetrics": {},
@@ -700,9 +700,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 0,
-      "quarterlyPeriods": 3,
+      "quarterlyPeriods": 4,
       "firstPeriodEnd": "2025-03-15",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 0.0,
       "metrics": {
         "capital_expenditures": {
@@ -741,14 +741,14 @@
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 2,
+          "quarterlyPeriods": 3,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "operating_cash_flow": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 1,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -769,14 +769,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 3,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "total_assets": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 2,
+          "quarterlyPeriods": 3,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -799,43 +799,45 @@
         }
       },
       "quality": {
-        "HIGH": 7
+        "HIGH": 11
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 7,
-        "resolvedValues": 7
+        "datableValues": 11,
+        "resolvedValues": 11
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 49,
+        "rules_version": "1.1.0",
+        "total": 91,
         "by_severity": {
-          "INFO": 48,
-          "WARNING": 1
+          "INFO": 86,
+          "WARNING": 5
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 1,
-          "UNKNOWN_CONCEPT": 48
+          "CONCEPT_DISAGREEMENT": 3,
+          "RESTATEMENT_CONFLICT": 2,
+          "UNKNOWN_CONCEPT": 86
         }
       },
       "latestFiling": {
-        "accession": "0001213900-26-089262",
-        "filing_date": "2026-08-13",
+        "accession": "0001213900-26-122778",
+        "filing_date": "2026-11-20",
         "form": "10-Q",
-        "periodic_filings": 1
+        "periodic_filings": 2,
+        "acceptance_datetime": "2026-11-20T22:15:27.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
-        "formula": "1.2.0",
+        "normalization_logic": "1.15.0",
+        "formula": "1.3.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.8.0"
         }
       },
-      "sourceDigest": "c7378a1ce7a687899b3c0d4eff5c9687b305cefd66fa582ecd1becc1709a0a52",
+      "sourceDigest": "d19ac351f7d4605606895e8b4171610f4da45cbeb8541671563406455b115a62",
       "issuerId": "iss_cik_0002125551"
     }
   ]

@@ -2,39 +2,39 @@
   "note": "Drei Ebenen, drei Nenner. Sie duerfen NICHT addiert werden - die erste zaehlt aufgeloeste Werte, die zweite rohe XBRL-Fakten, die dritte Titel.",
   "values": {
     "denominator": {
-      "RESOLVED_VALUES": 1900255,
+      "RESOLVED_VALUES": 1900537,
       "ISSUERS_WITH_VALUES": 5349
     },
     "byState": {
-      "VALID": 1729790,
-      "WARNING": 170465
+      "VALID": 1730037,
+      "WARNING": 170500
     },
     "note": "Zustand je aufgeloestem Wert. VALID entspricht der internen Stufe HIGH, WARNING der Stufe MEDIUM."
   },
   "findings": {
     "denominator": {
-      "RAW_XBRL_FACTS_WITH_FINDING": 50381836
+      "RAW_XBRL_FACTS_WITH_FINDING": 50388445
     },
     "byState": {
-      "AMBIGUOUS": 1267375,
-      "RESTATED": 304310,
+      "AMBIGUOUS": 1266535,
+      "RESTATED": 304207,
       "NON_COMPARABLE": 71087,
-      "MISSING": 48721052,
-      "WARNING": 18012
+      "MISSING": 48728614,
+      "WARNING": 18002
     },
     "byCode": {
-      "UNKNOWN_CONCEPT": 48721052,
-      "CONCEPT_DISAGREEMENT": 1256780,
-      "RESTATEMENT_CONFLICT": 304310,
+      "UNKNOWN_CONCEPT": 48728614,
+      "CONCEPT_DISAGREEMENT": 1255939,
+      "RESTATEMENT_CONFLICT": 304207,
       "UNEXPECTED_DURATION": 54904,
       "PERIOD_MISMATCH": 14922,
-      "FISCAL_PERIOD_CONFLICT": 12619,
+      "FISCAL_PERIOD_CONFLICT": 12600,
       "FUTURE_DATA_LEAK": 7513,
-      "UNPLACEABLE_PERIOD": 3082,
+      "UNPLACEABLE_PERIOD": 3083,
       "NEGATIVE_WHERE_IMPOSSIBLE": 2577,
-      "EXTREME_VALUE": 2208,
+      "EXTREME_VALUE": 2213,
       "UNIT_MISMATCH": 1261,
-      "FUTURE_PERIOD_END": 594,
+      "FUTURE_PERIOD_END": 598,
       "IMPLAUSIBLE_FILING_FY": 14
     },
     "note": "Befunde je ROHEM Fakt. UNKNOWN_CONCEPT heisst 'von der Registry nicht gemappt' und nicht 'fehlerhaft' - ein Emittent meldet Tausende Konzepte, von denen die wenigsten gebraucht werden."
@@ -116,5 +116,5 @@
       "mapping_version": "1.8.0"
     }
   },
-  "generatedAtUtc": "2026-11-20T07:23:39+00:00"
+  "generatedAtUtc": "2026-11-21T06:28:51+00:00"
 }
