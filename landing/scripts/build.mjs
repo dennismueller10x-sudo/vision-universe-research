@@ -1,6 +1,7 @@
 import {readFile, writeFile, mkdir, cp, rm, readdir} from 'node:fs/promises';
 import {resolve, dirname, relative, isAbsolute} from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {existsSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 
 export const root = fileURLToPath(new URL('../', import.meta.url));
@@ -170,6 +171,35 @@ async function buildConcepts(output) {
       .replace('</head>','<link rel="stylesheet" href="../t/techniken.css"><script src="../t/techniken.js" defer></script></head>')
       .replace(/(<body[^>]*>)/,`$1<a class="kz-badge" href="../">Technik ${id.slice(1)} · ${name} <span>‹ alle Techniken</span></a>`);
     await mkdir(resolve(output,'konzepte',id),{recursive:true}); await writeFile(resolve(output,'konzepte',id,'index.html'),html);
+  }
+  // Konzept „Welt“ (Owner 21.11.2026): Marketing-Seite statt Web-App; Start-iPhone, Anmeldung und Fuß wie live, News als Netflix-Oberfläche.
+  {
+    const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    const dd = d => d.split('-').reverse().join('.');
+    const data = JSON.parse(await readFile(resolve(root,'..','insights','artikel.json'),'utf8'));
+    const arts = data.artikel.filter(a => existsSync(resolve(root,'web','img','news',`art-${a.slug}.jpg`)));
+    const card = a => `<a class="vw-card" href="https://research.visionuniverse.de/insights/${esc(a.slug)}/"><img src="../../web/img/news/art-${esc(a.slug)}.jpg" alt="" loading="lazy"><span><small>${esc(a.rubrik)} · ${dd(a.datum)}</small><b>${esc(a.titel)}</b><em>${esc(a.teaser||'')}</em></span></a>`;
+    const row = (title, items, link) => items.length ? `<div class="vw-row"><div class="vw-rh w"><h3>${title}</h3><span class="vw-rh-r">${link||''}<span class="vw-arr"><button type="button" aria-label="Zurück">‹</button><button type="button" aria-label="Weiter">›</button></span></span></div><div class="vw-track">${items.join('')}</div></div>` : '';
+    const b = arts[0];
+    const films = [['discover','Discover'],['screener','Screener'],['atlas','Vision Universe AI'],['fundamental','Fundamental'],['quant','Quant'],['technical','Technical'],['elliott','Elliott'],['supertrader','Supertrader'],['hedgefonds','Hedgefonds'],['vorsorge','Vorsorge']]
+      .map(([k,n]) => `<button class="vw-card film reel9" type="button" data-vid="../../partner/media/${k}.mp4" aria-label="Film ${n} abspielen"><img src="../../partner/media/${k}.jpg" alt="" loading="lazy"><i aria-hidden="true">▶</i><span><small>In 30 Sekunden</small><b>${n}</b></span></button>`);
+    const reads = [`<a class="vw-card cover" href="../../magazin/"><img src="../../web/img/news/mag-01-cover.jpg" alt="Titel des aktuellen Aktienmagazins" loading="lazy"><span><small>Aktienmagazin · KW ${esc(data.magazin[0]?.kw||'')}</small><b>${esc(data.magazin[0]?.titel||'')}</b></span></a>`,
+      `<a class="vw-card cover" href="../../report/"><img src="../../web/img/news/rep-take-two-gta-6-cover.jpg" alt="Titel des aktuellen Aktienreports" loading="lazy"><span><small>Aktienreport</small><b>${esc(data.reports[0]?.titel||'')}</b></span></a>`]
+      .concat(['s02','s03','s05','s06','s08'].filter(p=>existsSync(resolve(root,'web','img','news',`mag-01-${p}.jpg`))).map(p=>`<a class="vw-card cover" href="../../magazin/"><img src="../../web/img/news/mag-01-${p}.jpg" alt="" loading="lazy"><span><small>Aktienmagazin · Blick ins Heft</small><b>${esc(data.magazin[0]?.titel||'')}</b></span></a>`));
+    const tv = `<section class="vw-tv" id="news" data-dark aria-label="News">
+<div class="vw-bill"><img class="bg" src="../../web/img/news/art-${esc(b.slug)}.jpg" alt=""><div class="w"><p class="vw-tag">${esc(b.rubrik)} · ${dd(b.datum)}</p><h2>${esc(b.titel)}</h2><p>${esc(b.teaser||'')}</p><div class="vw-bbtn"><a class="p" href="https://research.visionuniverse.de/insights/${esc(b.slug)}/">▶ Jetzt lesen</a><a class="s" href="../../news/">Alle News</a></div></div></div>
+<div class="vw-rows">${row('Neu bei Vision Universe', arts.slice(1,11).map(card), '<a href="../../news/">Alle News</a>')}${row('Aktienmagazin und Aktienreports', reads)}${row('Jeder Bereich in 30 Sekunden', films)}${row('Nebenwerte im Fokus', arts.filter(a=>a.rubrik==='Nebenwert im Fokus').map(card))}${row('Tagesthemen', arts.filter(a=>a.rubrik==='Tagesthema').map(card))}</div>
+</section>`;
+    const a0 = basis.indexOf('<div class="stage mob">'), a1 = basis.indexOf('\n<p class="t">', a0);
+    const tpl = (await readFile(resolve(root,'konzepte/t/welt.html'),'utf8'))
+      .replace(/(src|href|data-vid|data-img)="\.\//g,'$1="../../').replace('<!--HEROSTAGE-->', basis.slice(a0,a1)).replace('<!--TV-->', tv);
+    const m0 = basis.indexOf('<main id="inhalt">'), m1 = basis.indexOf('<div data-ch data-lbl="Anmelden">');
+    const html = (basis.slice(0,m0).replace(/<nav class="jbar"[\s\S]*?<\/nav>/,'') + '<main id="inhalt">' + tpl + basis.slice(m1))
+      .replace('<html lang="de"','<html lang="de" class="vw"')
+      .replace('</head>','<link rel="stylesheet" href="../t/welt.css"></head>')
+      .replace('</body>','<script src="../t/welt.js" defer></script></body>')
+      .replace(/(<body[^>]*>)/,'$1<a class="kz-badge" href="../">Konzept: Welt <span>‹ alle Konzepte</span></a>');
+    await mkdir(resolve(output,'konzepte','w'),{recursive:true}); await writeFile(resolve(output,'konzepte','w','index.html'),html);
   }
   // Konzept „Einfach“ (Owner 21.11.2026): Module der Live-Seite unverändert, in Boxen zum Wischen gruppiert.
   {

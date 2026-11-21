@@ -1,0 +1,188 @@
+/* Konzept „Welt“: Marketing-Seite für die App. Farben Schwarz, Weiß, Lime. Handy, iPad, Desktop. */
+.kz-badge{position:fixed;left:12px;bottom:12px;z-index:90;display:inline-flex;gap:8px;align-items:center;padding:8px 13px;border-radius:99px;background:var(--lime);color:#000;font-weight:900;font-size:12.5px;box-shadow:0 10px 30px -10px rgba(0,0,0,.4)}
+.kz-badge span{font-weight:700;opacity:.7}
+@media(max-width:700px){.kz-badge span{display:none}}
+.vw .jbar,.vw .dock{display:none !important}
+.vw body{background:#fff}
+.vw em{font-style:normal}
+.vw-k{font-size:13px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
+.vw-h2{margin-top:12px;font-size:clamp(38px,6vw,88px);font-weight:900;letter-spacing:-.055em;line-height:.95;text-wrap:balance}
+.vw-h2 em{color:#9a9a9a}
+
+/* Kopfzeile: Glas, hell über hellen und dunkel über dunklen Flächen */
+.vw .nav{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.72);backdrop-filter:saturate(1.6) blur(18px);-webkit-backdrop-filter:saturate(1.6) blur(18px);border-bottom:1px solid rgba(0,0,0,.06);transition:background .35s,color .35s,border-color .35s}
+html.vw-ondark .nav{background:rgba(8,8,8,.55);border-bottom-color:rgba(255,255,255,.08);color:#fff}
+html.vw-ondark .nav .logo{filter:invert(1)}
+html.vw-ondark .nav .links>a,html.vw-ondark .nav .links summary{color:#fff}
+html.vw-ondark .nav .appchip{color:#fff}
+html.vw-ondark .nav .btn{background:var(--lime);color:#000}
+html.vw-ondark .nav .btn .dot{background:#000;color:var(--lime)}
+html.vw-ondark .nav .menu{background:transparent;color:#fff;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.3)}
+
+/* 1 Startbühne: dunkel, groß, ruhig */
+.vw-hero{position:relative;overflow:hidden;background:#050505;color:#fff;margin-top:-67px;padding-top:67px}
+.vw-glow{position:absolute;inset:-20% -10% auto;height:120%;background:radial-gradient(40% 50% at 70% 40%,rgba(200,245,60,.28),transparent 70%),radial-gradient(30% 40% at 15% 85%,rgba(200,245,60,.10),transparent 70%);filter:blur(10px);animation:vwglow 14s ease-in-out infinite alternate}
+@keyframes vwglow{to{transform:translate3d(-4%,3%,0) scale(1.08)}}
+.vw-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);background-size:64px 64px;-webkit-mask:radial-gradient(70% 60% at 60% 40%,#000,transparent);mask:radial-gradient(70% 60% at 60% 40%,#000,transparent)}
+.vw-hin{position:relative;display:grid;gap:28px;align-items:center;min-height:calc(100svh - 67px);padding-top:28px;padding-bottom:64px}
+@media(min-width:900px){.vw-hin{grid-template-columns:1.05fr .95fr;gap:40px}}
+.vw-eyebrow{display:inline-flex;align-items:center;gap:10px;padding:8px 14px;border-radius:99px;background:rgba(255,255,255,.07);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);font-size:13.5px;font-weight:800;color:#ddd}
+.vw-live{width:8px;height:8px;border-radius:50%;background:var(--lime);box-shadow:0 0 0 0 rgba(200,245,60,.7);animation:vwpulse 2s infinite}
+@keyframes vwpulse{70%{box-shadow:0 0 0 10px rgba(200,245,60,0)}100%{box-shadow:0 0 0 0 rgba(200,245,60,0)}}
+.vw-h1{margin-top:22px;font-size:clamp(48px,8.2vw,124px);font-weight:900;letter-spacing:-.065em;line-height:.9}
+.vw-l{display:block;overflow:hidden;padding-bottom:.06em}
+.vw-h1 em{display:inline-block;background:linear-gradient(90deg,var(--lime),#eaff9a 50%,var(--lime));background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:vwshine 6s linear infinite}
+@keyframes vwshine{to{background-position:-200% 0}}
+.vw-sub{margin-top:22px;max-width:30ch;font-size:clamp(18px,1.8vw,24px);font-weight:650;color:#bdbdbd}
+.vw-cta{display:flex;flex-wrap:wrap;align-items:center;gap:14px 18px;margin-top:30px}
+.vw-btn{display:inline-flex;align-items:center;gap:12px;min-height:56px;padding:0 10px 0 24px;border-radius:99px;background:var(--lime);color:#000;font-weight:900;font-size:16.5px;transition:transform .25s var(--ease),box-shadow .25s}
+.vw-btn i{display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:#000;color:var(--lime);font-style:normal;transition:transform .3s var(--ease)}
+.vw-btn:hover{transform:translateY(-2px);box-shadow:0 18px 40px -16px rgba(200,245,60,.6)}
+.vw-btn:hover i{transform:translateX(3px)}
+.vw-stores{display:inline-flex;gap:10px}
+.vw-stores img{height:46px;width:auto;opacity:.92}
+.vw-free{margin-top:14px;font-size:14px;font-weight:700;color:#8a8a8a}
+/* Das iPhone der Live-Seite mit seinen Infokarten, leicht geneigt, folgt der Maus */
+.vw-stage{position:relative;perspective:1400px;min-height:520px}
+.vw-stage .stage.mob{display:block !important;position:relative;width:100%;max-width:560px;height:640px;margin:0 auto;transform:rotateY(var(--ry,-8deg)) rotateX(var(--rx,4deg));transform-style:preserve-3d;transition:transform .5s var(--ease)}
+.vw-stage .stage.mob .aphone{box-shadow:0 60px 120px -40px rgba(200,245,60,.35),0 0 0 1px rgba(255,255,255,.12)}
+.vw-stage .stage.mob .hc{color:#555}
+@media(max-width:899px){
+  .vw-hin{min-height:0;padding-top:24px;padding-bottom:30px;text-align:left}
+  .vw-stage{min-height:0}
+  .vw-stage .stage.mob{height:440px;max-width:420px}
+  .vw-stage .stage.mob .aphone{--pw:210px}
+}
+@media(max-width:600px){.vw-stage .stage.mob{height:400px}.vw-stage .stage.mob .hc{transform:scale(.8)}.vw-stores img{height:40px}}
+.vw-down{position:absolute;left:50%;bottom:18px;width:26px;height:42px;margin-left:-13px;border-radius:99px;box-shadow:inset 0 0 0 2px rgba(255,255,255,.35)}
+.vw-down span{position:absolute;left:50%;top:9px;width:4px;height:8px;margin-left:-2px;border-radius:2px;background:var(--lime);animation:vwdown 1.8s infinite}
+@keyframes vwdown{60%{transform:translateY(12px);opacity:0}100%{opacity:0}}
+@media(max-width:899px){.vw-down{display:none}}
+
+/* Laufband */
+.vw-marquee{overflow:hidden;background:var(--lime);color:#000;padding:16px 0;transform:rotate(-1.2deg) scale(1.02);margin:-10px 0 0;position:relative;z-index:2}
+.vw-marquee div{display:flex;gap:44px;width:max-content;animation:vwmq 40s linear infinite}
+.vw-marquee span{font-size:clamp(18px,2vw,26px);font-weight:900;letter-spacing:-.02em;white-space:nowrap}
+.vw-marquee span::after{content:"✦";margin-left:44px}
+@keyframes vwmq{to{transform:translateX(-50%)}}
+
+/* 2 Scroll-Erzählung wie Apple: iPhone steht, Aussagen wechseln */
+.vw-story{position:relative;height:calc(var(--n,7) * 90svh + 30svh)}
+.vw-sticky{position:sticky;top:0;height:100svh;overflow:hidden;display:grid;align-items:center}
+.vw-sbg{position:absolute;inset:0;background:radial-gradient(50% 60% at 72% 50%,rgba(200,245,60,.18),transparent 70%)}
+.vw-beats{position:relative;height:100%;width:100%}
+.vw-beat{position:absolute;left:20px;right:20px;top:50%;max-width:560px;transform:translateY(-40%);opacity:0;transition:opacity .6s var(--ease),transform .8s var(--ease);pointer-events:none}
+.vw-beat.on{opacity:1;transform:translateY(-50%);pointer-events:auto}
+.vw-beat h2{margin-top:12px;font-size:clamp(40px,5.6vw,84px);font-weight:900;letter-spacing:-.055em;line-height:.95}
+.vw-beat h2 em{background:linear-gradient(transparent 62%,var(--lime) 62%,var(--lime) 92%,transparent 92%)}
+.vw-beat p:not(.vw-k){margin-top:18px;font-size:clamp(17px,1.6vw,22px);font-weight:600;color:#444;max-width:34ch}
+@media(min-width:1000px){.vw-beat{left:max(32px,calc((100vw - 1240px)/2 + 32px))}}
+.vw-sphone{position:absolute;right:max(32px,calc((100vw - 1240px)/2 + 60px));top:50%;transform:translateY(-50%)}
+.vw-sphone .aphone{--pw:min(310px,26vw,calc((100svh - 120px) / 2.164))}
+.vw-sphone .scr img{transition:opacity .35s}
+.vw-sprog{position:absolute;left:50%;bottom:26px;transform:translateX(-50%);display:flex;gap:6px}
+.vw-sprog i{width:7px;height:7px;border-radius:99px;background:rgba(0,0,0,.15);transition:width .4s var(--ease),background .4s}
+.vw-sprog i.on{width:28px;background:#000}
+@media(max-width:999px){
+  .vw-sticky{align-items:start}
+  .vw-sphone{right:auto;left:50%;top:84px;transform:translateX(-50%)}
+  .vw-sphone .aphone{--pw:min(250px,calc((100svh - 380px) / 2.164))}
+  .vw-beat{top:auto;bottom:70px;transform:translateY(20px);max-width:none;text-align:center}
+  .vw-beat.on{transform:none}
+  .vw-beat p:not(.vw-k){margin-left:auto;margin-right:auto}
+  .vw-beat h2{font-size:clamp(32px,8vw,56px)}
+  .vw-beat p:not(.vw-k){font-size:16px}
+}
+@media(min-width:700px) and (max-width:999px){.vw-sphone .aphone{--pw:min(300px,calc((100svh - 420px) / 2.164))}}
+
+/* 3 Bento wie Apple und Linear */
+.vw-bento{padding-top:120px;padding-bottom:40px}
+.vw-tiles{display:grid;gap:14px;margin-top:40px;grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:200px}
+@media(min-width:700px){.vw-tiles{grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:220px}}
+@media(min-width:1100px){.vw-tiles{grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:240px;gap:16px}}
+.vw-tile{position:relative;overflow:hidden;display:flex;flex-direction:column;gap:4px;padding:20px;border-radius:28px;background:#f3f3f1;color:#000;isolation:isolate;transition:transform .45s var(--ease),box-shadow .45s var(--ease)}
+.vw-tile:hover{transform:translateY(-6px);box-shadow:0 30px 60px -30px rgba(0,0,0,.35)}
+.vw-tile.dark{background:#0b0b0b;color:#fff}.vw-tile.dark small{color:#a8a8a8}
+.vw-tile.lime{background:var(--lime)}.vw-tile.lime small{color:#2b3500}
+.vw-tile.t-xl{grid-column:span 2;grid-row:span 2}
+.vw-tile.t-w{grid-column:span 2}
+.vw-tile.t-t{grid-row:span 2}
+.vw-ti{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:#000;color:var(--lime)}
+.vw-tile.dark .vw-ti{background:var(--lime);color:#000}
+.vw-ti svg{width:22px;height:22px}
+.vw-tile b{margin-top:8px;font-size:clamp(19px,1.7vw,24px);font-weight:900;letter-spacing:-.03em}
+.vw-tile.t-xl b{font-size:clamp(28px,3vw,44px)}
+.vw-tile small{font-size:14px;font-weight:650;color:#555;max-width:24ch}
+.vw-shot{position:absolute;z-index:-1;right:-6%;bottom:-38%;width:52%;aspect-ratio:390/844;border-radius:24px;overflow:hidden;background:#000;box-shadow:0 0 0 5px #000,0 30px 60px -20px rgba(0,0,0,.5);transform:rotate(-8deg);transition:transform .6s var(--ease)}
+.vw-shot img{width:100%;height:100%;object-fit:cover;object-position:top}
+.vw-tile:hover .vw-shot{transform:rotate(-4deg) translateY(-8%)}
+.vw-tile.t-xl .vw-shot{width:46%;bottom:-14%;right:6%}
+.vw-tile.t-w .vw-shot{width:30%;bottom:-60%;right:8%}
+.vw-tile.t-t .vw-shot{width:66%;bottom:-18%;right:-8%}
+@media(max-width:699px){.vw-tile.t-t{grid-row:span 1}.vw-tile.t-t .vw-shot{width:52%;bottom:-38%}.vw-tile{padding:16px;border-radius:22px}.vw-tile small{font-size:12.5px}.vw-tile b{font-size:17px}}
+
+/* 4 News wie Netflix: Billboard und Reihen */
+.vw-tv{margin-top:120px;background:#050505;color:#fff;padding-bottom:70px;overflow:hidden}
+.vw-bill{position:relative;min-height:min(88svh,820px);display:flex;align-items:flex-end}
+.vw-bill img.bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scale(1.06);animation:vwkb 22s ease-in-out infinite alternate}
+@keyframes vwkb{to{transform:scale(1.16) translate(-2%,-1%)}}
+.vw-bill::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(5,5,5,.92) 0%,rgba(5,5,5,.55) 45%,rgba(5,5,5,0) 75%),linear-gradient(0deg,#050505 0%,rgba(5,5,5,0) 40%)}
+.vw-bill .w{position:relative;z-index:1;width:100%;padding-bottom:70px}
+.vw-tag{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--lime)}
+.vw-bill h2{margin-top:14px;max-width:18ch;font-size:clamp(34px,5vw,72px);font-weight:900;letter-spacing:-.05em;line-height:.98}
+.vw-bill p{margin-top:16px;max-width:52ch;font-size:clamp(16px,1.4vw,19px);font-weight:600;color:#cfcfcf}
+.vw-bbtn{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}
+.vw-bbtn a{display:inline-flex;align-items:center;gap:10px;min-height:50px;padding:0 22px;border-radius:12px;font-weight:900;font-size:16px;transition:transform .2s}
+.vw-bbtn a:hover{transform:scale(1.04)}
+.vw-bbtn .p{background:#fff;color:#000}.vw-bbtn .s{background:rgba(255,255,255,.16);color:#fff;backdrop-filter:blur(8px)}
+.vw-rows{position:relative;z-index:1;margin-top:-30px}
+.vw-row{margin-top:34px}
+.vw-rh{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.vw-rh h3{font-size:clamp(19px,1.8vw,24px);font-weight:900;letter-spacing:-.02em}
+.vw-rh a{font-size:14px;font-weight:800;color:var(--lime)}
+.vw-track{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x proximity;scrollbar-width:none;padding:18px max(20px,calc((100vw - 1240px)/2 + 32px)) 34px;margin:-18px 0 -34px;scroll-padding:0 max(20px,calc((100vw - 1240px)/2 + 32px))}
+.vw-track::-webkit-scrollbar{display:none}
+.vw-card{position:relative;flex:none;width:clamp(240px,24vw,340px);aspect-ratio:16/9;border-radius:10px;overflow:hidden;background:#1a1a1a;scroll-snap-align:start;transition:transform .35s var(--ease),box-shadow .35s;transform-origin:center}
+.vw-card img{width:100%;height:100%;object-fit:cover}
+.vw-card::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.92),rgba(0,0,0,.1) 55%,transparent)}
+.vw-card span{position:absolute;z-index:1;left:12px;right:12px;bottom:10px}
+.vw-card small{display:block;font-size:10.5px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--lime)}
+.vw-card b{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:3px;font-size:15px;font-weight:850;line-height:1.2}
+.vw-card em{display:block;max-height:0;overflow:hidden;font-size:12.5px;font-weight:600;color:#cfcfcf;transition:max-height .35s var(--ease),margin .35s}
+@media(hover:hover){
+  .vw-card:hover{transform:scale(1.12);z-index:3;box-shadow:0 30px 60px -10px rgba(0,0,0,.9),0 0 0 2px var(--lime)}
+  .vw-card:hover em{max-height:60px;margin-top:6px}
+  .vw-track:hover .vw-card:not(:hover){opacity:.65}
+}
+.vw-card.cover{width:clamp(150px,13vw,200px);aspect-ratio:3/4}
+.vw-card.cover::after{background:linear-gradient(0deg,rgba(0,0,0,.85),transparent 45%)}
+.vw-card.film{width:clamp(150px,13vw,200px);aspect-ratio:9/16;padding:0;border:0;cursor:pointer;color:#fff;text-align:left;box-shadow:none}
+.vw-card.film i{position:absolute;z-index:2;right:10px;top:10px;display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--lime);color:#000;font-style:normal;font-size:13px}
+.vw-arr{display:inline-flex;gap:6px}
+.vw-arr button{width:36px;height:36px;border-radius:50%;border:0;background:rgba(255,255,255,.12);color:#fff;font-size:18px;cursor:pointer}
+.vw-arr button:hover{background:var(--lime);color:#000}
+@media(max-width:700px){.vw-arr{display:none}.vw-bill{min-height:78svh}.vw-bill::after{background:linear-gradient(0deg,#050505 10%,rgba(5,5,5,.6) 55%,rgba(5,5,5,.2))}}
+
+/* 5 Versprechen */
+.vw-trust{display:grid;gap:28px;padding-top:110px;padding-bottom:40px}
+@media(min-width:800px){.vw-trust{grid-template-columns:repeat(3,1fr);gap:40px}}
+.vw-trust b{display:block;font-size:clamp(22px,2vw,28px);font-weight:900;letter-spacing:-.03em;padding-top:18px;border-top:3px solid #000}
+.vw-trust p{margin-top:10px;font-size:16.5px;font-weight:600;color:#555}
+.vw main>[data-ch]{margin-top:80px}
+
+/* Einblenden beim Scrollen (Scroll-Timeline, sonst per Skript) */
+.vw-rv{opacity:0;transform:translateY(40px);transition:opacity .9s var(--ease),transform .9s var(--ease)}
+.vw-rv.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){.vw-rv{opacity:1;transform:none}.vw-marquee div,.vw-glow,.vw-bill img.bg,.vw-h1 em{animation:none}}
+/* Korrekturen */
+.vw-tile b,.vw-tile small,.vw-ti{position:relative;z-index:1}
+.vw-tile:not(.t-xl):not(.t-w):not(.t-t) b,.vw-tile:not(.t-xl):not(.t-w):not(.t-t) small{max-width:58%}
+.vw-tile:not(.t-xl):not(.t-w):not(.t-t) .vw-shot{width:40%;right:-6%;bottom:-46%}
+.vw-bill h2{font-size:clamp(32px,4.2vw,60px);max-width:20ch}
+@media(max-width:899px){
+  .vw-stage .stage.mob .hc.c4,.vw-stage .stage.mob .hc.c5{display:none}
+  .vw-eyebrow{font-size:12.5px}
+}
+@media(min-width:600px) and (max-width:899px){.vw-stage .stage.mob{height:470px}.vw-stage .stage.mob .aphone{--pw:230px}}
+.vw-tiles{grid-auto-flow:dense}
+@media(min-width:700px) and (max-width:1099px){.vw-tile.t-xl{grid-column:span 3;grid-row:span 2}.vw-tile.t-xl .vw-shot{width:34%}}
