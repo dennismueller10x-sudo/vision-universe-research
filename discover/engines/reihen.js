@@ -19,7 +19,7 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function () {
   "use strict";
 
-  var MAX_HOME_ROWS = 14;
+  var MAX_HOME_ROWS = 16;  /* Owner 21.11.2026: drei weitere Reihen als Schiene (Aufwind, Gewinne, Aufwärtstrends) */
   var SHOWCASE_MIN_RETURN_12M = -0.60;
 
   /* Anzeigenamen (Folie U3, docs/legal/WORTWAHL.md). */
@@ -79,9 +79,12 @@
     { kind: "rail", row: "comeback", movable: true },
     { kind: "more" },
     { kind: "rail", row: "langfristige-compounder", movable: true },
+    { kind: "rail", row: "momentum-leaders", movable: true },
     { kind: "rail", row: "ueberraschungen", movable: true },
     { kind: "rail", row: "bekannte-namen", movable: true },
+    { kind: "rail", row: "gewinne-beschleunigen", movable: true },
     { kind: "strategies", rows: ["umsatz-waechst-stark", "qualitaet-wachstum", "cashflow-maschinen"] },
+    { kind: "rail", row: "trend-quality", movable: true },
     { kind: "rail", row: "breakout-watch", movable: true }
   ];
   /* Saetze der breiten Strategie-Karten (Screen n-home, Strategien). */
@@ -206,7 +209,37 @@
     return "Du hast zuletzt " + (names.length > 1 ? names[0] + " und " + names[1] : names[0]) + " angesehen.";
   }
 
+  var SECTOR_DE = { 'Technology': 'Technologie', 'Health Care': 'Gesundheit', 'Healthcare': 'Gesundheit', 'Financials': 'Finanzen', 'Financial Services': 'Finanzen',
+    'Consumer Discretionary': 'Zyklischer Konsum', 'Consumer Cyclical': 'Zyklischer Konsum', 'Consumer Staples': 'Basiskonsum', 'Consumer Defensive': 'Basiskonsum',
+    'Industrials': 'Industrie', 'Energy': 'Energie', 'Utilities': 'Versorger', 'Real Estate': 'Immobilien', 'Materials': 'Rohstoffe', 'Basic Materials': 'Rohstoffe',
+    'Communication Services': 'Kommunikation' };
+  /** Was die Firma ist: eigener Satz, sonst Branche auf Deutsch. Eine Quelle fuer Karten (v3.js) und Vorschau. */
+  function what(c) { return c.was || SECTOR_DE[c.sector] || c.sector || ""; }
+  /** Kurzname wie im Mockup (nm): Rechtsform und Zusaetze am Ende weg. */
+  function shortName(c) {
+    var x = String((c && (c.displayName || c.companyName)) || (c && c.symbol) || "");
+    for (var i = 0; i < 3; i++) x = x.replace(/,?\s+(Class [A-Z]|Inc\.?|Holdings?|Ltd\.?|Limited|Corporation|Corp\.?|Co\.?|Company|plc|N\.V\.|S\.A\.|A\.S\.|AG|SE|- New|\(Cayman\)|Group Holding|Therapeutics|Technology Group|L\.P\.|LP)$/i, "");
+    x = x.replace(/\s*&$/, ""); /* "Eli Lilly & Co" -> "Eli Lilly", nicht "Eli Lilly &" */
+    return x || (c && c.symbol) || "";
+  }
+  /** Die bis zu fuenf Aktien des Billboards: erst die der Startseiten-Flaeche, dann die Reihe "im Blick", ohne Doppelte, nur Schaufenster-Karten. */
+  function billboardCards(hero, row) {
+    var seen = {}, out = [];
+    ((hero && hero.cards) || []).concat((row && row.cards) || []).forEach(function (c) {
+      if (out.length < 5 && c && !seen[c.symbol] && showcase(c)) { seen[c.symbol] = 1; out.push(c); }
+    });
+    return out;
+  }
+  /** Vorschau der ersten Folie (Release-Build und Test): nur Name, Untertitel, Kuerzel - nie Kurs oder Prozent. */
+  function heroPreview(hero, row) {
+    var c = billboardCards(hero, row)[0];
+    if (!c) return null;
+    var name = shortName(c);
+    return { symbol: c.symbol, name: name, long: name.length > 11, sub: what(c) || c.symbol };
+  }
+
   return {
+    what: what, shortName: shortName, billboardCards: billboardCards, heroPreview: heroPreview,
     isNew: isNew, freshRows: freshRows, moreFrom: moreFrom, moreLine: moreLine,
     MAX_HOME_ROWS: MAX_HOME_ROWS, SHOWCASE_MIN_RETURN_12M: SHOWCASE_MIN_RETURN_12M,
     TITLES: TITLES, GENRES: GENRES, ALL_GROUPS: ALL_GROUPS, HOME_PLAN: HOME_PLAN, STRATEGY_COPY: STRATEGY_COPY,

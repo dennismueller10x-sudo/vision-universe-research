@@ -14,7 +14,7 @@
    Tages (immer dunkel, 520 px bis an den Rand, wischbar 1–5) -> Reiter im Inhalt
    -> Weiter ansehen -> Top 10 heute -> Themen -> Neue Jahreshochs -> Was sich
    heute bewegt -> Langfristige Compounder -> übrige Reihen -> Wie steht die
-   Börse? -> Alle N Reihen (mit Genres und Suche) -> Swipen, Weiter, Hinweis.
+   Börse? -> Alle N Reihen (mit Genres und Suche) -> Swipen (Ende der Seite).
    Mit Genre (#/?genre=…): Kopf mit Frage und Genre-Chips, darunter die Reihen. Schienen laden ihre Reihe erst, wenn sie in die Naehe
    des sichtbaren Bereichs kommen; die Mini-Charts laden, wenn sie sichtbar werden.
    ========================================================================= */
@@ -34,12 +34,7 @@
 
   /* ------------------------------------------------------------ Namen */
   /** Kurzname wie im Mockup (nm): Rechtsform und Zusaetze am Ende weg. */
-  function shortName(c) {
-    var x = String((c && (c.displayName || c.companyName)) || (c && c.symbol) || '');
-    for (var i = 0; i < 3; i++) x = x.replace(/,?\s+(Class [A-Z]|Inc\.?|Holdings?|Ltd\.?|Limited|Corporation|Corp\.?|Co\.?|Company|plc|N\.V\.|S\.A\.|A\.S\.|AG|SE|- New|\(Cayman\)|Group Holding|Therapeutics|Technology Group|L\.P\.|LP)$/i, '');
-    x = x.replace(/\s*&$/, ''); /* „Eli Lilly & Co“ -> „Eli Lilly“, nicht „Eli Lilly &“ */
-    return x || (c && c.symbol) || '';
-  }
+  function shortName(c) { return R().shortName(c); }
   /** Ziel „Alle N“ einer Reihe. Themenreihen fuehren in ihre Themenwelt. */
   function rowHref(id) {
     var T = D.Views && D.Views.Themes, t = T && T.byRow(id);
@@ -137,13 +132,7 @@
 
   /* ------------------------------------------------------------ Aktie des Tages (Prototyp „bleed“) */
   /** Karten fuer das Billboard: die Eingangsflaeche (mit Gruenden), dann die Reihe „Heute im Blick“, Schaufenster-Regel, hoechstens 5. */
-  function billboardCards(hero, row) {
-    var seen = {}, out = [];
-    ((hero && hero.cards) || []).concat((row && row.cards) || []).forEach(function (c) {
-      if (out.length < 5 && c && !seen[c.symbol] && R().showcase(c)) { seen[c.symbol] = 1; out.push(c); }
-    });
-    return out;
-  }
+  function billboardCards(hero, row) { return R().billboardCards(hero, row); }
   function heroWidth() { return Math.round(Math.max(320, Math.min(global.innerWidth || 390, 672))); }
   /** Zweite Zeile unter dem Satz: Zeitraum der Pille und der erste Grund (z. B. „in 12 Monaten · Ausbruch mit Volumen“). */
   function heroWhy(c) {
@@ -156,7 +145,7 @@
     var art = h('article', 'dr-bb__slide dp-hero__slide'); art.dataset.symbol = c.symbol; art.setAttribute('role', 'listitem');
     art.setAttribute('aria-label', 'Nr. ' + (i + 1) + ' von ' + n + ': ' + shortName(c));
     var r12 = c.metrics && c.metrics.return12M, sub = K().what(c);
-    art.innerHTML = '<div class="dr-bb__chart dp-hero__chart"></div><div class="dp-hero__shade" aria-hidden="true"></div>' +
+    art.innerHTML = '<div class="dr-bb__chart dp-hero__chart"></div><div class="dp-hero__shade" aria-hidden="true"></div><p class="dp-hero__day" data-hero-day></p>' +
       '<div class="dp-hero__body"><div class="dr-bb__tag dp-hero__tags"><span class="dp-pill dp-pill--sm">Nr. ' + (i + 1) + ' heute</span><span class="dp-pill dp-pill--sm dp-pill--bk" data-hero-theme>' +
       esc(surface && surface.live ? 'Heute im Blick · laufende Sitzung' : 'Heute im Blick') + '</span></div>' +
       '<div class="dr-bb__id dp-hero__id"' + stockAttrs(c) + '>' + U().logo(c.symbol, { xl: true }) + '<div><h2' + (shortName(c).length > 11 ? ' class="dp-long"' : '') + '>' + esc(shortName(c)) + '</h2><p>' + esc(sub || c.symbol) + '</p></div></div>' +
@@ -164,12 +153,37 @@
       '<div class="dr-bb__act dp-hero__act"><a class="dp-btn" href="' + esc(K().stockHref(ctx, c.symbol)) + '"' + stockAttrs(c) + ' aria-label="' + esc(shortName(c) + ' ansehen') + '">Ansehen</a>' +
       '<button type="button" class="dp-rnd dr-bb__keep" aria-pressed="false">' + U().glyph('heart', 18) + '</button>' +
       '<button type="button" class="dp-rnd dr-bb__q" aria-label="Warum steht ' + esc(shortName(c)) + ' hier?">?</button></div></div>';
-    art.querySelector('.dr-bb__chart').appendChild(K().spark(c, { big: true, width: heroWidth(), height: 260 }));
+    heroChart(art, c);
     var keep = art.querySelector('.dr-bb__keep'), st = K().store(ctx);
     if (!st) keep.hidden = true;
     else K().heart(keep, ctx, c.symbol, shortName(c));
     art.querySelector('.dr-bb__q').addEventListener('click', function () { K().whySheet(c, ctx, surface); });
     return art;
+  }
+  /** Chart der Aktie des Tages (Owner 21.11.2026): der Tagesverlauf (5-Minuten-Kurse, discover/ui/live-hub.js, derselbe Snapshot wie auf der
+      Aktienseite) mit der Veränderung zum Vortagesschluss; nur ohne Tagesverlauf (Europa, kein Snapshot) die Tagesschlüsse über 12 Monate.
+      Die Beschriftung oben rechts sagt immer, welcher Zeitraum zu sehen ist. */
+  function heroChart(art, c) {
+    var box = art.querySelector('.dr-bb__chart'), tag = art.querySelector('[data-hero-day]');
+    var Hub = D.LiveHub, MC = D.MicroChart, abo = null, off = false;
+    function caption(text, pct) { tag.innerHTML = '<span>' + esc(text) + '</span>' + (isNum(pct) ? U().chg(pct, { digits: 1 }) : ''); }
+    var daily = K().val(c.changePercent);
+    box.appendChild(K().spark(c, { big: true, width: heroWidth(), height: 260 }));
+    caption(isNum(daily) ? '12 Monate · heute' : '12 Monate', daily);
+    if (!Hub || !MC || !MC.renderIntraday || !Hub.enabled || !Hub.enabled() || c.region === 'EUROPE') return;
+    function stop() { off = true; if (abo) { abo(); abo = null; } }
+    abo = Hub.subscribe(c.symbol, function (p) {
+      if (off) return;
+      if (art.__heroOn && !art.isConnected) { stop(); return; }
+      if (art.isConnected) art.__heroOn = true;
+      var snap = p && p.snapshot, svg = snap ? MC.renderIntraday(snap, { width: heroWidth(), height: 260, symbol: c.symbol, label: p.label && p.label.label }) : null;
+      if (!svg) return;
+      var pts = snap.points, last = pts[pts.length - 1][1], base = snap.previousClose;
+      var pct = isNum(base) && base > 0 && isNum(last) ? (last / base - 1) * 100 : daily;
+      box.replaceChildren(svg); box.dataset.range = '1T';
+      caption((p.label && p.label.label) || 'Tagesverlauf', pct);
+    });
+    if (off && abo) { abo(); abo = null; }
   }
   /** Thema der Aktie (Reihen-Zugehörigkeit aus dem Datenlauf, discover/data/membership) als zweites Etikett, wie im Prototyp. */
   function heroThemes(sec, ctx) {
@@ -204,12 +218,14 @@
   }
 
   /* ------------------------------------------------------------ Reiter im Inhalt (Prototyp „tabs2“) */
-  var TABS = [['start', 'Start'], ['themen', 'Themen'], ['reihen', 'Reihen'], ['maerkte', 'Märkte']];
+  /* „Swipen“ (Owner 21.11.2026) führt direkt in den Swipe-Modus (#/swipen), statt erst ganz unten über den Kasten. */
+  var TABS = [['start', 'Start'], ['swipen', 'Swipen'], ['themen', 'Themen'], ['reihen', 'Reihen'], ['maerkte', 'Märkte']];
   function tabsBar(body) {
     var nav = h('nav', 'dp-tabs'); nav.setAttribute('aria-label', 'Discover');
     nav.innerHTML = TABS.map(function (t, i) { return '<button type="button" class="dp-tab' + (i ? '' : ' on') + '" data-dp-tab="' + t[0] + '"' + (i ? '' : ' aria-current="true"') + '>' + esc(t[1]) + '</button>'; }).join('');
     nav.addEventListener('click', function (e) {
       var b = e.target.closest && e.target.closest('[data-dp-tab]'); if (!b) return;
+      if (b.dataset.dpTab === 'swipen') { global.location.hash = '#/swipen'; return; }
       Array.prototype.forEach.call(nav.children, function (x) { x.classList.toggle('on', x === b); if (x === b) x.setAttribute('aria-current', 'true'); else x.removeAttribute('aria-current'); });
       var id = b.dataset.dpTab, target = id === 'start' ? null : body.querySelector('[data-dp-anchor="' + id + '"]');
       var off = nav.getBoundingClientRect().height + (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--vu-navigation-height')) || 56);
@@ -259,11 +275,17 @@
   }
 
   /* ------------------------------------------------------------ Schienen */
+  /** Rangreihen (z. B. „Seit Monaten im Aufwind“) ordnen den ganzen geprüften Umfang (die größte Trefferzahl aller Reihen): dann keine
+      Trefferzahl, sondern „Alle“. */
+  function ranksAll(avail, n) {
+    var max = 0; Object.keys(avail || {}).forEach(function (k) { if (isNum(avail[k]) && avail[k] > max) max = avail[k]; });
+    return isNum(n) && max > 0 && n >= max * 0.9;
+  }
   function railSection(slot, ctx, avail) {
     var id = slot.row, title = slot.title || R().homeTitle(id), sec = h('section', 'dr-sec' + (slot.kind === 'more' ? ' dr-sec--more' : '')); sec.dataset.row = id;
     if (slot.anchor) sec.dataset.dpAnchor = slot.anchor;
     var n = avail[id];
-    sec.innerHTML = protoHead({ title: title, more: slot.kind === 'more' ? 'Alle' : n ? fmtInt(n) + ' Aktien' : 'Alle', href: rowHref(id), label: 'Alle ' + fmtInt(n) + ' Aktien: ' + title });
+    sec.innerHTML = protoHead({ title: title, more: slot.kind === 'more' || ranksAll(avail, n) ? 'Alle' : n ? fmtInt(n) + ' Aktien' : 'Alle', href: rowHref(id), label: 'Alle ' + fmtInt(n) + ' Aktien: ' + title });
     if (slot.tag) sec.querySelector('.dr-head__t h2').insertAdjacentHTML('afterend', '<span class="dr-tag">' + esc(slot.tag) + '</span>');
     var track = rail(title); track.innerHTML = skeleton(3); sec.appendChild(track);
     whenNear(sec, function () {
@@ -406,13 +428,23 @@
       rowTile('#/c/EUROPE/all', '<span class="dr-hud" style="width:40px;height:40px">' + U().glyph('grid', 20) + '</span>', 'Ganz Europa', 'Zehn Börsen · Kurse in Landeswährung · Tagesschluss, unbereinigt') + '</div>';
     return sec;
   }
-  /** „Alle N Reihen“ (Prototyp: Etikett und Chips), darunter Suche und Genres (aus dem früheren Kopf der Seite). */
+  /** „Alle N Reihen“: Kacheln je Reihe (Symbol der Art, Titel, Zahl der Treffer) in einer wischbaren Fläche aus zwei Zeilen
+      (Owner 21.11.2026: statt der Chip-Wolke), am Ende „Alle Reihen und Themen“; darunter Genres und Suche. */
+  var GROUP_ICON = { kursbewegung: 'signal', unternehmen: 'bars', indizes: 'target', entdecken: 'new' };
   function rowsSection(ctx, avail) {
-    var ids = []; R().ALL_GROUPS.forEach(function (g) { g.rows.forEach(function (r) { if (avail && avail[r] && ids.indexOf(r) < 0) ids.push(r); }); });
+    var ids = [], grp = {};
+    R().ALL_GROUPS.forEach(function (g) { g.rows.forEach(function (r) { if (avail && avail[r] && ids.indexOf(r) < 0) { ids.push(r); grp[r] = g; } }); });
     var sec = h('section', 'dr-sec dp-rows');
-    var shown = ids.slice(0, 8), rest = ids.length - shown.length;
-    sec.innerHTML = (ids.length ? '<p class="dp-eb">Alle ' + ids.length + ' Reihen</p><div class="dp-chips">' + shown.map(function (id) { return '<a class="dp-chip" href="' + esc(rowHref(id)) + '">' + esc(R().title(id)) + '</a>'; }).join('') +
-      '<a class="dp-chip dr-allrows" href="#/reihen" aria-label="Alle ' + ids.length + ' Reihen und ' + D.Views.Themes.all.length + ' Themen">' + (rest > 0 ? '+' + rest : 'Alle') + '</a></div>' : '') +
+    var nThemes = D.Views.Themes.all.length;
+    var tiles = ids.map(function (id) {
+      var g = grp[id], n = avail[id];
+      return '<a class="dp-rt dp-rt--' + esc(g.id) + '" href="' + esc(rowHref(id)) + '" role="listitem">' + hudIcon(GROUP_ICON[g.id] || 'grid', 34) +
+        '<span class="dp-rt__t"><b>' + esc(R().title(id)) + '</b><small>' + esc(g.label) + (isNum(n) && !ranksAll(avail, n) ? ' · ' + fmtInt(n) + ' Aktien' : '') + '</small></span></a>';
+    }).join('');
+    sec.innerHTML = (ids.length ? protoHead({ title: 'Alle ' + ids.length + ' Reihen', sub: 'Jede Reihe ist eine Regel. Antippen zeigt alle Treffer.' }) +
+      '<div class="dp-rtgrid" role="list" aria-label="Alle ' + ids.length + ' Reihen">' + tiles +
+      '<a class="dp-rt dp-rt--all dr-allrows" href="#/reihen" role="listitem" aria-label="Alle ' + ids.length + ' Reihen und ' + nThemes + ' Themen">' + hudIcon('grid', 34) +
+      '<span class="dp-rt__t"><b>Alle Reihen und Themen</b><small>' + ids.length + ' Reihen · ' + nThemes + ' Themen</small></span></a></div>' : '') +
       '<p class="dp-eb">Nach Art</p><nav class="dr-genres dp-chips" aria-label="Genres">' + [['kursbewegung', 'Kursbewegung'], ['unternehmen', 'Unternehmen'], ['themen', 'Themen'], ['indizes', 'Indizes']].map(function (x) {
         return '<button type="button" class="dp-chip" data-genre="' + x[0] + '" aria-pressed="false">' + esc(x[1]) + '</button>'; }).join('') + '<a class="dp-chip" href="#/c/EUROPE/de" data-europe-chip>Europa</a></nav>' +
       '<button type="button" class="v2-search-prompt dp-find" aria-label="Aktie, Thema oder Frage suchen">' + U().glyph('search', 20) + '<span>Aktie, Thema oder Frage …</span></button>';
@@ -421,10 +453,9 @@
   }
   function endSection(ctx) {
     var sec = h('section', 'dr-sec dr-sec--end');
-    sec.innerHTML = rowTile('#/swipen', U().hud('discover', 40, 12), 'Aktien swipen, eine nach der anderen', 'Wische nach rechts zum Merken.', 'dv3-swipecard') +
-      U().next({ href: '/quant/', eyebrow: 'Weiter', title: 'Quant: das Profil jeder Aktie', sub: 'Faktoren je Aktie' }) +
-      '<p class="dp-end"><a href="#/daten">Daten &amp; Hinweise</a></p>' +
-      U().help((ctx.meta && ctx.meta.disclaimer) || 'Informationen zur eigenen Recherche, keine Anlageempfehlung.');
+    /* Owner 21.11.2026: die Seite endet mit dem Swipe-Kasten. „Weiter: Quant“, „Daten & Hinweise“ und der Hinweissatz entfallen hier;
+       Satz und Links stehen im Menü „Rechtliches & Infos“ (assets/legal-notices.json, footer.web = menu), „Daten & Hinweise“ unter #/daten. */
+    sec.innerHTML = rowTile('#/swipen', U().hud('discover', 40, 12), 'Aktien swipen, eine nach der anderen', 'Wische nach rechts zum Merken.', 'dv3-swipecard');
     return sec;
   }
 

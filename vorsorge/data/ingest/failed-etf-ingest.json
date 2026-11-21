@@ -1,6 +1,6 @@
 {
  "schemaVersion": "vu-vorsorge-failed-ingest-1.0.0",
- "count": 24,
+ "count": 29,
  "failed": [
   {
    "symbol": "562720",
@@ -11,7 +11,39 @@
    "attempts": 1
   },
   {
+   "symbol": "588560",
+   "endpoint": "prices",
+   "status": 200,
+   "reason": "NO_PRICES",
+   "retryable": false,
+   "attempts": 1
+  },
+  {
    "symbol": "589450",
+   "endpoint": "prices",
+   "status": 200,
+   "reason": "NO_PRICES",
+   "retryable": false,
+   "attempts": 1
+  },
+  {
+   "symbol": "AAUD",
+   "endpoint": "prices",
+   "status": 200,
+   "reason": "NO_PRICES",
+   "retryable": false,
+   "attempts": 1
+  },
+  {
+   "symbol": "AMCEF",
+   "endpoint": "prices",
+   "status": 200,
+   "reason": "NO_PRICES",
+   "retryable": false,
+   "attempts": 1
+  },
+  {
+   "symbol": "ANSS",
    "endpoint": "prices",
    "status": 200,
    "reason": "NO_PRICES",
@@ -172,6 +204,14 @@
   },
   {
    "symbol": "VVPL",
+   "endpoint": "prices",
+   "status": 200,
+   "reason": "NO_PRICES",
+   "retryable": false,
+   "attempts": 1
+  },
+  {
+   "symbol": "YLDS",
    "endpoint": "prices",
    "status": 200,
    "reason": "NO_PRICES",

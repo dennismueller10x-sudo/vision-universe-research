@@ -104,11 +104,7 @@
   /* ------------------------------------------------------- Karten-Bausteine */
   function name(c) { return c.displayName || c.companyName || c.symbol; }
   function story(c) { return (c.plain && c.plain.story) || c.was || c.symbol; }
-  var SECTOR_DE = { 'Technology': 'Technologie', 'Health Care': 'Gesundheit', 'Healthcare': 'Gesundheit', 'Financials': 'Finanzen', 'Financial Services': 'Finanzen',
-    'Consumer Discretionary': 'Zyklischer Konsum', 'Consumer Cyclical': 'Zyklischer Konsum', 'Consumer Staples': 'Basiskonsum', 'Consumer Defensive': 'Basiskonsum',
-    'Industrials': 'Industrie', 'Energy': 'Energie', 'Utilities': 'Versorger', 'Real Estate': 'Immobilien', 'Materials': 'Rohstoffe', 'Basic Materials': 'Rohstoffe',
-    'Communication Services': 'Kommunikation' };
-  function what(c) { return c.was || SECTOR_DE[c.sector] || c.sector || ''; }
+  function what(c) { return D.Reihen.what(c); }
   /** Klartext-Zahl als Pille (Discover-Muster): Richtung aus dem Rohwert, Text unveraendert aus plain.zahl. */
   function zahlPill(c, big) {
     var z = c && c.plain && c.plain.zahl;
@@ -211,7 +207,11 @@
     var st = store(ctx);
     if (!st) { btn.hidden = true; return; }
     function paint() { var on = st.has(symbol); btn.setAttribute('aria-pressed', String(on)); btn.setAttribute('aria-label', (label || symbol) + (on ? ' aus der Watchlist entfernen' : ' merken')); }
-    btn.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); st.toggle(symbol); paint(); });
+    btn.addEventListener('click', function (e) {
+      e.preventDefault(); e.stopPropagation(); st.toggle(symbol); paint();
+      /* Angemeldet: nach der Antwort des Kontos noch einmal zeichnen (z. B. Tarifgrenze, assets/watchlist-button.js#couple). */
+      if (st.lastSync && typeof st.lastSync.then === 'function') st.lastSync.then(paint, paint);
+    });
     paint();
   }
 
