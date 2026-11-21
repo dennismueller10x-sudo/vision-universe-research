@@ -26,3 +26,16 @@ test('QA redacts plaintext and derived keys literally in error and browser messa
  assert.ok(!redacted.includes(password));assert.ok(!redacted.includes(key));assert.equal(redacted.match(/\[REDACTED\]/g).length,3);
  assert.equal(redactSecrets('unchanged',[undefined,'']),'unchanged');
 });
+
+test('EQ-Befunde: jeder Befund bekommt Screenshot und Namen, das Szenario laeuft weiter, am Ende scheitert der Lauf einmal mit allen (21.11.2026)', async () => {
+  const {readFileSync} = await import('node:fs');
+  const src = readFileSync(new URL('../europe-public-live-qa.mjs', import.meta.url), 'utf8');
+  assert.match(src, /async function befund\(step,error\)\{[^}]*failures\.push\(\{scenario:scenario\.key,step,message\}\)[^]*FEHLER-/, 'Schritt-Befund mit Screenshot');
+  for (const step of ['europa-vollliste', 'rheinmetall-detail', 'us-320']) assert.ok(src.includes("befund('" + step + "',error)"), 'Schritt ' + step + ' faengt seinen Fehler');
+  assert.match(src, /step:'szenario'/, 'ein Fehler im Szenario ist ein Befund, der naechste Browser laeuft trotzdem');
+  assert.match(src, /console\.log\('ZAHLEN '/, 'Zaehlzahlen der Vollliste immer im Log');
+  assert.match(src, /deployment,reports,failures\}/, 'Beleg nennt die Befunde');
+  assert.match(src, /if\(failures\.length\)throw Error\('Befunde \('/, 'am Ende scheitert der Lauf mit allen Befunden');
+  assert.ok(src.indexOf("receipt.json") < src.indexOf("if(failures.length)throw"), 'Beleg wird vor dem Scheitern geschrieben');
+});
+
