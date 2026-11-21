@@ -144,8 +144,26 @@ export function indexSecTickers(sec) {
   return by;
 }
 
+/* Kuerzel-Wiederverwendung (21.11.2026, AXNX): Tiingo fuehrte Axonics (bis 2024-11) und Axonex AI (CIK 0001998560, ab
+   2026-10) in EINER Zeile mit Beginn 2018-10-31; die SEC-Liste nennt nur den heutigen Registranten. Die frueheste Einreichung
+   des Registranten (SEC-Submissions: filings.files[].filingFrom und filings.recent.filingDate) ist eine obere Schranke fuer
+   den Tag, ab dem es ihn gibt. Liegt sie mehr als REUSE_GRACE_DAYS nach dem Anbieter-Beginn, gehoert der fruehe Teil der
+   Zeile einem anderen Unternehmen: der Zugang wartet auf eine Pruefung von Hand (Positivliste), statt automatisch zu kommen. */
+export const REUSE_GRACE_DAYS = 365;
+export function firstFilingDate(sub) {
+  if (!sub || !sub.filings) return null;
+  const ds = [];
+  for (const f of sub.filings.files || []) if (f && f.filingFrom) ds.push(String(f.filingFrom).slice(0, 10));
+  for (const d of (sub.filings.recent && sub.filings.recent.filingDate) || []) if (d) ds.push(String(d).slice(0, 10));
+  return ds.length ? ds.sort()[0] : null;
+}
+export function reuseSuspected(providerStart, firstFiling, graceDays = REUSE_GRACE_DAYS) {
+  if (!providerStart || !firstFiling) return false;
+  return (Date.parse(firstFiling) - Date.parse(providerStart)) / 864e5 > graceDays;
+}
+
 /** Pruefung der Dauerregel fuer einen Kandidaten, der die Kette schon bestanden hat. -> null (ok) oder Grund. */
-export function autoRejectReason(row, secBy) {
+export function autoRejectReason(row, secBy, firstFilingByCik = null) {
   const t = String(row.ticker || "").toUpperCase();
   if (!/^[A-Z]{1,5}$/.test(t)) return "tickerForm";
   const s = secBy.get(t);
@@ -153,6 +171,10 @@ export function autoRejectReason(row, secBy) {
   const fam = FAMILY_SEC[String(s.exchange || "").toUpperCase()];
   if (!fam) return "secNotOnExchange";
   if (FAMILY_PROVIDER[String(row.exchange || "").toUpperCase()] !== fam) return "secExchangeMismatch";
+  if (firstFilingByCik) {
+    if (!firstFilingByCik.has(s.cik)) return "secSubmissionsUnavailable";       // fail closed: ohne Beleg kein Zugang
+    if (reuseSuspected(row.start_date, firstFilingByCik.get(s.cik))) return "tickerReuseSuspected";
+  }
   return null;
 }
 
@@ -188,7 +210,7 @@ export function appendOnlyMerge(baselineEntries, masterRows, opts) {
     if (seenAppended.has(t)) { skipped.duplicateWithinAppend++; continue; }
 
     if (opts.auto) {
-      const why = autoRejectReason(r, opts.auto.secBy);
+      const why = autoRejectReason(r, opts.auto.secBy, opts.auto.firstFilingByCik || null);
       if (why) { skipped[why] = (skipped[why] || 0) + 1; continue; }
     }
 
@@ -274,7 +296,20 @@ export function assertAppendOnly(baseline, entries) {
 }
 
 /* ================================================================ MAIN */
-function main() {
+/** SEC-Submissions je CIK (Dauerregel): frueheste Einreichung; ein Abruf, der scheitert, fehlt in der Karte (fail closed). */
+async function fetchFirstFilings(ciks, ua) {
+  const out = new Map();
+  for (const cik of ciks) {
+    try {
+      const res = await fetch(`https://data.sec.gov/submissions/CIK${cik}.json`, { headers: { "User-Agent": ua, "Accept": "application/json" } });
+      if (res.ok) { const d = firstFilingDate(await res.json()); if (d) out.set(cik, d); }
+    } catch { /* fehlt -> secSubmissionsUnavailable */ }
+    await new Promise((r) => setTimeout(r, 150));                          // SEC: hoechstens 10 Anfragen je Sekunde
+  }
+  return out;
+}
+
+async function main() {
   console.log("Vision Universe — US-Aktienuniversum erweitern (anhaengend)\n");
 
   if (!existsSync(UNIVERSE_FILE)) {
@@ -302,6 +337,15 @@ function main() {
     const bytes = readFileSync(SEC_FILE);
     auto = { max: AUTO, secBy: indexSecTickers(JSON.parse(bytes.toString("utf8"))) };
     secInfo = { file: SEC_FILE.replace(root + "/", ""), sha256: createHash("sha256").update(bytes).digest("hex"), tickers: auto.secBy.size };
+  }
+  /* --sec-submissions: Kuerzel-Wiederverwendung pruefen (erste Runde ohne Grenze nennt die Kandidaten, dann je CIK ein Abruf). */
+  if (auto && argv.includes("--sec-submissions")) {
+    const ua = process.env.SEC_USER_AGENT;
+    if (!ua) { console.error("--sec-submissions braucht SEC_USER_AGENT (fail closed)."); process.exit(2); }
+    const probe = appendOnlyMerge(baseline, masterRows, { today: TODAY, auto: { ...auto, max: Number.MAX_SAFE_INTEGER } });
+    const ciks = [...new Set(probe.appended.map((e) => auto.secBy.get(String(e.ticker).toUpperCase())).filter(Boolean).map((x) => x.cik))].sort();
+    auto.firstFilingByCik = await fetchFirstFilings(ciks, ua);
+    secInfo.submissions = { requested: ciks.length, answered: auto.firstFilingByCik.size, graceDays: REUSE_GRACE_DAYS };
   }
   const merged = appendOnlyMerge(baseline, masterRows, { today: TODAY, only: ONLY, auto });
   if (auto) console.log(`  Dauerregel:     hoechstens ${AUTO} je Lauf, SEC-Liste ${secInfo.tickers} Ticker; zurueckgestellt ${merged.deferred.length}`);
@@ -400,4 +444,4 @@ function countBy(entries, field) {
   return out;
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) main();
+if (import.meta.url === `file://${process.argv[1]}`) main().catch((e) => { console.error(e.message); process.exit(1); });
