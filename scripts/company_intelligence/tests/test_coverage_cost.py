@@ -74,10 +74,14 @@ class CoverageCostTests(unittest.TestCase):
         self.assertEqual(production.count('cron:'),0)
         entries=json.loads((root / 'core/registry/schedule.json').read_text())['entries']
         refresh=[e for e in entries if e['workflow']=='company-intelligence-refresh.yml']
-        self.assertEqual([(e['cron'],e['timer']) for e in refresh],[('17 */4 * * *','waker')])
+        # Seit 21.11.2026 (#2176): Wochenende Takt 4 h, Werktags sechs feste Slots (keine Veroeffentlichung im Boersenfenster
+        # 14-21 UTC). Weiter genau 6 Starts je Tag, kein Zusatz-Slot; alle ueber den Wecker.
+        self.assertEqual([(e['cron'],e['timer']) for e in refresh],
+            [('17 */4 * * 0,6','waker'),('17 0 * * 1-5','waker'),('10 3 * * 1-5','waker'),('0 7 * * 1-5','waker'),
+             ('35 9 * * 1-5','waker'),('10 12 * * 1-5','waker'),('40 20 * * 1-5','waker')])
         watchdog=(root / '.github/workflows/company-intelligence-refresh-watchdog.yml').read_text()
         self.assertEqual(watchdog.count('cron:'),0)
-        self.assertEqual(len([e for e in entries if e['workflow']=='company-intelligence-refresh-watchdog.yml']),1)
+        self.assertEqual([e['cron'] for e in entries if e['workflow']=='company-intelligence-refresh-watchdog.yml'],['47 2-22/4 * * 0,6','47 2,6,10,22 * * 1-5'])
         self.assertNotIn('company-intelligence-continuous-',watchdog)
         self.assertIn('scheduler-gate.mjs',production)
         self.assertIn("needs.gate.outputs.run != 'false'",production)
