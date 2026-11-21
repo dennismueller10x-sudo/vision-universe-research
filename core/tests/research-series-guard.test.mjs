@@ -48,3 +48,27 @@ test("RS-4 · die Bereinigung vom 17.11. waere am Schutz gestoppt", () => {
   const c = JSON.parse(readFileSync(join(ROOT, "docs/data/security-master/eligibility-cleanup-2026-11-17.json"), "utf8"));
   assert.throws(() => assertNoResearchSeries(ROOT, c.leave.map((x) => x.securityId + ".json"), "quant/data/market/discover-series-long/"), /RESEARCH_SERIES_PROTECTED/);
 });
+
+test("RS-5 · B2a: sichern, zuruecklesen, Manifest; geloescht wird nur Gesichertes mit gleichem Hash, nie mit Trockenlauf", async () => {
+  const { backupFiles, manifest, plannedDeletions, PREFIX } = await import("../../scripts/market/backup-series.mjs");
+  const r = mkdtempSync(join(tmpdir(), "vu-bk-"));
+  const put = (p, c) => { mkdirSync(dirname(join(r, p)), { recursive: true }); writeFileSync(join(r, p), c); };
+  put("core/registry/research-series-sources.json", JSON.stringify({ sources: [] }));
+  put("quant/data/market/discover-series-long/ref_IN.json", "{}"); put("quant/data/market/discover-series-long/ref_OUT.json", '{"a":1}');
+  put("quant/data/market/discover-series-long/index.json", "{}"); put("quant/data/market/discover-series/ref_OUT.json", '{"b":2}');
+  const plan = plannedDeletions(r, new Set(["ref_IN"]));
+  assert.deepEqual(plan, ["quant/data/market/discover-series/ref_OUT.json", "quant/data/market/discover-series-long/ref_OUT.json"]);
+  const store = new Map(), driver = { put: async (k, b) => { store.set(k, Buffer.from(b)); }, get: async (k) => store.get(k) || null };
+  const entries = await backupFiles(driver, r, plan);
+  assert.ok(store.has(PREFIX + "quant/data/market/discover-series-long/ref_OUT.json"));
+  const mf = join(r, "m.json"); writeFileSync(mf, JSON.stringify(manifest(entries)));
+  assert.doesNotThrow(() => assertNoResearchSeries(r, ["ref_OUT.json"], join(r, "quant/data/market/discover-series-long"), { manifestFile: mf }));
+  assert.throws(() => assertNoResearchSeries(r, ["ref_IN.json"], join(r, "quant/data/market/discover-series-long"), { manifestFile: mf }), /SERIES_NOT_BACKED_UP/);
+  put("quant/data/market/discover-series-long/ref_OUT.json", '{"a":2}');
+  assert.throws(() => assertNoResearchSeries(r, ["ref_OUT.json"], join(r, "quant/data/market/discover-series-long"), { manifestFile: mf }), /Hash weicht ab/);
+  writeFileSync(mf, JSON.stringify({ ...manifest(entries), dryRun: true }));
+  assert.throws(() => assertNoResearchSeries(r, ["ref_OUT.json"], "quant/data/market/discover-series-long", { manifestFile: mf }), /Trockenlauf/);
+  const bad = { put: async () => {}, get: async () => Buffer.from("anders") };
+  await assert.rejects(backupFiles(bad, r, plan), /READBACK_MISMATCH/, "Lesetest");
+  rmSync(r, { recursive: true, force: true });
+});

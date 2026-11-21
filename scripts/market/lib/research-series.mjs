@@ -14,7 +14,8 @@
    securedIds, Teil B2).
    ========================================================================= */
 import { readFileSync, readdirSync, existsSync } from "node:fs";
-import { join, dirname, basename } from "node:path";
+import { join, dirname, basename, relative, isAbsolute } from "node:path";
+import { createHash } from "node:crypto";
 
 export const SOURCES_FILE = "core/registry/research-series-sources.json";
 const ID = /\bref_[A-Z0-9_]+\b/g;
@@ -50,8 +51,25 @@ export function researchSeriesIds(root, doc = loadSources(root)) {
  * @param {string[]} fileNames  zu loeschende Dateinamen (ref_X.json) oder securityIds
  * @param {string} where        Verzeichnis (fuer die Meldung)
  */
-export function assertNoResearchSeries(root, fileNames, where) {
+export function assertNoResearchSeries(root, fileNames, where, { manifestFile = process.env.VU_SERIES_BACKUP_MANIFEST || null } = {}) {
   if (!fileNames.length) return;
+  /* Teil B2a: Mit Sicherungs-Manifest (scripts/market/backup-series.mjs, derselbe Lauf) darf nur geloescht werden, was mit
+     gleichem sha256 privat gesichert ist - jede Datei, nicht nur Forschungsreihen. Ein Trockenlauf-Manifest zaehlt nie. */
+  if (manifestFile) {
+    const m = JSON.parse(readFileSync(manifestFile, "utf8"));
+    if (m.schema !== "vu-series-backup-manifest-1" || m.dryRun) throw Object.assign(new Error("SERIES_BACKUP_MANIFEST_INVALID: " + manifestFile + (m.dryRun ? " (Trockenlauf)" : "")), { code: "SERIES_BACKUP_MANIFEST_INVALID" });
+    const shaOf = new Map((m.files || []).map((f) => [f.path, f.sha256]));
+    const dir = isAbsolute(where) ? relative(root, where) : String(where).replace(/\/+$/, "");
+    const missing = [];
+    for (const n of fileNames) {
+      const rel = dir + "/" + n;
+      const now = createHash("sha256").update(readFileSync(join(root, rel))).digest("hex");
+      if (shaOf.get(rel) !== now) missing.push(rel + (shaOf.has(rel) ? " (Hash weicht ab)" : " (nicht gesichert)"));
+    }
+    if (missing.length) throw Object.assign(new Error("SERIES_NOT_BACKED_UP: " + missing.length + " Dateien ohne private Sicherung, Abbruch vor dem Loeschen. " + missing.slice(0, 10).join("; ")),
+      { code: "SERIES_NOT_BACKED_UP", hits: missing });
+    return;
+  }
   const doc = loadSources(root), ids = researchSeriesIds(root, doc), secured = new Set(doc.securedIds || []);
   const hits = [];
   for (const n of fileNames) {
