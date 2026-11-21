@@ -39,3 +39,12 @@ test('EQ-Befunde: jeder Befund bekommt Screenshot und Namen, das Szenario laeuft
   assert.ok(src.indexOf("receipt.json") < src.indexOf("if(failures.length)throw"), 'Beleg wird vor dem Scheitern geschrieben');
 });
 
+test('EQ-Preis: der Rheinmetall-Block liest den SICHTBAREN Preis (alter Kopf .dx-dhero ist per CSS ausgeblendet, 21.11.2026)', async () => {
+  const {readFileSync} = await import('node:fs');
+  const src = readFileSync(new URL('../europe-public-live-qa.mjs', import.meta.url), 'utf8');
+  const block = src.slice(src.indexOf("#/s/EUROPE/ref_RHM_DE_XETR';"), src.indexOf("liveProof=")) ;
+  assert.match(block, /\.dx-chart-hero-preis \.num, \.dx-price b'\)\.filter\(\{visible:true\}\)\.first\(\)/);
+  assert.ok(!/waitForSelector\('\.dx-price b'\)/.test(block), 'kein Warten auf das erste .dx-price b (steht im ausgeblendeten Kopf)');
+  assert.match(block, /price:await sichtbarerPreis\.innerText\(\)/);
+});
+
