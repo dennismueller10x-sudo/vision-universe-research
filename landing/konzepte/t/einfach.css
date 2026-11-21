@@ -37,7 +37,7 @@
 /* Handy: kompakte Box mit Kapitel, Überschrift, Text, Link und kleinem iPhone; die große Grafik steht auf der Produktseite */
 @media(max-width:999px){
   .ez-card.step{width:86%;display:flex;flex-direction:column;justify-content:flex-start;gap:12px;padding:22px 20px 24px}
-  .ez-card.step>:not(.kap):not(.tagm):not(h2):not(p.t):not(.lnk):not(.aphone){display:none !important}
+  .ez-card.step>:not(.kap):not(.tagm):not(h2):not(p.t):not(.lnk):not(.aphone):not(.ez-main){display:none !important}
   .ez-card.step>.kap~.kap{display:none !important}
   .ez-card.step h2{font-size:28px}
   .ez-card.step p.t{font-size:16px;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
@@ -63,7 +63,7 @@
 .ez-bar a.cur .ic{background:#000}
 /* Desktop: je Kapitel eine Grafik, damit alle Boxen in den Bildschirm passen */
 @media(min-width:1000px){
-  .ez-card.step>.wd~.wd,.ez-card.step>.wd~.kap,.ez-card.step>.rowsband,.ez-card.step>.wd~*:not(.lnk):not(.aphone){display:none !important}
+  .ez-card.step>.wd~.wd,.ez-card.step>.wd~.kap,.ez-card.step>.rowsband,.ez-card.step>.wd~*:not(.lnk):not(.aphone):not(.ez-main){display:none !important}
   .ez-card.step h2{font-size:clamp(30px,3vw,44px)}
 }
 /* Desktop: Text | Grafik | iPhone nebeneinander, damit jede Box in den Bildschirm passt */
@@ -78,3 +78,30 @@
   .ez-card.step{width:calc(100% - 40px)}
 }
 @media(min-width:1000px){.ez-card.step>.big{font-size:clamp(52px,5vw,76px);white-space:nowrap;line-height:.95}}
+/* Start: Haken statt Fließtext, „Heute neu“ unten */
+.ez-top .step.first>p.t{display:none !important}
+.ez-checks{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.ez-checks li{display:flex;align-items:flex-start;gap:10px;font-size:clamp(16px,1.5vw,20px);font-weight:750;line-height:1.3}
+.ez-checks i{flex:none;display:grid;place-items:center;width:24px;height:24px;margin-top:1px;border-radius:50%;background:var(--lime);color:#000}
+.ez-checks svg{width:14px;height:14px}
+/* Handy: alles auf dem ersten Bildschirm – Überschrift, Haken links, kleines iPhone rechts, Knopf, Stores */
+@media(max-width:999px){
+  .ez-top .step.first{display:grid;grid-template-columns:minmax(0,1fr) 128px;column-gap:12px;row-gap:12px;align-items:start;padding-top:16px;padding-bottom:10px;min-height:0}
+  .ez-top .step.first>*{grid-column:1/-1;margin:0}
+  .ez-top .step.first .claimline{display:none}
+  .ez-top .step.first h1{font-size:clamp(34px,9.6vw,42px)}
+  .ez-top .step.first .ez-checks{grid-column:1;grid-row:3;gap:8px}
+  .ez-checks li{font-size:14.5px;gap:8px}
+  .ez-checks i{width:20px;height:20px}.ez-checks svg{width:12px;height:12px}
+  .ez-top .step.first .stage.mob{grid-column:2;grid-row:3;display:block !important;height:auto;width:128px;align-self:center}
+  .ez-top .step.first .stage.mob .hc{display:none !important}
+  .ez-top .step.first .stage.mob .aphone{--pw:124px;position:relative;left:auto;top:auto;transform:none;margin:0}
+  .ez-top .step.first .acts .btn{width:100%;justify-content:space-between}
+}
+/* Handy-Boxen: die Grafik des Kapitels statt des iPhones */
+@media(max-width:999px){
+  .ez-card.step>.ez-main{display:block !important;max-width:100%;margin-top:4px}
+  .ez-card.step>.aphone{display:none !important}
+  
+}
+.ez-card.step .tagm{height:auto;min-height:36px;white-space:normal;line-height:1.25;padding-top:7px;padding-bottom:7px}

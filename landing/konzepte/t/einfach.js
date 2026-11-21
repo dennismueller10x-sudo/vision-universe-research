@@ -23,12 +23,21 @@
 
   /* Start bleibt oben */
   var top = el("div", "ez-top w"); top.appendChild(hero);
+  // „Heute neu“ steht unten bei den News; oben stattdessen in Haken, was die App kann
+  var hl = $(".hl", hero); if (hl) hl.parentNode.removeChild(hl);
+  var h1 = $("h1", hero);
+  if (h1) {
+    var pts = ["Verdient die Firma Geld? Einfach erklärt.", "Wohin läuft der Kurs? In einem Satz.", "Was große Anleger kaufen und verkaufen.", "Aktien entdecken: wischen wie bei Instagram.", "Fragen stellen, in deinen eigenen Worten."];
+    var ul = el("ul", "ez-checks");
+    pts.forEach(function (t) { var li = el("li", "", '<i aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></i>'); li.appendChild(document.createTextNode(t)); ul.appendChild(li); });
+    h1.parentNode.insertBefore(ul, h1.nextSibling);
+  }
   story.parentNode.insertBefore(top, story);
 
   /* Alle Kapitel in ihrer Reihenfolge in einer Box; darüber die vorhandene Kapitel-Leiste */
   var chs = $$(".steps > .step:not(.first)");
   var sec = el("section", "ez-grp w"), tr = el("div", "ez-track");
-  chs.forEach(function (s) { s.classList.add("ez-card"); tr.appendChild(s); });
+  chs.forEach(function (s) { s.classList.add("ez-card"); var w = s.querySelector(":scope > .wd"); if (w) w.classList.add("ez-main"); tr.appendChild(s); });
   var ids = chs.map(function (s) { return "#" + s.id; });
   var bar = null;
   if (jbar) {
