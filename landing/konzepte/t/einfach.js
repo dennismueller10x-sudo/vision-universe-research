@@ -1,5 +1,5 @@
 /* Konzept „Einfach“ (Owner 21.11.2026): die Module von www.visionuniverse.de unverändert,
-   aber in Boxen zum Wischen gruppiert, damit die Seite kürzer wird. Nur Branch-Vorschau. */
+   die Kapitel in ihrer Reihenfolge in einer Box zum Wischen, damit die Seite kürzer wird. Nur Branch-Vorschau. */
 (function () {
   "use strict";
   var root = document.documentElement;
@@ -20,47 +20,50 @@
     track.addEventListener("scroll", upd, { passive: true }); addEventListener("resize", upd); setTimeout(upd, 400);
     return w;
   }
-  function dots(track) {
-    var d = el("div", "ez-dots"); var n = track.children.length;
-    for (var i = 0; i < n; i++) d.appendChild(el("i"));
-    var upd = function () { var w = track.firstElementChild.getBoundingClientRect().width + 16, k = Math.round(track.scrollLeft / w); $$("i", d).forEach(function (x, j) { x.classList.toggle("on", j === k); }); };
-    track.addEventListener("scroll", upd, { passive: true }); setTimeout(upd, 300);
-    return d;
-  }
 
-  /* Gruppen wie im Menü der Live-Seite: Entdecken, Verstehen, Methoden, Vorsorgen */
-  var groups = [], byId = {};
-  $$(".nav .mcol").forEach(function (col) {
-    var name = ($(".mg", col) || {}).textContent || "", ids = $$("a", col).map(function (a) { return "k-" + a.getAttribute("href").replace(/.*produkte\//, "").replace(/\/.*/, ""); });
-    var g = { name: name, ids: ids, steps: [] }; groups.push(g); ids.forEach(function (id) { byId[id] = g; });
-  });
-  var chs = $$(".steps > .step:not(.first)");
-  chs.forEach(function (s) { var g = byId[s.id] || groups[1]; g.steps.push(s); });
-
+  /* Start bleibt oben */
   var top = el("div", "ez-top w"); top.appendChild(hero);
   story.parentNode.insertBefore(top, story);
-  groups.forEach(function (g) {
-    if (!g.steps.length) return;
-    var sec = el("section", "ez-grp w"), hd = el("div", "ez-hd");
-    hd.innerHTML = '<div><p class="kap">' + g.steps.length + (g.steps.length === 1 ? " Bereich" : " Bereiche") + '</p><h2 class="ez-h"></h2></div>';
-    $("h2", hd).textContent = g.name + ".";
-    var tr = el("div", "ez-track"); g.steps.forEach(function (s) { s.classList.add("ez-card"); tr.appendChild(s); });
-    if (g.steps.length > 1) hd.appendChild(arrows(tr));
-    sec.appendChild(hd); sec.appendChild(tr); if (g.steps.length > 1) sec.appendChild(dots(tr));
-    story.parentNode.insertBefore(sec, story);
-  });
-  story.remove(); if (jbar) jbar.remove();
+
+  /* Alle Kapitel in ihrer Reihenfolge in einer Box; darüber die vorhandene Kapitel-Leiste */
+  var chs = $$(".steps > .step:not(.first)");
+  var sec = el("section", "ez-grp w"), tr = el("div", "ez-track");
+  chs.forEach(function (s) { s.classList.add("ez-card"); tr.appendChild(s); });
+  var ids = chs.map(function (s) { return "#" + s.id; });
+  var bar = null;
+  if (jbar) {
+    bar = jbar.cloneNode(true); bar.className = "ez-bar";
+    $$("a", bar).forEach(function (a) { if (ids.indexOf(a.getAttribute("href")) < 0) a.parentNode.removeChild(a); });
+    jbar.parentNode.removeChild(jbar);
+  }
+  var hd = el("div", "ez-hd"); if (bar) hd.appendChild(bar); hd.appendChild(arrows(tr));
+  var cnt = el("p", "ez-cnt");
+  sec.appendChild(hd); sec.appendChild(tr); sec.appendChild(cnt);
+  story.parentNode.insertBefore(sec, story);
+  story.parentNode.removeChild(story);
+
+  function go(k) { var s = chs[k]; if (s) tr.scrollTo({ left: s.offsetLeft - tr.offsetLeft, behavior: reduce ? "auto" : "smooth" }); }
+  var cur = -1;
+  function mark() {
+    var w = chs[0].getBoundingClientRect().width + 16, k = Math.max(0, Math.min(chs.length - 1, Math.round(tr.scrollLeft / w)));
+    if (tr.scrollLeft + tr.clientWidth > tr.scrollWidth - 4) k = chs.length - 1;
+    if (k === cur) return; cur = k; cnt.textContent = (k + 1) + " / " + chs.length;
+    if (bar) $$("a", bar).forEach(function (a) {
+      var on = a.getAttribute("href") === ids[k]; a.classList.toggle("cur", on);
+      if (on) { var jin = a.parentNode; jin.scrollTo({ left: a.offsetLeft - jin.offsetLeft - jin.clientWidth / 2 + a.clientWidth / 2, behavior: reduce ? "auto" : "smooth" }); }
+    });
+  }
+  tr.addEventListener("scroll", function () { requestAnimationFrame(mark); }, { passive: true }); setTimeout(mark, 300);
+
+  /* Kapitel-Links (Leiste, Menü, Fuß) blättern die Box zum Kapitel */
+  document.addEventListener("click", function (e) {
+    var a = e.target.closest('a[href^="#k-"]'); if (!a) return;
+    var k = ids.indexOf(a.getAttribute("href")); if (k < 0) return;
+    e.preventDefault(); go(k);
+    if (!a.closest(".ez-bar")) sec.scrollIntoView({ behavior: reduce ? "auto" : "smooth" });
+  }, true);
 
   /* News: Kacheln als Reihe zum Wischen */
   var nt = $("#news .ntiles"), nh = $("#news .hh");
   if (nt && nh) { nt.classList.add("ez-row"); nh.appendChild(arrows(nt)); }
-
-  /* Kapitel-Links (Menü, Fuß) springen zur Box */
-  document.addEventListener("click", function (e) {
-    var a = e.target.closest('a[href^="#k-"]'); if (!a) return;
-    var s = document.getElementById(a.getAttribute("href").slice(1)); if (!s || !s.classList.contains("ez-card")) return;
-    e.preventDefault(); var tr = s.parentNode;
-    tr.scrollTo({ left: s.offsetLeft - tr.offsetLeft, behavior: reduce ? "auto" : "smooth" });
-    tr.parentNode.scrollIntoView({ behavior: reduce ? "auto" : "smooth" });
-  }, true);
 })();
