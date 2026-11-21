@@ -69,6 +69,10 @@ const ONLY = (() => { const v = arg("--only"); return v ? new Set(v.split(/[\s,]
 const AUTO = (() => { const v = arg("--auto"); if (v === null) return null; const n = Number(v);
   if (!Number.isInteger(n) || n < 0) throw new Error("--auto erwartet eine ganze Zahl >= 0, nicht " + v); return n; })();
 const SEC_FILE = arg("--sec");
+/* --recent-days D (Schnellweg fuer Boersengaenge, Steuerung 21.11.2026, nur mit --auto): nur Titel, deren Anbieter-Beginn hoechstens
+   D Tage vor --today liegt. Dieselbe Kette und derselbe SEC-Abgleich wie die Dauerregel, nur enger und mit kleiner Obergrenze. */
+const RECENT_DAYS = (() => { const v = arg("--recent-days"); if (v === null) return null; const n = Number(v);
+  if (!Number.isInteger(n) || n < 1 || n > 30) throw new Error("--recent-days erwartet eine ganze Zahl von 1 bis 30, nicht " + v); return n; })();
 const MASTER_FILE = arg("--master",
   join(root, SCALE.storage.workingDir, "tiingo", "security-master", "us-security-master.json"));
 const UNIVERSE_FILE = join(SCALE_DIR, "universe-FULL_UNIVERSE.json");
@@ -209,6 +213,10 @@ export function appendOnlyMerge(baselineEntries, masterRows, opts) {
     if (baselineByTicker.has(t)) { skipped.alreadyInBaseline++; continue; }
     if (seenAppended.has(t)) { skipped.duplicateWithinAppend++; continue; }
 
+    if (opts.auto && opts.auto.recentDays) {
+      const alter = (Date.parse(opts.today) - Date.parse(r.start_date)) / 864e5;
+      if (!(alter >= 0 && alter <= opts.auto.recentDays)) { skipped.notRecent = (skipped.notRecent || 0) + 1; continue; }
+    }
     if (opts.auto) {
       const why = autoRejectReason(r, opts.auto.secBy, opts.auto.firstFilingByCik || null);
       if (why) { skipped[why] = (skipped[why] || 0) + 1; continue; }
@@ -331,11 +339,12 @@ async function main() {
   console.log(`  Wertpapierstamm: ${masterRows.length} Zeilen (${masterDoc.version})`);
 
   if (AUTO !== null && ONLY) { console.error("--auto und --only schliessen sich aus."); process.exit(2); }
+  if (RECENT_DAYS !== null && AUTO === null) { console.error("--recent-days gilt nur mit --auto."); process.exit(2); }
   let auto = null, secInfo = null;
   if (AUTO !== null) {
     if (!SEC_FILE || !existsSync(SEC_FILE)) { console.error("--auto braucht --sec <company_tickers_exchange.json> (fail closed)."); process.exit(2); }
     const bytes = readFileSync(SEC_FILE);
-    auto = { max: AUTO, secBy: indexSecTickers(JSON.parse(bytes.toString("utf8"))) };
+    auto = { max: AUTO, secBy: indexSecTickers(JSON.parse(bytes.toString("utf8"))), recentDays: RECENT_DAYS };
     secInfo = { file: SEC_FILE.replace(root + "/", ""), sha256: createHash("sha256").update(bytes).digest("hex"), tickers: auto.secBy.size };
   }
   /* --sec-submissions: Kuerzel-Wiederverwendung pruefen (erste Runde ohne Grenze nennt die Kandidaten, dann je CIK ein Abruf). */

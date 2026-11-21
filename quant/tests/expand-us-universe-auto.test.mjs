@@ -78,3 +78,25 @@ test("AU5 · Kuerzel-Wiederverwendung: frueheste SEC-Einreichung mehr als ein Ja
   assert.ok(!r.appended.some((e) => e.ticker === "MID"));
   assert.equal(r.skipped.secSubmissionsUnavailable >= 1, true);
 });
+
+test("AU-S · Schnellweg --recent-days: nur Titel, deren Anbieter-Beginn hoechstens D Tage zurueckliegt, Kette und SEC-Abgleich unveraendert", () => {
+  const heute = "2026-11-20";
+  const neu = [row("NEU", "2026-11-19"), row("ALT", "1996-01-10"), row("AMI", "2026-11-18", { exchange: "NYSE MKT" }),
+               row("ZUALT", "2026-11-10"), row("NOSEC", "2026-11-19"), row("ZUKUNFT", "2026-11-25"), row("OTCX", "2026-11-19")];
+  const r = appendOnlyMerge(baseline, neu, { today: heute, auto: { max: 3, secBy, recentDays: 3 } });
+  assert.deepEqual(r.appended.map((e) => e.ticker).sort(), ["AMI", "NEU"], "NEU (1 Tag) und AMI (2 Tage); ALT/ZUALT zu alt; NOSEC/OTCX scheitern am SEC-Abgleich");
+  assert.equal(r.skipped.notRecent, 3, "ALT, ZUALT, ZUKUNFT");
+  assert.equal(r.skipped.secNotListed, 1);
+  assert.equal(r.skipped.secNotOnExchange, 1);
+  assert.equal(r.entries[0].ticker, "NVDA", "Bestand zeichengleich vorne");
+});
+
+test("AU-S2 · Schnellweg: Obergrenze gilt, der Rest wartet; ohne recentDays bleibt die Dauerregel wie bisher", () => {
+  const heute = "2026-11-20";
+  const viele = ["NEU", "ALT", "MID", "AMI"].map((t) => row(t, "2026-11-19", { exchange: t === "MID" || t === "AMI" ? "NYSE" : "NASDAQ" }));
+  const r = appendOnlyMerge(baseline, viele, { today: heute, auto: { max: 2, secBy, recentDays: 3 } });
+  assert.equal(r.appended.length, 2);
+  assert.equal(r.deferred.length, 2);
+  const alt = appendOnlyMerge(baseline, [row("ALT", "1996-01-10")], { today: heute, auto: { max: 2, secBy } });
+  assert.equal(alt.appended.length, 1, "ohne recentDays kein Altersfilter");
+});

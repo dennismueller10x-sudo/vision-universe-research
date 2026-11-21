@@ -497,6 +497,18 @@
    "timer": "waker"
   },
   {
+   "id": "security-master-eligibility-schnellweg",
+   "workflow": "security-master-eligibility.yml",
+   "cron": "20 6 * * 2-6",
+   "timer": "waker",
+   "note": "schnellweg",
+   "inputs": {
+    "neuzugaenge": true,
+    "commit": true,
+    "schnell_tage": "3"
+   }
+  },
+  {
    "id": "security-master-weekly",
    "workflow": "security-master-weekly.yml",
    "cron": "41 9 * * 3",
