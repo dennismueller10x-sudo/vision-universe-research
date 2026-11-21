@@ -673,7 +673,7 @@ Vorher: `--financial` nur bei UTC-Stunde % 8 == 0. Verspaetete Schedule-Laeufe t
 (1 von 17 seit 10.10.). **Reale Verhaltensaenderung:** Finanzdaten werden jetzt etwa dreimal taeglich
 (alle 8 h) statt fast nie lokal neu projiziert. Jetzt entscheidet `scripts/company_intelligence/scheduler-gate.mjs`
 im Job `gate`: Finanz-Refresh laeuft, wenn der letzte erfolgreiche **Produktions**-Lauf mit Finanz-Refresh
-(Start) aelter als `financialHours` (8 h, `continuous-refresh.json`) minus 0,5 h Verzugstoleranz ist.
+(Start) aelter als `financialHours` (bis 20.11.2026 8 h, jetzt 7 h wegen der Werktags-Slots, `continuous-refresh.json`) minus 0,5 h Verzugstoleranz ist.
 `workflow_dispatch`/`workflow_call` behalten `--financial` (neuer optionaler Eingang `financial`, Default
 `true`; nur ein ausdrueckliches `false` schaltet ihn dort ab). Jede Unklarheit (API-Fehler, kaputte
 Antwort, ungueltige Konfiguration, Zeitstempel in der Zukunft, kein markierter Lauf, leere Gate-Ausgabe)
