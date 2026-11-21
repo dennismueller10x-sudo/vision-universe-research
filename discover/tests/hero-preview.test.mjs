@@ -78,5 +78,5 @@ test('Voll-Bau und Schnellweg benutzen dieselbe Funktion: die Vorschau altert ni
  const build=src('scripts/vu2/build-release.mjs'),fast=src('scripts/ci/intraday-fastpath.mjs');
  assert.match(build,/import\('\.\.\/ci\/discover-hero-preview\.mjs'\)[^\n]*writeDiscoverHeroPreview\(\{root,output\}\)/,'Voll-Bau schreibt sie aus den Repository-Daten');
  assert.match(fast,/import \{refreshHeroPreview\} from '\.\/discover-hero-preview\.mjs'/);assert.match(fast,/await refreshHeroPreview\(site, liste\)/);
- assert.doesNotMatch(src('scripts/vu2/discover-hero-preview.mjs'.replace('vu2','ci')),/^$/,'Modul liegt außerhalb der Bau-Quellen von FP-6');
+ assert.throws(()=>src('scripts/vu2/discover-hero-preview.mjs'),/ENOENT/,'Modul liegt außerhalb der Bau-Quellen von FP-6 (scripts/ci)');
 });
