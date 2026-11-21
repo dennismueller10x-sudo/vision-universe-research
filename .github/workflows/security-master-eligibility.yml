@@ -160,9 +160,12 @@ jobs:
           node scripts/market/apply-exchange-directory.mjs --classes DEBT,ETN,PREFERRED,WARRANT,RIGHT,UNIT,ETF \
             --dir "$E/exchange-directory" --eligibility "$E/out/eligibility.json" \
             --reconciliation "$E/out/eligibility-reconciliation.json" --product-universe "$E/scale/universe-ELIGIBLE_US_EQUITY.json"
-          # Beendete Notierungen (scripts/market/apply-ended-listings.mjs, #2054) sind ZURUECKGESTELLT (Steuerung 17.11.2026,
-          # Entscheidung A): Die Umfangsfolge loeschte lange Reihen, auf die eingefrorene Forschung (V10-Population,
-          # Elliott-Registry, Backtest-Tests) verweist. Wieder eingeschaltet erst, wenn die Forschung private Kopien (R2) liest.
+          # Beendete Notierungen (scripts/market/apply-ended-listings.mjs, #2054): Stamm INACTIVE und Tagesreihe zu Ende bzw.
+          # belegte Uebernahme -> EXCLUDED. Am 17.11.2026 zurueckgestellt (Entscheidung A), seit Teil B3 (21.11.2026) wieder an:
+          # die Forschung liest fehlende Reihen aus der privaten Kopie (B2b) bzw. dem Fixture (B2c), und die Umfangsfolge
+          # sichert jede Reihe vor dem Loeschen nach R2 (B2a, Abbruch ohne Sicherung).
+          node scripts/market/apply-ended-listings.mjs --eligibility "$E/out/eligibility.json" \
+            --reconciliation "$E/out/eligibility-reconciliation.json" --product-universe "$E/scale/universe-ELIGIBLE_US_EQUITY.json"
 
       - name: Gate (fail closed)
         if: ${{ !(github.event_name == 'workflow_dispatch' && !inputs.zeitplan && inputs.umfangsfolgen == true && inputs.erweiterung == '' && inputs.neuzugaenge != true && inputs.approved_catchup != true) }}
