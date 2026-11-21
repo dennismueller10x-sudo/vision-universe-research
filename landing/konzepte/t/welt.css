@@ -207,3 +207,34 @@ html.vw-ondark .nav .menu{background:transparent;color:#fff;box-shadow:inset 0 0
 .vw-tile .vw-shot,.vw-tile.t-xl .vw-shot,.vw-tile:not(.t-xl):not(.t-w):not(.t-t) .vw-shot{width:var(--sw) !important;height:var(--sh) !important;aspect-ratio:auto;justify-self:end;min-width:0}
 @media(min-width:700px){.vw-tile{--sh:240px;--sw:111px}.vw-tile.t-xl{--sh:340px;--sw:157px}}
 @media(min-width:1100px){.vw-tile{--sh:270px;--sw:125px}.vw-tile.t-xl{--sh:340px;--sw:157px}}
+/* Runde 3: Start passt aufs Handy, Key Facts, Einleitung der News */
+@media(max-width:899px){
+  .vw-hin{gap:14px;padding-top:18px;padding-bottom:22px}
+  .vw-eyebrow{padding:6px 12px;font-size:12px}
+  .vw-h1{margin-top:14px;font-size:clamp(40px,11vw,64px)}
+  .vw-sub{margin-top:12px;font-size:17px}
+  .vw-cta{margin-top:18px;gap:10px}
+  .vw-btn{min-height:50px;font-size:15.5px}
+  .vw-stores img{height:38px}
+  .vw-free{display:none}
+  .vw-stage .stage.mob,.vw-stage .stage.mob{height:300px;max-width:360px}
+  .vw-stage .stage.mob .aphone{--pw:140px}
+  .vw-stage .stage.mob .hc{transform:scale(.72)}
+  .vw-stage .stage.mob .hc.c2,.vw-stage .stage.mob .hc.c4,.vw-stage .stage.mob .hc.c5{display:none !important}
+  .vw-stage .stage.mob .hc.c1{top:40px}
+  .vw-stage .stage.mob .hc.c3{top:170px}
+}
+@media(min-width:600px) and (max-width:899px){.vw-stage .stage.mob{height:340px}.vw-stage .stage.mob .aphone{--pw:160px}}
+.vw-facts{padding-top:110px;padding-bottom:20px}
+.vw-fgrid{display:grid;gap:14px;margin-top:36px}
+@media(min-width:700px){.vw-fgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(min-width:1100px){.vw-fgrid{grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}}
+.vw-fact{padding:26px 24px 28px;border-radius:28px;background:#000;color:#fff}
+.vw-fact i{display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:var(--lime);color:#000;font-style:normal;font-weight:900;font-size:18px}
+.vw-fact b{display:block;margin-top:22px;font-size:clamp(22px,2vw,28px);font-weight:900;letter-spacing:-.03em;line-height:1.1}
+.vw-fact p{margin-top:10px;font-size:16px;font-weight:600;color:#bdbdbd}
+.vw-tv{padding-top:90px}
+.vw-tvh{padding-bottom:40px}
+.vw-tvh .vw-k{color:#9a9a9a}
+.vw-tvh .vw-h2 em{color:var(--lime)}
+.vw-tvs{margin-top:16px;max-width:52ch;font-size:clamp(16px,1.5vw,20px);font-weight:600;color:#bdbdbd}
