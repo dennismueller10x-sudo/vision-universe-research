@@ -193,7 +193,13 @@
       if (card.textStats.length > half) s += statBoxes(card.textStats.slice(half), y + 250, 220);
       if (card.note) s += textBlock(PAD, y + 540, card.note, { size: 26, fill: C.soft, lh: 36 }).svg;
     }
-    if (card.quote) s += textBlock(PAD + 30, bottom - 120, card.quote, { size: 26, lh: 36, w: IN - 60 }).svg;
+    if (card.quote) {
+      var bare = !card.bars && !card.columns && !card.groups && !card.pairs && !card.timeline && !card.textStats && card.id !== "overview";
+      if (bare) {
+        var qb = textBlock(PAD + 40, y + 120, "„" + card.quote + "“", { size: 44, bold: true, lh: 58, w: IN - 60 });
+        s += '<rect x="' + PAD + '" y="' + (y + 72) + '" width="8" height="' + (qb.h + 20) + '" rx="4" fill="' + C.lime + '"/>' + qb.svg;
+      } else s += textBlock(PAD + 30, bottom - 120, card.quote, { size: 26, lh: 36, w: IN - 60 }).svg;
+    }
     return s;
   }
 
@@ -223,7 +229,7 @@
       ".mb h1{font-size:28px;letter-spacing:-.02em;margin:8px 0 4px}.mb p{color:#c9cbc4;line-height:1.5}.mb-card{margin:0 0 28px}.mb-card svg{width:100%;height:auto;display:block;border-radius:18px}" +
       ".mb-card figcaption{font-size:13px;color:#8b8d86;margin-top:8px;line-height:1.4}.mb a{color:#c8f531}.mb-arch{display:flex;flex-wrap:wrap;gap:8px;font-size:14px}" +
       ".mb-arch a{padding:4px 10px;border:1px solid #25262a;border-radius:999px;text-decoration:none}.mb-arch a[aria-current]{border-color:#c8f531}.mb-legal{font-size:13px;color:#8b8d86;border-top:1px solid #25262a;padding-top:16px}</style>\n" +
-      '</head>\n<body data-view="news"><vu-navigation></vu-navigation><script src="/assets/site-navigation.js"></script>\n<main class="mb">\n' +
+      '</head>\n<body data-view="news"><vu-navigation></vu-navigation><script src="/assets/site-navigation.js"><\/script>\n<main class="mb">\n' +
       '<p style="margin:0;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#c8f531;font-weight:700">Marktbriefing · Closing Bell</p>\n' +
       "<h1>US-Handelstag " + deDate(b.session) + "</h1>\n" +
       "<p>" + n + " Karten: " + b.counts.MARKET + " Marktdaten, " + b.counts.OWN + " eigene Auswertungen, " + b.counts.THIRD + " Angaben Dritter. Indizes über ETF-Proxies.</p>\n" +
