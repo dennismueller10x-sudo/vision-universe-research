@@ -79,12 +79,28 @@
 
   /* ------------------------------------------------------------- Daten */
   var cache = {};
+  /* Vorübergehende 5xx und Netzabbrüche beim Wechsel einer Auslieferung (GitHub Pages, Messung 20.11.2026: einzelne 503
+     auf Datendateien neben einer Auslieferung) werden höchstens zweimal kurz nachgeladen (400 ms, 1200 ms). 4xx und
+     anhaltende 5xx kommen unverändert an. Test: technical/tests/fetch-retry.test.mjs. */
+  function fetchRetry(path, tries) {
+    tries = tries === undefined ? 2 : tries;
+    return fetch(path, { credentials: "same-origin" }).then(function (r) {
+      if (r.status < 500 || tries <= 0) return r;
+      return retryLater(path, tries);
+    }, function (e) {
+      if (tries <= 0) throw e;
+      return retryLater(path, tries);
+    });
+  }
+  function retryLater(path, tries) {
+    return new Promise(function (res) { setTimeout(res, tries === 2 ? 400 : 1200); }).then(function () { return fetchRetry(path, tries - 1); });
+  }
   function fetchJSON(path) {
-    if (!cache[path]) cache[path] = fetch(path, { credentials: "same-origin" }).then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); });
+    if (!cache[path]) cache[path] = fetchRetry(path).then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); });
     return cache[path];
   }
   function fetchGz(path) {
-    if (!cache[path]) cache[path] = fetch(path, { credentials: "same-origin" }).then(function (r) {
+    if (!cache[path]) cache[path] = fetchRetry(path).then(function (r) {
       if (!r.ok) throw new Error("HTTP " + r.status);
       if (typeof DecompressionStream !== "function") throw new Error("NO_DECOMPRESSION");
       return new Response(r.body.pipeThrough(new DecompressionStream("gzip"))).json();
