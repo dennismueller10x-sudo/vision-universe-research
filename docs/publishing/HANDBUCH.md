@@ -310,14 +310,19 @@ Ziel: mindestens die Hälfte der Karten sind Markt oder eigene Auswertung. Jede 
 - Wortwahl nach `docs/legal/WORTWAHL.md`: „Größte Anstiege/Rückgänge“, keine eigene Prognose; Kursziele von Banken nur als
   Angabe Dritter mit dem Zusatz „keine Prognose von Vision Universe“.
 
-**Frischeregeln (Owner 21.11.2026: höchstens 2–3 Tage)**
+**Frischeregeln (Owner 21.11.2026: tagesaktuell; 2–3 Tage nur für das erste Muster)**
 - Markt und eigene Auswertung: nur aus der jüngsten Handelssitzung. Hängt eine Datenart hinter ihrer Frische in
   `core/registry/domains.json`, entsteht kein Briefing, sondern ein Alarm.
-- Angabe Dritter: Veröffentlichung höchstens 3 Tage vor der Sitzung; der Zeitraum der Daten steht in der Quellenzeile.
-  Monatliche Berichte (Umfragen, Cyberlage) laufen damit nur in den ersten drei Tagen nach Erscheinen.
+- Angabe Dritter: veröffentlicht am Handelstag selbst (bis zum Erzeugen des Briefings); der Zeitraum der Daten steht in
+  der Quellenzeile. Monatliche Berichte (Umfragen, Cyberlage) und Konjunkturdaten laufen genau an ihrem Erscheinungstag.
 - SEC-Fundamentaldaten: jüngste Meldung; ist ein Quartal gemeldet, aber noch nicht bei der SEC, sagt die Karte das.
-- Im Muster fielen nach dieser Regel drei Karten heraus: FactSet-Bewertung (Stand 05.11.), Goldman-Hedgefondsdaten
+- Im Muster fielen schon nach der vorläufigen 3-Tage-Regel drei Karten heraus: FactSet-Bewertung (Stand 05.11.), Goldman-Hedgefondsdaten
   (bis 06.11.), Check-Point-Ransomware (veröffentlicht 11.11.).
+
+**Tägliche Quellen:** Kurse, Intraday und Movers aus Tiingo (Abendlauf 22:30 UTC), Marktbreite aus dem Faktorlauf
+(gegen 23:40 UTC), Renditen aus US Treasury und Bundesbank, SEC-Fundamentaldaten aus dem täglichen EDGAR-Lauf. Themen
+Dritter liefert ein täglicher Recherchelauf nach US-Handelsschluss, aufgebaut wie der Insights-Tageslauf (Skill
+`insights-tageslauf`): Nachrichtenagenturen, Fed und Statistikämter am Erscheinungstag, Unternehmensmeldungen, Research-Herausgeber.
 
 **Zeitpunkt:** Tagesschlüsse liegen ab 22:30 UTC vor; das Briefing entsteht danach oder morgens als Rückblick. Eine
 Opening Bell zum US-Handelsbeginn braucht schnellere Kursdaten als die heutigen (Intraday stündlich, IEX verzögert).
