@@ -1,9 +1,9 @@
 {
  "schemaVersion": "backtest-readiness-2.0.0",
- "generatedAt": "2026-11-21T01:04:42.085Z",
+ "generatedAt": "2026-11-21T13:54:41.622Z",
  "signalStudy": {
   "asOf": "2026-11-20",
-  "generatedAt": "2026-11-21T01:01:30.337Z",
+  "generatedAt": "2026-11-21T13:51:24.828Z",
   "returnType": "TOTAL_RETURN",
   "studySchemaVersion": "signal-backtest-study-2.0.0",
   "studyEngineVersion": "signal-backtest-2.0.0",
@@ -17,8 +17,8 @@
    "contract": "canonical-total-return-1.0.0",
    "coverage": {
     "unit": "SECURITY_PRICE_SERIES",
-    "titles": 6050,
-    "withTotalReturn": 5914,
+    "titles": 6080,
+    "withTotalReturn": 5944,
     "share": 0.978,
     "minimumShare": 0.95
    }
@@ -78,11 +78,11 @@
   {
    "id": "membershipSnapshots",
    "label": "Index-Zugehörigkeit (historisch)",
-   "count": 9,
+   "count": 10,
    "byIndex": {
-    "SP500": 9,
-    "NDX": 9,
-    "DJIA": 9
+    "SP500": 10,
+    "NDX": 10,
+    "DJIA": 10
    },
    "from": "2026-09-15"
   },
@@ -90,7 +90,7 @@
    "id": "priceSplitAdjusted",
    "label": "Kurshistorie splitbereinigt",
    "weekly": {
-    "titles": 6050,
+    "titles": 6080,
     "from": "1990-01-05",
     "grain": "WEEKLY",
     "endedBeforeMarch2026": 0
@@ -105,14 +105,14 @@
    "label": "Kurshistorie Gesamtrendite",
    "weekly": {
     "unit": "SECURITY_PRICE_SERIES",
-    "titles": 5914,
-    "eligibleTitles": 6050,
+    "titles": 5944,
+    "eligibleTitles": 6080,
     "share": 0.978,
     "state": "AVAILABLE",
     "reason": null,
     "contract": "canonical-total-return-1.0.0",
     "asOf": "2026-11-20",
-    "generatedAt": "2026-11-21T01:01:30.337Z"
+    "generatedAt": "2026-11-21T13:51:24.828Z"
    },
    "daily": {
     "titles": 5,
@@ -193,7 +193,7 @@
    "id": "survivorship",
    "label": "Überlebende-Kontrolle",
    "delistedInUniverse": 0,
-   "membershipSnapshots": 9,
+   "membershipSnapshots": 10,
    "state": "NOT_CONTROLLED",
    "sensitivityDelisted": 3057,
    "sensitivityFrom": "2016-01-08"
@@ -210,7 +210,7 @@
      "id": "history",
      "label": "Wochenhistorie",
      "state": "PASS",
-     "value": "6050 Titel seit 1990-01-05",
+     "value": "6080 Titel seit 1990-01-05",
      "reason": null
     },
     {
@@ -317,14 +317,14 @@
      "id": "history",
      "label": "Wochenhistorie",
      "state": "PASS",
-     "value": "6050 Titel seit 1990-01-05",
+     "value": "6080 Titel seit 1990-01-05",
      "reason": null
     },
     {
      "id": "totalReturn",
      "label": "Gesamtrendite",
      "state": "PASS",
-     "value": "5914 von 6050 Wertpapier-Zeitreihen (97.8 %), canonical-total-return-1.0.0",
+     "value": "5944 von 6080 Wertpapier-Zeitreihen (97.8 %), canonical-total-return-1.0.0",
      "reason": null
     },
     {
@@ -346,40 +346,40 @@
     {
      "id": "MOMENTUM_IMPROVED",
      "trust": "LIMITED",
-     "n": 89517,
-     "titles": 5098,
+     "n": 89559,
+     "titles": 5116,
      "displayAllowed": true,
      "returnType": "TOTAL_RETURN"
     },
     {
      "id": "MOMENTUM_DETERIORATED",
      "trust": "LIMITED",
-     "n": 89264,
-     "titles": 5099,
+     "n": 89308,
+     "titles": 5118,
      "displayAllowed": true,
      "returnType": "TOTAL_RETURN"
     },
     {
      "id": "TREND_UP",
      "trust": "LIMITED",
-     "n": 86677,
-     "titles": 5066,
+     "n": 86719,
+     "titles": 5085,
      "displayAllowed": true,
      "returnType": "TOTAL_RETURN"
     },
     {
      "id": "TREND_DOWN",
      "trust": "LIMITED",
-     "n": 86321,
-     "titles": 5068,
+     "n": 86363,
+     "titles": 5086,
      "displayAllowed": true,
      "returnType": "TOTAL_RETURN"
     },
     {
      "id": "NEW_52W_HIGH",
      "trust": "LIMITED",
-     "n": 56622,
-     "titles": 4855,
+     "n": 56642,
+     "titles": 4867,
      "displayAllowed": true,
      "returnType": "TOTAL_RETURN"
     }
@@ -400,7 +400,7 @@
      "id": "membership",
      "label": "historische Index-Zugehörigkeit",
      "state": "FAIL",
-     "value": "9 Stichtage je Index (nötig 24 Monatsstände)",
+     "value": "10 Stichtage je Index (nötig 24 Monatsstände)",
      "reason": "HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING"
     },
     {

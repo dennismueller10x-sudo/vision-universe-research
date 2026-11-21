@@ -1,6 +1,6 @@
 {
  "schemaVersion": "evidence-status-1.0.0",
- "generatedAt": "2026-11-21T01:05:12.629Z",
+ "generatedAt": "2026-11-21T13:55:12.851Z",
  "kinds": [
   {
    "id": "HISTORICAL_REPLAY",
@@ -36,21 +36,21 @@
    },
    "coverage": {
     "universe": 5680,
-    "covered": 5313,
-    "available": 4467,
+    "covered": 5342,
+    "available": 4373,
     "sufficient": {
-     "m1": 2197,
-     "m3": 2131,
-     "m6": 2062,
-     "m12": 1974
+     "m1": 2054,
+     "m3": 1991,
+     "m6": 1923,
+     "m12": 1837
     },
     "broad": {
-     "m6": 836
+     "m6": 687
     },
     "reasons": {
-     "NOT_COVERED": 367,
-     "NO_PRICE_CONDITION_TODAY": 761,
-     "NO_COMPARABLE_CASE": 85
+     "NOT_COVERED": 338,
+     "NO_PRICE_CONDITION_TODAY": 867,
+     "NO_COMPARABLE_CASE": 102
     }
    }
   },
@@ -78,10 +78,10 @@
     }
    },
    "trust": {
-    "sample": 955453,
+    "sample": 956139,
     "period": [
      "1992-01-31",
-     "2026-11-19"
+     "2026-11-20"
     ],
     "costs": {
      "roundTripBps": 20,
@@ -109,7 +109,7 @@
      "id": "HISTORICAL_UNIVERSE",
      "label": "Historische Index-Zugehörigkeit (Point-in-Time)",
      "required": "mindestens 24 Stichtage",
-     "measured": "9 Stichtage",
+     "measured": "10 Stichtage",
      "state": "FAIL"
     },
     {
@@ -263,8 +263,8 @@
     {
      "id": "MOMENTUM_IMPROVED",
      "trust": "LIMITED",
-     "n": 89517,
-     "titles": 5098,
+     "n": 89559,
+     "titles": 5116,
      "displayAllowed": true,
      "failed": [
       "survivorship",
@@ -274,8 +274,8 @@
     {
      "id": "MOMENTUM_DETERIORATED",
      "trust": "LIMITED",
-     "n": 89264,
-     "titles": 5099,
+     "n": 89308,
+     "titles": 5118,
      "displayAllowed": true,
      "failed": [
       "oos",
@@ -287,8 +287,8 @@
     {
      "id": "TREND_UP",
      "trust": "LIMITED",
-     "n": 86677,
-     "titles": 5066,
+     "n": 86719,
+     "titles": 5085,
      "displayAllowed": true,
      "failed": [
       "survivorship",
@@ -298,8 +298,8 @@
     {
      "id": "TREND_DOWN",
      "trust": "LIMITED",
-     "n": 86321,
-     "titles": 5068,
+     "n": 86363,
+     "titles": 5086,
      "displayAllowed": true,
      "failed": [
       "oos",
@@ -312,8 +312,8 @@
     {
      "id": "NEW_52W_HIGH",
      "trust": "LIMITED",
-     "n": 56622,
-     "titles": 4855,
+     "n": 56642,
+     "titles": 4867,
      "displayAllowed": true,
      "failed": [
       "oos",
@@ -338,21 +338,21 @@
   },
   "HISTORICAL_REPLAY_COVERAGE": {
    "universe": 5680,
-   "covered": 5313,
-   "available": 4467,
+   "covered": 5342,
+   "available": 4373,
    "sufficient": {
-    "m1": 2197,
-    "m3": 2131,
-    "m6": 2062,
-    "m12": 1974
+    "m1": 2054,
+    "m3": 1991,
+    "m6": 1923,
+    "m12": 1837
    },
    "broad": {
-    "m6": 836
+    "m6": 687
    },
    "reasons": {
-    "NOT_COVERED": 367,
-    "NO_PRICE_CONDITION_TODAY": 761,
-    "NO_COMPARABLE_CASE": 85
+    "NOT_COVERED": 338,
+    "NO_PRICE_CONDITION_TODAY": 867,
+    "NO_COMPARABLE_CASE": 102
    }
   }
  }
