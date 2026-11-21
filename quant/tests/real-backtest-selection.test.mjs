@@ -22,7 +22,10 @@ test('all five real periods return identical hashes across raw service and pinne
  for(const section of Selection.sections){const detail=await client.read(s.selection,section);assert.equal(detail.state,'AVAILABLE_LIMITED');assert.equal(detail.generation,s.generation);assert.equal(detail.identity.listingId,s.identity.listingId);if(detail.result)assert.equal(detail.result.resultHash,s.result.resultHash);}}
 });
 test('8 real identities retain quality and benchmark dimensions; blocked listings never expose performance',async()=>{
- for(const ticker of tickers){const s=await client.load(ticker);assert.equal(s.identity.ticker,ticker);assert.equal(s.certification,'NOT_CERTIFIED');assert.equal(s.returnBasis,'PRICE_RETURN');
+ for(const ticker of tickers){const s=await client.load(ticker);
+ /* AACT: seit Teil B3 (21.11.2026) beendete Notierung ausserhalb des Produktuniversums - keine Identitaet, keine Performance */
+ if(ticker==='AACT'){assert.notEqual(s.state,'AVAILABLE_LIMITED',JSON.stringify(s));assert.equal(s.result,undefined);continue;}
+ assert.equal(s.identity.ticker,ticker);assert.equal(s.certification,'NOT_CERTIFIED');assert.equal(s.returnBasis,'PRICE_RETURN');
  if(['AAPL','BGC','ANDG','AACT'].includes(ticker)){assert.equal(s.state,'BLOCKED');assert.equal(s.result,undefined);for(const section of Selection.sections){const d=await client.read(s.selection,section);assert.equal(d.state,'BLOCKED');assert.equal(d.result,undefined);}}
  else{assert.equal(s.state,'AVAILABLE_LIMITED');assert.ok(s.result.endCapital>0);}
  }
