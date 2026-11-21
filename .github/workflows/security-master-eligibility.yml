@@ -249,7 +249,11 @@ jobs:
           node scripts/discover/verify-discover-data.mjs
           git config user.name "vision-universe-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add -A $PUSH_OWNED_PATHS discover/data
+          # Nur vorhandene bzw. getrackte Pfade: ein noch leeres Verzeichnis (z. B. discover-series-kurz vor der ersten
+          # Kurzreihe) lässt "git add" sonst mit "pathspec did not match" (128) scheitern und der Schritt bricht ab.
+          for pfad in $PUSH_OWNED_PATHS discover/data; do
+            if [ -e "$pfad" ] || git ls-files --error-unmatch -- "$pfad" >/dev/null 2>&1; then git add -A -- "$pfad"; fi
+          done
           if git diff --cached --quiet; then echo "nichts ausserhalb des Umfangs"; else
             git commit -q -m "Umfangsfolgen: Reihen ausserhalb des Produktuniversums entfernt, Discover neu gebaut (Erzeuger)"
             # wie long-series.yml: nach dem Rebase Discover auf dem zusammengefuehrten Stand neu bauen und pruefen
