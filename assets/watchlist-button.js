@@ -37,7 +37,7 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function (root) {
   "use strict";
 
-  var VERSION = "watchlist-button-1.2.0";
+  var VERSION = "watchlist-button-1.2.1";
   var PATH = "M6 3h12v18l-6-4-6 4z";
   var cache = null;          /* Promise<{signedIn, ids:{instrumentId: Ticker beim Speichern}}> je Seite */
   var resolved = {};         /* ticker -> Promise<instrumentId|null> */
@@ -215,11 +215,18 @@
   function couple(store) {
     if (!store || store.vuCoupled) return store;
     var has = store.has, flip = store.toggle;
-    store.has = function (t) { return has.call(store, t) || centralHas(t); };
+    /* Geklickt, Konto noch nicht bestätigt: der Klick gilt, bis follow() fertig ist. Sonst meldete has() beim Entfernen
+       weiter „an“ (der Titel steht bis zur Antwort noch im Kontostand), und das Herz liess sich nicht leeren (Owner 21.11.2026). */
+    var pending = {};
+    function own(t) { return Object.prototype.hasOwnProperty.call(pending, t); }
+    store.has = function (t) { return own(t) ? pending[t] : (has.call(store, t) || centralHas(t)); };
     store.toggle = function (t) {
-      var local = has.call(store, t), want = !(local || centralHas(t));
+      var local = has.call(store, t), want = !store.has(t);
       if (local !== want) flip.call(store, t);           /* lokal genau so, wie geklickt */
-      store.lastSync = follow(t, want);
+      pending[t] = want;
+      var sync = follow(t, want), done = function () { if (own(t) && pending[t] === want) delete pending[t]; };
+      sync.then(done, done);
+      store.lastSync = sync;
       return want;
     };
     store.vuCoupled = true;

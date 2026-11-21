@@ -215,9 +215,10 @@ const ALLE = Object.fromEntries(Reihen.HOME_PLAN.flatMap((s) => s.row ? [[s.row,
 
 test("Reihen: Startseite in der Reihenfolge von n-home", () => {
   const plan = Reihen.homePlan(Object.assign({}, ALLE), { personal: { recent: true, more: true } });
+  /* Owner 21.11.2026: zusätzlich „Seit Monaten im Aufwind“, „Gewinne beschleunigen“ und „Stabile Aufwärtstrends“ als Schiene. */
   assert.deepEqual(plan.map((s) => s.row || s.kind), ["im-blick", "new-52-week-highs", "fallen-angels", "themes", "europe", "recent", "comeback", "more",
-    "langfristige-compounder", "ueberraschungen", "bekannte-namen", "strategies", "breakout-watch"]);
-  assert.ok(plan.length <= Reihen.MAX_HOME_ROWS, "hoechstens 14 Reihen");
+    "langfristige-compounder", "momentum-leaders", "ueberraschungen", "bekannte-namen", "gewinne-beschleunigen", "strategies", "trend-quality", "breakout-watch"]);
+  assert.ok(plan.length <= Reihen.MAX_HOME_ROWS, "hoechstens 16 Reihen");
   assert.equal(Reihen.homeTitle("ueberraschungen"), "Kennt kaum jemand");
   assert.equal(Reihen.homePlan(ALLE, { max: 5 }).length, 5);
 });
@@ -235,7 +236,7 @@ test("Reihen: leere oder fehlende Reihen erscheinen nicht (Fallen Angels vor PR 
 test("Reihen: Reihen mit neuen Treffern ruecken nach oben, nur zwischen den Reihen-Plaetzen", () => {
   const plan = Reihen.homePlan(ALLE, { fresh: ["breakout-watch", "bekannte-namen"] }).map((s) => s.row || s.kind);
   assert.deepEqual(plan, ["im-blick", "bekannte-namen", "breakout-watch", "themes", "europe", "new-52-week-highs", "fallen-angels",
-    "comeback", "langfristige-compounder", "strategies", "ueberraschungen"]);
+    "comeback", "langfristige-compounder", "momentum-leaders", "ueberraschungen", "strategies", "gewinne-beschleunigen", "trend-quality"]);
   assert.equal(plan[1], "bekannte-namen");
   assert.equal(plan[2], "breakout-watch");
   assert.equal(plan.indexOf("themes"), 3, "Themen behalten ihren Platz");
