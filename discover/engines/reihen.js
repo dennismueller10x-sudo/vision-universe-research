@@ -19,7 +19,7 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function () {
   "use strict";
 
-  var MAX_HOME_ROWS = 14;
+  var MAX_HOME_ROWS = 16;  /* Owner 21.11.2026: drei weitere Reihen als Schiene (Aufwind, Gewinne, Aufwärtstrends) */
   var SHOWCASE_MIN_RETURN_12M = -0.60;
 
   /* Anzeigenamen (Folie U3, docs/legal/WORTWAHL.md). */
@@ -79,9 +79,12 @@
     { kind: "rail", row: "comeback", movable: true },
     { kind: "more" },
     { kind: "rail", row: "langfristige-compounder", movable: true },
+    { kind: "rail", row: "momentum-leaders", movable: true },
     { kind: "rail", row: "ueberraschungen", movable: true },
     { kind: "rail", row: "bekannte-namen", movable: true },
+    { kind: "rail", row: "gewinne-beschleunigen", movable: true },
     { kind: "strategies", rows: ["umsatz-waechst-stark", "qualitaet-wachstum", "cashflow-maschinen"] },
+    { kind: "rail", row: "trend-quality", movable: true },
     { kind: "rail", row: "breakout-watch", movable: true }
   ];
   /* Saetze der breiten Strategie-Karten (Screen n-home, Strategien). */

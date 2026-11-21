@@ -97,7 +97,9 @@ async function premiumMobileAudit(page,key){
  assert.equal(order[order.indexOf('Langfristige Compounder')+1],'Wie steht die Börse?','Prototyp: Wie steht die Börse? direkt nach den Compoundern: '+order.join(' | '));
  assert(order.indexOf('Strategien')>order.indexOf('Wie steht die Börse?'),'Die uebrigen Reihen folgen nach Wie steht die Börse? und Alle Reihen: '+order.join(' | '));
  assert(await page.evaluate(()=>{const m=document.querySelector('.dr-sec--markt'),r=document.querySelector('.v2-journey > .dp-rows');return !!(m&&r&&m.nextElementSibling===r);}),'Alle N Reihen direkt nach Wie steht die Börse?');
- assert(order.length<=18,'At most 18 sections on the home page: '+order.length);
+ /* Owner 21.11.2026: drei weitere Schienen und der Kopf „Alle N Reihen“; mit „Weiter ansehen“ und „Mehr aus …“ höchstens 20. Ende = Swipe-Kasten. */
+ assert(order.length<=20,'At most 20 sections on the home page: '+order.length);
+ assert(await page.evaluate(()=>{const j=document.querySelector('.v2-journey'),last=j&&j.lastElementChild;return !!(last&&last.classList.contains('dr-sec--end')&&last.children.length===1&&last.querySelector('.dv3-swipecard')&&!j.querySelector('.dp-end'));}),'Startseite endet mit dem Swipe-Kasten (ohne Weiter und Hinweis)');
  const palette=await page.evaluate(()=>{const rgb=v=>(v.match(/[\d.]+/g)||[]).slice(0,3).map(Number),hue=c=>{const [r,g,b]=c,mx=Math.max(r,g,b),mn=Math.min(r,g,b);return mx-mn;};
   const lime=c=>c[0]===200&&c[1]===245&&c[2]===49,grey=c=>hue(c)<=8;
   return {pills:Array.from(document.querySelectorAll('.v2-journey .vu-chg')).filter(n=>!n.closest('.dp-idx')).map(n=>rgb(getComputedStyle(n).backgroundColor)).filter(c=>!(lime(c)||grey(c))),
@@ -225,7 +227,8 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
      die Reiter des Rahmens blendet assets/site-navigation.js dann aus. Sonst stehen die Bereiche als Reiter unter dem Kopf. */
   if(await page.locator('html[data-vu-tabs="inhalt"]').count()){
    const own=await page.locator('.dp-tabs .dp-tab').evaluateAll(ns=>ns.map(n=>n.textContent.trim()));
-   assert.deepEqual(own,['Start','Themen','Reihen','Märkte'],'Reiter im Inhalt: '+own.join(' | '));return;}
+   /* Owner 21.11.2026: „Swipen“ als zweiter Reiter führt direkt in den Swipe-Modus. */
+   assert.deepEqual(own,['Start','Swipen','Themen','Reihen','Märkte'],'Reiter im Inhalt: '+own.join(' | '));return;}
   /* Die Bereiche von Discover stehen als Reiter unter dem Kopf: die frueheren Leistenplaetze, dann die uebrigen Eintraege „In Discover“. */
   const tabs=await page.locator('vu-navigation nav.tabs').evaluate(n=>({top:n.getBoundingClientRect().top,bottom:n.getBoundingClientRect().bottom,rowBottom:n.getRootNode().querySelector('.row').getBoundingClientRect().bottom,reserved:parseFloat(getComputedStyle(document.body).paddingTop),labels:Array.from(n.querySelectorAll('a')).map(a=>({label:a.textContent.trim(),width:a.getBoundingClientRect().width,height:a.getBoundingClientRect().height,current:a.getAttribute('aria-current')}))}));
   assert.deepEqual(tabs.labels.map(i=>i.label),['Discover','Welten','Strategien','Swipen','Suchen','Märkte','Watchlist']);assert.equal(tabs.labels.filter(i=>i.current==='page').length,1,'Current route not identified');

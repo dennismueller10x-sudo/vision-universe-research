@@ -211,7 +211,11 @@
     var st = store(ctx);
     if (!st) { btn.hidden = true; return; }
     function paint() { var on = st.has(symbol); btn.setAttribute('aria-pressed', String(on)); btn.setAttribute('aria-label', (label || symbol) + (on ? ' aus der Watchlist entfernen' : ' merken')); }
-    btn.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); st.toggle(symbol); paint(); });
+    btn.addEventListener('click', function (e) {
+      e.preventDefault(); e.stopPropagation(); st.toggle(symbol); paint();
+      /* Angemeldet: nach der Antwort des Kontos noch einmal zeichnen (z. B. Tarifgrenze, assets/watchlist-button.js#couple). */
+      if (st.lastSync && typeof st.lastSync.then === 'function') st.lastSync.then(paint, paint);
+    });
     paint();
   }
 

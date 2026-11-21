@@ -268,7 +268,7 @@ html[data-vu-bleed][data-vu-tabs=inhalt] body.dv2 #v2-main.dv3-main{padding-top:
 .dv3-intro[hidden]{display:none!important}
 .dp-home{--dp-track:var(--vu-hair);margin:0 -16px;font-size:15px;line-height:1.35;color:var(--vu-ink)}
 :root[data-theme=dark] .dp-home{--dp-track:#2a2a2d;--vu-card:#151516;--vu-mute:#a1a7af;color:#f4f5f1}
-.dp-home>.dr-sec:not(.dp-hero)>:not(.dr-rail):not(.dp-sh){margin-left:14px;margin-right:14px}
+.dp-home>.dr-sec:not(.dp-hero)>:not(.dr-rail):not(.dp-sh):not(.dp-rtgrid){margin-left:14px;margin-right:14px}
 .dp-home .vu-chg{height:26px;padding:0 10px;gap:5px;font-size:12.5px;font-weight:800;line-height:1}
 .dp-tile{display:block;background:var(--vu-card);border-radius:22px;padding:14px;color:var(--vu-ink);text-decoration:none}
 a.dp-tile:focus-visible,.dp-tab:focus-visible,.dp-chip:focus-visible,.dp-btn:focus-visible,.dp-rnd:focus-visible,.dp-dv__r:focus-visible,.dp-find:focus-visible{outline:2px solid var(--vu-focus-ring);outline-offset:2px}
@@ -284,6 +284,15 @@ a.dp-tile:focus-visible,.dp-tab:focus-visible,.dp-chip:focus-visible,.dp-btn:foc
 .dp-hero__chart svg path:not([fill^=url]){stroke:#c8f531;stroke-width:3}
 .dp-hero__chart svg path[fill^=url]{opacity:.7}
 .dp-hero__chart svg circle{r:4px;stroke:#000;stroke-width:1.5}
+/* Tagesverlauf (Owner 21.11.2026): Linie ohne Füllung der Pfadfläche, Vortagesschluss gestrichelt, Beschriftung oben rechts. */
+html body .dp-hero .dp-hero__chart .dx-art-line{fill:none;stroke:#c8f531;stroke-width:3;stroke-linejoin:round;stroke-linecap:round;stroke-dasharray:none;stroke-dashoffset:0;animation:none}
+.dp-hero__chart .dx-art-base{stroke:currentColor;stroke-width:1.4;stroke-dasharray:2 6;stroke-linecap:round;opacity:.45}
+.dp-hero__chart .dx-micro--intraday{color:#a1a7af}
+.dp-hero__chart .dx-art-node-ring{display:none}
+html body .dp-hero .dp-hero__chart .dx-art-node{fill:#c8f531}
+.dp-hero__day{position:absolute;z-index:1;top:calc(var(--vu-navigation-height,64px) + 10px);right:14px;display:flex;align-items:center;gap:6px;margin:0;padding:4px 4px 4px 10px;border-radius:999px;background:rgba(0,0,0,.55);color:#f4f5f1;font-size:11.5px;font-weight:700;white-space:nowrap;pointer-events:none;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.dp-hero__day:empty{display:none}
+.dp-hero__day .vu-chg{height:22px;padding:0 8px;font-size:12px}
 .dp-hero__shade{position:absolute;inset:0;background:linear-gradient(transparent 42%,rgba(0,0,0,.92) 80%);pointer-events:none}
 .dp-hero__body{position:absolute;left:14px;right:14px;bottom:36px}
 .dp-hero__tags{display:flex;gap:6px;min-width:0}
@@ -320,6 +329,10 @@ html body #v2-main .dp-rnd[aria-pressed=true]{background:#c8f531;color:#101318}
 :root:not([data-theme=dark]) .dp-hero__chart svg path:not([fill^=url]){stroke:#4f6b00}
 :root:not([data-theme=dark]) .dp-hero__chart svg path[fill^=url]{opacity:.55}
 :root:not([data-theme=dark]) .dp-hero__chart svg circle{stroke:#fff}
+:root:not([data-theme=dark]) body .dp-hero .dp-hero__chart .dx-art-node{fill:#4f6b00}
+:root:not([data-theme=dark]) body .dp-hero .dp-hero__chart .dx-art-line{stroke:#4f6b00}
+:root:not([data-theme=dark]) .dp-hero__chart .dx-micro--intraday{color:#5d636b}
+:root:not([data-theme=dark]) .dp-hero__day{background:rgba(255,255,255,.8);color:#000}
 :root:not([data-theme=dark]) .dp-hero__shade{background:linear-gradient(rgba(255,255,255,0) 42%,rgba(255,255,255,.94) 80%)}
 :root:not([data-theme=dark]) .dp-hero .dp-pill--bk{background:#e9e9e9;color:#000}
 :root:not([data-theme=dark]) .dp-hero__id h2,:root:not([data-theme=dark]) .dp-hero__big b{color:#000}
@@ -415,8 +428,22 @@ html body #v2-main .dp-home .dp-tabs .dp-tab.on{background:var(--vu-ink);color:v
 /* Tagesbewegung als Pille (Owner 15.11.2026): rot bei Minus, neongrün bei Plus – wie assets/vu-stock-sheet.css (.k-move). */
 .dp-idx .vu-chg{background:#c8f531;color:#101318}.dp-idx .vu-chg--down{background:#c4281c;color:#fff}.dp-idx .vu-chg--flat{background:var(--dp-track,#2a2a2d);color:inherit}
 
-/* Alle N Reihen (Prototyp: Etikett und Chips), Genres, Suche */
+/* Alle N Reihen: Kacheln in zwei Zeilen, seitlich wischbar (Owner 21.11.2026), darunter Genres und Suche */
 .dp-home .dp-rows{margin-top:22px}
+.dp-home .dp-rows .dp-sh{margin-top:0}
+.dp-rtgrid{display:grid;grid-template-rows:repeat(2,auto);grid-auto-flow:column;grid-auto-columns:minmax(232px,74%);gap:8px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;padding:2px 14px 4px;scroll-snap-type:x proximity;scroll-padding:0 14px}
+.dp-rtgrid::-webkit-scrollbar{display:none}
+@media(min-width:600px){.dp-rtgrid{grid-auto-columns:minmax(240px,38%)}}
+html body #v2-main .dp-home a.dp-rt{min-width:0;min-height:62px;display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:18px;background:var(--vu-card);color:var(--vu-ink);text-decoration:none;scroll-snap-align:start}
+.dp-rt__t{display:flex;flex-direction:column;gap:3px;min-width:0}
+.dp-rt__t b{font-size:14.5px;font-weight:800;line-height:1.15;letter-spacing:-.01em;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.dp-rt__t small{font-size:11.5px;font-weight:700;color:var(--vu-mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dp-rt .dr-hud{border-radius:11px}
+html body #v2-main .dp-home a.dp-rt--all{background:var(--vu-ink);color:var(--vu-inv)}
+.dp-rt--all .dp-rt__t small{color:inherit;opacity:.7}
+.dp-rt--all .dr-hud{background:#c8f531;color:#101318}
+a.dp-rt:focus-visible{outline:2px solid var(--vu-focus-ring);outline-offset:2px}
+.dp-rtgrid+.dp-eb{margin-top:18px}
 .dp-eb{margin:0;font-size:10.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--vu-mute)}
 .dp-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .dp-chips+.dp-eb{margin-top:16px}
@@ -443,8 +470,10 @@ html body #v2-main .dp-rows .dp-find svg{width:20px;height:20px}
 .dp-home a.dv3-swipecard .dp-chev{flex:none;display:grid;place-items:center;width:36px;height:36px;border-radius:99px;background:#101318;color:#c8f531}
 :root:not([data-theme=dark]) .dp-home a.dv3-swipecard .dp-chev{background:var(--vu-lime);color:#101318}
 .dp-home .vu-next{margin-top:28px}
-.dp-end{margin:28px 0 0;text-align:center}
-.dp-end a{color:var(--vu-mute);font-size:12.5px;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+/* Owner 21.11.2026: die Startseite endet am Swipe-Kasten. Den Platz für das Dock hält schon der Körper (site-navigation.css,
+   --vu-dock-space); die 120 px von .dv3-main kämen doppelt dazu und liessen ein Drittel Bildschirm leer. */
+html body #v2-main.dv3-main:has(.dp-home){padding-bottom:20px}
+html body.dv2 .v2-home:has(>.dp-home){padding-bottom:0}
 .dp-home .dr-sec--end .vu-help{margin-top:16px;font-size:11.5px}
 
 /* Hell ist vollständig hell (Owner 16.11.2026: „wenn ich auf hell den Schalter umlege, dann muss natürlich auch alles hell sein“).
