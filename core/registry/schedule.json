@@ -182,6 +182,13 @@
    "note": "search-console (Insights: Sitemap, Indexierung, Suchanalyse; vor dem Fruehlauf)"
   },
   {
+   "id": "content-marktbriefing",
+   "workflow": "content.yml",
+   "cron": "50 23 * * 1-5",
+   "timer": "waker",
+   "note": "marktbriefing (Closing Bell nach US-Schluss; nach market-data-refresh 22:30 und dem Faktorlauf)"
+  },
+  {
    "id": "core-ci",
    "workflow": "core-ci.yml",
    "cron": "47 7 * * *",

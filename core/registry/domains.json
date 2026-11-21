@@ -452,6 +452,24 @@
       "consumers": ["/news/"]
     },
     {
+      "id": "marktbriefing",
+      "label": "Marktbriefing (Closing Bell)",
+      "layer": "CONTENT",
+      "group": "Content",
+      "critical": false,
+      "artifact": "/news/marktbriefing/data/latest.json",
+      "timestamp": ["generatedAt"],
+      "records": "cards",
+      "minRecords": 1,
+      "role": "Grafikkarten zum US-Handelstag aus Market Pulse, Tagesschluessen und SEC-Daten (Markt, eigene Auswertung, Angaben Dritter aus dem Themen-Radar); Seite, Karussell und Video.",
+      "producer": "products/news/briefing/build.mjs",
+      "workflow": "content.yml (Teil marktbriefing)",
+      "schedule": "Mo-Fr 23:50 UTC, nur im Datenzweig data/live",
+      "freshness": { "kind": "hours", "warnAfter": 72, "staleAfter": 120 },
+      "consumers": ["/news/marktbriefing/"],
+      "activation": { "state": "ACTIVATING", "decision": "Owner 21.11.2026: Generator fuer das Marktbriefing; erster Lauf content.yml Teil marktbriefing nach dem Merge, danach Feld entfernen." }
+    },
+    {
       "id": "analystRatings",
       "label": "Analyst Ratings",
       "layer": "CONTENT",

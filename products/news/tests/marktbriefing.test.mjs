@@ -1,0 +1,167 @@
+// Marktbriefing (products/news/briefing): Frische, Kartenregeln, Themen Dritter, Darstellung und Build mit --out.
+// Alle Eingaben sind synthetisch und entstehen im Test; es wird keine Produktionsdatei gelesen oder geschrieben.
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { spawnSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
+import { createRequire } from 'node:module';
+
+const here = path.dirname(fileURLToPath(import.meta.url));
+const root = path.resolve(here, '../../..');
+const require = createRequire(import.meta.url);
+const Engine = require('../briefing/engine.js');
+const Render = require('../briefing/render.js');
+
+const SESSION = '2026-11-20';
+
+/* Werktage rückwärts ab der Sitzung. */
+function days(n, end = SESSION) {
+  const out = []; let t = Date.parse(end + 'T12:00:00Z');
+  while (out.length < n) { const d = new Date(t); if (d.getUTCDay() % 6 !== 0) out.unshift(d.toISOString().slice(0, 10)); t -= 864e5; }
+  return out;
+}
+/* Reihe mit ruhigem Verlauf, zwei großen Verlusttagen (05.11. und Sitzung) und einem frühen Crash zum Vergleich. */
+function series(start, lastMove, end = SESSION) {
+  const ds = days(3000, end); let v = start; const pts = [];
+  ds.forEach((d, i) => {
+    if (i > 0) v *= d === '2026-11-05' ? 0.935 : d === '2020-03-16' ? 0.88 : i === ds.length - 1 ? 1 + lastMove : 1 + (i % 7 === 0 ? -0.004 : 0.002);
+    pts.push([d, Math.round(v * 100) / 100]);
+  });
+  return { symbol: 'X', points: pts };
+}
+function bp(level) { return { points: days(30).map((d, i, a) => [d, i === a.length - 1 ? level - 0.12 : level]) }; }
+function stock(t, close, prev, high) {
+  const ds = days(250); const pts = ds.map((d, i) => [d, i === ds.length - 1 ? close : i === ds.length - 2 ? prev : i === 100 ? high : prev * 1.05]);
+  return { schemaVersion: 'discover-series-1.1.0', status: 'CALCULATED', source: 'tiingo', provider: 'tiingo', ticker: t, dataMode: 'real',
+    priceSeriesType: 'SPLIT_ADJUSTED', currency: 'USD', grain: 'daily', publishBasis: 'EOD', asOf: SESSION, points: pts };
+}
+function sec(eps) { return { ttm: { eps_diluted: { v: eps, end: '2026-09-30', filed: '2026-10-30' } }, annual: {} }; }
+
+export function inputs(over = {}) {
+  const intraday = { points: [] };
+  for (let m = 0; m < 78; m++) { const t = new Date(Date.parse(SESSION + 'T14:30:00Z') + m * 300e3).toISOString(); intraday.points.push([t, 100 * (1 - 0.0007 * m)]); }
+  const ser = {
+    SPY: series(400, -0.036), QQQ: series(300, -0.057), DIA: series(350, -0.02), IWM: series(200, -0.029),
+    FEZ: series(50, -0.028), EEM: series(40, -0.051), N225: series(30000, -0.05),
+    US2Y: bp(4.75), US5Y: bp(4.85), US10Y: bp(5.04), US30Y: bp(5.4), DE10Y: bp(3.45),
+    XAUUSD: series(3000, -0.022), XAGUSD: series(40, -0.034), BTCUSD: series(60000, -0.05)
+  };
+  const prevQ = ser.QQQ.points[ser.QQQ.points.length - 2][1];
+  intraday.points = intraday.points.map(([t, v]) => [t, prevQ * v / 100]);
+  return Object.assign({
+    now: '2026-11-21T00:10:00Z',
+    pulse: {
+      headline: { text: 'Abwärtstrend – die Mehrheit der Aktien ist schwach' },
+      gauges: { TREND: { valueText: '0 von 4 über beiden Linien' }, BREADTH: { valueText: '23 % über der 50-Tage-Linie' } },
+      movers: { session: SESSION, complete: true,
+        gainers: [{ symbol: 'GAP', name: 'Gap Inc', changePercent: 11.44 }, { symbol: 'GPN', name: 'Global Payments', changePercent: 9.95 }, { symbol: 'EFOR', name: 'ASGN', changePercent: 7.9 }],
+        losers: [{ symbol: 'MARA', name: 'MARA', changePercent: -18.56 }, { symbol: 'IREN', name: 'IREN', changePercent: -17.97 }, { symbol: 'APLD', name: 'Applied Digital', changePercent: -17.81 }, { symbol: 'HUT', name: 'Hut 8', changePercent: -17.65 }] }
+    },
+    pulseHistory: {
+      breadthLog: days(20).map((d, i, a) => ({ asOf: d, above50Pct: 40 - i, newHighs: 30, newLows: i === a.length - 1 ? 112 : 50 })),
+      advDeclLog: [{ session: SESSION, advancers: 786, decliners: 4171, unchanged: 276, evaluated: 5233, complete: true }]
+    },
+    series: ser,
+    intraday: { QQQ: intraday },
+    stocks: { NVDA: stock('NVDA', 125.53, 145.98, 239), MSFT: stock('MSFT', 484.5, 498.3, 555), AAPL: stock('AAPL', 342.6, 349.2, 356), AMZN: stock('AMZN', 246.8, 257.4, 284), META: stock('META', 560.8, 596.2, 778) },
+    sec: { NVDA: sec(7.91), MSFT: sec(19.16), AAPL: sec(8.97), AMZN: sec(12.37), META: sec(29.32) },
+    radar: null
+  }, over);
+}
+
+test('MB-1 frische Sitzung: Karten aller Arten, Einordnung und Bewertung als eigene Auswertung', () => {
+  const b = Engine.buildBriefing(inputs());
+  assert.equal(b.fresh.ok, true, b.fresh.problems.join('; '));
+  assert.equal(b.session, SESSION);
+  const ids = b.cards.map((c) => c.id);
+  for (const id of ['overview', 'indices', 'context', 'megacaps', 'valuation', 'breadth', 'rates', 'movers', 'picture']) assert.ok(ids.includes(id), id);
+  assert.equal(b.cards[0].id, 'overview');
+  assert.equal(b.cards.find((c) => c.id === 'context').type, 'OWN');
+  assert.match(b.cards.find((c) => c.id === 'context').title, /^Zwei Tage mit über 5 % Minus/);
+  assert.match(b.cards.find((c) => c.id === 'valuation').title, /^NVDA: KGV/);
+  assert.equal(b.cards.find((c) => c.id === 'breadth').pairs[0].sub, '80 % von 5.233 US-Aktien im Minus');
+  assert.ok(b.counts.MARKET + b.counts.OWN === b.cards.length);
+});
+
+test('MB-2 Frische: hängt eine Pflicht-Eingabe hinterher, entsteht kein Briefing', () => {
+  const inp = inputs(); inp.series.SPY.points.pop();
+  const b = Engine.buildBriefing(inp);
+  assert.equal(b.fresh.ok, false);
+  assert.equal(b.cards.length, 0);
+  assert.ok(b.fresh.problems.some((p) => p.startsWith('SPY')));
+  const inp2 = inputs(); inp2.pulseHistory.breadthLog.pop();
+  assert.equal(Engine.buildBriefing(inp2).fresh.ok, false);
+  assert.equal(Engine.buildBriefing(inputs({ expectSession: '2026-11-23' })).fresh.ok, false);
+});
+
+test('MB-3 Themen Dritter: nur Handelstag, nur Quellenliste, höchstens zwei je Quelle, mit URL', () => {
+  const it = (o) => Object.assign({ title: 'T', source: 'Reuters', publisher: 'Reuters', published: SESSION, url: 'https://example.org/a' }, o);
+  const r = Engine.thirdCards({ items: [it(), it(), it(), it({ publisher: 'Irgendwer auf X' }), it({ published: '2026-11-18', publisher: 'CNBC' }),
+    it({ publisher: 'CNBC', url: '' }), it({ publisher: 'Federal Reserve', published: '2026-11-21' })] }, SESSION, '2026-11-21T00:10:00Z');
+  assert.equal(r.kept.length, 3);
+  assert.deepEqual(r.kept.map((c) => c.publisher), ['Reuters', 'Reuters', 'Federal Reserve']);
+  assert.ok(r.kept.every((c) => c.type === 'THIRD'));
+  const reasons = r.dropped.map((d) => d.reason).join(' | ');
+  assert.match(reasons, /mehr als 2 Karten von Reuters/);
+  assert.match(reasons, /nicht in der Quellenliste/);
+  assert.match(reasons, /nicht vom Handelstag \(2026-11-18\)/);
+  assert.match(reasons, /keine Quell-URL/);
+  const b = Engine.buildBriefing(inputs({ radar: { items: [it()] } }));
+  assert.equal(b.counts.THIRD, 1);
+});
+
+test('MB-4 Wortwahl: keine Gewinner/Verlierer, keine Empfehlung, kein Signal (docs/legal/WORTWAHL.md)', () => {
+  const text = JSON.stringify(Engine.buildBriefing(inputs()).cards);
+  for (const w of ['Gewinner', 'Verlierer', 'Empfehlung', 'Signal', 'Kaufen', 'unterbewertet', 'Top-Pick']) assert.ok(!text.includes(w), w);
+});
+
+test('MB-5 Einordnung: letzter vergleichbarer Tag', () => {
+  const s = series(300, -0.057).points;
+  const r = Engine.lastComparable(s, SESSION, 1);
+  assert.equal(r.date, '2026-11-05');
+  assert.ok(r.today < -5.6 && r.today > -5.8);
+});
+
+test('MB-6 Darstellung: jede Karte ein SVG 1080×1350, Seite noindex mit Pflichthinweis', () => {
+  const b = Engine.buildBriefing(inputs());
+  b.cards.forEach((c, i) => {
+    const svg = Render.cardSvg(c, i, b.cards.length, b.session);
+    assert.match(svg, /^<svg [^>]*viewBox="0 0 1080 1350"/);
+    assert.ok(!/NaN|undefined/.test(svg), c.id);
+  });
+  const html = Render.page(b, { archive: [SESSION] });
+  assert.match(html, /<meta name="robots" content="noindex,follow">/);
+  assert.match(html, /keine Anlageberatung/);
+  assert.equal((html.match(/<figure class="mb-card"/g) || []).length, b.cards.length);
+});
+
+test('MB-7 Build mit --data/--out schreibt nur in den Zielordner; nicht frisch -> Exit 3 ohne Dateien', () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'mb-'));
+  const data = path.join(tmp, 'data'), out = path.join(tmp, 'out');
+  const inp = inputs();
+  // Gleiche Ordnerstruktur wie im Repo, aber unter der temporären Fixture-Wurzel (synthetische Daten).
+  const w = (rel, obj) => { const f = path.join(data, rel); fs.mkdirSync(path.dirname(f), { recursive: true }); fs.writeFileSync(f, JSON.stringify(obj)); };
+  w('/quant/data/market/intelligence/market-pulse.json', inp.pulse);
+  w('/quant/data/market/intelligence/market-pulse-history.json', inp.pulseHistory);
+  for (const [k, v] of Object.entries(inp.series)) w('/quant/data/market/multi-asset/series/' + k + '.json', v);
+  w('/quant/data/market/multi-asset/intraday/QQQ.json', inp.intraday.QQQ);
+  for (const [k, v] of Object.entries(inp.stocks)) w('/quant/data/market/discover-series/ref_' + k + '.json', v);
+  w('/quant/data/universe/cik-map.json', { byTicker: { NVDA: { cik: '0000000001' } } });
+  w('/quant/data/sec/consumer/CIK0000000001.json', inp.sec.NVDA);
+  const run = () => spawnSync(process.execPath, [path.join(root, 'products/news/briefing/build.mjs'), '--data', data, '--out', out, '--now', inp.now,
+    '--radar', path.join(tmp, 'kein-radar.json')], { encoding: 'utf8' });
+  const ok = run();
+  assert.equal(ok.status, 0, ok.stderr);
+  for (const f of ['data/latest.json', 'data/archive/' + SESSION + '.json', 'index.html', SESSION + '/index.html']) assert.ok(fs.existsSync(path.join(out, 'news/marktbriefing', f)), f);
+  fs.rmSync(out, { recursive: true });
+  const spy = path.join(data, '/quant/data/market/multi-asset/series/SPY.json');
+  const s = JSON.parse(fs.readFileSync(spy)); s.points.pop(); fs.writeFileSync(spy, JSON.stringify(s));
+  const stale = run();
+  assert.equal(stale.status, 3);
+  assert.match(stale.stderr, /nicht frisch/);
+  assert.ok(!fs.existsSync(out));
+  fs.rmSync(tmp, { recursive: true });
+});

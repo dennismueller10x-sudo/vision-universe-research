@@ -330,8 +330,21 @@ Opening Bell zum US-Handelsbeginn braucht schnellere Kursdaten als die heutigen 
 **Bekannte Lücken:** echte Indexstände (heute ETF-Proxies), Sektor-ETFs für eine Heatmap, VIX, Zahlen- und
 Wirtschaftskalender (FMP-Endpunkte geprüft in `scripts/market/probe-free-sources.mjs`).
 
+**Generator (Stand 21.11.2026)**
+- Engine `products/news/briefing/engine.js` (Kartenregeln, Frische, Prüfung der Themen Dritter), Darstellung
+  `products/news/briefing/render.js` (jede Karte ein SVG 1080×1350), Build `products/news/briefing/build.mjs`, Tests
+  `products/news/tests/marktbriefing.test.mjs`.
+- Lauf: `content.yml` Teil `marktbriefing`, Mo–Fr 23:50 UTC über den Wecker (`core/registry/schedule.json`), nur im
+  Datenzweig (`news/marktbriefing/`, Datenart `marktbriefing`). Seite `/news/marktbriefing/` (vorerst `noindex`) mit
+  Archiv je Sitzung.
+- Themen Dritter liest der Build aus `news/marktbriefing/radar/<sitzung>.json` (`items[]` mit title, publisher, source,
+  published, url, optional sub, quote, columns, bars, stats; optional `editorial` mit eigenem Titel der Titelkarte).
+  Die Engine verwirft, was nicht vom Handelstag ist, nicht aus der Quellenliste kommt oder keine URL hat.
+- Karussell und Video: `node products/news/briefing/export-png.mjs <briefing.json> <ordner>` schreibt die Karten als PNG.
+- Die Investitionskarte erscheint nur, wenn ein Hyperscaler in den letzten 3 Tagen neue Zahlen bei der SEC gemeldet hat.
+
 **Ausbau in Ergebnissen (je ein PR)**
-1. Generator für Markt- und eigene Auswertungskarten aus den Repo-Artefakten, mit Frischeprüfung, als Seite im News-Bereich.
+1. Generator für Markt- und eigene Auswertungskarten aus den Repo-Artefakten, mit Frischeprüfung, als Seite im News-Bereich (erledigt, siehe oben).
 2. Themen-Radar für Angaben Dritter: täglicher Rechercheauftrag über die Quellenliste, Prüfung von Datum und Original,
    Ergebnis als Daten-Datei, die der Generator liest.
 3. Karussell und Reel jeden Abend ins Approval Center (Veröffentlichung nur nach Freigabe, wie bei Reels).

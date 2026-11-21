@@ -66,6 +66,15 @@
       "note": "Neu (11/2026), nur im Datenzweig. Bis zum ersten Lauf (So 05:41 UTC oder Dispatch teil=backtest-forschung) fehlt die Datei; die interne Forschungsansicht sagt das."
     },
     {
+      "id": "marktbriefing",
+      "phase": "BRANCH_ONLY",
+      "pendingFirstRun": true,
+      "workflow": "content.yml",
+      "paths": ["news/marktbriefing/data/latest.json"],
+      "prefixes": ["news/marktbriefing/"],
+      "note": "Neu (11/2026), nur im Datenzweig: JSON je Sitzung und die statischen Seiten /news/marktbriefing/. Bis zum ersten Lauf (Mo–Fr 23:50 UTC oder Dispatch teil=marktbriefing) fehlt die Seite."
+    },
+    {
       "id": "kiDepots",
       "phase": "BRANCH_ONLY",
       "workflow": "pipeline-daily.yml",
