@@ -24,30 +24,6 @@
     });
   }
 
-  /* Scroll-Erzählung: ein iPhone, die Aussagen wechseln */
-  var story = $(".vw-story"), beats = $$(".vw-beat"), sp = $(".vw-sphone"), prog = $(".vw-sprog");
-  var src = $(".vw-stage .aphone");
-  if (story && beats.length && sp && src) {
-    story.style.setProperty("--n", beats.length);
-    var ph = src.cloneNode(true); ph.removeAttribute("id"); sp.appendChild(ph);
-    var img = $(".scr img", ph);
-    beats.forEach(function () { prog.appendChild(document.createElement("i")); });
-    var cur = -1;
-    var show = function (k) {
-      if (k === cur) return; cur = k;
-      beats.forEach(function (b, j) { b.classList.toggle("on", j === k); });
-      $$("i", prog).forEach(function (d, j) { d.classList.toggle("on", j === k); });
-      var s = beats[k].getAttribute("data-img");
-      if (img && s && img.getAttribute("src") !== s) { img.style.opacity = 0; setTimeout(function () { img.src = s; img.style.animation = "none"; void img.offsetWidth; img.style.animation = ""; img.style.opacity = 1; }, reduce ? 0 : 200); }
-    };
-    var onS = function () {
-      var r = story.getBoundingClientRect(), total = story.offsetHeight - innerHeight;
-      var p = Math.min(.999, Math.max(0, -r.top / Math.max(1, total)));
-      show(Math.floor(p * beats.length));
-    };
-    addEventListener("scroll", function () { requestAnimationFrame(onS); }, { passive: true }); addEventListener("resize", onS); onS();
-  }
-
   /* Netflix-Reihen: Pfeile */
   $$(".vw-row").forEach(function (r) {
     var tr = $(".vw-track", r), a = $(".vw-arr", r); if (!tr || !a) return;

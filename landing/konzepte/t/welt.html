@@ -1,8 +1,7 @@
 <!-- Konzept „Welt“ (Owner 21.11.2026): Marketing-Seite statt Web-App. Inhalt der <main> vor der Anmeldung.
      Platzhalter füllt scripts/build.mjs: HEROSTAGE (iPhone der Live-Seite), TV (News aus insights/artikel.json). -->
 <section class="vw-hero" data-dark>
-  <div class="vw-glow" aria-hidden="true"></div><div class="vw-grid" aria-hidden="true"></div>
-  <div class="vw-hin w">
+    <div class="vw-hin w">
     <div class="vw-copy">
       <p class="vw-eyebrow"><span class="vw-live" aria-hidden="true"></span>Die App für iPhone und Android · bald im Store</p>
       <h1 class="vw-h1"><span class="vw-l">Aktien und Finanzen</span> <span class="vw-l"><em>richtig verstehen.</em></span></h1>
@@ -15,40 +14,23 @@
     </div>
     <div class="vw-stage" data-tilt><!--HEROSTAGE--></div>
   </div>
-  <a class="vw-down" href="#vw-story" aria-label="Weiter"><span></span></a>
+  <a class="vw-down" href="#vw-app" aria-label="Weiter"><span></span></a>
 </section>
 
-<div class="vw-marquee" aria-hidden="true"><div><span>Verdient die Firma Geld?</span><span>Wohin läuft der Kurs?</span><span>Was machen die großen Anleger?</span><span>Wie handeln die besten Trader der Welt?</span><span>Was wird aus meiner Rente?</span><span>Wie gut ist die Aktie im Vergleich?</span><span>Was bewegt die Börse heute?</span><span>Verdient die Firma Geld?</span><span>Wohin läuft der Kurs?</span><span>Was machen die großen Anleger?</span><span>Wie handeln die besten Trader der Welt?</span><span>Was wird aus meiner Rente?</span><span>Wie gut ist die Aktie im Vergleich?</span><span>Was bewegt die Börse heute?</span></div></div>
 
-<section class="vw-story" id="vw-story" aria-label="Eine Aktie, alle Antworten">
-  <div class="vw-sticky">
-    <div class="vw-sbg" aria-hidden="true"></div>
-    <div class="vw-beats w">
-      <article class="vw-beat" data-img="./web/img/app/apple.jpg"><p class="vw-k">Eine Aktie</p><h2>Alle Antworten. <em>Auf einer Seite.</em></h2><p>Zu jeder Aktie die Antwort in einfachen Sätzen.</p></article>
-      <article class="vw-beat" data-img="./web/img/app/fundamental.jpg"><p class="vw-k">Fundamental</p><h2>Verdient die Firma <em>Geld?</em></h2><p>Macht sie Gewinn? Wächst der Umsatz? Hat sie viele Schulden? Aus den offiziellen Geschäftsberichten, jede Zahl in einem Satz.</p></article>
-      <article class="vw-beat" data-img="./web/img/app/technical.jpg"><p class="vw-k">Technical</p><h2>Wohin läuft <em>der Kurs?</em></h2><p>Steigt die Aktie oder fällt sie? Trends und Muster, gesagt in einem Satz.</p></article>
-      <article class="vw-beat" data-img="./web/img/app/hedgefonds.jpg"><p class="vw-k">Hedgefonds</p><h2>Was machen die <em>großen Anleger?</em></h2><p>Wer zukauft, wer verkauft und wer eine Aktie hält, aus den Pflichtmeldungen der großen Fonds.</p></article>
-      <article class="vw-beat" data-img="./web/img/app/quant.jpg"><p class="vw-k">Quant</p><h2>Jede Aktie bekommt <em>ein Zeugnis.</em></h2><p>Sechs Noten von 0 bis 100, verglichen mit ähnlichen Firmen.</p></article>
-      <article class="vw-beat" data-img="./web/img/app/discover.jpg"><p class="vw-k">Discover</p><h2>Das Netflix der <em>Aktienwelt.</em></h2><p>Wisch dich durch die Börse wie durch Instagram: nach rechts merken, nach links weiter.</p></article>
-      <article class="vw-beat" data-img="./web/img/app/ai.jpg"><p class="vw-k">Vision Universe AI</p><h2>Frag einfach in <em>deinen Worten.</em></h2><p>So, wie du einen Freund fragen würdest. Mit Quelle zu jeder Zahl.</p></article>
-    </div>
-    <div class="vw-sphone" aria-hidden="true"></div>
-    <div class="vw-sprog" aria-hidden="true"></div>
-  </div>
-</section>
 
-<section class="vw-bento w" aria-labelledby="vw-bento-h">
+<section class="vw-bento w" id="vw-app" aria-labelledby="vw-bento-h">
   <p class="vw-k">Die App</p>
   <h2 class="vw-h2" id="vw-bento-h">Alles für deine Aktien. <em>In einer App.</em></h2>
   <div class="vw-tiles">
     <a class="vw-tile t-xl" href="./produkte/discover/"><span class="vw-ti"><svg><use href="#discover"/></svg></span><b>Discover</b><small>Die Börse entdecken, Aktie für Aktie</small><span class="vw-shot"><img src="./web/img/app/discover.jpg" alt="" loading="lazy"></span></a>
-    <a class="vw-tile t-w dark" href="./produkte/atlas/"><span class="vw-ti"><svg><use href="#atlas"/></svg></span><b>Vision Universe AI</b><small>Frag in deinen Worten</small><span class="vw-shot"><img src="./web/img/app/ai.jpg" alt="" loading="lazy"></span></a>
+    <a class="vw-tile dark" href="./produkte/atlas/"><span class="vw-ti"><svg><use href="#atlas"/></svg></span><b>Vision Universe AI</b><small>Frag in deinen Worten</small><span class="vw-shot"><img src="./web/img/app/ai.jpg" alt="" loading="lazy"></span></a>
     <a class="vw-tile" href="./produkte/fundamental/"><span class="vw-ti"><svg><use href="#fundamental"/></svg></span><b>Fundamental</b><small>Verdient die Firma Geld?</small><span class="vw-shot"><img src="./web/img/app/fundamental.jpg" alt="" loading="lazy"></span></a>
     <a class="vw-tile lime" href="./produkte/technical/"><span class="vw-ti"><svg><use href="#technical"/></svg></span><b>Technical</b><small>Wohin läuft der Kurs?</small><span class="vw-shot"><img src="./web/img/app/technical.jpg" alt="" loading="lazy"></span></a>
-    <a class="vw-tile t-t dark" href="./produkte/quant/"><span class="vw-ti"><svg><use href="#quant"/></svg></span><b>Quant</b><small>Das Zeugnis jeder Aktie</small><span class="vw-shot"><img src="./web/img/app/quant.jpg" alt="" loading="lazy"></span></a>
+    <a class="vw-tile dark" href="./produkte/quant/"><span class="vw-ti"><svg><use href="#quant"/></svg></span><b>Quant</b><small>Das Zeugnis jeder Aktie</small><span class="vw-shot"><img src="./web/img/app/quant.jpg" alt="" loading="lazy"></span></a>
     <a class="vw-tile" href="./produkte/supertrader/"><span class="vw-ti"><svg><use href="#supertrader"/></svg></span><b>Supertrader</b><small>Die Regeln der besten Trader</small><span class="vw-shot"><img src="./web/img/app/supertrader.jpg" alt="" loading="lazy"></span></a>
     <a class="vw-tile" href="./produkte/hedgefonds/"><span class="vw-ti"><svg><use href="#hedgefonds"/></svg></span><b>Hedgefonds</b><small>Was große Anleger machen</small><span class="vw-shot"><img src="./web/img/app/hedgefonds.jpg" alt="" loading="lazy"></span></a>
-    <a class="vw-tile t-w" href="./produkte/vorsorge/"><span class="vw-ti"><svg><use href="#vorsorge"/></svg></span><b>Vorsorge</b><small>Rente und Altersvorsorgedepot</small><span class="vw-shot"><img src="./web/img/app/vorsorge.jpg" alt="" loading="lazy"></span></a>
+    <a class="vw-tile" href="./produkte/vorsorge/"><span class="vw-ti"><svg><use href="#vorsorge"/></svg></span><b>Vorsorge</b><small>Rente und Altersvorsorgedepot</small><span class="vw-shot"><img src="./web/img/app/vorsorge.jpg" alt="" loading="lazy"></span></a>
     <a class="vw-tile" href="./produkte/screener/"><span class="vw-ti"><svg><use href="#screener"/></svg></span><b>Screener</b><small>Aktien nach deinen Wünschen finden</small><span class="vw-shot"><img src="./web/img/app/screener.jpg" alt="" loading="lazy"></span></a>
     <a class="vw-tile" href="./produkte/elliott/"><span class="vw-ti"><svg><use href="#elliott"/></svg></span><b>Elliott</b><small>Wellen im Kurs, für Fortgeschrittene</small><span class="vw-shot"><img src="./web/img/app/elliott.jpg" alt="" loading="lazy"></span></a>
     <a class="vw-tile" href="./produkte/portfolios/"><span class="vw-ti"><svg><use href="#portfolios"/></svg></span><b>Portfolios</b><small>Musterdepots nach festen Regeln</small><span class="vw-shot"><img src="./web/img/app/portfolios.jpg" alt="" loading="lazy"></span></a>
