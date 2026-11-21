@@ -7,7 +7,7 @@
   "count": 15
  },
  "family": "PIT_FUNDAMENTAL_OVERLAY",
- "generatedAt": "2026-11-21T00:46:52.000Z",
+ "generatedAt": "2026-11-21T13:37:47.000Z",
  "backtest": "NOT_CERTIFIED",
  "publication": {
   "predictionAllowed": false,
@@ -31,17 +31,17 @@
   "consequence": "Das Beobachtungsfenster dieser Familie ist kuerzer als das der Kursstudie und umfasst wenige Marktphasen. Die Walk-Forward-Bloecke sind entsprechend kurz; das steht im Artefakt und ist kein Detail."
  },
  "population": {
-  "seriesConsidered": 6050,
-  "seriesWithFundamentals": 4373,
-  "observations": 341695,
+  "seriesConsidered": 6080,
+  "seriesWithFundamentals": 4382,
+  "observations": 342038,
   "dropped": {
-   "noFundamentals": 53423,
-   "beforeCoverage": 503689,
+   "noFundamentals": 53617,
+   "beforeCoverage": 503838,
    "noFeatures": 0
   },
   "restriction": "Nur Beobachtungen, zu deren Stichtag mindestens eine Bilanz eingereicht war. Die Basisquote gilt fuer genau diese Grundgesamtheit.",
   "firstDate": "2018-01-24",
-  "lastDate": "2026-11-19",
+  "lastDate": "2026-11-20",
   "priceSeriesType": "SPLIT_ADJUSTED",
   "totalReturn": false,
   "totalReturnNote": "Split-, nicht dividendenbereinigt. Ein Titel mit hoher Ausschuettung ist hier systematisch schwaecher als seine Gesamtrendite. Das betrifft Gewinner und Nicht-Gewinner gleichermassen und wird nicht durch einen Schaetzwert ersetzt."
@@ -73,9 +73,9 @@
   "horizonMonths": 24,
   "winnerThreshold": "W100",
   "winnerMinReturn": 1,
-  "observations": 341695,
+  "observations": 342038,
   "usableObservations": 242335,
-  "outcomeUnavailable": 99360,
+  "outcomeUnavailable": 99703,
   "winners": 28480,
   "baseRate": 0.117523,
   "folds": [
@@ -5765,7 +5765,7 @@
     "conditionalLossRate": 0.397454,
     "lossLift": 2.4426,
     "asymmetry": 0.5371,
-    "medianForwardReturn": -0.31,
+    "medianForwardReturn": -0.3101,
     "medianForwardReturnNetOfFrictions": -0.3121,
     "medianForwardReturnPopulation": 0.028,
     "medianMaxDrawdownWithinHorizon": -0.7303,
@@ -28698,7 +28698,7 @@
    "conditionalLossRate": 0.397454,
    "lossLift": 2.4426,
    "asymmetry": 0.5371,
-   "medianForwardReturn": -0.31,
+   "medianForwardReturn": -0.3101,
    "medianForwardReturnNetOfFrictions": -0.3121,
    "medianForwardReturnPopulation": 0.028,
    "medianMaxDrawdownWithinHorizon": -0.7303,
@@ -45969,6 +45969,6 @@
    "addsOverBetterHalf": false
   }
  ],
- "runtimeMs": 51864,
- "contentHash": "35451b4990b021f2"
+ "runtimeMs": 52710,
+ "contentHash": "2d0c606419f7a300"
 }
