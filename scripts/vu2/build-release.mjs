@@ -388,7 +388,7 @@ export async function buildRelease({root,output}){
  try{const {writeEurope}=await import('../../products/screener/producer/build-europe.mjs');screener={...screener,europe:await writeEurope({root,out:resolve(output,'screener/data'),log:()=>{}})};}
  catch(e){screener={...screener,europe:{state:'UNAVAILABLE',reason:String(e&&e.message||e).slice(0,200)}};}
  // Keep inert Discover templates and budgeted view files, concatenate only their dependency runs.
- if(paths.includes('discover/index.html')){const {bundleDiscover}=await import('../mobile/bundle-discover.mjs');await bundleDiscover({root,output});}
+ if(paths.includes('discover/index.html')){const {bundleDiscover}=await import('../mobile/bundle-discover.mjs');await bundleDiscover({root,output});const {writeDiscoverHeroPreview}=await import('../ci/discover-hero-preview.mjs');await writeDiscoverHeroPreview({root,output});}
  const bytes=emitted.reduce((n,f)=>n+f.bytes,0);
  if(bytes>SEC_BUDGET||emitted.some(f=>f.bytes>2*1024*1024))throw Error('SEC_DELIVERY_BUDGET_EXCEEDED');
  const report={schemaVersion:1,sourceCommit:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),storage:'EXISTING_R2_UNCHANGED',secBudget:SEC_BUDGET,secBytes:bytes,files:emitted,excluded:['quant/data/sec/consumer','quant/data/sec/canonical','quant/data/fundamentals'],screener,quantBundle,status:'PASS'};

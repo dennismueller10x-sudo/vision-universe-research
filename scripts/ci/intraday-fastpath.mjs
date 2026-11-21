@@ -17,6 +17,7 @@
      overlay --repo=<dir> --site=<dir> [--list=<datei>]           Intraday- und Datendateien ueber das Paket legen
      smoke --repo=<dir> --site=<dir> [--list=<datei>]             Pruefsumme, Schema, JSON, ein Seitenaufruf
    ========================================================================= */
+import {refreshHeroPreview} from './discover-hero-preview.mjs';
 import {execFileSync, spawn} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {existsSync, readFileSync} from 'node:fs';
@@ -142,8 +143,10 @@ export async function overlay(repo, site, liste = []) {
     await cp(resolve(repo, e.pfad), z);
     daten++;
   }
+  /* Vorschau der ersten Discover-Folie (Ladezeit 21.11.2026): zieht nach, wenn eine ihrer Quellen im Paket steckt. */
+  const heroPreview = await refreshHeroPreview(site, liste).catch((e) => ({state: 'FAILED', reason: String(e && e.message || e).slice(0, 120)}));
   const files = (await walk(dst)).length;
-  const marker = {schema: 1, kind: 'INTRADAY_FASTPATH', files, dataFiles: daten, at: new Date().toISOString(), commit: execFileSync('git', ['rev-parse', 'HEAD'], {cwd: repo, encoding: 'utf8'}).trim()};
+  const marker = {schema: 1, kind: 'INTRADAY_FASTPATH', files, dataFiles: daten, heroPreview: heroPreview.state, at: new Date().toISOString(), commit: execFileSync('git', ['rev-parse', 'HEAD'], {cwd: repo, encoding: 'utf8'}).trim()};
   await writeFile(resolve(site, 'intraday-fastpath.json'), JSON.stringify(marker) + '\n');
   return marker;
 }
