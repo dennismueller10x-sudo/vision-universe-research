@@ -137,6 +137,9 @@ jobs:
           echo "ELIG_MASTER=$X/next1/us-security-master.json" >> "$GITHUB_ENV"
 
       - name: Neuer Stand (bestehender Erzeuger, nach RUNNER_TEMP)
+        # Nur Umfangsfolgen (Steuerung 21.11.2026): die committete Eignung bleibt, nichts wird neu gerechnet oder abgerufen
+        # (21.11.: nasdaqtrader.com HTTP 503 blockierte sonst das reine Nachziehen). Die Neuberechnung bleibt fail closed.
+        if: ${{ !(github.event_name == 'workflow_dispatch' && !inputs.zeitplan && inputs.umfangsfolgen == true && inputs.erweiterung == '' && inputs.neuzugaenge != true && inputs.approved_catchup != true) }}
         run: |
           set -euo pipefail
           N=quant/data/market/security-master
@@ -162,6 +165,7 @@ jobs:
           # Elliott-Registry, Backtest-Tests) verweist. Wieder eingeschaltet erst, wenn die Forschung private Kopien (R2) liest.
 
       - name: Gate (fail closed)
+        if: ${{ !(github.event_name == 'workflow_dispatch' && !inputs.zeitplan && inputs.umfangsfolgen == true && inputs.erweiterung == '' && inputs.neuzugaenge != true && inputs.approved_catchup != true) }}
         id: gate
         env:
           IN_APPROVED: ${{ inputs.approved_catchup }}
@@ -318,7 +322,7 @@ jobs:
         run: gh workflow run research.yml --ref main -f teil=etf-universum -f nur_zusatz=true
 
       - name: Ergebnis
-        if: steps.gate.outputs.decision != 'COMMIT'
+        if: ${{ !(github.event_name == 'workflow_dispatch' && !inputs.zeitplan && inputs.umfangsfolgen == true && inputs.erweiterung == '' && inputs.neuzugaenge != true && inputs.approved_catchup != true) && steps.gate.outputs.decision != 'COMMIT' }}
         run: |
           echo "::error::Gate BLOCKED: Produktuniversum nicht uebernommen (Bericht im Artefakt und in der Zusammenfassung)."
           exit 1

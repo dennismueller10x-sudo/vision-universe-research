@@ -138,3 +138,16 @@ test("UF-6 · die Umfangsfolge sichert jede zu loeschende Reihe privat, bevor si
   }
   assert.match(b, /VU_HISTORY_S3_BUCKET/, "ohne Speicherzugang keine Sicherung");
 });
+
+test("UF-7 · nur Umfangsfolgen: committete Eignung, keine Neuberechnung und kein Abruf; die Neuberechnung bleibt fail closed (21.11.2026)", () => {
+  const st = steps(OWNER_SRC), by = (re) => st.find((x) => re.test(x.name));
+  const nur = /!\(github\.event_name == 'workflow_dispatch' && !inputs\.zeitplan && inputs\.umfangsfolgen == true && inputs\.erweiterung == '' && inputs\.neuzugaenge != true && inputs\.approved_catchup != true\)/;
+  assert.match(by(/^Neuer Stand/).body, nur, "Neuer Stand laeuft bei reinem Nachziehen nicht (kein Verzeichnisabruf)");
+  assert.match(by(/^Gate/).body, nur, "Gate laeuft bei reinem Nachziehen nicht");
+  assert.match(by(/^Ergebnis/).body, nur, "ohne Gate keine Fehlmeldung");
+  const folgen = st.find((x) => /--prune-only/.test(x.body));
+  assert.match(folgen.body, /inputs\.umfangsfolgen == true/, "der Folge-Schritt laeuft mit umfangsfolgen");
+  assert.doesNotMatch(folgen.body, /RUNNER_TEMP\/elig\//, "der Folge-Schritt liest nicht den neu gerechneten Stand");
+  /* Eine Erweiterung, die Dauerregel oder eine Freigabeliste rechnen immer neu und gehen durchs Gate. */
+  assert.match(by(/^Erweiterung/).body, /inputs\.erweiterung != '' \|\| inputs\.neuzugaenge == true \|\| github\.event_name == 'workflow_run'/);
+});
