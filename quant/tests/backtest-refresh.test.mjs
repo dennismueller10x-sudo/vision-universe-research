@@ -4,8 +4,9 @@ import {createRequire} from 'node:module';
 import fs from 'node:fs';
 import {join,resolve,dirname} from 'node:path';
 import {tmpdir} from 'node:os';
+import { researchSeriesRoot } from "../../scripts/quant/lib/data-fixture.mjs";
 const require=createRequire(import.meta.url),{materialize}=require('../../scripts/quant/materialize-real-backtest-read.cjs'),{rollback}=require('../../scripts/quant/rollback-real-backtest.cjs'),{refresh}=require('../../scripts/quant/refresh-real-backtest.cjs');
-const root=resolve(import.meta.dirname,'../..'),folder=fs.mkdtempSync(join(tmpdir(),'vu-refresh-')),fixture=join(folder,'source'),output=join(folder,'private');
+const root=researchSeriesRoot(),/* B2c */folder=fs.mkdtempSync(join(tmpdir(),'vu-refresh-')),fixture=join(folder,'source'),output=join(folder,'private');
 /* Junge Notierung der Klasse C: ANDG (Stammaktie seit 17.12.2025) statt AAAC. AAAC ist ein ETF (Columbia AAA CLO ETF),
    seit der Eignung vom 05.11.2026 belegt aus dem Produktuniversum genommen; seine Reihe wird nicht mehr veroeffentlicht. */
 const ids=['ref_NVDA','ref_MSFT','ref_XOM','ref_ARM','ref_AAPL','ref_BGC','ref_ANDG','ref_AACT'];
