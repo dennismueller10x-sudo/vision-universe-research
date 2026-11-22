@@ -321,3 +321,6 @@
 #el-detail .ew-home{display:flex;align-items:center;justify-content:space-between;min-height:52px;color:var(--ew-ink);font-size:15px;font-weight:800;text-decoration:none}
 #el-detail .ew-home:after{content:"›";font-size:22px;font-weight:700;color:var(--ew-mut)}
 #el-detail .ew-end .ew-end-l{margin-top:16px}
+
+/* Leitmärkte (Elliott-Neustart Schritt 2): kein Aktienbild in anderen Modulen, keine Verweise auf Aktienseiten */
+main[data-market] .vu-sothers{display:none}

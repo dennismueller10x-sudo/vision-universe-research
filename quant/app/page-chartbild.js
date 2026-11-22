@@ -648,6 +648,7 @@
     /* Leitmarkt (Elliott-Neustart Schritt 2): Name und Quelle statt Aktienkopf; kein Tageskurs aus dem Aktiendienst. */
     if (a.market) {
       if (ctx && ctx.names) ctx.names[ticker] = a.market.name;
+      main.dataset.market = a.market.id;   // Elliott-Bild ohne Aktien-Verweise (elliott/wellen.css, elliott/aktie.js)
       headHost.replaceChildren(el("h1", { class: "qx-h1 cb-name", text: a.market.name }), el("p", { class: "cb-small cb-dim", text: a.market.via + (a.market.source && a.market.source.attribution ? " · " + a.market.source.attribution : "") }));
       head = { setPrice: function () {}, setCurrent: function () {} }; dailySet = true;
     }
