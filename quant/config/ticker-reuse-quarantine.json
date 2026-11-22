@@ -536,6 +536,126 @@
         "pageName": "WuXi PharmaTech Cayman Inc. ADR"
       },
       "resolution": "Freigabe zurueckziehen, sobald der Stamm das neue Listing unter der securityId fuehrt (dann ordnet die Eignung den ETF regulaer ein) oder eine eigene Identitaet nach ADR-001 besteht."
+    },
+    {
+      "securityId": "ref_DINE",
+      "ticker": "DINE",
+      "action": "IDENTITY_QUARANTINED",
+      "finding": "TICKER_REUSED_BY_ETF",
+      "historicIdentity": {
+        "name": "REWARDS NETWORK INC",
+        "nameSource": "TIINGO_METADATA",
+        "providerRow": {
+          "exchange": "NASDAQ",
+          "assetType": "Stock",
+          "priceCurrency": "USD",
+          "startDate": "2001-01-02",
+          "endDate": "2011-01-03"
+        },
+        "masterStatus": "us-security-master-1.3.0: tiingo:NASDAQ:DINE:2001-01-02 INACTIVE bis 2011-01-03 (Zeile der alten Aktie); der Stamm fuehrt unter ref_DINE ZUSAETZLICH die neue ETF-Zeile tiingo:NASDAQ:DINE:2026-05-05 (Eignung nimmt die alte Aktienzeile)"
+      },
+      "currentInstrument": {
+        "providerRow": {
+          "exchange": "NASDAQ",
+          "assetType": "ETF",
+          "priceCurrency": "USD",
+          "startDate": "2026-05-05",
+          "endDate": "2026-11-19"
+        },
+        "secCompanyTickers": "nicht gefuehrt (ETF bzw. kein operatives Unternehmen unter dem Ticker)"
+      },
+      "ownSeries": {
+        "file": "quant/data/market/discover-series/ref_DINE.json",
+        "from": "2026-05-05",
+        "to": "2026-11-20"
+      },
+      "masterBinding": "BOTH_ROWS_UNDER_SECURITY_ID",
+      "productBefore": {
+        "eligibility": "REVIEW",
+        "instrumentType": "EQUITY_COMMON",
+        "pageName": "Rewards Network"
+      },
+      "resolution": "Freigabe zurueckziehen, sobald der Stamm die beiden Zeilen unter getrennten securityIds fuehrt (ADR-001) oder die Eignung die aktive Zeile einordnet; der Abgang der alten Aktienzeile aus dem Produkt folgt ueber eine Freigabeliste der Eignung."
+    },
+    {
+      "securityId": "ref_LQ",
+      "ticker": "LQ",
+      "action": "IDENTITY_QUARANTINED",
+      "finding": "TICKER_REUSED_BY_ETF",
+      "historicIdentity": {
+        "name": "La Quinta Holdings Inc",
+        "nameSource": "TIINGO_METADATA",
+        "providerRow": {
+          "exchange": "NASDAQ",
+          "assetType": "Stock",
+          "priceCurrency": "USD",
+          "startDate": "2014-04-09",
+          "endDate": "2018-05-31"
+        },
+        "masterStatus": "us-security-master-1.3.0: tiingo:NASDAQ:LQ:2014-04-09 INACTIVE bis 2018-05-31 (Zeile der alten Aktie); der Stamm fuehrt unter ref_LQ ZUSAETZLICH die neue ETF-Zeile tiingo:NASDAQ:LQ:2026-05-05 (Eignung nimmt die alte Aktienzeile)"
+      },
+      "currentInstrument": {
+        "providerRow": {
+          "exchange": "NASDAQ",
+          "assetType": "ETF",
+          "priceCurrency": "USD",
+          "startDate": "2026-05-05",
+          "endDate": "2026-11-19"
+        },
+        "secCompanyTickers": "nicht gefuehrt (ETF bzw. kein operatives Unternehmen unter dem Ticker)"
+      },
+      "ownSeries": {
+        "file": "quant/data/market/discover-series/ref_LQ.json",
+        "from": "2026-05-05",
+        "to": "2026-11-20"
+      },
+      "masterBinding": "BOTH_ROWS_UNDER_SECURITY_ID",
+      "productBefore": {
+        "eligibility": "REVIEW",
+        "instrumentType": "EQUITY_COMMON",
+        "pageName": "La Quinta Holdings"
+      },
+      "resolution": "Freigabe zurueckziehen, sobald der Stamm die beiden Zeilen unter getrennten securityIds fuehrt (ADR-001) oder die Eignung die aktive Zeile einordnet; der Abgang der alten Aktienzeile aus dem Produkt folgt ueber eine Freigabeliste der Eignung."
+    },
+    {
+      "securityId": "ref_LMNX",
+      "ticker": "LMNX",
+      "action": "IDENTITY_QUARANTINED",
+      "finding": "TICKER_REUSED_BY_ETF",
+      "historicIdentity": {
+        "name": "Luminex Corp",
+        "nameSource": "TIINGO_METADATA",
+        "providerRow": {
+          "exchange": "NASDAQ",
+          "assetType": "Stock",
+          "priceCurrency": "USD",
+          "startDate": "2000-04-06",
+          "endDate": "2021-07-14"
+        },
+        "masterStatus": "us-security-master-1.3.0: tiingo:NASDAQ:LMNX:2000-04-06 INACTIVE bis 2021-07-14 (Zeile der alten Aktie); der Stamm fuehrt unter ref_LMNX ZUSAETZLICH die neue ETF-Zeile tiingo:NASDAQ:LMNX:2025-10-16 (Eignung nimmt die alte Aktienzeile)"
+      },
+      "currentInstrument": {
+        "providerRow": {
+          "exchange": "NASDAQ",
+          "assetType": "ETF",
+          "priceCurrency": "USD",
+          "startDate": "2025-10-16",
+          "endDate": "2026-11-19"
+        },
+        "secCompanyTickers": "nicht gefuehrt (ETF bzw. kein operatives Unternehmen unter dem Ticker)"
+      },
+      "ownSeries": {
+        "file": "quant/data/market/discover-series/ref_LMNX.json",
+        "from": "2025-10-27",
+        "to": "2026-11-20"
+      },
+      "masterBinding": "BOTH_ROWS_UNDER_SECURITY_ID",
+      "productBefore": {
+        "eligibility": "REVIEW",
+        "instrumentType": "EQUITY_COMMON",
+        "pageName": "Luminex"
+      },
+      "resolution": "Freigabe zurueckziehen, sobald der Stamm die beiden Zeilen unter getrennten securityIds fuehrt (ADR-001) oder die Eignung die aktive Zeile einordnet; der Abgang der alten Aktienzeile aus dem Produkt folgt ueber eine Freigabeliste der Eignung."
     }
   ],
   "notWithheld": [
@@ -547,5 +667,5 @@
       "reason": "Dieselbe Emittentin, kein fremdes Wertpapier: nicht zurueckgehalten. Offen: Name (Splash -> Endovia) und Verknuepfung der neuen Anbieterzeile im Stamm (eigener Erzeuger-PR)."
     }
   ],
-  "decidedAt": "2026-10-31"
+  "decidedAt": "2026-11-22"
 }
