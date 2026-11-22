@@ -22,7 +22,7 @@ test('Story-Website: alle Produkte, Originalsymbole, Datenstand, keine fremden Q
   }
   assert.match(index,/Bald im App Store und bei Google Play/);
   assert.match(index,/Stand \d{2}\.\d{2}\.\d{4}/,'Beispielwerte nennen ihren Datenstand');
-  assert.match(index,/<!--NEWS:hero-->[\s\S]+<!--\/NEWS:hero-->/);
+  assert.match(index,/<!--NEWS:pubs-->[\s\S]+<!--\/NEWS:pubs-->/);assert.match(index,/<!--NEWS:tv-->[\s\S]+<!--\/NEWS:tv-->/);
   for(const path of ['index.html',...SITE_PAGES]){
     const html=await readFile(resolve(output,path),'utf8');
     assert.doesNotMatch(html,/<style\b|<script(?![^>]*\bsrc=)[^>]*>/,`${path}: kein Inline-Stil oder -Skript (CSP)`);
