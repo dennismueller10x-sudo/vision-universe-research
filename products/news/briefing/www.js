@@ -312,18 +312,24 @@
     return { dot: pick(/<span class="dot">[\s\S]*?<\/svg><\/span>/), soon: pick(/<p class="soon">[\s\S]*?<\/p>/), stores: pick(/<div class="stores">[\s\S]*?<\/p><\/div>/) };
   }
 
-  /* Teaser für die Startseite (Region <!--MB:teaser--> in landing/index.html). */
-  function teaser(b, href) {
+  /* Teaser für die Startseite (Region <!--MB:teaser--> in landing/index.html; Owner 22.11.2026: „Karten zum Wischen“).
+     Schlagzeile, Knopf zur Produktseite und eine Reihe mit Titelblatt und den ersten Karten der Ausgabe; jede Karte
+     führt an ihre Stelle im Briefing. Die Startseite teasert nur an, alles Weitere steht auf /marktbriefing/. */
+  var RAIL = 5;
+  function teaser(b, href, img) {
     var C = {}; b.cards.forEach(function (c) { C[c.id] = c; });
-    var IX = {}; (C.indices ? C.indices.bars.rows : []).forEach(function (r) { IX[r.label] = r.value; });
-    var chips = ["Nasdaq 100", "S&P 500", "Dow Jones"].filter(function (n) { return IX[n] != null; }).map(function (n) { return "<i>" + esc(n) + "<em>" + pct(IX[n]) + "</em></i>"; });
-    if (C.megacaps) chips.push("<i>" + esc(C.megacaps.bars.rows[0].label) + "<em>" + pct(C.megacaps.bars.rows[0].value) + "</em></i>");
-    return '<a class="mbt" href="' + href + '"><span class="mbt-k">Marktbriefing · Börsenschluss ' + dmy(b.session) + b.session.slice(0, 4) + '</span><b class="mbt-h">' + esc(C.overview.title) + '</b><span class="mbt-c">' + chips.join("") + '</span><span class="mbt-go">Briefing ansehen →</span></a>';
+    var ed = href + b.session + "/", cards = (img && img.cards) || [], n = cards.length + (img && img.cover ? 1 : 0);
+    var items = (img && img.cover ? '<a class="mbt-card mbt-cover" href="' + ed + '"><img src="' + ed + img.cover + '" alt="Titelblatt des Marktbriefings: ' + esc(C.overview.title) + '" loading="lazy" width="1112" height="1572"><span>Neu</span></a>' : "") +
+      cards.slice(0, RAIL).map(function (c) { return '<a class="mbt-card" href="' + ed + "#" + c.anchor + '"><img src="' + ed + c.file + '" alt="' + esc(c.title) + '" loading="lazy" width="1080" height="1350"></a>'; }).join("") +
+      (n ? '<a class="mbt-card mbt-all" href="' + ed + '"><b>Alle ' + n + " Karten</b><span>im Briefing ansehen →</span></a>" : "");
+    return '<div class="mbt"><div class="mbt-head"><p class="mbt-k"><i aria-hidden="true"></i>Marktbriefing · Börsenschluss ' + dmy(b.session) + b.session.slice(0, 4) + '</p>' +
+      '<b class="mbt-h">' + esc(C.overview.title) + '</b><a class="mbt-go" href="' + href + '">Briefing ansehen <span aria-hidden="true">→</span></a></div>' +
+      (items ? '<div class="mbt-rail">' + items + "</div>" : "") + "</div>";
   }
-  function withTeaser(indexHtml, b) {
+  function withTeaser(indexHtml, b, img) {
     var a = "<!--MB:teaser-->", z = "<!--/MB:teaser-->", i = indexHtml.indexOf(a), j = indexHtml.indexOf(z);
     if (i < 0 || j < i) return indexHtml;
-    return indexHtml.slice(0, i + a.length) + teaser(b, "./marktbriefing/") + indexHtml.slice(j);
+    return indexHtml.slice(0, i + a.length) + teaser(b, "./marktbriefing/", img) + indexHtml.slice(j);
   }
 
   var api = { page: page, scenes: scenes, chromeFrom: chromeFrom, productPage: productPage, partsFrom: partsFrom, teaser: teaser, withTeaser: withTeaser, SITE: SITE };
