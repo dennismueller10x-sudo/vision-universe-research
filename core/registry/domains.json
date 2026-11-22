@@ -70,7 +70,7 @@
       "critical": false,
       "artifact": "/quant/data/universe/cik-map.json",
       "timestamp": ["generatedAt"],
-      "role": "Kuerzel -> CIK aus der SEC-Tickerliste; Quelle von cik und issuerId im Company Master. Veraltet sie, bekommen neue Kuerzel keine issuerId (13.09.-22.11.2026: 24 Produkttitel, u. a. alle Kuerzelwechsel-Nachfolger).",
+      "role": "Kuerzel -> CIK aus der SEC-Tickerliste; Quelle von cik und issuerId im Company Master. Veraltet sie, bekommen neue Kuerzel keine issuerId (13.09.-22.11.2026: 24 Produkttitel, u. a. alle Kuerzelwechsel-Nachfolger). Neue Notierung an einem Emittenten mit Produktkuerzel nur mit Nachfolge-Beleg, sonst PENDING_SUCCESSION_EVIDENCE (successionGuard.pending, Warnung im Lauf).",
       "producer": "scripts/universe/build-cik-map.mjs",
       "workflow": "universe-master.yml (Job sync)",
       "schedule": "woechentlich Mi 11:23 UTC ueber den Wecker (core/registry/schedule.json universe-master-sync), nach security-master-weekly",
