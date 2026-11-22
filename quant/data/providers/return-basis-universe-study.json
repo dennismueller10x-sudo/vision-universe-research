@@ -1,6 +1,6 @@
 {
  "schemaVersion": "return-basis-universe-study-1.0.0",
- "generatedAt": "2026-11-22T15:15:25.000Z",
+ "generatedAt": "2026-11-22T22:47:02.000Z",
  "versions": {
   "study_logic": "1.0.0",
   "return_series": "vu-return-series-1.0.0",
@@ -1749,9 +1749,9 @@
  "dataFreshnessFindings": [],
  "publishedBasis": {
   "artefact": "quant/data/product/factor-evidence-v1",
-  "entries": 5938,
+  "entries": 5937,
   "priceBasisCounts": {
-   "close": 5938
+   "close": 5937
   },
   "measuredQuantV2MomentumBasis": "MIXED_OR_UNCONFIRMED"
  },
@@ -3813,9 +3813,9 @@
     "publishedEvidenceLagDays": 0,
     "excludedForLateFundamentals": 0,
     "limitation": null,
-    "SIMULATION_FIDELITY_TOTAL_VS_PUBLISHED": 0.932807,
-    "SIMULATION_FIDELITY_PRICE_VS_PUBLISHED": 0.941052,
-    "publishedScored": 5435,
+    "SIMULATION_FIDELITY_TOTAL_VS_PUBLISHED": 0.933195,
+    "SIMULATION_FIDELITY_PRICE_VS_PUBLISHED": 0.940121,
+    "publishedScored": 4853,
     "simulatedScoredOnPrice": 5516,
     "simulatedScoredOnTotal": 5516,
     "momentumScoreShift": {
@@ -3831,11 +3831,11 @@
    "STRATEGY_IMPACT": {
     "momentum-leader": {
      "label": "Momentum Leader",
-     "MEMBERS_ON_PRICE_RETURN": 362,
-     "MEMBERS_ON_TOTAL_RETURN": 352,
+     "MEMBERS_ON_PRICE_RETURN": 363,
+     "MEMBERS_ON_TOTAL_RETURN": 353,
      "LEAVING": 18,
      "ENTERING": 8,
-     "MEMBERSHIP_CHURN_SHARE": 0.0718,
+     "MEMBERSHIP_CHURN_SHARE": 0.0716,
      "leavingExamples": [
       "MSFT",
       "FDX",
@@ -3861,11 +3861,11 @@
     },
     "quality-momentum": {
      "label": "Quality Momentum",
-     "MEMBERS_ON_PRICE_RETURN": 49,
-     "MEMBERS_ON_TOTAL_RETURN": 47,
+     "MEMBERS_ON_PRICE_RETURN": 44,
+     "MEMBERS_ON_TOTAL_RETURN": 42,
      "LEAVING": 3,
      "ENTERING": 1,
-     "MEMBERSHIP_CHURN_SHARE": 0.0816,
+     "MEMBERSHIP_CHURN_SHARE": 0.0909,
      "leavingExamples": [
       "CTS",
       "GL",
@@ -3877,25 +3877,25 @@
     },
     "future-leader": {
      "label": "Future Leader",
-     "MEMBERS_ON_PRICE_RETURN": 19,
+     "MEMBERS_ON_PRICE_RETURN": 18,
      "MEMBERS_ON_TOTAL_RETURN": 17,
-     "LEAVING": 2,
+     "LEAVING": 1,
      "ENTERING": 0,
-     "MEMBERSHIP_CHURN_SHARE": 0.1053,
+     "MEMBERSHIP_CHURN_SHARE": 0.0556,
      "leavingExamples": [
-      "SHOP",
-      "COCO"
+      "SHOP"
      ],
      "enteringExamples": []
     },
     "value-momentum": {
      "label": "Value Momentum",
      "MEMBERS_ON_PRICE_RETURN": 222,
-     "MEMBERS_ON_TOTAL_RETURN": 220,
-     "LEAVING": 7,
+     "MEMBERS_ON_TOTAL_RETURN": 219,
+     "LEAVING": 8,
      "ENTERING": 5,
-     "MEMBERSHIP_CHURN_SHARE": 0.0541,
+     "MEMBERSHIP_CHURN_SHARE": 0.0586,
      "leavingExamples": [
+      "C",
       "BC",
       "AZZ",
       "DIOD",
@@ -12164,5 +12164,5 @@
   "METHODOLOGY_DECISION_READY": "FAIL",
   "QUANT_V2_MOMENTUM_RETURN_BASIS": "PENDING_METHOD_DECISION"
  },
- "runtimeMs": 43811
+ "runtimeMs": 24304
 }
