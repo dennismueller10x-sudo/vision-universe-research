@@ -11,8 +11,8 @@
      - joinBars: Vorgaenger-Bars vor dem Stichtag + Nachfolger-Bars ab dem Stichtag
 
    Quelle ist ausschliesslich das Register quant/config/ticker-successions.json.
-   Regel: gleiche CIK in beiden Zeilen und ein zitierter Beleg (SEC-8-K oder
-   Boersenmeldung) - ohne beides kein Eintrag. Die Datei steht bewusst neben
+   Regel: gleiche CIK in beiden Zeilen und ein zitierter Beleg (SEC-8-K, bei
+   Auslandsemittenten SEC-6-K, oder Boersenmeldung) - ohne beides kein Eintrag. Die Datei steht bewusst neben
    identity.js und fuegt der Identitaetsregel nichts hinzu: Supertrader pinnt den
    Hash von core/identity.js (wie bei core/issuer-alias.js).
 
@@ -28,7 +28,7 @@
   "use strict";
 
   var VERSION = "core-ticker-succession-1.0.0";
-  var SOURCE_TYPES = { SEC_8K: true, EXCHANGE_NOTICE: true };
+  var SOURCE_TYPES = { SEC_8K: true, SEC_6K: true, EXCHANGE_NOTICE: true };
 
   function isSecurityId(id) { return typeof id === "string" && /^ref_[A-Z0-9_]{1,24}$/.test(id); }
   function isDate(d) { return typeof d === "string" && /^\d{4}-\d{2}-\d{2}$/.test(d); }
@@ -45,7 +45,7 @@
       if (typeof e.cik !== "string" || !/^\d{10}$/.test(e.cik)) fail("CIK fehlt bei " + e.from);
       var s = e.source || {};
       if (!SOURCE_TYPES[s.type]) fail("Belegart fehlt bei " + e.from);
-      if (s.type === "SEC_8K" && !/^\d{10}-\d{2}-\d{6}$/.test(s.accession || "")) fail("8-K ohne Accession bei " + e.from);
+      if ((s.type === "SEC_8K" || s.type === "SEC_6K") && !/^\d{10}-\d{2}-\d{6}$/.test(s.accession || "")) fail((s.type === "SEC_6K" ? "6-K" : "8-K") + " ohne Accession bei " + e.from);
       if (!isDate(s.filed) || s.filed > e.effective) fail("Beleg muss vor dem Stichtag eingereicht sein: " + e.from);
       if (out[e.from]) fail("zwei Nachfolger fuer " + e.from);
       if (heads[e.to]) fail("zwei Vorgaenger fuer " + e.to);
