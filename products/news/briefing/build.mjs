@@ -7,6 +7,10 @@
 //   node products/news/briefing/build.mjs --out <ordner>         schreibt in <ordner> (Tests)
 //   node products/news/briefing/build.mjs --radar <datei>        Themen Dritter (Radar), sonst news/marktbriefing/radar/<sitzung>.json
 //   node products/news/briefing/build.mjs --now <ISO>            fester Zeitpunkt (Tests)
+//   node products/news/briefing/build.mjs --www <landing-ordner>  schreibt zusätzlich die Seite für www.visionuniverse.de:
+//        <landing>/marktbriefing/index.html (neueste Ausgabe) und <landing>/marktbriefing/<sitzung>/index.html (Archiv);
+//        Kopf, Menü und Fuß kommen aus <landing>/news/index.html. Mit --pdf zusätzlich marktbriefing.pdf und vorschau.png
+//        (Playwright nötig; nur die neueste Ausgabe, feste Adressen).
 //
 // Ist das Briefing nicht frisch (engine: fresh.ok = false), wird nichts geschrieben; Exit-Code 3 mit Begründung.
 import fs from 'node:fs';
@@ -19,6 +23,7 @@ const root = path.resolve(here, '../../..');
 const require = createRequire(import.meta.url);
 const Engine = require('./engine.js');
 const Render = require('./render.js');
+const Www = require('./www.js');
 
 export const MEGACAPS = ['NVDA', 'MSFT', 'AAPL', 'AMZN', 'META', 'AVGO', 'GOOGL', 'ORCL'];
 export const SERIES = ['SPY', 'QQQ', 'DIA', 'IWM', 'FEZ', 'EEM', 'N225', 'US2Y', 'US5Y', 'US10Y', 'US30Y', 'DE10Y', 'XAUUSD', 'XAGUSD', 'BTCUSD'];
@@ -66,6 +71,25 @@ export function writeBriefing(briefing, outRoot) {
   return files;
 }
 
+/* Seite auf www: neueste Ausgabe unter /marktbriefing/, jede Ausgabe zusätzlich unter /marktbriefing/<sitzung>/. */
+export function writeWww(briefing, landingDir, { pdf = null, image = null } = {}) {
+  const dir = path.join(landingDir, 'marktbriefing');
+  const chrome = Www.chromeFrom(fs.readFileSync(path.join(landingDir, 'news/index.html'), 'utf8'));
+  fs.mkdirSync(path.join(dir, briefing.session), { recursive: true });
+  const archive = fs.readdirSync(dir).filter((f) => /^\d{4}-\d{2}-\d{2}$/.test(f)).sort().reverse();
+  const latest = archive[0];
+  const files = [];
+  const put = (rel, html) => { const f = path.join(dir, rel); fs.mkdirSync(path.dirname(f), { recursive: true }); fs.writeFileSync(f, html); files.push(f); };
+  // PDF und Vorschaubild gibt es nur für die neueste Ausgabe (feste Adressen, überschrieben je Lauf); Archivseiten ohne beides.
+  put(briefing.session + '/index.html', Www.page(briefing, { chrome, archive, latest, depth: 2, pdf: null, image: null }));
+  if (briefing.session === latest) {
+    put('index.html', Www.page(briefing, { chrome, archive, latest, depth: 1, pdf, image }));
+    const home = path.join(landingDir, 'index.html');
+    if (fs.existsSync(home)) { const before = fs.readFileSync(home, 'utf8'), after = Www.withTeaser(before, briefing); if (after !== before) { fs.writeFileSync(home, after); files.push(home); } }
+  }
+  return files;
+}
+
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const dataRoot = path.resolve(arg('--data') || root);
   const outRoot = path.resolve(arg('--out') || root);
@@ -77,6 +101,22 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
     process.exit(3);
   }
   const files = writeBriefing(briefing, outRoot);
+  if (arg('--www')) {
+    const landing = path.resolve(arg('--www'));
+    let pdf = null, image = null;
+    if (process.argv.includes('--pdf')) {
+      // PDF und Vorschaubild (Karte 1) mit Playwright; fehlt es, entsteht die Seite ohne beides.
+      try {
+        const { writePdf } = await import('./pdf.mjs');
+        await writePdf(briefing, path.join(landing, 'marktbriefing/marktbriefing.pdf'), { png: path.join(landing, 'marktbriefing/.vorschau') });
+        fs.renameSync(path.join(landing, 'marktbriefing/.vorschau/karte-01.png'), path.join(landing, 'marktbriefing/vorschau.png'));
+        fs.rmSync(path.join(landing, 'marktbriefing/.vorschau'), { recursive: true, force: true });
+        pdf = 'marktbriefing.pdf'; image = '/marktbriefing/vorschau.png';
+        files.push(path.join(landing, 'marktbriefing/marktbriefing.pdf'), path.join(landing, 'marktbriefing/vorschau.png'));
+      } catch (e) { console.error('PDF übersprungen: ' + e.message); }
+    }
+    files.push(...writeWww(briefing, landing, { pdf, image }));
+  }
   console.log('Marktbriefing ' + briefing.session + ': ' + briefing.cards.length + ' Karten (' +
     Object.entries(briefing.counts).map(([k, v]) => k + ' ' + v).join(', ') + '), ' + files.length + ' Dateien' +
     (briefing.dropped.length ? '; verworfen: ' + briefing.dropped.map((d) => d.reason).join('; ') : ''));

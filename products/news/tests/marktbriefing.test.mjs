@@ -171,3 +171,61 @@ test('MB-7 Build mit --data/--out schreibt nur in den Zielordner; nicht frisch -
   assert.ok(!fs.existsSync(out));
   fs.rmSync(tmp, { recursive: true });
 });
+
+const Www = require('../briefing/www.js');
+const CHROME = '<html><body data-x="1"><vu-navigation></vu-navigation><script src="/assets/site-navigation.js"></script><header class="nav"><a href="../news/" aria-current="page">News</a><a href="../marktbriefing/">Marktbriefing</a></header><main id="inhalt">x</main><footer>F</footer>\n</body></html>';
+
+test('MB-8 Kurzfassung: Sätze mit Datum und Zahlen, nur aus den Karten', () => {
+  const b = Engine.buildBriefing(inputs());
+  assert.ok(b.summary.length >= 4);
+  assert.match(b.summary[0], /^Am Freitag, 20\. November 2026 verloren der Nasdaq 100 /);
+  assert.ok(b.summary.some((s) => /von 5\.233 US-Aktien schlossen im Minus/.test(s)));
+  const ctx = b.cards.find((c) => c.id === 'context');
+  assert.ok(ctx.timeline.episodes.length >= 2);
+  assert.equal(ctx.timeline.episodes[ctx.timeline.episodes.length - 1].current, true);
+});
+
+test('MB-9 www-Seite: alles im HTML, CSP-tauglich, strukturierte Daten, Navigation aus der News-Seite', () => {
+  const b = Engine.buildBriefing(inputs());
+  const chrome = Www.chromeFrom(CHROME);
+  assert.ok(!/vu-navigation|site-navigation/.test(chrome.top), 'research-Navigation entfernt');
+  assert.match(chrome.top, /href="\.\.\/marktbriefing\/" aria-current="page"/);
+  assert.ok(!/href="\.\.\/news\/" aria-current/.test(chrome.top));
+  const html = Www.page(b, { chrome, archive: [SESSION], latest: SESSION, depth: 1, pdf: 'marktbriefing.pdf', image: '/marktbriefing/vorschau.png' });
+  assert.match(html, /<h1 class="mb-claim mb-h1">/);
+  assert.match(html, /<ol class="mb-sum"><li>Am Freitag, 20\. November 2026/);
+  assert.match(html, /<link rel="canonical" href="https:\/\/www\.visionuniverse\.de\/marktbriefing\/">/);
+  assert.match(html, /<meta name="robots" content="noindex, nofollow">/, 'Landing-Build schaltet erst in Produktion auf index');
+  // CSP der Website: kein ausführbares Inline-Skript, kein <style>-Block.
+  for (const m of html.matchAll(/<script(?![^>]*\bsrc=)([^>]*)>/g)) assert.match(m[1], /type="application\/(ld\+)?json"/, 'Inline-Skript: ' + m[0]);
+  assert.ok(!/<style[\s>]/.test(html));
+  const ld = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((m) => JSON.parse(m[1]));
+  assert.equal(ld[0]['@type'], 'NewsArticle');
+  assert.equal(ld[1]['@type'], 'BreadcrumbList');
+  assert.equal((html.match(/<template data-mb-card=/g) || []).length, b.cards.length);
+  assert.match(html, /href="marktbriefing\.pdf" download/);
+  assert.ok(!/tiingo|#ff5a4e/i.test(html));
+  const deep = Www.page(b, { chrome, archive: [SESSION, '2026-11-19'], latest: SESSION, depth: 2 });
+  assert.match(deep, /href="\.\.\/\.\.\/web\/site\.css"/);
+  assert.ok(!/download>PDF/.test(deep), 'Archivseiten ohne PDF');
+});
+
+test('MB-10 Startseiten-Teaser ersetzt nur seine Region', () => {
+  const b = Engine.buildBriefing(inputs());
+  const home = 'A<p>Heute neu</p>\n<!--MB:teaser-->alt<!--/MB:teaser-->\n<!--NEWS:hero-->N<!--/NEWS:hero-->Z';
+  const out = Www.withTeaser(home, b);
+  assert.match(out, /<!--MB:teaser--><a class="mbt" href="\.\/marktbriefing\/">/);
+  assert.ok(out.endsWith('\n<!--NEWS:hero-->N<!--/NEWS:hero-->Z'));
+  assert.equal(Www.withTeaser('ohne Region', b), 'ohne Region');
+});
+
+test('MB-11 Website-Build findet Ausgabe und Archiv', async () => {
+  const { marktbriefingPages } = await import('../../../landing/scripts/build.mjs');
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'mbl-'));
+  assert.deepEqual(await marktbriefingPages(tmp), []);
+  fs.mkdirSync(path.join(tmp, 'marktbriefing/2026-11-19'), { recursive: true });
+  fs.mkdirSync(path.join(tmp, 'marktbriefing/2026-11-20'), { recursive: true });
+  for (const f of ['marktbriefing/index.html', 'marktbriefing/2026-11-19/index.html', 'marktbriefing/2026-11-20/index.html']) fs.writeFileSync(path.join(tmp, f), 'x');
+  assert.deepEqual(await marktbriefingPages(tmp), ['marktbriefing/index.html', 'marktbriefing/2026-11-20/index.html', 'marktbriefing/2026-11-19/index.html']);
+  fs.rmSync(tmp, { recursive: true });
+});
