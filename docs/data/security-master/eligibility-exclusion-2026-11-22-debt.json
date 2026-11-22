@@ -1,0 +1,245 @@
+{
+ "status": "FREIGEGEBEN",
+ "statusNote": "Steuerung 22.11.2026: belegte Schuldtitel aus dem Produkt (Diagnose der unexplained_adjustment_step-Sperren: regelmaessige Kuponspruenge ohne gemeldete Dividende). Dazu HONG ELIGIBLE -> REVIEW aus dem Stamm (UNCONFIRMED:LISTING_INACTIVE, bleibt im Produkt). Die 309 beendeten Notierungen aus B3 bleiben ausgeschlossen (apply-ended-listings Regel C, Fortschreibung).",
+ "schema": "vu-eligibility-catchup-1",
+ "id": "eligibility-exclusion-2026-11-22-debt",
+ "prevSha256": "6e6ca01cd3ed018097191936b1d4f5a4beb919c6a554c4b4611a2269c19af848",
+ "sourceRun": "lokal 22.11.2026 gegen main 38f7236c40a (Kette wie security-master-eligibility.yml, Register confirmed-non-equity.json)",
+ "productUniverseBefore": 6031,
+ "productUniverseAfter": 6024,
+ "counts": {
+  "changes": 8,
+  "leaveProduct": 7,
+  "enterProduct": 0
+ },
+ "leaveReasons": {
+  "CONFIRMED_NON_EQUITY:DEBT": 7
+ },
+ "enterReasons": {},
+ "impact": {
+  "discover": {
+   "before": 5514,
+   "removed": 1,
+   "addedWithPage": 0
+  },
+  "elliott": {
+   "before": 4901,
+   "removed": 6,
+   "addedWithPage": 0
+  },
+  "fundamental": {
+   "before": 5253,
+   "removed": 1,
+   "addedWithPage": 0
+  },
+  "hedgefonds": {
+   "before": 4503,
+   "removed": 0,
+   "addedWithPage": 0
+  },
+  "quant": {
+   "before": 6028,
+   "removed": 7,
+   "addedWithPage": 0
+  },
+  "supertrader": {
+   "before": 1587,
+   "removed": 0,
+   "addedWithPage": 0
+  },
+  "technical": {
+   "before": 5676,
+   "removed": 7,
+   "addedWithPage": 0
+  },
+  "technik": {
+   "before": 4901,
+   "removed": 6,
+   "addedWithPage": 0
+  }
+ },
+ "changes": [
+  {
+   "securityId": "ref_TVC",
+   "ticker": "TVC",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:DEBT"
+  },
+  {
+   "securityId": "ref_TVE",
+   "ticker": "TVE",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:DEBT"
+  },
+  {
+   "securityId": "ref_KTN",
+   "ticker": "KTN",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:TRUST",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:DEBT"
+  },
+  {
+   "securityId": "ref_GJO",
+   "ticker": "GJO",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:TRUST",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:DEBT"
+  },
+  {
+   "securityId": "ref_GJT",
+   "ticker": "GJT",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:TRUST",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:DEBT"
+  },
+  {
+   "securityId": "ref_RILYN",
+   "ticker": "RILYN",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:PREFERRED",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:DEBT"
+  },
+  {
+   "securityId": "ref_HONG",
+   "ticker": "HONG",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_TWOD",
+   "ticker": "TWOD",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:DEBT"
+  }
+ ],
+ "leave": [
+  {
+   "ticker": "TVC",
+   "securityId": "ref_TVC",
+   "reason": "CONFIRMED_NON_EQUITY:DEBT",
+   "products": [
+    "discover",
+    "elliott",
+    "fundamental",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "TVE",
+   "securityId": "ref_TVE",
+   "reason": "CONFIRMED_NON_EQUITY:DEBT",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "KTN",
+   "securityId": "ref_KTN",
+   "reason": "CONFIRMED_NON_EQUITY:DEBT",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "GJO",
+   "securityId": "ref_GJO",
+   "reason": "CONFIRMED_NON_EQUITY:DEBT",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "GJT",
+   "securityId": "ref_GJT",
+   "reason": "CONFIRMED_NON_EQUITY:DEBT",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "RILYN",
+   "securityId": "ref_RILYN",
+   "reason": "CONFIRMED_NON_EQUITY:DEBT",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "TWOD",
+   "securityId": "ref_TWOD",
+   "reason": "CONFIRMED_NON_EQUITY:DEBT",
+   "products": [
+    "quant",
+    "technical"
+   ]
+  }
+ ],
+ "enter": [],
+ "decidedBy": "Steuerung 22.11.2026: TVE, TWOD und die STRATS/CorTS/Notes sind belegt; DEBT ueber Freigabeliste, AX und BA vorab informiert. TVC ist dieselbe TVA-Anleihe (PARRS) wie TVE.",
+ "evidence": [
+  {
+   "securityId": "ref_TVC",
+   "ticker": "TVC",
+   "note": "TVA 10-K Geschaeftsjahr 2026 (0001376986-26-000041, tve-20260930.htm): \"TVA's Putable Automatic Rate Reset Securities (\\\"PARRS\\\") are traded on the NYSE under the exchange symbols \\\"TVC\\\" and \\\"TVE.\\\"\" Boersenverzeichnis: Name \"Tennessee Valley Authority\" ohne Klassenbeleg."
+  },
+  {
+   "securityId": "ref_TVE",
+   "ticker": "TVE",
+   "note": "TVA 10-K Geschaeftsjahr 2026 (0001376986-26-000041, tve-20260930.htm): PARRS an der NYSE unter \"TVC\" und \"TVE\" (Anleihen der Tennessee Valley Authority). Boersenverzeichnis: Name \"Tennessee Valley Authority\" ohne Klassenbeleg."
+  },
+  {
+   "securityId": "ref_KTN",
+   "ticker": "KTN",
+   "note": "Boersenverzeichnis (otherlisted): \"Structured Products Corp 8.205% CorTS 8.205% Corporate Backed Trust Securities (CorTS)\" - festverzinsliche, anleihebesicherte Trustpapiere. R2-Reihe: 100 Kuponspruenge."
+  },
+  {
+   "securityId": "ref_GJO",
+   "ticker": "GJO",
+   "note": "Boersenverzeichnis (otherlisted): \"Synthetic Fixed-Income Securities, Inc. on behalf of STRATS(SM) Trust for Wal-Mart Stores, Inc. Securities, Series 2004-5\" - durchgereichte Anleihe (STRATS-Trustzertifikat). R2-Reihe: 171 Kuponspruenge, keine gemeldete Dividende."
+  },
+  {
+   "securityId": "ref_GJT",
+   "ticker": "GJT",
+   "note": "Boersenverzeichnis (otherlisted): \"Synthetic Fixed-Income Securities, Inc. Floating Rate Structured Repackaged Asset-Backed Trust Securities Certificates, Series 2006-3\" - forderungsbesicherte Trustzertifikate. R2-Reihe: 129 Kuponspruenge."
+  },
+  {
+   "securityId": "ref_RILYN",
+   "ticker": "RILYN",
+   "note": "BRC Group Holdings, Inc. (vormals B. Riley Financial), 8-K vom 09.06.2026 (0001213900-26-066858), Section-12(b)-Tabelle: \"6.50% Senior Notes due 2026 RILYN Nasdaq Global Market\". Keine Verzeichniszeile; bisher als PREFERRED gefuehrt."
+  },
+  {
+   "securityId": "ref_TWOD",
+   "ticker": "TWOD",
+   "note": "Two Harbors Investment Corp., 8-K vom 28.07.2026 (0001465740-26-000029), Section-12(b)-Tabelle: \"9.375% Senior Notes Due 2030 TWOD New York Stock Exchange\". Keine Verzeichniszeile."
+  }
+ ]
+}

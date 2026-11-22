@@ -11,6 +11,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import zlib from 'node:zlib';
+import crypto from 'node:crypto';
 import { createRequire } from 'node:module';
 import { allocate, setSecurity, setTerminal, finalize, RECOVERY } from './market.mjs';
 
@@ -61,7 +62,7 @@ function loadRawByTicker(dir, wanted) {
 }
 
 export function loadMarket({ workDir, delistedDir = null, delistedRawDir = null, to = null, limit = 0, log = console.log }) {
-  const diagnostics = { jumps2to5: {}, delistedColumns: {} };
+  const diagnostics = { jumps2to5: {}, delistedColumns: {} }, delistedCik = new Map();
   const cal = loadCalendar(ROOT, to), T = cal.dates.length, dayIdx = new Map(cal.dates.map((d, i) => [d, i]));
   const counts = { current: 0, currentNoBars: 0, delisted: 0, delistedNoRaw: 0, dqExcluded: 0, loaded: 0 };
   const prepared = []; // [id, cols, terminal|null]
@@ -108,6 +109,7 @@ export function loadMarket({ workDir, delistedDir = null, delistedRawDir = null,
       if (dqJump(cols)) { counts.dqExcluded++; continue; }
       tally(diagnostics.jumps2to5, 'delistete Titel', cols);
       const kind = String(doc.listingLifecycle.terminal?.kind || 'UNKNOWN').toUpperCase();
+      delistedCik.set(doc.securityId, String(doc.listingLifecycle.cik ?? '').padStart(10, '0'));
       prepared.push([doc.securityId, cols, lastT >= 0 ? { t: lastT, recovery: RECOVERY[kind] ?? RECOVERY.UNKNOWN, kind } : null]);
     }
   }
@@ -116,7 +118,12 @@ export function loadMarket({ workDir, delistedDir = null, delistedRawDir = null,
   counts.loaded = prepared.length;
   log(`Markt: ${counts.loaded} Titel, ${T} Tage (${cal.dates[0]} … ${cal.dates.at(-1)}), ${JSON.stringify(counts)}`);
   log(`Datenprüfung: ${JSON.stringify(diagnostics)}`);
-  return { market: finalize(m, cal.spy), counts, diagnostics };
+  finalize(m, cal.spy);
+  // Fingerabdruck des Datenstands: gleiche Eingangsdaten -> gleicher Wert (Läufe vergleichbar, Datenänderungen sichtbar)
+  const h = crypto.createHash('sha256'); h.update(m.ids.join(',')); h.update(Buffer.from(m.c.buffer)); h.update(Buffer.from(m.rc.buffer));
+  diagnostics.dataFingerprint = h.digest('hex');
+  log(`Datenstand-Fingerabdruck: ${diagnostics.dataFingerprint}`);
+  return { market: m, counts, diagnostics, delistedCik };
 }
 
 /** Benchmarks (Gesamtrendite, Wochenpunkte) aus vorsorge/data/series/<SYM>.json. */

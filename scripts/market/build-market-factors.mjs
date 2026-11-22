@@ -32,6 +32,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 import { loadSuccessions, withPredecessor } from "./lib/ticker-succession-bars.mjs";
+import { loadAdjustmentStepEvidence } from "./lib/adjustment-step-evidence.mjs";
 
 const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -98,6 +99,8 @@ if (PRODUCT_UNIVERSE) {
   }
   universe = JSON.parse(readFileSync(universeFile, "utf8"));
 }
+/* Belegte Faktorspruenge (quant/config/adjustment-step-evidence.json, nur SPIN_OFF): erklaeren genau ihren Sprung. */
+const STEP_EVIDENCE = loadAdjustmentStepEvidence(root);
 const store = MarketStore.createMarketStore({
   root, providerId: "tiingo", workingDir: WORK_DIR || undefined
 });
@@ -188,7 +191,7 @@ for (const sec of universe.securities) {
      keine Faktoren. Faktoren auf einer als FAIL beurteilten Reihe waeren
      rechenbar und wertlos - und im Screener nicht von guten zu
      unterscheiden. */
-  const assessment = MarketQuality.assessSeries(payload, { today });
+  const assessment = MarketQuality.assessSeries(payload, { today, explainedSteps: STEP_EVIDENCE.get(sec.securityId) });
   if (assessment.status === "FAIL" || assessment.status === "UNAVAILABLE") {
     skipped.push({ ticker: sec.ticker, reason: assessment.status,
                    message: assessment.statusReason });

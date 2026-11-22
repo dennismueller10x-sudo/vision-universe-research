@@ -1,6 +1,7 @@
 // Strategie-Vorlagen (AP8 S1, docs/technical/STRATEGY_TEMPLATES_PLAN.md):
 // Definitionen gueltig, drei Zustaende je Kriterium (unbekannt zaehlt nie als erfuellt), Einordnung,
 // Ausbruchsrichtung, Gleichheit mit der Abfrage-Engine, Index-Zaehlung, Adressen, Laufzeit.
+import "../../scripts/quant/lib/frozen-data.mjs"; /* eingefrorener Datenstand (scripts/quant/lib/frozen-data.mjs, 22.11.2026) */
 import test from "node:test";
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";

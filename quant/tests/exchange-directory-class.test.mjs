@@ -150,3 +150,17 @@ test("ED10 · Register belegter Nicht-Aktien: ohne Verzeichniszeile bleibt der E
   for (const r of reg.values()) assert.ok(r.evidence && r.approval && /^ref_/.test(r.securityId), r.ticker + " ohne Beleg oder Freigabe");
   assert.ok(reg.has("ref_MEMY"));
 });
+
+test("ED11 · Register greift auch, wenn die heutige Verzeichniszeile nichts einstuft (TVA-Anleihen, 22.11.2026); eine einstufende Zeile entscheidet", () => {
+  const src = readFileSync(new URL("../../scripts/market/apply-exchange-directory.mjs", import.meta.url), "utf8");
+  assert.match(src, /const jRow = e \? judgeWithDirectory\(/);
+  assert.match(src, /const reg = !jRow && judgeWithRegister\(/);
+  const reg = loadConfirmedNonEquity(new URL("../..", import.meta.url).pathname);
+  const Identity = require("../../core/identity.js");
+  for (const t of ["TVC", "TVE", "TWOD", "RILYN", "GJO", "GJT", "KTN"]) {
+    const sid = Identity.securityIdForTicker(t), rec = reg.get(sid);
+    assert.ok(rec && rec.instrumentType === "DEBT" && rec.evidence && rec.approval, t);
+    const j = judgeWithRegister({ securityId: sid, ticker: t, instrument_type: "EQUITY_COMMON", product_eligibility: "ELIGIBLE", review_flags: [] }, rec);
+    assert.equal(j.next.product_eligibility, "EXCLUDED", t);
+  }
+});

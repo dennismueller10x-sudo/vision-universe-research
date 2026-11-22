@@ -35,6 +35,7 @@ import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync, readdirSync
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import { ohneKarte } from "./not-delivered.mjs";
 
 const require = createRequire(import.meta.url);
 const here = dirname(fileURLToPath(import.meta.url));
@@ -604,6 +605,9 @@ function buildRealUniverse(nameMap, goldenBars, compactSeries) {
     attachFundamentals(stock, FUNDAMENTALS.get(sec.ticker) || null);
     stocks.push(stock);
   }
+  /* Produkttitel ohne Karte nach Grund (scripts/discover/not-delivered.mjs): macht die Luecke zwischen Produkt und Discover sichtbar. */
+  const notDelivered = ohneKarte({ securities: universeSource.securities, delivered: new Set(stocks.map((x) => x.symbol)),
+    factorTickers, skipped: factors.skipped });
   const fundamentalsCoverage = {
     withFundamentals: stocks.filter((s) => s.signals.fundamentals).length,
     h3: stocks.filter((s) => s.fundamentalCapabilities && s.fundamentalCapabilities.HAS_FUNDAMENTALS_3Y).length,
@@ -619,6 +623,7 @@ function buildRealUniverse(nameMap, goldenBars, compactSeries) {
     universeSource: { source: universeSource.source, file: universeSource.file, version: universeSource.version,
                       counts: universeSource.counts, sha256: universeSource.sha256, handover: universeSource.handover },
     factorCoverage,
+    notDelivered,
     fundamentalsCoverage,
     consumerPolicy: Object.assign({}, consumerPolicy, { rule: "CONSUMER_INSTRUMENT_TYPES aus scripts/market/universe-source.mjs; identityStatus IDENTITY_QUARANTINED (quant/config/ticker-reuse-quarantine.json) ausgeschlossen" }),
     label: METHODOLOGY.universes.US_REAL.label,
@@ -2545,6 +2550,7 @@ const meta = {
     detailPages: detailSets.get(u.universeId).size,
     kurzhistorie: (KURZ_SEITEN.get(u.universeId) || []).length,
     factorCoverage: u.factorCoverage || null,
+    notDelivered: u.notDelivered || null,
     fundamentalsCoverage: u.fundamentalsCoverage || null,
     valuationContext: u.valuationContext || null,
     universeSource: u.universeSource ? { source: u.universeSource.source, file: u.universeSource.file,
