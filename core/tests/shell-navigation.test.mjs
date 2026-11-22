@@ -644,9 +644,9 @@ test('Portfolios: eigener Menueeintrag, Direktzugriff, Leiste mit Gruppen und De
 /* ───────── Rahmen genau nach Prototyp „App-Konzept 2“ (Owner 15.11.2026): Kopf, Menue, dunkler Standard, Schalter, Aktien-Vorschau ───────── */
 
 test('Kopf nach Prototyp: Welten-Wechsler als Pille, KI (neongrüner Funke), Suche, Profil mit Lime-Ring; ohne „i“ und Datums-Pille', () => {
-  const head = source.slice(source.indexOf('<header><div class="shell">'), source.indexOf('</header>'));
+  const head = source.slice(source.indexOf('<header><a class="skip"'), source.indexOf('</header>'));
   // Owner 16.11.2026: „das i würde ich rausmachen …“, „das Datum … auch ausblenden“; neuer Knopf KI vor Suche und Profil
-  const order = ['<button class="world mod" type="button" hidden aria-haspopup="true" aria-expanded="false" aria-controls="site-panel"><span class="hud mi"></span><span class="world-t"><span class="world-name"></span><small class="world-area"></small></span><svg class="chev"',
+  const order = ['<button class="world mod" type="button" hidden aria-haspopup="true" aria-expanded="false" aria-controls="site-panel"><span class="hud mi"></span><span class="world-t"><span class="world-name"></span> <small class="world-area"></small></span><svg class="chev"',
     '<a class="hb ki" href="/ask/?fokus=1" aria-label="Vision Universe KI fragen">${SPARK}<span class="ki-t" aria-hidden="true"><small>Vision Universe</small><b>KI</b></span></a>',
     '<button class="hb grid" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="site-panel" aria-label="Hauptmenü: alle Module">',
     '<a class="hb search" href="/discover/#/suche" aria-label="Aktie suchen">', '<a class="hb profile" href="/mein-dashboard/" aria-label="Mein Bereich">'];

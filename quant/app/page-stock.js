@@ -958,7 +958,7 @@
       ["zahlen", "Geschäftszahlen", "Umsatz, Marge, Bewertung · Zahlen", "bars"]];
     var opened = chapOpen(), host = el("div", { class: "qk-chaps qk-block", id: "kapitel" }), n = 0;
     /* Klickentwurf 17.11.2026: „Kapitel“ mit Anzahl rechts, die Kapitel als Zeilen einer Karte (Nummer im Kreis, Titel, Satz, Pfeil). */
-    host.innerHTML = '<div class="qk-sh"><h2>Kapitel</h2><button type="button" class="qk-all" aria-label="Alle Kapitel öffnen oder schließen"><span class="qk-all-n"></span> ' + U.glyph("next", 13) + "</button></div><div class=\"qk-tile qk-chap-list\"></div>";
+    host.innerHTML = '<div class="qk-sh"><h2>Kapitel</h2><button type="button" class="qk-all"><span class="qk-all-n"></span> ' + U.glyph("next", 13) + '<span class="vu-visually-hidden"> Kapitel: alle öffnen oder schließen</span></button></div><div class="qk-tile qk-chap-list"></div>';
     var allBtn = host.querySelector(".qk-all"), list = host.querySelector(".qk-chap-list");
     if (allBtn) allBtn.addEventListener("click", function () { var all = host.querySelectorAll("details.qk-chap"), open = Array.prototype.some.call(all, function (d) { return !d.open; }); all.forEach(function (d) { d.open = open; }); });
     CH.forEach(function (c) {
