@@ -26,6 +26,18 @@
     if (!box) return;
     box.textContent = text || '';
     box.setAttribute('data-kind', kind || 'info');
+    /* WCAG 3.3.1/4.1.3: Fehler werden sofort vorgelesen (alert) und hängen an den als ungültig markierten Feldern;
+       sonstige Meldungen bleiben höflich (status). Die Markierung fällt, sobald das Feld bearbeitet wird. */
+    var isError = kind === 'error';
+    box.setAttribute('role', isError ? 'alert' : 'status');
+    box.setAttribute('aria-live', isError ? 'assertive' : 'polite');
+    [].forEach.call(document.querySelectorAll('[aria-invalid="true"]'), function (f) {
+      if (isError) f.setAttribute('aria-describedby', 'ka-status');
+      if (!f.__kaClear) {
+        f.__kaClear = true;
+        f.addEventListener('input', function () { f.removeAttribute('aria-invalid'); f.removeAttribute('aria-describedby'); });
+      }
+    });
   }
   function busy(button, on) {
     if (!button) return;

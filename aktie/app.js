@@ -221,7 +221,7 @@
       };
       t.push('<div class="k-tile" style="width:250px"><div class="k-eb">Bewertung</div><div class="k-num k-mt4" style="font-size:30px">' + esc(v.valuation.word.replace(" als der Markt", "")) + '</div><div class="k-mt12">' + row(v.ticker, v.valuation.pe, true) + (v.valuation.median != null ? row("Markt", v.valuation.median, false) : "") + '</div><p class="k-sm k-sec k-b7 k-mt8">' + esc(v.valuation.sentence) + "</p></div>");
     }
-    return t.length ? sh("In " + (t.length === 3 ? "drei" : t.length === 2 ? "zwei" : "einem") + (t.length === 1 ? " Satz" : " Sätzen")) + '<div class="k-rail">' + t.join("") + "</div>" : "";
+    return t.length ? sh("In " + (t.length === 3 ? "drei" : t.length === 2 ? "zwei" : "einem") + (t.length === 1 ? " Satz" : " Sätzen")) + '<div class="k-rail" role="group" tabindex="0" aria-label="Kennzahlen in Sätzen">' + t.join("") + "</div>" : "";
   }
   function businessHtml(v) {
     if (!v.tracks.length) return "";

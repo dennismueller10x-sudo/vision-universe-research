@@ -227,7 +227,11 @@
       if (!b) return;
       var done = s[story.id] === story.rev;
       b.classList.toggle('is-seen', done);
-      b.setAttribute('aria-label', story.tagline + ' (' + story.product + ', ' + mmss(storyVideo(story)) + ')' + (done ? ', gesehen' : ', neu'));
+      /* WCAG 2.5.3: der Name kommt aus dem sichtbaren Inhalt (Titel, Welt, Dauer); nur der Stand steht als verstecktes Wort dahinter. */
+      b.removeAttribute('aria-label');
+      var st = b.querySelector('.wk-vh');
+      if (!st) { st = doc.createElement('span'); st.className = 'wk-vh'; b.appendChild(st); }
+      st.textContent = done ? ', gesehen' : ', neu';
     });
   }
 
@@ -393,7 +397,7 @@
     if (!homeStories.length) { host.hidden = true; return; }
     var seenMap = storySeen();
     host.innerHTML = homeStories.map(function (s) {
-      return '<div role="listitem"><button class="wk-story-b wk-tap' + (seenMap[s.id] === s.stamp ? ' is-seen' : '') + '" type="button" aria-haspopup="dialog" data-wk-story="' + esc(s.id) + '" aria-label="' + esc(s.label + ': kurz und aktuell') + '"><span class="wk-story-r"><span class="wk-story-i">' + storyArt(s, false) + '</span></span><span class="wk-story-t">' + esc(s.label) + '</span></button></div>';
+      return '<div role="listitem"><button class="wk-story-b wk-tap' + (seenMap[s.id] === s.stamp ? ' is-seen' : '') + '" type="button" aria-haspopup="dialog" data-wk-story="' + esc(s.id) + '"><span class="wk-story-r"><span class="wk-story-i">' + storyArt(s, false) + '</span></span><span class="wk-story-t">' + esc(s.label) + '</span><span class="wk-vh">: kurz und aktuell</span></button></div>';
     }).join(''); /* nur maskierte Werte */
     host.hidden = false;
     host.onclick = function (e) { var b = e.target.closest && e.target.closest('[data-wk-story]'); if (b) openHomeStory(b.getAttribute('data-wk-story')); };

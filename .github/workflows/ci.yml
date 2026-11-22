@@ -150,6 +150,8 @@ on:
       - 'supertrader/assets/**'
       - 'hedgefonds/app.*'
       - 'scripts/quality/shell-browser-qa.mjs'
+      - 'scripts/quality/a11y-axe-qa.mjs'
+      - 'scripts/quality/a11y-baseline.json'
       - 'scripts/quality/app-legal-menu-qa.mjs'
       - 'app/www/**'
       - 'scripts/quality/vu3-regression-qa.mjs'
@@ -233,6 +235,8 @@ on:
       - 'screener/*.css'
       - 'hedgefonds/app.*'
       - 'scripts/quality/shell-browser-qa.mjs'
+      - 'scripts/quality/a11y-axe-qa.mjs'
+      - 'scripts/quality/a11y-baseline.json'
       - 'scripts/quality/app-legal-menu-qa.mjs'
       - 'app/www/**'
       - 'scripts/quality/vu3-regression-qa.mjs'
@@ -2033,7 +2037,7 @@ jobs:
         run: node products/screener/producer/build-universe.mjs
       - name: Browser dependencies (Chromium und WebKit liegen im Image)
         run: |
-          npm install --prefix /tmp/shell-qa-deps --no-audit --no-fund playwright@1.56.1
+          npm install --prefix /tmp/shell-qa-deps --no-audit --no-fund playwright@1.56.1 axe-core@4.10.3
           node -e "const pw=require('/tmp/shell-qa-deps/node_modules/playwright');for(const b of [pw.chromium,pw.webkit])require('fs').accessSync(b.executablePath())"
       # Datenzweig vor dem Bau wie pages-release.yml (Plan Neustart §3): BRANCH_ONLY-Daten (z. B. marketPulse) liegen in main
       # nur eingefroren; ohne diesen Schritt prueft der Bau einen anderen Stand als die ausgelieferte Seite. Vertragstest DB-16.
@@ -2053,6 +2057,17 @@ jobs:
           trap 'kill "$server_pid" 2>/dev/null || true' EXIT
           for i in 1 2 3 4 5; do curl --fail --silent http://127.0.0.1:8765/quant/ > /dev/null && break; sleep 1; done
           node scripts/quality/shell-browser-qa.mjs --engine="$QA_ENGINE" --viewports="$QA_VIEWPORTS" --url=http://127.0.0.1:8765 --out="/tmp/shell-evidence/$QA_ENGINE"
+      - name: Barrierefreiheit (axe-core, WCAG 2.2 AA; hell/dunkel, Desktop und 390 px; Basis scripts/quality/a11y-baseline.json)
+        if: matrix.legal == 'chromium'
+        env:
+          PLAYWRIGHT_PATH: /tmp/shell-qa-deps/node_modules/playwright
+        run: |
+          mkdir -p /tmp/shell-evidence
+          node scripts/ci/static-server.mjs --dir="$RUNNER_TEMP/shell-release" --port=8766 > /tmp/shell-evidence/server-a11y.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for i in 1 2 3 4 5; do curl --fail --silent http://127.0.0.1:8766/quant/ > /dev/null && break; sleep 1; done
+          node scripts/quality/a11y-axe-qa.mjs --url=http://127.0.0.1:8766 --axe=/tmp/shell-qa-deps/node_modules/axe-core/axe.min.js --baseline=scripts/quality/a11y-baseline.json --strict --out=/tmp/shell-evidence/a11y
       - name: App-QA Rechtliches & Infos (App-Hülle mit CSP, App-UA, echter Tipp je Menüeintrag)
         if: matrix.legal != ''
         env:
