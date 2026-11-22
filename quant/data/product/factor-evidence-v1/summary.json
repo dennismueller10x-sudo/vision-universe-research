@@ -3,7 +3,7 @@
  "methodologyVersion": "vu-factor-evidence-2.0.0",
  "derivedFrom": "quant-v2.4.1",
  "changeMethodologyVersion": "vu-change-1.0.0",
- "generatedAt": "2026-11-22T09:45:55.000Z",
+ "generatedAt": "2026-11-22T15:33:39.000Z",
  "asOf": "2026-11-20",
  "publication": {
   "compositeAllowed": false,
@@ -33,51 +33,51 @@
   "version": "factor-band-2.0.0",
   "basis": "RELATIVE_POSITION",
   "universe": {
-   "quality": 4123,
-   "growth": 3365,
-   "momentum": 5457,
-   "value": 2782,
-   "profitability": 2560,
+   "quality": 3961,
+   "growth": 3262,
+   "momentum": 4871,
+   "value": 2723,
+   "profitability": 2414,
    "revisions": 0,
-   "risk": 5457
+   "risk": 4871
   },
   "scoreCuts": {
    "quality": {
-    "VERY_STRONG": 67.05,
-    "STRONG": 59.99,
-    "NEUTRAL": 49.87,
+    "VERY_STRONG": 66.77,
+    "STRONG": 59.63,
+    "NEUTRAL": 49.63,
     "WEAK": 41.81
    },
    "growth": {
-    "VERY_STRONG": 75.34,
-    "STRONG": 64.15,
-    "NEUTRAL": 46.85,
-    "WEAK": 36.9
+    "VERY_STRONG": 75.21,
+    "STRONG": 64,
+    "NEUTRAL": 46.89,
+    "WEAK": 36.81
    },
    "momentum": {
-    "VERY_STRONG": 82.01,
-    "STRONG": 69.94,
-    "NEUTRAL": 49.78,
-    "WEAK": 32.31
+    "VERY_STRONG": 82.45,
+    "STRONG": 70.86,
+    "NEUTRAL": 49.91,
+    "WEAK": 31.41
    },
    "value": {
-    "VERY_STRONG": 76.84,
-    "STRONG": 66.01,
-    "NEUTRAL": 49.3,
-    "WEAK": 37.87
+    "VERY_STRONG": 76.79,
+    "STRONG": 65.91,
+    "NEUTRAL": 49.12,
+    "WEAK": 37.8
    },
    "profitability": {
-    "VERY_STRONG": 81.88,
-    "STRONG": 68.92,
-    "NEUTRAL": 49.34,
-    "WEAK": 37.16
+    "VERY_STRONG": 81.56,
+    "STRONG": 68.86,
+    "NEUTRAL": 49.54,
+    "WEAK": 37.36
    },
    "revisions": null,
    "risk": {
-    "VERY_STRONG": 87.19,
-    "STRONG": 74.64,
-    "NEUTRAL": 49.98,
-    "WEAK": 30.9
+    "VERY_STRONG": 85.3,
+    "STRONG": 72.75,
+    "NEUTRAL": 48.47,
+    "WEAK": 29.96
    }
   },
   "minimumUniverse": 100,
@@ -514,126 +514,6 @@
    "window": "last 3 fiscal years",
    "input": "median(annualNetIncome/annualTotalAssets)"
   },
-  "REAL_ESTATE_TRUST:quality:equityToAssets": {
-   "label": "Eigenkapitalquote",
-   "weight": 0.3,
-   "direction": "higher",
-   "unit": "ratio",
-   "basis": null,
-   "note": null,
-   "window": "latest filing",
-   "input": "stockholdersEquity/totalAssets"
-  },
-  "REAL_ESTATE_TRUST:quality:dividendCoverageByOcf": {
-   "label": "Ausschüttung gedeckt vom operativen Zahlungsfluss",
-   "weight": 0.3,
-   "direction": "higher",
-   "unit": "ratio",
-   "basis": null,
-   "note": "Operativer Zahlungsfluss der letzten zwoelf Monate je gezahlter Jahresausschuettung. Die Ausschuettung kommt aus der Jahresreihe, weil die Exporte fuer sie kein TTM-Fenster fuehren.",
-   "window": "TTM over latest fiscal year",
-   "input": "operatingCashFlowTTM/annualDividendsPaid"
-  },
-  "REAL_ESTATE_TRUST:quality:roaStability5y": {
-   "label": "Schwankung der Rendite auf die Bilanzsumme",
-   "weight": 0.2,
-   "direction": "lower",
-   "unit": "ratio",
-   "basis": null,
-   "note": "Median der absoluten Abweichungen der jaehrlichen Rendite auf die Bilanzsumme von ihrem eigenen Median, ueber bis zu fuenf Geschaeftsjahre und erst ab vier.",
-   "window": "last 5 fiscal years; minimum 4",
-   "input": "medianAbsoluteDeviation(annualNetIncome/annualTotalAssets)"
-  },
-  "REAL_ESTATE_TRUST:quality:positiveEarningsYears": {
-   "label": "Jahre mit Gewinn",
-   "weight": 0.2,
-   "direction": "higher",
-   "unit": "count",
-   "basis": null,
-   "note": null,
-   "window": "last 5 fiscal years; minimum 4",
-   "input": "count(annualNetIncome>0)"
-  },
-  "REAL_ESTATE_TRUST:value:cashFlowYield": {
-   "label": "Operativer Zahlungsfluss je Börsenwert",
-   "weight": 0.35,
-   "direction": "higher",
-   "unit": "ratio",
-   "basis": null,
-   "note": null,
-   "window": "TTM",
-   "input": "operatingCashFlowTTM/marketCap"
-  },
-  "REAL_ESTATE_TRUST:value:bookToMarket": {
-   "label": "Eigenkapital je Börsenwert",
-   "weight": 0.25,
-   "direction": "higher",
-   "unit": "ratio",
-   "basis": null,
-   "note": null,
-   "window": "latest filing",
-   "input": "stockholdersEquity/marketCap"
-  },
-  "REAL_ESTATE_TRUST:value:dividendYield": {
-   "label": "Ausschüttung je Börsenwert",
-   "weight": 0.25,
-   "direction": "higher",
-   "unit": "ratio",
-   "basis": null,
-   "note": null,
-   "window": "latest fiscal year",
-   "input": "annualDividendsPaid/marketCap"
-  },
-  "REAL_ESTATE_TRUST:value:earningsYield": {
-   "label": "Gewinn je Börsenwert",
-   "weight": 0.15,
-   "direction": "higher",
-   "unit": "ratio",
-   "basis": null,
-   "note": null,
-   "window": "TTM",
-   "input": "netIncomeTTM/marketCap"
-  },
-  "REAL_ESTATE_TRUST:profitability:cashReturnOnAssets": {
-   "label": "Operativer Zahlungsfluss je Bilanzsumme",
-   "weight": 0.35,
-   "direction": "higher",
-   "unit": "ratio",
-   "basis": null,
-   "note": null,
-   "window": "TTM",
-   "input": "operatingCashFlowTTM/averageTotalAssets"
-  },
-  "REAL_ESTATE_TRUST:profitability:roaMedian3y": {
-   "label": "Rendite auf die Bilanzsumme, Median 3 Jahre",
-   "weight": 0.25,
-   "direction": "higher",
-   "unit": "ratio",
-   "basis": null,
-   "note": null,
-   "window": "last 3 fiscal years",
-   "input": "median(annualNetIncome/annualTotalAssets)"
-  },
-  "REAL_ESTATE_TRUST:profitability:ocfMarginTtm": {
-   "label": "Operativer Zahlungsfluss je Umsatz",
-   "weight": 0.25,
-   "direction": "higher",
-   "unit": "ratio",
-   "basis": null,
-   "note": null,
-   "window": "TTM, same period end",
-   "input": "operatingCashFlowTTM/revenueTTM"
-  },
-  "REAL_ESTATE_TRUST:profitability:roaTtm": {
-   "label": "Rendite auf die Bilanzsumme",
-   "weight": 0.15,
-   "direction": "higher",
-   "unit": "ratio",
-   "basis": null,
-   "note": null,
-   "window": "TTM",
-   "input": "netIncomeTTM/averageTotalAssets"
-  },
   "BALANCE_SHEET_FINANCIAL:quality:equityToAssets": {
    "label": "Eigenkapitalquote",
    "weight": 0.3,
@@ -753,6 +633,126 @@
    "note": "Vorsteuerergebnis je durchschnittlicher Bilanzsumme. Ohne Steuerwirkung vergleichbar, wenn zwei Haeuser unterschiedlich besteuert werden.",
    "window": "TTM",
    "input": "pretaxIncomeTTM/averageTotalAssets"
+  },
+  "REAL_ESTATE_TRUST:quality:equityToAssets": {
+   "label": "Eigenkapitalquote",
+   "weight": 0.3,
+   "direction": "higher",
+   "unit": "ratio",
+   "basis": null,
+   "note": null,
+   "window": "latest filing",
+   "input": "stockholdersEquity/totalAssets"
+  },
+  "REAL_ESTATE_TRUST:quality:dividendCoverageByOcf": {
+   "label": "Ausschüttung gedeckt vom operativen Zahlungsfluss",
+   "weight": 0.3,
+   "direction": "higher",
+   "unit": "ratio",
+   "basis": null,
+   "note": "Operativer Zahlungsfluss der letzten zwoelf Monate je gezahlter Jahresausschuettung. Die Ausschuettung kommt aus der Jahresreihe, weil die Exporte fuer sie kein TTM-Fenster fuehren.",
+   "window": "TTM over latest fiscal year",
+   "input": "operatingCashFlowTTM/annualDividendsPaid"
+  },
+  "REAL_ESTATE_TRUST:quality:roaStability5y": {
+   "label": "Schwankung der Rendite auf die Bilanzsumme",
+   "weight": 0.2,
+   "direction": "lower",
+   "unit": "ratio",
+   "basis": null,
+   "note": "Median der absoluten Abweichungen der jaehrlichen Rendite auf die Bilanzsumme von ihrem eigenen Median, ueber bis zu fuenf Geschaeftsjahre und erst ab vier.",
+   "window": "last 5 fiscal years; minimum 4",
+   "input": "medianAbsoluteDeviation(annualNetIncome/annualTotalAssets)"
+  },
+  "REAL_ESTATE_TRUST:quality:positiveEarningsYears": {
+   "label": "Jahre mit Gewinn",
+   "weight": 0.2,
+   "direction": "higher",
+   "unit": "count",
+   "basis": null,
+   "note": null,
+   "window": "last 5 fiscal years; minimum 4",
+   "input": "count(annualNetIncome>0)"
+  },
+  "REAL_ESTATE_TRUST:value:cashFlowYield": {
+   "label": "Operativer Zahlungsfluss je Börsenwert",
+   "weight": 0.35,
+   "direction": "higher",
+   "unit": "ratio",
+   "basis": null,
+   "note": null,
+   "window": "TTM",
+   "input": "operatingCashFlowTTM/marketCap"
+  },
+  "REAL_ESTATE_TRUST:value:bookToMarket": {
+   "label": "Eigenkapital je Börsenwert",
+   "weight": 0.25,
+   "direction": "higher",
+   "unit": "ratio",
+   "basis": null,
+   "note": null,
+   "window": "latest filing",
+   "input": "stockholdersEquity/marketCap"
+  },
+  "REAL_ESTATE_TRUST:value:dividendYield": {
+   "label": "Ausschüttung je Börsenwert",
+   "weight": 0.25,
+   "direction": "higher",
+   "unit": "ratio",
+   "basis": null,
+   "note": null,
+   "window": "latest fiscal year",
+   "input": "annualDividendsPaid/marketCap"
+  },
+  "REAL_ESTATE_TRUST:value:earningsYield": {
+   "label": "Gewinn je Börsenwert",
+   "weight": 0.15,
+   "direction": "higher",
+   "unit": "ratio",
+   "basis": null,
+   "note": null,
+   "window": "TTM",
+   "input": "netIncomeTTM/marketCap"
+  },
+  "REAL_ESTATE_TRUST:profitability:cashReturnOnAssets": {
+   "label": "Operativer Zahlungsfluss je Bilanzsumme",
+   "weight": 0.35,
+   "direction": "higher",
+   "unit": "ratio",
+   "basis": null,
+   "note": null,
+   "window": "TTM",
+   "input": "operatingCashFlowTTM/averageTotalAssets"
+  },
+  "REAL_ESTATE_TRUST:profitability:roaMedian3y": {
+   "label": "Rendite auf die Bilanzsumme, Median 3 Jahre",
+   "weight": 0.25,
+   "direction": "higher",
+   "unit": "ratio",
+   "basis": null,
+   "note": null,
+   "window": "last 3 fiscal years",
+   "input": "median(annualNetIncome/annualTotalAssets)"
+  },
+  "REAL_ESTATE_TRUST:profitability:ocfMarginTtm": {
+   "label": "Operativer Zahlungsfluss je Umsatz",
+   "weight": 0.25,
+   "direction": "higher",
+   "unit": "ratio",
+   "basis": null,
+   "note": null,
+   "window": "TTM, same period end",
+   "input": "operatingCashFlowTTM/revenueTTM"
+  },
+  "REAL_ESTATE_TRUST:profitability:roaTtm": {
+   "label": "Rendite auf die Bilanzsumme",
+   "weight": 0.15,
+   "direction": "higher",
+   "unit": "ratio",
+   "basis": null,
+   "note": null,
+   "window": "TTM",
+   "input": "netIncomeTTM/averageTotalAssets"
   }
  },
  "snapshotHistory": {
@@ -804,9 +804,9 @@
   "recomputationDrift": {
    "asOf": "2026-11-20",
    "publishedHash": "704ca7dc218d40ca",
-   "recomputedHash": "bf1496dec520e7c2",
-   "rowsDiffering": 4258,
-   "rowsTotal": 5938,
+   "recomputedHash": "8c38ec556b214435",
+   "rowsDiffering": 5508,
+   "rowsTotal": 5937,
    "note": "Die veroeffentlichte Beobachtung bleibt unveraendert. Sie wurde an diesem Stichtag veroeffentlicht und wird nicht durch eine heutige Neuberechnung ersetzt."
   }
  },
@@ -815,7 +815,7 @@
   "priceFactors": {
    "engine": "market-factors-1.0.0",
    "generatedAt": "2026-11-20T23:38:11.385Z",
-   "securities": 5946,
+   "securities": 5945,
    "benchmark": {
     "id": "SPY",
     "bars": 8512,
@@ -833,7 +833,7 @@
   },
   "fundamentals": {
    "schema": "vu-consumer-fundamentals-1.0.0",
-   "issuersRead": 5184
+   "issuersRead": 5183
   },
   "peerTaxonomy": {
    "version": "sic-peer-taxonomy-1.0.0",
@@ -842,11 +842,11 @@
   },
   "quotes": {
    "source": "technical-product-artifact-1.0.0",
-   "tickers": 5998
+   "tickers": 5983
   },
   "productUniverse": {
    "file": "quant/data/market/security-master/eligibility.json",
-   "sha256": "d92ebc01e3b6352f0f47c31a6b5a870a2864debaa2ffdc32cc70ec4dbfdaa631"
+   "sha256": "9284ba47bdc131453a21d5d68c22b25456c13dc86ec9680e60090df12fbe8d2d"
   }
  },
  "notAnEquityListing": {
@@ -871,118 +871,119 @@
   ]
  },
  "counts": {
-  "productUniverse": 6011,
-  "priceFactorSecurities": 5946,
-  "priceFactorRowsOutsideProductUniverse": 14,
+  "productUniverse": 5996,
+  "priceFactorSecurities": 5945,
+  "priceFactorRowsOutsideProductUniverse": 15,
   "notAnEquityListing": 8,
   "identityQuarantined": 13,
-  "published": 5938,
-  "withFundamentals": 5327,
-  "withMarketCap": 3933,
+  "published": 5937,
+  "withFundamentals": 5326,
+  "withMarketCap": 3932,
   "quotesFromPublishedSeries": 532,
-  "withMarketCapFromPublishedSeries": 188
+  "withMarketCapFromPublishedSeries": 187
  },
  "factorStates": {
   "quality": {
-   "AVAILABLE": 4123,
-   "UNAVAILABLE": 1815,
-   "NOT_APPLICABLE": 0
+   "AVAILABLE": 3961,
+   "UNAVAILABLE": 1256,
+   "NOT_APPLICABLE": 720
   },
   "growth": {
-   "AVAILABLE": 3365,
-   "UNAVAILABLE": 2573,
-   "NOT_APPLICABLE": 0
+   "AVAILABLE": 3262,
+   "UNAVAILABLE": 1955,
+   "NOT_APPLICABLE": 720
   },
   "momentum": {
-   "AVAILABLE": 5457,
-   "UNAVAILABLE": 481,
-   "NOT_APPLICABLE": 0
+   "AVAILABLE": 4871,
+   "UNAVAILABLE": 346,
+   "NOT_APPLICABLE": 720
   },
   "value": {
-   "AVAILABLE": 2782,
-   "UNAVAILABLE": 3156,
-   "NOT_APPLICABLE": 0
+   "AVAILABLE": 2723,
+   "UNAVAILABLE": 2494,
+   "NOT_APPLICABLE": 720
   },
   "profitability": {
-   "AVAILABLE": 2560,
-   "UNAVAILABLE": 3378,
-   "NOT_APPLICABLE": 0
+   "AVAILABLE": 2414,
+   "UNAVAILABLE": 2803,
+   "NOT_APPLICABLE": 720
   },
   "revisions": {
    "AVAILABLE": 0,
-   "UNAVAILABLE": 5938,
+   "UNAVAILABLE": 5937,
    "NOT_APPLICABLE": 0
   },
   "risk": {
-   "AVAILABLE": 5457,
-   "UNAVAILABLE": 481,
-   "NOT_APPLICABLE": 0
+   "AVAILABLE": 4871,
+   "UNAVAILABLE": 346,
+   "NOT_APPLICABLE": 720
   }
  },
  "reasonCounts": {
-  "BLOCKED_EXTERNAL": 5938,
-  "INSUFFICIENT_COMPONENTS": 3770,
-  "INPUT_NOT_MATERIALIZED": 5687,
-  "INSUFFICIENT_WEIGHTED_COVERAGE": 1804,
+  "BLOCKED_EXTERNAL": 5937,
+  "INSUFFICIENT_COMPONENTS": 3333,
+  "INPUT_NOT_MATERIALIZED": 3595,
+  "INSUFFICIENT_WEIGHTED_COVERAGE": 1752,
   "REPORTING_CURRENCY_NOT_LISTING_CURRENCY": 360,
-  "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING": 248,
+  "NOT_IN_COMMON_STOCK_RANKING": 4320,
+  "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING": 145,
   "MANDATORY_COMPONENT_MISSING": 13,
   "SHARE_COUNT_SCALE_SUSPECT": 2
  },
  "componentCoverage": {
-  "quality:accrualRatio": 3241,
-  "quality:netDebtToAssets": 1902,
-  "quality:equityToAssets": 4366,
-  "quality:positiveFcfYears": 3442,
-  "quality:operatingMarginDrawdown": 3398,
-  "growth:revenueCagr3y": 3943,
-  "growth:epsCagr3y": 2004,
-  "growth:fcfCagr3y": 1945,
-  "growth:revenueGrowthTtmYoy": 3258,
-  "growth:operatingMarginExpansion3y": 3450,
-  "growth:revenueGrowthAcceleration": 4181,
-  "momentum:priceReturn12m1m": 5457,
-  "momentum:priceReturn6m": 5734,
-  "momentum:priceReturn3m": 5897,
-  "momentum:distanceTo52wHigh": 5460,
-  "momentum:distanceToSma200": 5552,
+  "quality:accrualRatio": 3140,
+  "quality:netDebtToAssets": 1881,
+  "quality:equityToAssets": 4173,
+  "quality:positiveFcfYears": 3415,
+  "quality:operatingMarginDrawdown": 3375,
+  "growth:revenueCagr3y": 3822,
+  "growth:epsCagr3y": 1928,
+  "growth:fcfCagr3y": 1880,
+  "growth:revenueGrowthTtmYoy": 3142,
+  "growth:operatingMarginExpansion3y": 3382,
+  "growth:revenueGrowthAcceleration": 4058,
+  "momentum:priceReturn12m1m": 4871,
+  "momentum:priceReturn6m": 5067,
+  "momentum:priceReturn3m": 5188,
+  "momentum:distanceTo52wHigh": 4874,
+  "momentum:distanceToSma200": 4941,
   "value:fcfYield": 2129,
-  "value:earningsYield": 2753,
-  "value:ebitdaYield": 963,
-  "value:salesYield": 1058,
-  "value:bookToMarket": 3259,
-  "profitability:roicTtm": 659,
-  "profitability:roicMedian3y": 535,
-  "profitability:grossProfitabilityTtm": 1965,
-  "profitability:operatingMarginTtm": 2539,
-  "profitability:fcfMarginTtm": 2348,
-  "profitability:roaTtm": 3266,
-  "risk:realizedVolatility252d": 5457,
-  "risk:downsideVolatility252d": 5460,
-  "risk:maxDrawdown252d": 5460,
-  "risk:beta252d": 5478,
-  "INDUSTRY:quality:equityToAssets": 861,
-  "INDUSTRY:quality:roaStability5y": 812,
-  "INDUSTRY:quality:positiveEarningsYears": 819,
-  "INDUSTRY:quality:dividendCoverageByOcf": 486,
-  "INDUSTRY:value:bookToMarket": 622,
-  "INDUSTRY:value:earningsYield": 591,
-  "INDUSTRY:value:pretaxEarningsYield": 409,
-  "INDUSTRY:value:dividendYield": 428,
-  "INDUSTRY:profitability:roaTtm": 745,
-  "INDUSTRY:profitability:roeTtm": 546,
-  "INDUSTRY:profitability:netMarginTtm": 105,
-  "INDUSTRY:profitability:roaMedian3y": 827,
-  "INDUSTRY:value:cashFlowYield": 152,
-  "INDUSTRY:profitability:cashReturnOnAssets": 187,
-  "INDUSTRY:profitability:ocfMarginTtm": 144,
-  "INDUSTRY:profitability:pretaxRoaTtm": 423
+  "value:earningsYield": 2719,
+  "value:ebitdaYield": 962,
+  "value:salesYield": 1054,
+  "value:bookToMarket": 3205,
+  "profitability:roicTtm": 656,
+  "profitability:roicMedian3y": 533,
+  "profitability:grossProfitabilityTtm": 1948,
+  "profitability:operatingMarginTtm": 2518,
+  "profitability:fcfMarginTtm": 2328,
+  "profitability:roaTtm": 3162,
+  "risk:realizedVolatility252d": 4871,
+  "risk:downsideVolatility252d": 4873,
+  "risk:maxDrawdown252d": 4874,
+  "risk:beta252d": 4886,
+  "INDUSTRY:quality:equityToAssets": 725,
+  "INDUSTRY:quality:roaStability5y": 680,
+  "INDUSTRY:quality:positiveEarningsYears": 687,
+  "INDUSTRY:quality:dividendCoverageByOcf": 391,
+  "INDUSTRY:value:bookToMarket": 563,
+  "INDUSTRY:value:earningsYield": 533,
+  "INDUSTRY:value:pretaxEarningsYield": 407,
+  "INDUSTRY:value:dividendYield": 378,
+  "INDUSTRY:profitability:roaTtm": 612,
+  "INDUSTRY:profitability:roeTtm": 495,
+  "INDUSTRY:profitability:netMarginTtm": 98,
+  "INDUSTRY:profitability:roaMedian3y": 694,
+  "INDUSTRY:profitability:pretaxRoaTtm": 381,
+  "INDUSTRY:value:cashFlowYield": 96,
+  "INDUSTRY:profitability:cashReturnOnAssets": 106,
+  "INDUSTRY:profitability:ocfMarginTtm": 87
  },
  "shards": 637,
  "screening": {
   "schemaVersion": "factor-evidence-screening-1.0.0",
   "namespace": "quantV2.factorEvidence",
-  "rows": 5938,
+  "rows": 5937,
   "fields": [
    "quantV2.factorEvidence.quality",
    "quantV2.factorEvidence.growth",
@@ -998,16 +999,15 @@
   {
    "id": "COMPONENT_INPUT_NARROW",
    "blocks": [
-    "INDUSTRY:profitability:cashReturnOnAssets (187)",
-    "INDUSTRY:profitability:netMarginTtm (105)",
-    "INDUSTRY:profitability:ocfMarginTtm (144)",
-    "INDUSTRY:profitability:pretaxRoaTtm (423)",
-    "INDUSTRY:profitability:roeTtm (546)",
-    "INDUSTRY:quality:dividendCoverageByOcf (486)",
-    "INDUSTRY:value:cashFlowYield (152)",
-    "INDUSTRY:value:dividendYield (428)",
-    "INDUSTRY:value:pretaxEarningsYield (409)",
-    "profitability:roicMedian3y (535)"
+    "INDUSTRY:profitability:cashReturnOnAssets (106)",
+    "INDUSTRY:profitability:netMarginTtm (98)",
+    "INDUSTRY:profitability:ocfMarginTtm (87)",
+    "INDUSTRY:profitability:pretaxRoaTtm (381)",
+    "INDUSTRY:profitability:roeTtm (495)",
+    "INDUSTRY:quality:dividendCoverageByOcf (391)",
+    "INDUSTRY:value:cashFlowYield (96)",
+    "INDUSTRY:value:dividendYield (378)",
+    "INDUSTRY:value:pretaxEarningsYield (407)"
    ],
    "owner": "the artifact that feeds the component",
    "detail": "Diese Komponenten sind offen, decken aber weniger als 10 % der bewerteten Titel ab. Sie tragen ihren Faktor nicht allein."
@@ -1037,7 +1037,7 @@
   }
  ],
  "gapCounts": {
-  "SHARE_COUNT_CONCEPT_KNOWN": 4747,
+  "SHARE_COUNT_CONCEPT_KNOWN": 4746,
   "IDENTITY_UNRESOLVED": 476,
   "REPORTING_CURRENCY_NOT_LISTING_CURRENCY": 502,
   "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING": 248,
@@ -1046,6 +1046,6 @@
   "SHARE_COUNT_SCALE_SUSPECT": 4,
   "NOT_AN_EQUITY_LISTING:PREFERRED": 8
  },
- "runtimeMs": 26622,
- "contentHash": "128533f973c6b309"
+ "runtimeMs": 27228,
+ "contentHash": "f6bb62092dfd2e09"
 }

@@ -67,3 +67,12 @@ test("CG-5: ausserhalb des Produkts und ohne vorigen Stand keine Pruefung", () =
   assert.equal(g.checked, false);
   assert.equal(by2.get("NEWB").cik, C2);
 });
+
+test("CG-6: CIK-Wechsel eines Produktkuerzels ohne Registereintrag behaelt die bisherige CIK", () => {
+  const by = new Map([["HOLD", { cik: C3, status: "RESOLVED" }]]);
+  const g = guardNewIssuerAttachments({ byTicker: by, previous: { HOLD: { cik: C1, status: "RESOLVED" } },
+                                        productTickers: ["HOLD"], successions: [] });
+  assert.equal(by.get("HOLD").cik, C1);
+  assert.equal(by.get("HOLD").status, PENDING);
+  assert.equal(g.pending[0].cikChange, true);
+});

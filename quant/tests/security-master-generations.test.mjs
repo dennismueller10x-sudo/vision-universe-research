@@ -101,7 +101,9 @@ test("MG-4 · Migration: simulierter Folgestand 1.3.0 im Produktpfad - Produkt f
       assert.equal(after.masterHash, SHA); assert.equal(after.masterGeneration, ID);
       const ids = [...new Set([...(after.identityEvidence ? after.identityEvidence.boundSecurityIds : []), "ref_NVDA", "ref_MSFT", "ref_INTC", "ref_KO"])].slice(0, 60);
       for (const id of ids) {
-        const out = (l) => { try { return JSON.stringify(l(id)); } catch (e) { return "ERR:" + e.message; } };
+        /* Fehlt eine Reihe (Titel hat das Produkt verlassen, z. B. INM 22.11.2026), unterscheiden sich die Meldungen nur
+           im Stammverzeichnis; verglichen wird ohne es. */
+        const out = (l) => { try { return JSON.stringify(l(id)); } catch (e) { return "ERR:" + e.message.split(tmp).join("<root>").split(ROOT).join("<root>"); } };
         assert.equal(out(after), out(before), id + " " + JSON.stringify(opts));
       }
     }

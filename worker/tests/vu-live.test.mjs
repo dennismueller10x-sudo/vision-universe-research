@@ -768,3 +768,24 @@ test("VL-D7 ein Browser von einer fremden Website (Sec-Fetch-Site) wird zusaetzl
     Object.assign({ "Sec-Fetch-Site": "same-site" }, GUTER_KOPF)), env);
   assert.equal(eigen.status, 101);
 });
+
+/* ------------------------------------------- Missbrauchsschutz (22.11.2026) */
+
+test("VL-SEC1 eine Verbindung kann nicht alle Plaetze belegen, Unsinn-Symbole werden abgelehnt", async () => {
+  const h = baue({ env: { MAX_SYMBOLS_PER_CLIENT: 3 } });
+  const ws = await verbinde(h);
+  await abonniere(h, ws, ["AAA", "BBB", "CCC", "DDD", "<script>", "A".repeat(40)]);
+  assert.equal(h.obj.manager.symbols().length, 3);
+  assert.equal(ws.mit("denied").filter((d) => d.reason === "clientSymbolLimit").length >= 1, true);
+  assert.equal(ws.mit("denied").filter((d) => d.reason === "invalidSymbol").length, 2);
+});
+
+test("VL-SEC3 falsche Typen in subscribe/unsubscribe werfen nicht", async () => {
+  const h = baue();
+  const ws = await verbinde(h);
+  ws.send(JSON.stringify({ op: "subscribe", symbols: 5 }));
+  ws.send(JSON.stringify({ op: "unsubscribe", symbols: { a: 1 } }));
+  await takte();
+  assert.equal(h.obj.clients.size, 1);
+  assert.deepEqual(h.obj.manager.symbols(), []);
+});

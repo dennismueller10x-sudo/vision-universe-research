@@ -1,6 +1,6 @@
 {
  "schemaVersion": "return-basis-input-audit-1.0.0",
- "generatedAt": "2026-11-22T09:27:27.000Z",
+ "generatedAt": "2026-11-22T15:14:41.000Z",
  "versions": {
   "audit_logic": "1.0.0"
  },
@@ -9,22 +9,22 @@
  "scope": "CANONICAL_HISTORY",
  "scopeNote": "Gelesen wurde der wiederhergestellte kanonische Barstore.",
  "counters": {
-  "CANONICAL_PRODUCT_UNIVERSE": 6024,
-  "CANONICAL_HISTORY_UNIVERSE": 6022,
-  "RAW_CLOSE_AVAILABLE": 6022,
-  "SPLIT_FACTOR_AVAILABLE": 6022,
-  "DIVIDEND_COLUMN_AVAILABLE": 6022,
-  "DIVIDEND_EVENTS_AVAILABLE": 2931,
-  "ADJUSTED_CLOSE_AVAILABLE": 6022,
-  "TRADING_DATES_AVAILABLE": 6022,
-  "ADJUSTMENT_STATUS_PRESENT": 6022,
-  "RETURN_BASIS_IDENTIFIABLE_UNIVERSE": 6022
+  "CANONICAL_PRODUCT_UNIVERSE": 6009,
+  "CANONICAL_HISTORY_UNIVERSE": 6007,
+  "RAW_CLOSE_AVAILABLE": 6007,
+  "SPLIT_FACTOR_AVAILABLE": 6007,
+  "DIVIDEND_COLUMN_AVAILABLE": 6007,
+  "DIVIDEND_EVENTS_AVAILABLE": 2928,
+  "ADJUSTED_CLOSE_AVAILABLE": 6007,
+  "TRADING_DATES_AVAILABLE": 6007,
+  "ADJUSTMENT_STATUS_PRESENT": 6007,
+  "RETURN_BASIS_IDENTIFIABLE_UNIVERSE": 6007
  },
  "bySource": {
-  "CANONICAL_STORE": 6022
+  "CANONICAL_STORE": 6007
  },
  "byAdjustmentStatus": {
-  "adjusted": 6022
+  "adjusted": 6007
  },
  "exclusions": {
   "NO_SERIES": 2
@@ -39,7 +39,7 @@
   "Energy": 8,
   "Utilities": 7,
   "Real Estate": 8,
-  "(unclassified)": 5922
+  "(unclassified)": 5907
  },
  "series": [
   {
@@ -6519,18 +6519,6 @@
    "to": "2026-11-20",
    "dividendEvents": 147,
    "splitEvents": 3,
-   "adjustmentStatus": "adjusted",
-   "source": "CANONICAL_STORE"
-  },
-  {
-   "securityId": "ref_MGPI",
-   "ticker": "MGPI",
-   "sector": "(unclassified)",
-   "bars": 9218,
-   "from": "1990-03-26",
-   "to": "2026-10-30",
-   "dividendEvents": 81,
-   "splitEvents": 2,
    "adjustmentStatus": "adjusted",
    "source": "CANONICAL_STORE"
   },
@@ -13095,18 +13083,6 @@
    "to": "2026-11-20",
    "dividendEvents": 90,
    "splitEvents": 0,
-   "adjustmentStatus": "adjusted",
-   "source": "CANONICAL_STORE"
-  },
-  {
-   "securityId": "ref_ACHV",
-   "ticker": "ACHV",
-   "sector": "(unclassified)",
-   "bars": 7819,
-   "from": "1995-10-13",
-   "to": "2026-11-09",
-   "dividendEvents": 0,
-   "splitEvents": 4,
    "adjustmentStatus": "adjusted",
    "source": "CANONICAL_STORE"
   },
@@ -20563,18 +20539,6 @@
    "source": "CANONICAL_STORE"
   },
   {
-   "securityId": "ref_TCBI",
-   "ticker": "TCBI",
-   "sector": "(unclassified)",
-   "bars": 5846,
-   "from": "2003-08-14",
-   "to": "2026-11-06",
-   "dividendEvents": 2,
-   "splitEvents": 0,
-   "adjustmentStatus": "adjusted",
-   "source": "CANONICAL_STORE"
-  },
-  {
    "securityId": "ref_AHT",
    "ticker": "AHT",
    "sector": "(unclassified)",
@@ -25483,18 +25447,6 @@
    "source": "CANONICAL_STORE"
   },
   {
-   "securityId": "ref_ANY",
-   "ticker": "ANY",
-   "sector": "(unclassified)",
-   "bars": 4585,
-   "from": "2008-06-24",
-   "to": "2026-09-15",
-   "dividendEvents": 0,
-   "splitEvents": 4,
-   "adjustmentStatus": "adjusted",
-   "source": "CANONICAL_STORE"
-  },
-  {
    "securityId": "ref_BTG",
    "ticker": "BTG",
    "sector": "(unclassified)",
@@ -25911,18 +25863,6 @@
    "to": "2026-11-20",
    "dividendEvents": 4,
    "splitEvents": 1,
-   "adjustmentStatus": "adjusted",
-   "source": "CANONICAL_STORE"
-  },
-  {
-   "securityId": "ref_VRME",
-   "ticker": "VRME",
-   "sector": "(unclassified)",
-   "bars": 4364,
-   "from": "2009-05-07",
-   "to": "2026-09-30",
-   "dividendEvents": 1,
-   "splitEvents": 3,
    "adjustmentStatus": "adjusted",
    "source": "CANONICAL_STORE"
   },
@@ -31507,18 +31447,6 @@
    "source": "CANONICAL_STORE"
   },
   {
-   "securityId": "ref_INM",
-   "ticker": "INM",
-   "sector": "(unclassified)",
-   "bars": 3142,
-   "from": "2014-05-05",
-   "to": "2026-11-06",
-   "dividendEvents": 0,
-   "splitEvents": 4,
-   "adjustmentStatus": "adjusted",
-   "source": "CANONICAL_STORE"
-  },
-  {
    "securityId": "ref_TOON",
    "ticker": "TOON",
    "sector": "(unclassified)",
@@ -34095,18 +34023,6 @@
    "to": "2026-11-20",
    "dividendEvents": 0,
    "splitEvents": 0,
-   "adjustmentStatus": "adjusted",
-   "source": "CANONICAL_STORE"
-  },
-  {
-   "securityId": "ref_AIXC",
-   "ticker": "AIXC",
-   "sector": "(unclassified)",
-   "bars": 2833,
-   "from": "2015-06-24",
-   "to": "2026-09-29",
-   "dividendEvents": 0,
-   "splitEvents": 4,
    "adjustmentStatus": "adjusted",
    "source": "CANONICAL_STORE"
   },
@@ -41203,18 +41119,6 @@
    "source": "CANONICAL_STORE"
   },
   {
-   "securityId": "ref_DOMO",
-   "ticker": "DOMO",
-   "sector": "(unclassified)",
-   "bars": 2069,
-   "from": "2018-06-29",
-   "to": "2026-09-23",
-   "dividendEvents": 0,
-   "splitEvents": 0,
-   "adjustmentStatus": "adjusted",
-   "source": "CANONICAL_STORE"
-  },
-  {
    "securityId": "ref_RPAY",
    "ticker": "RPAY",
    "sector": "(unclassified)",
@@ -41403,18 +41307,6 @@
    "to": "2026-11-20",
    "dividendEvents": 0,
    "splitEvents": 0,
-   "adjustmentStatus": "adjusted",
-   "source": "CANONICAL_STORE"
-  },
-  {
-   "securityId": "ref_ADIL",
-   "ticker": "ADIL",
-   "sector": "(unclassified)",
-   "bars": 2076,
-   "from": "2018-07-27",
-   "to": "2026-10-29",
-   "dividendEvents": 0,
-   "splitEvents": 2,
    "adjustmentStatus": "adjusted",
    "source": "CANONICAL_STORE"
   },
@@ -55663,18 +55555,6 @@
    "source": "CANONICAL_STORE"
   },
   {
-   "securityId": "ref_GNTA",
-   "ticker": "GNTA",
-   "sector": "(unclassified)",
-   "bars": 1226,
-   "from": "2021-12-15",
-   "to": "2026-11-03",
-   "dividendEvents": 0,
-   "splitEvents": 0,
-   "adjustmentStatus": "adjusted",
-   "source": "CANONICAL_STORE"
-  },
-  {
    "securityId": "ref_IOT",
    "ticker": "IOT",
    "sector": "(unclassified)",
@@ -63055,18 +62935,6 @@
    "source": "CANONICAL_STORE"
   },
   {
-   "securityId": "ref_EZRA",
-   "ticker": "EZRA",
-   "sector": "(unclassified)",
-   "bars": 210,
-   "from": "2026-01-23",
-   "to": "2026-11-20",
-   "dividendEvents": 0,
-   "splitEvents": 1,
-   "adjustmentStatus": "adjusted",
-   "source": "CANONICAL_STORE"
-  },
-  {
    "securityId": "ref_FACT",
    "ticker": "FACT",
    "sector": "(unclassified)",
@@ -64555,18 +64423,6 @@
    "source": "CANONICAL_STORE"
   },
   {
-   "securityId": "ref_HWH",
-   "ticker": "HWH",
-   "sector": "(unclassified)",
-   "bars": 671,
-   "from": "2024-01-08",
-   "to": "2026-09-10",
-   "dividendEvents": 0,
-   "splitEvents": 1,
-   "adjustmentStatus": "adjusted",
-   "source": "CANONICAL_STORE"
-  },
-  {
    "securityId": "ref_HXHX",
    "ticker": "HXHX",
    "sector": "(unclassified)",
@@ -65185,18 +65041,6 @@
    "bars": 109,
    "from": "2026-06-18",
    "to": "2026-11-20",
-   "dividendEvents": 0,
-   "splitEvents": 0,
-   "adjustmentStatus": "adjusted",
-   "source": "CANONICAL_STORE"
-  },
-  {
-   "securityId": "ref_KAZR",
-   "ticker": "KAZR",
-   "sector": "(unclassified)",
-   "bars": 454,
-   "from": "2025-01-23",
-   "to": "2026-11-11",
    "dividendEvents": 0,
    "splitEvents": 0,
    "adjustmentStatus": "adjusted",
@@ -67729,18 +67573,6 @@
    "bars": 95,
    "from": "2026-07-10",
    "to": "2026-11-20",
-   "dividendEvents": 0,
-   "splitEvents": 0,
-   "adjustmentStatus": "adjusted",
-   "source": "CANONICAL_STORE"
-  },
-  {
-   "securityId": "ref_PAPL",
-   "ticker": "PAPL",
-   "sector": "(unclassified)",
-   "bars": 702,
-   "from": "2023-11-01",
-   "to": "2026-10-23",
    "dividendEvents": 0,
    "splitEvents": 0,
    "adjustmentStatus": "adjusted",
@@ -70995,18 +70827,6 @@
    "to": "2026-11-20",
    "dividendEvents": 0,
    "splitEvents": 0,
-   "adjustmentStatus": "adjusted",
-   "source": "CANONICAL_STORE"
-  },
-  {
-   "securityId": "ref_VSME",
-   "ticker": "VSME",
-   "sector": "(unclassified)",
-   "bars": 772,
-   "from": "2023-09-27",
-   "to": "2026-10-23",
-   "dividendEvents": 0,
-   "splitEvents": 2,
    "adjustmentStatus": "adjusted",
    "source": "CANONICAL_STORE"
   },

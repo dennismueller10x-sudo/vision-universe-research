@@ -98,7 +98,7 @@ const VIEWS=['/quant/#/','/quant/#/meldungen','/quant/#/meldungen?filter=setups'
  '/quant/#/aktie/NVDA','/quant/#/aktie/AAPL','/quant/#/aktie/MSFT','/quant/#/aktie/JPM','/quant/#/aktie/O','/quant/#/aktie/AGNC',
  '/quant/#/aktie/ACAA','/quant/#/aktie/EDVA','/quant/#/aktie/ABTC','/quant/#/aktie/AHT-P-D','/quant/#/aktie/ALL-P-B','/quant/#/aktie/ABR-P-D',
  '/quant/#/aktie/GOOG','/quant/#/aktie/GOOGL','/quant/#/aktie/T','/quant/#/aktie/SO','/quant/#/aktie/AAAC',
- '/quant/#/aktie/AACI','/quant/#/aktie/ACGL','/quant/#/aktie/ABCB','/quant/#/aktie/WSBCO',
+ '/quant/#/aktie/AACI','/quant/#/aktie/ACGL','/quant/#/aktie/ABCB','/quant/#/aktie/WSBCO','/quant/#/aktie/WSBC',
  '/quant/#/aktie/ZZZZZ',
  '/elliott/#/NVDA','/elliott/#/AAPL?ansicht=profi','/quant/#/elliott/NVDA','/quant/#/aktie/NVDA/technik','/quant/#/aktie/NVDA/technik?elliott=1','/quant/#/aktie/NVDA/chartbild','/quant/#/aktie/AAPL/chartbild?ansicht=profi','/quant/#/chartlagen','/quant/#/aktie/NVDA/zahlen','/quant/#/aktie/JPM/zahlen',
  '/quant/#/vergleich/NVDA,MSFT','/quant/#/vergleich/AAPL,MSFT,GOOGL',
@@ -144,7 +144,9 @@ const LEGACY={
 const ABSAGE={'/quant/#/aktie/ZZZZZ':'Aktie nicht gefunden','/quant/#/gibtsnicht':'Diese Seite gibt es nicht'};
 const DATENREICH=['NVDA','AAPL','MSFT','JPM','O','T','SO','GOOG','GOOGL'];
 const DATENARM=['ACAA','EDVA','ABTC'];
-const BRANCHENVORLAGE=['JPM','O','WSBCO','ABCB'];
+/* WSBC statt WSBCO (22.11.2026): der Vorzug WSBCO rankt seit der Stammaktien-Grundgesamtheit (#2250) nicht mehr
+   und hat deshalb keine Branchenvorlage; die Bankvorlage zeigt die Stammaktie WSBC. */
+const BRANCHENVORLAGE=['JPM','O','WSBC','ABCB'];
 /* ZURUECKHALTUNG AUS DEN DATEN (04.10.2026).
    Ob ein Boersenwert zurueckgehalten wird, entscheidet die Materialisierung
    (marketCapReason SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING) - nicht diese
@@ -635,7 +637,7 @@ for(const width of [1440,390]){
     if(!satz)bad.push('BRANCHENVORLAGE_UNGENANNT');
     else{
      if(/[A-Z]{3,}_[A-Z_]{3,}/.test(satz))bad.push('CODE_VOR_DEM_SATZ');
-     if(stock==='WSBCO'&&!/Fassung|Version|v\d/.test(satz))bad.push('VORLAGE_OHNE_FASSUNG');
+     if(stock==='WSBC'&&!/Fassung|Version|v\d/.test(satz))bad.push('VORLAGE_OHNE_FASSUNG');
      console.log('     Branchenvorlage '+stock+': '+satz.slice(0,70));
     }
    }
