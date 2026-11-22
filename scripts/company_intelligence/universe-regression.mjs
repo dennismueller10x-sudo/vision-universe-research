@@ -21,11 +21,16 @@ export function approvedNonEquityPrune(cid,before,after,master){
   const matches=master.filter(r=>r.instrumentId===l.instrumentId||r.symbol===l.symbol);
   return matches.length===1&&matches[0].instrumentId===l.instrumentId&&matches[0].symbol===l.symbol
    &&matches[0].issuerId===cid&&cid==='iss_cik_'+matches[0].cik
-   &&['DEBT','ETN','RIGHT','WARRANT'].includes(matches[0].securityClass)
    &&matches[0].productEligibility==='EXCLUDED'
-   &&matches[0].productEligibilityReason==='CONFIRMED_NON_EQUITY:'+matches[0].securityClass;
+   &&(nonEquityExclusion(matches[0])||endedListingExclusion(matches[0]));
  });
 }
+// Zwei erklaerte Abgangsarten, beide nur aus dem Master gelesen (nie editiert): bestaetigt kein Eigenkapital
+// (CONFIRMED_NON_EQUITY:<Klasse>) oder bestaetigt beendete Notierung (Teil B3, eligibility-cleanup-2026-11-21:
+// CONFIRMED_LISTING_ENDED:MASTER_INACTIVE|ACQUISITION). Ein Abgang eines Teils der Notierungen eines weiter
+// zugelassenen Emittenten ist damit erklaert; Neuzugaenge, Ticker-/Emittentenwechsel und ID-Aenderungen bleiben gesperrt.
+const nonEquityExclusion=m=>['DEBT','ETN','RIGHT','WARRANT'].includes(m.securityClass)&&m.productEligibilityReason==='CONFIRMED_NON_EQUITY:'+m.securityClass;
+const endedListingExclusion=m=>/^CONFIRMED_LISTING_ENDED:(MASTER_INACTIVE|ACQUISITION)$/.test(String(m.productEligibilityReason));
 export function universeChanges(directory,previous,{masterRows}={}){
  const m=read(join(directory,'manifest.json')),prior=read(join(previous,'index.json'));
  const oldPaths={};

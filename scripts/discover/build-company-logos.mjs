@@ -35,7 +35,8 @@ import {
 } from "./company-logos-web.mjs";
 import {
   USER_AGENT, THUMB_WIDTH, SPARQL_BY_CIK, SPARQL_BY_TICKER, SPARQL_SITE_BY_CIK, SPARQL_SITE_BY_TICKER, MIME_EXT,
-  collectItems, matchUniverse, checkLicense, safeSymbol, entityToItem, matchByName, searchName, nativeEuropeLogoMembers
+  collectItems, matchUniverse, checkLicense, safeSymbol, entityToItem, matchByName, searchName, nativeEuropeLogoMembers,
+  neueTitel, neueZuerst, watchFortschreiben
 } from "./company-logos-lib.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -253,7 +254,15 @@ const universe = search.entries
   .map((e) => ({ symbol: e.s, name: e.n || e.s, cik: cikOf.get(e.s) || null }));
 const nativeMembers=nativeEuropeLogoMembers(readJson(join(root,'discover/data/europe/catalog.json'),{}));
 for(const member of nativeMembers)if(!universe.some(x=>x.symbol===member.symbol)&&!exclusions[member.symbol]&&(!ONLY||ONLY.has(member.symbol)))universe.push(member);
-console.log(`Discover-Universum: ${universe.length} Titel (${Object.keys(exclusions).length} ausgeschlossen)`);
+/* Neue Titel zuerst (Auftrag 22.11.2026): was der vorige Lauf nicht kannte, die Kurzhistorie-Titel und die
+   Beobachtungsliste. "Bekannt" = im vorigen Lauf mit Logo (index.json) oder mit Grund (missing.json). */
+const vorigeIndex = readJson(join(REAL_OUT, "index.json"), null), vorigeFehlend = readJson(join(REAL_OUT, "missing.json"), null);
+const watchAlt = readJson(join(REAL_OUT, "new-watch.json"), { watch: {} }).watch || {};
+const bekannt = vorigeIndex && vorigeFehlend ? new Set([...Object.keys(vorigeIndex.files || {}), ...Object.keys(vorigeFehlend.reasons || {})]) : null;
+const kurzTitel = readJson(join(root, "discover", "data", "stock-index", "US_REAL.json"), { kurzhistorie: [] }).kurzhistorie || [];
+const neuTitel = neueTitel(universe, { known: bekannt, kurz: kurzTitel, watch: watchAlt });
+universe.splice(0, universe.length, ...neueZuerst(universe, neuTitel));
+console.log(`Discover-Universum: ${universe.length} Titel (${Object.keys(exclusions).length} ausgeschlossen), neu/Beobachtung: ${neuTitel.size}`);
 
 /* ------------------------------------------------ Wichtige Indizes */
 /* S&P 500, NASDAQ-100, Dow Jones aus den Discover-Daten (Fondsbestaende),
@@ -690,6 +699,13 @@ const erwartetOhne = [...reasons].filter(([sym, why]) => why === "KEIN_LOGO_ERWA
 const grundZaehler = {};
 for (const r of reasons.values()) { const k = r.split(":")[0]; grundZaehler[k] = (grundZaehler[k] || 0) + 1; }
 
+/* Beobachtungsliste neuer Titel: Logo da -> raus, sonst Zaehler; ab 2 Laeufen Alarm (nicht blockierend). */
+const wf = watchFortschreiben({ neu: neuTitel, watch: watchAlt, hatLogo: (s) => Boolean(files[s]), grund: (s) => reasons.get(s),
+  universe, today: new Date().toISOString().slice(0, 10) });
+for (const a of wf.alarms) console.log(`::warning::Neuer Titel ohne Logo nach ${a.runs} Laeufen: ${a.symbol} (${a.reason}${a.nameMissing ? ", Name fehlt" : ""}${a.cikMissing ? ", CIK fehlt" : ""})`);
+writeFileSync(join(OUT, "new-watch.json"), JSON.stringify({
+  generatedAt, note: "Neue Titel (nicht im vorigen Lauf, Kurzhistorie) ohne Logo: Laeufe, Grund, fehlender Name/CIK. Ab 2 Laeufen Alarm (summary.json newTitleAlarms).",
+  watch: wf.watch }, null, 1) + "\n");
 writeFileSync(join(OUT, "index.json"), JSON.stringify({
   version: "company-logos-1.0.0",
   generatedAt,
@@ -726,6 +742,7 @@ writeFileSync(join(OUT, "summary.json"), JSON.stringify({
   bySource: live.reduce((a, c) => ((a[c.source] = (a[c.source] || 0) + 1), a), {}),
   byVia: live.reduce((a, c) => ((a[c.via] = (a[c.via] || 0) + 1), a), {}),
   indexCoverage: indexAbdeckung,
+  newTitleAlarms: wf.alarms,
   byLicense: live.filter((c) => c.license).reduce((a, c) => ((a[c.license] = (a[c.license] || 0) + 1), a), {}),
   excluded: grundZaehler
 }, null, 1) + "\n");

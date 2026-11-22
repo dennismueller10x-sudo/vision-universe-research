@@ -436,3 +436,46 @@ export function matchByName(row, candidates) {
   return { match: { item: unique[0].item, label: unique[0].label, title: titles[0] || null, titles, via: "NAME",
                      sites: [...(unique[0].sites || [])].sort() } };
 }
+
+/**
+ * Neue Titel im Logo-Lauf (Auftrag 22.11.2026): Titel, die der vorige Lauf noch nicht kannte (weder mit Logo noch mit
+ * Grund), die Kurzhistorie-Titel (junge Notierungen) und alle, die schon auf der Beobachtungsliste stehen.
+ * Sie kommen im Lauf zuerst dran; fehlt nach `schwelle` Laeufen noch das Logo, meldet der Lauf einen Alarm
+ * (nicht blockierend) mit Grund.
+ * @param {Array<{symbol,name,cik}>} universe
+ * @param {{known:Set<string>|null, kurz?:Iterable<string>, watch?:object}} vorher  known = null: erster Lauf, nichts ist neu
+ * @returns {Set<string>}
+ */
+export function neueTitel(universe, { known, kurz = [], watch = {} }) {
+  const neu = new Set(Object.keys(watch || {}));
+  const kurzSet = new Set(kurz);
+  for (const r of universe) {
+    if (kurzSet.has(r.symbol)) neu.add(r.symbol);
+    else if (known && !known.has(r.symbol)) neu.add(r.symbol);
+  }
+  return neu;
+}
+
+/** Neue Titel zuerst, sonst unveraenderte Reihenfolge (stabil). */
+export function neueZuerst(universe, neu) {
+  return [...universe.filter((r) => neu.has(r.symbol)), ...universe.filter((r) => !neu.has(r.symbol))];
+}
+
+/**
+ * Beobachtungsliste fortschreiben: Logo da -> raus; sonst Zaehler +1 mit Grund. Alarm ab `schwelle` Laeufen.
+ * @returns {{watch:object, alarms:Array}}
+ */
+export function watchFortschreiben({ neu, watch = {}, hatLogo, grund, universe, today, schwelle = 2 }) {
+  const byS = new Map(universe.map((r) => [r.symbol, r]));
+  const out = {}, alarms = [];
+  for (const sym of [...neu].sort()) {
+    if (!byS.has(sym) || hatLogo(sym)) continue;
+    const r = byS.get(sym), alt = watch[sym] || {};
+    const e = { firstSeen: alt.firstSeen || today, runs: (alt.runs || 0) + 1, lastRun: today,
+                reason: String(grund(sym) || "UNBEKANNT").split(":")[0],
+                nameMissing: !r.name || r.name === r.symbol, cikMissing: !r.cik };
+    out[sym] = e;
+    if (e.runs >= schwelle) alarms.push({ symbol: sym, ...e });
+  }
+  return { watch: out, alarms };
+}

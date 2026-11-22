@@ -46,6 +46,7 @@
   "use strict";
 
   var isNode = (typeof module !== "undefined" && module.exports);
+  var Exchanges = isNode ? require("../../core/exchanges.js") : global.VUCore.Exchanges;
 
   var Base = isNode
     ? require("./instrument-classification.js")
@@ -89,15 +90,7 @@
      Getrennt von Base.US_EXCHANGES, weil dort auch die
      Ausserboersen-Kuerzel als "US" gefuehrt sind: fuer die Landfrage ist
      das richtig, fuer die Frage "regulaer gelistet?" nicht. */
-  var US_PRIMARY_EXCHANGES = {
-    "NASDAQ": true, "NYSE": true, "NYSE ARCA": true, "NYSE MKT": true,
-    "NYSE AMERICAN": true, "AMEX": true, "BATS": true, "IEX": true,
-    "NASDAQ GLOBAL SELECT": true, "NASDAQ CAPITAL MARKET": true,
-    "NASDAQ GLOBAL MARKET": true,
-    /* Texas Stock Exchange, nationale Wertpapierboerse seit 2024 (SEC-Zulassung),
-       Handel seit 2026; erster Fall TXCP (8-A12B 0001077428-26-000068). */
-    "TXSE": true
-  };
+  var US_PRIMARY_EXCHANGES = Exchanges.regularTable();   /* core/exchanges.js (Boersenregister) */
 
   function norm(v) { return v === null || v === undefined ? "" : String(v).trim(); }
   function upper(v) { return norm(v).toUpperCase(); }
@@ -737,13 +730,9 @@
     "assetType", "instrumentType", "currency", "droppedEndDate", "event", "sec", "series", "reviewedAt"];
   /* Optional: nur fuer die Fortfuehrung nach Umfirmierung (siehe oben). */
   var DUPLICATE_RESOLUTION_OPTIONAL_KEYS = ["keptCanonicalId"];
-  /* Bezeichnungen DERSELBEN Boerse beim Anbieter. Keine Boersenfamilie:
-     NYSE und NYSE American sind verschiedene Boersen. */
-  var VENUE_ALIASES = { "NYSE MKT": "NYSE AMERICAN", "AMEX": "NYSE AMERICAN", "NYSE AMERICAN": "NYSE AMERICAN" };
-  function sameVenue(a, b) {
-    var x = upper(a), y = upper(b);
-    return (VENUE_ALIASES[x] || x) === (VENUE_ALIASES[y] || y);
-  }
+  /* Bezeichnungen DERSELBEN Boerse beim Anbieter (gleicher Operating MIC, core/exchanges.js#sameVenue). Keine
+     Boersenfamilie: NYSE und NYSE American sind verschiedene Boersen. */
+  function sameVenue(a, b) { return Exchanges.sameVenue(a, b); }
   /* "tiingo:<Boerse>:<Ticker>:<Beginn>" -> Teile; die Boerse darf ein
      Leerzeichen tragen ("NYSE MKT"), aber keinen Doppelpunkt. */
   function parseCanonicalId(id) {

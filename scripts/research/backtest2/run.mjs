@@ -25,6 +25,7 @@ function args(argv) {
   for (let i = 2; i < argv.length; i++) {
     const k = argv[i];
     if (k === '--smoke') { a.smoke = true; continue; }
+    if (k === '--survivors-only') { a.survivorsOnly = true; continue; }
     if (!k.startsWith('--')) throw new Error('ARG ' + k);
     a[k.slice(2).replace(/-([a-z])/g, (_, c) => c.toUpperCase())] = argv[++i];
   }
@@ -56,12 +57,12 @@ const median = (xs) => { const a = xs.filter(Number.isFinite).sort((x, y) => x -
 const pct = (x) => (x == null || !Number.isFinite(x) ? '–' : (x * 100).toFixed(1).replace('.', ',') + ' %');
 
 /** Walk-forward: Auswahl je Runde, Bestätigungskurve, Benchmarks, Phasen, Urteil. */
-export function walkForward(m, signals, combos, stats, nYears, bench, end) {
+export function walkForward(m, signals, combos, stats, nYears, bench, end, select = (r) => Q.selectRound(stats, combos.length, nYears, r, m, bench.SPY)) {
   const rounds = [], chainDates = [], chainEq = [], weekly = { SPY: [], QQQ: [], RSP: [] }, regime = [];
   let level = 1;
   const full = Q.windowDates(m, Q.FIRST_YEAR, 9999);
   for (const r of Q.ROUNDS) {
-    const sel = Q.selectRound(stats, combos.length, nYears, r, m, bench.SPY);
+    const sel = select(r);
     const w = Q.windowDates(m, r.confirm[0], r.confirm[1]);
     if (sel.combo < 0 || w.t0 < 0 || w.t1 < w.t0) { rounds.push({ ...r, selected: null }); continue; }
     const c = combos[sel.combo], res = simulate(m, signals[c.source], c, { t0: full.t0, t1: full.t1, daily: true });
@@ -74,7 +75,7 @@ export function walkForward(m, signals, combos, stats, nYears, bench, end) {
     const segM = Q.curveMetrics([eq[w.t0 - 1 - off] ?? INITIAL, ...seg], [m.dates[w.t0 - 1], ...segDates]);
     const benchW = Object.fromEntries(Object.entries(bench).map(([s, pts]) => [s, Q.cagr(Q.valueAt(pts, w.start), Q.valueAt(pts, w.end), w.start, w.end)]));
     for (const s of Object.keys(weekly)) weekly[s].push(...Q.weeklyReturns([eq[w.t0 - 1 - off] ?? INITIAL, ...seg], [m.dates[w.t0 - 1], ...segDates], bench[s]));
-    rounds.push({ ...r, confirm: [r.confirm[0], Math.min(r.confirm[1], +end.slice(0, 4))], selected: { id: c.id, label: Q.label(c), params: c }, learnExcessCagr: sel.learnExcess, spyLearnCagr: sel.spyLearnCagr, confirmMetrics: segM, benchmarksConfirmCagr: benchW });
+    rounds.push({ ...r, confirm: [r.confirm[0], Math.min(r.confirm[1], +end.slice(0, 4))], selected: { id: c.id, label: Q.label(c), params: c }, learnExcessCagr: sel.learnExcess, neighborhoodMedian: sel.neighborhoodMedian ?? null, spyLearnCagr: sel.spyLearnCagr, confirmMetrics: segM, benchmarksConfirmCagr: benchW });
   }
   if (!chainEq.length) return { rounds, chain: null, verdict: 'nicht bestimmbar' };
   const chain = Q.curveMetrics([1, ...chainEq], [Q.windowDates(m, Q.ROUNDS[0].confirm[0], 9999).start, ...chainDates]);
@@ -129,17 +130,23 @@ export function report(res) {
   const L = [];
   L.push('# Backtest 2.0 – Ergebnis' + (res.smoke ? ' (RAUCHTEST, kein Ergebnis)' : ''), '', '**Forschung, nicht zertifiziert.** Nur für den Owner. Protokoll-SHA-256 `' + res.protocolSha256 + '`.', '');
   L.push(`Daten: ${res.data.loaded} Titel (davon delistet ${res.data.delisted - res.data.delistedNoRaw}), ${res.window[0]} bis ${res.window[1]}. Kombinationen geprüft: ${res.combos}.`, '');
-  const wf = res.walkForward;
-  L.push('## Urteil', '', `**${wf.verdict}**`, '');
+  if (res.survivorsOnly) L.push('**Nur heutige Überlebende (ohne delistete Titel): zu gut gerechnet, nur zum Vergleich, nicht für das Urteil.**', '');
+  if (res.diagnostics) L.push('## Datenprüfung', '', '| Gruppe | Titel | mit Sprung ×2 bis ×5 | Sprünge auf | Sprünge ab |', '|---|---|---|---|---|',
+    ...Object.entries(res.diagnostics.jumps2to5).map(([g, d]) => `| ${g} | ${d.titles} | ${d.titlesWithJump} (${pct(d.titlesWithJump / d.titles)}) | ${d.jumpsUp} | ${d.jumpsDown} |`), '',
+    'Spalten der delisteten Rohreihen (Anzahl Titel): ' + (Object.entries(res.diagnostics.delistedColumns).map(([k, n]) => '`' + k + '` ' + n).join(' · ') || '–'), '');
+  const sections = [['Auswahl Fassung 2 (vorab festgelegt): beste Lern-Überrendite', res.walkForward], ['Auswahl Fassung 3 (zweiter Versuch nach Einsicht in Lauf 44918416065): robust, mind. 10 Positionen, Median mit Nachbarn', res.walkForwardRobust]];
+  for (const [title, wf] of sections) { if (!wf) continue;
+  L.push('## ' + title, '', `Urteil: **${wf.verdict}**`, '');
   if (wf.chain) {
-    L.push('## Bestätigungskurve (nur ungesehene Jahre, so hätte ein Kunde das Vorgehen erlebt)', '', '| | CAGR | max. Verlust | Sharpe | Überrendite | p |', '|---|---|---|---|---|---|');
+    L.push('### Bestätigungskurve (nur ungesehene Jahre, so hätte ein Kunde das Vorgehen erlebt)', '', '| | CAGR | max. Verlust | Sharpe | Überrendite | p |', '|---|---|---|---|---|---|');
     L.push(`| Strategie | ${pct(wf.chain.cagr)} | ${pct(wf.chain.maxDrawdown)} | ${wf.chain.sharpe.toFixed(2)} | | |`);
     for (const [s, b] of Object.entries(wf.benchmarks)) L.push(`| ${s} | ${pct(b.cagr)} | ${pct(b.maxDrawdown)} | ${b.sharpe.toFixed(2)} | ${pct(b.excessCagr)} | ${b.pExcess?.toFixed(4) ?? '–'} |`);
-    L.push('', '## Runden', '', '| Lernen | Bestätigen | gewählt | Lern-Überrendite | Bestätigung CAGR | SPY | QQQ | max. Verlust |', '|---|---|---|---|---|---|---|---|');
-    for (const r of wf.rounds) L.push(`| ${r.learn.join('–')} | ${r.confirm.join('–')} | ${r.selected?.label ?? '–'} | ${pct(r.learnExcessCagr)} | ${pct(r.confirmMetrics?.cagr)} | ${pct(r.benchmarksConfirmCagr?.SPY)} | ${pct(r.benchmarksConfirmCagr?.QQQ)} | ${pct(r.confirmMetrics?.maxDrawdown)} |`);
-    L.push('', '## Marktphasen (Bestätigungskurve; SPY als Kursreihe ohne Dividenden)', '', '| Phase | Tage | Strategie p. a. | SPY p. a. | p |', '|---|---|---|---|---|');
+    L.push('', '### Runden', '', '| Lernen | Bestätigen | gewählt | Lern-Überrendite | Bestätigung CAGR | SPY | QQQ | max. Verlust |', '|---|---|---|---|---|---|---|---|');
+    for (const r of wf.rounds) L.push(`| ${r.learn.join('–')} | ${r.confirm.join('–')} | ${r.selected?.label ?? '–'} | ${pct(r.learnExcessCagr)}${r.neighborhoodMedian != null ? ' (Nachbarn ' + pct(r.neighborhoodMedian) + ')' : ''} | ${pct(r.confirmMetrics?.cagr)} | ${pct(r.benchmarksConfirmCagr?.SPY)} | ${pct(r.benchmarksConfirmCagr?.QQQ)} | ${pct(r.confirmMetrics?.maxDrawdown)} |`);
+    L.push('', '### Marktphasen (Bestätigungskurve; SPY als Kursreihe ohne Dividenden)', '', '| Phase | Tage | Strategie p. a. | SPY p. a. | p |', '|---|---|---|---|---|');
     for (const [k, p] of Object.entries(wf.phases)) L.push(`| ${k} | ${p.days} | ${pct(p.strategyAnnual)} | ${pct(p.spyPriceAnnual)} | ${p.pExcess?.toFixed(4) ?? '–'} |`);
   }
+  L.push(''); }
   const s = res.summary;
   L.push('', `## Gesamtzeitraum, beschreibend (Rückschau, kein Nachweis)`, '', `SPY ${pct(s.spyFullCagr)} p. a.; ${s.beatingSpy} von ${res.combos} Kombinationen lagen roh darüber.`, '');
   L.push('| # | Kombination | CAGR | Überrendite | max. Verlust | Sharpe |', '|---|---|---|---|---|---|');
@@ -159,18 +166,20 @@ async function main() {
   // Bestätigungsrunde Strategie-Wochen mit fehlenden Index-Wochen)
   const benchEnd = Object.values(bench).map((p) => p.at(-1)[0]).sort()[0];
   const end = a.to || [lastCompleteMonthEnd(cal.filter((d) => d >= '2007-01-01')), cal.findLast((d) => d <= benchEnd)].sort()[0];
-  const { market: m, counts } = loadMarket({ workDir: a.workDir, delistedDir: a.delistedDir, delistedRawDir: a.delistedRawDir, to: end, limit: a.smoke ? 400 : 0 });
+  const { market: m, counts, diagnostics } = loadMarket({ workDir: a.workDir, delistedDir: a.survivorsOnly ? null : a.delistedDir, delistedRawDir: a.delistedRawDir, to: end, limit: a.smoke ? 400 : 0 });
   const signals = buildSignals(m);
   const grid = a.smoke ? SMOKE_GRID : Q.GRID, list = Q.combos(grid);
   const w = Q.windowDates(m, Q.FIRST_YEAR, 9999), nYears = +end.slice(0, 4) - Q.FIRST_YEAR + 1;
   console.log(`Signale: ${SOURCES.map((k) => k + ' ' + signals[k].items.length).join(', ')}; Kombinationen ${list.length}; Fenster ${w.start} … ${w.end}`);
   const stats = await runGrid(m, signals, list, { t0: w.t0, t1: w.t1, nYears, workers: +a.workers });
   const wf = walkForward(m, signals, list, stats, nYears, bench, end);
+  const nbrs = Q.neighbors(list, grid);
+  const wfRobust = walkForward(m, signals, list, stats, nYears, bench, end, (r) => Q.selectRoundRobust(stats, list, nbrs, nYears, r, m, bench.SPY));
   const summary = summarize(m, signals, list, stats, nYears, bench);
   const res = {
     schema: 'backtest2-result-1.0.0', label: 'Forschung, nicht zertifiziert', smoke: !!a.smoke, versions: { engine: ENGINE_VERSION, search: Q.SEARCH_VERSION },
     protocolSha256: crypto.createHash('sha256').update(fs.readFileSync(path.join(ROOT, 'docs/research/backtest2/PROTOKOLL.md'))).digest('hex'),
-    data: counts, window: [w.start, w.end], combos: list.length, grid, walkForward: wf, summary, runtimeSeconds: Math.round((Date.now() - t) / 1000),
+    survivorsOnly: !!a.survivorsOnly, data: counts, diagnostics, window: [w.start, w.end], combos: list.length, grid, walkForward: wf, walkForwardRobust: wfRobust, summary, runtimeSeconds: Math.round((Date.now() - t) / 1000),
   };
   fs.mkdirSync(a.out, { recursive: true });
   fs.writeFileSync(path.join(a.out, 'results.json'), JSON.stringify(res, null, 1));

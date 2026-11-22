@@ -56,7 +56,9 @@ test('all five periods end on actual final mark and never use same-close signal 
  const api=create(),data=A.load(root,'ref_NVDA');for(const period of C.periods){const r=run(data,{period});assert.equal(r.history.window.endDate,data.points.at(-1)[0]);const s=await api.getRealBacktest('NVDA',{period});assert.equal(s.result.to,data.points.at(-1)[0]);for(const t of r.trades)assert.ok(t.signalDate<t.entryDate);}
 });
 test('every required real edge case returns consistent execution, quality and benchmark dimensions',async()=>{
- const api=create();for(const ticker of ['AAPL','BGC','ANDG','AACT']){for(const section of C.sections){const r=await api.getRealBacktest(ticker,{section});assert.equal(r.state,'BLOCKED',ticker+':'+JSON.stringify(r));assert.equal(r.quality.class,'C');assert.equal(r.result,undefined);assert.equal(r.certification,'NOT_CERTIFIED');assert.equal(r.benchmarkState,'NOT_EVALUATED');}}
+ const api=create();/* AACT: seit Teil B3 (21.11.2026) beendete Notierung ausserhalb des Produktuniversums - Absage ohne Ergebnis statt BLOCKED */
+ for(const section of C.sections){const r=await api.getRealBacktest('AACT',{section});assert.equal(r.state,'UNAVAILABLE','AACT:'+JSON.stringify(r));assert.equal(r.reason,'INVALID_IDENTITY');assert.equal(r.result,undefined);assert.equal(r.certification,'NOT_CERTIFIED');}
+ for(const ticker of ['AAPL','BGC','ANDG']){for(const section of C.sections){const r=await api.getRealBacktest(ticker,{section});assert.equal(r.state,'BLOCKED',ticker+':'+JSON.stringify(r));assert.equal(r.quality.class,'C');assert.equal(r.result,undefined);assert.equal(r.certification,'NOT_CERTIFIED');assert.equal(r.benchmarkState,'NOT_EVALUATED');}}
  for(const ticker of ['XOM','ARM','MSFT']){const r=await api.getRealBacktest(ticker);assert.equal(r.state,'AVAILABLE_LIMITED',ticker+':'+JSON.stringify(r));assert.equal(r.returnBasis,'PRICE_RETURN');assert.ok(r.quality.limitations.includes('DIVIDENDS_EXCLUDED'));assert.equal(r.certification,'NOT_CERTIFIED');assert.ok(r.result.endCapital>0);}
  const xom=await api.getRealBacktest('XOM');assert.equal(xom.benchmarkState,'BENCHMARK_UNAVAILABLE');assert.equal(xom.state,'AVAILABLE_LIMITED');
 });

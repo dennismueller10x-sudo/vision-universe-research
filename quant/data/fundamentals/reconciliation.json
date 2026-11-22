@@ -18,17 +18,17 @@
       "PRODUCT_TITLES": 6031
     },
     "PRODUCT_TITLES": 6031,
-    "R2_HISTORY_AVAILABLE": 6026,
-    "R2_HISTORY_UNAVAILABLE": 5,
+    "R2_HISTORY_AVAILABLE": 6027,
+    "R2_HISTORY_UNAVAILABLE": 4,
     "TECHNICAL_HISTORY_ELIGIBLE": 5490,
     "TECHNICAL_INSUFFICIENT_HISTORY": 541,
     "R2_AND_FUNDAMENTAL": 5527,
-    "R2_WITHOUT_FUNDAMENTAL": 499,
+    "R2_WITHOUT_FUNDAMENTAL": 500,
     "TECHNICAL_WITHOUT_FUNDAMENTAL": 396,
     "PIT_AND_R2": 5388,
     "PIT_R2_AND_TECHNICAL": 5003,
     "PIT_R2_TECHNICAL_AND_CORE_FUNDAMENTALS": 4379,
-    "MARKET_HISTORY_AVAILABLE": 6026,
+    "MARKET_HISTORY_AVAILABLE": 6027,
     "TECHNICAL_COVERED": 5490,
     "FUNDAMENTAL_COMPANY_FACTS_AVAILABLE": 5529,
     "PIT_READY": 5390,
@@ -40,7 +40,7 @@
     "PIT_AND_HISTORICAL_PRICE": 5388,
     "PIT_TECHNICAL_AND_HISTORICAL_PRICE": 5003,
     "percentOfProductUniverse": {
-      "MARKET_HISTORY_AVAILABLE": 99.9171,
+      "MARKET_HISTORY_AVAILABLE": 99.9337,
       "TECHNICAL_COVERED": 91.0297,
       "FUNDAMENTAL_COMPANY_FACTS_AVAILABLE": 91.6763,
       "PIT_READY": 89.3716,
@@ -49,27 +49,27 @@
     "acceptedMarketDataState": {
       "status": "CANONICAL_PER_INSTRUMENT",
       "owner": "R2-/Marktdaten-Workstream",
-      "sourceRunId": "44694414000",
+      "sourceRunId": "44991765453",
       "provenance": "quant/data/market/history/CANONICAL_SOURCE.json",
       "accepted": {
-        "PRODUCT_TITLES": 6340,
-        "R2_SERIES_AVAILABLE": 7831,
-        "HISTORICAL_CHART_AVAILABLE": 6335,
+        "PRODUCT_TITLES": 6031,
+        "R2_SERIES_AVAILABLE": 7832,
+        "HISTORICAL_CHART_AVAILABLE": 6027,
         "HISTORICAL_CHART_AVAILABLE_PERCENT": 99.96,
-        "TECHNICAL_HISTORY_ELIGIBLE": 5700,
+        "TECHNICAL_HISTORY_ELIGIBLE": 5490,
         "TECHNICAL_HISTORY_ELIGIBLE_PERCENT": 84.42
       },
       "computed": {
-        "HISTORICAL_CHART_AVAILABLE": 6026,
+        "HISTORICAL_CHART_AVAILABLE": 6027,
         "TECHNICAL_HISTORY_ELIGIBLE": 5490,
         "PRODUCT_TITLES": 6031
       },
       "delta": {
-        "HISTORICAL_CHART_AVAILABLE": -309,
-        "TECHNICAL_HISTORY_ELIGIBLE": -210
+        "HISTORICAL_CHART_AVAILABLE": 0,
+        "TECHNICAL_HISTORY_ELIGIBLE": 0
       },
-      "reconciled": false,
-      "explanation": "Die eigene Rechnung weicht vom abgenommenen Stand ab. Moegliche Ursachen, in dieser Reihenfolge zu pruefen: (1) das Produktuniversum hier ist nicht dasselbe wie das, gegen das die Kennzahlen gerechnet wurden, (2) eine Ausnahmeliste wurde unvollstaendig gelesen, (3) der Identitaetsjoin trifft nicht jeden Titel. KEIN neuer Nenner ohne geklaerte Ursache (\u00a74).",
+      "reconciled": true,
+      "explanation": null,
       "explainedDelta": null,
       "note": "R2_SERIES_AVAILABLE (7.802) zaehlt gegen den WERTPAPIERSTAMM (7.803), nicht gegen das Produktuniversum (7.004) - es ist die Ablagedeckung und keine Produktkennzahl. Sie wird hier gefuehrt und NICHT in die Schnittmengen gerechnet.",
       "evidenceSources": [
@@ -374,5 +374,5 @@
       }
     }
   },
-  "generatedAtUtc": "2026-11-21T16:27:37+00:00"
+  "generatedAtUtc": "2026-11-22T06:06:17+00:00"
 }

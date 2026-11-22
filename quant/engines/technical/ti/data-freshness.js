@@ -32,8 +32,9 @@
   var STATES = Object.freeze({ FRESH: "FRESH", DELAYED: "DELAYED", STALE: "STALE", NON_TRADING: "NON_TRADING" });
   var WITHHELD_STATES = Object.freeze({ STALE: true, NON_TRADING: true });
   var AD_HOC_CLOSURES = Object.freeze({ "2025-01-09": "Staatstrauertag (J. Carter)" });
-  /* TXSE: Texas Stock Exchange (regulaerer US-Platz wie in us-security-master.js#US_PRIMARY_EXCHANGES), US-Boersenkalender. */
-  var US_VENUES = Object.freeze({ NASDAQ: 1, NYSE: 1, AMEX: 1, "NYSE MKT": 1, "NYSE ARCA": 1, "NYSE AMERICAN": 1, BATS: 1, CBOE: 1, IEX: 1, TXSE: 1 });
+  /* Regulaere US-Plaetze handeln nach dem US-Boersenkalender (core/exchanges.js, Boersenregister). */
+  var Exchanges = (typeof module !== "undefined" && module.exports) ? require("../../../../core/exchanges.js") : global.VUCore.Exchanges;
+  var US_VENUES = Exchanges.regularTable();
   var DAY = 864e5;
 
   function pad(n) { return (n < 10 ? "0" : "") + n; }

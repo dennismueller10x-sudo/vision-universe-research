@@ -8,7 +8,7 @@
    stand - jeder mit einem Titel, an dem der Fall wirklich auftritt:
 
      NVDA   Bildunterschrift des Charts: splitbereinigt, nicht roh
-     APGE   was das Setup beenden wuerde, ist da
+     AAPL   was das Setup beenden wuerde, ist da (bis 21.11.2026 APGE; APGE ist seit B3 eine beendete Notierung)
      AAON   der Musternenner nennt, wovon er zaehlt; ohne Wochenreihe
             erscheint stattdessen der belegte Nichtverfuegbarkeitsgrund
             (bis 05.11.2026 AAAP; AAAP ist laut Wertpapierstamm ein ETF)
@@ -66,7 +66,7 @@ const checks=[
  /* Die Bildunterschrift gehoert zum Tagesschluss-Zeitraum; auf 1T steht
     dort die Quelle des Tagesverlaufs. Deshalb zuerst 1J. */
  ["NVDA","section.qc-chart .qc-note",/(^|[^t] )splitbereinigt/,"1J"],
- ["APGE","#setup",/Was würde das Setup ungültig machen\?/i],
+ ["AAPL","#setup",/Was würde das Setup ungültig machen\?/i],
  [PATTERN_TICKER,"#historie",/\d+ von \d+ Mustern|nicht prüfbar/],
  ["AACB","#setup","messbaren Bedingungen"],
  /* AAAC IST SEIT DER OWNER-ENTSCHEIDUNG 1 KEIN AKTIENFALL MEHR: die Seite

@@ -33,6 +33,18 @@ export function lastCompleteMonthEnd(dates) {
 }
 
 function columns(T) { return { o: new Float64Array(T).fill(NaN), h: new Float64Array(T).fill(NaN), l: new Float64Array(T).fill(NaN), c: new Float64Array(T).fill(NaN), rc: new Float64Array(T).fill(NaN), v: new Float64Array(T).fill(NaN) }; }
+/** Datenprüfung: Sitzungssprünge der Gesamtrendite-Reihe zwischen Faktor 2 und 5 (unterhalb der DQ-K5-Grenze), z. B. nicht
+ *  herausgerechnete Splits 1:2, 1:3, 1:4 oder 2:1, 3:1, 4:1. Ergebnis: Zahl der Sprünge (auf, ab). */
+export function midJumps(cols) {
+  let prev = NaN, up = 0, down = 0;
+  for (let t = 0; t < cols.c.length; t++) { const c = cols.c[t]; if (!(c > 0)) continue; if (prev > 0) { const q = c / prev; if (q >= 2 && q < DQ_K) up++; else if (q <= 0.5 && q > 1 / DQ_K) down++; } prev = c; }
+  return { up, down };
+}
+function tally(diag, group, cols) {
+  const j = midJumps(cols), g = diag[group] ||= { titles: 0, titlesWithJump: 0, jumpsUp: 0, jumpsDown: 0 };
+  g.titles++; if (j.up + j.down) g.titlesWithJump++; g.jumpsUp += j.up; g.jumpsDown += j.down;
+}
+
 function dqJump(cols) { let prev = NaN; for (let t = 0; t < cols.c.length; t++) { const c = cols.c[t]; if (!(c > 0)) continue; if (prev > 0) { const q = c / prev; if (q >= DQ_K || q <= 1 / DQ_K) return true; } prev = c; } return false; }
 
 function loadRawByTicker(dir, wanted) {
@@ -49,6 +61,7 @@ function loadRawByTicker(dir, wanted) {
 }
 
 export function loadMarket({ workDir, delistedDir = null, delistedRawDir = null, to = null, limit = 0, log = console.log }) {
+  const diagnostics = { jumps2to5: {}, delistedColumns: {} };
   const cal = loadCalendar(ROOT, to), T = cal.dates.length, dayIdx = new Map(cal.dates.map((d, i) => [d, i]));
   const counts = { current: 0, currentNoBars: 0, delisted: 0, delistedNoRaw: 0, dqExcluded: 0, loaded: 0 };
   const prepared = []; // [id, cols, terminal|null]
@@ -64,6 +77,7 @@ export function loadMarket({ workDir, delistedDir = null, delistedRawDir = null,
       cols.o[t] = +b.adjustedOpen; cols.h[t] = +b.adjustedHigh; cols.l[t] = +b.adjustedLow; cols.c[t] = +b.adjustedClose; cols.rc[t] = +b.close; cols.v[t] = +b.volume;
     }
     if (dqJump(cols)) { counts.dqExcluded++; continue; }
+    tally(diagnostics.jumps2to5, 'heutige Titel', cols);
     prepared.push([id, cols, null]);
   }
   if (delistedDir) {
@@ -75,6 +89,8 @@ export function loadMarket({ workDir, delistedDir = null, delistedRawDir = null,
       const r = raw.get(doc.ticker);
       if (!r || !(r.rows || []).length) { counts.delistedNoRaw++; continue; }
       const ix = Object.fromEntries(r.cols.map((c, i) => [c, i]));
+      const colKey = ['open', 'high', 'low', 'splitFactor', 'divCash', 'dividend'].map((c) => (c in ix ? c : '-' + c)).join(',');
+      diagnostics.delistedColumns[colKey] = (diagnostics.delistedColumns[colKey] || 0) + 1;
       const last = doc.listingLifecycle.lastTradeDate, first = doc.points[0][0];
       const rows = r.rows.filter((x) => x[ix.close] !== null && String(x[0]).slice(0, 10) >= first && String(x[0]).slice(0, 10) <= last)
         .map((x) => ({ date: String(x[0]).slice(0, 10), open: +x[ix.open], high: +x[ix.high], low: +x[ix.low], close: +x[ix.close], volume: +x[ix.volume] || 0, splitFactor: +x[ix.splitFactor] || 1, div: ix.divCash !== undefined ? +x[ix.divCash] || 0 : ix.dividend !== undefined ? +x[ix.dividend] || 0 : 0 }));
@@ -90,6 +106,7 @@ export function loadMarket({ workDir, delistedDir = null, delistedRawDir = null,
         lastT = t;
       });
       if (dqJump(cols)) { counts.dqExcluded++; continue; }
+      tally(diagnostics.jumps2to5, 'delistete Titel', cols);
       const kind = String(doc.listingLifecycle.terminal?.kind || 'UNKNOWN').toUpperCase();
       prepared.push([doc.securityId, cols, lastT >= 0 ? { t: lastT, recovery: RECOVERY[kind] ?? RECOVERY.UNKNOWN, kind } : null]);
     }
@@ -98,7 +115,8 @@ export function loadMarket({ workDir, delistedDir = null, delistedRawDir = null,
   prepared.forEach(([, cols, term], s) => { setSecurity(m, s, cols); if (term) setTerminal(m, s, term.t, term.recovery); });
   counts.loaded = prepared.length;
   log(`Markt: ${counts.loaded} Titel, ${T} Tage (${cal.dates[0]} … ${cal.dates.at(-1)}), ${JSON.stringify(counts)}`);
-  return { market: finalize(m, cal.spy), counts };
+  log(`Datenprüfung: ${JSON.stringify(diagnostics)}`);
+  return { market: finalize(m, cal.spy), counts, diagnostics };
 }
 
 /** Benchmarks (Gesamtrendite, Wochenpunkte) aus vorsorge/data/series/<SYM>.json. */
