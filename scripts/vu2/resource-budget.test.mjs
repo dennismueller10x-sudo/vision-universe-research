@@ -33,6 +33,8 @@ test('no budget is looser than the 29.09.2026 baseline',()=>{
   assert.ok(budgets[view].decodedBytes<=b.decodedBytes,view+': '+budgets[view].decodedBytes+' Bytes > '+b.decodedBytes);
   assert.ok(budgets[view].requests<=b.requests,view+': '+budgets[view].requests+' Anfragen > '+b.requests);
  }
+ /* Logos der Home-Karten getrennt (22.11.2026): eigene Grenze, nicht hoeher als gemessen plus Luft. */
+ assert.ok(budgets.home.logoRequests<=30,'home: '+budgets.home.logoRequests+' Logos > 30');
  /* Nur die Aktienseite darf Kurshistorie laden. */
  assert.deepEqual(Object.entries(budgets).filter(([,b])=>b.history).map(([v])=>v),['stock']);
 });

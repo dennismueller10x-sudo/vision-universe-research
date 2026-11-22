@@ -131,10 +131,11 @@
 // Schriften, die in CI dazukommen). Wer sie wieder anhebt, hat den Ausschnitt abgeschaltet.
 export const budgets=Object.freeze({
  /* home zaehlt die Logo-Bilder der Aktienkarten getrennt (Steuerung 22.11.2026): `requests` gilt fuer alle anderen
-    Anfragen und bleibt 45; Logos (/discover/logos/files/...) haben eine eigene Obergrenze
-    (logoRequests 24: die Aktienkarten der Schienen im ersten Bild, lazy geladen). Sonst hing das Budget am Datenstand: andere Titel in den Schienen
+    Anfragen; Logos (/discover/logos/files/...) haben eine eigene Obergrenze.
+    Gemessen am 22.11.2026 (Lauf auf 93b81b1): 1440 px 19 andere + 27 Logos, 390 px 19 + 11. Damit sinkt die Grenze
+    der anderen Anfragen von 45 auf 22, die Logos (Aktienkarten der Schienen im Bild, lazy) duerfen 30 sein. Sonst hing das Budget am Datenstand: andere Titel in den Schienen
     brachten 44 -> 46 Anfragen ohne eine Codeaenderung. Die Bytes zaehlen weiter alle Anfragen. */
- home:{decodedBytes:1820000,requests:45,history:false,separateLogos:true,logoRequests:24},
+ home:{decodedBytes:1820000,requests:22,history:false,separateLogos:true,logoRequests:30},
  // stock 45 -> 46 Anfragen (Owner-Freigabe 24.10.2026, Chart-Harmonisierung): EUR als
  // Anzeigewaehrung braucht auf der Aktienseite EIN FX-Paket (quant/fx-pack.js aus
  // scripts/vu2/build-release.mjs: Chartstandard, FX-Schicht, Lizenz, EZB-Reihe EUR/USD -
