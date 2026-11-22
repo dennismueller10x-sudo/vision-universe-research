@@ -216,7 +216,13 @@ test('MB-10 Startseiten-Teaser ersetzt nur seine Region', () => {
   const b = Engine.buildBriefing(inputs());
   const home = 'A<p>Heute neu</p>\n<!--MB:teaser-->alt<!--/MB:teaser-->\n<!--NEWS:hero-->N<!--/NEWS:hero-->Z';
   const out = Www.withTeaser(home, b);
-  assert.match(out, /<!--MB:teaser--><a class="mbt" href="\.\/marktbriefing\/">/);
+  assert.match(out, /<!--MB:teaser--><div class="mbt"><div class="mbt-head">/);
+  assert.match(out, /<a class="mbt-go" href="\.\/marktbriefing\/">/);
+  assert.ok(!/mbt-rail/.test(out), 'ohne Bilder keine Kartenreihe');
+  const withCards = Www.withTeaser(home, b, { cover: 'titel.png', cards: [1, 2, 3, 4, 5, 6, 7].map((k) => ({ file: 'karte-0' + (k + 1) + '.png', anchor: 'indizes', title: 'Karte ' + k })) });
+  assert.equal((withCards.match(/class="mbt-card/g) || []).length, 7, 'Titelblatt, fünf Karten und „Alle Karten“');
+  assert.match(withCards, /href="\.\/marktbriefing\/2026-11-\d\d\/#indizes"/);
+  assert.match(withCards, /Alle 8 Karten/);
   assert.ok(out.endsWith('\n<!--NEWS:hero-->N<!--/NEWS:hero-->Z'));
   assert.equal(Www.withTeaser('ohne Region', b), 'ohne Region');
 });

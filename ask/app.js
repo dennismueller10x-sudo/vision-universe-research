@@ -235,12 +235,10 @@
 
   main.appendChild(hero);
   main.appendChild(h('div', { class: 'ak-body' }, [answerTop, conversation, startEl]));
-  /* Strang F, Hinweis „ai“ (assets/legal-notices.json): erscheint erst nach der rechtlichen Freigabe (VUUI.legal). Er bleibt
-     sichtbar am Seitenende und steht zusätzlich im Fenster „Daten & Hinweise“ des Rahmens (Prototyp: Link am Seitenende). */
-  if (U.legal && U.legal('ai')) main.appendChild(markup(U.legal('ai')));
+  /* Strang F, Hinweis „ai“ (assets/legal-notices.json): steht im Fenster „Daten & Hinweise“ des Rahmens (Menü „Rechtliches & Infos“).
+     Owner 22.11.2026: kein Hinweistext und kein Link „Daten & Hinweise“ mehr am Seitenende; die Seite endet mit ihrem letzten Knopf. */
   var Nav = window.VUNavigation;
   if (Nav && Nav.hinweis) Nav.hinweis('ai');
-  if (Nav && Nav.openHinweise) main.appendChild(h('div', { class: 'ak-end' }, [h('button', { class: 'ak-lk', type: 'button', onclick: function () { Nav.openHinweise(); } }, 'Daten & Hinweise')]));
   if (U.bindHelp) U.bindHelp(main);
   /* Zurück und Schließen: zur Seite, von der die KI geöffnet wurde (nur eigene Seiten), sonst zur Startseite. */
   (function () {

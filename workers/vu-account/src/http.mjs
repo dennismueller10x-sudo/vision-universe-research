@@ -56,7 +56,9 @@ export function parseCookies(request) {
     const i = part.indexOf('=');
     if (i < 1) continue;
     const name = part.slice(0, i).trim();
-    if (!(name in out)) out[name] = decodeURIComponent(part.slice(i + 1).trim());
+    if (name in out) continue;
+    // Fehlerhafte Prozent-Kodierung (z. B. von einer Nachbar-Subdomain gesetzt) darf die Anfrage nicht abbrechen.
+    try { out[name] = decodeURIComponent(part.slice(i + 1).trim()); } catch { out[name] = ''; }
   }
   return out;
 }

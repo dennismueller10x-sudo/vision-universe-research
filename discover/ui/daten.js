@@ -33,6 +33,7 @@
     var qual = meta.qualification && meta.qualification.rule ? meta.qualification.rule : null;
     var C = D.Cards;
     var stand = u.asOf ? C.dateShort(u.asOf) : "unbekannt";
+    var pc = u.productComposition && u.productComposition.labels ? u.productComposition : null;
 
     var seite = el("main", { class: "dx-page dx-daten" }, [
       el("a", { class: "dx-back", href: "#/", text: "← Discover" }),
@@ -43,8 +44,9 @@
 
       abschnitt("markt", "Marktdaten (Tagesschlusskurse)", [
         absatz("Kursreihen, Renditen, Jahreshochs und Scores beruhen auf Tagesschlusskursen des Produktuniversums (" +
-               (u.securities || "–") + " US-Aktien). Die Kurse sind split-bereinigt; Dividenden werden nicht eingerechnet. " +
+               (u.securities || "–") + " US-Aktien mit Karte). Die Kurse sind split-bereinigt; Dividenden werden nicht eingerechnet. " +
                "Kursdaten aus lizenziertem Marktdatenpaket (Quellen: /infos/#quellen; Erklärung des Eigentümers vom 13.09.2026)."),
+        zeile("Zusammensetzung", pc ? pc.labels.commonStock + "; " + pc.labels.productScope : "wird mit dem nächsten Lauf ergänzt"),
         zeile("Stand der Tagesreihen", stand),
         zeile("Aktualisierung", "täglich nach dem US-Handelsschluss (Abendlauf 22:30 UTC), danach Neuberechnung aller Reihen und Sammlungen"),
         zeile("Zeitraum auf der Aktienseite", "1 Woche bis 1 Jahr aus der Tagesreihe; 5 Jahre und Max aus einer Wochenreihe (Schlusskurs des letzten Handelstags jeder Woche) — nichts wird interpoliert")

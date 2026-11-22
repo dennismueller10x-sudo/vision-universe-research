@@ -261,7 +261,8 @@ async function main() {
   const guard = guardNewIssuerAttachments({
     byTicker, previous,
     productTickers: ((productDoc && productDoc.securities) || []).map((s) => s.ticker),
-    successions: (succDoc && succDoc.successions) || []
+    successions: (succDoc && succDoc.successions) || [],
+    pins: ((readOptional(pfad(arg("--pins", "quant/config/cik-pins.json")))) || {}).pins || []
   });
   if (!guard.checked) console.log("  Nachfolge-Regel: kein voriger Stand - nicht geprueft.");
   for (const p of guard.pending) {

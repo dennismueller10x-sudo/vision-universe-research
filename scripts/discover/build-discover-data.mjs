@@ -608,6 +608,13 @@ function buildRealUniverse(nameMap, goldenBars, compactSeries) {
   /* Produkttitel ohne Karte nach Grund (scripts/discover/not-delivered.mjs): macht die Luecke zwischen Produkt und Discover sichtbar. */
   const notDelivered = ohneKarte({ securities: universeSource.securities, delivered: new Set(stocks.map((x) => x.symbol)),
     factorTickers, skipped: factors.skipped });
+  /* Woraus das Produktumfang besteht (Quant-Kennzahl core/product-composition.js, Beschriftung 22.11.2026): dieselbe Rechnung
+     aus Eignungsentscheidungen und Produktuniversum; Discover zeigt nur die Beschriftung, nichts wird neu bewertet. */
+  const ProductComposition = require(join(root, "core", "product-composition.js"));
+  const eignung = readJSON(join(root, "quant", "data", "market", "security-master", "eligibility.json"));
+  const produktDatei = readJSON(join(root, "quant", "data", "market", "scale", "universe-ELIGIBLE_US_EQUITY.json"));
+  const productComposition = ProductComposition.compose(eignung.decisions, produktDatei.securities);
+  productComposition.labels = ProductComposition.label(productComposition);
   const fundamentalsCoverage = {
     withFundamentals: stocks.filter((s) => s.signals.fundamentals).length,
     h3: stocks.filter((s) => s.fundamentalCapabilities && s.fundamentalCapabilities.HAS_FUNDAMENTALS_3Y).length,
@@ -624,6 +631,7 @@ function buildRealUniverse(nameMap, goldenBars, compactSeries) {
                       counts: universeSource.counts, sha256: universeSource.sha256, handover: universeSource.handover },
     factorCoverage,
     notDelivered,
+    productComposition,
     fundamentalsCoverage,
     consumerPolicy: Object.assign({}, consumerPolicy, { rule: "CONSUMER_INSTRUMENT_TYPES aus scripts/market/universe-source.mjs; identityStatus IDENTITY_QUARANTINED (quant/config/ticker-reuse-quarantine.json) ausgeschlossen" }),
     label: METHODOLOGY.universes.US_REAL.label,
@@ -2551,6 +2559,7 @@ const meta = {
     kurzhistorie: (KURZ_SEITEN.get(u.universeId) || []).length,
     factorCoverage: u.factorCoverage || null,
     notDelivered: u.notDelivered || null,
+    productComposition: u.productComposition || null,
     fundamentalsCoverage: u.fundamentalsCoverage || null,
     valuationContext: u.valuationContext || null,
     universeSource: u.universeSource ? { source: u.universeSource.source, file: u.universeSource.file,

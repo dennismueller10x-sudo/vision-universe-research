@@ -6,7 +6,7 @@
 .tc-body{margin:0;background:var(--vu-bg);color:var(--vu-text);font:400 16px/1.5 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
 :root{--tc-gutter:16px;--tc-card:var(--vu-card,#f4f4f4);--tc-soft:var(--vu-card,#f4f4f4);--tc-up:var(--vu-ink,#000);--tc-down:var(--vu-ink,#000);--tc-watch:var(--vu-mute,#6e6e6e);
   /* Redesign 2027: nur Weiss, Schwarz, Neongruen und drei Graustufen; kein Rot, kein Gruen (auch nicht im Chart). */
-  --tc-price:var(--vu-ink,#000);--tc-candle-up:var(--vu-ink,#000);--tc-candle-down:var(--vu-ink,#000);--tc-c1:#6e6e6e;--tc-c2:#000;--tc-c3:#4f6b00;--tc-c4:#9b9b9b;--tc-c5:#bdbdbd;
+  --tc-price:var(--vu-ink,#000);--tc-candle-up:var(--vu-ink,#000);--tc-candle-down:var(--vu-ink,#000);--tc-c1:#6e6e6e;--tc-c2:#000;--tc-c3:#101318;--tc-c4:#9b9b9b;--tc-c5:#bdbdbd;
   --tc-grid:rgba(0,0,0,.06);--tc-axis:#6e6e6e;--tc-zone-pos:rgba(200,245,49,.42);--tc-zone-neg:rgba(0,0,0,.08);--tc-zone-acc:rgba(200,245,49,.25)}
 :root[data-theme=dark]{--tc-c1:#9b9b9b;--tc-c2:#fff;--tc-c3:#c8f531;--tc-c4:#6e6e6e;--tc-c5:#4a4a4a;
   --tc-grid:rgba(255,255,255,.07);--tc-axis:#9b9b9b;--tc-zone-pos:rgba(200,245,49,.26);--tc-zone-neg:rgba(255,255,255,.10);--tc-zone-acc:rgba(200,245,49,.18)}
@@ -1111,7 +1111,7 @@ div.tc-signal{grid-template-columns:44px minmax(0,1fr) auto}
 .tk .vu-chg{height:26px;padding:0 10px;border-radius:999px;font-size:12.5px;font-weight:800;line-height:1;gap:5px;background:var(--tk-lime);color:#101318}
 .tk .vu-chg--down{background:#c4281c;color:#fff}
 .tk .vu-chg--flat{background:var(--tk-pill);color:var(--tk-ink)}
-.tk a:focus-visible,.tk button:focus-visible{outline:2px solid var(--vu-focus-ring,var(--vu-focus,#4f6b00));outline-offset:2px}
+.tk a:focus-visible,.tk button:focus-visible{outline:2px solid var(--vu-focus-ring,var(--vu-focus,#101318));outline-offset:2px}
 /* Reiter im Inhalt (Prototyp .tabs2/.tab): klebt unter dem Kopf; die Tippfläche wächst unsichtbar auf 44 px. */
 .tk .tk-tabs{position:sticky;top:var(--vu-navigation-height,56px);z-index:4;display:flex;gap:6px;margin:0 calc(-1 * var(--tc-gutter));padding:8px var(--tc-gutter);overflow-x:auto;scrollbar-width:none;background:linear-gradient(var(--vu-bg,#000) 70%,transparent)}
 .tk .tk-tabs::-webkit-scrollbar,.tk .tk-rail::-webkit-scrollbar{display:none}
@@ -1232,7 +1232,7 @@ div.tc-signal{grid-template-columns:44px minmax(0,1fr) auto}
 /* Hell ist vollständig hell (Owner 16.11.2026: „wenn ich auf hell den Schalter umlege, dann muss natürlich auch alles hell sein“).
    Symbolkacheln im Hellen neongrün mit dunklem Zeichen, dunkle Flächen hellgrau mit dunkler Schrift; dunkel unverändert. */
 :root:not([data-theme=dark]) .tc-mg-ic{background:var(--vu-lime);color:#101318}
-:root:not([data-theme=dark]) .tc-mg .tc-mg-ic{background:none;color:#4f6b00}
+:root:not([data-theme=dark]) .tc-mg .tc-mg-ic{background:none;color:#101318}
 :root:not([data-theme=dark]) .tc-mgrid>a.tc-mg,:root:not([data-theme=dark]) .tc-story,:root:not([data-theme=dark]) .tc-today,:root:not([data-theme=dark]) .tc-textsearch.tc-satz{background:#f4f4f4;color:#000}
 :root:not([data-theme=dark]) .tc-mg .tc-dirdot{background:#e4e4e4;color:#000}
 :root:not([data-theme=dark]) .tc-story>.tc-ltag,:root:not([data-theme=dark]) .tc-story-r .tc-ltag,:root:not([data-theme=dark]) .tc-today .tc-ltag,:root:not([data-theme=dark]) .tc-satz .tc-ts-label{color:#5d636b}
@@ -1342,10 +1342,10 @@ div.tc-signal{grid-template-columns:44px minmax(0,1fr) auto}
 .tc-layers .tc-ema--fast{fill:var(--vu-lime,#c8f531);opacity:.55}
 .tc-layers .tc-ema--slow{fill:#6e6e6e;opacity:.18}
 .tc-layers .tc-ema-line{stroke-width:.9;vector-effect:non-scaling-stroke}
-.tc-layers .tc-ema-line--fast{stroke:#4f6b00;opacity:.85}
+.tc-layers .tc-ema-line--fast{stroke:#101318;opacity:.85}
 .tc-layers .tc-ema-line--slow{stroke:#000;opacity:.45}
 .tc-layers .tc-ema-edge{stroke-width:1.6}
-.tc-layers .tc-ema-edge--fast{stroke:#4f6b00}
+.tc-layers .tc-ema-edge--fast{stroke:#101318}
 .tc-layers .tc-ema-edge--slow{stroke:#000;opacity:.7}
 :root[data-theme=dark] .tc-layers .tc-ema--fast{opacity:.35}
 :root[data-theme=dark] .tc-layers .tc-ema--slow{fill:#9b9b9b;opacity:.22}

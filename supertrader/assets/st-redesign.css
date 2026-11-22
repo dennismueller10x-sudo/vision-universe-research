@@ -826,7 +826,7 @@ html[data-theme="dark"] .st-x-today,html[data-theme="dark"] .st-x-hero{backgroun
 .stp-sk-z{fill:#c8f531;opacity:.22}
 :root:not([data-theme=dark]) .stp-sk-z{opacity:.45}
 .stp-sk-zl{stroke:#c8f531;stroke-width:1.5}
-:root:not([data-theme=dark]) .stp-sk-zl{stroke:#5f7a00}
+:root:not([data-theme=dark]) .stp-sk-zl{stroke:#101318}
 .stp-sk-box{fill:none;stroke:var(--stp-mut);stroke-width:1.2;stroke-dasharray:5 3}
 .stp-sk-ma{fill:none;stroke:var(--stp-mut);stroke-width:1.4;opacity:.8}
 .stp-sk-v{fill:var(--stp-mut);opacity:.4}.stp-sk-v.is-on{opacity:1}.stp-sk-v.is-on{fill:#c8f531}
@@ -834,7 +834,7 @@ html[data-theme="dark"] .st-x-today,html[data-theme="dark"] .st-x-hero{backgroun
 
 /* Hell ist vollständig hell (Owner 16.11.2026: „wenn ich auf hell den Schalter umlege, dann muss natürlich auch alles hell sein“).
    Symbolkacheln im Hellen neongrün mit dunklem Zeichen, dunkle Flächen hellgrau mit dunkler Schrift; dunkel unverändert. */
-:root:not([data-theme=dark]) .st-k-hero{--vu-ink:#000;--vu-inv:#fff;--vu-card:#e9e9e9;--vu-hair:#dcdcdc;--vu-mute:#5d636b;--vu-focus-ring:#4f6b00;background:#f4f4f4;color:#000}
+:root:not([data-theme=dark]) .st-k-hero{--vu-ink:#000;--vu-inv:#fff;--vu-card:#e9e9e9;--vu-hair:#dcdcdc;--vu-mute:#5d636b;--vu-focus-ring:#101318;background:#f4f4f4;color:#000}
 :root:not([data-theme=dark]) .st-k-hero .vu-ltag,:root:not([data-theme=dark]) .st-k-hero .st-r-asof,:root:not([data-theme=dark]) .st-k-hero-p,:root:not([data-theme=dark]) .st-k-hero-f,:root:not([data-theme=dark]) .st-k-mkt svg{color:#5d636b}
 :root:not([data-theme=dark]) .st-k-hero .st-x-tag--ink{color:#000;box-shadow:inset 0 0 0 1.5px #000}
 :root:not([data-theme=dark]) .st-k-hero .vu-stats .is-lime b{color:#000}
@@ -853,7 +853,7 @@ html[data-theme="dark"] .st-x-today,html[data-theme="dark"] .st-x-hero{backgroun
 :root:not([data-theme=dark]) .st-x-today:not(.stp-tile),:root:not([data-theme=dark]) .st-x-hero,:root:not([data-theme=dark]) .st-x-story{background:#f4f4f4;color:#000}
 :root:not([data-theme=dark]) .st-x-today:not(.stp-tile) .vu-ltag,:root:not([data-theme=dark]) .st-x-story .vu-ltag{color:#5d636b}
 :root:not([data-theme=dark]) .st-x-hero-tags .st-x-tag--dk{background:#e4e4e4;color:#3a3d42}
-:root:not([data-theme=dark]) .st-x-hero h1 span{color:#4f6b00}
+:root:not([data-theme=dark]) .st-x-hero h1 span{color:#101318}
 :root:not([data-theme=dark]) .st-x-hero p{color:#3a3d42}
 :root:not([data-theme=dark]) .st-x-story-r{border-top-color:#dcdcdc}
 :root:not([data-theme=dark]) .st-x-story .vu-verdict--none{color:#5d636b;border-color:#5d636b}
@@ -875,12 +875,12 @@ html[data-theme="dark"] .st-x-today,html[data-theme="dark"] .st-x-hero{backgroun
    Ring-Karte, „Supertrader in drei Sätzen“ als Schiene, Karte je erkannter Methode mit Haken, „Alle 13 Methoden“ als Zeilen,
    „Weiter“, Daten & Methodik, Pillen „Diese Aktie in anderen Modulen“, Rechtssatz zentriert. Nur Darstellung. */
 body[data-page=stock] .st-k{--k2-card:#151516;--k2-dk:#232325;--k2-track:#2a2a2d;--k2-ink:#f4f5f1;--k2-hi:#fff;--k2-on-hi:#000;--k2-mut:#a1a7af;--k2-sec:#c3c7cc;--k2-line:rgba(255,255,255,.09);--k2-lime:#c8f531;--k2-lc:#c8f531}
-:root:not([data-theme=dark]) body[data-page=stock] .st-k{--k2-card:#f4f4f4;--k2-dk:#e4e4e4;--k2-track:#dcdcdc;--k2-ink:#0d0f12;--k2-hi:#000;--k2-on-hi:#fff;--k2-mut:#5f646b;--k2-sec:#3a3d42;--k2-line:rgba(0,0,0,.09);--k2-lc:#4f6b00}
+:root:not([data-theme=dark]) body[data-page=stock] .st-k{--k2-card:#f4f4f4;--k2-dk:#e4e4e4;--k2-track:#dcdcdc;--k2-ink:#0d0f12;--k2-hi:#000;--k2-on-hi:#fff;--k2-mut:#5f646b;--k2-sec:#3a3d42;--k2-line:rgba(0,0,0,.09);--k2-lc:#101318}
 body[data-page=stock] .st-k .st-k-sh{margin:26px 0 10px}
 body[data-page=stock] .st-k .st-k-sh h2{font-size:22px;color:var(--k2-hi)}
 body[data-page=stock] .st-k .st-k-sh>span{color:var(--k2-mut)}
 .st-k2-ringcard{display:flex;align-items:center;gap:16px;margin-top:16px;padding:16px;border-radius:22px;background:var(--k2-card);color:var(--k2-ink);box-shadow:0 0 0 1px rgba(200,245,49,.5),0 0 28px rgba(200,245,49,.18)}
-:root:not([data-theme=dark]) .st-k2-ringcard{box-shadow:0 0 0 1px rgba(79,107,0,.45)}
+:root:not([data-theme=dark]) .st-k2-ringcard{box-shadow:0 0 0 1px rgba(16,19,24,.45)}
 .st-k2-ringcard .vu-ring{width:96px;height:96px}
 .st-k2-ringcard .vu-ring b,.st-k2-ringcard .vu-ring span{font-size:26px;font-weight:900;letter-spacing:-.03em}
 .st-k2-ringcard>div{min-width:0}
