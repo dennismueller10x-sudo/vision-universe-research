@@ -159,3 +159,37 @@ Annahme **3 MB je Besuch (Mittel) ⇒ 100 GB ≈ 33.000 Besuche/Monat**. Schnell
 - **vu-ask:** Konto-Limit (`VU_ASK_ACCOUNT_LIMITS`, **aus**): gültiges Supabase-Token = Zählung je Konto (`VU_ASK_PER_ACCOUNT_DAILY`, 20) statt je Anschluss/Browser; ungültig = anonym; das globale Tageslimit bleibt oberster Deckel. Im Browser liegt das Token im HttpOnly-Cookie des Konto-Hosts, es greift dort erst mit einem Ticket von `vu-account` (offen, eigener PR); in der App sofort.
 - **Turnstile:** Schalter `VU_ASK_TURNSTILE` (**aus**). Einschalten braucht vom Owner: Site-Key im Meta-Tag `vu-ask-turnstile` in `ask/index.html` und Secret `TURNSTILE_SECRET`; danach `VU_ASK_TURNSTILE = "true"`.
 - Ausrollen: `frage-worker` rollt nach dem Merge selbst aus; `live-worker` nur per Dispatch oder Commit mit `[cf-deploy]` (Tor mit Realtime-Tests und Zero-Cost-Vertrag).
+
+## 8. Sicherheitsprüfung vor dem öffentlichen Start (Code-Review 22.11.2026)
+
+Umfang: Konten-Worker (Anmeldung, Sitzungen, Token-Brücke, CORS/CSRF, Stripe-Webhook, Supabase-RLS, Rollen, Tarifverwaltung), `vu-ask`, `vu-live`, statische Seite, GitHub Actions. Nur Code-Review und Unit-Tests; nichts gegen Produktion, kein Passwort benutzt, keine Zahlungslogik geändert. Keine Befunde der Stufe „kritisch“.
+
+### 8.1 Befundliste
+
+| Schwere | Bereich | Befund | Stand |
+|---|---|---|---|
+| **Hoch (Owner-Entscheidung)** | Statische Seite | Das Research-Passwort-Gate ist nur clientseitig: die Originale sind ohne Passwort abrufbar (`docs/RESEARCH_ACCESS_GATE.md`). Als Schutz für den öffentlichen Start ungeeignet. | offen: entfernen oder durch serverseitige Sperre ersetzen (z. B. Cloudflare Access/Worker-Auth) |
+| Mittel | Actions | Freie Eingabetexte standen in `run`-Blöcken (ADR-005): `intraday-pacemaker.yml`, `maintenance.yml`, `social.yml` | behoben #2271, Vertragstest WI-1 |
+| Mittel | Statische Seite | Release enthielt Worker-Quellen, `supabase/` (Migrationen), `server/`, `CLAUDE.md` | behoben #2272 (Sperrliste in `build-release.mjs`), Stand siehe PR |
+| Mittel | vu-live | Eine Verbindung konnte alle 50 Symbolplätze belegen; Symbole ungeprüft | behoben #2274 (12 je Verbindung, Symbolform) |
+| Mittel | vu-ask | Berechnete Fehlschläge gaben das Nutzerkontingent zurück | behoben #2275 |
+| Niedrig | Konten | Fehlerhafter Cookie-Kopf warf einen Worker-Fehler | behoben #2273 |
+| Niedrig | Konten | Öffentliche Kündigung/Widerruf/Kontakt senden E-Mails an frei eingegebene Adressen (Ratenbegrenzung je IP und Adresse vorhanden). Vorschlag: Turnstile vor dem Start | offen |
+| Niedrig (Geld, nur gemeldet) | Konten | Bei `VU_CANCELLATION_AUTO_PROCESS=true` würde eine öffentliche Kündigung allein über die Adresse zugeordnet. Heute aus; vor dem Einschalten Ablauf prüfen (Owner-Freigabe) | offen |
+| Niedrig | Statische Seite | Keine Content-Security-Policy (GitHub Pages setzt keine Header). Beim Hosting-Wechsel (§7) Header setzen | offen |
+| Niedrig | Statische Seite | Das App-Token geht an `research.visionuniverse.de`: eine XSS-Lücke dort würde es abgreifen. XSS-Disziplin (maskieren, kein ungeprüftes `innerHTML`) bleibt Pflicht; `innerHTML`-Stellen der übrigen Frontends nur stichprobenartig geprüft | offen |
+| Niedrig | vu-ask | `/v1/quota` ohne Origin-Prüfung; Upstream-`detail` in Fehlerantworten; `sweep()` räumt nur 1.000 Schlüssel je Lauf; Turnstile aus | offen |
+| Niedrig | vu-live | `/health` öffentlich und weckt das Durable Object | offen |
+| Niedrig | Actions | `github.ref_name` in `run`-Blöcken (nur mit Push-Recht ausnutzbar); `actions/*` auf Tags statt SHA; `maintenance.yml` läuft auf `claude/**` mit Secrets | offen |
+
+### 8.2 Geprüft, ohne Befund
+
+- **Konten-Worker:** Token-Prüfung (ES256/JWKS, `alg none` und HS256 ohne Freigabe abgelehnt, Aussteller, Zielgruppe, Rolle), HttpOnly-/`__Host-`-Cookies, CSRF (Herkunft plus eigener Kopf), CORS nur für eigene Herkunft, Weiterleitungen nur auf feste Pfade, Anmeldung und Wiederherstellung ohne Konto-Auskunft, Webhook (Signatur, Zeitfenster, Idempotenz, Zustand immer frisch bei Stripe, Live-Sperre), Preis und Tarif nur aus der Datenbank, Tarifverwaltung nur mit Rolle und erneuter Anmeldung, HTML-Ausgabe der öffentlichen Seiten maskiert.
+- **Supabase:** RLS auf allen Tabellen, `security definer`-Funktionen mit festem `search_path` und nur für `service_role` freigegeben, Nutzer-Funktionen als `security invoker` mit `auth.uid()`, Rollen nur lesbar, Registrierungstor im Auth-Hook (auch bei direktem Aufruf der Supabase-API wirksam).
+- **vu-ask:** Modellausgabe per Schema gebunden, Ausgabe im Browser maskiert, Schlüssel in keiner Antwort, Beta-Passwort nur als Hash, Kostenschranken dreifach.
+- **Statische Seite:** keine Schlüsselmuster im Repo, keine Dritt-Skripte, Nachrichten-Frontend maskiert Feeddaten, Service Worker cached keine Konto- oder API-Antworten, `postMessage`-Handler prüfen Herkunft.
+- **Actions:** kein `pull_request_target`, überall `permissions`, `ci-retry` läuft auf dem Standardzweig.
+
+Nicht geprüft: Artefakt-Vertrauen der übrigen `workflow_run`-Ketten, Secrets in Logs, Lasttest gegen Supabase/Stripe, `wrangler dev`.
+
+§7.4: Verbindungsdeckel, Nachrichtenrate, IP-Limit und `Sec-Fetch-Site`-Prüfung für vu-live sind bereits umgesetzt (siehe oben unter §7).
