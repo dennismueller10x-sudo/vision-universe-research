@@ -69,6 +69,8 @@ const LONG = "quant/data/market/discover-series-long";
 const daily = dir(SERIES, /^ref_.*\.json$/).map((f) => maybe(SERIES + "/" + f)).filter(Boolean);
 rules.push(DQ.seriesIntegrity(daily));
 rules.push(DQ.seriesFreshness(daily, expected, lag, 2));
+const successions = (maybe("quant/config/ticker-successions.json") || {}).successions || [];
+rules.push(DQ.renamedWithoutSuccessor(daily, expected, lag, 2, Object.fromEntries(successions.map((x) => [x.from, true]))));
 rules.push(DQ.implausibleJumps(daily, 0.6));
 const weekly = dir(LONG, /^ref_.*\.json$/).map((f) => maybe(LONG + "/" + f)).filter(Boolean);
 const weeklyById = new Map(weekly.map((w) => [w.securityId, w]));
