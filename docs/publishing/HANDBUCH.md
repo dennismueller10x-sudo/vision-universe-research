@@ -346,6 +346,22 @@ Wirtschaftskalender (FMP-Endpunkte geprüft in `scripts/market/probe-free-source
 - Karussell und Video: `node products/news/briefing/export-png.mjs <briefing.json> <ordner>` schreibt die Karten als PNG.
 - Die Investitionskarte erscheint nur, wenn ein Hyperscaler in den letzten 3 Tagen neue Zahlen bei der SEC gemeldet hat.
 
+**Website www.visionuniverse.de/marktbriefing/ (Owner 22.11.2026)**
+- Öffentliche Seite im Szenen-Format (eine Aussage je Bildschirm, Farbflächen Neongrün/Weiß/Schwarz, Kapitelliste am
+  Desktop, Karten als Story), erzeugt von `products/news/briefing/www.js`; Verhalten `landing/marktbriefing/mb.js`, Stil
+  `mb.css` (CSP der Website: kein Inline-Skript). Kopf, Menü und Fuß kommen aus `landing/news/index.html`.
+- Für Suche und KI-Suche steht alles im HTML: Kurzfassung „Das Wichtigste in Kürze“ (`engine.js#summary`), `NewsArticle`
+  und `BreadcrumbList` als JSON-LD, Sitemap über `landing/scripts/build.mjs` (`marktbriefingPages`).
+- Neueste Ausgabe unter `/marktbriefing/` mit PDF (`marktbriefing.pdf`) und Vorschaubild (`vorschau.png`), jede Ausgabe
+  zusätzlich unter `/marktbriefing/<sitzung>/` (ohne PDF; nur das aktuelle PDF liegt im Repo).
+- PDF im Stil des Aktienreports (`products/news/briefing/pdf.mjs`): Titelblatt „MARKTBRIEFING“, Zahlen auf einen Blick,
+  Kurzfassung mit Inhalt, je Karte eine Seite, Quellen, Rückseite.
+- Startseiten-Teaser in der Region `<!--MB:teaser-->` (eigene Zeile über den Insights-Kacheln); Menüpunkt „Marktbriefing“
+  auf allen Seiten.
+- Der Tageslauf (`content.yml`, Teil `marktbriefing`) schreibt Daten in den Datenzweig und Seite, PDF und Teaser nach `main`;
+  Cloudflare Pages baut www daraus.
+- Karten folgen der Hausregel: Plus neongrün, Minus in Schriftfarbe, kein Rot.
+
 **Ausbau in Ergebnissen (je ein PR)**
 1. Generator für Markt- und eigene Auswertungskarten aus den Repo-Artefakten, mit Frischeprüfung, als Seite im News-Bereich (erledigt, siehe oben).
 2. Themen-Radar für Angaben Dritter: täglicher Rechercheauftrag über die Quellenliste, Prüfung von Datum und Original,

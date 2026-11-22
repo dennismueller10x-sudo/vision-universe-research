@@ -11,7 +11,7 @@
   var isNode = typeof module !== "undefined" && module.exports;
 
   var W = 1080, H = 1350, PAD = 72, IN = W - 2 * PAD;
-  var C = { bg: "#08080a", fg: "#f4f5f1", mut: "#8b8d86", dim: "#5b5d57", lime: "#c8f531", red: "#ff5a4e", line: "#25262a", card: "#111114", soft: "#c9cbc4" };
+  var C = { bg: "#08080a", fg: "#f4f5f1", mut: "#8b8d86", dim: "#5b5d57", lime: "#c8f531", line: "#25262a", card: "#111114", soft: "#c9cbc4" };
   var TYPE_TAG = { MARKET: null, OWN: "Eigene Auswertung", THIRD: "Angabe Dritter" };
 
   function esc(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
@@ -19,7 +19,7 @@
   function sign(x) { return x > 0 ? "+" : x < 0 ? "−" : ""; }
   function pct(x, d) { return sign(x) + num(x, d) + " %"; }
   function fmt(v, unit, d) { return unit === "bp" ? sign(v) + num(v, 0) + " bp" : unit === "%" ? pct(v, d) : num(v, d == null ? 0 : d) + (unit || ""); }
-  function tone(v) { return v < 0 ? C.red : v > 0 ? C.lime : C.fg; }
+  function tone(v) { return v > 0 ? C.lime : C.fg; }  /* Hausregel: Plus neongrün, Minus in der Schriftfarbe, kein Rot */
   function deDate(iso) { return iso.slice(8, 10) + "." + iso.slice(5, 7) + "." + iso.slice(0, 4); }
 
   /* Zeilenumbruch nach geschätzter Laufweite (Inter). */
@@ -39,11 +39,11 @@
 
   function frame(card, i, n, session) {
     var s = '<rect width="' + W + '" height="' + H + '" fill="' + C.bg + '"/>';
-    s += '<text x="' + PAD + '" y="96" font-size="24" font-weight="700" letter-spacing="3" fill="' + C.lime + '">VISION UNIVERSE <tspan fill="' + C.mut + '" font-weight="600">· CLOSING BELL</tspan></text>';
+    s += '<text x="' + PAD + '" y="96" font-size="24" font-weight="700" letter-spacing="3" fill="' + C.lime + '">VISION UNIVERSE <tspan fill="' + C.mut + '" font-weight="600">· MARKTBRIEFING</tspan></text>';
     s += '<text x="' + (W - PAD) + '" y="96" font-size="24" font-weight="600" letter-spacing="3" fill="' + C.mut + '" text-anchor="end">' + esc(deDate(session)) + " · " + (i + 1) + "/" + n + "</text>";
     s += '<line x1="' + PAD + '" x2="' + (W - PAD) + '" y1="' + (H - 78) + '" y2="' + (H - 78) + '" stroke="' + C.line + '"/>';
     s += '<text x="' + PAD + '" y="' + (H - 40) + '" font-size="19" font-weight="700" fill="' + C.fg + '">Vision Universe <tspan fill="' + C.mut + '" font-weight="500">· Marktbriefing</tspan></text>';
-    s += '<text x="' + (W - PAD) + '" y="' + (H - 40) + '" font-size="19" font-weight="700" fill="' + C.lime + '" text-anchor="end">research.visionuniverse.de</text>';
+    s += '<text x="' + (W - PAD) + '" y="' + (H - 40) + '" font-size="19" font-weight="700" fill="' + C.lime + '" text-anchor="end">www.visionuniverse.de</text>';
     return s;
   }
 
@@ -129,18 +129,17 @@
     return s;
   }
 
+  /* Einordnung: jede Phase eine Zeile, jeder Tag ein Punkt (keine überlappenden Säulen). */
+  var MS = ["Jan.", "Feb.", "März", "Apr.", "Mai", "Juni", "Juli", "Aug.", "Sep.", "Okt.", "Nov.", "Dez."];
   function timeline(tl, y, h) {
-    var t0 = Date.parse(tl.from), t1 = Date.parse(tl.to.slice(0, 4) + "-12-31"), s = "";
-    var xs = function (d) { return PAD + (Date.parse(d) - t0) / (t1 - t0) * IN; };
-    var max = Math.max.apply(null, tl.days.map(function (d) { return Math.abs(d[1]); }).concat([5]));
-    var recent = tl.days.filter(function (d) { return (Date.parse(tl.to) - Date.parse(d[0])) / 864e5 <= 21; });
-    tl.days.forEach(function (d) {
-      var hot = recent.indexOf(d) >= 0, bh = Math.abs(d[1]) / max * h;
-      s += '<rect x="' + (xs(d[0]) - 5) + '" y="' + (y + h - bh) + '" width="10" height="' + bh + '" rx="4" fill="' + (hot ? C.lime : C.dim) + '"/>';
+    var eps = tl.episodes || [], s = "", n = Math.max(1, eps.length), rh = Math.min(64, h / n), r = Math.min(13, rh * 0.32);
+    eps.forEach(function (e, i) {
+      var yy = y + i * rh + rh / 2, lab = MS[+e.from.slice(5, 7) - 1] + " " + e.from.slice(0, 4);
+      s += '<text x="' + PAD + '" y="' + (yy + 9) + '" font-size="26" font-weight="800" fill="' + (e.current ? C.lime : C.fg) + '">' + esc(lab) + "</text>";
+      e.days.forEach(function (d, k) { s += '<circle cx="' + (PAD + 200 + r + k * (r * 2 + 10)) + '" cy="' + yy + '" r="' + r + '" fill="' + (e.current ? C.lime : C.fg) + '"/>'; });
+      s += '<text x="' + (W - PAD) + '" y="' + (yy + 9) + '" font-size="26" font-weight="800" fill="' + (e.current ? C.lime : C.mut) + '" text-anchor="end">' + esc(pct(e.extreme, 1)) + "</text>";
+      s += '<line x1="' + PAD + '" x2="' + (W - PAD) + '" y1="' + (y + (i + 1) * rh) + '" y2="' + (y + (i + 1) * rh) + '" stroke="' + C.line + '"/>';
     });
-    recent.forEach(function (d, i) { s += '<text x="' + (xs(d[0]) - 16) + '" y="' + (y + 20 + i * 28) + '" font-size="22" font-weight="800" fill="' + C.lime + '" text-anchor="end">' + esc(d[0].slice(8, 10) + "." + d[0].slice(5, 7) + ". " + pct(d[1], 1)) + "</text>"; });
-    s += '<line x1="' + PAD + '" x2="' + (W - PAD) + '" y1="' + (y + h) + '" y2="' + (y + h) + '" stroke="' + C.line + '"/>';
-    for (var yr = +tl.from.slice(0, 4); yr <= +tl.to.slice(0, 4); yr += 2) s += '<text x="' + xs(yr + "-01-01") + '" y="' + (y + h + 34) + '" font-size="18" fill="' + C.dim + '" text-anchor="middle">' + yr + "</text>";
     return s;
   }
 
@@ -153,7 +152,7 @@
         var pts = card.chart.points, vals = pts.map(function (p) { return p[1]; });
         var lo = Math.floor(Math.min.apply(null, vals.concat([0]))), hi = Math.ceil(Math.max.apply(null, vals.concat([0])));
         var xl = []; pts.forEach(function (p, i) { var t = new Date(p[0]); if (t.getUTCMinutes() === 30) xl.push([i, t.toLocaleTimeString("de-DE", { timeZone: "Europe/Berlin", hour: "2-digit", minute: "2-digit" })]); });
-        s += lineChart(pts, PAD, y + 40, 860, bottom - y - 100, { y0: lo, y1: hi, col: vals[vals.length - 1] < 0 ? C.red : C.lime, yfmt: function (v) { return sign(v) + num(v, 0) + " %"; }, xl: xl.filter(function (_, k) { return k % 1 === 0; }) });
+        s += lineChart(pts, PAD, y + 40, 860, bottom - y - 100, { y0: lo, y1: hi, col: vals[vals.length - 1] < 0 ? C.fg : C.lime, yfmt: function (v) { return sign(v) + num(v, 0) + " %"; }, xl: xl.filter(function (_, k) { return k % 1 === 0; }) });
       }
     } else if (card.bars && card.bars2) {
       var a = barRows(card.bars.rows, y, { unit: card.bars.unit, neutral: card.bars.neutral, rowH: 76 }); s += a.svg; y += a.h + 16;
@@ -162,7 +161,7 @@
       s += barRows(card.bars.rows, y, { unit: card.bars.unit, neutral: card.bars.neutral }).svg;
     } else if (card.groups) {
       card.groups.forEach(function (g, gi) {
-        s += '<text x="' + PAD + '" y="' + (y + 10) + '" font-size="24" font-weight="700" fill="' + (gi ? C.red : C.lime) + '">' + esc(g.label) + "</text>";
+        s += '<text x="' + PAD + '" y="' + (y + 10) + '" font-size="24" font-weight="700" fill="' + (gi ? C.fg : C.lime) + '">' + esc(g.label) + "</text>";
         var r = barRows(g.rows, y + 24, { unit: "%", max: 20, rowH: 76 }); s += r.svg; y += r.h + 54;
       });
     } else if (card.timeline) {
@@ -174,7 +173,7 @@
         var x = PAD + i * (bw + gap);
         s += '<rect x="' + x + '" y="' + y + '" width="' + bw + '" height="200" rx="22" fill="' + C.card + '" stroke="' + C.line + '"/>';
         s += '<text x="' + (x + 26) + '" y="' + (y + 44) + '" font-size="22" font-weight="600" fill="' + C.mut + '">' + esc(p.label) + "</text>";
-        s += '<text x="' + (x + 26) + '" y="' + (y + 116) + '" font-size="58" font-weight="800"><tspan fill="' + C.lime + '">' + num(p.a, 0) + '</tspan><tspan fill="' + C.dim + '"> / </tspan><tspan fill="' + C.red + '">' + num(p.b, 0) + "</tspan></text>";
+        s += '<text x="' + (x + 26) + '" y="' + (y + 116) + '" font-size="58" font-weight="800"><tspan fill="' + C.lime + '">' + num(p.a, 0) + '</tspan><tspan fill="' + C.dim + '"> / </tspan><tspan fill="' + C.fg + '">' + num(p.b, 0) + "</tspan></text>";
         s += textBlock(x + 26, y + 160, p.sub, { size: 19, fill: C.mut, w: bw - 52, lh: 23 }).svg;
       });
       y += 260;
@@ -219,7 +218,7 @@
     }).join("\n");
     var arch = (o.archive || []).slice(0, 20).map(function (d) { return '<a href="/news/marktbriefing/' + d + '/"' + (d === b.session ? ' aria-current="page"' : "") + ">" + deDate(d) + "</a>"; }).join(" ");
     return '<!doctype html>\n<html lang="de">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">\n' +
-      '<meta name="robots" content="noindex,follow">\n<title>Closing Bell ' + deDate(b.session) + ' · Marktbriefing · Vision Universe</title>\n' +
+      '<meta name="robots" content="noindex,follow">\n<title>Marktbriefing ' + deDate(b.session) + ' · Vision Universe</title>\n' +
       '<meta name="description" content="' + esc(b.cards[0] ? b.cards[0].title : "Marktbriefing") + ' – das Marktbriefing von Vision Universe zum US-Handelstag ' + deDate(b.session) + '.">\n' +
       '<link rel="canonical" href="https://research.visionuniverse.de' + esc(o.canonical || "/news/marktbriefing/") + '">\n' +
       '<link rel="preload" href="/assets/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>\n<link rel="stylesheet" href="/assets/site-navigation.css">\n' +
@@ -229,7 +228,7 @@
       ".mb-card figcaption{font-size:13px;color:#8b8d86;margin-top:8px;line-height:1.4}.mb a{color:#c8f531}.mb-arch{display:flex;flex-wrap:wrap;gap:8px;font-size:14px}" +
       ".mb-arch a{padding:4px 10px;border:1px solid #25262a;border-radius:999px;text-decoration:none}.mb-arch a[aria-current]{border-color:#c8f531}.mb-legal{font-size:13px;color:#8b8d86;border-top:1px solid #25262a;padding-top:16px}</style>\n" +
       '</head>\n<body data-view="news"><vu-navigation></vu-navigation><script src="/assets/site-navigation.js"><\/script>\n<main class="mb">\n' +
-      '<p style="margin:0;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#c8f531;font-weight:700">Marktbriefing · Closing Bell</p>\n' +
+      '<p style="margin:0;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#c8f531;font-weight:700">Marktbriefing</p>\n' +
       "<h1>US-Handelstag " + deDate(b.session) + "</h1>\n" +
       "<p>" + n + " Karten: " + b.counts.MARKET + " Marktdaten, " + b.counts.OWN + " eigene Auswertungen, " + b.counts.THIRD + " Angaben Dritter. Indizes über ETF-Proxies.</p>\n" +
       cards + "\n" +
