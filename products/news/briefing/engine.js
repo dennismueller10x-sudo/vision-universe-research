@@ -139,7 +139,7 @@
       ].filter(Boolean),
       chart: base && intra.length > 10 ? { kind: "intraday", label: "Nasdaq 100 im Tagesverlauf, gegen Vortagesschluss",
         points: intra.map(function (p) { return [p[0], round((p[1] / base - 1) * 100, 3)]; }) } : null,
-      source: "Indizes über ETF-Proxies (QQQ, SPY) · Tiingo · Verlauf 5 Min. (IEX, verzögert)"
+      source: "Indizes über ETF-Proxies (QQQ, SPY) · Tagesverlauf in 5-Minuten-Schritten, verzögert"
     };
   }
 
@@ -153,7 +153,7 @@
       : up === rows.length ? "Weltweit grün: " + sorted[sorted.length - 1].label + " am stärksten"
       : sorted[sorted.length - 1].label + " vorn, " + sorted[0].label + " hinten";
     return { id: "indices", type: "MARKET", kicker: "Indizes", title: title, bars: { unit: "%", rows: rows },
-      source: "ETF-Proxies (SPY, QQQ, DIA, IWM, FEZ, EEM) · Tiingo · Nikkei: FRED" };
+      source: "Indizes über ETF-Proxies (SPY, QQQ, DIA, IWM, FEZ, EEM) · Nikkei 225: FRED" };
   }
 
   function cardContext(inp, ix, session) {
@@ -176,7 +176,7 @@
           (cluster ? " Eine solche Häufung gab es zuletzt im " + monthYear(cluster) + "." : ""),
         timeline: { from: "2008-01-01", to: session, days: days },
         stats: [statWeek("Nasdaq 100", wq), statWeek("S&P 500", ws)],
-        source: pick.sym + "-Tagesschlüsse · Tiingo · eigene Auswertung" };
+        source: pick.sym + "-Tagesschlüsse seit 2008 · eigene Auswertung" };
     }
     title = pick.d.date ? "Größter Tages" + dir.toLowerCase() + " im " + pick.name + " seit " + monthYear(pick.d.date)
       : "Größter Tages" + dir.toLowerCase() + " im " + pick.name + " seit Beginn der Reihe";
@@ -184,7 +184,7 @@
       sub: pick.name + " (" + pick.sym + ") " + fmtPct(pick.d.today) + (pick.d.date ? "; zuletzt so stark am " + deDateY(pick.d.date) + " (" + fmtPct(pick.d.change) + ")." : "."),
       timeline: { from: "2008-01-01", to: session, days: days },
       stats: [statWeek("Nasdaq 100", wq), statWeek("S&P 500", ws)],
-      source: pick.sym + "-Tagesschlüsse · Tiingo · eigene Auswertung" };
+      source: pick.sym + "-Tagesschlüsse seit 2008 · eigene Auswertung" };
   }
   function findPrevCluster(days, k) {
     for (var i = days.length - 1 - k; i >= k - 1; i--) {
@@ -213,7 +213,7 @@
     return { id: "megacaps", type: "MARKET", kicker: "Die Schwergewichte",
       title: top.label + " " + fmtPct(top.value, 1) + (top.value < 0 ? ": größter Rückgang der Schwergewichte" : ": größter Anstieg der Schwergewichte"),
       bars: { unit: "%", rows: rows.slice(0, 7) },
-      source: "Tagesschlüsse · Tiingo · Hoch = höchster Schluss in 12 Monaten" };
+      source: "Tagesschlüsse · Hoch = höchster Schluss in 12 Monaten" };
   }
 
   function cardBreadth(inp, session) {
@@ -233,7 +233,7 @@
     var series = bl.slice(-40).map(function (x) { return [x.asOf, x.above50Pct]; });
     return { id: "breadth", type: "OWN", kicker: "Marktbreite", title: title,
       pairs: [
-        { label: "Gestiegen / gefallen", a: ad.advancers, b: ad.decliners, sub: Math.round(share * 100) + " % von " + thousands(ad.evaluated) + " US-Aktien im Minus" },
+        { label: "Gestiegen / gefallen", a: ad.advancers, b: ad.decliners, total: ad.evaluated, sub: Math.round(share * 100) + " % von " + thousands(ad.evaluated) + " US-Aktien im Minus" },
         { label: "52-Wochen-Hochs / -Tiefs", a: last.newHighs, b: last.newLows, sub: hlNote }
       ],
       line: { label: "Anteil der Aktien über ihrer 50-Tage-Linie", unit: "%", points: series },
@@ -252,7 +252,7 @@
       : us10 && us10.value >= 8 ? "Renditen steigen deutlich" : "Anleihen, Gold und Bitcoin";
     return { id: "rates", type: "MARKET", kicker: "Zinsen und Sachwerte", title: title,
       bars: { unit: "bp", neutral: true, rows: rows }, bars2: { unit: "%", rows: assets },
-      source: "US Treasury, Bundesbank, Tiingo · bp = Basispunkte" };
+      source: "Renditen: US Treasury, Bundesbank · bp = Basispunkte" };
   }
 
   function cardMovers(inp) {
@@ -284,7 +284,7 @@
     return { id: "valuation", type: "OWN", kicker: "Bewertung", title: title,
       sub: "Kurs geteilt durch den Gewinn je Aktie der letzten vier gemeldeten Quartale. Am jeweiligen 12-Monats-Hoch und am " + deDate(session) + (weeks ? " (" + top.label + ": Hoch vor " + weeks + " Wochen)." : "."),
       columns: { legend: ["am Kurshoch", deDateY(session)], rows: rows.map(function (r) { return { label: r.label, values: [r.a, r.b] }; }) },
-      source: "SEC EDGAR (Gewinn je Aktie, verwässert) · Tiingo · eigene Rechnung" };
+      source: "SEC EDGAR (Gewinn je Aktie, verwässert) · eigene Rechnung" };
   }
 
   /* Hyperscaler: Investitionen / operativer Cashflow. Nur wenn eine neue Meldung höchstens 3 Tage vor der Sitzung kam. */
@@ -316,10 +316,10 @@
   function cardPicture(inp) {
     var g = inp.pulse.gauges || {};
     var stats = [];
-    if (g.TREND) stats.push({ label: "Trend", text: g.TREND.valueText });
-    if (g.BREADTH) stats.push({ label: "Marktbreite", text: g.BREADTH.valueText });
-    if (g.MOMENTUM) stats.push({ label: "Momentum", text: g.MOMENTUM.valueText });
-    if (g.RISK) stats.push({ label: "Schwankung", text: g.RISK.valueText });
+    [["TREND", "Trend"], ["BREADTH", "Marktbreite"], ["MOMENTUM", "Momentum"], ["RISK", "Schwankung"]].forEach(function (k) {
+      var x = g[k[0]]; if (!x) return;
+      stats.push({ label: k[1], text: x.valueText, value: x.value, min: x.min, max: x.max, unit: x.unit, invert: !!x.invert, previous: x.previous });
+    });
     if (!stats.length) return null;
     return { id: "picture", type: "OWN", kicker: "Unser Marktbild", title: inp.pulse.headline && inp.pulse.headline.text || "Marktbild",
       textStats: stats, note: "Das Marktbild beschreibt den beobachteten Zustand aus festen Regeln. Es ist keine Prognose und keine Anlageberatung.",
