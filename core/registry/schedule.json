@@ -588,6 +588,16 @@
    "timer": "waker"
   },
   {
+   "id": "universe-master-sync",
+   "workflow": "universe-master.yml",
+   "cron": "23 11 * * 3",
+   "timer": "waker",
+   "note": "woechentlich nach security-master-weekly (Mi 09:41): Anbieterverzeichnis, CIK-Zuordnung, Company Master",
+   "inputs": {
+    "sync": true
+   }
+  },
+  {
    "id": "social-orchestrator",
    "workflow": "social-orchestrator.yml",
    "cron": "35 6 * * *",
