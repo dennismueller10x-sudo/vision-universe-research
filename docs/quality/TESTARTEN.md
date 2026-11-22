@@ -10,6 +10,7 @@ Rote Tests sollen nur kommen, wenn Code kaputt ist, nicht weil sich taeglich Mar
 2. **Zustandspruefungen** (Frische, Schema, Plausibilitaet des heutigen Standes) gehoeren in `scripts/core/data-quality.mjs` bzw. den Freshness-Monitor. Dort alarmieren sie und blockieren keinen Code-PR (CLAUDE.md).
 3. **Zustaende wie INSUFFICIENT_SAMPLE, fehlende Daten, zurueckgehaltene Evidenz** bekommen je einen Fixture-Test mit eigener Eingabe (`quant/tests/evidence-states.test.mjs`), nie einen Ticker, der heute zufaellig in diesem Zustand ist.
 4. **Rueckfallschutz:** `core/tests/test-inputs.test.mjs` verbietet neue Tests, die Live-Artefakte lesen, ausser mit Eintrag samt Grund in `core/registry/test-input-allowlist.json`. Die Liste darf nur kleiner werden.
+5. **Keine festen Live-Werte (TI-7, 22.11.2026):** Kuerzel und Daten in Erwartungen eines Tests, der Live-Daten liest, werden gezaehlt (`harteWerte` je Eintrag, Basis mit `--baseline`); die Zahl darf nur sinken. Neue Kuerzel gehoeren in eine eingefrorene Fixture (`scripts/quant/lib/data-fixture.mjs`) oder unter die Halbstand-Regel (`scripts/quant/lib/follow-artifact.mjs`); ausdrueckliche Live-Pruefungen im Monitor tragen `LIVE-PRUEFUNG: Monitor` im Kopf.
 
 ## Messung
 
@@ -88,7 +89,7 @@ Bereits umgestellt: `discover/tests/market-detail.test.mjs` und `core/tests/char
 | `discover/tests/names.test.mjs` | 13 | schema-vertrag | NIEDRIG | discover/data, quant/data |
 | `discover/tests/overview.test.mjs` | 43 | schema-vertrag | NIEDRIG | – |
 | `discover/tests/price-rounding.test.mjs` | 16 | schema-vertrag | NIEDRIG | discover/data, quant/data |
-| `discover/tests/producer-ownership.test.mjs` | 47 | schema-vertrag | NIEDRIG | discover/data |
+| `discover/tests/producer-ownership.test.mjs` | 31 | schema-vertrag | NIEDRIG | discover/data |
 | `discover/tests/scale.test.mjs` | 16 | schema-vertrag | NIEDRIG | discover/data, quant/data |
 | `discover/tests/series-reason-honest.test.mjs` | – | schema-vertrag (dyn.) | unbekannt | discover/data |
 | `discover/tests/technical-intelligence.test.mjs` | 65 | schema-vertrag | NIEDRIG | quant/data |
