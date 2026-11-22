@@ -215,34 +215,43 @@
     var C = {}; b.cards.forEach(function (c) { C[c.id] = c; });
     var chrome = o.chrome || { top: "", bottom: "" }, P = o.parts || {}, ed = b.session + "/", img = o.img || {};
     var title = "Das Marktbriefing: der Börsentag in Szenen | Vision Universe";
-    var desc = "Was an der Börse los war, als Story zum Durchwischen: eine Aussage je Bildschirm, eigene Auswertungen und Grafiken. Aktuelle Ausgabe: " + C.overview.title + " (" + dmy(b.session) + b.session.slice(0, 4) + ").";
+    var desc = "Der Börsentag als Story zum Durchwischen, in der App und im Browser: eine Aussage je Bildschirm, eigene Auswertungen, Grafiken zum Antippen und als PDF.";
     var cta = function (href, text) { return '<a class="btn" href="' + href + '"><span>' + esc(text) + "</span>" + (P.dot || "") + "</a>"; };
     var peek = (img.cards || []).map(function (c) { return '<figure class="pvp mbp"><a href="' + ed + "#" + c.anchor + '"><img src="' + ed + c.file + '" alt="' + esc(c.title) + '" loading="lazy"></a><figcaption>' + esc(c.kicker) + "</figcaption></figure>"; }).join("");
     var ld = { "@context": "https://schema.org", "@type": "CollectionPage", name: "Marktbriefing", url: SITE + "/marktbriefing/", description: desc, inLanguage: "de-DE",
       publisher: { "@type": "Organization", name: "Vision Universe", url: SITE + "/" },
       hasPart: (o.archive || [b.session]).slice(0, 20).map(function (d) { return { "@type": "NewsArticle", url: SITE + "/marktbriefing/" + d + "/", datePublished: d }; }) };
-    var main = '<main id="inhalt" class="w"><section class="ahero pvhero" data-hero><div>' +
-      '<p class="k pvk">Marktbriefing · Börsenschluss ' + dmy(b.session) + b.session.slice(0, 4) + " · " + b.cards.length + " Karten</p>" +
+    /* Allgemein gehalten (Owner 22.11.2026): die Seite stellt das Format vor, nicht eine Ausgabe. Von der Ausgabe kommen nur
+       die Bilder im Handy und der Link „Neueste Ausgabe“; beides wechselt mit jeder Veröffentlichung. */
+    var shots = [img.story0].concat((img.cards || []).map(function (c) { return c.file; })).filter(Boolean).slice(0, 4);
+    var phone = '<div class="mbphone" aria-hidden="true"><div class="mbscreen"><div class="mbbars">' + shots.map(function () { return "<i></i>"; }).join("") + "</div>" +
+      shots.map(function (f, i) { return '<img class="mbshot s' + i + '" src="' + ed + f + '" alt="">'; }).join("") + '<span class="mbtap">Antippen für die nächste Szene</span></div></div>';
+    var CHAPTERS = [["Der Tag im Verlauf", "Die Kurve des Tages zum Abfahren, Minute für Minute"], ["Indizes weltweit", "Von Nasdaq bis Nikkei auf einen Blick"],
+      ["Die Schwergewichte", "Was die größten Aktien bewegt hat"], ["Einordnung", "Wie selten so ein Tag ist, im Vergleich seit 2008"],
+      ["Marktbreite", "Wie viele Aktien wirklich mitgezogen haben"], ["Bewertung", "Was die Kursbewegung für das KGV bedeutet"],
+      ["Zinsen und Sachwerte", "Anleihen, Gold und Bitcoin"], ["Größte Bewegungen", "Die stärksten Anstiege und Rückgänge"],
+      ["Unser Marktbild", "Trend, Breite, Momentum und Schwankung"], ["Thema des Tages", "Nachrichten mit Quelle, als Angabe Dritter gekennzeichnet"]];
+    var main = '<main id="inhalt" class="w"><section class="ahero pvhero" data-hero><div>' + (P.soon || "") +
+      '<p class="k pvk">Marktbriefing · Story · Web · PDF</p>' +
       "<h1>Das <mark>Marktbriefing.</mark></h1>" +
-      '<p class="t">Was an der Börse los war, als Story zum Durchwischen: eine Aussage je Bildschirm, eigene Auswertungen und Grafiken zum Teilen.</p>' +
-      '<div class="pvcta">' + cta(ed, "Aktuelle Ausgabe ansehen") + "</div>" +
-      (o.pdf ? '<p class="mbpdf"><a href="' + ed + esc(o.pdf) + '" download>Als PDF herunterladen</a> · ' + (b.cards.length + 4) + " Seiten</p>" : "") +
-      '</div><div class="pvcover"><a class="mbcov" href="' + ed + '" aria-label="Aktuelle Ausgabe ansehen"><div class="m3 pvm" aria-hidden="true">' +
-      (img.p1 ? '<span class="pg p1"><img src="' + ed + img.p1 + '" alt=""></span>' : "") + (img.p2 ? '<span class="pg p2"><img src="' + ed + img.p2 + '" alt=""></span>' : "") +
-      (img.cover ? '<span class="cv"><img src="' + ed + img.cover + '" alt=""><i class="shine"></i></span>' : "") +
-      '</div></a><p class="pvnow"><small>Aktuelle Ausgabe</small><b>' + esc(C.overview.title) + "</b></p></div></section>" +
-      '<section class="full pvabout"><h2>Was ist das?</h2><div class="pvgrid"><div><p class="t">Das Marktbriefing erzählt einen Börsentag in Szenen: was passiert ist, wie es einzuordnen ist und was dahintersteckt. Am Handy zum Wischen, am Rechner mit Kapiteln, dazu als PDF.</p>' +
-      '<ul class="pvwhat"><li>Indizes, Schwergewichte, Zinsen und Sachwerte zum Börsenschluss</li><li>Eigene Auswertungen: Marktbreite, historische Einordnung, Bewertung</li><li>Nachrichten des Tages mit Quelle, als Angabe Dritter gekennzeichnet</li><li>Alle Grafiken als Story-Karten zum Teilen und als PDF</li></ul></div>' +
-      '<div class="pvissue"><span class="k">Aktuelle Ausgabe · ' + dmy(b.session) + b.session.slice(0, 4) + "</span><h3>" + esc(C.overview.title) + "</h3><p>" + esc((b.summary || []).slice(0, 2).join(" ")) + '</p><p><a class="mbmore" href="' + ed + '">Ausgabe ansehen →</a></p></div></div></section>' +
-      (peek ? '<section class="full"><h2>Ein Blick hinein</h2><p class="t pvnote">Drei von ' + b.cards.length + ' Karten der aktuellen Ausgabe. Antippen öffnet die Ausgabe an dieser Stelle.</p><div class="pvpeek">' + peek + "</div></section>" : "") +
-      '<section class="full"><h2>Das steht drin</h2><ol class="pvtoc">' + b.cards.map(function (c, i) { return "<li><b>" + (i + 1) + "</b><span><small>" + esc(c.kicker) + "</small>" + esc(c.title) + "</span></li>"; }).join("") + "</ol></section>" +
-      ((o.archive || []).length > 1 ? '<section class="full"><h2>Frühere Ausgaben</h2><p class="mbarch">' + o.archive.slice(1, 30).map(function (d) { return '<a href="' + d + '/">' + dmy(d) + d.slice(0, 4) + "</a>"; }).join("") + "</p></section>" : "") +
-      '<section class="full pvend"><div class="pvbox">' + (P.soon || "") + "<h2>Bald auch in der App.</h2><p class=\"t\">Das Marktbriefing gibt es in der App mit allen Kursen zum Antippen. Trag dich ein, dann sagen wir dir Bescheid, sobald die App da ist.</p>" +
+      '<p class="t">Der Börsentag als Story: Szene für Szene durchwischen, in der App und im Browser. Mit eigenen Auswertungen, Grafiken zum Antippen und auf Wunsch als PDF.</p>' +
+      '<div class="pvcta">' + cta(ed, "Neueste Ausgabe ansehen") + "</div>" +
+      '<p class="mbnew"><span>Neueste Ausgabe · ' + dmy(b.session) + b.session.slice(0, 4) + '</span><a href="' + ed + '">' + esc(C.overview.title) + "</a>" +
+      (o.pdf ? ' · <a class="mbpdfl" href="' + ed + esc(o.pdf) + '" download>PDF</a>' : "") + "</p>" +
+      '</div><div class="pvcover"><a class="mbcov" href="' + ed + '" aria-label="Neueste Ausgabe ansehen">' + phone + "</a></div></section>" +
+      '<section class="full pvabout"><h2>Was ist das?</h2><div class="pvgrid"><div><p class="t">Das Marktbriefing erzählt einen Börsentag in Szenen: was passiert ist, wie es einzuordnen ist und was dahintersteckt. Eine Aussage je Bildschirm, gebaut fürs Handy und am Rechner mit Kapiteln.</p>' +
+      '<ul class="pvwhat"><li>Indizes, Schwergewichte, Zinsen und Sachwerte zum Börsenschluss</li><li>Eigene Auswertungen: Marktbreite, historische Einordnung, Bewertung</li><li>Nachrichten des Tages mit Quelle, als Angabe Dritter gekennzeichnet</li><li>Jede Grafik als Story-Karte zum Teilen</li></ul></div>' +
+      '<div class="pvissue"><span class="k">In der App</span><h3>Das Briefing in deiner Tasche.</h3><p>In der App wischst du dich durch die Szenen, tippst auf eine Aktie und landest direkt bei ihr. Bis die App da ist, läuft das Marktbriefing hier im Browser.</p></div></div></section>' +
+      '<section class="full"><h2>So funktioniert es</h2><ol class="mbsteps"><li><b>Wischen</b><span>Eine Szene je Bildschirm: Zahl, Aussage, Grafik.</span></li><li><b>Antippen</b><span>Kurve abfahren, Punkte und Balken antippen, Karten als Story ansehen.</span></li><li><b>Mitnehmen</b><span>Karten teilen oder das ganze Briefing als PDF laden.</span></li></ol></section>' +
+      (peek ? '<section class="full"><h2>Ein Blick hinein</h2><p class="t pvnote">Karten aus der neuesten Ausgabe. Antippen öffnet die Ausgabe an dieser Stelle.</p><div class="pvpeek">' + peek + "</div></section>" : "") +
+      '<section class="full"><h2>Das steht drin</h2><ol class="pvtoc">' + CHAPTERS.map(function (c, i) { return "<li><b>" + (i + 1) + "</b><span><small>" + esc(c[1]) + "</small>" + esc(c[0]) + "</span></li>"; }).join("") + "</ol></section>" +
+      '<section class="full"><h2>Alle Ausgaben</h2><p class="mbarch">' + (o.archive || [b.session]).slice(0, 30).map(function (d) { return '<a href="' + d + '/">' + dmy(d) + d.slice(0, 4) + "</a>"; }).join("") + "</p></section>" +
+      '<section class="full pvend"><div class="pvbox">' + (P.soon || "") + "<h2>Bald auch in der App.</h2><p class=\"t\">Trag dich ein, dann sagen wir dir Bescheid, sobald die App da ist.</p>" +
       '<div class="pvcta">' + cta("../#newsletter", "Zum Start benachrichtigen") + "</div>" + (P.stores || "") + "</div></section></main>";
     return "<!doctype html>\n<html lang=\"de\">\n<head>\n<meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n<title>" + esc(title) + "</title>\n<meta name=\"description\" content=\"" + esc(desc) + "\">\n" +
       '<meta name="robots" content="noindex, nofollow">\n<link rel="canonical" href="' + SITE + '/marktbriefing/">\n<meta property="og:type" content="website">\n<meta property="og:site_name" content="Vision Universe">\n<meta property="og:locale" content="de_DE">\n' +
       '<meta property="og:url" content="' + SITE + '/marktbriefing/">\n<meta property="og:title" content="Das Marktbriefing · Vision Universe">\n<meta property="og:description" content="' + esc(desc) + '">\n' +
-      (img.cover ? '<meta property="og:image" content="' + SITE + "/marktbriefing/" + ed + img.cover + '">\n' : "") + '<meta name="twitter:card" content="summary_large_image">\n<meta name="theme-color" content="#ffffff">\n' +
+      (img.story0 ? '<meta property="og:image" content="' + SITE + "/marktbriefing/" + ed + img.story0 + '">\n' : "") + '<meta name="twitter:card" content="summary_large_image">\n<meta name="theme-color" content="#ffffff">\n' +
       '<link rel="icon" href="../assets/icon-192.png" type="image/png">\n<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">\n<link rel="preload" href="../assets/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>\n' +
       '<link rel="stylesheet" href="../web/site.css">\n<link rel="stylesheet" href="../marktbriefing/mb.css">\n<script src="../web/site.js" defer></script>\n<script src="../web/consent.js" defer></script>\n<meta name="vu-ga" content="">\n' +
       ldTag(ld) + "\n" + NAV_HEAD + "</head>\n<body>" + NAV_BODY + "\n" + chrome.top + "\n" + main + "\n" + chrome.bottom + "\n</body>\n</html>\n";

@@ -236,12 +236,18 @@ test('MB-12 Produktseite /marktbriefing/: wie Magazin und Report, führt zur Aus
   const b = Engine.buildBriefing(inputs());
   const parts = { dot: '<span class="dot"><svg></svg></span>', soon: '<p class="soon">Bald in der App verfügbar</p>', stores: '<div class="stores"><p class="cap">x</p></div>' };
   const html = Www.productPage(b, { chrome: Www.chromeFrom(CHROME), parts, archive: [SESSION, '2026-11-19'], pdf: 'marktbriefing-2026-11-20.pdf',
-    img: { cover: 'titel.png', p1: 'karte-03.png', p2: 'karte-06.png', cards: [{ file: 'karte-03.png', anchor: 'einordnung', title: 'T', kicker: 'Einordnung' }] } });
+    img: { story0: 'vorschau.png', cards: [{ file: 'karte-03.png', anchor: 'einordnung', title: 'T', kicker: 'Einordnung' }] } });
   assert.match(html, /<h1>Das <mark>Marktbriefing\.<\/mark><\/h1>/);
-  assert.match(html, /<a class="btn" href="2026-11-20\/"><span>Aktuelle Ausgabe ansehen<\/span>/);
-  assert.match(html, /href="2026-11-20\/marktbriefing-2026-11-20\.pdf" download/);
+  assert.match(html, /<a class="btn" href="2026-11-20\/"><span>Neueste Ausgabe ansehen<\/span>/);
+  assert.match(html, /href="2026-11-20\/marktbriefing-2026-11-20\.pdf" download>PDF/);
+  // App zuerst: Handy mit durchlaufenden Story-Karten, nicht der PDF-Stapel.
+  assert.match(html, /<div class="mbphone"[^>]*><div class="mbscreen">/);
+  assert.equal((html.match(/<img class="mbshot s\d"/g) || []).length, 2);
+  assert.ok(!/class="m3 pvm"/.test(html));
+  // Allgemein: die Ausgabe erscheint nur im Link „Neueste Ausgabe“, nicht in Überschriften oder im Inhalt.
+  assert.equal((html.match(new RegExp(b.cards[0].title, 'g')) || []).length, 1);
   assert.match(html, /<link rel="canonical" href="https:\/\/www\.visionuniverse\.de\/marktbriefing\/">/);
-  assert.equal((html.match(/<li><b>\d+<\/b>/g) || []).length, b.cards.length);
+  assert.equal((html.match(/<li><b>\d+<\/b>/g) || []).length, 10, 'feste Kapitel des Formats');
   assert.match(html, /<a href="2026-11-19\/">/);
   const ld = JSON.parse(html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1]);
   assert.equal(ld['@type'], 'CollectionPage');
