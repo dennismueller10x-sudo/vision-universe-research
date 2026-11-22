@@ -72,7 +72,7 @@
     subNoise: 0,                  // 3.2: Rauschschwelle der Unterteilung in σ·√Dauer (0 = aus)              // Ursprung schliesst eine Bewegung >= 4 ATR ab (Suchbudget; Korpus DEVELOPMENT: keine Genauigkeitseinbusse, 34 → 23 ms)
     /* 3.1: kalibriert auf Korpus DEVELOPMENT, Layout A und B (Ende + Mitte; scripts/technical/elliott-calibration/calibrate-weights.mjs; Koordinatensuche, Sensitivitaet ±50 % dokumentiert in
        ELLIOTT_ENGINE3_REPORT.md). Keine VALIDATION- oder HOLDOUT-Faelle verwendet. */
-    weights: { guidelines: 0.06, subdivision: 0.45, separation: 0.03, anchor: 0.45, dominance: 0.45, similarity: 0, trendContext: 0, coverage: 0.45, prior: 0.15, higherDegree: 0, tail: 0.2, residual: 0, hierarchy: 0, proportion: 0 },
+    weights: { guidelines: 0.06, subdivision: 0.45, separation: 0.03, anchor: 0.45, dominance: 0.45, similarity: 0, trendContext: 0, coverage: 0.45, prior: 0.15, higherDegree: 0, tail: 0.2, residual: 0, hierarchy: 0, proportion: 0, fresh: 0 },
     hierMargin: 0.1, hierChild: 0.5,
     wxyMargin: 0,                 // 3.3-Kandidat: Mindestvorsprung der Korrektur- vor der Motiv-Lesart fuer W und Y (0 = aus)
     subShrink: null,              // 3.2: { a, b, rMin } Zuverlaessigkeit der Unterteilung nach Unterwellen-Rauschabstand (null = aus)
@@ -527,9 +527,16 @@
         resid = clamp(1 - cm / Math.max(1e-9, Math.max(tailMove, 0.382 * lastLen)), 0, 1);
       }
       var nl = f.path.length - 1;
+      /* Aktualitaet (Elliott-Neustart, Forschung; Gewicht weights.fresh, Standard 0 = aus): ein abgeschlossenes Muster, nach dem der Kurs ein
+         Vielfaches seiner eigenen Spanne gelaufen ist, ist eher Unterwelle der Folgebewegung als die aktuelle Lesart (1 bis 1x Spanne, 0 ab 3x).
+         Gemessen mit 0,3 (311 Titel): Alter der Lesart 28 → 20 Wochen, Vorsprung unveraendert (−0,4), Korpus unveraendert (63,1 %), aber
+         Wechsel je Woche 17,0 → 22,1 % — deshalb aus. */
+      var pmin = Infinity, pmax = -Infinity;
+      for (var qq = 0; qq < f.path.length; qq++) { var pv = close[pts[f.path[qq]].i]; if (pv < pmin) pmin = pv; if (pv > pmax) pmax = pv; }
+      var fresh = f.complete && !f.internal ? clamp(1 - (tailMove / Math.max(1e-9, pmax - pmin) - 1) / 2, 0, 1) : 1;
       return { anchor: P.band(anc, [0.9, 1e9], [cfg.anchorMinRatio, 1e9]), dominance: dominanceOf(q0, endI - pts[q0].i),
                coverage: coverageOf(f.complete, nl, spec.waves),
-               prior: cfg.typePrior[f.type] === undefined ? 0.6 : cfg.typePrior[f.type], tail: tail, residual: resid };
+               prior: cfg.typePrior[f.type] === undefined ? 0.6 : cfg.typePrior[f.type], tail: tail, residual: resid, fresh: fresh };
     }
     found.forEach(function (f) { f.parts = pathParts(f); var r = 0; Object.keys(cfg.weights).forEach(function (k) { r += cfg.weights[k] * (k in f.parts ? f.parts[k] : 0.5); }); f.pre = r; });
     found.sort(function (x, y) { return y.pre - x.pre; });
@@ -605,6 +612,7 @@
         higherDegree: 0.5,
         tail: pp.tail,
         residual: pp.residual,
+        fresh: pp.fresh,
         proportion: prop.length ? Math.min.apply(null, prop) : 0.5
       };
       e.waves = legs; e.complete = f.complete; e.internal = !!f.internal; e.developingWave = dw; e.startLeg = f.path[0];

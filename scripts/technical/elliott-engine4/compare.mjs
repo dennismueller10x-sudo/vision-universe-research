@@ -29,7 +29,8 @@ const Ctx = require(join(ROOT, "quant/engines/technical/ti/context.js"));
 function arg(n, d) { const i = process.argv.indexOf("--" + n); return i >= 0 ? process.argv[i + 1] : d; }
 const K = 3, H = 26;
 const ALL_VARIANTS = { A: { ex: false, engine: { extremes: false } }, B: { ex: true, engine: { extremes: true } }, C: { ex: true, engine: { extremes: true, extremesAtr: false } },
-  D: { ex: false, engine: { extremes: false, windowYears: 3 } }, E: { ex: false, engine: { extremes: false, windowYears: 10 } }, F: { ex: false, engine: { extremes: false, windowYears: 2 } } };
+  D: { ex: false, engine: { extremes: false, windowYears: 3 } }, E: { ex: false, engine: { extremes: false, windowYears: 10 } }, F: { ex: false, engine: { extremes: false, windowYears: 2 } },
+  G: { ex: false, engine: { weights: { fresh: 0.3 } } }, H: { ex: false, engine: { weights: { fresh: 0.6 } } } };
 const PICK = (isMainThread ? arg("variants", "A,B,C") : (workerData && workerData.variants) || "A,B,C").split(",");
 const VARIANTS = Object.fromEntries(PICK.filter((k) => ALL_VARIANTS[k]).map((k) => [k, ALL_VARIANTS[k]]));
 
