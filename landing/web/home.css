@@ -449,3 +449,12 @@ html.vw-ondark .prog a{background:rgba(255,255,255,.22)}
 html.vw-ondark .prog a.done b{background:#fff}
 .fh-g{height:calc(100svh - 84px)}
 @media(min-width:1000px){.fh-g{height:auto;min-height:calc(100vh - 84px)}}
+/* Einstieg ohne feste Höhe (Safari schob den Text nach unten): Text oben, das Telefon bekommt den restlichen Platz
+   des ersten Bildschirms; --fh-copy misst web/home.js. */
+@media(max-width:999px){
+  .fh-g{height:auto;min-height:0;padding-top:18px;padding-bottom:24px;justify-content:flex-start}
+  .fh-phone{flex:none;min-height:0;height:clamp(240px,calc(100svh - 84px - var(--fh-copy,430px) - 58px),600px)}
+}
+/* Die Abschnitte bringen ihren Abstand selbst mit; die Marke data-ch (Fortschrittsleiste) fügt keinen hinzu */
+.vw main>[data-ch]{margin-top:0}
+.vw main>.vw-tv{margin-top:70px}
