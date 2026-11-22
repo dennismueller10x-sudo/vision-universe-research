@@ -479,6 +479,8 @@
     host.append(el("div", { class: "ek-find" }, [buildSearch("", false)]), sh("Lernen"),
       el("button", { class: "ek-tile ek-tap ek-row1 el-about", type: "button", "aria-haspopup": "dialog", onclick: openAbout }, [el("span", { class: "vu-hud", style: "--vu-hud:40px" }, [frag(U.glyph("book", 20))]),
         el("span", { class: "ek-f1" }, [el("b", { class: "ek-b8", text: "Wellen in 3 Minuten" }), el("span", { class: "ek-xs ek-mut", text: "Impuls, Korrektur, warum Zählungen oft wechseln" })]), frag(U.glyph("next", 18))]),
+      M.bilanzOf(state.home) ? el("a", { class: "ek-tile ek-tap ek-row1", href: "#/?bilanz=1" }, [el("span", { class: "vu-hud", style: "--vu-hud:40px" }, [frag(U.glyph("book", 20))]),
+        el("span", { class: "ek-f1" }, [el("b", { class: "ek-b8", text: "Prognose-Tagebuch" }), el("span", { class: "ek-xs ek-mut", text: M.bilanzOf(state.home).events.toLocaleString("de-DE") + " Lesarten eingefroren, Abrechnung ab " + M.dateDe((M.bilanzOf(state.home).horizons[0] || {}).firstEvaluableWeek) })]), frag(U.glyph("next", 18))]) : null,
       el("a", { class: "ek-tile ek-tap ek-gl ek-next", href: "/technical/#/" }, [el("span", { class: "ek-f1" }, [el("span", { class: "ek-eb ek-eb--l", text: "Weiter" }), el("b", { class: "ek-next-t", text: "Technical: Was zeigt der Chart?" })]), el("span", { class: "ek-rnd", "aria-hidden": "true" }, [frag(U.glyph("next", 18))])]),
       /* Prototyp end(): „Daten & Hinweise“ öffnet das Fenster des Rahmens mit dem Listen-Hinweis und dem Elliott-Satz samt Stand. */
       el("div", { class: "ek-end" }, [el("button", { type: "button", class: "ek-lk", "aria-haspopup": "dialog", text: "Daten & Hinweise", onclick: function () {
@@ -486,6 +488,13 @@
         NOTE.text = EXP_LINE + " " + INV_HELP + (asOf ? " Wochencharts, Stand " + M.dateDe(asOf) + "." : "");
         if (N && N.openHinweise && N.hinweis) { N.hinweis("ranking"); N.hinweis(NOTE); N.openHinweise(); } else pop("ek-hinweise-pop", "Daten & Hinweise", [el("p", { class: "el-sheet-p", text: NOTE.text })]);
       } })]));
+  }
+  /* Prognose-Tagebuch (Elliott-Neustart Schritt 4): elliott/bilanz.js lädt erst mit der Adresse #/?bilanz=1. */
+  function bilanzView(host) {
+    if (global.VUElliottBilanz) { global.VUElliottBilanz(host, { M: M, el: el, head: head, sh: sh, home: state.home }); return; }
+    host.append(el("div", { class: "el-skel-row", "aria-hidden": "true" }));
+    if (document.querySelector('script[src^="/elliott/bilanz.js"]')) return;
+    var sc = document.createElement("script"); sc.src = "/elliott/bilanz.js?v=ek4-1"; sc.onload = function () { render(); }; document.head.append(sc);
   }
   function zaehlbarView(host) {
     var a = M.applicableOf(state.home);
@@ -554,6 +563,7 @@
         el("button", { class: "el-link", type: "button", text: "Erneut versuchen", onclick: function () { state.status = "idle"; ensureHome(); render(); } })]));
       return host;
     }
+    if (s.bilanz && !s.suche) { bilanzView(host); return host; }
     if (s.zaehlbar && !s.suche) { zaehlbarView(host); host.append(el("p", { class: "vu-mu vu-xs el-exp", text: EXP_LINE })); return host; }
     if (s.neu && !s.reihe) { newsView(host, s); host.append(note(EXP)); return host; }
     if (!M.isFiltered(s)) { startBody(host); return host; }
@@ -593,7 +603,7 @@
     var key = M.buildHash(Object.assign({}, s, { suche: false, q: "" })) + "|" + artOf();
     var same = key === state.homeKey && state.rendered && state.status === state.renderedStatus;
     /* Start: Reiter im Inhalt und Kopfkachel (App-Konzept 2); jede andere Ansicht zeigt die Reiterzeile des Rahmens. */
-    var start = !M.isFiltered(s) && !s.zaehlbar && !s.suche;
+    var start = !M.isFiltered(s) && !s.zaehlbar && !s.bilanz && !s.suche;
     tabsMode(start);
     if (returning && same) {
       document.title = (M.isFiltered(s) ? M.filterTitle(s, state.home && state.home.rows) + " · " : "") + "Elliott · Vision Universe®";
@@ -605,13 +615,13 @@
     var searchHadFocus = document.activeElement && document.activeElement.id === "el-q", q = searchHadFocus ? document.activeElement.value : s.q;
     root.setAttribute("aria-busy", "true");
     root.classList.toggle("is-suche", !!s.suche);
-    root.classList.toggle("ek", start);
-    root.replaceChildren.apply(root, start ? [tabs(), kopf(), content(s)] : ((M.isFiltered(s) || s.zaehlbar) && !s.suche ? [] : hero(Object.assign({}, s, { q: q }))).concat(s.suche ? [] : [content(s)]));
+    root.classList.toggle("ek", start || !!s.bilanz);
+    root.replaceChildren.apply(root, start ? [tabs(), kopf(), content(s)] : ((M.isFiltered(s) || s.zaehlbar || s.bilanz) && !s.suche ? [] : hero(Object.assign({}, s, { q: q }))).concat(s.suche ? [] : [content(s)]));
     if (s.suche) global.scrollTo(0, 0);
     if (searchHadFocus) { var i = document.getElementById("el-q"); if (i) { i.focus(); try { i.setSelectionRange(i.value.length, i.value.length); } catch (e) { /* type=search */ } } }
     restoreFocus();
     root.querySelectorAll(".el-chips .is-on").forEach(function (c) { var p = c.parentNode; if (c.offsetLeft + c.offsetWidth > p.clientWidth) p.scrollLeft = c.offsetLeft - 16; });
-    document.title = (s.zaehlbar ? "Zählbar · " : M.isFiltered(s) ? M.filterTitle(s, state.home && state.home.rows) + " · " : "") + "Elliott · Vision Universe®";
+    document.title = (s.bilanz ? "Prognose-Tagebuch · " : s.zaehlbar ? "Zählbar · " : M.isFiltered(s) ? M.filterTitle(s, state.home && state.home.rows) + " · " : "") + "Elliott · Vision Universe®";
     root.setAttribute("aria-busy", "false"); root.dataset.ready = state.status === "ready" || state.status === "error" ? "true" : "false"; root.dataset.state = state.status;
     state.rendered = true; state.renderedStatus = state.status;
     if (returning) global.scrollTo(0, 0);
