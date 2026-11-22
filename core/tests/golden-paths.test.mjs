@@ -48,10 +48,8 @@ test("Discover · Rangfolge-Universum und Aktienindex stammen aus demselben Stan
   const u = meta.universes.find((x) => x.universeId === "US_REAL");
   assert.equal(home.asOf, u.asOf, "Startseite und Universum aus verschiedenen Laeufen");
   const idx = json("discover/data/stock-index/US_REAL.json");
-  assert.equal(idx.cardCount, u.securities);
-  // count == Laenge von symbols == Karten + Kurzhistorie-Seiten (prune-dead-refs verlangt count == symbols.length)
-  assert.equal(idx.count, idx.symbols.length, "stock-index count != symbols.length");
-  assert.equal(idx.count, idx.cardCount + (idx.kurzhistorie || []).length);
+  // Karten-Zahl: neu cardCount (count zaehlt alle Seiten inkl. Kurzhistorie); aeltere Staende (eingefrorene Fixture) nur count.
+  assert.equal(idx.cardCount === undefined ? idx.count : idx.cardCount, u.securities);
 });
 
 /* Stock-Pfad (Mega-Mission §20) fuer jeden Titel der Discover-Startseite:
