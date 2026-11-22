@@ -42,6 +42,18 @@ test("DQ-PX-2 · Rueckstand wird gemessen und ueber der Grenze gemeldet", () => 
   assert.deepEqual(r.histogram, { 0: 1, 1: 1, "5+": 1 });
 });
 
+test("DQ-PX-8 · veraltete Reihe mit identischer aktueller Reihe braucht einen Nachfolgeeintrag", () => {
+  const days = Array.from({ length: 70 }, (_, i) => ["2026-09-" + String(i + 1).padStart(2, "0"), 10 + i]);
+  const lag = (d, e) => (d === e ? 0 : 10);
+  const cur = s("ref_NEU", days, { to: "2026-10-02" });
+  const alt = s("ref_ALT", days, { to: "2026-09-10" });
+  const andere = s("ref_ANDERS", days.map(([d, c]) => [d, c + 1]), { to: "2026-09-10" });
+  const r = DQ.renamedWithoutSuccessor([cur, alt, andere], "2026-10-02", lag, 2, {});
+  assert.equal(r.failed, 1);
+  assert.match(r.samples[0], /ref_ALT -> ref_NEU/);
+  assert.equal(DQ.renamedWithoutSuccessor([cur, alt], "2026-10-02", lag, 2, { ref_ALT: true }).failed, 0);
+});
+
 test("DQ-PX-3 · ein unbereinigter 1:10-Reverse-Split wird als Split-Verdacht erkannt, normale Bewegung nicht", () => {
   const r = DQ.implausibleJumps([s("ref_R", [["2026-10-01", 1.0], ["2026-10-02", 10.05]]), s("ref_N", [["2026-10-01", 10], ["2026-10-02", 12]])], 0.6);
   assert.equal(r.failed, 1);

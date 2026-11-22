@@ -1,0 +1,1115 @@
+{
+ "schema": "longrun-atlas-frontend-1.0.0",
+ "label": "Forschung, nicht zertifiziert",
+ "producer": "scripts/research/longrun/atlas.mjs",
+ "source": "Kenneth R. French Data Library (Dartmouth), frei verfügbar; Owner-Freigabe der Quelle 21.11.2026",
+ "dataThrough": "202609",
+ "note": "Wertgewichtete Portfolios aller US-Aktien (CRSP) mit Pleiten und Delistings, ohne Handelskosten; keine Einzelaktien aus der App. Vergangenheit, keine Prognose.",
+ "rows": [
+  {
+   "name": "Momentum 12 Monate (Marktführer)",
+   "combo": false,
+   "from": "192701",
+   "excess": 0.066,
+   "published": 1993,
+   "excessAfterPublication": 0.041,
+   "since2008": 0.0192,
+   "decadesAhead": 9,
+   "decadesComplete": 9,
+   "windows10yAhead": 0.9601,
+   "maxDrawdown": -0.7579,
+   "marketMaxDrawdown": -0.8365,
+   "phaseRobust": true,
+   "decades": [
+    {
+     "decade": 1930,
+     "excess": 0.0404,
+     "complete": true
+    },
+    {
+     "decade": 1940,
+     "excess": 0.0799,
+     "complete": true
+    },
+    {
+     "decade": 1950,
+     "excess": 0.0758,
+     "complete": true
+    },
+    {
+     "decade": 1960,
+     "excess": 0.1342,
+     "complete": true
+    },
+    {
+     "decade": 1970,
+     "excess": 0.1062,
+     "complete": true
+    },
+    {
+     "decade": 1980,
+     "excess": 0.0179,
+     "complete": true
+    },
+    {
+     "decade": 1990,
+     "excess": 0.1092,
+     "complete": true
+    },
+    {
+     "decade": 2000,
+     "excess": 0.0054,
+     "complete": true
+    },
+    {
+     "decade": 2010,
+     "excess": 0.0167,
+     "complete": true
+    },
+    {
+     "decade": 2020,
+     "excess": 0.0666,
+     "complete": false
+    }
+   ]
+  },
+  {
+   "name": "Kurzfristige Umkehr (Verlierer des letzten Monats)",
+   "combo": false,
+   "from": "192607",
+   "excess": 0.0308,
+   "published": 1990,
+   "excessAfterPublication": -0.0423,
+   "since2008": -0.0407,
+   "decadesAhead": 6,
+   "decadesComplete": 9,
+   "windows10yAhead": 0.6125,
+   "maxDrawdown": -0.8241,
+   "marketMaxDrawdown": -0.8365,
+   "phaseRobust": false,
+   "decades": [
+    {
+     "decade": 1930,
+     "excess": 0.3401,
+     "complete": true
+    },
+    {
+     "decade": 1940,
+     "excess": 0.1033,
+     "complete": true
+    },
+    {
+     "decade": 1950,
+     "excess": 0.0338,
+     "complete": true
+    },
+    {
+     "decade": 1960,
+     "excess": 0.0246,
+     "complete": true
+    },
+    {
+     "decade": 1970,
+     "excess": 0.0764,
+     "complete": true
+    },
+    {
+     "decade": 1980,
+     "excess": -0.0117,
+     "complete": true
+    },
+    {
+     "decade": 1990,
+     "excess": -0.0594,
+     "complete": true
+    },
+    {
+     "decade": 2000,
+     "excess": -0.0609,
+     "complete": true
+    },
+    {
+     "decade": 2010,
+     "excess": 0.005,
+     "complete": true
+    },
+    {
+     "decade": 2020,
+     "excess": -0.0539,
+     "complete": false
+    }
+   ]
+  },
+  {
+   "name": "Langfristige Umkehr (Verlierer der letzten 5 Jahre)",
+   "combo": false,
+   "from": "193101",
+   "excess": 0.0317,
+   "published": 1985,
+   "excessAfterPublication": 0.0087,
+   "since2008": -0.0146,
+   "decadesAhead": 5,
+   "decadesComplete": 8,
+   "windows10yAhead": 0.6417,
+   "maxDrawdown": -0.7231,
+   "marketMaxDrawdown": -0.7136,
+   "phaseRobust": false,
+   "decades": [
+    {
+     "decade": 1940,
+     "excess": 0.1213,
+     "complete": true
+    },
+    {
+     "decade": 1950,
+     "excess": -0.0414,
+     "complete": true
+    },
+    {
+     "decade": 1960,
+     "excess": 0.0297,
+     "complete": true
+    },
+    {
+     "decade": 1970,
+     "excess": 0.057,
+     "complete": true
+    },
+    {
+     "decade": 1980,
+     "excess": -0.0408,
+     "complete": true
+    },
+    {
+     "decade": 1990,
+     "excess": 0.055,
+     "complete": true
+    },
+    {
+     "decade": 2000,
+     "excess": 0.0872,
+     "complete": true
+    },
+    {
+     "decade": 2010,
+     "excess": -0.0855,
+     "complete": true
+    },
+    {
+     "decade": 2020,
+     "excess": 0.0423,
+     "complete": false
+    }
+   ]
+  },
+  {
+   "name": "Günstig nach Buchwert",
+   "combo": false,
+   "from": "192607",
+   "excess": 0.0205,
+   "published": 1992,
+   "excessAfterPublication": 0.0268,
+   "since2008": -0.0247,
+   "decadesAhead": 6,
+   "decadesComplete": 9,
+   "windows10yAhead": 0.678,
+   "maxDrawdown": -0.9145,
+   "marketMaxDrawdown": -0.8365,
+   "phaseRobust": true,
+   "decades": [
+    {
+     "decade": 1930,
+     "excess": -0.0928,
+     "complete": true
+    },
+    {
+     "decade": 1940,
+     "excess": 0.085,
+     "complete": true
+    },
+    {
+     "decade": 1950,
+     "excess": 0.0209,
+     "complete": true
+    },
+    {
+     "decade": 1960,
+     "excess": 0.0216,
+     "complete": true
+    },
+    {
+     "decade": 1970,
+     "excess": 0.0852,
+     "complete": true
+    },
+    {
+     "decade": 1980,
+     "excess": 0.0671,
+     "complete": true
+    },
+    {
+     "decade": 1990,
+     "excess": -0.0068,
+     "complete": true
+    },
+    {
+     "decade": 2000,
+     "excess": 0.0761,
+     "complete": true
+    },
+    {
+     "decade": 2010,
+     "excess": -0.0557,
+     "complete": true
+    },
+    {
+     "decade": 2020,
+     "excess": 0.0537,
+     "complete": false
+    }
+   ]
+  },
+  {
+   "name": "Günstig nach Gewinn (KGV niedrig)",
+   "combo": false,
+   "from": "195107",
+   "excess": 0.0404,
+   "published": 1977,
+   "excessAfterPublication": 0.0262,
+   "since2008": -0.0168,
+   "decadesAhead": 5,
+   "decadesComplete": 6,
+   "windows10yAhead": 0.852,
+   "maxDrawdown": -0.4718,
+   "marketMaxDrawdown": -0.5031,
+   "phaseRobust": true,
+   "decades": [
+    {
+     "decade": 1960,
+     "excess": 0.0419,
+     "complete": true
+    },
+    {
+     "decade": 1970,
+     "excess": 0.0664,
+     "complete": true
+    },
+    {
+     "decade": 1980,
+     "excess": 0.0084,
+     "complete": true
+    },
+    {
+     "decade": 1990,
+     "excess": 0.0207,
+     "complete": true
+    },
+    {
+     "decade": 2000,
+     "excess": 0.1151,
+     "complete": true
+    },
+    {
+     "decade": 2010,
+     "excess": -0.0327,
+     "complete": true
+    },
+    {
+     "decade": 2020,
+     "excess": -0.0277,
+     "complete": false
+    }
+   ]
+  },
+  {
+   "name": "Günstig nach Cashflow",
+   "combo": false,
+   "from": "195107",
+   "excess": 0.0346,
+   "published": 1994,
+   "excessAfterPublication": 0.0032,
+   "since2008": -0.0342,
+   "decadesAhead": 4,
+   "decadesComplete": 6,
+   "windows10yAhead": 0.8444,
+   "maxDrawdown": -0.5064,
+   "marketMaxDrawdown": -0.5031,
+   "phaseRobust": true,
+   "decades": [
+    {
+     "decade": 1960,
+     "excess": 0.0703,
+     "complete": true
+    },
+    {
+     "decade": 1970,
+     "excess": 0.0796,
+     "complete": true
+    },
+    {
+     "decade": 1980,
+     "excess": 0.0175,
+     "complete": true
+    },
+    {
+     "decade": 1990,
+     "excess": -0.0069,
+     "complete": true
+    },
+    {
+     "decade": 2000,
+     "excess": 0.1029,
+     "complete": true
+    },
+    {
+     "decade": 2010,
+     "excess": -0.0499,
+     "complete": true
+    },
+    {
+     "decade": 2020,
+     "excess": -0.0473,
+     "complete": false
+    }
+   ]
+  },
+  {
+   "name": "Hohe Dividendenrendite",
+   "combo": false,
+   "from": "192707",
+   "excess": 0.0041,
+   "published": 1979,
+   "excessAfterPublication": 0.0037,
+   "since2008": -0.0159,
+   "decadesAhead": 5,
+   "decadesComplete": 9,
+   "windows10yAhead": 0.6007,
+   "maxDrawdown": -0.8693,
+   "marketMaxDrawdown": -0.8365,
+   "phaseRobust": false,
+   "decades": [
+    {
+     "decade": 1930,
+     "excess": -0.0091,
+     "complete": true
+    },
+    {
+     "decade": 1940,
+     "excess": 0.0337,
+     "complete": true
+    },
+    {
+     "decade": 1950,
+     "excess": -0.0069,
+     "complete": true
+    },
+    {
+     "decade": 1960,
+     "excess": -0.0061,
+     "complete": true
+    },
+    {
+     "decade": 1970,
+     "excess": 0.0165,
+     "complete": true
+    },
+    {
+     "decade": 1980,
+     "excess": 0.0476,
+     "complete": true
+    },
+    {
+     "decade": 1990,
+     "excess": -0.0835,
+     "complete": true
+    },
+    {
+     "decade": 2000,
+     "excess": 0.0582,
+     "complete": true
+    },
+    {
+     "decade": 2010,
+     "excess": 0.0071,
+     "complete": true
+    },
+    {
+     "decade": 2020,
+     "excess": 0.0084,
+     "complete": false
+    }
+   ]
+  },
+  {
+   "name": "Hohe operative Profitabilität",
+   "combo": false,
+   "from": "196307",
+   "excess": 0.0117,
+   "published": 2013,
+   "excessAfterPublication": 0.0246,
+   "since2008": 0.0279,
+   "decadesAhead": 3,
+   "decadesComplete": 5,
+   "windows10yAhead": 0.7016,
+   "maxDrawdown": -0.5222,
+   "marketMaxDrawdown": -0.5031,
+   "phaseRobust": false,
+   "decades": [
+    {
+     "decade": 1970,
+     "excess": -0.0207,
+     "complete": true
+    },
+    {
+     "decade": 1980,
+     "excess": -0.0073,
+     "complete": true
+    },
+    {
+     "decade": 1990,
+     "excess": 0.0027,
+     "complete": true
+    },
+    {
+     "decade": 2000,
+     "excess": 0.0375,
+     "complete": true
+    },
+    {
+     "decade": 2010,
+     "excess": 0.0113,
+     "complete": true
+    },
+    {
+     "decade": 2020,
+     "excess": 0.0371,
+     "complete": false
+    }
+   ]
+  },
+  {
+   "name": "Wenig Investition (geringes Bilanzwachstum)",
+   "combo": false,
+   "from": "196307",
+   "excess": 0.0204,
+   "published": 2008,
+   "excessAfterPublication": 0.0011,
+   "since2008": 0.0011,
+   "decadesAhead": 3,
+   "decadesComplete": 5,
+   "windows10yAhead": 0.7094,
+   "maxDrawdown": -0.5634,
+   "marketMaxDrawdown": -0.5031,
+   "phaseRobust": false,
+   "decades": [
+    {
+     "decade": 1970,
+     "excess": 0.0781,
+     "complete": true
+    },
+    {
+     "decade": 1980,
+     "excess": -0.0089,
+     "complete": true
+    },
+    {
+     "decade": 1990,
+     "excess": 0.0016,
+     "complete": true
+    },
+    {
+     "decade": 2000,
+     "excess": 0.0451,
+     "complete": true
+    },
+    {
+     "decade": 2010,
+     "excess": -0.015,
+     "complete": true
+    },
+    {
+     "decade": 2020,
+     "excess": 0.0169,
+     "complete": false
+    }
+   ]
+  },
+  {
+   "name": "Saubere Gewinne (niedrige Accruals)",
+   "combo": false,
+   "from": "196307",
+   "excess": 0.0129,
+   "published": 1996,
+   "excessAfterPublication": 0.007,
+   "since2008": 0.0157,
+   "decadesAhead": 2,
+   "decadesComplete": 5,
+   "windows10yAhead": 0.5969,
+   "maxDrawdown": -0.5709,
+   "marketMaxDrawdown": -0.5031,
+   "phaseRobust": false,
+   "decades": [
+    {
+     "decade": 1970,
+     "excess": 0.0329,
+     "complete": true
+    },
+    {
+     "decade": 1980,
+     "excess": -0.0278,
+     "complete": true
+    },
+    {
+     "decade": 1990,
+     "excess": -0.0013,
+     "complete": true
+    },
+    {
+     "decade": 2000,
+     "excess": -0.0142,
+     "complete": true
+    },
+    {
+     "decade": 2010,
+     "excess": 0.0579,
+     "complete": true
+    },
+    {
+     "decade": 2020,
+     "excess": -0.0299,
+     "complete": false
+    }
+   ]
+  },
+  {
+   "name": "Aktienrückkäufe (Nettoemission < 0)",
+   "combo": false,
+   "from": "196307",
+   "excess": 0.023,
+   "published": 2008,
+   "excessAfterPublication": 0.0062,
+   "since2008": 0.0062,
+   "decadesAhead": 5,
+   "decadesComplete": 5,
+   "windows10yAhead": 0.9328,
+   "maxDrawdown": -0.4833,
+   "marketMaxDrawdown": -0.5031,
+   "phaseRobust": true,
+   "decades": [
+    {
+     "decade": 1970,
+     "excess": 0.0411,
+     "complete": true
+    },
+    {
+     "decade": 1980,
+     "excess": 0.0471,
+     "complete": true
+    },
+    {
+     "decade": 1990,
+     "excess": 0.0072,
+     "complete": true
+    },
+    {
+     "decade": 2000,
+     "excess": 0.0309,
+     "complete": true
+    },
+    {
+     "decade": 2010,
+     "excess": 0.0069,
+     "complete": true
+    },
+    {
+     "decade": 2020,
+     "excess": 0.0036,
+     "complete": false
+    }
+   ]
+  },
+  {
+   "name": "Niedriges Beta",
+   "combo": false,
+   "from": "196307",
+   "excess": -0.0002,
+   "published": 1972,
+   "excessAfterPublication": 0.0018,
+   "since2008": -0.0244,
+   "decadesAhead": 3,
+   "decadesComplete": 5,
+   "windows10yAhead": 0.6156,
+   "maxDrawdown": -0.3853,
+   "marketMaxDrawdown": -0.5031,
+   "phaseRobust": false,
+   "decades": [
+    {
+     "decade": 1970,
+     "excess": 0.0241,
+     "complete": true
+    },
+    {
+     "decade": 1980,
+     "excess": 0.0347,
+     "complete": true
+    },
+    {
+     "decade": 1990,
+     "excess": -0.0503,
+     "complete": true
+    },
+    {
+     "decade": 2000,
+     "excess": 0.0447,
+     "complete": true
+    },
+    {
+     "decade": 2010,
+     "excess": -0.006,
+     "complete": true
+    },
+    {
+     "decade": 2020,
+     "excess": -0.0577,
+     "complete": false
+    }
+   ]
+  },
+  {
+   "name": "Niedrige Schwankung",
+   "combo": false,
+   "from": "196307",
+   "excess": -0.0085,
+   "published": 2006,
+   "excessAfterPublication": -0.0156,
+   "since2008": -0.0203,
+   "decadesAhead": 3,
+   "decadesComplete": 5,
+   "windows10yAhead": 0.5609,
+   "maxDrawdown": -0.3896,
+   "marketMaxDrawdown": -0.5031,
+   "phaseRobust": false,
+   "decades": [
+    {
+     "decade": 1970,
+     "excess": -0.0062,
+     "complete": true
+    },
+    {
+     "decade": 1980,
+     "excess": 0.0285,
+     "complete": true
+    },
+    {
+     "decade": 1990,
+     "excess": -0.0601,
+     "complete": true
+    },
+    {
+     "decade": 2000,
+     "excess": 0.0466,
+     "complete": true
+    },
+    {
+     "decade": 2010,
+     "excess": 0.0031,
+     "complete": true
+    },
+    {
+     "decade": 2020,
+     "excess": -0.0701,
+     "complete": false
+    }
+   ]
+  },
+  {
+   "name": "Niedrige Eigen-Schwankung",
+   "combo": false,
+   "from": "196307",
+   "excess": 0.0051,
+   "published": 2006,
+   "excessAfterPublication": -0.0033,
+   "since2008": -0.0057,
+   "decadesAhead": 3,
+   "decadesComplete": 5,
+   "windows10yAhead": 0.7547,
+   "maxDrawdown": -0.4374,
+   "marketMaxDrawdown": -0.5031,
+   "phaseRobust": false,
+   "decades": [
+    {
+     "decade": 1970,
+     "excess": -0.0184,
+     "complete": true
+    },
+    {
+     "decade": 1980,
+     "excess": 0.0273,
+     "complete": true
+    },
+    {
+     "decade": 1990,
+     "excess": -0.0044,
+     "complete": true
+    },
+    {
+     "decade": 2000,
+     "excess": 0.0551,
+     "complete": true
+    },
+    {
+     "decade": 2010,
+     "excess": 0.0047,
+     "complete": true
+    },
+    {
+     "decade": 2020,
+     "excess": -0.0344,
+     "complete": false
+    }
+   ]
+  },
+  {
+   "name": "Kleine Firmen",
+   "combo": false,
+   "from": "192607",
+   "excess": 0.0172,
+   "published": 1981,
+   "excessAfterPublication": -0.0206,
+   "since2008": -0.0419,
+   "decadesAhead": 5,
+   "decadesComplete": 9,
+   "windows10yAhead": 0.6319,
+   "maxDrawdown": -0.8854,
+   "marketMaxDrawdown": -0.8365,
+   "phaseRobust": false,
+   "decades": [
+    {
+     "decade": 1930,
+     "excess": 0.0509,
+     "complete": true
+    },
+    {
+     "decade": 1940,
+     "excess": 0.1504,
+     "complete": true
+    },
+    {
+     "decade": 1950,
+     "excess": -0.0079,
+     "complete": true
+    },
+    {
+     "decade": 1960,
+     "excess": 0.0937,
+     "complete": true
+    },
+    {
+     "decade": 1970,
+     "excess": 0.0301,
+     "complete": true
+    },
+    {
+     "decade": 1980,
+     "excess": -0.0634,
+     "complete": true
+    },
+    {
+     "decade": 1990,
+     "excess": -0.0468,
+     "complete": true
+    },
+    {
+     "decade": 2000,
+     "excess": 0.0932,
+     "complete": true
+    },
+    {
+     "decade": 2010,
+     "excess": -0.0496,
+     "complete": true
+    },
+    {
+     "decade": 2020,
+     "excess": -0.0452,
+     "complete": false
+    }
+   ]
+  },
+  {
+   "name": "Größte Firmen (wie S&P 500)",
+   "combo": false,
+   "from": "192607",
+   "excess": -0.0029,
+   "published": null,
+   "excessAfterPublication": null,
+   "since2008": 0.0045,
+   "decadesAhead": 5,
+   "decadesComplete": 9,
+   "windows10yAhead": 0.3459,
+   "maxDrawdown": -0.8204,
+   "marketMaxDrawdown": -0.8365,
+   "phaseRobust": false,
+   "decades": [
+    {
+     "decade": 1930,
+     "excess": 0.0014,
+     "complete": true
+    },
+    {
+     "decade": 1940,
+     "excess": -0.0153,
+     "complete": true
+    },
+    {
+     "decade": 1950,
+     "excess": 0.0006,
+     "complete": true
+    },
+    {
+     "decade": 1960,
+     "excess": -0.0133,
+     "complete": true
+    },
+    {
+     "decade": 1970,
+     "excess": -0.0136,
+     "complete": true
+    },
+    {
+     "decade": 1980,
+     "excess": 0.003,
+     "complete": true
+    },
+    {
+     "decade": 1990,
+     "excess": 0.0119,
+     "complete": true
+    },
+    {
+     "decade": 2000,
+     "excess": -0.0194,
+     "complete": true
+    },
+    {
+     "decade": 2010,
+     "excess": 0.0004,
+     "complete": true
+    },
+    {
+     "decade": 2020,
+     "excess": 0.0149,
+     "complete": false
+    }
+   ]
+  },
+  {
+   "name": "Kombination Momentum + Günstig nach Buchwert",
+   "combo": true,
+   "from": "192701",
+   "excess": 0.0497,
+   "published": 1993,
+   "excessAfterPublication": 0.0356,
+   "since2008": 0.0041,
+   "decadesAhead": 7,
+   "decadesComplete": 9,
+   "windows10yAhead": 0.8284,
+   "maxDrawdown": -0.8309,
+   "marketMaxDrawdown": -0.8365,
+   "phaseRobust": true,
+   "decades": [
+    {
+     "decade": 1930,
+     "excess": -0.0023,
+     "complete": true
+    },
+    {
+     "decade": 1940,
+     "excess": 0.0855,
+     "complete": true
+    },
+    {
+     "decade": 1950,
+     "excess": 0.0509,
+     "complete": true
+    },
+    {
+     "decade": 1960,
+     "excess": 0.079,
+     "complete": true
+    },
+    {
+     "decade": 1970,
+     "excess": 0.0984,
+     "complete": true
+    },
+    {
+     "decade": 1980,
+     "excess": 0.0452,
+     "complete": true
+    },
+    {
+     "decade": 1990,
+     "excess": 0.0531,
+     "complete": true
+    },
+    {
+     "decade": 2000,
+     "excess": 0.0463,
+     "complete": true
+    },
+    {
+     "decade": 2010,
+     "excess": -0.0167,
+     "complete": true
+    },
+    {
+     "decade": 2020,
+     "excess": 0.0712,
+     "complete": false
+    }
+   ]
+  },
+  {
+   "name": "Kombination Momentum + Profitabilität",
+   "combo": true,
+   "from": "196307",
+   "excess": 0.0402,
+   "published": 2013,
+   "excessAfterPublication": 0.0369,
+   "since2008": 0.0265,
+   "decadesAhead": 5,
+   "decadesComplete": 5,
+   "windows10yAhead": 0.9953,
+   "maxDrawdown": -0.4591,
+   "marketMaxDrawdown": -0.5031,
+   "phaseRobust": true,
+   "decades": [
+    {
+     "decade": 1970,
+     "excess": 0.043,
+     "complete": true
+    },
+    {
+     "decade": 1980,
+     "excess": 0.0066,
+     "complete": true
+    },
+    {
+     "decade": 1990,
+     "excess": 0.0575,
+     "complete": true
+    },
+    {
+     "decade": 2000,
+     "excess": 0.0259,
+     "complete": true
+    },
+    {
+     "decade": 2010,
+     "excess": 0.0155,
+     "complete": true
+    },
+    {
+     "decade": 2020,
+     "excess": 0.0569,
+     "complete": false
+    }
+   ]
+  },
+  {
+   "name": "Kombination Momentum + Rückkäufe",
+   "combo": true,
+   "from": "196307",
+   "excess": 0.0461,
+   "published": 2008,
+   "excessAfterPublication": 0.0158,
+   "since2008": 0.0158,
+   "decadesAhead": 5,
+   "decadesComplete": 5,
+   "windows10yAhead": 0.9891,
+   "maxDrawdown": -0.4919,
+   "marketMaxDrawdown": -0.5031,
+   "phaseRobust": true,
+   "decades": [
+    {
+     "decade": 1970,
+     "excess": 0.0753,
+     "complete": true
+    },
+    {
+     "decade": 1980,
+     "excess": 0.0342,
+     "complete": true
+    },
+    {
+     "decade": 1990,
+     "excess": 0.0598,
+     "complete": true
+    },
+    {
+     "decade": 2000,
+     "excess": 0.0227,
+     "complete": true
+    },
+    {
+     "decade": 2010,
+     "excess": 0.0134,
+     "complete": true
+    },
+    {
+     "decade": 2020,
+     "excess": 0.04,
+     "complete": false
+    }
+   ]
+  },
+  {
+   "name": "Kombination Profitabilität + Günstig nach Gewinn",
+   "combo": true,
+   "from": "196307",
+   "excess": 0.0233,
+   "published": 2013,
+   "excessAfterPublication": -0.0005,
+   "since2008": 0.0076,
+   "decadesAhead": 4,
+   "decadesComplete": 5,
+   "windows10yAhead": 0.9266,
+   "maxDrawdown": -0.4492,
+   "marketMaxDrawdown": -0.5031,
+   "phaseRobust": false,
+   "decades": [
+    {
+     "decade": 1970,
+     "excess": 0.0241,
+     "complete": true
+    },
+    {
+     "decade": 1980,
+     "excess": 0.002,
+     "complete": true
+    },
+    {
+     "decade": 1990,
+     "excess": 0.0134,
+     "complete": true
+    },
+    {
+     "decade": 2000,
+     "excess": 0.0778,
+     "complete": true
+    },
+    {
+     "decade": 2010,
+     "excess": -0.0099,
+     "complete": true
+    },
+    {
+     "decade": 2020,
+     "excess": 0.0084,
+     "complete": false
+    }
+   ]
+  }
+ ]
+}

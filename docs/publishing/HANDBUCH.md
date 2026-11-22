@@ -337,14 +337,35 @@ Wirtschaftskalender (FMP-Endpunkte geprüft in `scripts/market/probe-free-source
 - Engine `products/news/briefing/engine.js` (Kartenregeln, Frische, Prüfung der Themen Dritter), Darstellung
   `products/news/briefing/render.js` (jede Karte ein SVG 1080×1350), Build `products/news/briefing/build.mjs`, Tests
   `products/news/tests/marktbriefing.test.mjs`.
-- Lauf: `content.yml` Teil `marktbriefing`, Mo–Fr 23:50 UTC über den Wecker (`core/registry/schedule.json`), nur im
-  Datenzweig (`news/marktbriefing/`, Datenart `marktbriefing`). Seite `/news/marktbriefing/` (vorerst `noindex`) mit
-  Archiv je Sitzung.
+- Lauf: `content.yml` Teil `marktbriefing`, Mo–Fr 23:50 UTC über den Wecker (`core/registry/schedule.json`), intern im
+  Datenzweig (`news/marktbriefing/`, Datenart `marktbriefing`; Research-Seite `/news/marktbriefing/` bleibt `noindex`).
 - Themen Dritter liest der Build aus `news/marktbriefing/radar/<sitzung>.json` (`items[]` mit title, publisher, source,
   published, url, optional sub, quote, columns, bars, stats; optional `editorial` mit eigenem Titel der Titelkarte).
   Die Engine verwirft, was nicht vom Handelstag ist, nicht aus der Quellenliste kommt oder keine URL hat.
 - Karussell und Video: `node products/news/briefing/export-png.mjs <briefing.json> <ordner>` schreibt die Karten als PNG.
 - Die Investitionskarte erscheint nur, wenn ein Hyperscaler in den letzten 3 Tagen neue Zahlen bei der SEC gemeldet hat.
+
+**Website www.visionuniverse.de/marktbriefing/ (Owner 22.11.2026)**
+- `/marktbriefing/` ist die Produktseite wie Magazin und Aktienreport (Bausteine aus `landing/report/index.html`): Titelblatt
+  des PDF und zwei Karten als Stapel, „Was ist das?“, „Ein Blick hinein“ (drei Karten, scharf), „Das steht drin“, frühere
+  Ausgaben, „Bald auch in der App“. Knopf „Aktuelle Ausgabe ansehen“ führt zur Ausgabe.
+- Jede Ausgabe steht unter `/marktbriefing/<sitzung>/` im Szenen-Format (eine Aussage je Bildschirm, Kapitelliste am
+  Desktop, Karten als Story) mit eigenem PDF (`marktbriefing-<sitzung>.pdf`), Titelbild, Vorschaubild und Karten-Bildern.
+  Erzeugt von `products/news/briefing/www.js` (`page`, `productPage`); Verhalten `landing/marktbriefing/mb.js`, Stil `mb.css`
+  (CSP der Website: kein Inline-Skript). Kopf, Menü und Fuß kommen aus `landing/news/index.html`.
+- Für Suche und KI-Suche steht alles im HTML: Kurzfassung „Das Wichtigste in Kürze“ (`engine.js#summary`), JSON-LD
+  (`NewsArticle` und `BreadcrumbList` je Ausgabe, `CollectionPage` auf der Produktseite), Sitemap über
+  `landing/scripts/build.mjs` (`marktbriefingPages`).
+- PDF im Stil des Aktienreports (`products/news/briefing/pdf.mjs`): Titelblatt „MARKTBRIEFING“, Zahlen auf einen Blick,
+  Kurzfassung mit Inhalt, je Karte eine Seite, Quellen, Rückseite. Aufwand: ein Chromium-Lauf (rund 2 Minuten mit Installation),
+  rund 1,5 MB je Ausgabe im Repo.
+- Veröffentlichung nur auf Auslösung (Owner 22.11.2026: ob täglich, ist noch offen): `content.yml` Teil `marktbriefing` mit
+  `website=ja` baut Seite, PDF und Bilder und committet `landing/marktbriefing` und den Startseiten-Teaser nach `main`;
+  Cloudflare Pages baut www daraus. Der Zeitplan (Mo–Fr 23:50 UTC) rechnet das Briefing nur intern in den Datenzweig.
+  Seiten und PDF versprechen kein tägliches Erscheinen.
+- Startseiten-Teaser in der Region `<!--MB:teaser-->` (eigene Zeile über den Insights-Kacheln), verlinkt die Produktseite;
+  Menüpunkt „Marktbriefing“ auf allen Seiten.
+- Karten folgen der Hausregel: Plus neongrün, Minus in Schriftfarbe, kein Rot.
 
 **Ausbau in Ergebnissen (je ein PR)**
 1. Generator für Markt- und eigene Auswertungskarten aus den Repo-Artefakten, mit Frischeprüfung, als Seite im News-Bereich (erledigt, siehe oben).

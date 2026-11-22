@@ -1,0 +1,47 @@
+{
+ "schemaVersion": "adjustment-step-evidence-1.0.0",
+ "purpose": "Belegte Spruenge des Bereinigungsfaktors (adjClose/close), die der Kursanbieter in seinem bereinigten Kurs fuehrt, aber weder als splitFactor noch als Dividende meldet. Die Qualitaetspruefung (quant/engines/market-quality.js#validateAdjustmentConsistency, unexplained_adjustment_step) bleibt hart: ein Eintrag erklaert genau einen Sprung an genau diesem Tag mit genau diesem Betrag (Toleranz je Eintrag); jeder andere Sprung sperrt weiter. Kurse, Rohschluesse und splitFactors (ADR-002, quant/engines/return-series.js#splitFactors) bleiben unveraendert - der Anbieterkurs ist hier richtig, es fehlt nur die Erklaerung. Zugelassene Art bis auf Weiteres nur SPIN_OFF (Steuerung 22.11.2026); Anbieterfehler bleiben gesperrt.",
+ "kinds": ["SPIN_OFF"],
+ "records": [
+  {
+   "id": "APD-2016-10-03-SPIN-OFF-VERSUM",
+   "securityId": "ref_APD",
+   "ticker": "APD",
+   "cik": "0000002969",
+   "issuer": "Air Products and Chemicals, Inc.",
+   "kind": "SPIN_OFF",
+   "date": "2016-10-03",
+   "expectedStep": 1.09369,
+   "tolerance": 0.002,
+   "distribution": "1 Aktie Versum Materials, Inc. (VSM) je 2 APD-Aktien; regulaerer Handel von VSM ab 03.10.2016",
+   "evidence": [
+    {
+     "accession": "0001193125-16-731580",
+     "form": "8-K",
+     "filed": "2016-10-03",
+     "url": "https://www.sec.gov/Archives/edgar/data/2969/000119312516731580/d184846d8k.htm",
+     "sha256": "2f07d32eb27c64e6d3a1d4af199f8605d3240b43f14679873f625ccaea42aadf",
+     "bytes": 26521,
+     "quote": "completed the previously announced separation of its Electronics Materials business into a separate and independent public company by way of a distribution to the Company’s stockholders all of the issued and outstanding shares of common stock of the Versum Materials, Inc. (“ Versum ”) on the basis of one share of common stock of Versum for every two shares of the Company’s common stock"
+    },
+    {
+     "accession": "0001193125-16-731580",
+     "form": "8-K Ex-99.1",
+     "filed": "2016-10-03",
+     "url": "https://www.sec.gov/Archives/edgar/data/2969/000119312516731580/d184846dex991.htm",
+     "sha256": "e80075f05b596dda9dc1e24067103a73ea7d825abab8c33803302f6edfb75c4f",
+     "bytes": 8900,
+     "quote": "Air Products (NYSE:APD) announced today that it has completed the separation of its Electronics Materials Division through the spin-off of Versum Materials, Inc. (“Versum”). Versum begins “regular way” trading today on the New York Stock Exchange"
+    }
+   ],
+   "providerCheck": {
+    "provider": "tiingo",
+    "checkedAt": "2026-11-22",
+    "run": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/44997904558",
+    "source": "R2 Arbeitsablage (scripts/diagnose/adjustment-steps.mjs, research.yml Teil anpassung-diagnose)",
+    "result": "STEP_WITHOUT_EVENT",
+    "detail": "30.09.2016 close 150,34 adj 106,987363 (Faktor 0,711636) -> 03.10.2016 close 140,57 adj 109,406926 (Faktor 0,778309); Sprung 1,09369, splitFactor 1, Dividende 0 an beiden Tagen; impliziter Wertabgang 13,17 USD je APD-Aktie (= halbe Versum-Aktie)."
+   }
+  }
+ ]
+}

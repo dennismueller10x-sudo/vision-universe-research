@@ -244,14 +244,18 @@ async function main() {
   elig.decisions = elig.decisions.map((d) => {
     if (reuseIds.has(d.securityId)) { skippedReuse++; return d; }
     const e = byId.get(d.securityId); if (e) matched++;
-    const reg = !e && judgeWithRegister(d, belegt.get(d.securityId));
+    /* Register (quant/config/confirmed-non-equity.json): greift, wenn das Verzeichnis keine Zeile fuehrt ODER seine heutige
+       Zeile nichts einstuft (Name ohne Klassenbeleg, z. B. "Tennessee Valley Authority" fuer TVA-Anleihen, 22.11.2026).
+       Eine Zeile, die selbst eine Klasse belegt, entscheidet wie bisher. */
+    const jRow = e ? judgeWithDirectory(d, e, memberOf.get(d.securityId), names.get(d.securityId), opts, classes) : null;
+    const reg = !jRow && judgeWithRegister(d, belegt.get(d.securityId));
     if (reg) {
       changes.push({ securityId: d.securityId, ticker: d.ticker, from: { instrumentType: d.instrument_type, productEligibility: d.product_eligibility, activeStatus: d.active_status },
         to: { instrumentType: reg.next.instrument_type, productEligibility: reg.next.product_eligibility, activeStatus: reg.next.active_status },
         source: REGISTER_SOURCE, evidence: belegt.get(d.securityId).evidence, approval: belegt.get(d.securityId).approval, rule: reg.rule, ruleVersion: RULE_VERSION, classifier: Master.VERSION });
       return reg.next;
     }
-    const j = judgeWithDirectory(d, e, memberOf.get(d.securityId), names.get(d.securityId), opts, classes);
+    const j = jRow;
     if (!j) return d;
     changes.push({ securityId: d.securityId, ticker: d.ticker, from: { instrumentType: d.instrument_type, productEligibility: d.product_eligibility, activeStatus: d.active_status },
       to: { instrumentType: j.next.instrument_type, productEligibility: j.next.product_eligibility, activeStatus: j.next.active_status },
