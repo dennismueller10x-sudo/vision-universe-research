@@ -42,7 +42,14 @@ export function packFixture(paths, meta, root = REPO) {
   return gzipSync(JSON.stringify({ meta, files }), { level: 9 });
 }
 
-export const readFixture = (bundlePath) => JSON.parse(gunzipSync(readFileSync(bundlePath)).toString("utf8"));
+/* Geteilte Blobs (22.11.2026): eine Datei, die in mehreren Buendeln steht, liegt einmal in FROZEN_SHARED_DIR (<sha256>.gz, gzip des
+   Textes); das Buendel traegt dann { enc, ref: <sha256> } statt { enc, data }. scripts/quant/dedupe-frozen-bundles.mjs erzeugt das. */
+export const FROZEN_SHARED_DIR = "core/tests/fixtures/frozen-shared";
+export const readFixture = (bundlePath) => {
+  const b = JSON.parse(gunzipSync(readFileSync(bundlePath)).toString("utf8"));
+  for (const f of Object.values(b.files)) if (f.ref && f.data === undefined) { f.data = gunzipSync(readFileSync(join(REPO, FROZEN_SHARED_DIR, f.ref + ".gz"))).toString("utf8"); delete f.ref; }
+  return b;
+};
 
 /** Spiegelwurzel: Datenverzeichnisse aus dem Bündel, alles andere als Symlink ins Repository. */
 export function mountFixture(bundlePath, { root = REPO, into } = {}) {
