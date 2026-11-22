@@ -191,10 +191,11 @@ test('MB-9 www-Seite: alles im HTML, CSP-tauglich, strukturierte Daten, Navigati
   assert.ok(!/vu-navigation|site-navigation/.test(chrome.top), 'research-Navigation entfernt');
   assert.match(chrome.top, /href="\.\.\/marktbriefing\/" aria-current="page"/);
   assert.ok(!/href="\.\.\/news\/" aria-current/.test(chrome.top));
-  const html = Www.page(b, { chrome, archive: [SESSION], latest: SESSION, depth: 1, pdf: 'marktbriefing.pdf', image: '/marktbriefing/vorschau.png' });
+  const html = Www.page(b, { chrome, archive: [SESSION], depth: 2, pdf: 'marktbriefing-2026-11-20.pdf', image: '/marktbriefing/2026-11-20/vorschau.png' });
   assert.match(html, /<h1 class="mb-claim mb-h1">/);
   assert.match(html, /<ol class="mb-sum"><li>Am Freitag, 20\. November 2026/);
-  assert.match(html, /<link rel="canonical" href="https:\/\/www\.visionuniverse\.de\/marktbriefing\/">/);
+  assert.match(html, /<link rel="canonical" href="https:\/\/www\.visionuniverse\.de\/marktbriefing\/2026-11-20\/">/);
+  assert.match(html, /<a class="mb-back" href="\.\.\/">/);
   assert.match(html, /<meta name="robots" content="noindex, nofollow">/, 'Landing-Build schaltet erst in Produktion auf index');
   // CSP der Website: kein ausführbares Inline-Skript, kein <style>-Block.
   for (const m of html.matchAll(/<script(?![^>]*\bsrc=)([^>]*)>/g)) assert.match(m[1], /type="application\/(ld\+)?json"/, 'Inline-Skript: ' + m[0]);
@@ -203,11 +204,12 @@ test('MB-9 www-Seite: alles im HTML, CSP-tauglich, strukturierte Daten, Navigati
   assert.equal(ld[0]['@type'], 'NewsArticle');
   assert.equal(ld[1]['@type'], 'BreadcrumbList');
   assert.equal((html.match(/<template data-mb-card=/g) || []).length, b.cards.length);
-  assert.match(html, /href="marktbriefing\.pdf" download/);
+  assert.match(html, /href="marktbriefing-2026-11-20\.pdf" download/);
   assert.ok(!/tiingo|#ff5a4e/i.test(html));
-  const deep = Www.page(b, { chrome, archive: [SESSION, '2026-11-19'], latest: SESSION, depth: 2 });
+  const deep = Www.page(b, { chrome, archive: [SESSION, '2026-11-19'], depth: 2 });
+  assert.match(deep, /href="\.\.\/\.\.\/marktbriefing\/2026-11-19\/"/);
   assert.match(deep, /href="\.\.\/\.\.\/web\/site\.css"/);
-  assert.ok(!/download>PDF/.test(deep), 'Archivseiten ohne PDF');
+  assert.ok(!/download>PDF/.test(deep), 'ohne PDF kein Knopf');
 });
 
 test('MB-10 Startseiten-Teaser ersetzt nur seine Region', () => {
@@ -228,4 +230,22 @@ test('MB-11 Website-Build findet Ausgabe und Archiv', async () => {
   for (const f of ['marktbriefing/index.html', 'marktbriefing/2026-11-19/index.html', 'marktbriefing/2026-11-20/index.html']) fs.writeFileSync(path.join(tmp, f), 'x');
   assert.deepEqual(await marktbriefingPages(tmp), ['marktbriefing/index.html', 'marktbriefing/2026-11-20/index.html', 'marktbriefing/2026-11-19/index.html']);
   fs.rmSync(tmp, { recursive: true });
+});
+
+test('MB-12 Produktseite /marktbriefing/: wie Magazin und Report, führt zur Ausgabe', () => {
+  const b = Engine.buildBriefing(inputs());
+  const parts = { dot: '<span class="dot"><svg></svg></span>', soon: '<p class="soon">Bald in der App verfügbar</p>', stores: '<div class="stores"><p class="cap">x</p></div>' };
+  const html = Www.productPage(b, { chrome: Www.chromeFrom(CHROME), parts, archive: [SESSION, '2026-11-19'], pdf: 'marktbriefing-2026-11-20.pdf',
+    img: { cover: 'titel.png', p1: 'karte-03.png', p2: 'karte-06.png', cards: [{ file: 'karte-03.png', anchor: 'einordnung', title: 'T', kicker: 'Einordnung' }] } });
+  assert.match(html, /<h1>Das <mark>Marktbriefing\.<\/mark><\/h1>/);
+  assert.match(html, /<a class="btn" href="2026-11-20\/"><span>Aktuelle Ausgabe ansehen<\/span>/);
+  assert.match(html, /href="2026-11-20\/marktbriefing-2026-11-20\.pdf" download/);
+  assert.match(html, /<link rel="canonical" href="https:\/\/www\.visionuniverse\.de\/marktbriefing\/">/);
+  assert.equal((html.match(/<li><b>\d+<\/b>/g) || []).length, b.cards.length);
+  assert.match(html, /<a href="2026-11-19\/">/);
+  const ld = JSON.parse(html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1]);
+  assert.equal(ld['@type'], 'CollectionPage');
+  for (const m of html.matchAll(/<script(?![^>]*\bsrc=)([^>]*)>/g)) assert.match(m[1], /type="application\/(ld\+)?json"/);
+  assert.ok(!/<style[\s>]/.test(html));
+  assert.ok(!/jeden Börsentag|täglich/i.test(html), 'kein Versprechen eines täglichen Erscheinens');
 });
