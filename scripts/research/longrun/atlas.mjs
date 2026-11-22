@@ -101,6 +101,22 @@ export function atlasReport(res) {
   return L.join('\n') + '\n';
 }
 
+/** Kompakte Fassung für die Forschungsseite (/quant/#/forschung): nur abgeleitete Kennzahlen, keine Monatsreihen. */
+export function frontendSummary(res) {
+  const r1 = (x) => (Number.isFinite(x) ? Math.round(x * 10000) / 10000 : null);
+  return {
+    schema: 'longrun-atlas-frontend-1.0.0', label: 'Forschung, nicht zertifiziert', producer: 'scripts/research/longrun/atlas.mjs',
+    source: 'Kenneth R. French Data Library (Dartmouth), frei verfügbar; Owner-Freigabe der Quelle 21.11.2026', dataThrough: res.dataThrough,
+    note: 'Wertgewichtete Portfolios aller US-Aktien (CRSP) mit Pleiten und Delistings, ohne Handelskosten; keine Einzelaktien aus der App. Vergangenheit, keine Prognose.',
+    rows: res.rows.map((r) => ({ name: r.name, combo: r.name.startsWith('Kombination'), from: r.from, excess: r1(r.excess), published: r.afterPublication?.from ?? null,
+      excessAfterPublication: r.afterPublication ? r1(r.afterPublication.cagr - r.afterPublication.market) : null,
+      since2008: r1(r.since2008.cagr - r.since2008.market), decadesAhead: r.decadesAhead, decadesComplete: r.decadesComplete, windows10yAhead: r1(r.rel10y.winShare),
+      maxDrawdown: r1(r.maxDrawdown), marketMaxDrawdown: r1(r.marketMaxDrawdown),
+      phaseRobust: r.decadesComplete > 0 && r.decadesAhead >= (2 / 3) * r.decadesComplete && (r.afterPublication ? r.afterPublication.cagr > r.afterPublication.market : r.excess > 0),
+      decades: r.decades.map((d) => ({ decade: d.decade, excess: r1(d.excess), complete: d.complete })) })),
+  };
+}
+
 async function load(name, dir, raw) {
   if (dir) return fs.readFileSync(path.join(dir, name + '.csv'), 'latin1');
   const f = path.join(raw, name + '_CSV.zip');
@@ -117,6 +133,7 @@ async function main() {
   fs.mkdirSync(a.out, { recursive: true });
   fs.writeFileSync(path.join(a.out, 'atlas.json'), JSON.stringify(res, null, 1));
   fs.writeFileSync(path.join(a.out, 'MERKMALE.md'), atlasReport(res));
+  if (a['json-out']) fs.writeFileSync(a['json-out'], JSON.stringify(frontendSummary(res), null, 1) + '\n');
   console.log(atlasReport(res));
 }
 if (import.meta.url === `file://${process.argv[1]}`) main().catch((e) => { console.error(e); process.exit(1); });
