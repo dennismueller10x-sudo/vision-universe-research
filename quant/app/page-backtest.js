@@ -586,11 +586,59 @@
       page.innerHTML = h;
       await researchSection(page, ctx);
     }
+    await longrunSection(page);
     var more = el("details", { class: "vu-box qk-bt-more" }, [el("summary", {}, [el("b", { text: "Was zur Zertifizierung fehlt" })])]);
     var body = el("div", { class: "qk-bt-legacy" }); more.append(body); page.append(more);
     await render(body, ctx, null, true);
     var hero = body.querySelector(".q-hero"); if (hero) hero.remove();
     var picks = body.querySelector(".q-bt-picks"); if (picks) picks.remove();
+  }
+  /* LANGFRIST UND EIGENE PRUEFUNG (Owner 22.11.2026: neue Forschung ins Frontend). Zwei feste Dateien unter
+     /quant/methodology/ (Erzeuger scripts/research/longrun/atlas.mjs bzw. Bericht Backtest 2.0); keine Rechnung hier.
+     Nur in der internen Ansicht hinter der Zugangsmaske, wie die übrige Backtest-Forschung. */
+  function lrPp(v) { if (typeof v !== "number" || !isFinite(v)) return "–"; var x = v * 100; return (x > 0 ? "+" : x < 0 ? "−" : "") + Math.abs(x).toLocaleString("de-DE", { minimumFractionDigits: 1, maximumFractionDigits: 1 }); }
+  function lrPct(v) { return typeof v === "number" && isFinite(v) ? (v * 100).toLocaleString("de-DE", { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + " %" : "–"; }
+  function lrBar(v, max) {
+    var w = Math.max(2, Math.round(Math.abs(v || 0) / max * 50));
+    return '<span class="qk-bt-bar" aria-hidden="true"><i class="' + (v >= 0 ? "is-up" : "is-dn") + '" style="width:' + w + "%;" + (v >= 0 ? "left:50%" : "right:50%") + '"></i></span>';
+  }
+  async function longrunSection(page) {
+    var U = global.VUUI;
+    if (typeof global.fetch !== "function" || !U) return;
+    var get = function (u) { return global.fetch(u, { cache: "no-cache" }).then(function (resp) { return resp.ok ? resp.json() : null; }).catch(function () { return null; }); };
+    var got = await Promise.all([get("/quant/methodology/longrun-atlas-v1.json"), get("/quant/methodology/backtest2-summary-v1.json")]);
+    var atlas = got[0], b2 = got[1], html = "";
+    if (atlas && Array.isArray(atlas.rows) && atlas.rows.length) {
+      var key = function (row) { return typeof row.excessAfterPublication === "number" ? row.excessAfterPublication : row.excess; };
+      var rows = atlas.rows.filter(function (row) { return typeof key(row) === "number"; }).sort(function (a, b) { return key(b) - key(a); });
+      var max = Math.max.apply(null, [0.005].concat(rows.map(function (row) { return Math.abs(key(row)); })));
+      var since = String(atlas.dataThrough || "");
+      html += '<div class="qk-rh"><div class="qk-rh-t"><h2>Was hat über Jahrzehnte funktioniert?</h2><span class="vu-xs vu-mu qk-sort">Prozentpunkte p. a. zum Gesamtmarkt</span></div></div>' +
+        '<p class="vu-xs vu-mu">' + U.esc("Aktienmerkmale seit 1926 bzw. 1963, Daten bis " + (since.length === 6 ? since.slice(4) + "/" + since.slice(0, 4) : since) + ". Gezählt ab der ersten Veröffentlichung in der Wissenschaft, denn vorher wusste niemand davon. „Phasenfest“ heißt: in mindestens zwei Dritteln der Jahrzehnte vorn.") + "</p>" +
+        '<div class="vu-box qk-list">' + rows.map(function (row) {
+          var sub = row.decadesAhead + " von " + row.decadesComplete + " Jahrzehnten vorn · seit 2008 " + lrPp(row.since2008) + (row.phaseRobust ? " · phasenfest" : "");
+          return '<div class="qk-bt-r' + (row.combo ? " is-combo" : "") + '"><span><b>' + U.esc(row.name) + "</b><span>" + U.esc(sub) + "</span></span>" + lrBar(key(row), max) + '<b class="vu-num">' + lrPp(key(row)) + "</b></div>";
+        }).join("") + "</div>" +
+        '<div class="qk-help">' + U.help((atlas.note || "") + " Quelle: " + (atlas.source || "")) + "</div>";
+    }
+    if (b2 && Array.isArray(b2.selections)) {
+      var robust = b2.selections.filter(function (x) { return x.id === "fassung3"; })[0], bm = b2.benchmarks || {};
+      html += '<div class="qk-rh"><div class="qk-rh-t"><h2>Unsere eigene Prüfung 2014–2026</h2><span class="vu-xs vu-mu qk-sort">nur ungesehene Jahre</span></div></div>' +
+        '<p class="vu-xs vu-mu">' + U.esc(b2.question || "") + "</p>" +
+        (robust ? '<div class="qk-today qk-bt-stand"><span class="qk-tg">' + [[lrPct(robust.cagr), "Regel p. a."], [lrPct(bm.SPY && bm.SPY.cagr), "S&P 500"], [lrPct(bm.QQQ && bm.QQQ.cagr), "Nasdaq 100"]].map(function (x) {
+          return '<span><b class="vu-num">' + U.esc(x[0]) + "</b><span>" + U.esc(x[1]) + "</span></span>"; }).join("") + "</span></div>" : "") +
+        '<div class="vu-box qk-list">' + b2.selections.map(function (x) {
+          return '<div class="qk-bt-c"><span><b>' + U.esc(x.label) + "</b><span>" + U.esc(x.lesson) + "</span></span>" + U.verdict(x.verdict === "schlägt nicht" ? "weak" : "strong", x.verdict) + "</div>";
+        }).join("") + "</div>" +
+        (robust && Array.isArray(robust.rounds) ? '<details class="vu-box qk-bt-more"><summary><b>Runden im Einzelnen</b></summary><div class="qk-list">' + robust.rounds.map(function (rd) {
+          return '<div class="qk-bt-c"><span><b>' + U.esc(rd.confirm + ": " + rd.pick) + "</b><span>" + U.esc("gelernt auf " + rd.learn + " · Regel " + lrPct(rd.cagr) + " · S&P 500 " + lrPct(rd.spy) + " · Nasdaq 100 " + lrPct(rd.qqq)) + "</span></span></div>";
+        }).join("") + "</div></details>" : "") +
+        '<div class="qk-help">' + U.help(b2.method + " " + (b2.next || "")) + "</div>";
+    }
+    if (!html) return;
+    var host = el("section", { class: "qk-bt-longrun", "aria-label": "Langfristige Forschung" });
+    host.innerHTML = BR_TAG + html;
+    page.append(host);
   }
   async function render(main, ctx, ruleId, inner, fall) {
     if (!inner && global.VUUI) {

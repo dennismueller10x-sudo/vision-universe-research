@@ -133,7 +133,8 @@ export function report(res) {
   if (res.survivorsOnly) L.push('**Nur heutige Überlebende (ohne delistete Titel): zu gut gerechnet, nur zum Vergleich, nicht für das Urteil.**', '');
   if (res.diagnostics) L.push('## Datenprüfung', '', '| Gruppe | Titel | mit Sprung ×2 bis ×5 | Sprünge auf | Sprünge ab |', '|---|---|---|---|---|',
     ...Object.entries(res.diagnostics.jumps2to5).map(([g, d]) => `| ${g} | ${d.titles} | ${d.titlesWithJump} (${pct(d.titlesWithJump / d.titles)}) | ${d.jumpsUp} | ${d.jumpsDown} |`), '',
-    'Spalten der delisteten Rohreihen (Anzahl Titel): ' + (Object.entries(res.diagnostics.delistedColumns).map(([k, n]) => '`' + k + '` ' + n).join(' · ') || '–'), '');
+    'Spalten der delisteten Rohreihen (Anzahl Titel): ' + (Object.entries(res.diagnostics.delistedColumns).map(([k, n]) => '`' + k + '` ' + n).join(' · ') || '–'), '',
+    'Datenstand-Fingerabdruck: `' + (res.diagnostics.dataFingerprint || '–') + '` (gleicher Wert = gleiche Eingangsdaten).', '');
   const sections = [['Auswahl Fassung 2 (vorab festgelegt): beste Lern-Überrendite', res.walkForward], ['Auswahl Fassung 3 (zweiter Versuch nach Einsicht in Lauf 44918416065): robust, mind. 10 Positionen, Median mit Nachbarn', res.walkForwardRobust]];
   for (const [title, wf] of sections) { if (!wf) continue;
   L.push('## ' + title, '', `Urteil: **${wf.verdict}**`, '');

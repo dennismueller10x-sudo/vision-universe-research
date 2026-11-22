@@ -1,4 +1,5 @@
 // Quant-Musterdepots (scripts/quant/portfolio/model-depots.cjs): Rechenmodell vorwärts, öffentlicher Export.
+import "../../scripts/quant/lib/frozen-data.mjs"; /* eingefrorener Datenstand (scripts/quant/lib/frozen-data.mjs, 22.11.2026) */
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtempSync, readFileSync, writeFileSync, existsSync, rmSync, mkdirSync } from 'node:fs';

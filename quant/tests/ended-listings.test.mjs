@@ -4,7 +4,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { judgeEnded, indexEvidence, lagFn, referenceSession, MAX_LAG, GRACE_DAYS } from "../../scripts/market/apply-ended-listings.mjs";
+import { judgeEnded, judgeCarried, indexEvidence, lagFn, referenceSession, MAX_LAG, GRACE_DAYS } from "../../scripts/market/apply-ended-listings.mjs";
 
 const ROOT = join(import.meta.dirname, "..", "..");
 const calendar = JSON.parse(readFileSync(join(ROOT, "quant/config/market-calendar.json"), "utf8"));
@@ -65,4 +65,22 @@ test("Bezugssitzung ist die haeufigste letzte Bar des Datenbestands, nicht die U
 test("Das committete Register ist gueltig und belegt jeden Eintrag", () => {
   const ev = indexEvidence(JSON.parse(readFileSync(join(ROOT, "quant/config/listing-ended-evidence.json"), "utf8")));
   assert.deepEqual([...ev.keys()].sort(), ["ref_BWMN", "ref_CBZ", "ref_KVUE", "ref_LXP", "ref_RAMP", "ref_ROKU"]);
+});
+
+test("Regel C · Fortschreibung: nach der Bereinigung (Reihe entfernt) bleibt eine beendete Notierung ausgeschlossen", () => {
+  const d = { securityId: "ref_FL", ticker: "FL", product_eligibility: "REVIEW", product_eligibility_reason: "UNCONFIRMED:LISTING_INACTIVE", active_status: "INACTIVE" };
+  const prev = { ...d, product_eligibility: "EXCLUDED", product_eligibility_reason: "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE" };
+  const inactive = { active: false, status: "INACTIVE" }, active = { active: true, status: "ACTIVE" };
+  const j = judgeCarried(d, prev, null, inactive, null);
+  assert.equal(j.next.product_eligibility, "EXCLUDED");
+  assert.equal(j.next.product_eligibility_reason, "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE");
+  assert.equal(j.rule, "ENDED_LISTING:CARRIED");
+  assert.equal(judgeCarried(d, prev, null, active, null), null, "Stamm wieder ACTIVE: kein Beleg mehr");
+  assert.equal(judgeCarried(d, prev, { points: [["2026-11-20", 1]] }, inactive, null), null, "Reihe wieder da: Regel A/B entscheiden neu");
+  assert.equal(judgeCarried(d, { ...prev, product_eligibility_reason: "CONFIRMED_NON_EQUITY:ETF" }, null, inactive, null), null, "nur beendete Notierungen");
+  assert.equal(judgeCarried(d, null, null, inactive, null), null, "ohne Vorstand nichts");
+  /* Uebernahme (Regel B): traegt nur, solange der Registereintrag besteht */
+  const prevAcq = { ...prev, product_eligibility_reason: "CONFIRMED_LISTING_ENDED:ACQUISITION" }, dAcq = { ...d, product_eligibility: "ELIGIBLE", active_status: "ACTIVE" };
+  assert.equal(judgeCarried(dAcq, prevAcq, null, active, { securityId: "ref_FL", event: "ACQUISITION" }).next.product_eligibility, "EXCLUDED");
+  assert.equal(judgeCarried(dAcq, prevAcq, null, active, null), null, "Registereintrag entfernt: kein Beleg");
 });

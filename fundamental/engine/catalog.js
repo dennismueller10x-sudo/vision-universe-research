@@ -64,6 +64,7 @@
     { id: 'ebitda_margin', label: 'EBITDA-Marge', cat: 'profit', kind: 'ratio', q: true, deps: ['ebitda', 'revenue'], calc: function (g) { return margin(g('ebitda'), g('revenue')); }, formula: 'EBITDA ÷ Umsatz', desc: 'EBITDA im Verhältnis zum Umsatz.' },
     { id: 'net_margin', label: 'Nettomarge', cat: 'profit', kind: 'ratio', q: true, u: 'netMargin', uBasis: 'FY', deps: ['net_income', 'revenue'], calc: function (g) { return margin(g('net_income'), g('revenue')); }, formula: 'Nettogewinn ÷ Umsatz', desc: 'Anteil des Umsatzes, der als Gewinn bleibt.' },
     { id: 'fcf_margin', label: 'Free-Cashflow-Marge', cat: 'profit', kind: 'ratio', q: true, u: 'fcfMargin', uBasis: 'FY', deps: ['free_cash_flow', 'revenue'], calc: function (g) { return margin(g('free_cash_flow'), g('revenue')); }, formula: 'Free Cashflow ÷ Umsatz', desc: 'Anteil des Umsatzes, der als freier Cashflow übrig bleibt.' },
+    { id: 'rule_of_40', label: 'Rule of 40', cat: 'profit', kind: 'ratio', q: true, deps: ['revenue', 'free_cash_flow'], calc: ruleOf40, formula: 'Umsatzwachstum zum Vorjahreszeitraum + Free-Cashflow-Marge', desc: 'Verbindet Wachstum und Ertragskraft. Ab 40 % gilt die Regel als erfüllt: Ein Unternehmen wächst schnell, ohne dafür dauerhaft Geld zu verbrennen. Gebräuchlich vor allem bei Software- und Technologiewerten; bei anderen Branchen nur bedingt aussagekräftig.' },
     { id: 'roe', label: 'Eigenkapitalrendite (ROE)', cat: 'profit', kind: 'ratio', u: 'roe', uBasis: 'FY', deps: ['net_income', 'stockholders_equity'], calc: function (g) { var e = g('stockholders_equity'); return e > 0 ? div(g('net_income'), e) : null; }, formula: 'Nettogewinn ÷ Eigenkapital (Geschäftsjahresende); nur bei positivem Eigenkapital', desc: 'Gewinn im Verhältnis zum Eigenkapital der Aktionäre.' },
     { id: 'roa', label: 'Gesamtkapitalrendite (ROA)', cat: 'profit', kind: 'ratio', u: 'roa', uBasis: 'FY', deps: ['net_income', 'total_assets'], calc: function (g) { var a = g('total_assets'); return a > 0 ? div(g('net_income'), a) : null; }, formula: 'Nettogewinn ÷ Bilanzsumme', desc: 'Gewinn im Verhältnis zum gesamten Vermögen.' },
     { id: 'roic', label: 'Kapitalrendite (ROIC)', cat: 'profit', kind: 'ratio', u: 'roic', uBasis: 'FY', deps: ['operating_income', 'stockholders_equity', 'total_debt', 'cash_and_equivalents'], calc: roic, formula: 'Operatives Ergebnis × (1 − Steuerquote) ÷ (Eigenkapital + Finanzschulden − Kasse); Steuerquote = Steuern ÷ Ergebnis vor Steuern, begrenzt auf 0–50 %, ohne Angabe 21 % (US-Satz) – wie im Screener', desc: 'Rendite auf das im Geschäft gebundene Kapital.' },
@@ -113,6 +114,14 @@
   var FORMULA = {}; M.forEach(function (d) { if (d.formula) FORMULA[d.id] = d.formula; });
 
   /* Ein Anteil am Umsatz braucht positiven Umsatz; ueber 150 % ist er nicht plausibel (Banken, abweichende Umsatzzeile). */
+  /* Rule of 40: Umsatzwachstum zum Vorjahreszeitraum + Free-Cashflow-Marge; gp liest den Vorjahreszeitraum.
+     Ohne Vorjahresumsatz oder bei unplausiblen Werten (Marge ueber ±150 %, Wachstum ueber 300 %) keine Zahl. */
+  function ruleOf40(g, gp) {
+    var r = g('revenue'), r0 = gp ? gp('revenue') : null, m = margin(g('free_cash_flow'), r);
+    if (!(r0 > 0) || !isNum(m)) return null;
+    var growth = r / r0 - 1;
+    return growth <= 3 ? growth + m : null;
+  }
   function margin(x, rev) { if (!(rev > 0) || !isNum(x)) return null; var m = x / rev; return Math.abs(m) <= 1.5 ? m : null; }
   function roic(g) {
     var op = g('operating_income'), eq = g('stockholders_equity'), debt = g('total_debt'), cash = g('cash_and_equivalents');
@@ -260,7 +269,7 @@
           else r = { v: now.v / pr.v - 1, end: now.end, filed: now.filed, accn: now.accn };
         } else if (now && pr) r = { v: null, reason: 'NOT_POSITIVE' };
       } else if (def.calc) {
-        var g = getter(b, period, k), v = def.calc(g);
+        var g = getter(b, period, k), v = def.calc(g, getter(b, period, prevKey(k)));
         if (isNum(v)) { var src = baseRow(b, def.deps[0], period, k); r = { v: v, end: src ? src.end : info.end, filed: src ? src.filed : null, accn: src ? src.accn : null }; }
       }
       return Object.assign(info, r && isNum(r.v) ? r : { v: null, gap: true, reason: r && r.reason || null });
@@ -324,8 +333,9 @@
     }
     if (def.calc && def.q && def.kind === 'ratio' && def.deps.every(function (m) { var s = b.base[m]; return s && s.ttm && s.ttm.kind === 'TTM'; })) {
       var pairs = {}; def.deps.forEach(function (m) { pairs[m] = ltmPair(b, m); });
-      var v = def.calc(function (m) { return pairs[m] ? pairs[m].v : null; });
-      var pv = def.deps.every(function (m) { return pairs[m] && isNum(pairs[m].prev); }) ? def.calc(function (m) { return pairs[m].prev; }) : null;
+      // Zweites Argument: Wert des Vorjahreszeitraums (fuer Kennzahlen mit Wachstum, z. B. Rule of 40)
+      var v = def.calc(function (m) { return pairs[m] ? pairs[m].v : null; }, function (m) { return pairs[m] && isNum(pairs[m].prev) ? pairs[m].prev : null; });
+      var pv = def.deps.every(function (m) { return pairs[m] && isNum(pairs[m].prev); }) ? def.calc(function (m) { return pairs[m].prev; }, function () { return null; }) : null;
       return isNum(v) ? { v: v, end: pairs[def.deps[0]].end, through: pairs[def.deps[0]].through, prev: pv } : null;
     }
     return null;
