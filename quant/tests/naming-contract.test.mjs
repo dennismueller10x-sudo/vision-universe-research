@@ -188,7 +188,9 @@ test("Liste und Aktienseite nennen denselben Namen", async () => {
   const verzeichnis = JSON.parse(gunzipSync(
     readFileSync(join(ROOT, "quant/data/product/universe-list-v1.json.gz"))).toString("utf8"));
   const erwartet = new Map((verzeichnis.entries || []).filter((e) => e.n).map((e) => [e.s, e.n]));
-  assert.ok(erwartet.size > 6000, "das Verzeichnis traegt zu wenige Namen fuer diese Pruefung");
+  /* Relativ zum Verzeichnis statt einer festen Zahl: das Produkt schrumpft mit jeder belegten Bereinigung (6.340 -> 6.024,
+     21./22.11.2026); geprueft wird, dass fast jede Zeile einen Namen traegt (heute 5.998 von 6.021). */
+  assert.ok(erwartet.size >= 0.98 * (verzeichnis.entries || []).length && erwartet.size > 5000, "das Verzeichnis traegt zu wenige Namen fuer diese Pruefung");
 
   /* JEDER Titel, nicht eine Stichprobe. In M40 hat eine 20er-Stichprobe
      einen Fehler uebersehen, der 743 Titel betraf. */
