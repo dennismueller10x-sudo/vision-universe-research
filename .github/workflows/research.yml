@@ -2018,7 +2018,7 @@ jobs:
         run: rm -rf "$RUNNER_TEMP/v10"
 
   # --- faktor-prognose: neu (22.11.2026, Steuerung): wie gut sagen Faktoren, Profilwert und Gesamtwert (quant-v2.4.1) auf der
-  # bereinigten Basis voraus? Wie quality-marge-pit: SEC companyfacts.zip einmal, PIT-Dokumente neu bauen, dann
+  # bereinigten Basis voraus? Rohwerte aus dem privaten V10-Panel (R2-Restore, keine SEC-Abfrage), dann
   # scripts/quant/research/factor-predictive-power.cjs je Population (common = EQUITY_COMMON + ADR, all = inkl. getrennter
   # Klassen). Forschung, nicht zertifiziert; nur lesend, nichts wird committet, als Artefakt nur Kennzahlen.
   faktor-prognose:
@@ -2048,28 +2048,34 @@ jobs:
         run: |
           set -euo pipefail
           node --test quant/tests/factor-predictive-power.test.mjs
-      - name: SEC companyfacts.zip (eine Anfrage)
+      - name: Lesegeneration des privaten Archivs
+        id: g
+        run: |
+          set -euo pipefail
+          node scripts/quant/v13/archive/reader-generation.mjs >> "$GITHUB_OUTPUT"
+      # Keine SEC-Abfrage: Rohwerte aus dem privaten V10-Panel (R2), nur lesend
+      - name: V10-Panel aus R2 wiederherstellen (privater Schluessel nur in diesem Schritt)
         env:
-          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
+          READ_MANIFEST: ${{ steps.g.outputs.manifest }}
+          READ_PREFIX: ${{ steps.g.outputs.prefix }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          V13_ARCHIVE_PRIVATE_KEY: ${{ secrets.V13_ARCHIVE_PRIVATE_KEY }}
         run: |
           set -euo pipefail
-          test -n "$SEC_USER_AGENT" || { echo "::error::Secret SEC_USER_AGENT fehlt (SEC verlangt eine Kontaktangabe)"; exit 1; }
-          mkdir -p "$RUNNER_TEMP/v10"
-          python3 -I scripts/quant/v10/factor/fetch_companyfacts.py "$RUNNER_TEMP/v10"
-          test -s "$RUNNER_TEMP/v10/bulk/companyfacts.zip"
-      - name: PIT-Dokumente je Emittent (V10-Weg)
-        run: |
-          set -euo pipefail
-          P="$RUNNER_TEMP/v10"
-          node --max-old-space-size=8192 scripts/quant/v10/factor/jobs.cjs "$P"
-          python3 -I scripts/quant/v10/factor/pit_docs.py "$P/bulk/companyfacts.zip" "$P/jobs.json" "$P/docs" --workers 4
-          rm -f "$P/bulk/companyfacts.zip"
+          node scripts/quant/v13/archive/r2-restore.mjs --mode extract --parts v10-factor-panel \
+            --dest "$RUNNER_TEMP/priv" --manifest "$READ_MANIFEST" --prefix "$READ_PREFIX"
+          find "$RUNNER_TEMP/priv" -name panel.jsonl.gz -print -quit | grep -q .
       - name: Prognosekraft rechnen (nur Kennzahlen im Log)
         env:
           POPULATION: ${{ matrix.population }}
         run: |
           set -euo pipefail
-          node --max-old-space-size=12288 scripts/quant/research/factor-predictive-power.cjs --docs "$RUNNER_TEMP/v10/docs" \
+          PANEL=$(find "$RUNNER_TEMP/priv" -name panel.jsonl.gz -print -quit)
+          node --max-old-space-size=12288 scripts/quant/research/factor-predictive-power.cjs --panel "$PANEL" \
             --population "$POPULATION" --out "$RUNNER_TEMP/faktor-prognose/factor-predictive-power-$POPULATION.json"
       - uses: actions/upload-artifact@v4
         with:
@@ -2079,7 +2085,7 @@ jobs:
           if-no-files-found: error
       - name: Private Daten entfernen
         if: always()
-        run: rm -rf "$RUNNER_TEMP/v10"
+        run: rm -rf "$RUNNER_TEMP/priv"
 
   # --- anpassung-diagnose: neu (22.11.2026, Steuerung): warum sperrt der Faktorlauf eine Reihe mit
   # unexplained_adjustment_step? scripts/diagnose/adjustment-steps.mjs --blocked liest die Tagesreihen der gesperrten

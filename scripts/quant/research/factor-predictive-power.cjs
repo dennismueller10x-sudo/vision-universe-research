@@ -12,7 +12,7 @@
 // PROFILE_MEAN (Mittel der sechs Perzentile, ab vier belegten). Zusatz in "common": quality/composite/PROFILE_MEAN mit dem
 // bisherigen Margenfenster (quant-v2.4.0, bis fuenf Jahre) als Vergleich.
 // Je Signal und Horizont (1, 3, 12 Monate): IC, Q5-Q1, Trefferquote, Newey-West-p, Holm je Kennzahl, Teilzeitraeume.
-// Usage: node factor-predictive-power.cjs --docs <dir> --out <file.json> --population common|all [--loader-options '<json>']
+// Usage: node factor-predictive-power.cjs (--docs <dir> | --panel <panel.jsonl.gz>) --out <file.json> --population common|all [--loader-options '<json>']
 const fs = require('node:fs'), path = require('node:path'), zlib = require('node:zlib');
 const F = require('../v10/factor/common.cjs'), X = require('../v10/factor/factors.cjs');
 const { neweyWest, nwBandwidth } = require('../v10/factor/study.cjs');
@@ -35,7 +35,8 @@ function specs(marginId) {
   for (const f of X.FACTORS) out[f] = CONTRACT.factors[f].components.map(c => [c.id === 'operatingMarginDrawdown' && marginId ? marginId : c.id, c.weight, c.direction, NO_WINSOR.has(c.id)]);
   return out;
 }
-const SPECS = { v241: specs(null), v240: specs('operatingMarginDrawdown5y') };
+// panel: V10-Panel aus dem privaten Archiv traegt die Margenstabilitaet (v2.3) statt des Einbruchs; sonst gleiche Vertragsgewichte.
+const SPECS = { v241: specs(null), v240: specs('operatingMarginDrawdown5y'), panel: specs('operatingMarginStability') };
 
 function scoreCrossSection(rows, sp) {
   const comp = {};
@@ -134,16 +135,24 @@ function stat(rows, field, h) {
     subperiods: SUBPERIODS.map(([a, b]) => { const s = pts.filter(r => r.date >= a && r.date <= b).map(r => r[field]); const x = neweyWest(s, nwBandwidth(h)); return { from: a, to: b, n: s.length, mean: x.mean, t: x.t ?? null, positiveShare: s.length ? s.filter(v => v > 0).length / s.length : null }; }) };
 }
 
-function run(docsDir, loaderOptions, population) {
+/** Zeilen aus dem privaten V10-Panel (Rohwerte je Stichtag), gefiltert auf die Population. */
+function rowsFromPanel(panelFile, keep) {
+  const P = require('../v10/factor/panel.cjs').readPanel(panelFile, { withRaws: true });
+  const counts = { source: 'V10_PANEL', rows: 0, kept: 0 };
+  const dates = P.dates.map(d => ({ date: d.date, rows: d.rows.filter(r => { counts.rows++; const k = keep(r.id); if (k) counts.kept++; return k; }).map(r => ({ id: r.id, template: !!r.template, raws: r.raws })) }));
+  return { dates, counts };
+}
+
+function run(docsDir, loaderOptions, population, panelFile) {
   const t0 = Date.now(), log = k => process.stderr.write(k + ' ' + Math.round((Date.now() - t0) / 1000) + 's\n');
   const type = populations();
   const keep = population === 'common' ? id => RANKABLE.includes(type.get(id)) : id => type.has(id);
   const frame = F.buildFrame(loaderOptions), spy = F.spyWeekly(frame.calendar);
   log('frame');
-  const { dates, counts } = buildRows(frame, docsDir, keep, new Map(spy.bars.map(b => [b.date, b.close])));
+  const { dates, counts } = panelFile ? rowsFromPanel(panelFile, keep) : buildRows(frame, docsDir, keep, new Map(spy.bars.map(b => [b.date, b.close])));
   log('rows');
   const known = new Set(frame.listings.map(l => l.securityId));
-  const sets = population === 'common' ? { v241: '', v240: '_v240' } : { v241: '' };
+  const sets = panelFile ? { panel: '' } : population === 'common' ? { v241: '', v240: '_v240' } : { v241: '' };
   const signals = [...X.FACTORS, 'composite', 'PROFILE_MEAN'];
   const scored = dates.map(d => ({ date: d.date, rows: [] }));
   const own = {};
@@ -151,11 +160,11 @@ function run(docsDir, loaderOptions, population) {
     dates.forEach((d, k) => {
       const rows = d.rows.filter(r => known.has(r.id));
       const sc = scoreCrossSection(rows, SPECS[name]);
-      if (name === 'v241') scored[k].rows = rows.map((r, j) => ({ id: r.id, ...Object.fromEntries(signals.map(s => [s, sc[j][s]])) }));
+      if (name === 'v241' || name === 'panel') scored[k].rows = rows.map((r, j) => ({ id: r.id, ...Object.fromEntries(signals.map(s => [s, sc[j][s]])) }));
       else rows.forEach((r, j) => { const t = scored[k].rows[j]; if (t) for (const s of ['quality', 'composite', 'PROFILE_MEAN']) t[s + sfx] = sc[j][s]; });
     });
   }
-  const names = [...signals, ...(population === 'common' ? ['quality_v240', 'composite_v240', 'PROFILE_MEAN_v240'] : [])];
+  const names = [...signals, ...(population === 'common' && !panelFile ? ['quality_v240', 'composite_v240', 'PROFILE_MEAN_v240'] : [])];
   const per = Q.perDateOutcomes(scored, names, frame, spy, HORIZONS, log);
   const table = [];
   for (const n of names) for (const h of HORIZONS) {
@@ -169,7 +178,7 @@ function run(docsDir, loaderOptions, population) {
   }
   // gepaarte Differenz v2.4.1 - v2.4.0 (nur "common")
   const paired = [];
-  if (population === 'common') for (const base of ['quality', 'composite', 'PROFILE_MEAN']) for (const h of HORIZONS) {
+  if (population === 'common' && !panelFile) for (const base of ['quality', 'composite', 'PROFILE_MEAN']) for (const h of HORIZONS) {
     const a = per[base + ':' + h], b = per[base + '_v240:' + h];
     const ds = [...a.keys()].filter(d => b.has(d)).sort();
     const diff = f => ds.map(d => [a.get(d)[f], b.get(d)[f]]).filter(([x, y]) => finite(x) && finite(y)).map(([x, y]) => x - y);
@@ -180,7 +189,7 @@ function run(docsDir, loaderOptions, population) {
   const titles = scored.map(d => d.rows.length).filter(n => n > 0).sort((a, b) => a - b);
   return {
     schemaVersion: 'factor-predictive-power-1.0.0', label: 'Forschung, nicht zertifiziert', evidenceKind: 'RECONSTRUCTION',
-    modelVersion: CONTRACT.methodologyVersion, population, populationRule: population === 'common' ? 'EQUITY_COMMON + ADR im Produktumfang (ranking-population-1.0.0)' : 'Produktumfang inklusive getrennter Klassen und Pruefungsfaellen',
+    modelVersion: CONTRACT.methodologyVersion, rawSource: panelFile ? 'V10_PANEL (Quality mit Margenstabilitaet v2.3, Rohwerte des V10-Panels, Gewichte quant-v2.4.1)' : 'PIT_DOCS', population, populationRule: population === 'common' ? 'EQUITY_COMMON + ADR im Produktumfang (ranking-population-1.0.0)' : 'Produktumfang inklusive getrennter Klassen und Pruefungsfaellen',
     population_counts: { rankDates: titles.length, titelJeStichtagMedian: titles[Math.floor(titles.length / 2)] || 0, ...counts },
     returnBasis: 'PRICE_RETURN', buckets: 5, horizonsMonths: [1, 3, 12],
     table, v241GegenV240: paired,
@@ -191,9 +200,9 @@ function run(docsDir, loaderOptions, population) {
 }
 
 function main() {
-  const docsDir = arg('--docs'), out = arg('--out'), population = arg('--population') || 'common';
-  if (!docsDir || !out || !['common', 'all'].includes(population)) throw Error('usage: --docs <dir> --out <file.json> --population common|all');
-  const r = run(path.resolve(docsDir), F.parseLoaderOptions(arg('--loader-options')), population);
+  const docsDir = arg('--docs'), out = arg('--out'), population = arg('--population') || 'common', panel = arg('--panel');
+  if ((!docsDir && !panel) || !out || !['common', 'all'].includes(population)) throw Error('usage: (--docs <dir> | --panel <panel.jsonl.gz>) --out <file.json> --population common|all');
+  const r = run(docsDir && path.resolve(docsDir), F.parseLoaderOptions(arg('--loader-options')), population, panel && path.resolve(panel));
   fs.mkdirSync(path.dirname(path.resolve(out)), { recursive: true });
   fs.writeFileSync(out, JSON.stringify(r, null, 1) + '\n');
   console.log(JSON.stringify(r.population_counts));
