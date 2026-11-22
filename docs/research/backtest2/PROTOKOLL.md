@@ -141,6 +141,14 @@ Regel, gewinnt die mit der höchsten Rangkorrelation zu `live` (die kleinste Än
 einem eigenen PR (neue Fassung von quant-v2.json, Vorher/Nachher auf den Produkt-Eingängen); Revisionen behalten ihr Gewicht.
 Grenzen: heutige Survivors, Kursrendite, keine Kosten – deshalb nur die Rangfolge der Varianten, keine Renditeaussage.
 
+**Ergebnis** (Lauf 45054479353; 176 Stichtage 2012–2025, im Median 822 Titel): IC 3/12 Monate live 0,036/0,046, tilt 0,038/0,049,
+mp 0,036/0,047, mgpa 0,028/0,040; oberes Fünftel − SPY (12 Monate) live +1,35 %, tilt +1,55 %, mp +1,75 %, mgpa +3,67 %.
+Δ IC gegen live: tilt +0,0014/+0,0025, mp −0,00003/+0,0009, mgpa −0,0078/−0,0062 (alle Holm 1,0). **Nach der Regel gilt tilt**
+(mp verfehlt den 3-Monats-IC knapp, mgpa trennt im oberen Fünftel am stärksten, im IC aber schwächer). Vorher/Nachher am 26.12.2025:
+Rangkorrelation tilt–live 0,95, Überlappung der oberen 10 % 78 %. Auffällig: Q5−Q1 ist bei allen Varianten negativ (live −11 % über
+12 Monate) – auf heutigen Survivors erholen sich schwache Titel, die überlebt haben; deshalb zählt hier das obere Fünftel, nicht die Spanne.
+Folge: eigener PR für den Produkt-Score (quant-v2.json, Gewichte von tilt, Revisionen behalten 0,15, die übrigen mit 0,85 skaliert).
+
 ## 4d. Vorwärtstest (registriert am 22.11.2026)
 
 `scripts/research/vorwaerts/forward.mjs` (nur lesend, beliebig wiederholbar: `node scripts/research/vorwaerts/forward.mjs`). Er braucht
