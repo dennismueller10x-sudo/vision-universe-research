@@ -485,7 +485,10 @@ function main() {
     const caps = capsByInstrument.get(inst.instrumentId);
     const flags = Master.CAPABILITIES.filter((c) => caps.levels[c] === "DELIVERED");
     const entry = Master.searchEntry(inst, { capabilities: flags });
-    const wiederverwendet = !!(reuse && reuse.records.has(Identity.securityIdForTicker(inst.symbol)) &&
+    /* Ein Anbieterkuerzel, das keine securityId bildet (z. B. "CAPTW(EXP20260807)", Sync 22.11.2026), kann nicht im
+       Register stehen; es darf den Bau nicht abbrechen (core/identity.js normalizeTicker). */
+    const wiederverwendet = !!(reuse && Identity.normalizeTicker(inst.symbol) &&
+                               reuse.records.has(Identity.securityIdForTicker(inst.symbol)) &&
                                inst.securityType !== "ETF");
     if (wiederverwendet) {
       entry.n = null;
