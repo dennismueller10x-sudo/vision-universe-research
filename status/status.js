@@ -48,8 +48,23 @@
     p.hidden = false;
   }
 
+  /* Zusammensetzung des Produktumfangs (Quant-Kennzahl core/product-composition.js, vom Discover-Erzeuger ins Meta geschrieben). */
+  async function productComposition() {
+    var p = document.getElementById("product-composition");
+    if (!p) return;
+    try {
+      var meta = await load("/discover/data/meta.json");
+      var u = (meta.universes || []).filter(function (x) { return x.universeId === "US_REAL"; })[0];
+      var c = u && u.productComposition;
+      if (!c || !c.labels) return;
+      p.textContent = c.labels.commonStock + " · " + c.labels.productScope + " · davon " + u.securities + " mit Discover-Karte";
+      p.hidden = false;
+    } catch (e) { /* Zeile bleibt verborgen */ }
+  }
+
   async function health() {
     releaseGeneration();
+    productComposition();
     var overall = document.getElementById("overall");
     var body = document.querySelector("#systems tbody");
     body.textContent = "";

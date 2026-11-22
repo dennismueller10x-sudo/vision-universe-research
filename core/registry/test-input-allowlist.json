@@ -2338,6 +2338,17 @@
       ],
       "grund": "Zaehl-Vertrag des Repositorys (22.11.2026): stock-index count == symbols.length == cardCount + kurzhistorie, Karten + notDelivered == Produktuniversum; Struktur, keine festen Datenwerte.",
       "harteWerte": 0
+    },
+    {
+      "file": "discover/tests/product-composition-label.test.mjs",
+      "kategorie": "schema-vertrag",
+      "dynamisch": true,
+      "liest": [
+        "discover/data",
+        "quant/data"
+      ],
+      "grund": "Beschriftung des Produktumfangs (22.11.2026): Meta == compose() der beiden committeten Quant-Dateien; Vertrag zwischen Quant-Kennzahl und Anzeige, keine festen Datenwerte.",
+      "harteWerte": 0
     }
   ]
 }
