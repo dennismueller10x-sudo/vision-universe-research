@@ -437,7 +437,15 @@ li.on .d3 svg{animation:dr 1.4s ease-out forwards}@keyframes dr{to{stroke-dashof
 /* Schmale Handys und 200 % Text: nichts ragt seitlich heraus */
 @media(max-width:374px){.nav .right .btn>span:first-child{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}.nav .right .btn{padding:0 5px}}
 .fh-copy{width:100%;min-width:0}
-.fh h1{overflow-wrap:anywhere;hyphens:auto}
+.fh h1{overflow-wrap:break-word;hyphens:manual}
 .fh-btn{max-width:100%;height:auto;min-height:54px;padding-top:8px;padding-bottom:8px}
 .fh-stores{flex-wrap:wrap;justify-content:center}
 @media(min-width:1000px){.fh-copy{width:auto}.fh-stores{justify-content:flex-start}}
+/* Fortschrittsleiste (Owner 22.11.2026): kleine Striche oben zeigen, wo man auf der Seite ist und wie viel noch kommt */
+.vw .prog{top:66px;gap:5px;padding-top:7px;padding-bottom:7px;border-bottom:1px solid rgba(0,0,0,.04)}
+.vw .prog a{height:4px}
+html.vw-ondark .prog{background:rgba(8,8,8,.7)}
+html.vw-ondark .prog a{background:rgba(255,255,255,.22)}
+html.vw-ondark .prog a.done b{background:#fff}
+.fh-g{height:calc(100svh - 84px)}
+@media(min-width:1000px){.fh-g{height:auto;min-height:calc(100vh - 84px)}}
