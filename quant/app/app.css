@@ -2198,10 +2198,8 @@ main.qx-main:has(>.qp){padding-bottom:20px}
   .qp.q-home>.qk-today-host{grid-column:2;grid-row:3}
   .qp.q-home>#qp-karte{grid-column:2;grid-row:4}
   .qp.q-home>.qk-today-host>.qp-sh:first-child{margin-top:10px}
-  /* Screener links, Forschung rechts */
-  .qp.q-home>#qp-scr{grid-column:1}
-  .qp.q-home>#qp-for{grid-column:2}
-  .qp.q-home>#qp-for>.qp-sh,.qp.q-home>#qp-for>.qp-px{padding-left:0}
+  /* Forschung bleibt volle Breite unter dem Screener: sie laedt Backtest-Module erst beim Sichtbarwerden; neben dem
+     Screener laege sie auf dem Desktop schon im ersten Bild (Ressourcenbudget home@1440, scripts/vu2/resource-budget.mjs). */
   .qp.q-home>.qk-today-host>.qp-sh,.qp.q-home>#qp-karte>.qp-sh{padding-left:0}
   .qp.q-home>.qk-today-host>.qp-px,.qp.q-home>#qp-karte>.qp-px{padding-left:0}
   /* Anlagestile-Schiene (7 Kacheln) wird Gitter */
