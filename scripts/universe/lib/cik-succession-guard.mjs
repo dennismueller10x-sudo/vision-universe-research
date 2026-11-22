@@ -32,9 +32,17 @@ export const PENDING = "PENDING_SUCCESSION_EVIDENCE";
  * @param {object|null} args.previous           voriger cik-map.json#byTicker (null: keine Pruefung moeglich)
  * @param {Iterable<string>} args.productTickers Kuerzel des Produktuniversums
  * @param {Array<object>} args.successions      Eintraege aus ticker-successions.json
+ * @param {Array<object>} [args.pins]          Eintraege aus quant/config/cik-pins.json (ticker, cik)
  * @returns {{ checked: boolean, pending: object[], registered: object[] }}
  */
-export function guardNewIssuerAttachments({ byTicker, previous, productTickers, successions }) {
+export function guardNewIssuerAttachments({ byTicker, previous, productTickers, successions, pins }) {
+  /* Gepinnte CIKs (quant/config/cik-pins.json): gelten vor dem vorigen Stand, auch wenn der schon die neue CIK fuehrt. */
+  const pinned = new Map((pins || []).map((p) => [String(p.ticker).toUpperCase(), String(p.cik).padStart(10, "0")]));
+  if (pinned.size) {
+    const prev0 = previous || {};
+    previous = Object.assign({}, prev0);
+    for (const [t, c] of pinned) previous[t] = Object.assign({}, prev0[t] || {}, { cik: c, status: "RESOLVED" });
+  }
   const product = new Set(Array.from(productTickers || [], (t) => String(t).toUpperCase()));
   if (!previous) return { checked: false, pending: [], registered: [] };
 
