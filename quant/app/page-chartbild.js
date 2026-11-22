@@ -645,6 +645,12 @@
       return;
     }
     var a = res.analysis;
+    /* Leitmarkt (Elliott-Neustart Schritt 2): Name und Quelle statt Aktienkopf; kein Tageskurs aus dem Aktiendienst. */
+    if (a.market) {
+      if (ctx && ctx.names) ctx.names[ticker] = a.market.name;
+      headHost.replaceChildren(el("h1", { class: "qx-h1 cb-name", text: a.market.name }), el("p", { class: "cb-small cb-dim", text: a.market.via + (a.market.source && a.market.source.attribution ? " · " + a.market.source.attribution : "") }));
+      head = { setPrice: function () {}, setCurrent: function () {} }; dailySet = true;
+    }
     /* Red-Team 2 C1: unveraenderter Schlusskurs ueber mehrere Bars (Uebernahme, Delisting, Aussetzung) – kein Chartbild, kein Kurs im Kopf. */
     if (a.dataQuality && a.dataQuality.stalePriceBars) {
       host.append(el("p", { class: "vu-result cb-none", text: "Für " + ticker + " gibt es kein aktuelles Chartbild" }),

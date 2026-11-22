@@ -453,7 +453,18 @@
     });
     return out;
   }
+  /* Leitmärkte (Elliott-Neustart Schritt 2, Owner 22.11.2026): Indizes über ETFs, Krypto, Edelmetalle, Energie – je Markt Lesart, Klarheit A–D und Ungültig-Marke. */
+  var GRADE_TXT = { A: "Klarheit A", B: "Klarheit B", C: "Klarheit C", D: "Klarheit D" };
+  function marketTile(r) {
+    var d = M.dirOf(r), inv = M.invalidLine(r);
+    return el("a", { class: "el-cr ek-tile ek-tap ek-nc ek-mk", role: "listitem", href: M.detailHref(r.t), dataset: { symbol: r.t }, "aria-label": [r.n, r.via, M.countLine(r), GRADE_TXT[r.grade], DIRW[d] || "Richtung offen", inv].filter(Boolean).join(", ") }, [
+      el("span", { class: "ek-nc-h" }, [el("span", { class: "ek-f1" }, [el("b", { class: "ek-b8", text: r.n }), el("span", { class: "ek-xs ek-mut", text: M.countLine(r) })]), el("span", { class: "ek-pill ek-pill--sm" + (r.grade === "D" ? " ek-pill--wh" : ""), text: GRADE_TXT[r.grade] || "–" })]),
+      el("span", { class: "ek-nc-f" }, [el("span", { class: "ek-xs ek-b7", text: (d === "up" ? "▲ " : d === "down" ? "▼ " : "◆ ") + (DIRW[d] || "Richtung offen") })]), inv ? el("span", { class: "ek-xs ek-mut ek-nc-i", text: inv }) : null,
+      el("span", { class: "ek-xs ek-mut ek-nc-i", text: r.via })]);
+  }
   function startBody(host) {
+    var mk = M.marketsOf(state.home);
+    if (mk) host.append(sh("Märkte"), el("p", { class: "ek-sub ek-sm ek-mut", text: "Indizes über ETFs, Krypto, Edelmetalle und Energie. Wochenschluss, gleiche Analyse wie bei Aktien." }), el("div", { class: "ek-rail", role: "list", "aria-label": "Märkte" }, mk.map(marketTile)));
     var a = M.applicableOf(state.home), neu = M.filterCards(state.home.cards, { neu: true }), by = {}, seen = {};
     neu.forEach(function (c) { (by[c.chg.k] = by[c.chg.k] || []).push(c); });
     var fresh = [];

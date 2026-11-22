@@ -40,6 +40,7 @@ import { analyzeProduct, replaySnapshots, clarityOf, evidenceBadge, overlaysOf, 
 import { Worker, isMainThread, parentPort, workerData } from "node:worker_threads";
 import { projectFor, motiveCandidateFor, candidatePool, exploreCandidatesFor, exploreLegacyPick, wave3PoolAudit, projectionInput, splitResolutionFor, dataIntegrity, rsInput, rsRanks, advanceStore, attachLifecycle, PROJECTION_VERSION, STORE_SCHEMA } from "./lib/ti-projection.mjs";
 import { pruneStaleShards } from "./lib/ti-shards.mjs";
+import { MARKETS, MARKETS_VERSION, marketSeries } from "./lib/ti-markets.mjs";
 import { Freshness, loadMaster, freshnessOf, withholdPayload, shardBlock, withheldIndexRow, newStats, addStats, systemicCheck, validReference } from "./lib/ti-freshness.mjs";
 import { cpus } from "node:os";
 import { loadIdentityQuarantine } from "./lib/identity-quarantine.mjs";
@@ -122,7 +123,7 @@ function casesFor(tf, sym) {
   if (!(f in CASES)) CASES[f] = existsSync(f) ? JSON.parse(gunzipSync(readFileSync(f)).toString()).symbols : {};
   return (CASES[f][sym] || []).slice().reverse();
 }
-function payload(series, out, currency, withReplay) {
+export function payload(series, out, currency, withReplay) {
   const res = out.res, s = slim(res), E = res.methods.elliott;
   const abstain = !!(E && E.applicability && E.applicability.abstain);
   s.history = casesFor(series.timeframe, res.symbol);
@@ -384,12 +385,41 @@ async function main() {
     runtimeSec: Math.round((Date.now() - t0) / 1000)
   };
   meta.projection = projStats;
+  if (!only) meta.markets = buildMarkets(C, OUT, arg("reference", null));
   meta.paths.projectionTheses = "/quant/data/technical-intelligence/v3/projection-theses.json";
+  meta.paths.markets = "/quant/data/technical-intelligence/v3/markets/index.json";
   writeFileSync(join(OUT, "meta.json"), JSON.stringify(meta, null, 1));
   writeFileSync(join(OUT, "evidence-summary.json"), JSON.stringify(evidenceSummary(), null, 1));
   const me = join(ROOT, "quant/methodology/technical-method-evidence.json");
   if (existsSync(me)) writeFileSync(join(OUT, "method-evidence.json"), JSON.stringify(Object.assign({ schemaVersion: API_VERSION }, readJson(me)), null, 1));
   console.log(JSON.stringify(meta.counts), meta.runtimeSec + " s", alerts.length + " Alerts");
+}
+
+/** Leitmaerkte (Elliott-Neustart Schritt 2, Owner 22.11.2026): dieselbe Produktanalyse wie fuer Aktien auf den Wochenschluessen der
+    Multi-Asset-Reihen; je Markt eine Datei v3/markets/<ID>.json.gz (Form eines Shards) und v3/markets/index.json fuer die Startseite.
+    Keine Relative Staerke (kein Aktien-Querschnitt), kein Wertpapierstamm; Datenstand nach derselben Richtlinie. */
+export function buildMarkets(C, out = OUT, reference = null) {
+  const ref = reference || Freshness.lastCompletedSession(new Date().toISOString());
+  const rows = [], skipped = [];
+  mkdirSync(join(out, "markets"), { recursive: true });
+  for (const m of MARKETS) {
+    const ms = marketSeries(m);
+    if (!ms || ms.series.length < 160) { skipped.push({ id: m.id, reason: ms ? "SHORT_HISTORY" : "NO_SERIES" }); continue; }
+    let p = payload(ms.series, analyzeProduct(ms.series, productOpts("weekly", C, m.id)), "$", null);
+    const f = freshnessOf(p, { reference: ref, master: new Map() });
+    p.freshness = shardBlock(f);
+    p.projection = projectFor(p, null);
+    if (f.withheld) p = withholdPayload(p, f);
+    p.market = { id: m.id, name: m.name, via: m.via, group: m.group, source: ms.source };
+    gz(join(out, "markets", m.id + ".json.gz"), { schemaVersion: API_VERSION, shard: "markets", instruments: { [m.id]: p } });
+    const row = p.withheld ? withheldIndexRow(p, f) : indexRow(p);
+    if (f.state !== Freshness.STATES.FRESH) row.fr = Freshness.compact(f);
+    rows.push(Object.assign(row, { n: m.name, via: m.via, group: m.group }));
+  }
+  const doc = { schemaVersion: API_VERSION, version: MARKETS_VERSION, generatedAt: new Date().toISOString(), reference: ref, rows, skipped,
+    note: "Indizes über ETFs (kein lizenzierter Indexkurs), Krypto, Edelmetalle und Energie aus den Multi-Asset-Reihen; Wochenschluss, gleiche Analyse wie bei Aktien." };
+  writeFileSync(join(out, "markets", "index.json"), JSON.stringify(doc, null, 1));
+  return { count: rows.length, skipped: skipped.length };
 }
 
 /** Projektionen aller Titel (Hauptthread: braucht den Querschnitt der Relativen Staerke) und Lebenszyklus-Store. */

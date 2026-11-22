@@ -17,7 +17,10 @@
 (function (global) {
   "use strict";
   var BASE = "/quant/data/technical-intelligence/v3/";
-  var ALLOWED = /^\/quant\/data\/technical-intelligence\/v3\/(meta\.json|index\.json\.gz|discover-rows\.json|rules-catalog\.json|alerts\.json|evidence-summary\.json|method-evidence\.json|shards\/[A-Z0-9._-]{2}\.json\.gz)$/;
+  var ALLOWED = /^\/quant\/data\/technical-intelligence\/v3\/(meta\.json|index\.json\.gz|discover-rows\.json|rules-catalog\.json|alerts\.json|evidence-summary\.json|method-evidence\.json|shards\/[A-Z0-9._-]{2}\.json\.gz|markets\/(index\.json|[A-Z0-9]{2,8}\.json\.gz))$/;
+  /* Leitmaerkte (Elliott-Neustart Schritt 2): eigene Ablage v3/markets/<ID>.json.gz, gleiche Form wie ein Shard.
+     Dieselbe Liste wie scripts/technical/lib/ti-markets.mjs#MARKETS (Test ti-markets prueft die Gleichheit). */
+  var MARKETS = ["SPY", "QQQ", "DIA", "IWM", "FEZ", "URTH", "EEM", "BTCUSD", "ETHUSD", "SOLUSD", "XRPUSD", "XAUUSD", "XAGUSD", "USOIL", "UKOIL", "NATGAS"];
   var cache = {};
 
   function shardKey(ticker) { return (String(ticker).toUpperCase() + "_").slice(0, 2).replace(/[^A-Z0-9._-]/g, "_"); }
@@ -46,7 +49,8 @@
   function getAnalysis(ticker) {
     var t = String(ticker || "").toUpperCase();
     if (!/^[A-Z0-9.-]{1,12}$/.test(t)) return Promise.resolve({ state: "NOT_AVAILABLE", reason: "INVALID_TICKER" });
-    return Promise.all([load(BASE + "shards/" + shardKey(t) + ".json.gz"), load(BASE + "meta.json").catch(function () { return null; })])
+    var file = MARKETS.indexOf(t) >= 0 ? "markets/" + t + ".json.gz" : "shards/" + shardKey(t) + ".json.gz";
+    return Promise.all([load(BASE + file), load(BASE + "meta.json").catch(function () { return null; })])
       .then(function (r) {
         var a = r[0] && r[0].instruments ? r[0].instruments[t] : null;
         return a ? { state: "AVAILABLE", analysis: a, meta: r[1] } : { state: "NOT_AVAILABLE", reason: "NOT_COVERED", meta: r[1] };
@@ -54,6 +58,7 @@
       .catch(function (e) { return { state: e && e.status === 404 ? "NOT_AVAILABLE" : "ERROR", reason: e && e.message }; });
   }
   function getIndex() { return load(BASE + "index.json.gz"); }
+  function getMarkets() { return load(BASE + "markets/index.json"); }
   function getDiscoverRows() { return load(BASE + "discover-rows.json"); }
   function getRulesCatalog() { return load(BASE + "rules-catalog.json").catch(function () { return { rules: {} }; }); }
   function getMeta() { return load(BASE + "meta.json"); }
@@ -92,5 +97,5 @@
   /** Evidenz-Status je Methode (Validierungsstudie): fehlt die Datei, zeigt die Seite neutrale Standardtexte. */
   function getMethodEvidence() { return load(BASE + "method-evidence.json").catch(function () { return null; }); }
 
-  global.VUTechnicalIntelligence = { BASE: BASE, shardKey: shardKey, getAnalysis: getAnalysis, getIndex: getIndex, getDiscoverRows: getDiscoverRows, getRulesCatalog: getRulesCatalog, getMeta: getMeta, getEvidenceSummary: getEvidenceSummary, getAlerts: getAlerts, getWatchlistAlerts: getWatchlistAlerts, watchlistAlerts: watchlistAlerts, ALERT_TEXT: ALERT_TEXT, getMethodEvidence: getMethodEvidence, ALLOWED: ALLOWED };
+  global.VUTechnicalIntelligence = { BASE: BASE, shardKey: shardKey, getAnalysis: getAnalysis, getIndex: getIndex, getMarkets: getMarkets, MARKETS: MARKETS, getDiscoverRows: getDiscoverRows, getRulesCatalog: getRulesCatalog, getMeta: getMeta, getEvidenceSummary: getEvidenceSummary, getAlerts: getAlerts, getWatchlistAlerts: getWatchlistAlerts, watchlistAlerts: watchlistAlerts, ALERT_TEXT: ALERT_TEXT, getMethodEvidence: getMethodEvidence, ALLOWED: ALLOWED };
 })(typeof window !== "undefined" ? window : globalThis);

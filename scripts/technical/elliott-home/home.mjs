@@ -222,8 +222,23 @@ export function applicableOf(rows, names) {
   };
 }
 
+/** Klarheit A–D aus den Einstufungen der Engine (gleiche Regel wie quant/app/page-chartbild.js#ewGrade). */
+export function gradeOf(applicable, clarity) {
+  const lv = applicable || "LOW";
+  return lv === "HIGH" && clarity === "HIGH" ? "A" : lv === "HIGH" || (lv === "MODERATE" && clarity === "HIGH") ? "B" : lv === "MODERATE" ? "C" : "D";
+}
+/** Leitmaerkte (Elliott-Neustart Schritt 2): Zeilen aus v3/markets/index.json, Reihenfolge der Ablage (ti-markets.mjs#MARKETS).
+    Zurueckgehaltene Maerkte (veraltete Reihe) stehen nicht auf der Startseite. */
+export function marketsOf(doc) {
+  if (!doc || !Array.isArray(doc.rows)) return null;
+  const rows = doc.rows.filter((r) => r && !r.withheld && r.elliott).map((r) => ({ t: r.t, n: r.n || r.t, via: r.via || null, group: r.group || null, tf: r.tf || null, asOf: r.asOf || null,
+    close: num(r.close), el: r.elliott, st: r.structure || null, dir: r.direction || null, inv: num(r.invalidation), app: r.elliottApplicable || null, cl: r.elliottClarity || null,
+    grade: gradeOf(r.elliottApplicable, r.elliottClarity), fr: r.fr ? r.fr.st : null }));
+  return { version: doc.version || null, rows };
+}
+
 /** Index aus Karten + Metadaten. Deterministisch: gleiche Eingabe, gleiche Bytes. */
-export function assembleHome({ cards, meta, indexGeneratedAt, dataAsOf, applicable }) {
+export function assembleHome({ cards, meta, indexGeneratedAt, dataAsOf, applicable, markets }) {
   const sorted = cards.slice().sort(compareCards);
   const rows = [];
   const filters = { wave: {}, dir: {}, st: {}, role: {} };
@@ -256,6 +271,7 @@ export function assembleHome({ cards, meta, indexGeneratedAt, dataAsOf, applicab
       delayed: sorted.filter((c) => c.fr === "DELAYED").length, recent: sorted.filter((c) => c.chg).length
     },
     applicable: applicable || null,
+    markets: markets || null,
     filters,
     rows,
     cards: sorted
@@ -290,5 +306,6 @@ export function buildHomeFromDir(root, dir = join(root, "quant/data/technical-in
       cards.push(...cardsOfDocument(symbol, doc, names));
     }
   }
-  return assembleHome({ cards, meta, indexGeneratedAt: index.generatedAt, dataAsOf, applicable: applicableOf(index.rows, names) });
+  const mf = join(dir, "markets", "index.json");
+  return assembleHome({ cards, meta, indexGeneratedAt: index.generatedAt, dataAsOf, applicable: applicableOf(index.rows, names), markets: existsSync(mf) ? marketsOf(readJson(mf)) : null });
 }

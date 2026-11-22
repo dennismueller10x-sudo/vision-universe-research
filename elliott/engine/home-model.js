@@ -68,6 +68,8 @@
     return "Die Übersicht der zählbaren Aktien lädt gerade nicht, weil " + why + " (Stand der Abfrage " + at + "). Die Suche oben öffnet jede Aktie direkt.";
   }
   function applicableOf(home) { var a = home && home.applicable; return a && Array.isArray(a.rows) ? a : null; }
+  /* Leitmaerkte (Elliott-Neustart Schritt 2): Indizes ueber ETFs, Krypto, Edelmetalle, Energie; fehlt der Block, keine Schiene. */
+  function marketsOf(home) { var m = home && home.markets; return m && Array.isArray(m.rows) && m.rows.length ? m.rows : null; }
 
   var MINUS = "−";
   function group(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, "."); }
@@ -304,7 +306,7 @@
     rowHref: rowHref, validate: validate, emptyState: emptyState,
     norm: norm, searchEntries: searchEntries, cardsByTicker: cardsByTicker, searchHint: searchHint,
     PATTERN_DE: PATTERN_DE, STRUCTURE_DE: STRUCTURE_DE, APPLICABLE_DE: APPLICABLE_DE, ZAEHLBAR_HASH: ZAEHLBAR_HASH,
-    patternDe: patternDe, phaseDe: phaseDe, structureDe: structureDe, countLine: countLine, dirOf: dirOf, invalidLine: invalidLine, GAP_SCALE: GAP_SCALE, invalidGap: invalidGap, gapOfRow: gapOfRow, gapOfAnalysis: gapOfAnalysis, applicableOf: applicableOf, redirectOf: redirectOf, shortName: shortName, loadFailText: loadFailText
+    patternDe: patternDe, phaseDe: phaseDe, structureDe: structureDe, countLine: countLine, dirOf: dirOf, invalidLine: invalidLine, GAP_SCALE: GAP_SCALE, invalidGap: invalidGap, gapOfRow: gapOfRow, gapOfAnalysis: gapOfAnalysis, applicableOf: applicableOf, marketsOf: marketsOf, redirectOf: redirectOf, shortName: shortName, loadFailText: loadFailText
   };
   global.VUElliottHome = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;

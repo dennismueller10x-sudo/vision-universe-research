@@ -2348,6 +2348,15 @@
         "quant/data"
       ],
       "grund": "Beschriftung des Produktumfangs (22.11.2026): Meta == compose() der beiden committeten Quant-Dateien; Vertrag zwischen Quant-Kennzahl und Anzeige, keine festen Datenwerte.",
+        "harteWerte": 0
+      },
+      {
+      "file": "quant/tests/elliott-markets-live.test.mjs",
+      "kategorie": "schema-vertrag",
+      "liest": [
+        "quant/data"
+      ],
+      "grund": "Elliott-Neustart Schritt 2 (22.11.2026): prueft an den echten Multi-Asset-Reihen nur Laenge und Kollisionsfreiheit der Marktkuerzel; keine festen Werte.",
       "harteWerte": 0
     }
   ]
