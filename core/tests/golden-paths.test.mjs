@@ -10,13 +10,19 @@ import { readFileSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import { fixtureRoot } from "../../scripts/quant/lib/data-fixture.mjs";
 
 const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const Client = require(join(ROOT, "core", "client.js"));
 const Identity = require(join(ROOT, "core", "identity.js"));
-const json = (rel) => JSON.parse(readFileSync(join(ROOT, rel.replace(/^\//, "")), "utf8"));
-const repo = async (p) => { const f = join(ROOT, p.replace(/^\//, "")); if (!existsSync(f)) throw new Error("fehlt: " + p); return json(p); };
+/* EINGEFRORENER DATENSTAND (Steuerung 22.11.2026, Muster #2122): Die Startseite rotiert taeglich (19.11. IBN, 21.11. APGE/AACT), und ein
+   Datenlauf zwischen Discover und Quant zeigt einen Halbstand. Der Pfad prueft deshalb einen gruenen Stand aus
+   core/tests/fixtures/golden-paths/data.json.gz (Erzeuger: scripts/quant/freeze-test-fixture.mjs). Code kommt aus dem Repository.
+   DATA_FIXTURE_LIVE=1 prueft gegen das Repository; die Live-Deckung melden die Datenqualitaets-Regeln. */
+const DATA = fileURLToPath(fixtureRoot(fileURLToPath(new URL("fixtures/golden-paths/data.json.gz", import.meta.url))).url);
+const json = (rel) => JSON.parse(readFileSync(join(DATA, rel.replace(/^\//, "")), "utf8"));
+const repo = async (p) => { const f = join(DATA, p.replace(/^\//, "")); if (!existsSync(f)) throw new Error("fehlt: " + p); return json(p); };
 const c = Client.create({ load: repo });
 
 test("Discover · jede Karte der Startseite fuehrt zu einer Aktienseite mit demselben Kurs und einer Reihe", async () => {
@@ -32,7 +38,7 @@ test("Discover · jede Karte der Startseite fuehrt zu einer Aktienseite mit dems
     if (px.state !== "AVAILABLE") { fehler.push(k.symbol + ": keine Reihe"); continue; }
     if (k.price && typeof k.price.value === "number" && k.price.value !== px.data.close) fehler.push(k.symbol + ": Karte " + k.price.value + " / Reihe " + px.data.close);
     if (page.data.price.value !== px.data.close) fehler.push(k.symbol + ": Seite " + page.data.price.value + " / Reihe " + px.data.close);
-    if (k.priceSeries && k.priceSeries.path && !existsSync(join(ROOT, k.priceSeries.path.slice(1)))) fehler.push(k.symbol + ": Chartpfad " + k.priceSeries.path);
+    if (k.priceSeries && k.priceSeries.path && !existsSync(join(DATA, k.priceSeries.path.slice(1)))) fehler.push(k.symbol + ": Chartpfad " + k.priceSeries.path);
   }
   assert.deepEqual(fehler, []);
 });

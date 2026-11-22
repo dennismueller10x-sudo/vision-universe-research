@@ -74,12 +74,9 @@
     },
     {
       "file": "core/tests/golden-paths.test.mjs",
-      "kategorie": "schema-vertrag",
-      "liest": [
-        "discover/data",
-        "quant/data"
-      ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "kategorie": "scan-fehlalarm",
+      "grund": "22.11.2026: rechnet auf eingefrorenem Stand (core/tests/fixtures/golden-paths, Muster #2122); der Scan meldet die Datenpfade als Zeichenketten. Live-Lauf nur mit DATA_FIXTURE_LIVE=1.",
+      "harteWerte": 0
     },
     {
       "file": "core/tests/health.test.mjs",

@@ -23,8 +23,8 @@ Die Liste stammt aus zwei Quellen: Text-Scan (`scripts/quality/test-inputs.mjs`,
 |---|---|
 | datenzustand-offen (Ziel: Datenqualitaet) | 17 |
 | fixture-offen (Ziel: eingefrorene Kopie) | 55 |
-| schema-vertrag (darf lesen) | 185 |
-| scan-fehlalarm (Scan meldet, Test liest nicht) | 29 |
+| schema-vertrag (darf lesen) | 184 |
+| scan-fehlalarm (Scan meldet, Test liest nicht) | 30 |
 
 Bereits umgestellt: `discover/tests/market-detail.test.mjs` und `core/tests/chart-standard.test.mjs` (Fixtures mit Quell-Commit), neu: `quant/tests/evidence-states.test.mjs`. Seit S2 (10.11.2026) sind Tests auf Fixtures umgestellt (Quell-Commits in den READMEs unter tests/fixtures) und Zustandspruefungen als DQ-PQ-1..9 in der Datenqualitaet (`core/product-quality.js`).
 
@@ -42,16 +42,16 @@ Bereits umgestellt: `discover/tests/market-detail.test.mjs` und `core/tests/char
 | `core/tests/europe-discover-schedule.test.mjs` | 28 | fixture-offen | MITTEL | discover/data |
 | `core/tests/identity.test.mjs` | 31 | fixture-offen | HOCH | quant/data |
 | `core/tests/industry-classification-sec.test.mjs` | 73 | fixture-offen | HOCH | quant/data |
-| `core/tests/watchlist-view.test.mjs` | 121 | fixture-offen | HOCH | quant/data, supertrader/data, technical/data |
-| `discover/tests/europe-continuity-rematerialization.test.mjs` | 8 | fixture-offen | MITTEL | discover/data |
 | `core/tests/client.test.mjs` | – | schema-vertrag (dyn.) | unbekannt | discover/data, quant/data |
 | `core/tests/eligibility-gate.test.mjs` | 72 | schema-vertrag | NIEDRIG | quant/data |
 | `core/tests/equity-quality.test.mjs` | 91 | scan-fehlalarm | HOCH | – |
+| `core/tests/global-published-contract.test.mjs` | – | schema-vertrag (dyn.) | unbekannt | discover/data |
+| `core/tests/golden-paths.test.mjs` | 29 | scan-fehlalarm | NIEDRIG | – |
 | `core/tests/sf8-data-quality.test.mjs` | 89 | fixture-offen | HOCH | quant/data, supertrader/data |
 | `core/tests/stock-availability.test.mjs` | 53 | fixture-offen | MITTEL | discover/data, quant/data, supertrader/data, technical/data |
 | `core/tests/stock-context.test.mjs` | 16 | fixture-offen | HOCH | discover/data, quant/data, supertrader/data, technical/data |
-| `core/tests/global-published-contract.test.mjs` | – | schema-vertrag (dyn.) | unbekannt | discover/data |
-| `core/tests/golden-paths.test.mjs` | 23 | schema-vertrag | NIEDRIG | discover/data, quant/data |
+| `core/tests/watchlist-view.test.mjs` | 121 | fixture-offen | HOCH | quant/data, supertrader/data, technical/data |
+| `discover/tests/europe-continuity-rematerialization.test.mjs` | 8 | fixture-offen | MITTEL | discover/data |
 | `core/tests/health.test.mjs` | – | schema-vertrag (dyn.) | unbekannt | core/data, discover/data, quant/data, supertrader/data, technical/data |
 | `core/tests/legal-notices-frontend.test.mjs` | 120 | schema-vertrag | NIEDRIG | supertrader/data |
 | `core/tests/long-series-repair.test.mjs` | 67 | schema-vertrag | NIEDRIG | – |
@@ -88,7 +88,7 @@ Bereits umgestellt: `discover/tests/market-detail.test.mjs` und `core/tests/char
 | `discover/tests/names.test.mjs` | 13 | schema-vertrag | NIEDRIG | discover/data, quant/data |
 | `discover/tests/overview.test.mjs` | 43 | schema-vertrag | NIEDRIG | – |
 | `discover/tests/price-rounding.test.mjs` | 16 | schema-vertrag | NIEDRIG | discover/data, quant/data |
-| `discover/tests/producer-ownership.test.mjs` | 47 | schema-vertrag | NIEDRIG | discover/data |
+| `discover/tests/producer-ownership.test.mjs` | 31 | schema-vertrag | NIEDRIG | discover/data |
 | `discover/tests/scale.test.mjs` | 16 | schema-vertrag | NIEDRIG | discover/data, quant/data |
 | `discover/tests/series-reason-honest.test.mjs` | – | schema-vertrag (dyn.) | unbekannt | discover/data |
 | `discover/tests/technical-intelligence.test.mjs` | 65 | schema-vertrag | NIEDRIG | quant/data |
