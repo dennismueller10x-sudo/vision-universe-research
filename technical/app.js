@@ -140,7 +140,11 @@
   function prefetchScreener() {
     if (dataset || (navigator.connection && navigator.connection.saveData)) return;
     var go = function () { loadScreener().catch(function () {}); };
-    if (window.requestIdleCallback) window.requestIdleCallback(go, { timeout: 2000 }); else setTimeout(go, 300);
+    /* Nur bei erkennbarer Absicht (Finger/Zeiger auf einer Vorlage, Tastaturfokus), nicht im Leerlauf: 1,1 MB ueber Mobilfunk. */
+    var list = document.querySelector(".tc-tcard");
+    var host = list && list.parentNode;
+    if (!host) return;
+    ["pointerdown", "pointerenter", "focusin", "touchstart"].forEach(function (n) { host.addEventListener(n, go, { once: true, passive: true }); });
   }
   /* Startseite und Chart Studio brauchen nur Kuerzel, Namen und Trefferzahlen: schlanker Index statt des vollen Datensatzes.
      Fehlt er (z. B. vor dem ersten Erzeugerlauf), wird er aus dem Datensatz nachgerechnet - dieselbe Funktion wie im Erzeuger. */
