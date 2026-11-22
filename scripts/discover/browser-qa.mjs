@@ -170,7 +170,7 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
   assert.equal(await nav.locator('a[href="/discover-v2/"]').count(),0);
   /* Gemeinsame Shell (Redesign C01): links die Welt (Discover), rechts „i“, Datenstand, Suche und Mein Bereich (atlas = rechtester Knopf); das
      globale Menue „Dein Universe“ oeffnet der runde Universe-Knopf in der Mitte des Docks (#vu-dock). */
-  const header=await nav.evaluate(n=>{const root=n.shadowRoot,world=root.querySelector('.world'),w=world.getBoundingClientRect(),atlas=root.querySelector('.profile').getBoundingClientRect();return {viewport:innerWidth,world:w.toJSON(),worldName:world.textContent.trim(),worldHidden:world.hidden,atlas:atlas.toJSON(),toggle:getComputedStyle(root.querySelector('.toggle')).display};});
+  const header=await nav.evaluate(n=>{const root=n.shadowRoot,world=root.querySelector('.world'),w=world.getBoundingClientRect(),atlas=root.querySelector('.hb.search').getBoundingClientRect();return {viewport:innerWidth,world:w.toJSON(),worldName:world.querySelector('.world-name').textContent.trim(),worldHidden:world.hidden,atlas:atlas.toJSON(),toggle:getComputedStyle(root.querySelector('.toggle')).display};});
   assert(!header.worldHidden&&header.worldName==='Discover','Header does not show the Discover world: '+JSON.stringify(header));
   assert(header.world.left>=0&&header.atlas.right<=header.viewport&&header.atlas.left>=header.world.right,'Header overflows: '+JSON.stringify(header));
   assert.equal(header.toggle,'none','Redundant header menu button on a page with product dock');
