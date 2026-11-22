@@ -171,5 +171,6 @@ test('Marktbriefing: erster Story-Kreis mit allen Szenen, nur mit gueltiger Date
   assert.deepEqual(W.storyList(null,null,{...b,schema:'x'}).map(s=>s.kind),['thema','thema']);
   // Menue „Insights → Marktbriefing“ oeffnet die Story auf Home
   assert.match(read('willkommen/app.js'),/location\.hash === '#marktbriefing'/);
-  assert.match(read('products/insights/module.json'),/"Marktbriefing", "\/willkommen\/#marktbriefing"/);
+  assert.match(read('products/insights/module.json'),/"Marktbriefing", "\/insights\/marktbriefing\/"/);
+  assert.match(read('insights/marktbriefing/index.html'),/url=\/willkommen\/#marktbriefing/);
 });

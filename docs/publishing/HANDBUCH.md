@@ -382,7 +382,7 @@ Wirtschaftskalender (FMP-Endpunkte geprüft in `scripts/market/probe-free-source
   Bilder (`bildschirm-NN.jpg` und `bildschirme.json` aus `screens.mjs`; ohne die Schluss-Szene). Der Generator schreibt
   `willkommen/config/marktbriefing.json` (Schema `vu-marktbriefing-app-1`); `willkommen/app.js#validBriefing` zeigt nur Bilder
   und Links unter `www.visionuniverse.de/marktbriefing/<sitzung>/`. „Ganzes Briefing“ öffnet die Ausgabe auf www. Im Menü
-  steht „Marktbriefing“ unter Insights (`products/insights/module.json`) und führt auf `/willkommen/#marktbriefing`, das die
+  steht „Marktbriefing“ unter Insights (`products/insights/module.json`) und führt über `/insights/marktbriefing/` (Weiterleitung) auf `/willkommen/#marktbriefing`, das die
   Story direkt öffnet. Wirkt ohne neuen App-Build.
 - Karten folgen der Hausregel: Plus neongrün, Minus in Schriftfarbe, kein Rot. Icons (Linien, `render.js#ICONS`, eine Quelle
   für Karten und Seite) stehen an Kurzfassung, Überschriften, Etiketten und Terminen, damit die Szenen weniger nach Text aussehen.
