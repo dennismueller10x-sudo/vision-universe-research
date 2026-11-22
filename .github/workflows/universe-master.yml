@@ -12,9 +12,9 @@ run-name: ${{ inputs.zeitplan && format('{0} · Takt {1}', github.workflow, inpu
 #             dieser Job rot wird, ist der Master kaputt - unabhaengig
 #             von jedem Anbieter.
 #
-#   sync      Laeuft nur auf Ansage. Er holt das VOLLSTAENDIGE
-#             Anbieterverzeichnis (Tiingo) und die CIK-Zuordnung (SEC),
-#             baut den Master daraus neu und committet das Ergebnis.
+#   sync      Laeuft auf Ansage und woechentlich ueber den Wecker. Er holt
+#             die CIK-Zuordnung (SEC), baut den Master aus den committeten
+#             Gate-Universen neu und committet das Ergebnis.
 #
 # WARUM DER SYNC NICHT AUTOMATISCH LAEUFT
 #
@@ -163,13 +163,10 @@ jobs:
         with:
           node-version: '22'
 
-      # Erst das Anbieterverzeichnis. Ohne Schluessel bricht dieser
-      # Schritt ab, und das ist richtig: ein Sync gegen den committeten
-      # Auszug waere kein Sync.
-      - name: Anbieterverzeichnis holen (Tiingo)
-        env:
-          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
-        run: node scripts/market/build-market-universe.mjs
+      # Kein Anbieterverzeichnis mehr (22.11.2026): Der Master entsteht aus den committeten Gate-Universen
+      # (quant/data/market/scale, Erzeuger security-master-eligibility.yml). Das volle Tiingo-Verzeichnis im
+      # Arbeitsbaum machte ihn zum PROVIDER_DIRECTORY-Master (24.795 statt 7.841 Instrumente) und die
+      # Pruefung des Masters schlug fehl (Lauf 45028028782). Der Sync holt nur noch die CIK-Zuordnung.
 
       # Dann die SEC. Zwei Anfragen fuer den ganzen US-Markt - Kuerzel,
       # CIK und Firmenname. Kostenlos, ohne Vertrag (§32).
