@@ -193,7 +193,7 @@ test('MB-9 www-Seite: alles im HTML, CSP-tauglich, strukturierte Daten, Navigati
   assert.ok(!/href="\.\.\/news\/" aria-current/.test(chrome.top));
   const html = Www.page(b, { chrome, archive: [SESSION], depth: 2, pdf: 'marktbriefing-2026-11-20.pdf', image: '/marktbriefing/2026-11-20/vorschau.png' });
   assert.match(html, /<h1 class="mb-claim mb-h1">/);
-  assert.match(html, /<ol class="mb-sum"><li>Am Freitag, 20\. November 2026/);
+  assert.match(html, /<ol class="mb-sum"><li><svg class="mb-si"[^>]*>[\s\S]*?<\/svg><span>Am Freitag, 20\. November 2026/);
   assert.match(html, /<link rel="canonical" href="https:\/\/www\.visionuniverse\.de\/marktbriefing\/2026-11-20\/">/);
   assert.match(html, /<a class="mb-back" href="\.\.\/">/);
   assert.match(html, /<meta name="robots" content="noindex, nofollow">/, 'Landing-Build schaltet erst in Produktion auf index');
@@ -236,26 +236,60 @@ test('MB-12 Produktseite /marktbriefing/: wie Magazin und Report, führt zur Aus
   const b = Engine.buildBriefing(inputs());
   const parts = { dot: '<span class="dot"><svg></svg></span>', soon: '<p class="soon">Bald in der App verfügbar</p>', stores: '<div class="stores"><p class="cap">x</p></div>' };
   const html = Www.productPage(b, { chrome: Www.chromeFrom(CHROME), parts, archive: [SESSION, '2026-11-19'], pdf: 'marktbriefing-2026-11-20.pdf',
-    img: { story0: 'vorschau.png', cover: 'titel.png', cards: [{ file: 'karte-03.png', anchor: 'einordnung', title: 'T', kicker: 'Einordnung' }] } });
+    img: { story0: 'vorschau.png', cover: 'titel.png', pages: ['seite-02.png', 'seite-03.png', 'seite-04.png'], cards: [{ file: 'karte-03.png', anchor: 'einordnung', title: 'T', kicker: 'Einordnung' }] } });
   assert.match(html, /<h1>Das <mark>Marktbriefing\.<\/mark><\/h1>/);
   assert.match(html, /<a class="btn" href="2026-11-20\/"><span>Neueste Ausgabe ansehen<\/span>/);
   assert.match(html, /<a class="mbpdfbtn" href="2026-11-20\/marktbriefing-2026-11-20\.pdf" download>/);
   // App zuerst und PDF bleibt: Bühne mit PDF-Titelblatt und Handy mit durchlaufenden Story-Karten.
-  assert.match(html, /<div class="mbstage"><img class="mbcover" src="2026-11-20\/titel\.png"/);
+  // Handy und PDF als eigene Blöcke (Owner 22.11.2026): Bühne nur mit dem Handy, PDF als aufklappendes Heft wie beim Magazin.
+  assert.match(html, /<div class="mbstage"><div class="mbphone"/);
+  assert.match(html, /<section class="full mbpdf">[\s\S]*<div class="m3 pvm mbfan"[^>]*><span class="pg p1"><img src="2026-11-20\/seite-04\.png"[\s\S]*<span class="cv"><img src="2026-11-20\/titel\.png"/);
   assert.match(html, /<div class="mbphone"[^>]*><div class="mbscreen">/);
   // Zahlenband zu Datenmenge und Quellen, Kartenleiste aus der neuesten Ausgabe.
   assert.match(html, /<section class="mbband">[\s\S]*Aus Millionen Datenpunkten/);
   assert.match(html, /<a class="mbcard" href="2026-11-20\/#einordnung">/);
   assert.equal((html.match(/<img class="mbshot s\d"/g) || []).length, 2);
-  assert.ok(!/class="m3 pvm"/.test(html));
   // Allgemein: die Ausgabe erscheint nur im Link „Neueste Ausgabe“, nicht in Überschriften oder im Inhalt.
   assert.equal((html.match(new RegExp(b.cards[0].title, 'g')) || []).length, 1);
   assert.match(html, /<link rel="canonical" href="https:\/\/www\.visionuniverse\.de\/marktbriefing\/">/);
-  assert.equal((html.match(/<div><svg viewBox="0 0 24 24"[^>]*>[\s\S]*?<\/svg><span>/g) || []).length, 10, 'feste Kapitel des Formats als Kacheln');
+  assert.equal((html.match(/<div><svg viewBox="0 0 24 24"[^>]*>[\s\S]*?<\/svg><span>/g) || []).length, 11, 'feste Kapitel des Formats als Kacheln');
   assert.match(html, /<a href="2026-11-19\/">/);
   const ld = JSON.parse(html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1]);
   assert.equal(ld['@type'], 'CollectionPage');
   for (const m of html.matchAll(/<script(?![^>]*\bsrc=)([^>]*)>/g)) assert.match(m[1], /type="application\/(ld\+)?json"/);
   assert.ok(!/<style[\s>]/.test(html));
   assert.ok(!/jeden Börsentag|täglich/i.test(html), 'kein Versprechen eines täglichen Erscheinens');
+});
+
+test('MB-13 Ausblick: nur kommende Handelstage mit Quelle, Karte, Szene und Kurzfassung', () => {
+  const u = 'https://www.bea.gov/news/schedule';
+  const agenda = [
+    { date: '2026-11-23', kind: 'zahlen', label: 'Zoom', time: 'nach US-Börsenschluss', source: 'Unternehmensangaben', url: u },
+    { date: '2026-11-25', kind: 'daten', label: 'US-Wachstum 3. Quartal', time: '14:30 Uhr', source: 'BEA', url: u },
+    { date: '2026-11-24', kind: 'dividende', label: 'Johnson & Johnson', sub: 'Ex-Tag', source: 'Johnson & Johnson', url: u },
+    { date: '2026-11-20', kind: 'zahlen', label: 'Alt', source: 'X', url: u },
+    { date: '2026-11-22', kind: 'zahlen', label: 'Sonntag', source: 'X', url: u },
+    { date: '2026-12-10', kind: 'daten', label: 'Zu weit', source: 'X', url: u },
+    { date: '2026-11-24', kind: 'gerücht', label: 'Unbekannt', source: 'X', url: u },
+    { date: '2026-11-24', kind: 'zahlen', label: 'Ohne Link', source: 'X', url: 'http://x' }
+  ];
+  const inp = inputs(); inp.radar = Object.assign({}, inp.radar || {}, { agenda });
+  const b = Engine.buildBriefing(inp);
+  const c = b.cards.find((x) => x.id === 'agenda');
+  assert.equal(c.type, 'AGENDA');
+  assert.deepEqual(c.agenda.days.map((d) => d.date), ['2026-11-23', '2026-11-24', '2026-11-25']);
+  assert.equal(b.cards[b.cards.length - 1].id, 'agenda', 'Ausblick schließt das Briefing ab');
+  assert.equal(b.counts.AGENDA, 1);
+  const why = b.dropped.filter((d) => /^Ausblick/.test(d.reason)).map((d) => d.reason);
+  assert.equal(why.length, 5);
+  assert.ok(why.some((r) => /Wochenende/.test(r)) && why.some((r) => /keine Quell-URL/.test(r)) && why.some((r) => /unbekannte Art/.test(r)));
+  assert.match(b.summary[b.summary.length - 1], /^Als Nächstes: Montag Quartalszahlen von Zoom; Mittwoch US-Wachstum 3\. Quartal\.$/);
+  const svg = Render.cardSvg(c, b.cards.length - 1, b.cards.length, b.session);
+  assert.match(svg, />MO<\/text>/); assert.match(svg, /Johnson &amp; Johnson/);
+  const html = Www.page(b, { chrome: Www.chromeFrom(CHROME), archive: [SESSION], depth: 2 });
+  assert.match(html, /<section class="mb-sc w" id="ausblick"/);
+  assert.match(html, /<li class="k-dividende"><svg class="mb-ai"/);
+  assert.match(html, /<a href="https:\/\/www\.bea\.gov\/news\/schedule" rel="noopener">Unternehmensangaben<\/a>/);
+  // Ohne Agenda keine Karte.
+  assert.ok(!Engine.buildBriefing(inputs()).cards.some((x) => x.id === 'agenda'));
 });
