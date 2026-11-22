@@ -59,7 +59,7 @@ on:
         required: false
         default: portfolios
         type: choice
-        options: [portfolios, holdout-quant, ema-cluster-dev, ema-cluster-archive, ema-cluster-complete, backtest2-smoke, backtest2, backtest2-survivors, merkmale-smoke, merkmale, merkmale-wf-smoke, merkmale-wf]
+        options: [portfolios, holdout-quant, ema-cluster-dev, ema-cluster-archive, ema-cluster-complete, backtest2-smoke, backtest2, backtest2-survivors, merkmale-smoke, merkmale, merkmale-wf-smoke, merkmale-wf, quant-varianten]
       ema_archive_metadata: {description: 'EMA-Archiv/Vervollstaendigung: Pruefsummen und verschluesselte Dateischluessel, keine Klartextschluessel', required: false, default: '', type: string}
       reviewer_public_key_b64: {description: 'portfolio: Nur holdout-quant: oeffentlicher RSA-Schluessel (PEM, base64 in einer Zeile) der Steuerung', required: false, default: '', type: string}
       phase: {description: 'labor: dev, test oder holdout', required: false, default: dev}
@@ -1981,7 +1981,7 @@ jobs:
       - name: Tests der Pruefung
         run: |
           set -euo pipefail
-          node --test quant/tests/quality-margin-substitute.test.mjs
+          node --test quant/tests/quality-margin-substitute.test.mjs scripts/research/quantscore/variant-pit.test.mjs
       - name: SEC companyfacts.zip (eine Anfrage)
         env:
           SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT || 'VisionUniverseResearch info@visionuniverse.de' }}
@@ -2002,10 +2002,19 @@ jobs:
       # Satz iv (18.11.2026, Steuerung nach Owner-Ja): Einbruch ueber drei Geschaeftsjahre (iv) gegen das bisherige Fenster
       # (ii) und ohne Margenkomponente. Der Satz vom 16.11. (i-iii) steht in docs/quant/QUANT_FINAL_HANDOVER.md.
       - name: Margenformen rechnen (nur Zaehlungen im Log)
+        if: inputs.mode != 'quant-varianten'
         run: |
           set -euo pipefail
           node --max-old-space-size=12288 scripts/quant/research/quality-margin-pit.cjs --docs "$RUNNER_TEMP/v10/docs" \
             --set iv --out "$RUNNER_TEMP/quality-margin-pit/quality-margin-pit.json"
+      # Modus quant-varianten (22.11.2026, Plan nach Backtest 2.0 Stufe 3): Gesamtscore-Gewichte live gegen tilt, mp, mgpa auf
+      # denselben PIT-Dokumenten (scripts/research/quantscore/variant-pit.cjs, Protokoll docs/research/backtest2/PROTOKOLL.md §4c).
+      - name: Quant-Varianten rechnen (nur Zaehlungen und Mittelwerte)
+        if: inputs.mode == 'quant-varianten'
+        run: |
+          set -euo pipefail
+          node --max-old-space-size=12288 scripts/research/quantscore/variant-pit.cjs --docs "$RUNNER_TEMP/v10/docs" \
+            --out "$RUNNER_TEMP/quality-margin-pit/quant-varianten.json"
       - uses: actions/upload-artifact@v4
         with:
           name: quality-margin-pit-${{ github.run_id }}

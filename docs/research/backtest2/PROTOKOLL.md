@@ -120,6 +120,39 @@ Versuchen ist das ein Hinweis, kein Beweis: die Auswahl kannte alle Jahre.
   Supertrader-Marktfilter und Profitabilitätsfilter prüfen; Kurssignale allein (200-Tage-Linie, 52-Wochen-Hoch, Umkehr) schlagen
   SPY nicht.
 
+## 4c. Quant-Varianten auf PIT-Dokumenten (22.11.2026, Owner „Ok“ zum Plan; vor dem ersten Lauf festgelegt)
+
+Frage: Trennt ein Gesamtscore mit mehr Gewicht auf Momentum und Profitabilität die künftigen Gewinner mindestens so gut wie die
+heutigen Gewichte? `scripts/research/quantscore/variant-pit.cjs`, `research.yml` Teil `quality-marge-pit`, Modus `quant-varianten`.
+Gleiche Titel und gleiche Faktor-Scores (V10-Rekonstruktion der Produktfaktoren auf neu gebauten PIT-Dokumenten, 2010–2025,
+wöchentliche Stichtage wie quality-marge-pit), nur die Gewichtung des Gesamtscores ändert sich:
+- `live` Q .10 G .15 V .15 P .15 M .25 R .05 (heute, ohne Revisionen renormiert);
+- `tilt` Q .10 G .05 V .05 P .30 M .45 R .05;
+- `mp` Momentum .50 + Profitabilität .50;
+- `mgpa` Momentum .50 + Bruttogewinn je Bilanzsumme .50 (Hypothese B der Stufe 3).
+
+Kennzahlen je Horizont (3 und 12 Monate): IC, Q5−Q1, oberes Fünftel und dessen Abstand zu SPY (Kursrendite, Einstieg einen Balken
+später, ohne Kosten); gepaarte Differenzen gegen `live` mit Newey-West-t, Holm über alle Vergleiche. Dazu Vorher/Nachher am letzten
+Stichtag (Rangkorrelation, Überlappung der oberen 10 %).
+
+**Entscheidungsregel:** Eine Variante wird für das Produkt vorgeschlagen, wenn ihr IC gegen `live` bei 3 **und** 12 Monaten nicht
+kleiner ist (Punktschätzer ≥ 0) und ihr oberes Fünftel bei 12 Monaten weiter vor SPY liegt als das von `live`. Erfüllen mehrere die
+Regel, gewinnt die mit der höchsten Rangkorrelation zu `live` (die kleinste Änderung für Nutzer). Der Umbau des Produkt-Scores folgt in
+einem eigenen PR (neue Fassung von quant-v2.json, Vorher/Nachher auf den Produkt-Eingängen); Revisionen behalten ihr Gewicht.
+Grenzen: heutige Survivors, Kursrendite, keine Kosten – deshalb nur die Rangfolge der Varianten, keine Renditeaussage.
+
+## 4d. Vorwärtstest (registriert am 22.11.2026)
+
+`scripts/research/vorwaerts/forward.mjs` (nur lesend, beliebig wiederholbar: `node scripts/research/vorwaerts/forward.mjs`). Er braucht
+keinen eigenen Speicher: die Faktor-Snapshots `quant/data/product/factor-evidence-history/vu-factor-evidence-2.0.0/<datum>.json.gz`
+werden nie überschrieben. Festgelegt:
+- Je Monat der erste Snapshot; je Variante (`live` mit Revisionen, wo vorhanden; `tilt`; `mp`, Gewichte wie §4c) das obere Fünftel der
+  Titel mit allen Pflichtfaktoren, gleich gewichtet; Einstieg und Ausstieg zum Schluss des ersten Handelstags nach dem Snapshot
+  (`quant/data/market/discover-series`, Kursrendite), 6 bp je Seite auf den Umschlag; Vergleich SPY aus derselben Reihe.
+- **Zählt ab Dezember 2026.** Oktober und November 2026 sind Vorlauf (nach dem Ende des Studienfensters 09/2026, aber vor der
+  Registrierung). Urteil frühestens nach 12 Monaten; öffentlich nur mit Owner-Freigabe (Renditeaussage).
+- Erster Stand (Vorlauf, ein Monat Okt.–Nov.): live −1,5 %, tilt −2,5 %, mp −1,6 %, SPY −2,0 % – ein Monat sagt nichts.
+
 ## 5. Ausführung und Veröffentlichung
 
 - Umsetzung: `scripts/research/backtest2/` (Markt, Signale, Depotführung, Suche, Lauf mit Workern). Workflow `research.yml`, Teil
