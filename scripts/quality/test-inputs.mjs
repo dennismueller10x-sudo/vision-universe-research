@@ -75,6 +75,10 @@ export function scanFile(root, file) {
   const refs = [];
   lines.forEach((l, i) => { if (!isComment(l) && LIVE_RE.test(l)) refs.push(i + 1); });
   if (!refs.length) return null;
+  /* Eingefrorener Datenstand (22.11.2026): importiert der Test scripts/quant/lib/frozen-data.mjs und liegt sein Buendel
+     fixtures/frozen/<name>.json.gz daneben, liest er keine Produktionsdaten (die Lesezugriffe sind umgelenkt). */
+  if (lines.some((l) => !isComment(l) && /lib\/frozen-data\.mjs/.test(l))
+      && existsSync(join(root, dirname(file), "fixtures", "frozen", file.split("/").pop().replace(/\.test\.(mjs|js)$/, "") + ".json.gz"))) return null;
   const body = lines.filter((l) => !isComment(l));
   const reads = body.some((l) => READ_RE.test(l));
   let dates = 0, tickers = 0, nums = 0, firstFix = 0;
@@ -141,6 +145,7 @@ Rote Tests sollen nur kommen, wenn Code kaputt ist, nicht weil sich taeglich Mar
 3. **Zustaende wie INSUFFICIENT_SAMPLE, fehlende Daten, zurueckgehaltene Evidenz** bekommen je einen Fixture-Test mit eigener Eingabe (\`quant/tests/evidence-states.test.mjs\`), nie einen Ticker, der heute zufaellig in diesem Zustand ist.
 4. **Rueckfallschutz:** \`core/tests/test-inputs.test.mjs\` verbietet neue Tests, die Live-Artefakte lesen, ausser mit Eintrag samt Grund in \`${REGISTRY}\`. Die Liste darf nur kleiner werden.
 5. **Keine festen Live-Werte (TI-7, 22.11.2026):** Kuerzel und Daten in Erwartungen eines Tests, der Live-Daten liest, werden gezaehlt (\`harteWerte\` je Eintrag, Basis mit \`--baseline\`); die Zahl darf nur sinken. Neue Kuerzel gehoeren in eine eingefrorene Fixture (\`scripts/quant/lib/data-fixture.mjs\`) oder unter die Halbstand-Regel (\`scripts/quant/lib/follow-artifact.mjs\`); ausdrueckliche Live-Pruefungen im Monitor tragen \`LIVE-PRUEFUNG: Monitor\` im Kopf.
+6. **Eingefroren ohne Umbau (22.11.2026):** \`import "<rel>/scripts/quant/lib/frozen-data.mjs"\` als erster Import plus Buendel \`<testdir>/fixtures/frozen/<name>.json.gz\` (Erzeuger \`node scripts/quant/freeze-frozen-data.mjs --test <datei>\`: live gruen, Buendel gruen, hoechstens 2 MB; Quell-Commit im Buendel) lenkt die Lesezugriffe auf \`*/data\` um. Solche Tests stehen nicht mehr in der Allowlist. Nicht geeignet: Tests, die Kindprozesse starten (die lesen live), und Buendel ueber 2 MB.
 
 ## Messung
 

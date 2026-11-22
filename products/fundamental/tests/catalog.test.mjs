@@ -483,3 +483,15 @@ test('Analysten-Konsens: Eintrag ohne zusammengefasstes Wort, Kursziel nur aus f
   assert.deepEqual(t.target, { low: 180, high: 320, mean: 250, median: 248, provider: 'FMP' });
   assert.equal(C.consensus({ ratingsState: 'NO_COVERAGE' }), null);
 });
+
+test('Rule of 40: Umsatzwachstum + FCF-Marge je Geschaeftsjahr; ohne Vorjahr keine Zahl', () => {
+  const d = synth();
+  d.units.free_cash_flow = 'USD';
+  d.annual.free_cash_flow = [row(2022, 'FY', '2022-12-31', 5), row(2023, 'FY', '2023-12-31', 24), row(2024, 'FY', '2024-12-31', 30)];
+  const b = C.fromHistory(projectHistory(d, 'TEST'), null);
+  const rows = C.seriesOf(b, C.BY_ID.rule_of_40, 'annual');
+  const at = (fy) => rows.find((r) => r.fy === fy)?.v ?? null;
+  assert.equal(at(2022), null, 'erstes Jahr ohne Vorjahresumsatz -> Luecke statt Schaetzung');
+  assert.ok(Math.abs(at(2023) - (0.2 + 0.2)) < 1e-12, '20 % Wachstum + 20 % FCF-Marge');
+  assert.ok(Math.abs(at(2024) - (0.25 + 0.2)) < 1e-12, '25 % Wachstum + 20 % FCF-Marge');
+});

@@ -1,3 +1,4 @@
+import "../../quant/lib/frozen-data.mjs"; /* eingefrorener Datenstand (scripts/quant/lib/frozen-data.mjs, 22.11.2026) */
 import fs from 'node:fs';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';

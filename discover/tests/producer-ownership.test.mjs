@@ -59,6 +59,7 @@ test("actual Discover rebuild preserves only foreign Europe and Europe-ESEF dire
     symlinkSync(join(root, "scripts/market"), join(temporary, "scripts/market"), "dir");
     writeFileSync(join(temporary, "scripts/discover/build-discover-data.mjs"), readFileSync(builder));
     writeFileSync(join(temporary, "scripts/discover/global-search-index.mjs"), readFileSync(join(root,"scripts/discover/global-search-index.mjs")));
+    writeFileSync(join(temporary, "scripts/discover/not-delivered.mjs"), readFileSync(join(root, "scripts/discover/not-delivered.mjs")));
     mkdirSync(join(temporary, "discover"));
     for (const entry of ["engines", "config", "methodology"]) symlinkSync(join(root, "discover", entry), join(temporary, "discover", entry), "dir");
     const data = join(temporary, "discover/data");

@@ -1,6 +1,7 @@
 // Europe Discover refresh on a schedule: billing headers, quota reserve,
 // trading-day skip and per-stock isolation on the scheduled path.
 // Synthetic transport only; outputs go to temp dirs, never discover/data.
+import "../../scripts/quant/lib/frozen-data.mjs"; /* eingefrorener Datenstand (scripts/quant/lib/frozen-data.mjs, 22.11.2026) */
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {mkdtemp,rm,readFile} from 'node:fs/promises';

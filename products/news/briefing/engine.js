@@ -1,5 +1,5 @@
 /* =========================================================================
-   MARKTBRIEFING (CLOSING BELL) – ENGINE
+   MARKTBRIEFING – ENGINE
 
    Rechnet aus veröffentlichten Artefakten das Briefing eines US-Handelstags:
    Karten mit Daten, Titeln und Quellen. Keine Datei- oder Netzzugriffe; der
@@ -89,6 +89,45 @@
     return out;
   }
 
+  /* Phasen: Tage mit großer Bewegung, die höchstens 75 Kalendertage auseinanderliegen, bilden eine Phase. */
+  function episodes(days, session) {
+    var out = [];
+    days.forEach(function (d) {
+      var last = out[out.length - 1];
+      if (last && daysBetween(last.days[last.days.length - 1][0], d[0]) <= 75) last.days.push(d);
+      else out.push({ from: d[0], days: [d] });
+    });
+    out.forEach(function (e) {
+      e.to = e.days[e.days.length - 1][0];
+      e.extreme = e.days.reduce(function (m, d) { return Math.abs(d[1]) > Math.abs(m) ? d[1] : m; }, 0);
+      e.current = daysBetween(e.to, session) <= 21;
+    });
+    return out;
+  }
+
+  /* Kurzfassung: vier bis sechs Sätze mit Datum und Zahlen (Seite, PDF, Caption, Suchmaschinen). Nur aus den Karten. */
+  function summary(b) {
+    var C = {}; b.cards.forEach(function (c) { C[c.id] = c; });
+    var out = [], d = new Date(b.session + "T12:00:00Z");
+    var day = WEEKDAY[d.getUTCDay()] + ", " + d.getUTCDate() + ". " + MONTHS[d.getUTCMonth()] + " " + d.getUTCFullYear();
+    var ix = {}; (C.indices ? C.indices.bars.rows : []).forEach(function (r) { ix[r.label] = r.value; });
+    if (ix["Nasdaq 100"] != null) {
+      var names = ["Nasdaq 100", "S&P 500", "Dow Jones"].filter(function (n) { return ix[n] != null; });
+      var allDn = names.every(function (n) { return ix[n] < 0; }), allUp = names.every(function (n) { return ix[n] > 0; });
+      var part = names.map(function (n, i) { var v = allDn || allUp ? fmtPct(Math.abs(ix[n])).replace(/^\+/, "") : fmtPct(ix[n]); return (i === names.length - 1 && i ? "und " : "") + "der " + n + " " + v; });
+      out.push("Am " + day + (allDn ? " verloren " : allUp ? " gewannen " : " bewegten sich ") + part.join(", ").replace(", und", " und") + (allDn || allUp ? "." : " (Tagesschluss)."));
+    }
+    var third = b.cards.filter(function (c) { return c.type === "THIRD"; });
+    if (third[0]) out.push(third[0].title + (third[0].title.indexOf(third[0].publisher) >= 0 ? "." : " (" + third[0].publisher + ")."));
+    if (C.megacaps) { var m = C.megacaps.bars.rows[0]; out.push("Größte Bewegung unter den Schwergewichten: " + m.label + " " + fmtPct(m.value) + "."); }
+    if (C.breadth) { var p = C.breadth.pairs[0], q = C.breadth.pairs[1], t = p.total || (p.a + p.b);
+      out.push(Math.round(p.b / t * 100) + " % von " + thousands(t) + " US-Aktien schlossen im Minus; " + q.b + " neuen 52-Wochen-Tiefs standen " + q.a + " Hochs gegenüber."); }
+    if (C.context) out.push(C.context.title + ".");
+    if (C.rates) { var r10 = C.rates.bars.rows.filter(function (r) { return r.label === "US 10 Jahre"; })[0];
+      if (r10 && r10.value) out.push("Die Rendite zehnjähriger US-Staatsanleihen " + (r10.value < 0 ? "fiel" : "stieg") + " um " + Math.abs(r10.value) + " Basispunkte auf " + r10.sub + "."); }
+    return out;
+  }
+
   /* ---------- Frische ---------- */
   function checkFresh(inp) {
     var problems = [];
@@ -118,6 +157,18 @@
     return "Wall Street kaum verändert";
   }
 
+  function intradayPct(inp, sym, session) {
+    var j = inp.intraday[sym], prev = inp.series[sym] && seriesUpTo(inp.series[sym].points, session);
+    if (!j || !prev || prev.length < 2) return null;
+    var base = prev[prev.length - 2][1];
+    var pts = (j.points || []).filter(function (p) { return String(p[0]).slice(0, 10) === session; });
+    return pts.length > 10 ? pts.map(function (p) { return [p[0], round((p[1] / base - 1) * 100, 3)]; }) : null;
+  }
+  function monthPct(points, session) {
+    var s = seriesUpTo(points, session).slice(-23); if (s.length < 2) return null;
+    return s.map(function (p) { return [p[0], round((p[1] / s[0][1] - 1) * 100, 3)]; });
+  }
+
   function cardOverview(inp, ix, session, editorial) {
     var spy = ix.SPY, qqq = ix.QQQ;
     var others = INDICES.filter(function (x) { return ix[x[0]] && x[0] !== "SPY" && x[0] !== "QQQ"; })
@@ -138,7 +189,8 @@
         third
       ].filter(Boolean),
       chart: base && intra.length > 10 ? { kind: "intraday", label: "Nasdaq 100 im Tagesverlauf, gegen Vortagesschluss",
-        points: intra.map(function (p) { return [p[0], round((p[1] / base - 1) * 100, 3)]; }) } : null,
+        points: intra.map(function (p) { return [p[0], round((p[1] / base - 1) * 100, 3)]; }),
+        spy: intradayPct(inp, "SPY", session), month: { QQQ: monthPct(inp.series.QQQ.points, session), SPY: monthPct(inp.series.SPY.points, session) } } : null,
       source: "Indizes über ETF-Proxies (QQQ, SPY) · Tagesverlauf in 5-Minuten-Schritten, verzögert"
     };
   }
@@ -174,7 +226,7 @@
       return { id: "context", type: "OWN", kicker: "Einordnung", title: title,
         sub: "Tage, an denen der " + pick.name + " (" + pick.sym + ") " + Math.abs(thr) + " % oder mehr " + (pick.d.today < 0 ? "verlor" : "gewann") + ", seit 2008." +
           (cluster ? " Eine solche Häufung gab es zuletzt im " + monthYear(cluster) + "." : ""),
-        timeline: { from: "2008-01-01", to: session, days: days },
+        timeline: { from: "2008-01-01", to: session, days: days, episodes: episodes(days, session) },
         stats: [statWeek("Nasdaq 100", wq), statWeek("S&P 500", ws)],
         source: pick.sym + "-Tagesschlüsse seit 2008 · eigene Auswertung" };
     }
@@ -182,7 +234,7 @@
       : "Größter Tages" + dir.toLowerCase() + " im " + pick.name + " seit Beginn der Reihe";
     return { id: "context", type: "OWN", kicker: "Einordnung", title: title,
       sub: pick.name + " (" + pick.sym + ") " + fmtPct(pick.d.today) + (pick.d.date ? "; zuletzt so stark am " + deDateY(pick.d.date) + " (" + fmtPct(pick.d.change) + ")." : "."),
-      timeline: { from: "2008-01-01", to: session, days: days },
+      timeline: { from: "2008-01-01", to: session, days: days, episodes: episodes(days, session) },
       stats: [statWeek("Nasdaq 100", wq), statWeek("S&P 500", ws)],
       source: pick.sym + "-Tagesschlüsse seit 2008 · eigene Auswertung" };
   }
@@ -387,11 +439,12 @@
     out.dropped = third.dropped;
     out.counts = { MARKET: 0, OWN: 0, THIRD: 0 };
     cards.forEach(function (c) { out.counts[c.type]++; });
+    out.summary = summary(out);
     return out;
   }
 
   var api = { SCHEMA: SCHEMA, METHOD: METHOD, THIRD_SOURCES: THIRD_SOURCES, MAX_PER_SOURCE: MAX_PER_SOURCE,
-    buildBriefing: buildBriefing, checkFresh: checkFresh, lastComparable: lastComparable, thirdCards: thirdCards,
+    buildBriefing: buildBriefing, checkFresh: checkFresh, summary: summary, episodes: episodes, lastComparable: lastComparable, thirdCards: thirdCards,
     fmtPct: fmtPct, headline: headline };
   if (isNode) module.exports = api;
   else global.VUMarketBriefing = api;
