@@ -951,9 +951,11 @@ export function stockSeriesHref(sym) { return '/quant/data/market/discover-serie
 /* stockKit() wartet auf das Stylesheet des Aktienkopfs; ein Preload reicht nicht (loadCss fande den Preload-Link und
    wartete auf ihn, ohne dass er angewendet wird). Als echtes Stylesheet im <head> ist es beim Zeichnen schon da. */
 export const STOCK_STYLESHEETS = ['/assets/stock-navigator.css'];
-export function stockPreloads(sym) {
+/* Ein Titel, den das Discover-Universum nicht mehr fuehrt (signals.discoverAvailability.unavailable, z. B. eine beendete
+   Notierung nach B3, 21.11.2026), hat keine veroeffentlichte Tagesreihe mehr: kein Preload, sonst 404 (Monitor rot). */
+export function stockPreloads(sym, unavailable = []) {
   return STOCK_STYLESHEETS.map((href) => `<link rel="stylesheet" href="${href}">\n`).join('') + STOCK_PRELOAD_SCRIPTS.map((href) => `<link rel="preload" as="script" href="${href}">`).join('\n') +
-    `\n<link rel="preload" as="fetch" crossorigin="anonymous" href="${stockSeriesHref(sym)}">`;
+    (unavailable.includes(sym) ? '' : `\n<link rel="preload" as="fetch" crossorigin="anonymous" href="${stockSeriesHref(sym)}">`);
 }
 
 /* Startseite: Schrift und die Bausteine der Oberfläche früh ankündigen (vorher von Hand in supertrader/index.html gepflegt;
@@ -1121,9 +1123,10 @@ export function signalsBySymbol(signals, extra = []) {
 }
 
 function writeStockPages(signals, extra = []) {
+  const un = (signals.discoverAvailability && signals.discoverAvailability.unavailable) || [];
   for (const sym of new Set([...Object.keys(signals.bySymbol), ...extra])) {
     if (!/^[A-Z0-9.\-]+$/.test(sym)) continue;
-    writeIfChanged(path.join(OUT, 'stock', sym, 'index.html'), pageShell({ title: `${sym} — Methoden — Supertrader — Vision Universe®`, description: `Welche der 13 Supertrader-Methoden ${sym} erkennen — Ablauf, Musterdepot und Protokoll.`, page: 'stock', depth: 3, attrs: ` data-symbol="${sym}"`, head: stockPreloads(sym) }));
+    writeIfChanged(path.join(OUT, 'stock', sym, 'index.html'), pageShell({ title: `${sym} — Methoden — Supertrader — Vision Universe®`, description: `Welche der 13 Supertrader-Methoden ${sym} erkennen — Ablauf, Musterdepot und Protokoll.`, page: 'stock', depth: 3, attrs: ` data-symbol="${sym}"`, head: stockPreloads(sym, un) }));
   }
 }
 
