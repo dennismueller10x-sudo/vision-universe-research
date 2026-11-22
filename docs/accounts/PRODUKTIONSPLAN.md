@@ -193,3 +193,14 @@ Umfang: Konten-Worker (Anmeldung, Sitzungen, Token-Brücke, CORS/CSRF, Stripe-We
 Nicht geprüft: Artefakt-Vertrauen der übrigen `workflow_run`-Ketten, Secrets in Logs, Lasttest gegen Supabase/Stripe, `wrangler dev`.
 
 §7.4: Verbindungsdeckel, Nachrichtenrate, IP-Limit und `Sec-Fetch-Site`-Prüfung für vu-live sind bereits umgesetzt (siehe oben unter §7).
+
+### 8.3 Content-Security-Policy: Vorschlag (kein Merge, nicht umgesetzt)
+
+Prüfung, ob eine CSP als `<meta http-equiv>` in den Seitenrahmen möglich ist (22.11.2026): **nicht empfohlen.**
+
+- Per `<meta>` gehen weder `frame-ancestors` noch `report-only` noch Meldeadresse; eine falsche Richtlinie bricht Seiten sofort, ohne Vorlauf.
+- Die Seiten laden Inline-Skripte (Theme-Start, Navigation, Startseite), also bräuchte `script-src` `'unsafe-inline'` oder Hashes für über 5.000 HTML-Dateien. Mit `'unsafe-inline'` bringt die CSP gegen XSS kaum etwas; ohne bricht der Seitenstart.
+- Der Seitenrahmen und viele Dateien stehen unter UI-Schutz; ein Meta-Tag in jede Seite ist ein Querschnitts-Umbau.
+- Bekannte Gegenstellen: `https://konto.visionuniverse.de` (API), `wss://live.visionuniverse.de` (Live-Relay), `https://*.workers.dev` (vu-ask), `https://challenges.cloudflare.com` (Turnstile, aus), Bilder `data:`.
+
+Vorschlag stattdessen: als **Header** beim Hosting-Wechsel (§7), zuerst `Content-Security-Policy-Report-Only` (Cloudflare Pages `_headers` bzw. `vercel.json`), mit `object-src 'none'; base-uri 'self'; form-action 'self' https://konto.visionuniverse.de; connect-src 'self' https://konto.visionuniverse.de wss://live.visionuniverse.de https://*.workers.dev; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com`, mit Browser-QA je Produktwelt; erst nach Meldungsfreiheit auf erzwingend stellen, `unsafe-inline` später durch Hashes oder Nonces ersetzen. Dazu `frame-ancestors 'none'` und `X-Content-Type-Options`.
