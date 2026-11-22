@@ -92,8 +92,13 @@ delisteten Rohreihen; dazu Modus `backtest2-survivors` ohne delistete Titel als 
   `portfolio`, Modus `backtest2-smoke` (400 Titel, kleines Gitter, nur Funktionsprobe) und `backtest2` (voller Lauf).
 - **Stufe 1** (dieser Stand): Signalquellen nur aus Kursen: Marktführer (relative Stärke), Trendvorlage nach Minervini in
   veröffentlichter Lesart, Ausbruch 20 und 55 Tage (Turtle-Einstieg auf Schlussbasis), Trendvorlage mit 55-Tage-Ausbruch.
-  **Stufe 2** (eigener PR, vor einem Urteil über Supertrader oder Quant): die zertifizierten Supertrader-Module C01–C13 und die
-  Quant-Profile mit Fundamentaldaten als weitere Quellen im selben Gitter.
+  **Stufe 2** (Owner 22.11.2026, „den Spieß umdrehen“; eigener PR, eingefrorener Datenstand, eine Woche): zuerst eine
+  **Merkmals-Studie** auf unseren Daten (Point-in-Time, delistete Titel, liquide Top 1.000): je Merkmal monatlich das beste Fünftel
+  gegen das Universum und gegen SPY, getrennt 2008–2016 und 2017–Ende, mit Kosten. Merkmale: die 11 Bestandteile der Quant-Profile
+  und neu Rule of 40 (Umsatzwachstum + FCF-Marge), Bruttogewinn je Bilanzsumme, Eigenkapitalrendite, Bilanzwachstum, Accruals,
+  Nettoemission/Rückkäufe, Abstand zum 52-Wochen-Hoch, Lage zur 200-Tage-Linie, kurzfristige Umkehr, „S&P-ähnlich“ (groß und
+  profitabel). Vorrang nach dem Merkmals-Atlas 1963–heute ([../longrun/MERKMALE.md](../longrun/MERKMALE.md)). Danach die
+  Merkmale, die in beiden Hälften halten, als Signalquellen im Gitter dieser Suche, dazu die zertifizierten Supertrader-Module.
 - Vorher: Gegentests der Depotführung auf künstlichen Kursen mit bekanntem Ergebnis (`scripts/research/backtest2/backtest2.test.mjs`:
   Kauf zur Folgeeröffnung, Kosten, Stopp-Kurs, Insolvenz, Filter, Positionszahl, Universum, Walk-forward sieht nur Lernjahre).
 - Läufe über GitHub Actions auf dem eingefrorenen Snapshot (R2); Ergebnisse zuerst versiegelt an den Owner.
