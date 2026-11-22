@@ -753,7 +753,8 @@ function main() {
     const recordTemplate = templateFor(templates, record.peer?.sic4);
 
     for (const factorId of FactorEvidence.FACTOR_ORDER) {
-      if (!rankable[index]) {
+      /* revisions ist fuer jeden Titel BLOCKED_EXTERNAL (Vertrag), auch ausserhalb der Stammaktien-Rangliste. */
+      if (!rankable[index] && factorId !== "revisions") {
         factors[factorId] = { state: "NOT_APPLICABLE", reason: RankingPopulation.REASON, reasonText: RankingPopulation.TEXT, score: null,
           availableWeight: 0, confidence: null, components: [], peer: null };
         factorStates[factorId].NOT_APPLICABLE += 1;
