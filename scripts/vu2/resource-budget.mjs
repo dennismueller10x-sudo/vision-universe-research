@@ -130,7 +130,12 @@
 // stock wird deshalb von 5.700.000 auf 3.300.000 gesenkt (gemessen plus rund 0,4 MB fuer die
 // Schriften, die in CI dazukommen). Wer sie wieder anhebt, hat den Ausschnitt abgeschaltet.
 export const budgets=Object.freeze({
- home:{decodedBytes:1820000,requests:45,history:false},
+ /* home zaehlt die Logo-Bilder der Aktienkarten getrennt (Steuerung 22.11.2026): `requests` gilt fuer alle anderen
+    Anfragen; Logos (/discover/logos/files/...) haben eine eigene Obergrenze.
+    Gemessen am 22.11.2026 (Lauf auf 93b81b1): 1440 px 19 andere + 27 Logos, 390 px 19 + 11. Damit sinkt die Grenze
+    der anderen Anfragen von 45 auf 22, die Logos (Aktienkarten der Schienen im Bild, lazy) duerfen 30 sein. Sonst hing das Budget am Datenstand: andere Titel in den Schienen
+    brachten 44 -> 46 Anfragen ohne eine Codeaenderung. Die Bytes zaehlen weiter alle Anfragen. */
+ home:{decodedBytes:1820000,requests:22,history:false,separateLogos:true,logoRequests:30},
  // stock 45 -> 46 Anfragen (Owner-Freigabe 24.10.2026, Chart-Harmonisierung): EUR als
  // Anzeigewaehrung braucht auf der Aktienseite EIN FX-Paket (quant/fx-pack.js aus
  // scripts/vu2/build-release.mjs: Chartstandard, FX-Schicht, Lizenz, EZB-Reihe EUR/USD -
@@ -147,6 +152,7 @@ export const budgets=Object.freeze({
  screener:{decodedBytes:30500000,requests:30,history:false},
  screenerPro:{decodedBytes:30500000,requests:30,history:false}
 });
+export const isLogoImage=(path)=>/^\/discover\/logos\/files\//.test(String(path||''));
 export function assessResourceBudget(view,resources){
  const budget=budgets[view];if(!budget)return null;
  if(!Array.isArray(resources)||!resources.length)throw Error('Missing resource evidence: '+view);
@@ -155,9 +161,12 @@ export function assessResourceBudget(view,resources){
   if(r.path.includes('/fixtures/'))throw Error('Fixture loaded: '+view);
   if(!budget.history&&r.path.includes('/daily/ref_'))throw Error('Unexpected price-history fanout: '+view+' ('+r.path+')');
  }
- const decodedBytes=resources.reduce((s,r)=>s+r.bytes,0),requests=resources.length;
+ const decodedBytes=resources.reduce((s,r)=>s+r.bytes,0);
+ const logoRequests=budget.separateLogos?resources.filter((r)=>isLogoImage(r.path)).length:0;
+ const requests=resources.length-logoRequests;
  const failures=[];
  if(decodedBytes>budget.decodedBytes)failures.push('decodedBytes');
  if(requests>budget.requests)failures.push('requests');
- return {view,decodedBytes,requests,budget,pass:failures.length===0,failures};
+ if(budget.separateLogos&&logoRequests>budget.logoRequests)failures.push('logoRequests');
+ return {view,decodedBytes,requests,logoRequests,budget,pass:failures.length===0,failures};
 }

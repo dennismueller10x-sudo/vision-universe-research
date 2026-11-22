@@ -74,6 +74,11 @@ const CLIENT_MSG_MAX = 30;
    zwei Aktienseiten hin- und herspringt, soll nicht zweimal einen
    Verbindungsaufbau bezahlen. */
 const GRACE_MS = 60000;
+/* Sicherheitspruefung 22.11.2026: Eine Verbindung darf nicht alle 50 Plaetze
+   belegen (Nicht-Browser setzen den Origin beliebig), und Symbole haben eine
+   feste Form - alles andere geht weder an den Manager noch an Tiingo. */
+const MAX_SYMBOLS_PER_CLIENT = 12;
+const SYMBOL_RE = /^[A-Z0-9][A-Z0-9.\-]{0,9}$/;
 
 function jetzt() { return Date.now(); }
 
@@ -107,6 +112,7 @@ function laufzeit(env) {
     alarmMs: zahl(env.ALARM_MS, ALARM_MS),
     idleCloseMs: zahl(env.IDLE_CLOSE_MS, IDLE_CLOSE_MS),
     graceMs: zahl(env.GRACE_MS, GRACE_MS),
+    maxSymbolsPerClient: zahl(env.MAX_SYMBOLS_PER_CLIENT, MAX_SYMBOLS_PER_CLIENT),
     maxSymbols: zahl(env.MAX_SYMBOLS, MAX_SYMBOLS),
     maxClients: zahl(env.MAX_CLIENTS, MAX_CLIENTS),
     clientMsgMax: zahl(env.CLIENT_MSG_MAX, CLIENT_MSG_MAX),
@@ -278,6 +284,7 @@ export class VuLive {
     try { nachricht = JSON.parse(typeof ev.data === "string" ? ev.data : ""); }
     catch (err) { return; }
     if (!nachricht || typeof nachricht.op !== "string") return;
+    if ((nachricht.op === "subscribe" || nachricht.op === "unsubscribe") && !Array.isArray(nachricht.symbols)) return;
 
     if (nachricht.op === "ping") { this.sende(ws, { op: "pong", t: this.now() }); return; }
 
@@ -289,8 +296,8 @@ export class VuLive {
          zurueckfallen und den Stand mit Uhrzeit nennen. */
       const phase = sitzung(this.now()).phase;
       if (phase !== "REGULAR") {
-        for (const roh of (nachricht.symbols || []).slice(0, 200)) {
-          const sym = String(roh || "").trim().toUpperCase();
+        for (const roh of nachricht.symbols.slice(0, 200)) {
+          const sym = String(roh || "").trim().toUpperCase().slice(0, 12);
           if (sym) this.sende(ws, { op: "denied", symbol: sym, reason: "sessionClosed", session: phase });
         }
         this.sende(ws, { op: "subscribed", symbols: [...eintrag.symbols], session: phase });
@@ -300,10 +307,12 @@ export class VuLive {
          und benannt. Stillschweigend die Liste zu kuerzen hiesse, dem
          Browser einen Titel zu versprechen, der nie kommt. Die 200 sind
          nur ein Riegel gegen eine sinnlos lange Nachricht. */
-      const symbole = (nachricht.symbols || []).slice(0, 200);
+      const symbole = nachricht.symbols.slice(0, 200);
       for (const roh of symbole) {
         const sym = String(roh || "").trim().toUpperCase();
         if (!sym || eintrag.symbols.has(sym)) continue;
+        if (!SYMBOL_RE.test(sym)) { this.sende(ws, { op: "denied", symbol: sym.slice(0, 12), reason: "invalidSymbol" }); continue; }
+        if (eintrag.symbols.size >= this.cfg.maxSymbolsPerClient) { this.sende(ws, { op: "denied", symbol: sym, reason: "clientSymbolLimit" }); continue; }
         const urteil = this.manager.acquire(sym, eintrag.id);
         if (!urteil.allowed) {
           /* Abgelehnt heisst abgelehnt, mit Grund - der Browser faellt
@@ -328,7 +337,7 @@ export class VuLive {
     }
 
     if (nachricht.op === "unsubscribe") {
-      for (const roh of (nachricht.symbols || [])) {
+      for (const roh of nachricht.symbols.slice(0, 200)) {
         const sym = String(roh || "").trim().toUpperCase();
         if (!eintrag.symbols.delete(sym)) continue;
         this.manager.release(sym, eintrag.id);
