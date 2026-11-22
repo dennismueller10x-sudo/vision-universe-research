@@ -179,3 +179,26 @@ test("BR scopes · negative economic result never changes methodological/forward
   assert.equal(scopes.certificationStatus, 'PRODUCT_APPROVAL_LEGACY');
   assert.equal(scopes.productionApproved, false);
 });
+
+test("BR-MS · Ampel auf Median und Trefferquote, Mittel bleibt Zusatzwert; alte Läufe ohne Median wie bisher", () => {
+  const f = (med, medSh, d, sh) => B.comparison("FACTOR_RANKING_BACKTEST", {}, { meanTopMinusBottom: d, topBeatsBottomShare: sh, medianTopMinusBottom: med, medianTopBeatsBottomShare: medSh });
+  // Mittel negativ, Median positiv und Trefferquote tragen: nicht mehr „hat versagt“
+  const a = f(0.03, 0.7, -0.11, 0.45);
+  assert.equal(a.state, "BEATS"); assert.equal(a.value, 0.03); assert.equal(a.meanValue, -0.11); assert.match(a.basis, /Median/);
+  assert.equal(f(-0.01, 0.4, 0.05, 0.7).state, "LOSES", "positives Mittel allein genügt nicht");
+  assert.equal(f(0.01, 0.55, -0.1, 0.4).state, "MIXED");
+  assert.equal(B.comparison("FACTOR_RANKING_BACKTEST", {}, { meanTopMinusBottom: 0.02, topBeatsBottomShare: 0.7 }).state, "BEATS");
+  assert.equal(B.comparison("FACTOR_RANKING_BACKTEST", {}, {}), null);
+  const row = B.factorRow({ metrics: { perEvent: { factor: { factorId: "X", buckets: 5, rankDates: 3, meanTopMinusBottomCompleteCohort: -0.1, topBeatsBottomShare: 0.4, medianTopMinusBottomCompleteCohort: 0.03, medianTopBeatsBottomShare: 0.7 } } } });
+  assert.equal(row.medianTopMinusBottom, 0.03); assert.equal(row.medianTopBeatsBottomShare, 0.7);
+});
+
+test("BR-MS2 · Runner: Median-Spread je Rangtag aus abgeschlossenen Ereignissen", () => {
+  const Run = require("../../scripts/quant/research/backtest-runner.cjs");
+  const ev = (d, bucket, r, completed = true) => ({ signalDate: d, bucket, grossReturn: r, completed });
+  const events = [ev("d1", 4, 0.10), ev("d1", 4, 0.02), ev("d1", 4, 0.04), ev("d1", 0, 0.90), ev("d1", 0, -0.05), ev("d1", 0, -0.02), ev("d1", 0, 0.5, false), ev("d2", 4, 0.01), ev("d2", 0, 0.03), ev("d3", 4, 0.1)];
+  const m = Run.medianSpread(events, ["d1", "d2", "d3"], 5);
+  assert.equal(m.medianTopMinusBottomDates, 2, "d3 ohne unterstes Fünftel zählt nicht");
+  assert.ok(Math.abs(m.medianTopMinusBottomCompleteCohort - ((0.04 - -0.02) + (0.01 - 0.03)) / 2) < 1e-12);
+  assert.equal(m.medianTopBeatsBottomShare, 0.5);
+});
