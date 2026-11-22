@@ -1,5 +1,5 @@
 /* =========================================================================
-   MARKTBRIEFING (CLOSING BELL) – ENGINE
+   MARKTBRIEFING – ENGINE
 
    Rechnet aus veröffentlichten Artefakten das Briefing eines US-Handelstags:
    Karten mit Daten, Titeln und Quellen. Keine Datei- oder Netzzugriffe; der

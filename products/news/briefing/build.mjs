@@ -1,4 +1,4 @@
-// Marktbriefing (Closing Bell): lädt die veröffentlichten Artefakte, rechnet das Briefing (engine.js) und schreibt
+// Marktbriefing: lädt die veröffentlichten Artefakte, rechnet das Briefing (engine.js) und schreibt
 //   news/marktbriefing/data/latest.json, news/marktbriefing/data/archive/<sitzung>.json,
 //   news/marktbriefing/index.html und news/marktbriefing/<sitzung>/index.html.
 //

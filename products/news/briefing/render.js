@@ -39,7 +39,7 @@
 
   function frame(card, i, n, session) {
     var s = '<rect width="' + W + '" height="' + H + '" fill="' + C.bg + '"/>';
-    s += '<text x="' + PAD + '" y="96" font-size="24" font-weight="700" letter-spacing="3" fill="' + C.lime + '">VISION UNIVERSE <tspan fill="' + C.mut + '" font-weight="600">· CLOSING BELL</tspan></text>';
+    s += '<text x="' + PAD + '" y="96" font-size="24" font-weight="700" letter-spacing="3" fill="' + C.lime + '">VISION UNIVERSE <tspan fill="' + C.mut + '" font-weight="600">· MARKTBRIEFING</tspan></text>';
     s += '<text x="' + (W - PAD) + '" y="96" font-size="24" font-weight="600" letter-spacing="3" fill="' + C.mut + '" text-anchor="end">' + esc(deDate(session)) + " · " + (i + 1) + "/" + n + "</text>";
     s += '<line x1="' + PAD + '" x2="' + (W - PAD) + '" y1="' + (H - 78) + '" y2="' + (H - 78) + '" stroke="' + C.line + '"/>';
     s += '<text x="' + PAD + '" y="' + (H - 40) + '" font-size="19" font-weight="700" fill="' + C.fg + '">Vision Universe <tspan fill="' + C.mut + '" font-weight="500">· Marktbriefing</tspan></text>';
@@ -219,7 +219,7 @@
     }).join("\n");
     var arch = (o.archive || []).slice(0, 20).map(function (d) { return '<a href="/news/marktbriefing/' + d + '/"' + (d === b.session ? ' aria-current="page"' : "") + ">" + deDate(d) + "</a>"; }).join(" ");
     return '<!doctype html>\n<html lang="de">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">\n' +
-      '<meta name="robots" content="noindex,follow">\n<title>Closing Bell ' + deDate(b.session) + ' · Marktbriefing · Vision Universe</title>\n' +
+      '<meta name="robots" content="noindex,follow">\n<title>Marktbriefing ' + deDate(b.session) + ' · Vision Universe</title>\n' +
       '<meta name="description" content="' + esc(b.cards[0] ? b.cards[0].title : "Marktbriefing") + ' – das Marktbriefing von Vision Universe zum US-Handelstag ' + deDate(b.session) + '.">\n' +
       '<link rel="canonical" href="https://research.visionuniverse.de' + esc(o.canonical || "/news/marktbriefing/") + '">\n' +
       '<link rel="preload" href="/assets/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>\n<link rel="stylesheet" href="/assets/site-navigation.css">\n' +
@@ -229,7 +229,7 @@
       ".mb-card figcaption{font-size:13px;color:#8b8d86;margin-top:8px;line-height:1.4}.mb a{color:#c8f531}.mb-arch{display:flex;flex-wrap:wrap;gap:8px;font-size:14px}" +
       ".mb-arch a{padding:4px 10px;border:1px solid #25262a;border-radius:999px;text-decoration:none}.mb-arch a[aria-current]{border-color:#c8f531}.mb-legal{font-size:13px;color:#8b8d86;border-top:1px solid #25262a;padding-top:16px}</style>\n" +
       '</head>\n<body data-view="news"><vu-navigation></vu-navigation><script src="/assets/site-navigation.js"><\/script>\n<main class="mb">\n' +
-      '<p style="margin:0;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#c8f531;font-weight:700">Marktbriefing · Closing Bell</p>\n' +
+      '<p style="margin:0;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#c8f531;font-weight:700">Marktbriefing</p>\n' +
       "<h1>US-Handelstag " + deDate(b.session) + "</h1>\n" +
       "<p>" + n + " Karten: " + b.counts.MARKET + " Marktdaten, " + b.counts.OWN + " eigene Auswertungen, " + b.counts.THIRD + " Angaben Dritter. Indizes über ETF-Proxies.</p>\n" +
       cards + "\n" +
