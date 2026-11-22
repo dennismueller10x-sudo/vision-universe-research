@@ -45,13 +45,13 @@ test('missing or malformed measurements cannot pass',()=>{
  for(const value of [null,[],[resource(NaN)],[resource(-1)],[resource(Infinity)]])assert.throws(()=>assessResourceBudget('home',value),/evidence/);
 });
 test('unmeasured workspaces have no invented budget',()=>assert.equal(assessResourceBudget('elliott',[]),null));
-test('home counts card logos separately, capped by the logo slots on the page (22.11.2026)',()=>{
+test('home counts card logos separately, with their own cap (22.11.2026)',()=>{
  const logo=(t)=>({bytes:1,path:'/discover/logos/files/'+t+'.png'});
  const base=Array.from({length:budgets.home.requests},()=>resource(1));
- assert.equal(assessResourceBudget('home',[...base,logo('A'),logo('B')],{logoSlots:2}).pass,true);
- assert.deepEqual(assessResourceBudget('home',[...base,logo('A'),logo('B')],{logoSlots:1}).failures,['logoRequests']);
- assert.deepEqual(assessResourceBudget('home',[...base,logo('A')]).failures,['logoRequests'],'ohne gezaehlte Plaetze ist kein Logo erlaubt');
- assert.deepEqual(assessResourceBudget('home',[...base,resource(1),logo('A')],{logoSlots:5}).failures,['requests']);
+ const logos=(n)=>Array.from({length:n},(_,i)=>logo('T'+i));
+ assert.equal(assessResourceBudget('home',[...base,...logos(budgets.home.logoRequests)]).pass,true);
+ assert.deepEqual(assessResourceBudget('home',[...base,...logos(budgets.home.logoRequests+1)]).failures,['logoRequests']);
+ assert.deepEqual(assessResourceBudget('home',[...base,resource(1),logo('A')]).failures,['requests']);
  /* Andere Ansichten zaehlen Logos wie jede Anfrage. */
  assert.equal(assessResourceBudget('stock',[logo('A')]).logoRequests,0);
 });

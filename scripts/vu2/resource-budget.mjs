@@ -131,10 +131,10 @@
 // Schriften, die in CI dazukommen). Wer sie wieder anhebt, hat den Ausschnitt abgeschaltet.
 export const budgets=Object.freeze({
  /* home zaehlt die Logo-Bilder der Aktienkarten getrennt (Steuerung 22.11.2026): `requests` gilt fuer alle anderen
-    Anfragen und bleibt 45; Logos (/discover/logos/files/...) duerfen hoechstens so viele sein, wie die Seite Logo-Plaetze
-    traegt (logoSlots, von der QA im DOM gezaehlt). Sonst hing das Budget am Datenstand: andere Titel in den Schienen
+    Anfragen und bleibt 45; Logos (/discover/logos/files/...) haben eine eigene Obergrenze
+    (logoRequests 24: die Aktienkarten der Schienen im ersten Bild, lazy geladen). Sonst hing das Budget am Datenstand: andere Titel in den Schienen
     brachten 44 -> 46 Anfragen ohne eine Codeaenderung. Die Bytes zaehlen weiter alle Anfragen. */
- home:{decodedBytes:1820000,requests:45,history:false,separateLogos:true},
+ home:{decodedBytes:1820000,requests:45,history:false,separateLogos:true,logoRequests:24},
  // stock 45 -> 46 Anfragen (Owner-Freigabe 24.10.2026, Chart-Harmonisierung): EUR als
  // Anzeigewaehrung braucht auf der Aktienseite EIN FX-Paket (quant/fx-pack.js aus
  // scripts/vu2/build-release.mjs: Chartstandard, FX-Schicht, Lizenz, EZB-Reihe EUR/USD -
@@ -152,7 +152,7 @@ export const budgets=Object.freeze({
  screenerPro:{decodedBytes:30500000,requests:30,history:false}
 });
 export const isLogoImage=(path)=>/^\/discover\/logos\/files\//.test(String(path||''));
-export function assessResourceBudget(view,resources,opts={}){
+export function assessResourceBudget(view,resources){
  const budget=budgets[view];if(!budget)return null;
  if(!Array.isArray(resources)||!resources.length)throw Error('Missing resource evidence: '+view);
  for(const r of resources){
@@ -166,10 +166,6 @@ export function assessResourceBudget(view,resources,opts={}){
  const failures=[];
  if(decodedBytes>budget.decodedBytes)failures.push('decodedBytes');
  if(requests>budget.requests)failures.push('requests');
- let logoSlots=null;
- if(budget.separateLogos){
-  logoSlots=Number.isInteger(opts.logoSlots)&&opts.logoSlots>=0?opts.logoSlots:0;
-  if(logoRequests>logoSlots)failures.push('logoRequests');
- }
- return {view,decodedBytes,requests,logoRequests,logoSlots,budget,pass:failures.length===0,failures};
+ if(budget.separateLogos&&logoRequests>budget.logoRequests)failures.push('logoRequests');
+ return {view,decodedBytes,requests,logoRequests,budget,pass:failures.length===0,failures};
 }
