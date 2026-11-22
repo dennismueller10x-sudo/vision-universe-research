@@ -200,6 +200,15 @@ jobs:
           path: ${{ runner.temp }}/elig
           retention-days: 30
 
+      - name: Forschungsreihen der Abgaenge eingefroren? (vor dem Commit)
+        # Steuerung 22.11.2026: die Umfangsfolge entfernt die Reihen jedes Abgangs. Forschungs-Tests lesen Forschungsreihen
+        # dann aus quant/tests/fixtures/research-series/ - fehlt die Kopie, waere main nach dem Lauf rot. Abbruch vor dem Commit.
+        if: (github.event_name == 'workflow_run' || inputs.commit == true) && steps.gate.outputs.decision == 'COMMIT'
+        run: |
+          set -euo pipefail
+          node scripts/market/check-research-frozen.mjs --prev-universe quant/data/market/scale/universe-ELIGIBLE_US_EQUITY.json \
+            --next-universe "$RUNNER_TEMP/elig/scale/universe-ELIGIBLE_US_EQUITY.json"
+
       - name: Commit (nur mit commit=true und Gate COMMIT)
         id: commit
         if: (github.event_name == 'workflow_run' || inputs.commit == true) && steps.gate.outputs.decision == 'COMMIT'

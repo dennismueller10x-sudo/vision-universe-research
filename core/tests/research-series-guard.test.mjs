@@ -114,3 +114,22 @@ test("RS-8 · B3: jede Reihe der Bereinigung vom 21.11. liegt byte-gleich im For
   }
   assert.ok(n >= c.leave.length, "Fixture haelt mindestens eine Reihe je Titel (" + n + ")");
 });
+
+test("RS-9 · Vor dem Commit einer Eignung: jede Forschungsreihe eines Abgangs liegt im Fixture, sonst Abbruch (22.11.2026)", async () => {
+  const { notFrozen } = await import("../../scripts/market/check-research-frozen.mjs");
+  const r = mkdtempSync(join(tmpdir(), "vu-rf-"));
+  const put = (p, c) => { mkdirSync(dirname(join(r, p)), { recursive: true }); writeFileSync(join(r, p), c); };
+  put("quant/data/market/discover-series-long/ref_OLD.json", "{}");
+  put("quant/data/market/discover-series/ref_OLD.json", "{}");
+  const prev = { securities: [{ securityId: "ref_OLD", ticker: "OLD" }, { securityId: "ref_KEEP", ticker: "KEEP" }] };
+  const next = { securities: [{ securityId: "ref_KEEP", ticker: "KEEP" }] };
+  assert.equal(notFrozen(r, prev, next, new Set(["ref_OLD"])).length, 2, "Abgang mit Forschungsreihe ohne Fixture");
+  assert.equal(notFrozen(r, prev, next, new Set()).length, 0, "keine Forschungsreihe: nichts zu tun");
+  put("quant/tests/fixtures/research-series/quant/data/market/discover-series-long/ref_OLD.json", "{}");
+  put("quant/tests/fixtures/research-series/quant/data/market/discover-series/ref_OLD.json", "{}");
+  assert.equal(notFrozen(r, prev, next, new Set(["ref_OLD"])).length, 0, "eingefroren");
+  const wf = readFileSync(join(ROOT, ".github/workflows/security-master-eligibility.yml"), "utf8");
+  const a = wf.indexOf("node scripts/market/check-research-frozen.mjs"), c = wf.indexOf("- name: Commit (nur mit commit=true und Gate COMMIT)");
+  assert.ok(a > 0 && c > a, "Pruefung steht vor dem Commit");
+  rmSync(r, { recursive: true, force: true });
+});
