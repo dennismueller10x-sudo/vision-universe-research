@@ -116,8 +116,7 @@ export async function writeWww(briefing, landingDir, { pdf = false } = {}) {
         pages: ['seite-02.png', 'seite-03.png', 'seite-04.png'].filter(has),
         screens: pick(['start', 'indizes', 'marktbreite', 'ausblick']) } }));
     const home = path.join(landingDir, 'index.html');
-    const tshots = pick(['indizes', 'ausblick', 'start']).map((f) => './marktbriefing/' + briefing.session + '/' + f);
-    if (fs.existsSync(home)) { const before = fs.readFileSync(home, 'utf8'), after = Www.withTeaser(before, briefing, { shots: tshots, scenes: shots.length }); if (after !== before) { fs.writeFileSync(home, after); files.push(home); } }
+    if (fs.existsSync(home)) { const before = fs.readFileSync(home, 'utf8'), after = Www.withTeaser(before, briefing, { cover: has('titel.png') ? 'titel.png' : null, cards }); if (after !== before) { fs.writeFileSync(home, after); files.push(home); } }
     // App (research.visionuniverse.de/willkommen/): Story-Kreis „Briefing“ mit allen Szenen. Nur im Repo-Aufbau
     // (landing/ neben willkommen/); die Bilder liegen auf www, die App öffnet die ganze Ausgabe dort.
     const appCfg = path.join(landingDir, '..', 'willkommen', 'config');

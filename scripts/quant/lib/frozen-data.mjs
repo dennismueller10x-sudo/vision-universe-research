@@ -16,7 +16,7 @@ import { createRequire } from "node:module";
 import { syncBuiltinESMExports } from "node:module";
 import { basename, dirname, join, resolve, sep } from "node:path";
 import { rmSync } from "node:fs";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { REPO, mountFixture, dataDirOf, readFixture } from "./data-fixture.mjs";
 
 export const frozenBundleFor = (testFile) => join(dirname(testFile), "fixtures", "frozen", basename(testFile).replace(/\.test\.(mjs|js)$/, "").replace(/\.mjs$/, "") + ".json.gz");
@@ -43,11 +43,15 @@ export function installFrozenData(bundle, { repo = REPO } = {}) {
   for (const n of MAP_FIRST.promises) wrap(fs.promises, n);
   syncBuiltinESMExports();
   process.on("exit", () => rmSync(mirror, { recursive: true, force: true }));
+  /* Kindprozesse (node-Skripte, die der Test startet) erben den eingefrorenen Stand: Umgebungsvariable + --import. */
+  process.env.VU_FROZEN_BUNDLE = bundle;
+  const imp = "--import=" + pathToFileURL(fileURLToPath(import.meta.url)).href;
+  if (!(process.env.NODE_OPTIONS || "").includes(imp)) process.env.NODE_OPTIONS = ((process.env.NODE_OPTIONS || "") + " " + imp).trim();
   return { mirror, dirs };
 }
 
 const testFile = process.argv[1] || "";
-if (process.env.DATA_FIXTURE_LIVE !== "1" && /\.test\.(mjs|js)$/.test(testFile)) {
-  const bundle = frozenBundleFor(resolve(testFile));
-  if (fs.existsSync(bundle)) installFrozenData(bundle);
+if (process.env.DATA_FIXTURE_LIVE !== "1") {
+  const bundle = process.env.VU_FROZEN_BUNDLE || (/\.test\.(mjs|js)$/.test(testFile) ? frozenBundleFor(resolve(testFile)) : null);
+  if (bundle && fs.existsSync(bundle)) installFrozenData(bundle);
 }

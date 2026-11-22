@@ -216,7 +216,13 @@ test('MB-10 Startseiten-Teaser ersetzt nur seine Region', () => {
   const b = Engine.buildBriefing(inputs());
   const home = 'A<p>Heute neu</p>\n<!--MB:teaser-->alt<!--/MB:teaser-->\n<!--NEWS:hero-->N<!--/NEWS:hero-->Z';
   const out = Www.withTeaser(home, b);
-  assert.match(out, /<!--MB:teaser--><a class="mbt" href="\.\/marktbriefing\/">/);
+  assert.match(out, /<!--MB:teaser--><div class="mbt"><div class="mbt-head">/);
+  assert.match(out, /<a class="mbt-go" href="\.\/marktbriefing\/">/);
+  assert.ok(!/mbt-rail/.test(out), 'ohne Bilder keine Kartenreihe');
+  const withCards = Www.withTeaser(home, b, { cover: 'titel.png', cards: [1, 2, 3, 4, 5, 6, 7].map((k) => ({ file: 'karte-0' + (k + 1) + '.png', anchor: 'indizes', title: 'Karte ' + k })) });
+  assert.equal((withCards.match(/class="mbt-card/g) || []).length, 7, 'Titelblatt, fünf Karten und „Alle Karten“');
+  assert.match(withCards, /href="\.\/marktbriefing\/2026-11-\d\d\/#indizes"/);
+  assert.match(withCards, /Alle 8 Karten/);
   assert.ok(out.endsWith('\n<!--NEWS:hero-->N<!--/NEWS:hero-->Z'));
   assert.equal(Www.withTeaser('ohne Region', b), 'ohne Region');
 });
@@ -297,14 +303,8 @@ test('MB-13 Ausblick: nur kommende Handelstage mit Quelle, Karte, Szene und Kurz
   assert.ok(!Engine.buildBriefing(inputs()).cards.some((x) => x.id === 'agenda'));
 });
 
-test('MB-14 Startseiten-Leiste mit Bildschirmen und App-Story', () => {
+test('MB-14 App-Story aus der Ausgabe', () => {
   const b = Engine.buildBriefing(inputs());
-  const shots = ['./marktbriefing/2026-11-20/bildschirm-04.jpg', './marktbriefing/2026-11-20/bildschirm-13.jpg', './marktbriefing/2026-11-20/bildschirm-01.jpg'];
-  const t = Www.teaser(b, './marktbriefing/', { shots, scenes: 13 });
-  assert.match(t, /^<a class="mbt mbt--s" href="\.\/marktbriefing\/">/);
-  assert.match(t, /<span class="mbt-s" aria-hidden="true"><img class="a" src="\.\/marktbriefing\/2026-11-20\/bildschirm-04\.jpg"/);
-  assert.match(t, /13 Szenen/);
-  assert.ok(!/mbt-s"/.test(Www.teaser(b, './marktbriefing/')), 'ohne Bildschirme die bisherige Leiste');
   const url = 'https://www.visionuniverse.de/marktbriefing/2026-11-20/';
   const app = Www.appStory(b, { url, pdf: url + 'marktbriefing-2026-11-20.pdf', screens: [{ id: 'start', toc: 'T', image: url + 'bildschirm-01.jpg' }] });
   assert.equal(app.schema, 'vu-marktbriefing-app-1');

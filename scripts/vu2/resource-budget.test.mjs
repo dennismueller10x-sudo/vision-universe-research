@@ -33,6 +33,8 @@ test('no budget is looser than the 29.09.2026 baseline',()=>{
   assert.ok(budgets[view].decodedBytes<=b.decodedBytes,view+': '+budgets[view].decodedBytes+' Bytes > '+b.decodedBytes);
   assert.ok(budgets[view].requests<=b.requests,view+': '+budgets[view].requests+' Anfragen > '+b.requests);
  }
+ /* Logos der Home-Karten getrennt (22.11.2026): eigene Grenze, nicht hoeher als gemessen plus Luft. */
+ assert.ok(budgets.home.logoRequests<=30,'home: '+budgets.home.logoRequests+' Logos > 30');
  /* Nur die Aktienseite darf Kurshistorie laden. */
  assert.deepEqual(Object.entries(budgets).filter(([,b])=>b.history).map(([v])=>v),['stock']);
 });
@@ -45,3 +47,13 @@ test('missing or malformed measurements cannot pass',()=>{
  for(const value of [null,[],[resource(NaN)],[resource(-1)],[resource(Infinity)]])assert.throws(()=>assessResourceBudget('home',value),/evidence/);
 });
 test('unmeasured workspaces have no invented budget',()=>assert.equal(assessResourceBudget('elliott',[]),null));
+test('home counts card logos separately, with their own cap (22.11.2026)',()=>{
+ const logo=(t)=>({bytes:1,path:'/discover/logos/files/'+t+'.png'});
+ const base=Array.from({length:budgets.home.requests},()=>resource(1));
+ const logos=(n)=>Array.from({length:n},(_,i)=>logo('T'+i));
+ assert.equal(assessResourceBudget('home',[...base,...logos(budgets.home.logoRequests)]).pass,true);
+ assert.deepEqual(assessResourceBudget('home',[...base,...logos(budgets.home.logoRequests+1)]).failures,['logoRequests']);
+ assert.deepEqual(assessResourceBudget('home',[...base,resource(1),logo('A')]).failures,['requests']);
+ /* Andere Ansichten zaehlen Logos wie jede Anfrage. */
+ assert.equal(assessResourceBudget('stock',[logo('A')]).logoRequests,0);
+});

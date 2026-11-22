@@ -297,7 +297,7 @@
   ];
   var GRUPPE_SYMBOL = { aktien: ["kerzen", "#2f6fed"], energie: ["flamme", "#e8590c"], edelmetalle: ["barren", "#d49a0a"],
                         krypto: ["bitcoin", "#7c5cff"], "us-renditen": ["prozent", "#1f4fb8"], "eu-renditen": ["prozent", "#0a84ff"],
-                        leitzinsen: ["saeulen", "#636a78"], devisen: ["waehrung", "#2f9463"] };
+                        leitzinsen: ["saeulen", "#636a78"], devisen: ["waehrung", "#101318"] };
 
   function symbol(key) {
     var MI = global.VUDiscover && global.VUDiscover.MarketIntelligence;

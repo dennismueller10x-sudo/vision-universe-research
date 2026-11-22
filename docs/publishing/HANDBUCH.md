@@ -376,7 +376,6 @@ Wirtschaftskalender (FMP-Endpunkte geprüft in `scripts/market/probe-free-source
   Cloudflare Pages baut www daraus. Der Zeitplan (Mo–Fr 23:50 UTC) rechnet das Briefing nur intern in den Datenzweig.
   Seiten und PDF versprechen kein tägliches Erscheinen.
 - Startseiten-Teaser in der Region `<!--MB:teaser-->` (eigene Zeile über den Insights-Kacheln), verlinkt die Produktseite;
-  seit 22.11.2026 mit drei echten Bildschirmen der Ausgabe (gleicher Platz, Layout der Startseite unverändert).
   Menüpunkt „Marktbriefing“ auf allen Seiten.
 - App (Owner 22.11.2026): erster Story-Kreis „Briefing“ auf Home (`/willkommen/`) mit allen Szenen der neuesten Ausgabe als
   Bilder (`bildschirm-NN.jpg` und `bildschirme.json` aus `screens.mjs`; ohne die Schluss-Szene). Der Generator schreibt

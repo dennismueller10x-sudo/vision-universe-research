@@ -215,9 +215,8 @@ function loadBundleIndex(dir) {
   return bySec;
 }
 
-async function main() {
-  const a = {}; for (let i = 2; i < process.argv.length; i++) { const k = process.argv[i]; if (k === '--smoke') { a.smoke = true; continue; } a[k.slice(2).replace(/-([a-z])/g, (_, c) => c.toUpperCase())] = process.argv[++i]; }
-  if (!a.workDir || !a.fundamentals || !a.out) throw new Error('--work-dir, --fundamentals und --out sind Pflicht');
+/** Lädt Markt, Benchmarks und Fundamentaldaten wie der Workflow-Lauf (auch für faktor-wf.mjs). */
+export function loadInputs(a) {
   const bench = loadBenchmarks(), benchEnd = Object.values(bench).map((p) => p.at(-1)[0]).sort()[0];
   const cal = JSON.parse(fs.readFileSync(path.join(ROOT, 'quant/data/market/multi-asset/series/SPY.json'), 'utf8')).points.map((p) => p[0]).filter((d) => d >= '2007-01-01');
   const end = [lastCompleteMonthEnd(cal), cal.findLast((d) => d <= benchEnd)].sort()[0];
@@ -229,6 +228,17 @@ async function main() {
     if (!cache.has(cik)) { const f = path.join(a.fundamentals, 'CIK' + cik + '.json'); cache.set(cik, fs.existsSync(f) ? JSON.parse(fs.readFileSync(f, 'utf8')) : null); }
     return cache.get(cik);
   };
+  return { m, bench, counts, diagnostics, bundleOf, cache };
+}
+export function parseArgs(argv) {
+  const a = {}; for (let i = 2; i < argv.length; i++) { const k = argv[i]; if (k === '--smoke') { a.smoke = true; continue; } a[k.slice(2).replace(/-([a-z])/g, (_, c) => c.toUpperCase())] = argv[++i]; }
+  if (!a.workDir || !a.fundamentals || !a.out) throw new Error('--work-dir, --fundamentals und --out sind Pflicht');
+  return a;
+}
+
+async function main() {
+  const a = parseArgs(process.argv);
+  const { m, bench, counts, diagnostics, bundleOf, cache } = loadInputs(a);
   const st = study(m, bundleOf);
   // SPY-Monatsrenditen auf denselben Ultimos (Gesamtrendite, Wochenreihe: letzter Wert ≤ Datum)
   const ends = monthEnds(m.dates).map((t) => m.dates[t]);

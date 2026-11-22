@@ -991,30 +991,29 @@ main,.story,.steps,.step{overflow-x:clip}
 
 .full .nday h2,.nday h2{max-width:none;font-size:clamp(20px,2vw,26px);line-height:1.15}
 /* Marktbriefing-Teaser auf der Startseite (Region MB:teaser, geschrieben von products/news/briefing/build.mjs --www) */
-.mbt{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px 18px;align-items:end;background:var(--lime);color:#000;border-radius:24px;padding:18px 20px;margin:0 0 14px;text-decoration:none;box-shadow:inset 0 0 0 2px #000}
-.mbt-k{grid-column:1/-1;font-size:13px;font-weight:800;opacity:.65}
-.mbt-h{font-size:clamp(24px,3vw,36px);font-weight:900;letter-spacing:-.045em;line-height:1;text-wrap:balance}
-.mbt-c{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px}
-.mbt-c i{font-style:normal;background:rgba(0,0,0,.08);border-radius:12px;padding:6px 10px;font-size:13px;font-weight:700}
-.mbt-c em{font-style:normal;font-weight:900;margin-left:4px}
-.mbt-go{display:inline-flex;align-items:center;gap:8px;background:#000;color:#fff;border-radius:999px;padding:10px 16px;font-weight:800;font-size:15px;white-space:nowrap;grid-row:2;grid-column:2}
-.mbt:hover .mbt-go{background:#222}
-.mbt:focus-visible{outline:3px solid #4f6b00;outline-offset:3px}
-@media(max-width:600px){.mbt{grid-template-columns:minmax(0,1fr)}.mbt-go{grid-row:auto;grid-column:1;justify-self:start}}
-/* Marktbriefing-Leiste mit drei echten Bildschirmen der Ausgabe (Owner 22.11.2026; gleicher Platz, gleiche Breite) */
-.mbt-k i{display:inline-block;width:8px;height:8px;border-radius:50%;background:#000;margin-right:8px;vertical-align:1px}
-.mbt--s{grid-template-columns:minmax(0,1fr) 210px auto;align-items:center;padding:18px 22px;overflow:hidden;min-height:150px}
-.mbt--s .mbt-k,.mbt--s .mbt-h,.mbt--s .mbt-c{grid-column:1}
-.mbt--s .mbt-c{flex-wrap:nowrap;overflow:hidden}
-.mbt--s .mbt-go{grid-column:3;grid-row:1/4;align-self:center}
-.mbt-s{grid-column:2;grid-row:1/4;position:relative;align-self:stretch;margin:-18px 0}
-.mbt-s img{position:absolute;top:22px;width:80px;height:auto;aspect-ratio:390/844;object-fit:cover;object-position:top;border-radius:11px;box-shadow:0 12px 24px -10px rgba(0,0,0,.55),0 0 0 2px #000;transition:transform .5s cubic-bezier(.2,.8,.2,1)}
-.mbt-s .a{left:12px;transform:rotate(-8deg);top:30px}.mbt-s .b{left:118px;transform:rotate(8deg);top:30px}.mbt-s .c{left:65px;top:12px;z-index:2}
-.mbt--s:hover .mbt-s .a{transform:rotate(-12deg) translateX(-6px)}.mbt--s:hover .mbt-s .b{transform:rotate(12deg) translateX(6px)}.mbt--s:hover .mbt-s .c{transform:translateY(-4px)}
-@media(max-width:900px){.mbt--s{grid-template-columns:minmax(0,1fr) 104px;padding:16px}.mbt--s .mbt-c{flex-wrap:wrap}.mbt--s .mbt-c i:nth-child(n+3){display:none}
-  .mbt--s .mbt-go{grid-column:1/-1;grid-row:auto;justify-self:start}.mbt-s{margin:0;min-height:118px}.mbt--s .mbt-x{display:none}.mbt--s .mbt-c i{font-size:12px;padding:5px 8px}
-  .mbt-s img{width:50px;border-radius:8px}.mbt-s .a{left:0;top:22px}.mbt-s .b{left:50px;top:22px}.mbt-s .c{left:25px;top:8px}}
-@media(prefers-reduced-motion:reduce){.mbt-s img{transition:none}}
+/* Marktbriefing auf der Startseite (Owner 22.11.2026, „Karten zum Wischen“): teasert die Unterseite an. */
+.mbt{margin:34px 0 0;color:#fff}
+.mbt-head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 18px;align-items:end}
+.mbt-k{grid-column:1/-1;display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:#d6d6d6}
+.mbt-k i{width:8px;height:8px;border-radius:50%;background:#ff6b5e;box-shadow:0 0 0 0 rgba(255,107,94,.6);animation:mbtp 1.8s infinite}
+@keyframes mbtp{70%{box-shadow:0 0 0 10px rgba(255,107,94,0)}100%{box-shadow:0 0 0 0 rgba(255,107,94,0)}}
+.mbt-h{font-size:clamp(28px,3.6vw,46px);font-weight:900;letter-spacing:-.045em;line-height:1.02;text-wrap:balance}
+.mbt-go{display:inline-flex;align-items:center;gap:8px;min-height:46px;background:var(--lime);color:#000;border-radius:999px;padding:0 20px;font-weight:800;font-size:15.5px;white-space:nowrap;text-decoration:none}
+.mbt-go:hover{background:#d8ff4a}
+.mbt-rail{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;margin:22px -20px 0;padding:4px 20px 10px;scroll-padding:0 20px}
+.mbt-rail::-webkit-scrollbar{display:none}
+.mbt-card{position:relative;flex:0 0 auto;width:min(58vw,230px);aspect-ratio:1080/1350;scroll-snap-align:start;border-radius:16px;overflow:hidden;background:#111;box-shadow:0 0 0 1px #262626;text-decoration:none;transition:transform .25s}
+.mbt-card:hover{transform:translateY(-4px)}
+.mbt-card img{width:100%;height:100%;object-fit:cover;object-position:top}
+.mbt-cover{box-shadow:0 0 0 3px var(--lime)}
+.mbt-cover span{position:absolute;right:10px;bottom:10px;font-size:11px;font-weight:900;background:var(--lime);color:#000;padding:3px 9px;border-radius:99px}
+.mbt-all{display:flex;flex-direction:column;justify-content:flex-end;gap:6px;padding:18px;background:#141414;color:#fff}
+.mbt-all b{font-size:22px;font-weight:900;letter-spacing:-.03em;line-height:1.1}
+.mbt-all span{font-size:14px;font-weight:800;color:var(--lime)}
+.mbt-card:focus-visible,.mbt-go:focus-visible{outline:3px solid var(--lime);outline-offset:3px}
+@media(min-width:900px){.mbt-rail{margin:22px -32px 0;padding:4px 32px 10px;scroll-padding:0 32px}}
+@media(max-width:600px){.mbt-head{grid-template-columns:minmax(0,1fr)}.mbt-go{justify-self:start}}
+@media(prefers-reduced-motion:reduce){.mbt-k i{animation:none}.mbt-card{transition:none}}
 /* Acht Menüpunkte (mit Marktbriefing) in einer Zeile: weniger Innenabstand; der Hinweis „Bald im Store“ steht im Knopf „Benachrichtigen“ und auf der Startseite. */
 @media(min-width:960px){.nav .links a{padding:9px 10px}.nav .appchip{display:none !important}}
 @media(min-width:960px) and (max-width:1279px){.nav .links{margin-left:4px}.nav .links a{padding:8px 8px;font-size:14px}.nav .links a[href$="#fragen"]{display:none}}

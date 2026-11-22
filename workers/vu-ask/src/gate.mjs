@@ -216,10 +216,14 @@ export class AskGate {
     /* 6 — Abrechnen: Reservierung durch die echten Kosten ersetzen. */
     const actual = answer.usage ? costOf(limits.model, answer.usage) : null;
     const usd = answer.billed === false ? -reserve : actual !== null ? actual - reserve : 0;
-    /* Scheitert die Frage, bekommt der Nutzer sein Kontingent zurueck -
+    /* Scheitert die Frage UNBERECHNET (billed === false), bekommt der Nutzer
+       sein Kontingent zurueck; berechnete Fehlschlaege (abgeschnitten,
+       unlesbar, abgelehnt) und unbekannte (Zeitueberschreitung) kosten es,
+       sonst liessen sich Kosten mit absichtlich scheiternden Fragen am
+       Nutzerlimit vorbei erzeugen. Der Rest:
        der Tageszaehler aller Nutzer aber nicht: sonst liesse sich die
        Tagesgrenze mit absichtlich scheiternden Fragen umgehen. */
-    await this.book({ month, day, ids, usd, userLlm: answer.ok ? 0 : -1, dayLlm: 0, calls: answer.billed === false ? 0 : 1 });
+    await this.book({ month, day, ids, usd, userLlm: answer.ok || answer.billed !== false ? 0 : -1, dayLlm: 0, calls: answer.billed === false ? 0 : 1 });
 
     if (answer.error === "CREDIT_EXHAUSTED") {
       /* Das Prepaid-Guthaben bei Anthropic ist leer - die gewollte harte

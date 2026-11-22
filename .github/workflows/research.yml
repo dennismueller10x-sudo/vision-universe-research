@@ -21,6 +21,8 @@ name: Forschung (Buendel research)
 #   edge2-paper                  vormals research-edge2-paper.yml
 #   europa-esef                  neu (Strang M5, 08.11.2026): Konzern-Kennzahlen deutscher Emittenten aus ESEF, nur manuell
 #   quality-marge-pit            neu (16.11.2026): Quality-Margenformen auf neu gebauten PIT-Dokumenten, nur manuell
+#   faktor-gewichte              neu (22.11.2026): Gewichtsvarianten mit Holdout und Q5-Q1-Robustheit, nur manuell, nur lesend
+#   faktor-prognose              neu (22.11.2026): IC/Q5-Q1/Holm je Faktor und Profil auf bereinigter Basis, nur manuell, nur lesend
 #   anpassung-diagnose           neu (22.11.2026): Faktorspruenge gesperrter Reihen offenlegen (R2, nur lesend), nur manuell
 # Der Job `auswahl` bildet die Ausloeser der Quellen nach (Dispatch `teil`, Zeitplan am Cron, Push nach
 # Zweig/Pfad, workflow_run nach Name/Typ/Zweig, repository_dispatch nach Typ). Generiert, siehe A-Doc.
@@ -52,6 +54,8 @@ on:
           - hausstrategie-forschung
           - europa-esef
           - quality-marge-pit
+          - faktor-prognose
+          - faktor-gewichte
           - anpassung-diagnose
           - edge2-paper
       mode:
@@ -59,7 +63,7 @@ on:
         required: false
         default: portfolios
         type: choice
-        options: [portfolios, holdout-quant, ema-cluster-dev, ema-cluster-archive, ema-cluster-complete, backtest2-smoke, backtest2, backtest2-survivors, merkmale-smoke, merkmale]
+        options: [portfolios, holdout-quant, ema-cluster-dev, ema-cluster-archive, ema-cluster-complete, backtest2-smoke, backtest2, backtest2-survivors, merkmale-smoke, merkmale, merkmale-wf-smoke, merkmale-wf, quant-varianten]
       ema_archive_metadata: {description: 'EMA-Archiv/Vervollstaendigung: Pruefsummen und verschluesselte Dateischluessel, keine Klartextschluessel', required: false, default: '', type: string}
       reviewer_public_key_b64: {description: 'portfolio: Nur holdout-quant: oeffentlicher RSA-Schluessel (PEM, base64 in einer Zeile) der Steuerung', required: false, default: '', type: string}
       phase: {description: 'labor: dev, test oder holdout', required: false, default: dev}
@@ -110,6 +114,8 @@ jobs:
       hausstrategie_forschung: ${{ steps.wahl.outputs.hausstrategie_forschung }}
       europa_esef: ${{ steps.wahl.outputs.europa_esef }}
       quality_marge_pit: ${{ steps.wahl.outputs.quality_marge_pit }}
+      faktor_prognose: ${{ steps.wahl.outputs.faktor_prognose }}
+      faktor_gewichte: ${{ steps.wahl.outputs.faktor_gewichte }}
       anpassung_diagnose: ${{ steps.wahl.outputs.anpassung_diagnose }}
       edge2_paper: ${{ steps.wahl.outputs.edge2_paper }}
     steps:
@@ -146,7 +152,7 @@ jobs:
           export PUSH_FILES PUSH_FILES_UNKNOWN
           python3 - <<'PY'
           import fnmatch, json, os, re
-          SPEC = json.loads(r"""{"anpassung-diagnose": {"crons": [], "dispatch": true, "required": []}, "delisting-probe": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "edge2-paper": {"crons": ["47 8 * * 6"], "dispatch": true, "required": []}, "elliott-register": {"crons": ["23 9 * * 6", "47 7 * * 0", "17 6 * * 1", "41 5 * * 3"], "dispatch": true, "required": []}, "emerging-leaders": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "etf-universum": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"], "paths": ["products/vorsorge/producer/**", "vorsorge/engines/**", ".github/workflows/research.yml"]}, "required": []}, "europa-esef": {"crons": [], "dispatch": true, "required": []}, "hausstrategie-forschung": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "labor": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": ["phase"]}, "muster-gesamtrendite": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "mustervolumen": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "portfolio": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "quality-marge-pit": {"crons": [], "dispatch": true, "required": []}, "v13-archiv": {"crons": [], "dispatch": false, "push": {"branches": ["claude/**"]}, "required": []}, "vorsorge-etf": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"], "paths": ["products/vorsorge/producer/**", "vorsorge/engines/**", ".github/workflows/research.yml"]}, "required": []}, "vorsorge-recht": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"], "paths": [".github/workflows/research.yml", "products/vorsorge/producer/fetch-legal-sources.sh"]}, "required": []}}""")
+          SPEC = json.loads(r"""{"anpassung-diagnose": {"crons": [], "dispatch": true, "required": []}, "delisting-probe": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "edge2-paper": {"crons": ["47 8 * * 6"], "dispatch": true, "required": []}, "elliott-register": {"crons": ["23 9 * * 6", "47 7 * * 0", "17 6 * * 1", "41 5 * * 3"], "dispatch": true, "required": []}, "emerging-leaders": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "etf-universum": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"], "paths": ["products/vorsorge/producer/**", "vorsorge/engines/**", ".github/workflows/research.yml"]}, "required": []}, "europa-esef": {"crons": [], "dispatch": true, "required": []}, "hausstrategie-forschung": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "labor": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": ["phase"]}, "muster-gesamtrendite": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "mustervolumen": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "portfolio": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "faktor-gewichte": {"crons": [], "dispatch": true, "required": []}, "faktor-prognose": {"crons": [], "dispatch": true, "required": []}, "quality-marge-pit": {"crons": [], "dispatch": true, "required": []}, "v13-archiv": {"crons": [], "dispatch": false, "push": {"branches": ["claude/**"]}, "required": []}, "vorsorge-etf": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"], "paths": ["products/vorsorge/producer/**", "vorsorge/engines/**", ".github/workflows/research.yml"]}, "required": []}, "vorsorge-recht": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"], "paths": [".github/workflows/research.yml", "products/vorsorge/producer/fetch-legal-sources.sh"]}, "required": []}}""")
           ev, ref = os.environ.get("EVENT", ""), os.environ.get("REF", "")
           def glob_re(p):
               # GitHub-Filtermuster: ** beliebig, * ohne '/', ? ein Zeichen, [..] Klasse; Praefix '!' = Ausschluss
@@ -262,7 +268,7 @@ jobs:
             printf '%s' "$REVIEWER_B64" | base64 -d > "$RUNNER_TEMP/holdout/reviewer.pem"
             openssl pkey -pubin -in "$RUNNER_TEMP/holdout/reviewer.pem" -noout || { echo "REVIEWER_KEY_NOT_A_PUBLIC_KEY"; exit 2; }
           fi
-          case "${IN_MODE:-}" in ema-cluster-dev|ema-cluster-archive|ema-cluster-complete|backtest2-smoke|backtest2|backtest2-survivors|merkmale-smoke|merkmale) m="$IN_MODE";; esac
+          case "${IN_MODE:-}" in ema-cluster-dev|ema-cluster-archive|ema-cluster-complete|backtest2-smoke|backtest2|backtest2-survivors|merkmale-smoke|merkmale|merkmale-wf-smoke|merkmale-wf) m="$IN_MODE";; esac
           echo "mode=${m:-portfolios}" >> "$GITHUB_OUTPUT"
           echo "Modus: ${m:-portfolios}"
 
@@ -432,17 +438,19 @@ jobs:
             --out "$RUNNER_TEMP/backtest2/upload" --workers "$(nproc)" $smoke
           rm -rf "$RUNNER_TEMP/priv" "$RUNNER_TEMP/canonical-history"
 
-      # Backtest 2.0, Stufe 2: Merkmals-Studie auf eigenen Daten (PIT-Fundamentaldaten aus dem Schritt oben). Nur Artefakt.
+      # Backtest 2.0, Stufe 2 (Merkmals-Studie) und Stufe 3 (Faktor-Walk-forward) auf eigenen Daten (PIT-Fundamentaldaten aus dem Schritt oben). Nur Artefakt.
       - name: Merkmals-Studie rechnen (Ergebnis nur als Artefakt)
         if: startsWith(steps.m.outputs.mode, 'merkmale')
         env:
           MODE: ${{ steps.m.outputs.mode }}
         run: |
           set -euo pipefail
-          node --test scripts/research/backtest2/merkmale.test.mjs
+          node --test scripts/research/backtest2/merkmale.test.mjs scripts/research/backtest2/faktor-wf.test.mjs
           mkdir -p "$RUNNER_TEMP/backtest2/upload"
-          smoke=""; if [ "$MODE" = "merkmale-smoke" ]; then smoke="--smoke"; fi
-          node --max-old-space-size=12288 scripts/research/backtest2/merkmale.mjs \
+          smoke=""; case "$MODE" in *-smoke) smoke="--smoke";; esac
+          # Stufe 3 (merkmale-wf*): Faktor-Depots im Walk-forward; sonst Stufe 2 (Merkmals-Studie)
+          script=merkmale.mjs; case "$MODE" in merkmale-wf*) script=faktor-wf.mjs;; esac
+          node --max-old-space-size=12288 "scripts/research/backtest2/$script" \
             --work-dir "$RUNNER_TEMP/canonical-history" --delisted-dir "$DELISTED_DIR" --delisted-raw-dir "$DELISTED_RAW_DIR" \
             --fundamentals "$RUNNER_TEMP/pit-fundamentals" --out "$RUNNER_TEMP/backtest2/upload" $smoke
           rm -rf "$RUNNER_TEMP/priv" "$RUNNER_TEMP/canonical-history"
@@ -1979,7 +1987,7 @@ jobs:
       - name: Tests der Pruefung
         run: |
           set -euo pipefail
-          node --test quant/tests/quality-margin-substitute.test.mjs
+          node --test quant/tests/quality-margin-substitute.test.mjs scripts/research/quantscore/variant-pit.test.mjs
       - name: SEC companyfacts.zip (eine Anfrage)
         env:
           SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT || 'VisionUniverseResearch info@visionuniverse.de' }}
@@ -2000,10 +2008,19 @@ jobs:
       # Satz iv (18.11.2026, Steuerung nach Owner-Ja): Einbruch ueber drei Geschaeftsjahre (iv) gegen das bisherige Fenster
       # (ii) und ohne Margenkomponente. Der Satz vom 16.11. (i-iii) steht in docs/quant/QUANT_FINAL_HANDOVER.md.
       - name: Margenformen rechnen (nur Zaehlungen im Log)
+        if: inputs.mode != 'quant-varianten'
         run: |
           set -euo pipefail
           node --max-old-space-size=12288 scripts/quant/research/quality-margin-pit.cjs --docs "$RUNNER_TEMP/v10/docs" \
             --set iv --out "$RUNNER_TEMP/quality-margin-pit/quality-margin-pit.json"
+      # Modus quant-varianten (22.11.2026, Plan nach Backtest 2.0 Stufe 3): Gesamtscore-Gewichte live gegen tilt, mp, mgpa auf
+      # denselben PIT-Dokumenten (scripts/research/quantscore/variant-pit.cjs, Protokoll docs/research/backtest2/PROTOKOLL.md §4c).
+      - name: Quant-Varianten rechnen (nur Zaehlungen und Mittelwerte)
+        if: inputs.mode == 'quant-varianten'
+        run: |
+          set -euo pipefail
+          node --max-old-space-size=12288 scripts/research/quantscore/variant-pit.cjs --docs "$RUNNER_TEMP/v10/docs" \
+            --out "$RUNNER_TEMP/quality-margin-pit/quant-varianten.json"
       - uses: actions/upload-artifact@v4
         with:
           name: quality-margin-pit-${{ github.run_id }}
@@ -2013,6 +2030,156 @@ jobs:
       - name: Private Daten entfernen
         if: always()
         run: rm -rf "$RUNNER_TEMP/v10"
+
+  # --- faktor-prognose: neu (22.11.2026, Steuerung): wie gut sagen Faktoren, Profilwert und Gesamtwert (quant-v2.4.1) auf der
+  # bereinigten Basis voraus? Rohwerte aus dem privaten V10-Panel (R2-Restore, keine SEC-Abfrage), dann
+  # scripts/quant/research/factor-predictive-power.cjs je Population (common = EQUITY_COMMON + ADR, all = inkl. getrennter
+  # Klassen). Forschung, nicht zertifiziert; nur lesend, nichts wird committet, als Artefakt nur Kennzahlen.
+  faktor-prognose:
+    needs: [auswahl]
+    if: needs.auswahl.outputs.faktor_prognose == 'true'
+    permissions: {contents: read}
+    strategy:
+      fail-fast: false
+      matrix:
+        population: [common, all]
+    concurrency:
+      group: faktor-prognose-${{ matrix.population }}-${{ github.ref_name }}
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Tests der Pruefung
+        run: |
+          set -euo pipefail
+          node --test quant/tests/factor-predictive-power.test.mjs
+      - name: Lesegeneration des privaten Archivs
+        id: g
+        run: |
+          set -euo pipefail
+          node scripts/quant/v13/archive/reader-generation.mjs >> "$GITHUB_OUTPUT"
+      # Keine SEC-Abfrage: Rohwerte aus dem privaten V10-Panel (R2), nur lesend
+      - name: V10-Panel aus R2 wiederherstellen (privater Schluessel nur in diesem Schritt)
+        env:
+          READ_MANIFEST: ${{ steps.g.outputs.manifest }}
+          READ_PREFIX: ${{ steps.g.outputs.prefix }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          V13_ARCHIVE_PRIVATE_KEY: ${{ secrets.V13_ARCHIVE_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          node scripts/quant/v13/archive/r2-restore.mjs --mode extract --parts v10-factor-panel \
+            --dest "$RUNNER_TEMP/priv" --manifest "$READ_MANIFEST" --prefix "$READ_PREFIX"
+          find "$RUNNER_TEMP/priv" -name panel.jsonl.gz -print -quit | grep -q .
+      - name: Prognosekraft rechnen (nur Kennzahlen im Log)
+        env:
+          POPULATION: ${{ matrix.population }}
+        run: |
+          set -euo pipefail
+          PANEL=$(find "$RUNNER_TEMP/priv" -name panel.jsonl.gz -print -quit)
+          node --max-old-space-size=12288 scripts/quant/research/factor-predictive-power.cjs --panel "$PANEL" \
+            --population "$POPULATION" --out "$RUNNER_TEMP/faktor-prognose/factor-predictive-power-$POPULATION.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: faktor-prognose-${{ matrix.population }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/faktor-prognose
+          retention-days: 30
+          if-no-files-found: error
+      - name: Private Daten entfernen
+        if: always()
+        run: rm -rf "$RUNNER_TEMP/priv"
+
+  # --- faktor-gewichte: neu (22.11.2026, Steuerung): Gewichtsvarianten des Gesamtwerts mit Holdout (Wahl 2010-2017, Pruefung 2018-2025)
+  # und Robustheit von Q5-Q1 (Median, winsorisiert, Ausreisser; common gegen common+ended). Forschung, nicht zertifiziert, nur lesend.
+  faktor-gewichte:
+    needs: [auswahl]
+    if: needs.auswahl.outputs.faktor_gewichte == 'true'
+    permissions: {contents: read}
+    strategy:
+      fail-fast: false
+      matrix:
+        population: [common, common+ended]
+    concurrency:
+      group: faktor-gewichte-${{ matrix.population }}-${{ github.ref_name }}
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Tests der Pruefung
+        run: |
+          set -euo pipefail
+          node --test quant/tests/factor-weights-holdout.test.mjs
+      - name: Lesegeneration des privaten Archivs
+        id: g
+        run: |
+          set -euo pipefail
+          node scripts/quant/v13/archive/reader-generation.mjs >> "$GITHUB_OUTPUT"
+      # Keine SEC-Abfrage: Rohwerte aus dem privaten V10-Panel (R2), nur lesend
+      - name: V10-Panel aus R2 wiederherstellen (privater Schluessel nur in diesem Schritt)
+        env:
+          READ_MANIFEST: ${{ steps.g.outputs.manifest }}
+          READ_PREFIX: ${{ steps.g.outputs.prefix }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          V13_ARCHIVE_PRIVATE_KEY: ${{ secrets.V13_ARCHIVE_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          node scripts/quant/v13/archive/r2-restore.mjs --mode extract --parts v10-factor-panel \
+            --dest "$RUNNER_TEMP/priv" --manifest "$READ_MANIFEST" --prefix "$READ_PREFIX"
+          find "$RUNNER_TEMP/priv" -name panel.jsonl.gz -print -quit | grep -q .
+      # Teil B2b (#2194): ausgeschiedene Reihen byte-gleich aus R2 zurueck in den Checkout dieses Laufs (nie committet)
+      - name: Private Kopien ausgeschiedener Reihen zurueckholen
+        if: matrix.population == 'common+ended'
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: |
+          set -euo pipefail
+          node scripts/market/restore-research-series.mjs --out "$GITHUB_WORKSPACE"
+      - name: Gewichtsvarianten und Q5-Q1 rechnen (nur Kennzahlen im Log)
+        env:
+          POPULATION: ${{ matrix.population }}
+        run: |
+          set -euo pipefail
+          PANEL=$(find "$RUNNER_TEMP/priv" -name panel.jsonl.gz -print -quit)
+          node --max-old-space-size=12288 scripts/quant/research/factor-weights-holdout.cjs --panel "$PANEL" \
+            --population "$POPULATION" --out "$RUNNER_TEMP/faktor-gewichte/factor-weights-holdout-$POPULATION.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: faktor-gewichte-${{ matrix.population }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/faktor-gewichte
+          retention-days: 30
+          if-no-files-found: error
+      - name: Private Daten entfernen
+        if: always()
+        run: rm -rf "$RUNNER_TEMP/priv"
 
   # --- anpassung-diagnose: neu (22.11.2026, Steuerung): warum sperrt der Faktorlauf eine Reihe mit
   # unexplained_adjustment_step? scripts/diagnose/adjustment-steps.mjs --blocked liest die Tagesreihen der gesperrten

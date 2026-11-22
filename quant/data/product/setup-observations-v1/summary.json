@@ -3,7 +3,7 @@
  "engineVersion": "vu-setup-1.0.0",
  "mappingVersion": "setup-mapping-1.0.0",
  "methodologyVersion": "setup-state-v1.0.0",
- "generatedAt": "2026-11-22T09:46:17.000Z",
+ "generatedAt": "2026-11-22T15:34:01.000Z",
  "asOf": "2026-11-20",
  "approval": {
   "state": "APPROVED",
@@ -323,12 +323,12 @@
    "predicateHash": null
   }
  ],
- "universe": 5466,
- "observed": 5466,
+ "universe": 5451,
+ "observed": 5451,
  "unavailable": 0,
  "stateCounts": {
-  "NO_SETUP": 4662,
-  "WATCH": 455,
+  "NO_SETUP": 4648,
+  "WATCH": 454,
   "SETUP_FORMING": 340,
   "CONFIRMED": 9,
   "ACTIVE": 0,
@@ -338,8 +338,8 @@
  },
  "ruleCounts": {
   "setup.forming.complete-setup-awaiting-trigger": 340,
-  "setup.none.fallback": 4662,
-  "setup.watch.bullish-trend": 338,
+  "setup.none.fallback": 4648,
+  "setup.watch.bullish-trend": 337,
   "setup.watch.confirmed-structure-near-high": 117,
   "setup.confirmed.structure-trend-volume": 9
  },
@@ -405,7 +405,7 @@
  "inputs": {
   "technical": {
    "artifact": "technical-product-artifact-1.0.0",
-   "instruments": 5466
+   "instruments": 5451
   }
  },
  "shards": [
@@ -1043,47 +1043,40 @@
  "observationDrift": {
   "asOf": "2026-11-20",
   "publishedHash": "41bcff5e25fea160f28cc4c11ea05397",
-  "recomputedHash": "c109237a1091002edd1a3941f17272f1",
+  "recomputedHash": "5ac4c3ab6aab57f59148ffacece078c2",
   "rowsPublished": 5413,
-  "rowsToday": 5406,
+  "rowsToday": 5405,
   "rowsAdded": 0,
-  "rowsChanged": 7,
+  "rowsChanged": 9,
   "addedOnly": false,
   "columnsDiffer": false,
   "note": "Die veroeffentlichte Beobachtung bleibt unveraendert. Sie wurde an diesem Stichtag veroeffentlicht und wird nicht durch eine heutige Neuberechnung ersetzt - auch nicht durch eine, die nur Zeilen hinzufuegen wuerde."
  },
  "staleBundles": {
-  "count": 60,
+  "count": 46,
   "cutoff": "2026-11-20",
   "rule": "Bundles mit dataCutoff vor dem Stichtag gehen nicht in die Beobachtung dieses Stichtags ein.",
   "byDataCutoff": {
-   "2026-10-23": 6,
-   "2026-11-09": 1,
-   "2026-10-29": 4,
-   "2026-09-29": 1,
+   "2026-10-23": 4,
    "2026-11-19": 11,
-   "2026-09-15": 1,
-   "2026-11-06": 5,
+   "2026-11-06": 3,
    "2026-10-22": 1,
    "2026-11-13": 2,
    "2026-11-04": 1,
    "2026-11-17": 2,
    "2026-09-18": 1,
-   "2026-09-23": 1,
+   "2026-10-29": 3,
    "2026-10-21": 1,
-   "2026-11-03": 1,
    "2026-11-18": 2,
    "2026-10-02": 2,
-   "2026-09-10": 2,
    "2026-11-02": 1,
    "2026-11-16": 2,
-   "2026-11-11": 1,
    "2026-11-10": 1,
-   "2026-10-30": 2,
+   "2026-10-30": 1,
    "2026-10-26": 3,
    "2026-10-13": 3,
-   "2026-10-16": 1,
-   "2026-09-30": 1
+   "2026-09-10": 1,
+   "2026-10-16": 1
   },
   "sample": [
    {
@@ -1091,24 +1084,8 @@
     "dataCutoff": "2026-10-23"
    },
    {
-    "ticker": "ACHV",
-    "dataCutoff": "2026-11-09"
-   },
-   {
-    "ticker": "ADIL",
-    "dataCutoff": "2026-10-29"
-   },
-   {
-    "ticker": "AIXC",
-    "dataCutoff": "2026-09-29"
-   },
-   {
     "ticker": "AMZE",
     "dataCutoff": "2026-11-19"
-   },
-   {
-    "ticker": "ANY",
-    "dataCutoff": "2026-09-15"
    },
    {
     "ticker": "ARI",
@@ -1143,10 +1120,6 @@
     "dataCutoff": "2026-09-18"
    },
    {
-    "ticker": "DOMO",
-    "dataCutoff": "2026-09-23"
-   },
-   {
     "ticker": "EICA",
     "dataCutoff": "2026-10-29"
    },
@@ -1171,10 +1144,6 @@
     "dataCutoff": "2026-11-19"
    },
    {
-    "ticker": "GNTA",
-    "dataCutoff": "2026-11-03"
-   },
-   {
     "ticker": "GROM",
     "dataCutoff": "2026-11-18"
    },
@@ -1183,24 +1152,12 @@
     "dataCutoff": "2026-10-02"
    },
    {
-    "ticker": "HWH",
-    "dataCutoff": "2026-09-10"
-   },
-   {
     "ticker": "INDV",
     "dataCutoff": "2026-11-02"
    },
    {
-    "ticker": "INM",
-    "dataCutoff": "2026-11-06"
-   },
-   {
     "ticker": "ITGR",
     "dataCutoff": "2026-11-16"
-   },
-   {
-    "ticker": "KAZR",
-    "dataCutoff": "2026-11-11"
    },
    {
     "ticker": "KPTI",
@@ -1223,10 +1180,6 @@
     "dataCutoff": "2026-11-19"
    },
    {
-    "ticker": "MGPI",
-    "dataCutoff": "2026-10-30"
-   },
-   {
     "ticker": "MSGS",
     "dataCutoff": "2026-10-26"
    },
@@ -1237,10 +1190,6 @@
    {
     "ticker": "NVNIW",
     "dataCutoff": "2026-10-13"
-   },
-   {
-    "ticker": "PAPL",
-    "dataCutoff": "2026-10-23"
    },
    {
     "ticker": "PERF",
@@ -1275,16 +1224,44 @@
     "dataCutoff": "2026-11-06"
    },
    {
-    "ticker": "TCBI",
-    "dataCutoff": "2026-11-06"
-   },
-   {
     "ticker": "UTZ",
     "dataCutoff": "2026-11-19"
    },
    {
     "ticker": "UUU",
     "dataCutoff": "2026-10-16"
+   },
+   {
+    "ticker": "VBNK",
+    "dataCutoff": "2026-11-16"
+   },
+   {
+    "ticker": "WALD",
+    "dataCutoff": "2026-10-02"
+   },
+   {
+    "ticker": "WEAV",
+    "dataCutoff": "2026-10-26"
+   },
+   {
+    "ticker": "WPRT",
+    "dataCutoff": "2026-10-23"
+   },
+   {
+    "ticker": "WRB-P-F",
+    "dataCutoff": "2026-11-19"
+   },
+   {
+    "ticker": "WRB-P-G",
+    "dataCutoff": "2026-11-19"
+   },
+   {
+    "ticker": "WRB-P-H",
+    "dataCutoff": "2026-11-19"
+   },
+   {
+    "ticker": "YHNA",
+    "dataCutoff": "2026-10-29"
    }
   ]
  }

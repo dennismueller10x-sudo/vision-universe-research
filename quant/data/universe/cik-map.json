@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-22T13:49:53.279Z",
+  "generatedAt": "2026-11-22T19:47:28.460Z",
   "status": "OK",
   "source": "sec.gov",
   "sources": [
@@ -23,14 +23,14 @@
   "requests": 2,
   "totals": {
     "tickers": 10399,
-    "resolved": 10398,
+    "resolved": 10392,
     "ambiguous": 0,
-    "distinctCiks": 7992,
+    "distinctCiks": 7991,
     "ciksWithMultipleTickers": 1435,
     "ciksWithMultipleTickersNote": "Kein Befund. Aktienklassen und Vorzuege desselben Emittenten teilen sich eine CIK - genau deshalb gehoeren Fundamentaldaten an den Emittenten und nicht an das Papier (§15).",
     "withExchange": 10244,
     "withName": 10399,
-    "pendingSuccessionEvidence": 1
+    "pendingSuccessionEvidence": 7
   },
   "ambiguous": [],
   "successionGuard": {
@@ -38,106 +38,56 @@
     "checked": true,
     "pending": [
       {
+        "ticker": "BIP",
+        "cik": "0002155396",
+        "heldBy": [],
+        "keptCik": "0001406234",
+        "cikChange": true
+      },
+      {
+        "ticker": "CDLR",
+        "cik": "0002063345",
+        "heldBy": [],
+        "keptCik": "0001978867",
+        "cikChange": true
+      },
+      {
+        "ticker": "NAVI",
+        "cik": "0002152623",
+        "heldBy": [],
+        "keptCik": "0001593538",
+        "cikChange": true
+      },
+      {
         "ticker": "SUPN",
         "cik": "0001625297",
-        "heldBy": [
-          "INDV"
-        ],
-        "keptCik": "0001356576"
+        "heldBy": [],
+        "keptCik": "0001356576",
+        "cikChange": true
+      },
+      {
+        "ticker": "XRPN",
+        "cik": "0002092592",
+        "heldBy": [],
+        "keptCik": "0002044009",
+        "cikChange": true
+      },
+      {
+        "ticker": "JSM",
+        "cik": "0002152623",
+        "heldBy": [],
+        "keptCik": "0001593538",
+        "cikChange": true
+      },
+      {
+        "ticker": "XRPNW",
+        "cik": "0002092592",
+        "heldBy": [],
+        "keptCik": "0002044009",
+        "cikChange": true
       }
     ],
-    "registered": [
-      {
-        "ticker": "AZR",
-        "cik": "0001513525",
-        "predecessor": "ADIL",
-        "effective": "2026-10-29"
-      },
-      {
-        "ticker": "CASK",
-        "cik": "0000835011",
-        "predecessor": "MGPI",
-        "effective": "2026-11-02"
-      },
-      {
-        "ticker": "CRMN",
-        "cik": "0002031009",
-        "predecessor": "KAZR",
-        "effective": "2026-11-12"
-      },
-      {
-        "ticker": "DRK",
-        "cik": "0001591956",
-        "predecessor": "ANY",
-        "effective": "2026-09-17"
-      },
-      {
-        "ticker": "ESYN",
-        "cik": "0001897245",
-        "predecessor": "HWH",
-        "effective": "2026-09-22"
-      },
-      {
-        "ticker": "FCDH",
-        "cik": "0001951294",
-        "predecessor": "VSME",
-        "effective": "2026-10-26"
-      },
-      {
-        "ticker": "FFR",
-        "cik": "0001460702",
-        "predecessor": "AIXC",
-        "effective": "2026-09-30"
-      },
-      {
-        "ticker": "HUCK",
-        "cik": "0001505952",
-        "predecessor": "DOMO",
-        "effective": "2026-09-24"
-      },
-      {
-        "ticker": "MTRI",
-        "cik": "0001728328",
-        "predecessor": "INM",
-        "effective": "2026-11-09"
-      },
-      {
-        "ticker": "OPNW",
-        "cik": "0001104038",
-        "predecessor": "VRME",
-        "effective": "2026-10-01"
-      },
-      {
-        "ticker": "PTIV",
-        "cik": "0001938109",
-        "predecessor": "PAPL",
-        "effective": "2026-10-26"
-      },
-      {
-        "ticker": "QUIT",
-        "cik": "0000949858",
-        "predecessor": "ACHV",
-        "effective": "2026-11-10"
-      },
-      {
-        "ticker": "SAEN",
-        "cik": "0001838716",
-        "predecessor": "GNTA",
-        "effective": "2026-11-04"
-      },
-      {
-        "ticker": "TXCP",
-        "cik": "0001077428",
-        "predecessor": "TCBI",
-        "effective": "2026-11-09"
-      },
-      {
-        "ticker": "XGPU",
-        "cik": "0001812727",
-        "predecessor": "EZRA",
-        "effective": "2026-11-10"
-      }
-    ]
+    "registered": []
   },
   "note": "Kuerzel -> CIK + Firmenname, wie die SEC sie fuehrt. Die SEC ist die Autoritaet fuer die CIK; ein Kuerzel, das hier fehlt, hat keinen US-Einreicher - kein Fehler, sondern ein Befund (auslaendische Emittenten ohne 20-F, ETFs, delistete Titel).",
   "byTicker": {
@@ -8990,11 +8940,15 @@
       "status": "RESOLVED"
     },
     "BIP": {
-      "cik": "0002155396",
+      "cik": "0001406234",
       "name": "Brookfield Infrastructure Partners Inc.",
       "exchange": "NYSE",
       "source": "company_tickers_exchange",
-      "status": "RESOLVED"
+      "status": "PENDING_SUCCESSION_EVIDENCE",
+      "candidates": [
+        "0002155396"
+      ],
+      "heldBy": []
     },
     "BIP-PA": {
       "cik": "0001406234",
@@ -12854,11 +12808,15 @@
       "status": "RESOLVED"
     },
     "CDLR": {
-      "cik": "0002063345",
+      "cik": "0001978867",
       "name": "Cadeler plc",
       "exchange": "NYSE",
       "source": "company_tickers_exchange",
-      "status": "RESOLVED"
+      "status": "PENDING_SUCCESSION_EVIDENCE",
+      "candidates": [
+        "0002063345"
+      ],
+      "heldBy": []
     },
     "CDLX": {
       "cik": "0001666071",
@@ -35611,11 +35569,15 @@
       "status": "RESOLVED"
     },
     "JSM": {
-      "cik": "0002152623",
+      "cik": "0001593538",
       "name": "Navient Holdings, Inc.",
       "exchange": "Nasdaq",
       "source": "company_tickers_exchange",
-      "status": "RESOLVED"
+      "status": "PENDING_SUCCESSION_EVIDENCE",
+      "candidates": [
+        "0002152623"
+      ],
+      "heldBy": []
     },
     "JSPR": {
       "cik": "0001788028",
@@ -44067,11 +44029,15 @@
       "status": "RESOLVED"
     },
     "NAVI": {
-      "cik": "0002152623",
+      "cik": "0001593538",
       "name": "Navient Holdings, Inc.",
       "exchange": "Nasdaq",
       "source": "company_tickers_exchange",
-      "status": "RESOLVED"
+      "status": "PENDING_SUCCESSION_EVIDENCE",
+      "candidates": [
+        "0002152623"
+      ],
+      "heldBy": []
     },
     "NAVN": {
       "cik": "0001639723",
@@ -62345,9 +62311,7 @@
       "candidates": [
         "0001625297"
       ],
-      "heldBy": [
-        "INDV"
-      ]
+      "heldBy": []
     },
     "SUPV": {
       "cik": "0001517399",
@@ -71646,18 +71610,26 @@
       "status": "RESOLVED"
     },
     "XRPN": {
-      "cik": "0002092592",
+      "cik": "0002044009",
       "name": "Evernorth Holdings Inc.",
       "exchange": "Nasdaq",
       "source": "company_tickers_exchange",
-      "status": "RESOLVED"
+      "status": "PENDING_SUCCESSION_EVIDENCE",
+      "candidates": [
+        "0002092592"
+      ],
+      "heldBy": []
     },
     "XRPNW": {
-      "cik": "0002092592",
+      "cik": "0002044009",
       "name": "Evernorth Holdings Inc.",
       "exchange": "Nasdaq",
       "source": "company_tickers_exchange",
-      "status": "RESOLVED"
+      "status": "PENDING_SUCCESSION_EVIDENCE",
+      "candidates": [
+        "0002092592"
+      ],
+      "heldBy": []
     },
     "XRPZ": {
       "cik": "0002059438",
