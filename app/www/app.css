@@ -40,3 +40,6 @@ button.secondary{background:transparent;color:var(--accent);border:1px solid var
 #login input:focus{outline:2px solid var(--lime);outline-offset:1px;border-color:#000}
 #login button[type=submit]{width:100%;min-height:54px;margin:4px 0 10px;font-weight:800;background:var(--lime);color:#000;border-radius:12px}
 #login button.secondary{width:100%;min-height:48px;color:var(--fg);border-color:var(--line);border-radius:12px}
+
+/* iPad und breite Fenster (22.11.2026): native Panels (Konto, Watchlist, Anmeldung) als lesbare Spalte statt ueber die volle Breite */
+@media (min-width:768px){.view.panel{padding-left:max(24px,env(safe-area-inset-left),calc((100% - 720px)/2));padding-right:max(24px,env(safe-area-inset-right),calc((100% - 720px)/2))}}

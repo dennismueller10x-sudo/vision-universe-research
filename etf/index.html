@@ -65,6 +65,25 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 .bar-track{flex:1;background:#f0f0f0;border-radius:4px;height:22px;overflow:hidden;display:flex;align-items:center}
 .bar-fill{height:100%;border-radius:4px;min-width:2px;display:flex;align-items:center;padding-left:6px}
 
+/* iPad und Desktop (22.11.2026): unter 761 px unverändert */
+@media (min-width:761px){
+#app,.tabs{max-width:880px}
+.detail{max-width:760px;box-shadow:0 0 0 100vmax rgba(0,0,0,.35)}
+.page{padding:28px 24px 0}
+}
+@media (min-width:1024px){
+#app,.tabs{max-width:1120px}
+#page-etfs.active{display:grid;grid-template-columns:300px minmax(0,1fr);column-gap:24px;align-items:start}
+#page-etfs>*{grid-column:1/-1;min-width:0}
+#page-etfs>.fbox{grid-column:1;grid-row:5/span 4;position:sticky;top:76px}
+#page-etfs>#sbar,#page-etfs>#elist,#page-etfs>.cta-gr,#page-etfs>.cta-dk{grid-column:2}
+#page-etfs>.pbar{max-width:520px}
+#page-rechner.active{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:auto auto auto auto 1fr;column-gap:24px;align-items:start}
+#page-rechner>*{grid-column:1/-1}
+#page-rechner>#rc-result{grid-column:1;grid-row:3}
+#page-rechner>#rc-bonus{grid-column:1;grid-row:4}
+#page-rechner>#rc-sliders{grid-column:2;grid-row:3/span 3}
+}
 </style>
 
 <div id="etf-wrapper">

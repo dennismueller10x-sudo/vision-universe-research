@@ -497,3 +497,27 @@ html body.dv2 .v2-home:has(>.dp-home){padding-bottom:0}
 .dr-slot{min-height:258px}
 @media (max-width:700px){.dr-slot{min-height:275px}}
 @media (max-width:340px){.dr-slot{min-height:292px}}
+
+/* iPad und Desktop (Responsiv 22.11.2026): unter 761 px bleibt alles wie im Prototyp. Ab 761 px füllt die Spalte die Breite
+   (Seitenrand --vu-gutter, bis 900 px), ab 1024 px bis 1240 px wie der Kopf des Rahmens; Karussells nutzen die volle Breite,
+   kurze Schienen und Kachellisten werden mehrspaltig, Fließtext bleibt bei etwa 68 Zeichen. */
+@media (min-width:761px){
+  html body.dv2 #v2-main.dv3-main{max-width:calc(900px + 2 * var(--vu-gutter,24px));padding-inline:var(--vu-gutter,24px)}
+}
+@media (min-width:761px){
+  html body #v2-main .dp-hero__act{max-width:640px}
+  html body #v2-main .dr-sec--strat .dr-rail{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+  html body #v2-main .dr-sec--strat .dr-rail>*{width:auto}
+  html body #v2-main .dr-sec--europa .dp-stack{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .dv3-themehead p,.dv3 .vu-lead{max-width:68ch}
+  .dv3 .dv3-dots100{max-width:600px}
+  .dv3 .dv3-baro .vu-btn--block{max-width:480px}
+  .dv3.dv3-swipe{max-width:640px;margin-inline:auto}
+  .dv3-swipe .dv3-gesture>*{width:100%;max-width:640px;margin-inline:auto}
+}
+@media (min-width:1024px){
+  html body.dv2 #v2-main.dv3-main{max-width:calc(1240px + 2 * var(--vu-gutter,24px))}
+  .dv3 .dv3-tgrid{--vu-cols:4}
+  .dv3 .dv3-tlist,.dv3 .dv3-list{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:32px}
+  .dv3 .dv3-groups{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:40px;align-items:start}
+}

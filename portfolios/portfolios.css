@@ -172,3 +172,13 @@ html[data-vu-dock] .pf{padding-bottom:24px}
 .pfp-sheet .pfp-dr{padding:13px 0}
 .pfp-sheet .pfp-dlink::after{display:none}
 .pfp-sheet .pfp-tls{margin-top:4px}
+
+/* Breite Bildschirme (iPad, Laptop, Desktop). Handy (< 761 px) bleibt unverändert. Ab 761 px: Kacheln am Seitenrand
+   (--vu-gutter 24 px = 10 px Rand + 14 px .pfp-px) bis 900 px Breite; ab 1024 px Kopfbreite 1240 px, Depotkarten dreispaltig. */
+@media (min-width:761px){.pfp{box-sizing:border-box;max-width:948px;padding-left:10px;padding-right:10px}}
+@media (min-width:1024px){
+  .pfp{max-width:1288px}
+  .pfp-rail>.pfp-card{width:calc((100% - 20px) / 3)}
+  .pfp-stack.pfp-px:not(nav){grid-template-columns:repeat(3,minmax(0,1fr))}
+  .pfp-legal .vu-legal>p,.pfp-legal .pf-foot{max-width:68ch}
+}

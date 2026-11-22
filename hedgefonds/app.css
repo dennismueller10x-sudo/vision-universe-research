@@ -580,3 +580,34 @@ main.hf-main:has(>.hp){padding-bottom:20px}
 .hf-k2 .hf-dm{margin-top:16px}
 .hf-k2 .vu-sothers{margin-top:26px}
 .hf-k2>.hf-legal{margin:28px 0 0;font-size:11px;line-height:1.45;text-align:center;color:var(--k2-mut)}
+
+/* =========================================================================
+   iPad und Desktop (ab 761 px): die Handy-Spalte wächst mit der Breite. Unter 761 px gilt nichts hiervon.
+   761–1023 px: Breite bis ca. 900 px mit 24 px Rand; ab 1024 px Inhalt bis 1240 px (Kopf-Breite des Rahmens), mittig.
+   ========================================================================= */
+@media (min-width:761px){
+  .hf-wrap{max-width:948px}
+  /* Bildschirme nach App-Konzept 2 (.hp): bündig mit der Inhaltskante statt Handy-Innenrand von 14 px */
+  .hp,.hp-tabw{margin-left:0;margin-right:0}
+  :is(.hp,.hp-tabw) .hp-tabs{padding-left:0;padding-right:0}
+  .hp .hp-px,.hp .hp-sh,.hp .hp-rail{padding-left:0;padding-right:0}
+  .hp .hp-endl{margin-left:0;margin-right:0}
+}
+@media (min-width:1024px){
+  .hf-wrap{max-width:1288px}
+  /* Start: „Was die Stars bewegt haben“ neben „Gekauft, verkauft, gehalten“ */
+  .hp:has(>.hp-px>.hp-mv):has(>.hp-px>#hf-agg){display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:28px;grid-auto-flow:row dense;align-items:start}
+  .hp>*{grid-column:1/-1}
+  .hp>.hp-sh:has(+.hp-px>.hp-mv),.hp>.hp-px:has(>.hp-mv){grid-column:1}
+  .hp>.hp-sh:has(+.hp-px>#hf-agg),.hp>.hp-px:has(>#hf-agg){grid-column:2}
+  /* Listen zweispaltig: Investoren, Fonds, Aktien, Fondsströme, Gruppen-Käufe */
+  #hf-invlist,#hf-sgrid,#hf-flows,#hf-ni,#hf-nd{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:28px;align-content:start}
+  .hf-main .vu-stack{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .hf-main .hf-seg{max-width:620px}
+  /* Fonds: größte Positionen neben dem Depotwert-Verlauf */
+  .hf-detail:has(>.hf-mvl+.vu-sect+.vu-box>svg){display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:28px;grid-auto-flow:row dense}
+  .hf-detail>*{grid-column:1/-1}
+  .hf-detail>.vu-sect:has(+.hf-mvl),.hf-detail>.vu-sect+.hf-mvl{grid-column:1}
+  .hf-detail>.hf-mvl+.vu-sect,.hf-detail>.hf-mvl+.vu-sect+.vu-box{grid-column:2}
+  .hf-detail>.hf-back{justify-self:start}
+}
