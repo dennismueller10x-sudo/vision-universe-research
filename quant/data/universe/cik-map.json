@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-22T18:29:57.965Z",
+  "generatedAt": "2026-11-22T19:47:28.460Z",
   "status": "OK",
   "source": "sec.gov",
   "sources": [
@@ -23,14 +23,14 @@
   "requests": 2,
   "totals": {
     "tickers": 10399,
-    "resolved": 10398,
+    "resolved": 10392,
     "ambiguous": 0,
-    "distinctCiks": 7992,
+    "distinctCiks": 7991,
     "ciksWithMultipleTickers": 1435,
     "ciksWithMultipleTickersNote": "Kein Befund. Aktienklassen und Vorzuege desselben Emittenten teilen sich eine CIK - genau deshalb gehoeren Fundamentaldaten an den Emittenten und nicht an das Papier (§15).",
     "withExchange": 10244,
     "withName": 10399,
-    "pendingSuccessionEvidence": 1
+    "pendingSuccessionEvidence": 7
   },
   "ambiguous": [],
   "successionGuard": {
@@ -38,10 +38,52 @@
     "checked": true,
     "pending": [
       {
+        "ticker": "BIP",
+        "cik": "0002155396",
+        "heldBy": [],
+        "keptCik": "0001406234",
+        "cikChange": true
+      },
+      {
+        "ticker": "CDLR",
+        "cik": "0002063345",
+        "heldBy": [],
+        "keptCik": "0001978867",
+        "cikChange": true
+      },
+      {
+        "ticker": "NAVI",
+        "cik": "0002152623",
+        "heldBy": [],
+        "keptCik": "0001593538",
+        "cikChange": true
+      },
+      {
         "ticker": "SUPN",
         "cik": "0001625297",
         "heldBy": [],
         "keptCik": "0001356576",
+        "cikChange": true
+      },
+      {
+        "ticker": "XRPN",
+        "cik": "0002092592",
+        "heldBy": [],
+        "keptCik": "0002044009",
+        "cikChange": true
+      },
+      {
+        "ticker": "JSM",
+        "cik": "0002152623",
+        "heldBy": [],
+        "keptCik": "0001593538",
+        "cikChange": true
+      },
+      {
+        "ticker": "XRPNW",
+        "cik": "0002092592",
+        "heldBy": [],
+        "keptCik": "0002044009",
         "cikChange": true
       }
     ],
@@ -8898,11 +8940,15 @@
       "status": "RESOLVED"
     },
     "BIP": {
-      "cik": "0002155396",
+      "cik": "0001406234",
       "name": "Brookfield Infrastructure Partners Inc.",
       "exchange": "NYSE",
       "source": "company_tickers_exchange",
-      "status": "RESOLVED"
+      "status": "PENDING_SUCCESSION_EVIDENCE",
+      "candidates": [
+        "0002155396"
+      ],
+      "heldBy": []
     },
     "BIP-PA": {
       "cik": "0001406234",
@@ -12762,11 +12808,15 @@
       "status": "RESOLVED"
     },
     "CDLR": {
-      "cik": "0002063345",
+      "cik": "0001978867",
       "name": "Cadeler plc",
       "exchange": "NYSE",
       "source": "company_tickers_exchange",
-      "status": "RESOLVED"
+      "status": "PENDING_SUCCESSION_EVIDENCE",
+      "candidates": [
+        "0002063345"
+      ],
+      "heldBy": []
     },
     "CDLX": {
       "cik": "0001666071",
@@ -35519,11 +35569,15 @@
       "status": "RESOLVED"
     },
     "JSM": {
-      "cik": "0002152623",
+      "cik": "0001593538",
       "name": "Navient Holdings, Inc.",
       "exchange": "Nasdaq",
       "source": "company_tickers_exchange",
-      "status": "RESOLVED"
+      "status": "PENDING_SUCCESSION_EVIDENCE",
+      "candidates": [
+        "0002152623"
+      ],
+      "heldBy": []
     },
     "JSPR": {
       "cik": "0001788028",
@@ -43975,11 +44029,15 @@
       "status": "RESOLVED"
     },
     "NAVI": {
-      "cik": "0002152623",
+      "cik": "0001593538",
       "name": "Navient Holdings, Inc.",
       "exchange": "Nasdaq",
       "source": "company_tickers_exchange",
-      "status": "RESOLVED"
+      "status": "PENDING_SUCCESSION_EVIDENCE",
+      "candidates": [
+        "0002152623"
+      ],
+      "heldBy": []
     },
     "NAVN": {
       "cik": "0001639723",
@@ -71552,18 +71610,26 @@
       "status": "RESOLVED"
     },
     "XRPN": {
-      "cik": "0002092592",
+      "cik": "0002044009",
       "name": "Evernorth Holdings Inc.",
       "exchange": "Nasdaq",
       "source": "company_tickers_exchange",
-      "status": "RESOLVED"
+      "status": "PENDING_SUCCESSION_EVIDENCE",
+      "candidates": [
+        "0002092592"
+      ],
+      "heldBy": []
     },
     "XRPNW": {
-      "cik": "0002092592",
+      "cik": "0002044009",
       "name": "Evernorth Holdings Inc.",
       "exchange": "Nasdaq",
       "source": "company_tickers_exchange",
-      "status": "RESOLVED"
+      "status": "PENDING_SUCCESSION_EVIDENCE",
+      "candidates": [
+        "0002092592"
+      ],
+      "heldBy": []
     },
     "XRPZ": {
       "cik": "0002059438",
