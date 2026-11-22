@@ -186,7 +186,18 @@
 
   /* Chart C06 aus der veröffentlichten Tagesreihe (discover-series, ADR-002) */
   var SERIES = {};
+  /* Titel, die das Discover-Universum nicht mehr fuehrt (signals.discoverAvailability.unavailable, Erzeuger
+     build.mjs bzw. prune-dead-refs.mjs; z. B. beendete Notierungen nach B3, 21.11.2026): keine Tagesreihe abrufen -
+     sie ist entfernt (404) -, sondern einen Hinweis zeigen. Das Signal selbst bleibt (Owner-Regel 04.10.2026, LOGI). */
+  var UNAVAILABLE = {};
+  function noteAvailability(D) {
+    var av = D && D.signals && D.signals.discoverAvailability;
+    UNAVAILABLE = {};
+    ((av && av.unavailable) || []).forEach(function (s) { UNAVAILABLE[s] = true; });
+  }
+  var NO_SERIES_TEXT = 'Kein Kursverlauf veröffentlicht: Der Titel ist nicht mehr im Analyseuniversum (Notierung beendet oder ersetzt).';
   function series(sym) {
+    if (UNAVAILABLE[sym]) return Promise.reject(new Error('NOT_IN_DISCOVER'));
     if (SERIES[sym]) return SERIES[sym];
     var I = window.VUCore && window.VUCore.Identity;
     var id = I ? I.securityIdForTicker(sym) : null;
@@ -696,7 +707,7 @@
         if (!first.entry && isNum(lv.invalidation)) levels.push({ value: lv.invalidation, label: 'Ungültig', tone: 'grey' });
         if (first.entry && isNum(stopOf(first))) levels.push({ value: stopOf(first), label: 'Ungültig', tone: 'grey' });
         drawChart(pos.querySelector('[data-chart]'), lastMonths(ser.points, 3), { levels: levels, label: first.symbol, height: 130 });
-      }).catch(function () { pos.querySelector('[data-chart]').innerHTML = ''; });
+      }).catch(function () { pos.querySelector('[data-chart]').innerHTML = UNAVAILABLE[first.symbol] ? U.blank(NO_SERIES_TEXT) : ''; });
     } else pos.innerHTML = U.blank('Heute wartet keine Aktie auf die Aufnahme, und das Musterdepot hält gerade keine.');
     append(main, '<a class="vu-tap st-k-gap st-k-prot" href="/supertrader/treffer/?method=' + esc(id) + '"><span class="st-k-row"><span class="vu-ltag">Protokoll seit ' + dShort(st.liveSince) + '</span><span class="st-k-go">' + U.glyph('next', 14) + '</span></span>' + U.stats([{ value: n0(X.closedCount(st)), label: 'abgegeben' }, { value: n0(st.invalidatedTotal || 0), label: 'Muster zerfallen' }, { value: n0(st.retiredTotal || 0), label: 'Regel geändert' }], { label: 'Protokoll seit ' + dDe(st.liveSince) }) + '</a>');
     if (mp) {
@@ -1256,7 +1267,12 @@
     }).catch(function () { answer.classList.remove('st-r-pending-answer'); answer.setAttribute('aria-busy', 'false'); headHost.classList.remove('st-r-pending-head'); answer.innerHTML = U.blank('Die 13 Methoden sind für ' + sym + ' gerade nicht erreichbar.'); });
   }
 
-  window.STRedesign = { version: 'st-redesign-2.1.0', STATE: STATE, render: { home: home, strategies: strategies, strategy: strategy, signals: signals, backtests: backtests, sources: sources, house: house, stock: stock, replay: replay },
+  window.STRedesign = { version: 'st-redesign-2.1.1', STATE: STATE, render: { home: home, strategies: strategies, strategy: strategy, signals: signals, backtests: backtests, sources: sources, house: house, stock: stock, replay: replay },
     /* Bausteine dieser Oberfläche für die Kandidatenliste einer Methode (sf-research.js): gleiche Kacheln, Leisten und Fenster. */
     kit: { version: 1, page: page, sh: sh, tpl: tpl, infoBtn: infoBtn, monoHtml: monoHtml, segs: segs, segLegend: segLegend, zoneBar: zoneBar, chapters: chapters, onTap: onTap, methodMeta: methodMeta } };
+  /* Jede Ansicht kennt vor dem Zeichnen die ausgewiesenen Titel (siehe UNAVAILABLE). */
+  Object.keys(window.STRedesign.render).forEach(function (k) {
+    var f = window.STRedesign.render[k];
+    window.STRedesign.render[k] = function (D) { noteAvailability(D); return f.apply(this, arguments); };
+  });
 })();

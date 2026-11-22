@@ -39,7 +39,7 @@ test('Erzeugte Aktienseite: Preloads im <head>, Kursreihe als fetch mit crossori
   assert.ok(head.indexOf('rel="preload"') > head.indexOf('supertrader.css'), 'nach den Stylesheets');
   const home = renderPage({ title: 't', description: 'd', page: 'home', depth: 1 });
   assert.doesNotMatch(home, /rel="preload"/);
-  assert.match(SRC('scripts/supertrader/build.mjs'), /attrs: ` data-symbol="\$\{sym\}"`, head: stockPreloads\(sym\)/, 'writeStockPages setzt die Preloads');
+  assert.match(SRC('scripts/supertrader/build.mjs'), /attrs: ` data-symbol="\$\{sym\}"`, head: stockPreloads\(sym, un\)/, 'writeStockPages setzt die Preloads');
 });
 
 test('Aktienseite wartet nicht auf portfolio.json; nur die bisherige Ansicht laedt es nach', () => {
@@ -56,4 +56,11 @@ test('Stylesheet des Aktienkopfs steht als Stylesheet (nicht als Preload) im <he
   assert.ok(html.startsWith('<link rel="stylesheet" href="/assets/stock-navigator.css">'));
   assert.doesNotMatch(html, /as="style"/, 'loadCss wuerde auf einen Preload-Link warten, ohne ihn anzuwenden');
   assert.match(SRC('supertrader/assets/supertrader.js'), /loadCss\('\/assets\/stock-navigator\.css'\)/);
+});
+
+test('ein im Discover-Universum ausgewiesener Titel (Notierung beendet) laedt keine Kursreihe vor - sonst 404', () => {
+  const html = stockPreloads('CBZ', ['CBZ']);
+  assert.ok(!html.includes('as="fetch"'), 'kein Reihen-Preload');
+  assert.ok(html.includes('/supertrader/assets/st-redesign.js'), 'Skripte bleiben vorgeladen');
+  assert.ok(stockPreloads('NVDA', ['CBZ']).includes(stockSeriesHref('NVDA')));
 });
