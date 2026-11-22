@@ -443,8 +443,10 @@
       /* Kennungen aus dem Bestand nicht mit einem leeren Eingang
          ueberschreiben. Eine einmal aufgeloeste CIK geht nicht dadurch
          verloren, dass die Tickerliste sie nicht kennt. */
+      /* issuerId folgt der CIK (22.11.2026): bleibt die CIK aus dem Bestand stehen, bleibt auch ihre issuerId -
+         sonst verlor der erste Sync seit September 144 Instrumenten die issuerId bei erhaltener CIK. */
       if ((f === "cik" || f === "isin" || f === "cusip" || f === "figi" || f === "lei" ||
-           f === "cikSource" || f === "companyName") &&
+           f === "cikSource" || f === "companyName" || f === "issuerId" || f === "issuerIdSource") &&
           (incoming[f] === null || incoming[f] === undefined)) return;
       if (f === "companyNameStatus" && incoming.companyName === null && previous.companyName) return;
       merged[f] = incoming[f] === undefined ? null : incoming[f];
