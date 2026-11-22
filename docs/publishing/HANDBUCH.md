@@ -342,12 +342,20 @@ Wirtschaftskalender (FMP-Endpunkte geprüft in `scripts/market/probe-free-source
 - Themen Dritter liest der Build aus `news/marktbriefing/radar/<sitzung>.json` (`items[]` mit title, publisher, source,
   published, url, optional sub, quote, columns, bars, stats; optional `editorial` mit eigenem Titel der Titelkarte).
   Die Engine verwirft, was nicht vom Handelstag ist, nicht aus der Quellenliste kommt oder keine URL hat.
+- Ausblick (Owner 22.11.2026): `agenda[]` in derselben Radar-Datei, je Termin `date`, `kind` (`zahlen`, `daten`, `notenbank`,
+  `dividende`, `markt`), `label`, optional `time` (deutsche Zeit) und `sub`, Pflicht `source` und `url` (https; Primärquelle
+  bevorzugt: Unternehmen, BEA/BLS/Conference Board, Notenbank). Die Engine nimmt nur Werktage 1 bis 7 Kalendertage nach dem
+  Handelstag, höchstens 4 Tage und 12 Termine; Verworfenes steht mit Grund in `dropped`. Daraus entstehen die letzte Karte
+  „Die nächsten Tage“, die Szene `#ausblick` und der Satz „Als Nächstes: …“ in der Kurzfassung. Ohne `agenda` keine Karte.
+  Termine sind Angaben der Unternehmen und Behörden, keine Erwartung von Vision Universe.
 - Karussell und Video: `node products/news/briefing/export-png.mjs <briefing.json> <ordner>` schreibt die Karten als PNG.
 - Die Investitionskarte erscheint nur, wenn ein Hyperscaler in den letzten 3 Tagen neue Zahlen bei der SEC gemeldet hat.
 
 **Website www.visionuniverse.de/marktbriefing/ (Owner 22.11.2026)**
 - `/marktbriefing/` ist die Produktseite, visuell und allgemein (Owner 22.11.2026: App zuerst, PDF bleibt, wenig Text):
-  Bühne mit PDF-Titelblatt und Handy mit durchlaufenden Story-Karten (reines CSS), schwarzes Zahlenband „Aus Millionen
+  Kopf mit dem Handy (durchlaufende Story-Karten, reines CSS), darunter ein eigener PDF-Block mit aufklappendem Heft wie bei
+  Magazin und Aktienreport (`.m3` aus `landing/web/site.css`; Titelblatt und Innenseiten `seite-02.png` bis `seite-04.png`
+  aus `pdf.mjs`), schwarzes Zahlenband „Aus Millionen
   Datenpunkten. Weltweit.“ (6 Mio. Kursdaten, 5.200+ US-Aktien je Börsentag, 5.277 Firmenbilanzen der SEC, 119 Hedgefonds aus
   13F-Meldungen; gezählt am 22.11.2026, abgerundet) mit Quellenarten, Kartenleiste aller Karten der neuesten Ausgabe, Schritte
   Wischen/Antippen/Mitnehmen, Kapitel als Kacheln, alle Ausgaben. Bilder, PDF und „Neueste Ausgabe“ wechseln mit jeder
@@ -368,12 +376,13 @@ Wirtschaftskalender (FMP-Endpunkte geprüft in `scripts/market/probe-free-source
   Seiten und PDF versprechen kein tägliches Erscheinen.
 - Startseiten-Teaser in der Region `<!--MB:teaser-->` (eigene Zeile über den Insights-Kacheln), verlinkt die Produktseite;
   Menüpunkt „Marktbriefing“ auf allen Seiten.
-- Karten folgen der Hausregel: Plus neongrün, Minus in Schriftfarbe, kein Rot.
+- Karten folgen der Hausregel: Plus neongrün, Minus in Schriftfarbe, kein Rot. Icons (Linien, `render.js#ICONS`, eine Quelle
+  für Karten und Seite) stehen an Kurzfassung, Überschriften, Etiketten und Terminen, damit die Szenen weniger nach Text aussehen.
 
 **Ausbau in Ergebnissen (je ein PR)**
 1. Generator für Markt- und eigene Auswertungskarten aus den Repo-Artefakten, mit Frischeprüfung, als Seite im News-Bereich (erledigt, siehe oben).
 2. Themen-Radar für Angaben Dritter: täglicher Rechercheauftrag über die Quellenliste, Prüfung von Datum und Original,
    Ergebnis als Daten-Datei, die der Generator liest.
 3. Karussell und Reel jeden Abend ins Approval Center (Veröffentlichung nur nach Freigabe, wie bei Reels).
-4. Lücken schließen: Sektor-ETFs, VIX, Kalender.
+4. Lücken schließen: Sektor-ETFs, VIX; Ausblick-Termine automatisch aus den Quellen (bisher von Hand recherchiert).
 

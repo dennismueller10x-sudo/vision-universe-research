@@ -74,7 +74,7 @@ export function writeBriefing(briefing, outRoot) {
 /* Website: /marktbriefing/ ist die Produktseite (wie Magazin und Aktienreport), jede Ausgabe steht unter
    /marktbriefing/<sitzung>/ mit eigenem PDF und eigenen Bildern. Kopf, Menü und Fuß aus landing/news, Bausteine aus landing/report. */
 // Alle Karten außer der ersten (die ist vorschau.png) als Bilder für „Ein Blick hinein“ und das Handy auf der Produktseite.
-const ANCHOR = { indices: 'indizes', context: 'einordnung', megacaps: 'schwergewichte', valuation: 'bewertung', breadth: 'marktbreite', rates: 'zinsen', movers: 'bewegungen', picture: 'marktbild' };
+const ANCHOR = { agenda: 'ausblick', indices: 'indizes', context: 'einordnung', megacaps: 'schwergewichte', valuation: 'bewertung', breadth: 'marktbreite', rates: 'zinsen', movers: 'bewegungen', picture: 'marktbild' };
 export async function writeWww(briefing, landingDir, { pdf = false } = {}) {
   const dir = path.join(landingDir, 'marktbriefing'), ed = path.join(dir, briefing.session);
   const chrome = Www.chromeFrom(fs.readFileSync(path.join(landingDir, 'news/index.html'), 'utf8'));
@@ -104,7 +104,8 @@ export async function writeWww(briefing, landingDir, { pdf = false } = {}) {
     const cards = peekIdx.map((i) => ({ file: 'karte-' + String(i + 1).padStart(2, '0') + '.png', anchor: ANCHOR[briefing.cards[i].id] || 'start',
       title: briefing.cards[i].title, kicker: briefing.cards[i].kicker })).filter((c) => has(c.file));
     put('index.html', Www.productPage(briefing, { chrome, parts, archive, pdf: havePdf ? pdfName : null,
-      img: { story0: has('vorschau.png') ? 'vorschau.png' : null, cover: has('titel.png') ? 'titel.png' : null, cards } }));
+      img: { story0: has('vorschau.png') ? 'vorschau.png' : null, cover: has('titel.png') ? 'titel.png' : null, cards,
+        pages: ['seite-02.png', 'seite-03.png', 'seite-04.png'].filter(has) } }));
     const home = path.join(landingDir, 'index.html');
     if (fs.existsSync(home)) { const before = fs.readFileSync(home, 'utf8'), after = Www.withTeaser(before, briefing); if (after !== before) { fs.writeFileSync(home, after); files.push(home); } }
   }
