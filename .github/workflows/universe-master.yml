@@ -1,4 +1,7 @@
 name: Company Master — Universum, Suchindex, CIK
+# Zeitplan (Sync): core/registry/schedule.json, Takt ueber den Cloudflare-Wecker (RUNBOOK §10), woechentlich nach dem
+# Security-Master-Wochenlauf - die CIK-Zuordnung (quant/data/universe/cik-map.json) lag vom 13.09. bis 22.11.2026 still.
+run-name: ${{ inputs.zeitplan && format('{0} · Takt {1}', github.workflow, inputs.zeitplan) || '' }}
 
 # Der kanonische Company Master. Zwei Jobs, und der Unterschied zwischen
 # ihnen ist der ganze Punkt dieser Datei.
@@ -32,6 +35,10 @@ name: Company Master — Universum, Suchindex, CIK
 on:
   workflow_dispatch:
     inputs:
+      zeitplan:
+        description: 'Vom Cloudflare-Wecker gesetzt (Cron des Termins, core/registry/schedule.json); manuell leer lassen'
+        type: string
+        default: ''
       sync:
         description: 'Anbieterverzeichnis und CIK-Zuordnung neu holen und committen'
         type: boolean
@@ -143,7 +150,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: pruefen
     if: >
-      (github.event_name == 'workflow_dispatch' && inputs.sync) ||
+      (github.event_name == 'workflow_dispatch' && !inputs.zeitplan && inputs.sync) || (inputs.zeitplan != '' && inputs.sync) ||
       (github.event_name == 'push' && contains(github.event.head_commit.message, '[universe-sync]'))
     steps:
       - uses: actions/checkout@v4
@@ -167,7 +174,9 @@ jobs:
       - name: CIK-Zuordnung holen (SEC)
         env:
           SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
-        run: node scripts/universe/build-cik-map.mjs
+        # --require-source (22.11.2026): ohne frische SEC-Tickerliste bricht der Sync ab, statt einen alten Stand
+        # fortzuschreiben oder zu committen (wie sec-fundamentals-universe.yml).
+        run: node scripts/universe/build-cik-map.mjs --require-source
 
       - name: Company Master bauen
         run: node scripts/universe/build-company-master.mjs
