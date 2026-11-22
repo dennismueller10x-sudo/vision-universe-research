@@ -14,6 +14,10 @@ const wrap = (obj, name) => { const orig = obj[name]; obj[name] = function (p, .
 wrap(fs, "readFileSync"); wrap(fs.promises, "readFile"); wrap(fs, "readFile");
 mod.syncBuiltinESMExports();
 process.on("exit", () => {
+  /* TRACE_DIR (22.11.2026): jeder Prozess schreibt seine eigene Datei <pid>.json; so tragen auch Kindprozesse (NODE_OPTIONS=--require)
+     zum Mitschnitt bei. Ohne TRACE_DIR bleibt es bei TRACE_OUT (nur dieser Prozess). */
+  const out = process.env.TRACE_DIR ? path.join(process.env.TRACE_DIR, process.pid + ".json") : process.env.TRACE_OUT;
+  if (!out) return;
   const files = [...seen].filter((f) => { try { return fs.statSync(path.join(ROOT, f)).isFile(); } catch { return false; } }).sort();
-  fs.writeFileSync(process.env.TRACE_OUT, JSON.stringify(files, null, 1) + "\n");
+  fs.writeFileSync(out, JSON.stringify(files, null, 1) + "\n");
 });
