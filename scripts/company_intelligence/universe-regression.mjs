@@ -3,11 +3,22 @@ import {readFileSync,readdirSync} from 'node:fs';
 import {join} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {createHash} from 'node:crypto';
+import {createRequire} from 'node:module';
 const read=p=>JSON.parse(readFileSync(p));
 const digest=p=>createHash('sha256').update(JSON.stringify(p)).digest('hex');
 function masterInstruments(){
  const root=fileURLToPath(new URL('../../quant/data/universe/instruments/',import.meta.url));
  return readdirSync(root).filter(p=>p.endsWith('.json')).flatMap(p=>read(join(root,p)).instruments);
+}
+/* Register der belegten Tickerwechsel (ADR-009, quant/config/ticker-successions.json, gelesen ueber core/ticker-succession.js; je Eintrag
+   gleiche CIK und zitierter Beleg). Nicht lesbar oder formfehlerhaft: leere Liste, also keine Nachfolge erklaert (fail closed).
+   Eintraege mit retirePredecessor:false (Vorgaenger bleibt im Produkt) erklaeren nichts. */
+export function loadSuccessions(){
+ try{
+  const require=createRequire(import.meta.url),{tickerSuccessions}=require('../../core/ticker-succession.js');
+  const doc=read(fileURLToPath(new URL('../../quant/config/ticker-successions.json',import.meta.url)));
+  return Object.values(tickerSuccessions(doc)).filter(e=>e.retirePredecessor!==false);
+ }catch{return [];}
 }
 export function approvedNonEquityPrune(cid,before,after,master){
  // Only a strict subset of unchanged identities can be a pruning operation.
@@ -32,19 +43,22 @@ export function approvedNonEquityPrune(cid,before,after,master){
 const nonEquityExclusion=m=>['DEBT','ETN','RIGHT','WARRANT'].includes(m.securityClass)&&m.productEligibilityReason==='CONFIRMED_NON_EQUITY:'+m.securityClass;
 const endedListingExclusion=m=>/^CONFIRMED_LISTING_ENDED:(MASTER_INACTIVE|ACQUISITION|SUCCEEDED)$/.test(String(m.productEligibilityReason));
 /* Belegte Nachfolge (Kuerzelwechsel, Quant-Nachfolgeregister, 8-K mit gleicher CIK): Der Vorgaenger steht im Master als
-   EXCLUDED CONFIRMED_LISTING_ENDED:SUCCEEDED, der Nachfolger als ELIGIBLE beim SELBEN Emittenten (issuerId und CIK). Erklaert nur den
+   EXCLUDED CONFIRMED_LISTING_ENDED:SUCCEEDED und ist im Register der Tickerwechsel (ADR-009) belegt; der Nachfolger, der Nachfolger als ELIGIBLE beim SELBEN Emittenten (issuerId und CIK). Erklaert nur den
    Ersatz, nie ein Wachstum (hoechstens so viele neue wie entfallene Notierungen); unveraenderte Notierungen bleiben identisch.
    Der Master wird nur gelesen. Jede andere Umbelegung bleibt UNEXPLAINED_PUBLIC_IDENTITY_REMAPPING. */
-export function approvedSuccession(cid,before,after,master){
+export function approvedSuccession(cid,before,after,master,successions=[]){
  const key=l=>JSON.stringify([l.symbol,l.instrumentId]),old=new Set(before.map(key)),current=new Set(after.map(key));
  if(!after.length||old.size!==before.length||current.size!==after.length)return false;
  const removed=before.filter(l=>!current.has(key(l))),added=after.filter(l=>!old.has(key(l)));
  if(!removed.length||!added.length||added.length>removed.length)return false;
  const row=l=>{const m=master.filter(r=>r.instrumentId===l.instrumentId||r.symbol===l.symbol);return m.length===1&&m[0].instrumentId===l.instrumentId&&m[0].symbol===l.symbol&&m[0].issuerId===cid&&cid==='iss_cik_'+m[0].cik?m[0]:null;};
  return removed.every(l=>{const m=row(l);return m&&m.productEligibility==='EXCLUDED'&&m.productEligibilityReason==='CONFIRMED_LISTING_ENDED:SUCCEEDED';})
-  &&added.every(l=>{const m=row(l);return m&&m.productEligibility==='ELIGIBLE';});
+  &&added.every(l=>{const m=row(l);return m&&m.productEligibility==='ELIGIBLE';})
+  // Belegt im Register (8-K, gleiche CIK): jede entfallene Notierung hat einen Eintrag auf eine der neuen, jede neue ist Ziel eines Eintrags.
+  &&removed.every(l=>successions.some(e=>e.fromTicker===l.symbol&&cid==='iss_cik_'+e.cik&&added.some(a=>a.symbol===e.toTicker)))
+  &&added.every(a=>successions.some(e=>e.toTicker===a.symbol&&cid==='iss_cik_'+e.cik&&removed.some(l=>l.symbol===e.fromTicker)));
 }
-export function universeChanges(directory,previous,{masterRows}={}){
+export function universeChanges(directory,previous,{masterRows,successions}={}){
  const m=read(join(directory,'manifest.json')),prior=read(join(previous,'index.json'));
  const oldPaths={};
  // An initial universe release compares every preserved existing cohort issuer.
@@ -58,9 +72,9 @@ export function universeChanges(directory,previous,{masterRows}={}){
   const q=read(join(directory,`snapshots/${m.generation}/${cid}.json`));
   const identities=v=>v.listings.map(l=>[l.symbol,l.instrumentId]).sort();
   if(JSON.stringify(identities(p))!==JSON.stringify(identities(q))){
-   masterRows??=masterInstruments();
+   masterRows??=masterInstruments();successions??=loadSuccessions();
    if(approvedNonEquityPrune(cid,p.listings,q.listings,masterRows))approvedPrunes.push({issuer:cid,removedListings:p.listings.length-q.listings.length});
-   else if(approvedSuccession(cid,p.listings,q.listings,masterRows))approvedSuccessions.push({issuer:cid,removedListings:p.listings.map(l=>l.symbol).filter(x=>!q.listings.some(n=>n.symbol===x)),addedListings:q.listings.map(l=>l.symbol).filter(x=>!p.listings.some(n=>n.symbol===x))});
+   else if(approvedSuccession(cid,p.listings,q.listings,masterRows,successions))approvedSuccessions.push({issuer:cid,removedListings:p.listings.map(l=>l.symbol).filter(x=>!q.listings.some(n=>n.symbol===x)),addedListings:q.listings.map(l=>l.symbol).filter(x=>!p.listings.some(n=>n.symbol===x))});
    else remapped.push(cid);
   }
   if(p.latestFinancials.state==='AVAILABLE'&&q.latestFinancials.state==='AVAILABLE'&&(q.latestFinancials.reportingPeriod||'')<(p.latestFinancials.reportingPeriod||''))throw Error('FINANCIAL_PERIOD_REGRESSION');

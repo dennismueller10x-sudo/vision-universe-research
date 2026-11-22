@@ -45,17 +45,20 @@ test('beendete Notierung (Teil B3, CONFIRMED_LISTING_ENDED) erklaert den Abgang 
 test('belegte Nachfolge (SUCCEEDED, Nachfolger beim selben Emittenten) erklaert nur den Ersatz, nie Wachstum oder fremde Umbelegung',async()=>{
  const {approvedSuccession}=await import('../universe-regression.mjs');
  const oldL={symbol:'ANY',instrumentId:'vu_aaaaaaaaaaaaaa'},newL={symbol:'DRK',instrumentId:'vu_bbbbbbbbbbbbbb'};
+ const reg=[{fromTicker:'ANY',toTicker:'DRK',cik:'0000007789'}];
  const pred={...oldL,issuerId:cid,cik:'0000007789',productEligibility:'EXCLUDED',productEligibilityReason:'CONFIRMED_LISTING_ENDED:SUCCEEDED',securityClass:'EQUITY_COMMON'};
  const succ={...newL,issuerId:cid,cik:'0000007789',productEligibility:'ELIGIBLE',productEligibilityReason:'US_COMMON_EQUITY_ON_PRIMARY_VENUE',securityClass:'EQUITY_COMMON'};
- assert(approvedSuccession(cid,[oldL],[newL],[pred,succ]));
+ assert(approvedSuccession(cid,[oldL],[newL],[pred,succ],reg));
+ for(const [name,r] of Object.entries({'ohne Register':[],'falsche CIK':[{...reg[0],cik:'0000320193'}],'anderes Ziel':[{...reg[0],toTicker:'XXX'}],'anderer Vorgaenger':[{...reg[0],fromTicker:'ZZZ'}]}))
+  assert(!approvedSuccession(cid,[oldL],[newL],[pred,succ],r),name);
  for(const [name,rows] of Object.entries({
   'Nachfolger ohne issuerId':[pred,{...succ,issuerId:null}],'Nachfolger anderer Emittent':[pred,{...succ,issuerId:'iss_cik_0000320193'}],
   'Nachfolger nicht im Produkt':[pred,{...succ,productEligibility:'REVIEW'}],'Vorgaenger anderer Grund':[{...pred,productEligibilityReason:'CONFIRMED_LISTING_ENDED:MASTER_INACTIVE'},succ],
   'Vorgaenger noch zugelassen':[{...pred,productEligibility:'ELIGIBLE'},succ],'Vorgaenger anderer Emittent':[{...pred,issuerId:'iss_cik_0000320193'},succ],'Master fehlt':[]}))
-  assert(!approvedSuccession(cid,[oldL],[newL],rows),name);
- assert(!approvedSuccession(cid,[oldL],[newL,{symbol:'EXTRA',instrumentId:'vu_cccccccccccccc'}],[pred,succ]),'Wachstum');
- assert(!approvedSuccession(cid,[oldL],[],[pred,succ]),'alle weg ist Emittenten-Abgang, kein Ersatz');
- assert(!approvedSuccession(cid,[oldL],[oldL],[pred,succ]),'nichts geaendert');
+  assert(!approvedSuccession(cid,[oldL],[newL],rows,reg),name);
+ assert(!approvedSuccession(cid,[oldL],[newL,{symbol:'EXTRA',instrumentId:'vu_cccccccccccccc'}],[pred,succ],reg),'Wachstum');
+ assert(!approvedSuccession(cid,[oldL],[],[pred,succ],reg),'alle weg ist Emittenten-Abgang, kein Ersatz');
+ assert(!approvedSuccession(cid,[oldL],[oldL],[pred,succ],reg),'nichts geaendert');
  // Zusammenspiel: SUCCEEDED ist auch als reiner Abgang einer von mehreren Notierungen erklaert
  assert(approvedNonEquityPrune(cid,[common,note],[common],[{...master,securityClass:'EQUITY_COMMON',productEligibilityReason:'CONFIRMED_LISTING_ENDED:SUCCEEDED'}]));
 });
@@ -69,8 +72,17 @@ test('Veroeffentlichung akzeptiert den belegten Kuerzelwechsel und verweigert ih
   write(old,'index.json',{generation:'old'});write(old,'manifest.json',{assets:{[oldPath]:{}}});write(old,oldPath,{...payload,listings:[a]});
   write(current,'manifest.json',{generation:'new',eligibility:{[cid]:{}}});write(current,newPath,{...payload,listings:[b]});
   const rows=[{...a,issuerId:cid,cik:'0000007789',productEligibility:'EXCLUDED',productEligibilityReason:'CONFIRMED_LISTING_ENDED:SUCCEEDED'},{...b,issuerId:cid,cik:'0000007789',productEligibility:'ELIGIBLE'}];
-  const result=universeChanges(current,old,{masterRows:rows});
+  const reg=[{fromTicker:'ANY',toTicker:'DRK',cik:'0000007789'}];
+  const result=universeChanges(current,old,{masterRows:rows,successions:reg});
   assert.equal(result.identityRemappings,0);assert.deepEqual(result.approvedSuccessions,[{issuer:cid,removedListings:['ANY'],addedListings:['DRK']}]);
-  assert.throws(()=>universeChanges(current,old,{masterRows:[rows[0]]}),/UNEXPLAINED_PUBLIC_IDENTITY_REMAPPING/);
+  assert.throws(()=>universeChanges(current,old,{masterRows:[rows[0]],successions:reg}),/UNEXPLAINED_PUBLIC_IDENTITY_REMAPPING/);
+  assert.throws(()=>universeChanges(current,old,{masterRows:rows,successions:[]}),/UNEXPLAINED_PUBLIC_IDENTITY_REMAPPING/);
  }finally{rmSync(root,{recursive:true,force:true});}
+});
+
+test('loadSuccessions liest das echte Register (ADR-009): ANY->DRK und fünf weitere, TCBI ausgenommen sobald retirePredecessor:false',async()=>{
+ const {loadSuccessions}=await import('../universe-regression.mjs');
+ const list=loadSuccessions();
+ assert.ok(list.some(e=>e.fromTicker==='ANY'&&e.toTicker==='DRK'&&e.cik==='0001591956'));
+ assert.ok(list.every(e=>e.retirePredecessor!==false));
 });
