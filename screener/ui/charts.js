@@ -50,8 +50,8 @@
     var up = v[v.length - 1] >= v[0], col = up ? 'var(--sc-up)' : 'var(--sc-down)';
     var id = 'g' + Math.random().toString(36).slice(2, 8);
     var defs = node('defs', {}, s), g = node('linearGradient', { id: id, x1: 0, y1: 0, x2: 0, y2: 1 }, defs);
-    node('stop', { offset: '0', 'stop-color': up ? '#12864a' : '#cc3b30', 'stop-opacity': '.16' }, g);
-    node('stop', { offset: '1', 'stop-color': up ? '#12864a' : '#cc3b30', 'stop-opacity': '0' }, g);
+    node('stop', { offset: '0', 'stop-color': up ? '#101318' : '#cc3b30', 'stop-opacity': '.16' }, g);
+    node('stop', { offset: '1', 'stop-color': up ? '#101318' : '#cc3b30', 'stop-opacity': '0' }, g);
     var d = path(v, w, h, 2, lo, hi);
     node('path', { d: d + 'L' + (w - 2) + ' ' + h + 'L2 ' + h + 'Z', fill: 'url(#' + id + ')' }, s);
     node('path', { d: d, class: 'l', stroke: col, 'vector-effect': 'non-scaling-stroke' }, s);

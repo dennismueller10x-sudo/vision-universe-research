@@ -119,8 +119,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     <div class="sbar" id="sbar"></div>
     <div id="elist"></div>
     <div class="cta-gr" style="margin-top:8px">
-      <div style="flex:1"><div style="font-size:13px;font-weight:700;color:#16a34a;margin-bottom:2px">Altersvorsorgedepot 2027</div><div style="font-size:12px;color:#666">Bis 540€ Staatszulage/Jahr</div></div>
-      <button onclick="goTab('rechner')" style="padding:8px 14px;border-radius:20px;background:#16a34a;border:none;color:#fff;font-size:12px;font-weight:700">Rechner →</button>
+      <div style="flex:1"><div style="font-size:13px;font-weight:700;color:#101318;margin-bottom:2px">Altersvorsorgedepot 2027</div><div style="font-size:12px;color:#666">Bis 540€ Staatszulage/Jahr</div></div>
+      <button onclick="goTab('rechner')" style="padding:8px 14px;border-radius:20px;background:#101318;border:none;color:#fff;font-size:12px;font-weight:700">Rechner →</button>
     </div>
     <div class="cta-dk">
       <div><div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:1px">Aktienreports</div><div style="font-size:11px;color:#555">KI-Analysen · Ab 29€</div></div>
@@ -265,12 +265,12 @@ const ETF=[
 const CATS=["Alle","Global","USA","Europa","Asien","Emerging Markets","Dividende","Themen","Anleihen","Rohstoffe","ESG"];
 const BRANDS=["Alle","iShares","Vanguard","Xtrackers","Invesco","VanEck","Global X","Amundi","SPDR","L&G","WisdomTree","HANetf","21Shares","Fidelity","JPMorgan"];
 const GRPS=["Alle","Broad Market","Factor","Small Cap","Dividende","KI & Robotik","Halbleiter","Cybersecurity","Clean Energy","Defense","Biotech","Wasser","Digitalisierung","Elektromobilität","Longevity","Rohstoffe","Anleihen","ESG","FinTech","Sektoren","Länder","Immobilien","Uran & Kernenergie","Krypto","Luxusgüter","Infrastruktur","Gaming"];
-const GC={"Broad Market":"#1a1a1a","Factor":"#4f46e5","Small Cap":"#7c3aed","Dividende":"#16a34a","KI & Robotik":"#6366f1","Halbleiter":"#f59e0b","Cybersecurity":"#ef4444","Clean Energy":"#10b981","Defense":"#64748b","Biotech":"#ec4899","Wasser":"#0284c7","Digitalisierung":"#06b6d4","Elektromobilität":"#0ea5e9","Longevity":"#14b8a6","Rohstoffe":"#d97706","Anleihen":"#78716c","ESG":"#22c55e","FinTech":"#8b5cf6","Sektoren":"#84cc16","Länder":"#e11d48","Immobilien":"#a855f7","Uran & Kernenergie":"#f97316","Krypto":"#eab308","Luxusgüter":"#db2777","Infrastruktur":"#0891b2","Gaming":"#8b5cf6"};
+const GC={"Broad Market":"#1a1a1a","Factor":"#4f46e5","Small Cap":"#7c3aed","Dividende":"#101318","KI & Robotik":"#6366f1","Halbleiter":"#f59e0b","Cybersecurity":"#ef4444","Clean Energy":"#10b981","Defense":"#64748b","Biotech":"#ec4899","Wasser":"#0284c7","Digitalisierung":"#06b6d4","Elektromobilität":"#0ea5e9","Longevity":"#14b8a6","Rohstoffe":"#d97706","Anleihen":"#78716c","ESG":"#22c55e","FinTech":"#8b5cf6","Sektoren":"#84cc16","Länder":"#e11d48","Immobilien":"#a855f7","Uran & Kernenergie":"#f97316","Krypto":"#eab308","Luxusgüter":"#db2777","Infrastruktur":"#0891b2","Gaming":"#8b5cf6"};
 const PL={ytd:"YTD",y1:"1J",y3:"3J",y5:"5J",y10:"10J"};
 const PLF={ytd:"YTD 2026",y1:"1 Jahr",y3:"3 Jahre",y5:"5 Jahre",y10:"10 Jahre"};
 
 function pf(v){return v==null?"–":(v>0?"+":"")+v+"%";}
-function pc(v){return v==null?"#aaa":v>0?"#16a34a":"#e00";}
+function pc(v){return v==null?"#aaa":v>0?"#101318":"#e00";}
 function gc(g){return GC[g]||"#1a1a1a";}
 function eu(n){return n.toLocaleString("de-DE")+" €";}
 function h(tag,attrs,children){
@@ -452,7 +452,7 @@ function renderList(){
         rv.appendChild(h("div",{style:{fontSize:"16px",fontWeight:"700",color:"#1a1a1a"}},etf.ter.toFixed(2)+"%"));
         rv.appendChild(h("div",{style:{fontSize:"10px",color:"#ccc"}},"TER"));
       }else if(S.sort==="div"){
-        rv.appendChild(h("div",{style:{fontSize:"16px",fontWeight:"700",color:etf.div>0?"#16a34a":"#aaa"}},etf.div>0?etf.div+"%":"–"));
+        rv.appendChild(h("div",{style:{fontSize:"16px",fontWeight:"700",color:etf.div>0?"#101318":"#aaa"}},etf.div>0?etf.div+"%":"–"));
         rv.appendChild(h("div",{style:{fontSize:"10px",color:"#ccc"}},"Div."));
       }else{
         const pv=S.per==="ytd"?etf.ytd:etf.p[S.per];
@@ -605,7 +605,7 @@ function renderCharts(){
         <div style="font-size:11px;font-weight:700;color:#aaa">${d.tk}</div>
         <div style="font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d.name}</div>
       </div>
-      <span style="font-size:16px;font-weight:800;color:${d.v>0?"#16a34a":"#e00"};flex-shrink:0">${pf(d.v)}</span>
+      <span style="font-size:16px;font-weight:800;color:${d.v>0?"#101318":"#e00"};flex-shrink:0">${pf(d.v)}</span>
     </div>`;
   });
   html+="</div>";
@@ -658,7 +658,7 @@ function renderPortfolio(){
     html+=`<div style="background:#f8f8f8;border-radius:16px;padding:16px;margin-bottom:16px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
         <div style="font-size:13px;font-weight:700">Gewichtung</div>
-        <div style="font-size:13px;font-weight:700;color:${total===100?"#16a34a":total>100?"#ef4444":"#f59e0b"}">${total}% ${total===100?"✓":""}</div>
+        <div style="font-size:13px;font-weight:700;color:${total===100?"#101318":total>100?"#ef4444":"#f59e0b"}">${total}% ${total===100?"✓":""}</div>
       </div>`;
     picks.forEach(etf=>{
       const w=wts[etf.id]||0;
@@ -737,12 +737,12 @@ function renderRechner(){
     </div>`;
   }).join("");
   q("#rc-bonus").innerHTML=`
-    <div style="font-size:12px;font-weight:700;color:#16a34a;letter-spacing:.04em;margin-bottom:10px">VORTEIL STAATSZULAGE 2027</div>
+    <div style="font-size:12px;font-weight:700;color:#101318;letter-spacing:.04em;margin-bottom:10px">VORTEIL STAATSZULAGE 2027</div>
     <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="font-size:14px;color:#666">Ohne Förderung</span><span style="font-size:16px;font-weight:700;color:#aaa">${eu(res.k0)}</span></div>
-    <div style="display:flex;justify-content:space-between;margin-bottom:12px"><span style="font-size:14px;color:#666">Mit Förderung</span><span style="font-size:16px;font-weight:700;color:#16a34a">${eu(res.k)}</span></div>
+    <div style="display:flex;justify-content:space-between;margin-bottom:12px"><span style="font-size:14px;color:#666">Mit Förderung</span><span style="font-size:16px;font-weight:700;color:#101318">${eu(res.k)}</span></div>
     <div style="background:#d1fae5;border-radius:10px;padding:10px 14px;display:flex;justify-content:space-between">
-      <span style="font-size:13px;font-weight:600;color:#16a34a">Vorteil</span>
-      <span style="font-size:18px;font-weight:800;color:#16a34a">+${eu(res.vt)}</span>
+      <span style="font-size:13px;font-weight:600;color:#101318">Vorteil</span>
+      <span style="font-size:18px;font-weight:800;color:#101318">+${eu(res.vt)}</span>
     </div>`;
 }
 

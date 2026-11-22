@@ -512,7 +512,7 @@ body.ka-body{--vu-card:#f1f1f1;--vu-hair:rgba(0,0,0,.1);--vu-mute:#5d636b;--ak-b
 .md-tabs .md-tab{position:relative;height:36px;padding:0 15px;border-radius:99px;background:var(--vu-card);color:inherit;text-decoration:none;font-weight:700;font-size:14px;display:inline-flex;align-items:center;white-space:nowrap;flex:none}
 .md-tabs .md-tab[aria-current]{background:var(--ak-on);color:var(--ak-onink)}
 .md-tab::after{content:"";position:absolute;left:0;right:0;top:50%;height:44px;transform:translateY(-50%)}
-.md-tab:focus-visible{outline:2px solid var(--vu-focus-ring,#4f6b00);outline-offset:2px}
+.md-tab:focus-visible{outline:2px solid var(--vu-focus-ring,#101318);outline-offset:2px}
 
 /* Seitenrahmen der Seiten von „Mein Bereich“ (Konto, Einstellungen, Abonnement, Watchlist): Rand 14 px wie im Prototyp */
 .ka-ak{max-width:560px;padding:0 14px 20px;min-height:0}
@@ -632,7 +632,7 @@ a.ka-row:active{transform:scale(.97)}
 .ka-me .ka-delete .ka-link{display:inline-flex;align-items:center;min-height:44px}
 .ka-end{margin:14px 0 0;text-align:center}
 .ka-lk{min-height:44px;border:0;background:none;padding:0;color:var(--vu-mute);font:700 12.5px/1.2 Inter,system-ui,sans-serif;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
-.ka-lk:focus-visible,.ka-up:focus-visible,.ka-btn:focus-visible{outline:2px solid var(--vu-focus-ring,#4f6b00);outline-offset:2px}
+.ka-lk:focus-visible,.ka-up:focus-visible,.ka-btn:focus-visible{outline:2px solid var(--vu-focus-ring,#101318);outline-offset:2px}
 
 /* Watchlist-Detail: Zurück, Kacheln */
 .ka-ak .ka-back{margin:6px 0 0}

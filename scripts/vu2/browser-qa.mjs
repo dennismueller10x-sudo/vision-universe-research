@@ -262,7 +262,7 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    await page.waitForFunction(()=>/Stand \d{2}\.\d{2}\.\d{4}|Gerade keine Meldungen abrufbar/.test(document.querySelector('#qx-main').innerText),null,{timeout:30000}).catch(()=>befund(view,width,'Heute zeigt weder Zustaende mit Stichtag noch den ehrlichen Rueckfall'));
    const wege=await page.locator('#qx-main a').evaluateAll(ns=>ns.map(n=>n.getAttribute('href')||''));
    for(const ziel of ['#/meldungen','#/stile','#/methodik'])if(!wege.includes(ziel))befund(view,width,'Weg nach '+ziel+' fehlt auf Home');
-   const fuss=await page.locator('footer.qx-foot').innerText();
+   /* Owner 22.11.2026: die Fußzeile ist mit Dock ausgeblendet (Hinweise im Menü); ihr Text bleibt im Dokument. */const fuss=await page.locator('footer.qx-foot').evaluate(n=>n.textContent);if(await page.locator('footer.qx-foot').isVisible())befund(view,width,'Fusszeile am Seitenende noch sichtbar');
    if(!fuss.includes('Keine Anlageempfehlung'))befund(view,width,'Fusszeile ohne Keine Anlageempfehlung');
    /* Owner-Entscheidung 07.11.2026 (PLAN §11): Anbieter stehen zentral auf /infos/#quellen, nicht im Fuß. */
    for(const name of ['SEC EDGAR','Tiingo'])if(fuss.includes(name))befund(view,width,'Fusszeile nennt Anbieter '+name);
@@ -292,7 +292,7 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    const mitStand=/\d{2}\.\d{2}\.\d{4}/.test(heute)&&/Stand|→/.test(heute);
    if(!mitStand&&!heute.includes('Gerade keine Veränderungen abrufbar'))befund(view,width,'Heute zeigt weder Zustaende mit Stichtag noch den ehrlichen Rueckfall');
    /* Quellen und die Absage an Empfehlung, Prognose, Kursziel. */
-   const fuss=await page.locator('footer.qx-foot').innerText();
+   /* Owner 22.11.2026: die Fußzeile ist mit Dock ausgeblendet (Hinweise im Menü); ihr Text bleibt im Dokument. */const fuss=await page.locator('footer.qx-foot').evaluate(n=>n.textContent);if(await page.locator('footer.qx-foot').isVisible())befund(view,width,'Fusszeile am Seitenende noch sichtbar');
    if(!fuss.includes('Keine Anlageempfehlung'))befund(view,width,'Fusszeile ohne Keine Anlageempfehlung');
    /* Owner-Entscheidung 07.11.2026 (PLAN §11): Anbieter stehen zentral auf /infos/#quellen, nicht im Fuß. */
    for(const name of ['SEC EDGAR','Tiingo'])if(fuss.includes(name))befund(view,width,'Fusszeile nennt Anbieter '+name);
@@ -510,7 +510,7 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    for(const id of soll)if(!abschnitte.includes(id))befund(view,width,'Abschnitt fehlt: '+id);
    const ist=abschnitte.filter(id=>soll.includes(id));
    if(ist.join('|')!==soll.filter(id=>ist.includes(id)).join('|'))befund(view,width,'Abschnitte in falscher Reihenfolge: '+ist.join('|'));
-   const grenzen=await page.locator('#grenzen').innerText();
+   const grenzen=await page.locator('#grenzen').evaluate(n=>n.textContent);/* Owner 22.11.2026: „Daten & Methodik“ ist mit Dock ausgeblendet, der Text bleibt im Dokument */
    /* Owner-Entscheidung 07.11.2026: Stand ja, Anbieternamen nein (zentral auf /infos/#quellen). */
    if(!/Daten & Methodik/.test(grenzen))befund(view,width,'Daten und Grenzen ohne Daten & Methodik');
    for(const q of ['Tiingo','SEC EDGAR'])if(grenzen.includes(q))befund(view,width,'Daten und Grenzen nennt Anbieter '+q);

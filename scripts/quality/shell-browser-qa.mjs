@@ -337,9 +337,8 @@ for (const [vpName, width, height] of VIEWPORTS) {
       if (a.can !== 3 || a.often !== 3) fail(where, 'Start unvollständig („Was die KI kann“ ' + a.can + ', „Oft gefragt“ ' + a.often + ')');
       if (a.small.length) fail(where, a.small.length + ' Ziele kleiner als 44 px (' + a.small.slice(0, 4).join('; ') + ')');
       if (a.overflow > 1) fail(where, 'horizontaler Ueberlauf ' + a.overflow + ' px');
-      await page.locator('main .ak-lk').click();
-      const sheet = await page.waitForSelector('#vu-sh-hinweise', { state: 'visible', timeout: 5000 }).then(() => true, () => false);
-      if (!sheet) fail(where, '„Daten & Hinweise“ öffnet das Fenster des Rahmens nicht');
+      /* Owner 22.11.2026: kein „Daten & Hinweise“ und kein Hinweistext am Seitenende; der KI-Hinweis steht im Fenster des Rahmens (Menü). */
+      if (await page.locator('main .ak-lk, main .ak-end, main .vu-legal').count()) fail(where, 'Hinweis oder „Daten & Hinweise“ noch am Seitenende');
       checks.push({ where, pass: !findings.some((f) => f.where === where) });
     } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
   }
