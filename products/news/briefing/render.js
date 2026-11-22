@@ -42,9 +42,8 @@
     s += '<text x="' + PAD + '" y="96" font-size="24" font-weight="700" letter-spacing="3" fill="' + C.lime + '">VISION UNIVERSE <tspan fill="' + C.mut + '" font-weight="600">· CLOSING BELL</tspan></text>';
     s += '<text x="' + (W - PAD) + '" y="96" font-size="24" font-weight="600" letter-spacing="3" fill="' + C.mut + '" text-anchor="end">' + esc(deDate(session)) + " · " + (i + 1) + "/" + n + "</text>";
     s += '<line x1="' + PAD + '" x2="' + (W - PAD) + '" y1="' + (H - 78) + '" y2="' + (H - 78) + '" stroke="' + C.line + '"/>';
-    var src = wrap(card.source || "", 640, 17, false).slice(0, 2);
-    s += src.map(function (l, k) { return '<text x="' + PAD + '" y="' + (H - 48 + k * 21) + '" font-size="17" fill="' + C.mut + '">' + esc(l) + "</text>"; }).join("");
-    s += '<text x="' + (W - PAD) + '" y="' + (H - 48) + '" font-size="19" font-weight="700" fill="' + C.fg + '" text-anchor="end">App · research.visionuniverse.de</text>';
+    s += '<text x="' + PAD + '" y="' + (H - 40) + '" font-size="19" font-weight="700" fill="' + C.fg + '">Vision Universe <tspan fill="' + C.mut + '" font-weight="500">· Marktbriefing</tspan></text>';
+    s += '<text x="' + (W - PAD) + '" y="' + (H - 40) + '" font-size="19" font-weight="700" fill="' + C.lime + '" text-anchor="end">research.visionuniverse.de</text>';
     return s;
   }
 
@@ -52,7 +51,7 @@
     var y = 180, s = "";
     var kick = String(card.kicker || "").toUpperCase();
     s += '<text x="' + PAD + '" y="' + y + '" font-size="26" font-weight="800" letter-spacing="3" fill="' + C.lime + '">' + esc(kick) + "</text>";
-    var tag = TYPE_TAG[card.type];
+    var tag = card.type === "THIRD" && card.publisher ? "Angabe Dritter · " + card.publisher : TYPE_TAG[card.type];
     if (tag) {
       var x = PAD + kick.length * 26 * 0.8 + 24, w = tag.length * 19 * 0.55 + 32;
       var own = card.type === "OWN";
@@ -193,7 +192,13 @@
       if (card.textStats.length > half) s += statBoxes(card.textStats.slice(half), y + 250, 220);
       if (card.note) s += textBlock(PAD, y + 540, card.note, { size: 26, fill: C.soft, lh: 36 }).svg;
     }
-    if (card.quote) s += textBlock(PAD + 30, bottom - 120, card.quote, { size: 26, lh: 36, w: IN - 60 }).svg;
+    if (card.quote) {
+      var bare = !card.bars && !card.columns && !card.groups && !card.pairs && !card.timeline && !card.textStats && card.id !== "overview";
+      if (bare) {
+        var qb = textBlock(PAD + 40, y + 120, "„" + card.quote + "“", { size: 44, bold: true, lh: 58, w: IN - 60 });
+        s += '<rect x="' + PAD + '" y="' + (y + 72) + '" width="8" height="' + (qb.h + 20) + '" rx="4" fill="' + C.lime + '"/>' + qb.svg;
+      } else s += textBlock(PAD + 30, bottom - 120, card.quote, { size: 26, lh: 36, w: IN - 60 }).svg;
+    }
     return s;
   }
 
@@ -210,7 +215,7 @@
     var n = b.cards.length;
     var cards = b.cards.map(function (c, i) {
       return '<figure class="mb-card" id="karte-' + (i + 1) + '">' + cardSvg(c, i, n, b.session) +
-        '<figcaption>' + esc(c.title) + " · " + esc(c.source) + (c.url ? ' · <a href="' + esc(c.url) + '" rel="noopener">Quelle</a>' : "") + "</figcaption></figure>";
+        "</figure>";
     }).join("\n");
     var arch = (o.archive || []).slice(0, 20).map(function (d) { return '<a href="/news/marktbriefing/' + d + '/"' + (d === b.session ? ' aria-current="page"' : "") + ">" + deDate(d) + "</a>"; }).join(" ");
     return '<!doctype html>\n<html lang="de">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">\n' +
@@ -223,12 +228,13 @@
       ".mb h1{font-size:28px;letter-spacing:-.02em;margin:8px 0 4px}.mb p{color:#c9cbc4;line-height:1.5}.mb-card{margin:0 0 28px}.mb-card svg{width:100%;height:auto;display:block;border-radius:18px}" +
       ".mb-card figcaption{font-size:13px;color:#8b8d86;margin-top:8px;line-height:1.4}.mb a{color:#c8f531}.mb-arch{display:flex;flex-wrap:wrap;gap:8px;font-size:14px}" +
       ".mb-arch a{padding:4px 10px;border:1px solid #25262a;border-radius:999px;text-decoration:none}.mb-arch a[aria-current]{border-color:#c8f531}.mb-legal{font-size:13px;color:#8b8d86;border-top:1px solid #25262a;padding-top:16px}</style>\n" +
-      '</head>\n<body data-view="news"><vu-navigation></vu-navigation><script src="/assets/site-navigation.js"></script>\n<main class="mb">\n' +
+      '</head>\n<body data-view="news"><vu-navigation></vu-navigation><script src="/assets/site-navigation.js"><\/script>\n<main class="mb">\n' +
       '<p style="margin:0;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#c8f531;font-weight:700">Marktbriefing · Closing Bell</p>\n' +
       "<h1>US-Handelstag " + deDate(b.session) + "</h1>\n" +
       "<p>" + n + " Karten: " + b.counts.MARKET + " Marktdaten, " + b.counts.OWN + " eigene Auswertungen, " + b.counts.THIRD + " Angaben Dritter. Indizes über ETF-Proxies.</p>\n" +
       cards + "\n" +
       (arch ? '<h2 style="font-size:18px">Frühere Ausgaben</h2><nav class="mb-arch">' + arch + "</nav>\n" : "") +
+      '<details class="mb-legal"><summary>Quellen und Hinweise</summary><ul>' + b.cards.map(function (c) { return "<li>" + esc(c.title) + ": " + esc(c.source) + (c.url ? ' · <a href="' + esc(c.url) + '" rel="noopener">Quelle</a>' : "") + "</li>"; }).join("") + "</ul></details>\n" +
       '<p class="mb-legal">' + esc(LEGAL_TEXT) + " " + esc(b.notes.forecast) + ' <a href="https://konto.visionuniverse.de/rechtliches/methodik">Methodik, Quellen und Interessen</a>.</p>\n' +
       "</main>\n</body>\n</html>\n";
   }

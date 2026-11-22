@@ -2309,7 +2309,10 @@ for (const universe of universes) {
   KURZ_SEITEN.set(universe.universeId, kurzSeiten);
   write(`stock-index/${universe.universeId}.json`, {
     universeId: universe.universeId,
-    count: universe.stocks.length,
+    /* count = Laenge von symbols (Vertrag fuer prune-dead-refs: count == symbols.length); cardCount = Titel mit voller Karte
+       (meta.universes[].securities), kurzhistorie = Titel mit schlanker Seite. count == cardCount + kurzhistorie.length. */
+    count: universe.stocks.length + kurzSeiten.length,
+    cardCount: universe.stocks.length,
     kurzhistorie: kurzSeiten.map((k) => k.stock.symbol).sort(),
     note: "Kuerzel, fuer die eine Detailseite ausgeliefert wird. Alle uebrigen Titel des " +
           "Company Master bekommen ihre Seite aus dem Master (quant/data/universe/).",

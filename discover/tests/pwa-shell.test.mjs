@@ -46,7 +46,7 @@ test('service worker: precached nur Offline-Seite und Icon, keine Daten oder Skr
 
 test('service worker: private, Live- und fremde Abrufe bleiben unberuehrt; Offline-Navigation bleibt ehrlich', async () => {
   const {handlers} = loadWorker();
-  const fire = req => { let r = null; handlers.fetch({request: req, respondWith: x => { r = x; }}); return r; };
+  const fire = req => { let r = null; handlers.fetch({request: req, respondWith: x => { r = x; }, waitUntil: () => {}}); return r; };
   for (const url of ['/api/history', '/v1/me', '/discover/live/im-blick-US_REAL.json?t=12', '/assets/a.js?token=private', 'https://other.test/assets/a.js'])
     assert.equal(fire({mode: 'cors', method: 'GET', url: new URL(url, 'https://example.test').href}), null, url);
   assert.equal(fire({mode: 'navigate', method: 'POST', url: 'https://example.test/'}), null);

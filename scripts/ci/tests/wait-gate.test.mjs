@@ -10,7 +10,7 @@ import { spawnSync } from "node:child_process";
 const SCRIPT = join(dirname(fileURLToPath(import.meta.url)), "..", "wait-gate.sh");
 
 /** Fake-gh: liest Antworten je Pfad-Muster aus einem Skript (Zeilen: muster<TAB>status<TAB>etag<TAB>body<TAB>zusatzheader). */
-function lauf(antworten, { max = 1 } = {}) {
+function lauf(antworten, { max = 1, erwartet = "" } = {}) {
   const dir = mkdtempSync(join(tmpdir(), "vu-wg-"));
   try {
     const plan = join(dir, "plan.json"), log = join(dir, "calls.log"), sleeps = join(dir, "sleeps.log");
@@ -28,15 +28,15 @@ process.stdout.write("HTTP/1.1 "+r.status+" X\\r\\n"+etag+"X-Ratelimit-Remaining
 process.exit(r.status<300?0:1);
 `);
     chmodSync(join(dir, "gh"), 0o755);
-    writeFileSync(join(dir, "sleep.sh"), `#!/bin/sh\necho "$1" >> ${sleeps}\n`); chmodSync(join(dir, "sleep.sh"), 0o755);
-    const r = spawnSync("bash", [SCRIPT, "7", String(max)], {
+    writeFileSync(join(dir, "sleep.sh"), `#!/bin/sh\necho "$1" >> ${sleeps}\nsleep 0.05\n`); chmodSync(join(dir, "sleep.sh"), 0o755);
+    const r = spawnSync("bash", [SCRIPT, "7", String(max), erwartet], {
       encoding: "utf8", timeout: 20000,
-      env: { ...process.env, PATH: dir + ":" + process.env.PATH, GH_REPO: "o/r", WAIT_GATE_SLEEP: join(dir, "sleep.sh") }
+      env: { ...process.env, PATH: dir + ":" + process.env.PATH, GH_REPO: "o/r", WAIT_GATE_SLEEP: join(dir, "sleep.sh"), WAIT_GATE_MAX_S: process.env.WG_MAX_S || "60" }
     });
     return { ...r, calls: readFileSync(log, "utf8").trim().split("\n").filter(Boolean), sleeps: readFileSync(sleeps, "utf8").trim().split("\n").filter(Boolean) };
   } finally { rmSync(dir, { recursive: true, force: true }); }
 }
-const pr = (sha = "abc") => ({ status: 200, etag: "p1", body: { head: { sha } } });
+const pr = (sha = "abc") => ({ status: 200, etag: "p-" + sha, body: { head: { sha } } });
 const gate = (c, s = "completed", etag = "g" + Math.random()) => ({ status: 200, etag, body: { check_runs: [{ id: 1, status: s, conclusion: c }] } });
 
 test("wait-gate: gruen beendet mit 0, nur REST-Pfade, nur der Check ci-gate", () => {
@@ -62,4 +62,12 @@ test("wait-gate: Limit (403 mit Remaining 0) wartet, statt zu zaehlen; Dauerfehl
   const kaputt = lauf({ pr: [{ status: 404 }], gate: [gate("success")] });
   assert.equal(kaputt.status, 2);
   assert.match(kaputt.stderr, /nicht lesbar/);
+});
+
+test("wait-gate: mit erwartetem Head-sha zaehlt der gruene Check eines anderen (alten) Heads nicht", () => {
+  process.env.WG_MAX_S = "2"; const alt = lauf({ pr: [pr("alt")], gate: [gate("success")] }, { max: 1, erwartet: "neu" }); delete process.env.WG_MAX_S;
+  assert.equal(alt.status, 2, "nur der alte Head ist sichtbar: Zeitlimit statt gruen");
+  const ok = lauf({ pr: [pr("alt"), pr("neu")], gate: [gate("success")] }, { max: 1, erwartet: "neu" });
+  assert.equal(ok.status, 0, ok.stderr);
+  assert.match(ok.stdout, /\(neu\)/);
 });

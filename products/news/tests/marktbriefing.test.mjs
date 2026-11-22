@@ -113,9 +113,13 @@ test('MB-3 Themen Dritter: nur Handelstag, nur Quellenliste, höchstens zwei je 
   assert.equal(b.counts.THIRD, 1);
 });
 
-test('MB-4 Wortwahl: keine Gewinner/Verlierer, keine Empfehlung, kein Signal (docs/legal/WORTWAHL.md)', () => {
+test('MB-4 Wortwahl: keine Gewinner/Verlierer, keine Empfehlung, kein Signal, kein Datenanbieter (docs/legal/WORTWAHL.md)', () => {
   const text = JSON.stringify(Engine.buildBriefing(inputs()).cards);
   for (const w of ['Gewinner', 'Verlierer', 'Empfehlung', 'Signal', 'Kaufen', 'unterbewertet', 'Top-Pick']) assert.ok(!text.includes(w), w);
+  // Owner 22.11.2026: der Kursdaten-Anbieter wird nirgends genannt (Karten, Quellen, Seite).
+  const b = Engine.buildBriefing(inputs());
+  const all = text + b.cards.map((c, i) => Render.cardSvg(c, i, b.cards.length, b.session)).join('') + Render.page(b, { archive: [SESSION] });
+  assert.ok(!/tiingo|\biex\b/i.test(all), 'Anbieter genannt');
 });
 
 test('MB-5 Einordnung: letzter vergleichbarer Tag', () => {
@@ -135,6 +139,8 @@ test('MB-6 Darstellung: jede Karte ein SVG 1080×1350, Seite noindex mit Pflicht
   const html = Render.page(b, { archive: [SESSION] });
   assert.match(html, /<meta name="robots" content="noindex,follow">/);
   assert.match(html, /keine Anlageberatung/);
+  assert.match(html, /<details class="mb-legal"><summary>Quellen und Hinweise<\/summary>/);
+  assert.ok(!/<figcaption>/.test(html), 'keine Quelle unter der Grafik');
   assert.equal((html.match(/<figure class="mb-card"/g) || []).length, b.cards.length);
 });
 
