@@ -59,6 +59,7 @@ on:
       - 'scripts/universe/**'
       - 'quant/tests/company-master.test.mjs'
       - 'quant/tests/sec-universe-scale.test.mjs'
+      - 'quant/tests/cik-succession-guard.test.mjs'
       - '.github/workflows/universe-master.yml'
   pull_request:
     paths:
@@ -123,6 +124,7 @@ jobs:
         run: |
           node --test quant/tests/company-master.test.mjs
           node --test quant/tests/sec-universe-scale.test.mjs
+          node --test quant/tests/cik-succession-guard.test.mjs
 
       - name: Es gibt keine Zielgroesse im Code
         # §6. Eine Obergrenze wieder einzufuehren ist die naheliegendste
@@ -176,6 +178,9 @@ jobs:
           SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
         # --require-source (22.11.2026): ohne frische SEC-Tickerliste bricht der Sync ab, statt einen alten Stand
         # fortzuschreiben oder zu committen (wie sec-fundamentals-universe.yml).
+        # Nachfolge-Regel (22.11.2026, scripts/universe/lib/cik-succession-guard.mjs): ein neues Produktkuerzel an
+        # einer CIK, die im Produkt schon haengt, bekommt sie nur mit Eintrag in quant/config/ticker-successions.json;
+        # sonst PENDING_SUCCESSION_EVIDENCE als Warnung im Lauf, kein Abbruch.
         run: node scripts/universe/build-cik-map.mjs --require-source
 
       - name: Company Master bauen
@@ -206,6 +211,7 @@ jobs:
         run: |
           node --test quant/tests/company-master.test.mjs
           node --test quant/tests/sec-universe-scale.test.mjs
+          node --test quant/tests/cik-succession-guard.test.mjs
           node --test "discover/tests/*.test.mjs"
 
       # Dieselbe Gegenprobe wie in allen Anbieter-Workflows: kein
