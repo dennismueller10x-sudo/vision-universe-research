@@ -6,15 +6,15 @@
     "youngListingYears": 2
   },
   "denominator": {
-    "PRODUCT_TITLES": 6024
+    "PRODUCT_TITLES": 6009
   },
-  "TITLES_WITH_SUFFICIENT_FUNDAMENTALS": 4922,
-  "TITLES_WITH_GAP": 1102,
+  "TITLES_WITH_SUFFICIENT_FUNDAMENTALS": 4894,
+  "TITLES_WITH_GAP": 1115,
   "byCause": [
     {
       "cause": "VERY_YOUNG_LISTING",
-      "count": 485,
-      "percent": 8.0511,
+      "count": 483,
+      "percent": 8.0379,
       "recoverability": "RESOLVES_WITH_TIME",
       "examples": [
         {
@@ -52,7 +52,7 @@
     {
       "cause": "SPECIAL_SECURITY_STRUCTURE",
       "count": 308,
-      "percent": 5.1129,
+      "percent": 5.1256,
       "recoverability": "BY_DESIGN",
       "examples": [
         {
@@ -89,10 +89,16 @@
     },
     {
       "cause": "NO_CIK",
-      "count": 121,
-      "percent": 2.0086,
+      "count": 132,
+      "percent": 2.1967,
       "recoverability": "REQUIRES_REVIEW",
       "examples": [
+        {
+          "symbol": "ACA",
+          "cik": null,
+          "form": null,
+          "securityType": "COMMON_STOCK"
+        },
         {
           "symbol": "ACHL",
           "cik": null,
@@ -116,19 +122,13 @@
           "cik": null,
           "form": null,
           "securityType": "COMMON_STOCK"
-        },
-        {
-          "symbol": "ANSS",
-          "cik": null,
-          "form": null,
-          "securityType": "COMMON_STOCK"
         }
       ]
     },
     {
       "cause": "SEC_DATA_PRESENT_BUT_NOT_NORMALIZED",
       "count": 107,
-      "percent": 1.7762,
+      "percent": 1.7807,
       "recoverability": "SEC_RECOVERABLE",
       "examples": [
         {
@@ -165,8 +165,8 @@
     },
     {
       "cause": "INSUFFICIENT_HISTORY",
-      "count": 54,
-      "percent": 0.8964,
+      "count": 51,
+      "percent": 0.8487,
       "recoverability": "EXTERNAL_PROVIDER_CANDIDATE",
       "examples": [
         {
@@ -204,7 +204,7 @@
     {
       "cause": "FOREIGN_ISSUER",
       "count": 27,
-      "percent": 0.4482,
+      "percent": 0.4493,
       "recoverability": "SEC_RECOVERABLE",
       "examples": [
         {
@@ -238,35 +238,73 @@
           "securityType": "COMMON_STOCK"
         }
       ]
+    },
+    {
+      "cause": "NO_SEC_COMPANY_FACTS",
+      "count": 7,
+      "percent": 0.1165,
+      "recoverability": "SEC_RECOVERABLE",
+      "examples": [
+        {
+          "symbol": "ANT",
+          "cik": "0002130357",
+          "form": null,
+          "securityType": "COMMON_STOCK"
+        },
+        {
+          "symbol": "BDAI",
+          "cik": "0001742341",
+          "form": null,
+          "securityType": "COMMON_STOCK"
+        },
+        {
+          "symbol": "BIP",
+          "cik": "0002155396",
+          "form": null,
+          "securityType": "COMMON_STOCK"
+        },
+        {
+          "symbol": "FFTT",
+          "cik": "0002020228",
+          "form": null,
+          "securityType": "COMMON_STOCK"
+        },
+        {
+          "symbol": "NAVI",
+          "cik": "0002152623",
+          "form": null,
+          "securityType": "COMMON_STOCK"
+        }
+      ]
     }
   ],
   "byRecoverability": {
     "SEC_RECOVERABLE": 2,
-    "EXTERNAL_PROVIDER_CANDIDATE": 93,
-    "RESOLVES_WITH_TIME": 524,
-    "BY_DESIGN": 362,
-    "REQUIRES_REVIEW": 121
+    "EXTERNAL_PROVIDER_CANDIDATE": 91,
+    "RESOLVES_WITH_TIME": 522,
+    "BY_DESIGN": 361,
+    "REQUIRES_REVIEW": 139
   },
   "mainGroups": {
     "note": "\u00a77 verlangt zwei Hauptgruppen. Das sind diese beiden - und nur sie tragen die Anbieterfrage.",
     "SEC_RECOVERABLE": 2,
-    "EXTERNAL_PROVIDER_CANDIDATE": 93
+    "EXTERNAL_PROVIDER_CANDIDATE": 91
   },
   "recoverabilityNote": "REQUIRES_REVIEW ist keine dritte Meinung, sondern die Weigerung zu raten: Titel ohne CIK, deren Kuerzel auch die beiden SEC-Verzeichnisse nicht fuehren. Ob dort etwas liegt, ist von hier aus nicht entscheidbar. Sie in eine der beiden Hauptgruppen zu schieben hiesse, die Anbieterfrage per Rundung zu beantworten. RESOLVES_WITH_TIME und BY_DESIGN sind aus dem gleichen Grund eigene Zustaende: eine Notiz von 2026 hat keine drei Jahresabschluesse, und ein Vorzug meldet keinen eigenen - beides kann kein Anbieter liefern, und beides als Anbieterkandidat zu zaehlen wuerde den Einkauf begruenden, den diese Titel nicht brauchen. byRecoverability traegt die Gruppe NACH der Feinklassifikation (\u00a75): ein SPAC ohne Umsatz ist BY_DESIGN, eine junge Notierung RESOLVES_WITH_TIME, ein leeres companyfacts EXTERNAL_PROVIDER_CANDIDATE. byRecoverabilityCoarse ist die Zaehlung davor.",
   "secTickerDirectory": {
     "present": true,
-    "tickers": 10426,
+    "tickers": 10399,
     "role": "Beleg fuer IDENTITY_MAPPING_GAP: kennt das SEC-Verzeichnis das Kuerzel, ist die fehlende CIK unsere Luecke und keine der Quelle."
   },
   "providerDecision": "OFFEN. Die Trennung oben ist die Entscheidungsgrundlage und nicht die Entscheidung (\u00a715). Solange die groesste Gruppe SEC_RECOVERABLE heisst, waere ein zugekaufter Anbieter Geld fuer Daten, die bereits bei der SEC liegen und nur nicht gemappt sind.",
   "byRecoverabilityCoarse": {
-    "SEC_RECOVERABLE": 134,
-    "EXTERNAL_PROVIDER_CANDIDATE": 54,
-    "RESOLVES_WITH_TIME": 485,
+    "SEC_RECOVERABLE": 141,
+    "EXTERNAL_PROVIDER_CANDIDATE": 51,
+    "RESOLVES_WITH_TIME": 483,
     "BY_DESIGN": 308,
-    "REQUIRES_REVIEW": 121
+    "REQUIRES_REVIEW": 132
   },
-  "regroupedByFineClassification": 132,
+  "regroupedByFineClassification": 139,
   "versions": {
     "normalization_schema": "1.0.0",
     "normalization_logic": "1.15.0",
@@ -281,14 +319,14 @@
   "priorities": {
     "note": "Die Gruppen ueberschneiden sich bewusst; jede beantwortet eine eigene Frage. Ihre Summe ist deshalb KEINE Titelzahl.",
     "denominator": {
-      "PRODUCT_TITLES": 6024
+      "PRODUCT_TITLES": 6009
     },
     "groups": [
       {
         "priority": "PRIORITY_1_TECHNICAL_WITHOUT_ANY_FUNDAMENTALS",
         "description": "Technisch gedeckt, aber keinerlei Fundamentaldaten",
-        "COUNT": 396,
-        "PERCENT": 6.5737,
+        "COUNT": 416,
+        "PERCENT": 6.9229,
         "TOP_CAUSES": [
           {
             "cause": "SPECIAL_SECURITY_STRUCTURE",
@@ -296,11 +334,15 @@
           },
           {
             "cause": "NO_CIK",
-            "count": 88
+            "count": 99
           },
           {
             "cause": "VERY_YOUNG_LISTING",
-            "count": 8
+            "count": 12
+          },
+          {
+            "cause": "NO_SEC_COMPANY_FACTS",
+            "count": 5
           }
         ],
         "SEC_RECOVERABLE_COUNT": 0,
@@ -309,12 +351,12 @@
       {
         "priority": "PRIORITY_2_FUNDAMENTALS_WITHOUT_CORE_METRICS",
         "description": "Fundamentaldaten vorhanden, aber zentrale Kennzahlen fehlen",
-        "COUNT": 1047,
-        "PERCENT": 17.3805,
+        "COUNT": 1037,
+        "PERCENT": 17.2574,
         "TOP_CAUSES": [
           {
             "cause": "VERY_YOUNG_LISTING",
-            "count": 345
+            "count": 341
           },
           {
             "cause": "SEC_DATA_PRESENT_BUT_NOT_NORMALIZED",
@@ -322,7 +364,7 @@
           },
           {
             "cause": "INSUFFICIENT_HISTORY",
-            "count": 37
+            "count": 34
           },
           {
             "cause": "FOREIGN_ISSUER",
@@ -334,31 +376,31 @@
           }
         ],
         "SEC_RECOVERABLE_COUNT": 2,
-        "EXTERNAL_PROVIDER_CANDIDATE_COUNT": 76
+        "EXTERNAL_PROVIDER_CANDIDATE_COUNT": 74
       },
       {
         "priority": "PRIORITY_3_HISTORY_TOO_SHORT",
         "description": "Fundamentaldaten vorhanden, Historie zu kurz",
-        "COUNT": 464,
-        "PERCENT": 7.7025,
+        "COUNT": 456,
+        "PERCENT": 7.5886,
         "TOP_CAUSES": [
           {
             "cause": "VERY_YOUNG_LISTING",
-            "count": 410
+            "count": 405
           },
           {
             "cause": "INSUFFICIENT_HISTORY",
-            "count": 54
+            "count": 51
           }
         ],
         "SEC_RECOVERABLE_COUNT": 0,
-        "EXTERNAL_PROVIDER_CANDIDATE_COUNT": 54
+        "EXTERNAL_PROVIDER_CANDIDATE_COUNT": 51
       },
       {
         "priority": "PRIORITY_4_PIT_INSUFFICIENT",
         "description": "Nicht zeitpunktgenau abfragbar",
         "COUNT": 136,
-        "PERCENT": 2.2576,
+        "PERCENT": 2.2633,
         "TOP_CAUSES": [
           {
             "cause": "SEC_DATA_PRESENT_BUT_NOT_NORMALIZED",
@@ -374,13 +416,13 @@
           }
         ],
         "SEC_RECOVERABLE_COUNT": 2,
-        "EXTERNAL_PROVIDER_CANDIDATE_COUNT": 39
+        "EXTERNAL_PROVIDER_CANDIDATE_COUNT": 40
       },
       {
         "priority": "PRIORITY_5_EDGE_CASES",
         "description": "Spezial- und Randfaelle",
         "COUNT": 804,
-        "PERCENT": 13.3466,
+        "PERCENT": 13.3799,
         "TOP_CAUSES": [
           {
             "cause": "SPECIAL_SECURITY_STRUCTURE",
@@ -392,7 +434,7 @@
           },
           {
             "cause": "NO_CIK",
-            "count": 65
+            "count": 70
           },
           {
             "cause": "SEC_DATA_PRESENT_BUT_NOT_NORMALIZED",
@@ -400,13 +442,13 @@
           },
           {
             "cause": "INSUFFICIENT_HISTORY",
-            "count": 22
+            "count": 21
           }
         ],
         "SEC_RECOVERABLE_COUNT": 0,
-        "EXTERNAL_PROVIDER_CANDIDATE_COUNT": 39
+        "EXTERNAL_PROVIDER_CANDIDATE_COUNT": 38
       }
     ]
   },
-  "generatedAtUtc": "2026-11-22T08:56:20+00:00"
+  "generatedAtUtc": "2026-11-22T13:55:54+00:00"
 }
