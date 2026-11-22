@@ -113,7 +113,7 @@ export async function writeWww(briefing, landingDir, { pdf = false } = {}) {
         pages: ['seite-02.png', 'seite-03.png', 'seite-04.png'].filter(has),
         screens: ['bildschirm-01.jpg', 'bildschirm-02.jpg', 'bildschirm-03.jpg', 'bildschirm-04.jpg'].filter(has) } }));
     const home = path.join(landingDir, 'index.html');
-    if (fs.existsSync(home)) { const before = fs.readFileSync(home, 'utf8'), after = Www.withTeaser(before, briefing); if (after !== before) { fs.writeFileSync(home, after); files.push(home); } }
+    if (fs.existsSync(home)) { const before = fs.readFileSync(home, 'utf8'), after = Www.withTeaser(before, briefing, { cover: has('titel.png') ? 'titel.png' : null, cards }); if (after !== before) { fs.writeFileSync(home, after); files.push(home); } }
   }
   return files;
 }
