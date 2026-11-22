@@ -1,6 +1,7 @@
 // Echte, nachpruefbare SEC-Beispiele auf dem gebauten Datensatz quant/data/sec/sic-history.
 // Jede Accession ist unter https://www.sec.gov/Archives/edgar/data/<cik>/<acc ohne Striche>/<acc>.hdr.sgml abrufbar.
 // Liest nur, schreibt nichts.
+import "../../scripts/quant/lib/frozen-data.mjs"; /* eingefrorener Datenstand (scripts/quant/lib/frozen-data.mjs, 22.11.2026) */
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
