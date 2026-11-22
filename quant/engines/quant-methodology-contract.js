@@ -2,8 +2,10 @@
   "use strict";
 
   var FACTORS = ["quality", "growth", "momentum", "value", "profitability", "revisions", "risk"];
-  var WEIGHTS = { quality: 0.10, growth: 0.15, momentum: 0.25, value: 0.15,
-                  profitability: 0.15, revisions: 0.15, risk: 0.05 };
+  /* quant-v2.5.0 (22.11.2026): Gewichte nach der Variantenpruefung auf PIT-Dokumenten (tilt, Revisionen unveraendert 0,15,
+     uebrige mit 0,85 skaliert); docs/research/backtest2/PROTOKOLL.md §4c. */
+  var WEIGHTS = { quality: 0.085, growth: 0.0425, momentum: 0.3825, value: 0.0425,
+                  profitability: 0.255, revisions: 0.15, risk: 0.0425 };
   /* Die drei Kohorten, fuer die die generische Formel NOT_APPLICABLE ist
      und deshalb eine eigene Vorlage tragen muss, und die Faktoren, die eine
      Vorlage ersetzt. Wachstum steht nicht darin: es ist vom Branchentor
@@ -25,9 +27,10 @@
        Versicherungstraeger und REITs - quant-v2.2.0. Seit 2026-11-13 zaehlt der
        Marktvorsprung nicht mehr doppelt in Momentum - quant-v2.3.0. Seit 2026-11-16
        misst Quality nur Margeneinbrueche, nicht steigende Margen - quant-v2.4.0. Seit 2026-11-18
-       nur ueber die letzten drei Geschaeftsjahre - quant-v2.4.1. */
-    if (!config || config.methodologyVersion !== "quant-v2.4.1" ||
-        config.modelProfileId !== "quant-v2.4.1-full-7f") errors.push("VERSION");
+       nur ueber die letzten drei Geschaeftsjahre - quant-v2.4.1. Seit 2026-11-22 mehr Gewicht auf Momentum und
+       Profitabilitaet - quant-v2.5.0. */
+    if (!config || config.methodologyVersion !== "quant-v2.5.0" ||
+        config.modelProfileId !== "quant-v2.5.0-full-7f") errors.push("VERSION");
     if (JSON.stringify(config && config.factorOrder) !== JSON.stringify(FACTORS)) errors.push("FACTOR_ORDER");
     var sum = 0, componentOwners = Object.create(null);
     FACTORS.forEach(function (id) {
