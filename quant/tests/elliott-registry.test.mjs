@@ -1,6 +1,7 @@
 /* Elliott Prospective Registry auf main: Setup-Definitionen (Library V1), Kausalitaet, Unveraenderlichkeit,
    Revisionen, Auswertung nur abgelaufener Horizonte. Aus quant/tests/elliott-setups-mission10.test.mjs des
    Forschungsbranches ohne die Einstufung der historischen Evidenz (decide-setups, bleibt Forschung). */
+import "../../scripts/quant/lib/frozen-data.mjs"; /* eingefrorener Datenstand (scripts/quant/lib/frozen-data.mjs, 22.11.2026) */
 import test from "node:test";
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";

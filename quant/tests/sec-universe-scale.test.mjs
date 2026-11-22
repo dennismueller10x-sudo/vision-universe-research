@@ -12,6 +12,7 @@
    erreichbar, und ein Test, der nur im CI laufen kann, prueft nichts,
    solange er nicht laeuft.
    ========================================================================= */
+import "../../scripts/quant/lib/frozen-data.mjs"; /* eingefrorener Datenstand (scripts/quant/lib/frozen-data.mjs, 22.11.2026) */
 import test from "node:test";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
