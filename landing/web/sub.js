@@ -4,6 +4,11 @@
   "use strict";
   var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   function $$(s, c) { return [].slice.call((c || document).querySelectorAll(s)); }
+  /* Höhe des Bildschirms einmal beim Laden festhalten (und nur bei neuer Breite, z. B. Drehen): iOS ändert die
+     sichtbare Höhe beim Wischen (Leisten ein- und ausblenden); sonst wächst und schrumpft das Telefon im Einstieg. */
+  var vw0 = 0;
+  function fhVh() { if (innerWidth === vw0) return; vw0 = innerWidth; document.documentElement.style.setProperty("--fh-vh", innerHeight + "px"); }
+  fhVh(); addEventListener("resize", fhVh);
   var root = document.documentElement, c = document.querySelector(".fh-copy");
   function size() { if (c) root.style.setProperty("--fh-copy", c.offsetHeight + "px"); }
   size(); addEventListener("resize", size);
