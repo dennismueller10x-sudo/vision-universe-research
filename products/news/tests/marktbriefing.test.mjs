@@ -311,3 +311,15 @@ test('MB-14 Startseiten-Leiste mit Bildschirmen und App-Story', () => {
   assert.equal(app.title, b.cards[0].title);
   assert.deepEqual(app.screens, [{ id: 'start', title: 'T', image: url + 'bildschirm-01.jpg' }]);
 });
+
+test('MB-15 kein Bezug auf Vorbilder: weder Personenname noch „Closing Bell“ in Erzeugern, Seiten und Registern', () => {
+  const files = ['products/news/briefing/engine.js', 'products/news/briefing/render.js', 'products/news/briefing/www.js', 'products/news/briefing/pdf.mjs',
+    'landing/marktbriefing/mb.css', 'landing/marktbriefing/mb.js', 'landing/index.html', 'willkommen/app.js', 'insights/marktbriefing/index.html',
+    'core/registry/domains.json', 'core/registry/schedule.json', 'docs/publishing/HANDBUCH.md', '.github/workflows/content.yml'];
+  const rx = new RegExp(['Mar' + 'kus', 'Ko' + 'ch\\b', 'Closing ' + 'Bell'].join('|'), 'i');
+  for (const f of files) assert.doesNotMatch(fs.readFileSync(new URL('../../../' + f, import.meta.url), 'utf8'), rx, f);
+  for (const d of fs.readdirSync(new URL('../../../landing/marktbriefing/', import.meta.url))) {
+    const p = new URL('../../../landing/marktbriefing/' + d + '/index.html', import.meta.url);
+    if (fs.existsSync(p)) assert.doesNotMatch(fs.readFileSync(p, 'utf8'), rx, d);
+  }
+});
