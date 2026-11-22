@@ -12,7 +12,31 @@
 
   var W = 1080, H = 1350, PAD = 72, IN = W - 2 * PAD;
   var C = { bg: "#08080a", fg: "#f4f5f1", mut: "#8b8d86", dim: "#5b5d57", lime: "#c8f531", line: "#25262a", card: "#111114", soft: "#c9cbc4" };
-  var TYPE_TAG = { MARKET: null, OWN: "Eigene Auswertung", THIRD: "Angabe Dritter" };
+  var TYPE_TAG = { MARKET: null, OWN: "Eigene Auswertung", THIRD: "Angabe Dritter", AGENDA: "Termine" };
+  /* Linien-Icons (24er Raster, Strich): Ausblick-Arten und Szenen der Website (www.js nutzt dieselben). */
+  var ICONS = {
+    zahlen: '<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 17v-3M12 17v-7M15 17v-5"/>',
+    daten: '<path d="M3 12h4l3-7 4 14 3-7h4"/>',
+    notenbank: '<path d="M3 10l9-6 9 6M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 21h18"/>',
+    dividende: '<circle cx="12" cy="12" r="9"/><path d="M15 9.5c-.5-1-1.6-1.5-3-1.5-1.7 0-3 .9-3 2.1 0 2.8 6 1.4 6 4.3 0 1.2-1.3 2.1-3 2.1-1.4 0-2.6-.6-3-1.6M12 5.5v2.5M12 16v2.5"/>',
+    markt: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+    news: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 9h10M7 13h6"/>',
+    down: '<path d="M3 7l6 6 4-4 8 8"/><path d="M21 11v6h-6"/>',
+    up: '<path d="M3 17l6-6 4 4 8-8"/><path d="M21 13V7h-6"/>',
+    globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>',
+    heavy: '<rect x="4" y="10" width="4" height="10" rx="1"/><rect x="10" y="5" width="4" height="15" rx="1"/><rect x="16" y="13" width="4" height="7" rx="1"/>',
+    scale: '<path d="M12 4v16M5 8h14M7 8l-3 7h6zM17 8l-3 7h6z"/>',
+    dots: '<circle cx="6" cy="6" r="1.6"/><circle cx="12" cy="6" r="1.6"/><circle cx="18" cy="6" r="1.6"/><circle cx="6" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18" cy="12" r="1.6"/><circle cx="6" cy="18" r="1.6"/><circle cx="12" cy="18" r="1.6"/><circle cx="18" cy="18" r="1.6"/>',
+    clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+    rate: '<path d="M19 5L5 19"/><circle cx="7" cy="7" r="2.5"/><circle cx="17" cy="17" r="2.5"/>',
+    movers: '<path d="M7 20V5M3 9l4-4 4 4M17 4v15M13 15l4 4 4-4"/>',
+    gauge: '<path d="M4 16a8 8 0 1 1 16 0"/><path d="M12 16l4-5"/>',
+    bank: '<path d="M3 10l9-6 9 6M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 21h18"/>',
+    alert: '<path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18v.5"/>'
+  };
+  function icon(name, x, y, size, col) {
+    return '<g transform="translate(' + x + " " + y + ") scale(" + (size / 24) + ')" fill="none" stroke="' + col + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + (ICONS[name] || "") + "</g>";
+  }
 
   function esc(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
   function num(x, d) { return Math.abs(x).toFixed(d == null ? 1 : d).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, "."); }
@@ -191,6 +215,33 @@
       if (card.textStats.length > half) s += statBoxes(card.textStats.slice(half), y + 250, 220);
       if (card.note) s += textBlock(PAD, y + 540, card.note, { size: 26, fill: C.soft, lh: 36 }).svg;
     }
+    if (card.agenda) {
+      var WS = { Montag: "MO", Dienstag: "DI", Mittwoch: "MI", Donnerstag: "DO", Freitag: "FR" };
+      var LW = IN - 240, days = card.agenda.days.map(function (d) {
+        var its = d.items.map(function (x) { var l = wrap(x.label, LW, 30, true).slice(0, 2); return { x: x, lines: l, h: 34 + l.length * 36 + (x.sub ? 30 : 0) + 18 }; });
+        return { d: d, its: its, h: Math.max(118, its.reduce(function (a, t) { return a + t.h; }, 0)) };
+      });
+      var need = days.reduce(function (a, d) { return a + d.h + 18; }, 0), avail = bottom - y - 10, k = Math.min(1, avail / need), yy = y + 6;
+      s += '<g transform="translate(0 ' + yy + ')">';
+      var off = 0;
+      days.forEach(function (D) {
+        var dh = D.h * k, d = D.d;
+        s += '<rect x="' + PAD + '" y="' + off + '" width="128" height="' + (dh - 6) + '" rx="22" fill="' + C.lime + '"/>';
+        s += '<text x="' + (PAD + 64) + '" y="' + (off + 52) + '" font-size="34" font-weight="900" fill="' + C.bg + '" text-anchor="middle">' + (WS[d.weekday] || d.weekday.slice(0, 2).toUpperCase()) + "</text>";
+        s += '<text x="' + (PAD + 64) + '" y="' + (off + 84) + '" font-size="22" font-weight="700" fill="' + C.bg + '" text-anchor="middle">' + d.date.slice(8, 10) + "." + d.date.slice(5, 7) + ".</text>";
+        var iy = off;
+        D.its.forEach(function (t) {
+          var x = t.x, ix = PAD + 152;
+          s += '<circle cx="' + (ix + 30) + '" cy="' + (iy + 36) + '" r="30" fill="' + C.card + '" stroke="' + C.line + '"/>' + icon(x.kind, ix + 14, iy + 20, 32, x.kind === "dividende" ? C.lime : C.fg);
+          s += '<text x="' + (ix + 80) + '" y="' + (iy + 22) + '" font-size="19" font-weight="700" letter-spacing="2" fill="' + C.mut + '">' + esc(x.kindLabel.toUpperCase() + (x.time ? " · " + x.time : "")) + "</text>";
+          t.lines.forEach(function (l, j) { s += '<text x="' + (ix + 80) + '" y="' + (iy + 58 + j * 36) + '" font-size="30" font-weight="800" fill="' + C.fg + '">' + esc(l) + "</text>"; });
+          if (x.sub) s += '<text x="' + (ix + 80) + '" y="' + (iy + 58 + t.lines.length * 36 - 4) + '" font-size="22" fill="' + C.soft + '">' + esc(x.sub) + "</text>";
+          iy += t.h * k;
+        });
+        off += dh + 18 * k;
+      });
+      s += "</g>";
+    }
     if (card.quote) {
       var bare = !card.bars && !card.columns && !card.groups && !card.pairs && !card.timeline && !card.textStats && card.id !== "overview";
       if (bare) {
@@ -238,7 +289,7 @@
       "</main>\n</body>\n</html>\n";
   }
 
-  var api = { W: W, H: H, cardSvg: cardSvg, page: page, wrap: wrap };
+  var api = { W: W, H: H, cardSvg: cardSvg, page: page, wrap: wrap, ICONS: ICONS };
   if (isNode) module.exports = api;
   else global.VUMarketBriefingRender = api;
 })(typeof window !== "undefined" ? window : globalThis);
