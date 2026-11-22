@@ -26,6 +26,7 @@
    getrennt; gesendet wird eines. Stimmt die Rechnung nicht, sieht er
    eine Aufteilung, die es nie gab.
    ========================================================================= */
+import "../../../scripts/quant/lib/frozen-data.mjs"; /* eingefrorener Datenstand (scripts/quant/lib/frozen-data.mjs, 22.11.2026) */
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync, existsSync } from "node:fs";

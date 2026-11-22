@@ -1,5 +1,6 @@
 // Runde 4: Donchian/Turtle-Engine, CAN-SLIM- und Piotroski-Teilpruefung,
 // Artefakt-Regeln (Teiltreffer nie als Signal, Datenstand, Modus je Methode).
+import "../../quant/lib/frozen-data.mjs"; /* eingefrorener Datenstand (scripts/quant/lib/frozen-data.mjs, 22.11.2026) */
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
