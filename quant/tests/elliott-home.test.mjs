@@ -695,7 +695,7 @@ test("EHV-8 · Anzeige: Balken im Elliott-Bild nach den drei Sätzen, auf den Ka
   assert.match(js, /var g = r && r\.state === "AVAILABLE" \? M\.gapOfAnalysis\(r\.analysis\) : null;\s*if \(g && story\.isConnected && !cb\.querySelector\("\.ew-gap"\)\) story\.after\(gapCard\(g\)\);/, "ohne Abstand kein Balken");
   assert.match(js, /bar\.setAttribute\("role", "img"\); bar\.setAttribute\("aria-label", g\.aria\);/);
   assert.doesNotMatch(js, /\.price\.close|invalidation/, "keine eigene Rechnung in aktie.js");
-  assert.match(read("quant/app/page-chartbild.js"), /el\("section", \{ class: "cb-story", "aria-label": "Die Lesart in drei Sätzen" \}/, "Anker stammt aus page-chartbild.js");
+  assert.match(read("quant/app/page-chartbild.js"), /el\("section", \{ class: "cb-story", "aria-label": "Die Lesart in drei Sätzen", tabindex: "0" \}/, "Anker stammt aus page-chartbild.js");
   /* Karten „Zählbar heute“: aus der Zeile des Wellen-Index, kein Abruf */
   assert.match(app, /g = inv \? M\.gapOfRow\(r\) : null;/);
   assert.match(app, /g \? gapBar\(g\) : null, g \? el\("span", \{ class: "ek-xs ek-mut ek-nc-i ek-gap-t", text: g\.short \}\) : null\]/);

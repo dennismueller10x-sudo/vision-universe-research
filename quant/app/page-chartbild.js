@@ -601,7 +601,7 @@
       ["target", "Grenze", inv ? "Die Lesart gilt, solange " + (weekly ? "die Woche" : "der Tag") + " " + (inv.direction === "below" ? "über " : "unter ") + ewPrice(inv.price) + " schließt." : "Für diese Lesart gibt es keine Ungültig-Marke.", ewVerdict("mid", "Ungültig-Marke")],
       ["book", "Klarheit", CLV[1] + ": " + CLV[2] + "." + (grade === "D" ? " Diese Lesart ist die derzeit beste" + (nCand > 1 ? " von " + nCand.toLocaleString("de-DE") + " regelkonformen" : "") + "; der Chart lässt mehrere Zählungen zu." : "") + (rr && EW_RR[rr] ? " Gefahr einer Neuzählung " + EW_RR[rr] + "." : ""), ewVerdict(CLV[0], CLV[1])]
     ];
-    host.append(el("section", { class: "cb-story", "aria-label": "Die Lesart in drei Sätzen" }, [el("p", { class: "vu-ltag", text: "Die Lesart in drei Sätzen" })].concat(rows.map(function (r) {
+    host.append(el("section", { class: "cb-story", "aria-label": "Die Lesart in drei Sätzen", tabindex: "0" }, [el("p", { class: "vu-ltag", text: "Die Lesart in drei Sätzen" })].concat(rows.map(function (r) {
       return el("div", { class: "cb-story-r" }, [el("span", { class: "vu-hud", style: "--vu-hud:34px", "aria-hidden": "true" }, [ewIcon(EW_IC[r[0]])]), el("div", {}, [el("span", { class: "vu-ltag", text: r[1] }), el("p", { text: r[2] })]), r[3]]);
     }))));
     var ov = a.overlays && a.overlays.waves, waves = (ov && ov.primary) || [];
