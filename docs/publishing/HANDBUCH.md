@@ -376,7 +376,14 @@ Wirtschaftskalender (FMP-Endpunkte geprüft in `scripts/market/probe-free-source
   Cloudflare Pages baut www daraus. Der Zeitplan (Mo–Fr 23:50 UTC) rechnet das Briefing nur intern in den Datenzweig.
   Seiten und PDF versprechen kein tägliches Erscheinen.
 - Startseiten-Teaser in der Region `<!--MB:teaser-->` (eigene Zeile über den Insights-Kacheln), verlinkt die Produktseite;
+  seit 22.11.2026 mit drei echten Bildschirmen der Ausgabe (gleicher Platz, Layout der Startseite unverändert).
   Menüpunkt „Marktbriefing“ auf allen Seiten.
+- App (Owner 22.11.2026): erster Story-Kreis „Briefing“ auf Home (`/willkommen/`) mit allen Szenen der neuesten Ausgabe als
+  Bilder (`bildschirm-NN.jpg` und `bildschirme.json` aus `screens.mjs`; ohne die Schluss-Szene). Der Generator schreibt
+  `willkommen/config/marktbriefing.json` (Schema `vu-marktbriefing-app-1`); `willkommen/app.js#validBriefing` zeigt nur Bilder
+  und Links unter `www.visionuniverse.de/marktbriefing/<sitzung>/`. „Ganzes Briefing“ öffnet die Ausgabe auf www. Im Menü
+  steht „Marktbriefing“ unter Insights (`products/insights/module.json`) und führt auf `/willkommen/#marktbriefing`, das die
+  Story direkt öffnet. Wirkt ohne neuen App-Build.
 - Karten folgen der Hausregel: Plus neongrün, Minus in Schriftfarbe, kein Rot. Icons (Linien, `render.js#ICONS`, eine Quelle
   für Karten und Seite) stehen an Kurzfassung, Überschriften, Etiketten und Terminen, damit die Szenen weniger nach Text aussehen.
 

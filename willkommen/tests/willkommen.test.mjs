@@ -156,3 +156,20 @@ test('Home: Tagesbewegung bei Minus rot, bei Plus neongrün – hell und dunkel,
   const lum=h=>{const c=[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)/255).map(v=>v<=.03928?v/12.92:((v+.055)/1.055)**2.4);return .2126*c[0]+.7152*c[1]+.0722*c[2];};
   assert.ok(1.05/(lum('#c4281c')+.05)>=4.5);
 });
+
+test('Marktbriefing: erster Story-Kreis mit allen Szenen, nur mit gueltiger Datei vom Generator',()=>{
+  const b=JSON.parse(read('willkommen/config/marktbriefing.json'));
+  assert.equal(W.validBriefing(b),true,'Datei aus products/news/briefing/build.mjs');
+  const list=W.storyList(null,null,b);
+  assert.equal(list[0].id,'marktbriefing');assert.equal(list[0].kind,'briefing');assert.equal(list[0].stamp,b.session);
+  assert.equal(list[0].slides.length,b.screens.length);
+  for(const s of list[0].slides){assert.match(s.image,/^https:\/\/www\.visionuniverse\.de\/marktbriefing\/\d{4}-\d{2}-\d{2}\/bildschirm-\d{2}\.jpg$/);assert.equal(s.cta.href,b.url);}
+  // fremde Ziele und Bilder werden nicht angezeigt
+  assert.equal(W.validBriefing({...b,url:'https://example.com/'}),false);
+  assert.equal(W.validBriefing({...b,screens:[{title:'x',image:'https://example.com/a.jpg'}]}),false);
+  assert.equal(W.validBriefing(null),false);
+  assert.deepEqual(W.storyList(null,null,{...b,schema:'x'}).map(s=>s.kind),['thema','thema']);
+  // Menue „Insights → Marktbriefing“ oeffnet die Story auf Home
+  assert.match(read('willkommen/app.js'),/location\.hash === '#marktbriefing'/);
+  assert.match(read('products/insights/module.json'),/"Marktbriefing", "\/willkommen\/#marktbriefing"/);
+});

@@ -296,3 +296,18 @@ test('MB-13 Ausblick: nur kommende Handelstage mit Quelle, Karte, Szene und Kurz
   // Ohne Agenda keine Karte.
   assert.ok(!Engine.buildBriefing(inputs()).cards.some((x) => x.id === 'agenda'));
 });
+
+test('MB-14 Startseiten-Leiste mit Bildschirmen und App-Story', () => {
+  const b = Engine.buildBriefing(inputs());
+  const shots = ['./marktbriefing/2026-11-20/bildschirm-04.jpg', './marktbriefing/2026-11-20/bildschirm-13.jpg', './marktbriefing/2026-11-20/bildschirm-01.jpg'];
+  const t = Www.teaser(b, './marktbriefing/', { shots, scenes: 13 });
+  assert.match(t, /^<a class="mbt mbt--s" href="\.\/marktbriefing\/">/);
+  assert.match(t, /<span class="mbt-s" aria-hidden="true"><img class="a" src="\.\/marktbriefing\/2026-11-20\/bildschirm-04\.jpg"/);
+  assert.match(t, /13 Szenen/);
+  assert.ok(!/mbt-s"/.test(Www.teaser(b, './marktbriefing/')), 'ohne Bildschirme die bisherige Leiste');
+  const url = 'https://www.visionuniverse.de/marktbriefing/2026-11-20/';
+  const app = Www.appStory(b, { url, pdf: url + 'marktbriefing-2026-11-20.pdf', screens: [{ id: 'start', toc: 'T', image: url + 'bildschirm-01.jpg' }] });
+  assert.equal(app.schema, 'vu-marktbriefing-app-1');
+  assert.equal(app.title, b.cards[0].title);
+  assert.deepEqual(app.screens, [{ id: 'start', title: 'T', image: url + 'bildschirm-01.jpg' }]);
+});

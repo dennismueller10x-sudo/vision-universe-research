@@ -105,15 +105,27 @@ export async function writeWww(briefing, landingDir, { pdf = false } = {}) {
     try { const { writeScreens } = await import('./screens.mjs'); files.push(...await writeScreens(path.join(ed, 'index.html'), ed)); }
     catch (e) { console.error('Bildschirme übersprungen: ' + e.message); }
   }
+  // Bildschirme der Ausgabe (bildschirme.json aus screens.mjs): Auswahl nach Szene für Produktseite und Startseite.
+  const shots = (readJson(path.join(ed, 'bildschirme.json')) || { screens: [] }).screens.filter((x) => has(x.file));
+  const pick = (ids) => ids.map((id) => (shots.find((x) => x.id === id) || {}).file).filter(Boolean);
   if (briefing.session === archive[0]) {
     const cards = peekIdx.map((i) => ({ file: 'karte-' + String(i + 1).padStart(2, '0') + '.png', anchor: ANCHOR[briefing.cards[i].id] || 'start',
       title: briefing.cards[i].title, kicker: briefing.cards[i].kicker })).filter((c) => has(c.file));
     put('index.html', Www.productPage(briefing, { chrome, parts, archive, pdf: havePdf ? pdfName : null,
       img: { story0: has('vorschau.png') ? 'vorschau.png' : null, cover: has('titel.png') ? 'titel.png' : null, cards,
         pages: ['seite-02.png', 'seite-03.png', 'seite-04.png'].filter(has),
-        screens: ['bildschirm-01.jpg', 'bildschirm-02.jpg', 'bildschirm-03.jpg', 'bildschirm-04.jpg'].filter(has) } }));
+        screens: pick(['start', 'indizes', 'marktbreite', 'ausblick']) } }));
     const home = path.join(landingDir, 'index.html');
-    if (fs.existsSync(home)) { const before = fs.readFileSync(home, 'utf8'), after = Www.withTeaser(before, briefing); if (after !== before) { fs.writeFileSync(home, after); files.push(home); } }
+    const tshots = pick(['indizes', 'ausblick', 'start']).map((f) => './marktbriefing/' + briefing.session + '/' + f);
+    if (fs.existsSync(home)) { const before = fs.readFileSync(home, 'utf8'), after = Www.withTeaser(before, briefing, { shots: tshots, scenes: shots.length }); if (after !== before) { fs.writeFileSync(home, after); files.push(home); } }
+    // App (research.visionuniverse.de/willkommen/): Story-Kreis „Briefing“ mit allen Szenen. Nur im Repo-Aufbau
+    // (landing/ neben willkommen/); die Bilder liegen auf www, die App öffnet die ganze Ausgabe dort.
+    const appCfg = path.join(landingDir, '..', 'willkommen', 'config');
+    if (shots.length && fs.existsSync(appCfg)) {
+      const f = path.join(appCfg, 'marktbriefing.json'), url = Www.SITE + '/marktbriefing/' + briefing.session + '/';
+      fs.writeFileSync(f, JSON.stringify(Www.appStory(briefing, { url, pdf: havePdf ? url + pdfName : null, screens: shots.map((x) => ({ id: x.id, toc: x.toc, image: url + x.file })) }), null, 1) + '\n');
+      files.push(f);
+    }
   }
   return files;
 }

@@ -1001,6 +1001,20 @@ main,.story,.steps,.step{overflow-x:clip}
 .mbt:hover .mbt-go{background:#222}
 .mbt:focus-visible{outline:3px solid #4f6b00;outline-offset:3px}
 @media(max-width:600px){.mbt{grid-template-columns:minmax(0,1fr)}.mbt-go{grid-row:auto;grid-column:1;justify-self:start}}
+/* Marktbriefing-Leiste mit drei echten Bildschirmen der Ausgabe (Owner 22.11.2026; gleicher Platz, gleiche Breite) */
+.mbt-k i{display:inline-block;width:8px;height:8px;border-radius:50%;background:#000;margin-right:8px;vertical-align:1px}
+.mbt--s{grid-template-columns:minmax(0,1fr) 210px auto;align-items:center;padding:18px 22px;overflow:hidden;min-height:150px}
+.mbt--s .mbt-k,.mbt--s .mbt-h,.mbt--s .mbt-c{grid-column:1}
+.mbt--s .mbt-c{flex-wrap:nowrap;overflow:hidden}
+.mbt--s .mbt-go{grid-column:3;grid-row:1/4;align-self:center}
+.mbt-s{grid-column:2;grid-row:1/4;position:relative;align-self:stretch;margin:-18px 0}
+.mbt-s img{position:absolute;top:22px;width:80px;height:auto;aspect-ratio:390/844;object-fit:cover;object-position:top;border-radius:11px;box-shadow:0 12px 24px -10px rgba(0,0,0,.55),0 0 0 2px #000;transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+.mbt-s .a{left:12px;transform:rotate(-8deg);top:30px}.mbt-s .b{left:118px;transform:rotate(8deg);top:30px}.mbt-s .c{left:65px;top:12px;z-index:2}
+.mbt--s:hover .mbt-s .a{transform:rotate(-12deg) translateX(-6px)}.mbt--s:hover .mbt-s .b{transform:rotate(12deg) translateX(6px)}.mbt--s:hover .mbt-s .c{transform:translateY(-4px)}
+@media(max-width:900px){.mbt--s{grid-template-columns:minmax(0,1fr) 104px;padding:16px}.mbt--s .mbt-c{flex-wrap:wrap}.mbt--s .mbt-c i:nth-child(n+3){display:none}
+  .mbt--s .mbt-go{grid-column:1/-1;grid-row:auto;justify-self:start}.mbt-s{margin:0;min-height:118px}.mbt--s .mbt-x{display:none}.mbt--s .mbt-c i{font-size:12px;padding:5px 8px}
+  .mbt-s img{width:50px;border-radius:8px}.mbt-s .a{left:0;top:22px}.mbt-s .b{left:50px;top:22px}.mbt-s .c{left:25px;top:8px}}
+@media(prefers-reduced-motion:reduce){.mbt-s img{transition:none}}
 /* Acht Menüpunkte (mit Marktbriefing) in einer Zeile: weniger Innenabstand; der Hinweis „Bald im Store“ steht im Knopf „Benachrichtigen“ und auf der Startseite. */
 @media(min-width:960px){.nav .links a{padding:9px 10px}.nav .appchip{display:none !important}}
 @media(min-width:960px) and (max-width:1279px){.nav .links{margin-left:4px}.nav .links a{padding:8px 8px;font-size:14px}.nav .links a[href$="#fragen"]{display:none}}

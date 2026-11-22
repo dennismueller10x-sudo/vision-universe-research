@@ -313,20 +313,30 @@
   }
 
   /* Teaser für die Startseite (Region <!--MB:teaser--> in landing/index.html). */
-  function teaser(b, href) {
+  /* App-Story (willkommen/config/marktbriefing.json): Titel, Datum, Link zur Ausgabe, PDF und alle Szenen als Bilder. */
+  function appStory(b, o) {
+    var C = {}; b.cards.forEach(function (c) { C[c.id] = c; });
+    return { schema: "vu-marktbriefing-app-1", session: b.session, title: C.overview.title, label: "Briefing", url: o.url, pdf: o.pdf || null,
+      screens: (o.screens || []).map(function (x) { return { id: x.id, title: x.toc, image: x.image }; }) };
+  }
+  function teaser(b, href, o) {
+    o = o || {};
     var C = {}; b.cards.forEach(function (c) { C[c.id] = c; });
     var IX = {}; (C.indices ? C.indices.bars.rows : []).forEach(function (r) { IX[r.label] = r.value; });
     var chips = ["Nasdaq 100", "S&P 500", "Dow Jones"].filter(function (n) { return IX[n] != null; }).map(function (n) { return "<i>" + esc(n) + "<em>" + pct(IX[n]) + "</em></i>"; });
     if (C.megacaps) chips.push("<i>" + esc(C.megacaps.bars.rows[0].label) + "<em>" + pct(C.megacaps.bars.rows[0].value) + "</em></i>");
-    return '<a class="mbt" href="' + href + '"><span class="mbt-k">Marktbriefing · Börsenschluss ' + dmy(b.session) + b.session.slice(0, 4) + '</span><b class="mbt-h">' + esc(C.overview.title) + '</b><span class="mbt-c">' + chips.join("") + '</span><span class="mbt-go">Briefing ansehen →</span></a>';
+    /* Owner 22.11.2026: gleicher Platz auf der Startseite, rechts drei echte Bildschirme der Ausgabe. */
+    var sh = (o.shots || []).slice(0, 3);
+    var fan = sh.length === 3 ? '<span class="mbt-s" aria-hidden="true"><img class="a" src="' + sh[0] + '" alt="" loading="lazy"><img class="b" src="' + sh[1] + '" alt="" loading="lazy"><img class="c" src="' + sh[2] + '" alt="" loading="lazy"></span>' : "";
+    return '<a class="mbt' + (fan ? " mbt--s" : "") + '" href="' + href + '"><span class="mbt-k"><i aria-hidden="true"></i>Marktbriefing · <span class="mbt-x">Börsenschluss </span>' + dmy(b.session) + b.session.slice(0, 4) + (o.scenes ? '<span class="mbt-x"> · ' + o.scenes + " Szenen</span>" : "") + '</span><b class="mbt-h">' + esc(C.overview.title) + '</b><span class="mbt-c">' + chips.join("") + "</span>" + fan + '<span class="mbt-go">Briefing ansehen →</span></a>';
   }
-  function withTeaser(indexHtml, b) {
+  function withTeaser(indexHtml, b, o) {
     var a = "<!--MB:teaser-->", z = "<!--/MB:teaser-->", i = indexHtml.indexOf(a), j = indexHtml.indexOf(z);
     if (i < 0 || j < i) return indexHtml;
-    return indexHtml.slice(0, i + a.length) + teaser(b, "./marktbriefing/") + indexHtml.slice(j);
+    return indexHtml.slice(0, i + a.length) + teaser(b, "./marktbriefing/", o) + indexHtml.slice(j);
   }
 
-  var api = { page: page, scenes: scenes, chromeFrom: chromeFrom, productPage: productPage, partsFrom: partsFrom, teaser: teaser, withTeaser: withTeaser, SITE: SITE };
+  var api = { page: page, scenes: scenes, appStory: appStory, chromeFrom: chromeFrom, productPage: productPage, partsFrom: partsFrom, teaser: teaser, withTeaser: withTeaser, SITE: SITE };
   if (isNode) module.exports = api;
   else global.VUMarketBriefingWww = api;
 })(typeof window !== "undefined" ? window : globalThis);

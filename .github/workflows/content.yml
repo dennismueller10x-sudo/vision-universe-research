@@ -92,11 +92,12 @@ jobs:
         if: github.ref == 'refs/heads/main'
         run: scripts/ci/push-data-branch.sh data/live news/marktbriefing
       # www.visionuniverse.de baut Cloudflare Pages aus main (landing/): Produktseite, Ausgabe mit PDF und Bildern, Startseiten-Teaser.
+      # Dazu die App-Story auf Home (willkommen/config/marktbriefing.json, research.visionuniverse.de).
       - name: Marktbriefing auf die Website (nur main, nur website=ja)
         if: github.ref == 'refs/heads/main' && inputs.website == 'ja'
         shell: bash
         run: |
-          git add landing/marktbriefing landing/index.html
+          git add landing/marktbriefing landing/index.html willkommen/config/marktbriefing.json
           if git diff --cached --quiet; then
             echo "Marktbriefing: keine neue Ausgabe fuer die Website."
             exit 0
