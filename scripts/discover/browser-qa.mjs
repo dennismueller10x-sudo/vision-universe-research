@@ -73,15 +73,15 @@ async function premiumMobileAudit(page,key){
  else{/* Hell (Owner 16.11.2026): helle Leiste, Schrift mit Kontrast ≥ 4,5:1. */const lum=meanLum(material.dock.background,material.bodyBackground),ratio=contrast(material.dock.ink,material.dock.background,material.bodyBackground);
   assert(lum>=230&&ratio>=4.5,'Light dock must be a light surface with readable labels: '+JSON.stringify({lum,ratio,dock:material.dock}));}/* Prototyp App-Konzept 2: das Dock hebt sich mit einer feinen hellen Kante (1 px) ab, nicht mit einem Schatten. */assert(!/^none$/.test(material.dock.boxShadow)||material.dock.border>=1,'Dock needs depth (shadow or hairline edge)');if(material.theme==='dark')assert(material.active.label==='Discover'&&material.active.luminance!==null&&material.active.luminance>80&&/^rgb\(200, 245, 49\)$/.test(material.active.color),'Active dock place must be Discover in the signal lime: '+JSON.stringify(material.active));
  /* Hell: aktiver Platz in dunklem Gruen #4f6b00 (Lime hat auf Weiss keinen lesbaren Kontrast). */
- else assert(material.active.label==='Discover'&&/^rgb\(79, 107, 0\)$/.test(material.active.color)&&contrast(material.active.color,material.dock.background,material.bodyBackground)>=4.5,'Active dock place must be Discover in dark green on the light dock: '+JSON.stringify(material.active));
+ else assert(material.active.label==='Discover'&&/^rgb\(0, 0, 0\)$/.test(material.active.color)&&contrast(material.active.color,material.dock.background,material.bodyBackground)>=4.5,'Active dock place must be Discover in black on the light dock (Owner 22.11.2026: kein Dunkelgrün): '+JSON.stringify(material.active));
 
  /* App-Konzept 2 (Prototyp „v-discover“, Owner 15.11.2026 „1:1 wie im Prototyp“): oben die Aktie des Tages (Billboard), direkt danach die Reiter
     im Inhalt, dann in der Reihenfolge des Prototyps Top 10 heute, Themen, Neue Jahreshochs, Was sich heute bewegt, Langfristige Compounder
     („Weiter ansehen“ nur mit angesehenen Aktien, davor), dann wie im Prototyp „Wie steht die Börse?“ und „Alle N Reihen“. Die uebrigen Reihen
     der Startseite folgen danach in der Reihenfolge von Reihen.homePlan. Nur Weiss, Schwarz, Neongruen und Graustufen (kein Rot, kein Gruen). */
  await page.waitForFunction(()=>document.querySelector('.dr-sec--top10 .dr-poster'),null,{timeout:15000}).catch(()=>{});
- const top=await page.evaluate(()=>Array.from(document.querySelectorAll('.v2-journey > :not(h1)')).map(n=>n.classList.contains('dr-bb')?'billboard':n.classList.contains('dp-tabs')?'tabs':n.classList.contains('dr-sec--recent')?'recent':n.classList.contains('dr-sec--top10')?'top10':n.classList.contains('dr-sec--themes')?'themes':n.classList.contains('dp-moves')?'moves':n.dataset.row||n.className).filter(x=>x!=='recent').slice(0,7));
- assert.deepEqual(top,['billboard','tabs','top10','themes','new-52-week-highs','moves','langfristige-compounder'],'n-home: oben die Aktie des Tages, Reiter, dann die Bloecke des Prototyps: '+top.join(' | '));
+ const top=await page.evaluate(()=>Array.from(document.querySelectorAll('.v2-journey > :not(h1)')).map(n=>n.classList.contains('dr-bb')?'billboard':n.classList.contains('dr-sec--recent')?'recent':n.classList.contains('dr-sec--top10')?'top10':n.classList.contains('dr-sec--themes')?'themes':n.classList.contains('dp-moves')?'moves':n.dataset.row||n.className).filter(x=>x!=='recent').slice(0,7));
+ /* Owner 22.11.2026 (Menü im Kopf): keine Reiter im Inhalt mehr; nach der Aktie des Tages folgen direkt die Blöcke. */assert.deepEqual(top,['billboard','top10','themes','new-52-week-highs','moves','langfristige-compounder'],'n-home: oben die Aktie des Tages, dann die Bloecke des Prototyps: '+top.join(' | '));
  const order=await page.locator('.v2-journey > section .dr-head h2').allTextContents();
  const proto=order.filter(t=>t!=='Weiter ansehen').slice(0,5);
  assert.deepEqual(proto.map(t=>t.replace(/^\d+ Themen$/,'N Themen')),['Top 10 heute','N Themen','Neue Jahreshochs','Was sich heute bewegt','Langfristige Compounder'],'Bloecke des Prototyps in seiner Reihenfolge: '+order.join(' | '));
@@ -126,7 +126,7 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
  const bad=[];page.on('response',r=>{if(r.url().startsWith(base)&&r.status()>=400)bad.push({status:r.status(),url:r.url()});});
  const entryStarted=Date.now();await navigate(page,base+'/discover/',{waitUntil:'domcontentloaded'});await page.locator('.v2-hero-track [data-symbol]').first().waitFor({state:'visible'});
  // Measure the cold Home entry before unrelated settings, theme and reload checks.
- await check(key+' five-second entry heuristic',async()=>{const text=await page.locator('body').innerText();assert(/Aktien/.test(text)&&/Nr\. 1 heute/i.test(text),'Entry does not explain the purpose');const viewport=page.viewportSize();/* App-Konzept 2: der erste Bildschirm ist die Aktie des Tages mit „Ansehen“ und den Reitern im Inhalt (die Suche steht im Kopf des Rahmens). */const targets=[['purpose',page.locator('.v2-hero-track .dp-hero__id h2').first()],['open',page.locator('.v2-hero-track .dp-btn').first()],['tabs',page.locator('.dp-tabs .dp-tab').first()]];const bounds=[];for(const [label,target] of targets){const box=await target.boundingBox();assert(box&&box.width>0&&box.height>0,label+' missing');assert(box.x>=0&&box.y>=70&&box.x+box.width<=viewport.width+1&&box.y+box.height<=viewport.height-75,label+' outside unobstructed first viewport');bounds.push({label,...box});}const milliseconds=Date.now()-entryStarted;firstScreenEvidence.push({key,milliseconds,bounds});assert(milliseconds<=5000,'First-screen content took '+milliseconds+' ms locally');});
+ await check(key+' five-second entry heuristic',async()=>{const text=await page.locator('body').innerText();assert(/Aktien/.test(text)&&/Nr\. 1 heute/i.test(text),'Entry does not explain the purpose');const viewport=page.viewportSize();/* App-Konzept 2: der erste Bildschirm ist die Aktie des Tages mit „Ansehen“ und den Reitern im Inhalt (die Suche steht im Kopf des Rahmens). */const targets=[['purpose',page.locator('.v2-hero-track .dp-hero__id h2').first()],['open',page.locator('.v2-hero-track .dp-btn').first()],['areas',page.locator('vu-navigation').locator('button.world')]];const bounds=[];for(const [label,target] of targets){const box=await target.boundingBox();assert(box&&box.width>0&&box.height>0,label+' missing');assert(box.x>=0&&box.y>=(label==='areas'?0:70)&&box.x+box.width<=viewport.width+1&&box.y+box.height<=viewport.height-75,label+' outside unobstructed first viewport');bounds.push({label,...box});}const milliseconds=Date.now()-entryStarted;firstScreenEvidence.push({key,milliseconds,bounds});assert(milliseconds<=5000,'First-screen content took '+milliseconds+' ms locally');});
  /* App-Konzept 2 (Owner 15.11.2026): Standard ist dunkel, unabhaengig vom Geraeteschema; Hell bleibt waehlbar (naechste Pruefung). */
  await check(key+' fresh visit starts dark regardless of device scheme',async()=>{
   assert.equal(await page.locator('html').getAttribute('data-theme'),'dark');
@@ -164,7 +164,7 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
   const nav=page.locator('vu-navigation');
   // Menue (Mockup N3): Raster der Produkte, darunter die Unterseiten der aktuellen Welt.
   const destinations=await nav.locator('.here-links a').evaluateAll(nodes=>nodes.map(n=>({label:n.textContent.trim(),href:n.getAttribute('href')})));
-  assert.deepEqual(destinations.map(x=>x.label),['Übersicht','Welten','Strategien','Entdecken','Suchen','Märkte','Watchlist']);
+  assert.deepEqual(destinations.map(x=>x.label),['Übersicht','Themen','Strategien','Swipen','Suchen','Märkte','Watchlist','Alle Reihen']);
   assert.deepEqual(destinations.map(x=>x.href),['/discover/#/','/discover/#/welten','/discover/#/strategien','/discover/#/einzeln/US_REAL','/discover/#/suche','/discover/#/maerkte','/discover/#/watchlist']);
   assert.equal(await nav.locator('.tile[data-group="discover"]').getAttribute('href'),'/discover/#/');
   assert.equal(await nav.locator('a[href="/discover-v2/"]').count(),0);
@@ -223,16 +223,16 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
  await check(key+' responsive navigation remains reachable',async()=>{
   const nav=page.locator('#vu-dock nav');const state=await nav.evaluate(n=>({box:n.getBoundingClientRect().toJSON(),position:getComputedStyle(n.getRootNode().host).position,paddingBottom:parseFloat(getComputedStyle(n).paddingBottom),height:innerHeight,labels:Array.from(n.querySelectorAll('a,button')).map(a=>({label:a.textContent.trim()||a.getAttribute('aria-label'),width:a.getBoundingClientRect().width,height:a.getBoundingClientRect().height,current:a.getAttribute('aria-current')}))}));
   assert.deepEqual(state.labels.map(i=>i.label),['Home','Discover','Alle Module','News','Ich']);assert.deepEqual(state.labels.filter(i=>i.current==='page').map(i=>i.label),['Discover'],'Dock must mark Discover inside Discover');
-  /* App-Konzept 2: auf der Startseite zeigt die Seite ihre Reiter im Inhalt (html[data-vu-tabs=inhalt], Prototyp „tabs2“: Start · Themen · Reihen · Märkte);
-     die Reiter des Rahmens blendet assets/site-navigation.js dann aus. Sonst stehen die Bereiche als Reiter unter dem Kopf. */
-  if(await page.locator('html[data-vu-tabs="inhalt"]').count()){
-   const own=await page.locator('.dp-tabs .dp-tab').evaluateAll(ns=>ns.map(n=>n.textContent.trim()));
-   /* Owner 21.11.2026: „Swipen“ als zweiter Reiter führt direkt in den Swipe-Modus. */
-   assert.deepEqual(own,['Start','Swipen','Themen','Reihen','Märkte'],'Reiter im Inhalt: '+own.join(' | '));return;}
-  /* Die Bereiche von Discover stehen als Reiter unter dem Kopf: die frueheren Leistenplaetze, dann die uebrigen Eintraege „In Discover“. */
-  const tabs=await page.locator('vu-navigation nav.tabs').evaluate(n=>({top:n.getBoundingClientRect().top,bottom:n.getBoundingClientRect().bottom,rowBottom:n.getRootNode().querySelector('.row').getBoundingClientRect().bottom,reserved:parseFloat(getComputedStyle(document.body).paddingTop),labels:Array.from(n.querySelectorAll('a')).map(a=>({label:a.textContent.trim(),width:a.getBoundingClientRect().width,height:a.getBoundingClientRect().height,current:a.getAttribute('aria-current')}))}));
-  assert.deepEqual(tabs.labels.map(i=>i.label),['Discover','Welten','Strategien','Swipen','Suchen','Märkte','Watchlist']);assert.equal(tabs.labels.filter(i=>i.current==='page').length,1,'Current route not identified');
-  assert(Math.abs(tabs.top-tabs.rowBottom)<=1&&tabs.reserved>=tabs.bottom-1,'Tab strip must sit under the header and never cover content: '+JSON.stringify({top:tabs.top,rowBottom:tabs.rowBottom,bottom:tabs.bottom,reserved:tabs.reserved}));assert(tabs.labels.every(i=>i.width>=44&&i.height>=44),'Tabs smaller than 44px');
+  /* Owner 22.11.2026 (Menü im Kopf): keine Reiterzeile und keine Reiter im Inhalt. Oben links stehen Modul und Bereich; ein Tipp öffnet
+     alle Bereiche von Discover, der aktuelle ist markiert. */
+  const head=await page.evaluate(()=>{const r=document.querySelector('vu-navigation').shadowRoot,vis=n=>!!n&&!n.hidden&&n.getClientRects().length>0&&getComputedStyle(n).display!=='none';
+   return {name:r.querySelector('.world-name').textContent.trim(),area:r.querySelector('.world-area').textContent.trim(),strip:vis(r.querySelector('nav.tabs')),inTabs:document.querySelectorAll('.dp-tabs').length,grid:vis(r.querySelector('.hb.grid'))};});
+  assert.equal(head.name,'Discover');assert(head.area,'Bereich unter dem Modulnamen fehlt');assert(!head.strip&&!head.inTabs,'Reiter noch sichtbar: '+JSON.stringify(head));assert(head.grid,'Rasterknopf (Hauptmenü) fehlt');
+  await page.locator('vu-navigation').locator('button.world').click();await page.waitForTimeout(500);
+  const areas=await page.evaluate(()=>[...document.querySelector('vu-navigation').shadowRoot.querySelectorAll('.areas-list a')].map(a=>({label:a.querySelector('span').textContent.trim(),current:a.getAttribute('aria-current'),w:a.getBoundingClientRect().width,h:a.getBoundingClientRect().height})));
+  assert.deepEqual(areas.map(a=>a.label),['Start','Swipen','Themen','Strategien','Suchen','Märkte','Watchlist','Alle Reihen'],'Bereiche: '+areas.map(a=>a.label).join(' | '));
+  assert.equal(areas.filter(a=>a.current==='page').length,1,'Current route not identified');assert(areas.every(a=>a.w>=44&&a.h>=44),'Bereiche kleiner als 44px');
+  await page.keyboard.press('Escape');await page.waitForTimeout(400);
   assert.equal(state.position,'fixed');const gap=state.height-state.box.bottom;assert(gap>=6&&gap<=24,'Product dock must float just above the viewport edge: '+gap);assert(state.labels.every(i=>i.width>=44&&i.height>=44),'Dock targets smaller than 44px');assert(state.paddingBottom>=0);
   if(width>=500)assert(state.box.width<=760,'Desktop dock must not stretch across the viewport: '+state.box.width);interactionEvidence.push({key,type:'responsive-navigation',...state});
  });
@@ -257,7 +257,7 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
     for(const rowId of ['sp500-staerkste','djia-staerkste','ndx-staerkste','qualitaet-zum-preis','qualitaet-wachstum'])assert.equal(await page.locator('.dv3-srow[data-row="'+rowId+'"]').count(),1,'Strategy missing: '+rowId);
     assert(/Treffer/.test(await strategies.first().innerText()),'Strategy row needs its match count');
     assert.equal(await page.locator('.dv3-welten').count(),0,'Themes must not appear in Strategien');
-    assert.equal(await page.locator('vu-navigation nav.tabs a[aria-current=page]').innerText(),'Strategien');
+    assert.equal(await page.evaluate(()=>document.querySelector('vu-navigation').shadowRoot.querySelector('.world-area').textContent.trim()),'Strategien');
     const first=await strategies.first().boundingBox();assert(first&&first.width<=page.viewportSize().width,'Strategy row overflows mobile viewport');
     await screenshot(page,key+'-strategies');
     const href=await strategies.first().getAttribute('href');
@@ -453,13 +453,13 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
      Kurslinie laeuft gross hinter Kopf und Namen, unten stehen Etiketten, Name, Pille und die Knoepfe „Ansehen · Herz · ?“ ueber dem Dock;
      direkt darunter die Reiter im Inhalt. „Wie steht die Börse?“ zeigt die Stufe als Skala. */
   {await page.evaluate(()=>scrollTo(0,0));await page.locator('.dr-bb__chart svg').first().waitFor();await page.locator('.dr-ms__scale i.on').waitFor();
-   const bb=await page.evaluate(()=>{const b=document.querySelector('.dr-bb'),r=b.getBoundingClientRect(),s=b.querySelector('.dr-bb__slide'),box=n=>s.querySelector(n).getBoundingClientRect(),dock=document.getElementById('vu-dock').getBoundingClientRect(),tabs=document.querySelector('.dp-tabs').getBoundingClientRect();
-    return {left:r.left,right:innerWidth-r.right,height:r.height,chart:box('.dr-bb__chart').toJSON(),id:box('.dr-bb__id').toJSON(),act:box('.dr-bb__act').toJSON(),dockTop:dock.top,tabsTop:tabs.top,bottom:r.bottom,scale:document.querySelectorAll('.dr-ms__scale i').length};});
+   const bb=await page.evaluate(()=>{const b=document.querySelector('.dr-bb'),r=b.getBoundingClientRect(),s=b.querySelector('.dr-bb__slide'),box=n=>s.querySelector(n).getBoundingClientRect(),dock=document.getElementById('vu-dock').getBoundingClientRect();
+    return {left:r.left,right:innerWidth-r.right,height:r.height,chart:box('.dr-bb__chart').toJSON(),id:box('.dr-bb__id').toJSON(),act:box('.dr-bb__act').toJSON(),dockTop:dock.top,bottom:r.bottom,scale:document.querySelectorAll('.dr-ms__scale i').length};});
    if(width<500)assert(bb.left<=0.5&&bb.right<=0.5,'Billboard reaches both screen edges: '+JSON.stringify(bb));
    assert(bb.height>=500,'Billboard fills the first screen (520 px): '+bb.height);
    assert(bb.chart.width>=Math.min(width,640)-1&&bb.chart.height>=200&&bb.chart.top<bb.id.top,'Billboard chart is full width, large and runs behind the name: '+JSON.stringify(bb.chart));
    assert(bb.act.bottom<=bb.dockTop,'Billboard actions sit above the dock in the first screen: '+bb.act.bottom+' > '+bb.dockTop);
-   assert(bb.tabsTop>=bb.bottom-1&&bb.tabsTop<=bb.bottom+12,'Tabs follow the billboard: '+JSON.stringify(bb));
+
    assert(bb.scale>=4,'Market level is drawn as a scale');}
   await page.locator('.dr-sec--top10 .dr-t10').first().waitFor();assert(await page.locator('.dr-sec--top10 .dr-t10').count()>=5,'Top 10 heute');
   await page.locator('.dr-bb__q').first().click();await page.locator('#dv3-sheet:not([hidden])').waitFor();await screenshot(page,key+'-why-sheet');await page.keyboard.press('Escape');

@@ -116,7 +116,8 @@ async function main() {
       /* Die Frage steht als Dachzeile der Kopfkachel (Versalien per CSS), deshalb ohne Groß-/Kleinschreibung. */
       assert(/Was zeigt\s*der Chart/i.test(await page.locator("h1").innerText()), "Titel als Frage fehlt");
       assert(await page.evaluate(() => document.documentElement.getAttribute("data-vu-tabs")) === "inhalt", "Start zeigt seine Reiter nicht im Inhalt");
-      assert((await page.locator("main .tk-tabs .tk-tab").allInnerTexts()).slice(0, 5).join("|") === "Heute|Muster|Screener|Chart|Lernen", "Reiter wie im Prototyp fehlen");
+      /* Menü im Kopf (Owner 22.11.2026): die Reiter im Inhalt sind ausgeblendet; oben links steht „Technical · Start“. */
+      assert(await page.evaluate(() => { const t = document.querySelector("main .tk-tabs"), r = document.querySelector("vu-navigation").shadowRoot; return (!t || getComputedStyle(t).display === "none") && r.querySelector(".world-name").textContent.trim() === "Technical" && r.querySelector(".world-area").textContent.trim() === "Start"; }), "Kopf zeigt nicht Technical · Start oder Reiter im Inhalt noch sichtbar");
       assert(await page.locator(".tk-scr").count() === 5, "fünf fertige Suchen fehlen");
       await page.waitForSelector(".tk-markt .tk-seg2", { timeout: 30000 });
       assert(/über 200-Tage-Linie/.test(await page.locator(".tc-ms").innerText()), "Markt heute in der Kopfkachel fehlt");
@@ -194,10 +195,13 @@ async function main() {
       await clean("Lernen-Fragen");
       await navigate(page,base + "#/assistent/trendfolge");
       await page.waitForSelector(".tc-hit .tc-ticks", { timeout: 30000 });
-      /* Die frühere Reiterzeile der Seite (Technical · Screener · Vorlagen · Lernen · Muster) steht in der Reiterzeile des Rahmens: dort ist „Lernen“ aktiv, und jedes ihrer Ziele ist ein Reiter. */
-      const strip = await page.evaluate(() => { const links = [...document.querySelector("vu-navigation").shadowRoot.querySelectorAll("nav.tabs a")]; return { old: document.querySelectorAll(".tc-tabs").length, hrefs: links.map((a) => a.getAttribute("href")), current: links.filter((a) => a.getAttribute("aria-current") === "page").map((a) => a.textContent.trim()).join("|") }; });
-      assert(strip.old === 0 && strip.current === "Lernen", "Assistent: Reiterzeile doppelt oder „Lernen“ nicht aktiv: " + JSON.stringify(strip));
-      for (const href of ["/technical/#/", "/technical/#/screener", "/technical/#/screener?reiter=vorlagen", "/technical/#/lernen", "/technical/#/muster"]) assert(strip.hrefs.includes(href), "Ziel der früheren Reiterzeile fehlt im Rahmen: " + href);
+      /* Menü im Kopf (Owner 22.11.2026): oben links steht „Lernen“ als Bereich; das Fenster der Bereiche führt zu allen früheren Reitern. */
+      const strip = await page.evaluate(() => { const r = document.querySelector("vu-navigation").shadowRoot; return { old: document.querySelectorAll(".tc-tabs").length, current: r.querySelector(".world-area").textContent.trim() }; });
+      assert(strip.old === 0 && strip.current === "Lernen", "Assistent: Reiter doppelt oder „Lernen“ nicht als Bereich: " + JSON.stringify(strip));
+      await page.locator("vu-navigation").locator("button.world").click(); await page.waitForTimeout(500);
+      const hrefs = await page.evaluate(() => [...document.querySelector("vu-navigation").shadowRoot.querySelectorAll(".areas-list a")].map((a) => a.getAttribute("href")));
+      for (const href of ["/technical/#/", "/technical/#/screener", "/technical/#/screener?reiter=vorlagen", "/technical/#/lernen", "/technical/#/muster"]) assert(hrefs.includes(href), "Ziel fehlt in den Bereichen: " + href);
+      await page.keyboard.press("Escape"); await page.waitForTimeout(400);
       assert(await page.locator(".tc-hit").first().locator(".tc-ticks li").count() === 4, "Checkliste ohne 4 Kriterien");
       assert((await page.locator(".tc-step-n").allTextContents()).join(",") === "1,2,3,4,5,6", "Schritte 1–6 nicht vollstaendig");
       await page.locator(".tc-goal-jumps a", { hasText: "Treffer" }).click();

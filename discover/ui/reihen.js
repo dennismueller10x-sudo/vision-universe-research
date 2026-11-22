@@ -11,7 +11,7 @@
    (discover/(app|home|detail|themes).(js|css)).
 
    Startseite (App-Konzept 2, Prototyp „v-discover“, seit 15.11.2026): Aktie des
-   Tages (immer dunkel, 520 px bis an den Rand, wischbar 1–5) -> Reiter im Inhalt
+   Tages (immer dunkel, 520 px bis an den Rand, wischbar 1–5)
    -> Weiter ansehen -> Top 10 heute -> Themen -> Neue Jahreshochs -> Was sich
    heute bewegt -> Langfristige Compounder -> übrige Reihen -> Wie steht die
    Börse? -> Alle N Reihen (mit Genres und Suche) -> Swipen (Ende der Seite).
@@ -217,22 +217,7 @@
     return sec;
   }
 
-  /* ------------------------------------------------------------ Reiter im Inhalt (Prototyp „tabs2“) */
-  /* „Swipen“ (Owner 21.11.2026) führt direkt in den Swipe-Modus (#/swipen), statt erst ganz unten über den Kasten. */
-  var TABS = [['start', 'Start'], ['swipen', 'Swipen'], ['themen', 'Themen'], ['reihen', 'Reihen'], ['maerkte', 'Märkte']];
-  function tabsBar(body) {
-    var nav = h('nav', 'dp-tabs'); nav.setAttribute('aria-label', 'Discover');
-    nav.innerHTML = TABS.map(function (t, i) { return '<button type="button" class="dp-tab' + (i ? '' : ' on') + '" data-dp-tab="' + t[0] + '"' + (i ? '' : ' aria-current="true"') + '>' + esc(t[1]) + '</button>'; }).join('');
-    nav.addEventListener('click', function (e) {
-      var b = e.target.closest && e.target.closest('[data-dp-tab]'); if (!b) return;
-      if (b.dataset.dpTab === 'swipen') { global.location.hash = '#/swipen'; return; }
-      Array.prototype.forEach.call(nav.children, function (x) { x.classList.toggle('on', x === b); if (x === b) x.setAttribute('aria-current', 'true'); else x.removeAttribute('aria-current'); });
-      var id = b.dataset.dpTab, target = id === 'start' ? null : body.querySelector('[data-dp-anchor="' + id + '"]');
-      var off = nav.getBoundingClientRect().height + (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--vu-navigation-height')) || 56);
-      global.scrollTo({ top: target ? Math.max(0, target.getBoundingClientRect().top + global.scrollY - off) : 0, behavior: 'smooth' });
-    });
-    return nav;
-  }
+  /* Reiter im Inhalt entfallen (Owner 22.11.2026, Menü im Kopf): die Bereiche stehen im Knopf oben links (assets/site-navigation.js). */
 
   /* ------------------------------------------------------------ Markt (Prototyp „Wie steht die Börse?“) */
   function marketSection(ctx) {
@@ -525,7 +510,6 @@
       var bb = wait0 || h('section', 'dr-sec dr-bb dp-hero dp-hero--wait', '<p class="v2-load-state" role="status">Aktien werden geladen …</p>');
       wait0 = null; bb.removeAttribute('data-static');
       body.appendChild(h('h1', 'vu-visually-hidden', 'Discover: Aktien entdecken')); body.appendChild(bb);
-      body.appendChild(tabsBar(body));
       var mem = D.memory, followed = mem && mem.followedRows ? mem.followedRows() : [];
       var recent = mem && mem.recent ? mem.recent(uid(ctx)) : [], more = R().moreFrom(recent, avail);
       var fresh = followed.concat(R().freshRows(ctx.meta, uid(ctx)).filter(function (r) { return followed.indexOf(r) < 0; }));

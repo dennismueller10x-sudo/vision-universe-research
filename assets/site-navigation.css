@@ -17,8 +17,11 @@ body.vu-magazine-two .progress{top:var(--vu-navigation-height)}
 /* Reiterzeile eines Produkts unter dem Kopf (site-navigation.js, mountTabs): 52px mehr feste Hoehe (Prototyp .tabs2:
    Pillen 36px, je 8px Luft). Alles, was unter dem Kopf klebt oder Platz fuer ihn laesst, rechnet weiter mit
    --vu-navigation-height und liegt damit unter der Reiterzeile. */
-html[data-vu-tabs]{--vu-navigation-height:116px}
-@media(max-width:760px){html[data-vu-tabs]{--vu-navigation-height:108px}}
+/* Owner 22.11.2026 (Menü im Kopf): die Reiterzeile des Rahmens entfällt überall; der Kopf ist so hoch wie ohne Reiter. */
+html[data-vu-tabs]{--vu-navigation-height:64px}
+@media(max-width:760px){html[data-vu-tabs]{--vu-navigation-height:56px}}
+/* Die Bereichs-Reiter im Inhalt der Modul-Startseiten entfallen ebenso: die Bereiche stehen im Knopf oben links. */
+html[data-vu-dock] :is(.dp-tabs,.qp-tabs,.tk-tabs,.ek-tabs,.fp-tabs,.pfp-tabs,.vsp-tabs,.stp-tabs,.hp-tabw,.hp-tabs,.sc-ak-tabs){display:none!important}
 /* Schalter des Rahmens (site-navigation.js, VUNavigation.rahmen):
    <html data-vu-tabs="inhalt">  Die Seite zeigt ihre Reiter selbst im Inhalt; die Zeile des Rahmens und ihr Platz entfallen.
    <html data-vu-bleed>          Der Bildschirm beginnt unter dem Kopf (Titelbild bis oben); der Kopf ist durchsichtig, bis
