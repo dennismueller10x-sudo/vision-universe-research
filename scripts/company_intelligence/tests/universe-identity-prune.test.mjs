@@ -29,3 +29,15 @@ test('publication accepts the observed Master cleanup but refuses unexplained li
   assert.throws(()=>universeChanges(current,old,{masterRows:[]}),/UNEXPLAINED_PUBLIC_IDENTITY_REMAPPING/);
  }finally{rmSync(root,{recursive:true,force:true});}
 });
+
+test('beendete Notierung (Teil B3, CONFIRMED_LISTING_ENDED) erklaert den Abgang einer Notierung, sonst nichts',()=>{
+ const ended={...master,securityClass:'EQUITY_COMMON',productEligibilityReason:'CONFIRMED_LISTING_ENDED:MASTER_INACTIVE'};
+ assert(approvedNonEquityPrune(cid,[common,note],[common],[ended]));
+ assert(approvedNonEquityPrune(cid,[common,note],[common],[{...ended,productEligibilityReason:'CONFIRMED_LISTING_ENDED:ACQUISITION'}]));
+ for(const alteration of [{issuerId:'iss_cik_0000320193'},{cik:'0000320193'},{productEligibility:'ELIGIBLE'},{productEligibilityReason:'CONFIRMED_LISTING_ENDED:OTHER'},{productEligibilityReason:'UNCONFIRMED:LISTING_INACTIVE'},{instrumentId:'vu_00000000000000'}])
+  assert(!approvedNonEquityPrune(cid,[common,note],[common],[{...ended,...alteration}]));
+ // Verbleibende Notierung muss unveraendert sein: Neuzugang oder ID-Wechsel bleibt gesperrt, ebenso Abgang ALLER Notierungen
+ assert(!approvedNonEquityPrune(cid,[common,note],[common,{symbol:'NEW',instrumentId:'vu_11111111111111'}],[ended]));
+ assert(!approvedNonEquityPrune(cid,[common,note],[{...common,instrumentId:'vu_11111111111111'}],[ended]));
+ assert(!approvedNonEquityPrune(cid,[common,note],[],[ended]));
+});
