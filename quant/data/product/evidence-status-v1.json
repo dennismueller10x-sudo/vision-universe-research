@@ -1,6 +1,6 @@
 {
  "schemaVersion": "evidence-status-1.0.0",
- "generatedAt": "2026-11-21T17:22:57.651Z",
+ "generatedAt": "2026-11-22T10:10:50.505Z",
  "kinds": [
   {
    "id": "HISTORICAL_REPLAY",
@@ -35,21 +35,21 @@
     "outOfSample": "nicht anwendbar - beschreibt, prüft keine Regel"
    },
    "coverage": {
-    "universe": 5473,
-    "covered": 5156,
-    "available": 4201,
+    "universe": 5466,
+    "covered": 5150,
+    "available": 4196,
     "sufficient": {
-     "m1": 2004,
-     "m3": 1941,
-     "m6": 1873,
-     "m12": 1793
+     "m1": 2000,
+     "m3": 1937,
+     "m6": 1869,
+     "m12": 1789
     },
     "broad": {
-     "m6": 674
+     "m6": 671
     },
     "reasons": {
-     "NOT_COVERED": 317,
-     "NO_PRICE_CONDITION_TODAY": 857,
+     "NOT_COVERED": 316,
+     "NO_PRICE_CONDITION_TODAY": 856,
      "NO_COMPARABLE_CASE": 98
     }
    }
@@ -71,14 +71,14 @@
     "rule": "Nur Befunde mit Urteil ROBUST (Out-of-Sample-Lift > 1, Benjamini-Hochberg, Mindest-Support) erreichen eine Aktie.",
     "verdicts": {
      "INSUFFICIENT_SUPPORT": 9,
-     "ROBUST": 97,
+     "ROBUST": 96,
      "PARAMETER_SENSITIVE": 1,
      "NOT_SIGNIFICANT": 11,
-     "IN_SAMPLE_ONLY": 45
+     "IN_SAMPLE_ONLY": 46
     }
    },
    "trust": {
-    "sample": 935057,
+    "sample": 933683,
     "period": [
      "1992-01-31",
      "2026-11-20"
@@ -130,7 +130,7 @@
      "id": "PIT_FUNDAMENTALS",
      "label": "Fundamentaldaten zeitpunktgenau",
      "required": "datierbar je Wert",
-     "measured": "5003 von 6031 Titeln",
+     "measured": "4999 von 6024 Titeln",
      "state": "PASS"
     },
     {
@@ -263,8 +263,8 @@
     {
      "id": "MOMENTUM_IMPROVED",
      "trust": "LIMITED",
-     "n": 87655,
-     "titles": 4950,
+     "n": 87620,
+     "titles": 4949,
      "displayAllowed": true,
      "failed": [
       "survivorship",
@@ -274,8 +274,8 @@
     {
      "id": "MOMENTUM_DETERIORATED",
      "trust": "LIMITED",
-     "n": 87377,
-     "titles": 4947,
+     "n": 87343,
+     "titles": 4946,
      "displayAllowed": true,
      "failed": [
       "oos",
@@ -287,8 +287,8 @@
     {
      "id": "TREND_UP",
      "trust": "LIMITED",
-     "n": 84895,
-     "titles": 4921,
+     "n": 84861,
+     "titles": 4920,
      "displayAllowed": true,
      "failed": [
       "survivorship",
@@ -298,8 +298,8 @@
     {
      "id": "TREND_DOWN",
      "trust": "LIMITED",
-     "n": 84506,
-     "titles": 4919,
+     "n": 84472,
+     "titles": 4918,
      "displayAllowed": true,
      "failed": [
       "oos",
@@ -312,8 +312,8 @@
     {
      "id": "NEW_52W_HIGH",
      "trust": "LIMITED",
-     "n": 55540,
-     "titles": 4712,
+     "n": 55517,
+     "titles": 4711,
      "displayAllowed": true,
      "failed": [
       "oos",
@@ -329,29 +329,29 @@
   }
  ],
  "measures": {
-  "BACKTEST_ELIGIBLE_RULES": 97,
-  "BACKTEST_WITHHELD_RULES": 83,
+  "BACKTEST_ELIGIBLE_RULES": 96,
+  "BACKTEST_WITHHELD_RULES": 84,
   "BACKTEST_WITHHELD_DETAIL": {
-   "patternFindingsNotRobust": 66,
+   "patternFindingsNotRobust": 67,
    "strategyProfiles": 8,
    "setupRules": 9
   },
   "HISTORICAL_REPLAY_COVERAGE": {
-   "universe": 5473,
-   "covered": 5156,
-   "available": 4201,
+   "universe": 5466,
+   "covered": 5150,
+   "available": 4196,
    "sufficient": {
-    "m1": 2004,
-    "m3": 1941,
-    "m6": 1873,
-    "m12": 1793
+    "m1": 2000,
+    "m3": 1937,
+    "m6": 1869,
+    "m12": 1789
    },
    "broad": {
-    "m6": 674
+    "m6": 671
    },
    "reasons": {
-    "NOT_COVERED": 317,
-    "NO_PRICE_CONDITION_TODAY": 857,
+    "NOT_COVERED": 316,
+    "NO_PRICE_CONDITION_TODAY": 856,
     "NO_COMPARABLE_CASE": 98
    }
   }
