@@ -492,3 +492,8 @@ html body.dv2 .v2-home:has(>.dp-home){padding-bottom:0}
 :root:not([data-theme=dark]) .dr-all__r:focus-visible{outline-color:#4f6b00}
 :root:not([data-theme=dark]) .dr-rowhero__act .vu-btn--line:not([aria-pressed=true]){border-color:#b4b8bd;color:#000}
 :root:not([data-theme=dark]) .dr-all__r>span:not(:first-child){color:#5d636b}
+/* Platz für „Top 10 heute“ (Ladezeit 22.11.2026): der Slot unter der Aktie des Tages wird beim Eintreffen der Daten durch die Sektion ersetzt;
+   ohne Reservierung rutschten die Themen darunter um die Höhe der Sektion nach unten (CLS 0,093 in 1 von 3 Läufen, iPhone 13). Höhen der fertigen Sektion. */
+.dr-slot{min-height:258px}
+@media (max-width:700px){.dr-slot{min-height:275px}}
+@media (max-width:340px){.dr-slot{min-height:292px}}
