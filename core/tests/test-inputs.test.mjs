@@ -100,3 +100,13 @@ test("TI-8 · der Zaehler erkennt feste Kuerzel in Erwartungen und nimmt Woerter
   const d = scanFile(root, put("d.test.mjs", kopf + 'const t = "NVDA"; // Hilfsvariable ausserhalb einer Erwartung\n'));
   assert.equal(d.harte, 0);
 });
+
+test("TI-9 · ein Test mit frozen-data.mjs und Buendel gilt nicht als Live-Leser; ohne Buendel bleibt er einer", () => {
+  const root = mkdtempSync(join(tmpdir(), "ti9-"));
+  mkdirSync(join(root, "core/tests/fixtures/frozen"), { recursive: true });
+  const kopf = 'import "../../scripts/quant/lib/frozen-data.mjs";\nimport {readFileSync} from "node:fs";\nreadFileSync(join(ROOT, "quant/data/x.json"));\n';
+  writeFileSync(join(root, "core/tests/a.test.mjs"), kopf);
+  assert.equal(scanFile(root, "core/tests/a.test.mjs")?.reads, true, "ohne Buendel");
+  writeFileSync(join(root, "core/tests/fixtures/frozen/a.json.gz"), "x");
+  assert.equal(scanFile(root, "core/tests/a.test.mjs"), null, "mit Buendel");
+});

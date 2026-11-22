@@ -2,7 +2,6 @@
    Golden-Five-Bars: nur Titel aus dem deklarierten Umfang, nur mit
    Grundlage. Und der Umfang darf ein ganzes Universum sein - ohne dass
    irgendwo eine Liste von fuenf Tickern steht. */
-import "../../scripts/quant/lib/frozen-data.mjs"; /* eingefrorener Datenstand (scripts/quant/lib/frozen-data.mjs, 22.11.2026) */
 import test from "node:test";
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";

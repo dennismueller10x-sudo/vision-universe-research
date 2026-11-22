@@ -20,15 +20,6 @@
       "harteWerte": 0
     },
     {
-      "file": "core/tests/discover-universe.test.mjs",
-      "kategorie": "fixture-offen",
-      "liest": [
-        "discover/data"
-      ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen.",
-      "harteWerte": 6
-    },
-    {
       "file": "core/tests/eligibility-gate.test.mjs",
       "kategorie": "schema-vertrag",
       "liest": [
@@ -103,24 +94,6 @@
       ],
       "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
       "harteWerte": 0
-    },
-    {
-      "file": "core/tests/identity.test.mjs",
-      "kategorie": "fixture-offen",
-      "liest": [
-        "quant/data"
-      ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen.",
-      "harteWerte": 4
-    },
-    {
-      "file": "core/tests/industry-classification-sec.test.mjs",
-      "kategorie": "fixture-offen",
-      "liest": [
-        "quant/data"
-      ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen.",
-      "harteWerte": 11
     },
     {
       "file": "core/tests/legal-notices-frontend.test.mjs",
@@ -608,16 +581,6 @@
       "harteWerte": 0
     },
     {
-      "file": "products/social/tests/final-public-text.test.mjs",
-      "kategorie": "fixture-offen",
-      "liest": [
-        "social/data"
-      ],
-      "grund": "10.11.2026 (S2): die direkte Lesung der Publish-Kandidaten steht jetzt als Fixture (social/tests/fixtures/final-public-text); uebrig bleibt der indirekte Lesezugriff der Producer-Funktionen auf Serien (quant/data/market/discover-series-long), den der Test nicht selbst steuert.",
-      "dynamisch": true,
-      "harteWerte": 0
-    },
-    {
       "file": "products/social/tests/hashtags.test.mjs",
       "kategorie": "schema-vertrag",
       "liest": [
@@ -995,15 +958,6 @@
       "harteWerte": 6
     },
     {
-      "file": "quant/tests/company-names.test.mjs",
-      "kategorie": "fixture-offen",
-      "liest": [
-        "quant/data"
-      ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen.",
-      "harteWerte": 73
-    },
-    {
       "file": "quant/tests/coverage-audits.test.mjs",
       "kategorie": "schema-vertrag",
       "liest": [
@@ -1011,15 +965,6 @@
       ],
       "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
       "harteWerte": 1
-    },
-    {
-      "file": "quant/tests/currency-fx-matrix.test.mjs",
-      "kategorie": "fixture-offen",
-      "liest": [
-        "quant/data"
-      ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen.",
-      "harteWerte": 55
     },
     {
       "file": "quant/tests/debt-instrument-classification.test.mjs",
@@ -1096,15 +1041,6 @@
       ],
       "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen.",
       "harteWerte": 17
-    },
-    {
-      "file": "quant/tests/elliott-registry.test.mjs",
-      "kategorie": "fixture-offen",
-      "liest": [
-        "quant/data"
-      ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen.",
-      "harteWerte": 28
     },
     {
       "file": "quant/tests/exchange-directory-class.test.mjs",
@@ -1328,15 +1264,6 @@
       "harteWerte": 2
     },
     {
-      "file": "quant/tests/model-depots.test.mjs",
-      "kategorie": "datenzustand-offen",
-      "liest": [
-        "quant/data"
-      ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): prueft Datenstand gegen Uhr/Frische; in die Datenqualitaet verlegen.",
-      "harteWerte": 11
-    },
-    {
       "file": "quant/tests/multi-asset-market-environment.test.mjs",
       "kategorie": "schema-vertrag",
       "liest": [
@@ -1451,26 +1378,6 @@
         "quant/data"
       ],
       "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
-      "harteWerte": 0
-    },
-    {
-      "file": "quant/tests/product-identity-release.test.mjs",
-      "kategorie": "fixture-offen",
-      "liest": [
-        "discover/data",
-        "quant/data"
-      ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen.",
-      "harteWerte": 8
-    },
-    {
-      "file": "quant/tests/product-intelligence-materialization.test.mjs",
-      "kategorie": "fixture-offen",
-      "liest": [
-        "quant/data"
-      ],
-      "grund": "10.11.2026 (S2): alle Eingaben des Tests stehen als Fixture-Wurzel; uebrig bleibt der indirekte Lesezugriff des Materialisierers auf quant/data/universe/market-capability.json (Produktcode, vom Test nicht steuerbar).",
-      "dynamisch": true,
       "harteWerte": 0
     },
     {
@@ -1727,15 +1634,6 @@
       "harteWerte": 0
     },
     {
-      "file": "quant/tests/return-series.test.mjs",
-      "kategorie": "fixture-offen",
-      "liest": [
-        "quant/data"
-      ],
-      "grund": "10.11.2026 (S2): bleibt auf Live-Daten. Eine Umstellung auf Fixtures machte den Test zum Vorab-Gate A des Marktlaufs (eod-publish-gates EG8 verbietet das fuer diese Vorfall-Datei); der Helper confirmed-golden-evidence liest bereits die Fixture.",
-      "harteWerte": 1
-    },
-    {
       "file": "quant/tests/scale-gate.test.mjs",
       "kategorie": "scan-fehlalarm",
       "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem.",
@@ -1810,15 +1708,6 @@
       ],
       "grund": "Altbestand 10.11.2026 (Inventur Strang S): prueft Datenstand gegen Uhr/Frische; in die Datenqualitaet verlegen.",
       "harteWerte": 3
-    },
-    {
-      "file": "quant/tests/security-master-content-hash.test.mjs",
-      "kategorie": "datenzustand-offen",
-      "liest": [
-        "quant/data"
-      ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): prueft Datenstand gegen Uhr/Frische; in die Datenqualitaet verlegen.",
-      "harteWerte": 1
     },
     {
       "file": "quant/tests/security-master-generations.test.mjs",
@@ -1913,15 +1802,6 @@
       ],
       "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
       "harteWerte": 0
-    },
-    {
-      "file": "quant/tests/split-evidence-supplements.test.mjs",
-      "kategorie": "fixture-offen",
-      "liest": [
-        "quant/data"
-      ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen.",
-      "harteWerte": 9
     },
     {
       "file": "quant/tests/stock-chart-basis.test.mjs",
@@ -2139,15 +2019,6 @@
       "harteWerte": 4
     },
     {
-      "file": "quant/tests/tiingo.test.mjs",
-      "kategorie": "fixture-offen",
-      "liest": [
-        "quant/data"
-      ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen.",
-      "harteWerte": 3
-    },
-    {
       "file": "quant/tests/tiingo2-foundation-classifier-merge.test.mjs",
       "kategorie": "schema-vertrag",
       "dynamisch": true,
@@ -2324,25 +2195,6 @@
       "kategorie": "scan-fehlalarm",
       "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem.",
       "harteWerte": 25
-    },
-    {
-      "file": "scripts/supertrader/tests/r10-cases.test.mjs",
-      "kategorie": "fixture-offen",
-      "liest": [
-        "discover/data",
-        "quant/data"
-      ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen.",
-      "harteWerte": 27
-    },
-    {
-      "file": "scripts/supertrader/tests/r4.test.mjs",
-      "kategorie": "fixture-offen",
-      "liest": [
-        "supertrader/data"
-      ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen.",
-      "harteWerte": 5
     },
     {
       "file": "scripts/supertrader/tests/r5.test.mjs",
@@ -2533,15 +2385,6 @@
       "harteWerte": 4
     },
     {
-      "file": "technical/tests/technical-stock-summary.test.mjs",
-      "kategorie": "fixture-offen",
-      "liest": [
-        "technical/data"
-      ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen.",
-      "harteWerte": 1
-    },
-    {
       "file": "technical/tests/technical-templates-dq-order.test.mjs",
       "kategorie": "schema-vertrag",
       "liest": [
@@ -2549,15 +2392,6 @@
       ],
       "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
       "harteWerte": 0
-    },
-    {
-      "file": "technical/tests/technical-templates.test.mjs",
-      "kategorie": "fixture-offen",
-      "liest": [
-        "technical/data"
-      ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen.",
-      "harteWerte": 3
     },
     {
       "file": "technical/tests/technical-world-context.test.mjs",

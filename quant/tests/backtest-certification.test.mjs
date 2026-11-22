@@ -1,7 +1,6 @@
 /* Backtest-Zertifizierung: Status-Regel, Strategie-/Faktor-Engine und
    Sabotage-Gegenproben. Ein gruener Guard zaehlt nur, wenn die Sabotage
    ihn rot werden laesst. */
-import "../../scripts/quant/lib/frozen-data.mjs"; /* eingefrorener Datenstand (scripts/quant/lib/frozen-data.mjs, 22.11.2026) */
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
