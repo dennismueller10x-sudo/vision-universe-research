@@ -27,10 +27,23 @@ export function approvedNonEquityPrune(cid,before,after,master){
 }
 // Zwei erklaerte Abgangsarten, beide nur aus dem Master gelesen (nie editiert): bestaetigt kein Eigenkapital
 // (CONFIRMED_NON_EQUITY:<Klasse>) oder bestaetigt beendete Notierung (Teil B3, eligibility-cleanup-2026-11-21:
-// CONFIRMED_LISTING_ENDED:MASTER_INACTIVE|ACQUISITION). Ein Abgang eines Teils der Notierungen eines weiter
+// CONFIRMED_LISTING_ENDED:MASTER_INACTIVE|ACQUISITION|SUCCEEDED). Ein Abgang eines Teils der Notierungen eines weiter
 // zugelassenen Emittenten ist damit erklaert; Neuzugaenge, Ticker-/Emittentenwechsel und ID-Aenderungen bleiben gesperrt.
 const nonEquityExclusion=m=>['DEBT','ETN','RIGHT','WARRANT'].includes(m.securityClass)&&m.productEligibilityReason==='CONFIRMED_NON_EQUITY:'+m.securityClass;
-const endedListingExclusion=m=>/^CONFIRMED_LISTING_ENDED:(MASTER_INACTIVE|ACQUISITION)$/.test(String(m.productEligibilityReason));
+const endedListingExclusion=m=>/^CONFIRMED_LISTING_ENDED:(MASTER_INACTIVE|ACQUISITION|SUCCEEDED)$/.test(String(m.productEligibilityReason));
+/* Belegte Nachfolge (Kuerzelwechsel, Quant-Nachfolgeregister, 8-K mit gleicher CIK): Der Vorgaenger steht im Master als
+   EXCLUDED CONFIRMED_LISTING_ENDED:SUCCEEDED, der Nachfolger als ELIGIBLE beim SELBEN Emittenten (issuerId und CIK). Erklaert nur den
+   Ersatz, nie ein Wachstum (hoechstens so viele neue wie entfallene Notierungen); unveraenderte Notierungen bleiben identisch.
+   Der Master wird nur gelesen. Jede andere Umbelegung bleibt UNEXPLAINED_PUBLIC_IDENTITY_REMAPPING. */
+export function approvedSuccession(cid,before,after,master){
+ const key=l=>JSON.stringify([l.symbol,l.instrumentId]),old=new Set(before.map(key)),current=new Set(after.map(key));
+ if(!after.length||old.size!==before.length||current.size!==after.length)return false;
+ const removed=before.filter(l=>!current.has(key(l))),added=after.filter(l=>!old.has(key(l)));
+ if(!removed.length||!added.length||added.length>removed.length)return false;
+ const row=l=>{const m=master.filter(r=>r.instrumentId===l.instrumentId||r.symbol===l.symbol);return m.length===1&&m[0].instrumentId===l.instrumentId&&m[0].symbol===l.symbol&&m[0].issuerId===cid&&cid==='iss_cik_'+m[0].cik?m[0]:null;};
+ return removed.every(l=>{const m=row(l);return m&&m.productEligibility==='EXCLUDED'&&m.productEligibilityReason==='CONFIRMED_LISTING_ENDED:SUCCEEDED';})
+  &&added.every(l=>{const m=row(l);return m&&m.productEligibility==='ELIGIBLE';});
+}
 export function universeChanges(directory,previous,{masterRows}={}){
  const m=read(join(directory,'manifest.json')),prior=read(join(previous,'index.json'));
  const oldPaths={};
@@ -38,7 +51,7 @@ export function universeChanges(directory,previous,{masterRows}={}){
  const oldManifestPath=join(previous,'manifest.json');
  let oldManifest;try{oldManifest=read(oldManifestPath);}catch{throw Error('PREVIOUS_VERIFIED_MANIFEST_REQUIRED');}
  for(const path of Object.keys(oldManifest.assets))if(path!=='index.json'&&!path.includes('/lookup/'))oldPaths[path.split('/').at(-1).replace(/\.json$/,'')]=path;
- const counts={profiles:0,news:0,financials:0},oldCounts={profiles:0,news:0,financials:0},changed=[],removed=[],remapped=[],approvedPrunes=[];
+ const counts={profiles:0,news:0,financials:0},oldCounts={profiles:0,news:0,financials:0},changed=[],removed=[],remapped=[],approvedPrunes=[],approvedSuccessions=[];
  for(const [cid,path] of Object.entries(oldPaths)){
   const p=read(join(previous,path));oldCounts.profiles+=Boolean(p.companyProfile);oldCounts.news+=p.news.length;oldCounts.financials+=p.latestFinancials.state==='AVAILABLE';
   const current=m.eligibility[cid];if(!current){removed.push(cid);continue;}
@@ -47,6 +60,7 @@ export function universeChanges(directory,previous,{masterRows}={}){
   if(JSON.stringify(identities(p))!==JSON.stringify(identities(q))){
    masterRows??=masterInstruments();
    if(approvedNonEquityPrune(cid,p.listings,q.listings,masterRows))approvedPrunes.push({issuer:cid,removedListings:p.listings.length-q.listings.length});
+   else if(approvedSuccession(cid,p.listings,q.listings,masterRows))approvedSuccessions.push({issuer:cid,removedListings:p.listings.map(l=>l.symbol).filter(x=>!q.listings.some(n=>n.symbol===x)),addedListings:q.listings.map(l=>l.symbol).filter(x=>!p.listings.some(n=>n.symbol===x))});
    else remapped.push(cid);
   }
   if(p.latestFinancials.state==='AVAILABLE'&&q.latestFinancials.state==='AVAILABLE'&&(q.latestFinancials.reportingPeriod||'')<(p.latestFinancials.reportingPeriod||''))throw Error('FINANCIAL_PERIOD_REGRESSION');
@@ -60,5 +74,5 @@ export function universeChanges(directory,previous,{masterRows}={}){
  for(const key of Object.keys(counts))if(oldCounts[key]-counts[key]>Math.max(key==='news'?100:5,oldCounts[key]*0.1))throw Error('MODULE_COVERAGE_COLLAPSE_REFUSED');
  return {status:'PASS',...counts,newsIssuers:Object.keys(m.eligibility).filter(cid=>read(join(directory,`snapshots/${m.generation}/${cid}.json`)).news.length>0).length,
   changedIssuers:changed,removedIssuers:removed,identityRemappings:remapped.length,
-  approvedNonEquityPrunes:approvedPrunes,previousGeneration:prior.generation};
+  approvedNonEquityPrunes:approvedPrunes,approvedSuccessions,previousGeneration:prior.generation};
 }
