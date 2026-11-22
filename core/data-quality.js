@@ -116,6 +116,36 @@
     return r;
   }
 
+  /** DQ-PX-8: Eine veraltete Reihe, deren Kurse in den letzten `window` Sitzungen
+   *  (mindestens `minSame` Tage mit gleichem Datum UND gleichem Schluss) mit einer aktuellen
+   *  Reihe uebereinstimmen, ist ein Kuerzelwechsel: der Anbieter fuehrt die Historie unter dem
+   *  neuen Kuerzel weiter und liefert das alte nicht mehr. Ohne Eintrag im Nachfolgeregister
+   *  bleiben beide im Produkt (Doppelung, Alt-Kuerzel "veraltet").
+   *  registered: {alte securityId: true} aus quant/config/ticker-successions.json. Nur Bericht. */
+  function renamedWithoutSuccessor(seriesList, expectedSession, lagFn, maxLag, registered, opts) {
+    var o = opts || {}, window = o.window || 120, minSame = o.minSame || 60, reg = registered || {};
+    var cur = {}, stale = [], fail = [];
+    seriesList.forEach(function (s) {
+      var lag = lagFn(s.to, expectedSession);
+      if (lag === null) return;
+      if (lag > maxLag) { stale.push(s); return; }
+      (s.points || []).slice(-window).forEach(function (p) {
+        var k = p[0] + ":" + p[1];
+        (cur[k] = cur[k] || []).push(s.securityId);
+      });
+    });
+    stale.forEach(function (s) {
+      var cnt = {}, best = null;
+      (s.points || []).slice(-window).forEach(function (p) {
+        (cur[p[0] + ":" + p[1]] || []).forEach(function (id) { cnt[id] = (cnt[id] || 0) + 1; });
+      });
+      Object.keys(cnt).forEach(function (id) { if (cnt[id] >= minSame && (!best || cnt[id] > cnt[best])) best = id; });
+      if (best && !reg[s.securityId]) fail.push(s.securityId + " -> " + best + ": " + cnt[best] + " gleiche Tagesschluesse, alte Reihe endet " + s.to);
+    });
+    return result("DQ-PX-8", "Veraltetes Kuerzel mit identischer aktueller Reihe hat einen Nachfolgeeintrag", "WARN", stale.length, fail,
+      "Kuerzelwechsel ohne Eintrag in quant/config/ticker-successions.json (gleiche CIK und Beleg noetig). Nur Bericht - kein Ausschluss.");
+  }
+
   /** DQ-PX-3: unplausible Tagessprünge in split-bereinigten Reihen
    *  (Verdacht auf unbereinigten Split oder Datenfehler). */
   function implausibleJumps(seriesList, threshold) {
@@ -932,7 +962,7 @@
   return {
     VERSION: VERSION,
     idConsistency: idConsistency, universeDuplicates: universeDuplicates, activeSymbolCollisions: activeSymbolCollisions,
-    seriesIntegrity: seriesIntegrity, seriesFreshness: seriesFreshness, implausibleJumps: implausibleJumps,
+    seriesIntegrity: seriesIntegrity, seriesFreshness: seriesFreshness, renamedWithoutSuccessor: renamedWithoutSuccessor, implausibleJumps: implausibleJumps,
     dailyWeeklyAgreement: dailyWeeklyAgreement, compareDailyWeekly: compareDailyWeekly, closeUnit: closeUnit,
     payloadMatchesSeries: payloadMatchesSeries,
     staleTails: staleTails, masterSeriesConsistency: masterSeriesConsistency,
