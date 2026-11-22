@@ -102,6 +102,11 @@ env:
 jobs:
   auswahl:
     name: Auswahl der Pruefungen
+    # Ein abgebrochener oder uebersprungener pages-release-Lauf hat nichts ausgeliefert: dann gibt es nichts zu pruefen, und der
+    # Auswahl-Job braucht keinen Runner (22.11.2026, 20:00-22:45 UTC: 48 Monitor-Laeufe, 37 mit einem Runner-Job von je ~3 s, im
+    # Mittel 100 min in der Runner-Schlange; 22 von 37 pages-release-Laeufen waren abgebrochen oder uebersprungen). Die Folgejobs haengen
+    # per needs/if an den Ausgaben dieses Jobs und werden dann ebenfalls uebersprungen. Fehlgeschlagene Laeufe werden weiter geprueft.
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.name != 'Quant 2.0 Production Pages' || (github.event.workflow_run.conclusion != 'cancelled' && github.event.workflow_run.conclusion != 'skipped') }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
