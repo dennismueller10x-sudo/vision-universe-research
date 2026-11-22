@@ -483,3 +483,18 @@ test('Analysten-Konsens: Eintrag ohne zusammengefasstes Wort, Kursziel nur aus f
   assert.deepEqual(t.target, { low: 180, high: 320, mean: 250, median: 248, provider: 'FMP' });
   assert.equal(C.consensus({ ratingsState: 'NO_COVERAGE' }), null);
 });
+
+test('Rule of 40: Umsatzwachstum + FCF-Marge, je Geschaeftsjahr und LTM; ohne Vorjahr keine Zahl', () => {
+  const b = bookOf('NVDA'), byId = (id) => C.METRICS.find((m) => m.id === id);
+  const r40 = byId('rule_of_40'), gr = byId('revenue_growth'), fm = byId('fcf_margin');
+  const cur = C.current(b, r40), g = C.current(b, gr), f = C.current(b, fm);
+  assert.equal(cur.basis, 'TTM');
+  assert.ok(Math.abs(cur.v - (g.v + f.v)) < 1e-9, `${cur.v} vs ${g.v} + ${f.v}`);
+  const rows = C.seriesOf(b, r40, 'annual'), grow = C.seriesOf(b, gr, 'annual'), marg = C.seriesOf(b, fm, 'annual');
+  const last = rows.filter((r) => r.v != null).at(-1);
+  const gy = grow.find((r) => r.fy === last.fy), my = marg.find((r) => r.fy === last.fy);
+  assert.ok(Math.abs(last.v - (gy.v + my.v)) < 1e-9);
+  // erstes Jahr der Reihe hat keinen Vorjahresumsatz -> Luecke statt Schaetzung
+  const firstRevenueFy = C.seriesOf(b, byId('revenue'), 'annual').find((r) => r.v != null).fy;
+  assert.ok(!rows.some((r) => r.fy === firstRevenueFy && r.v != null));
+});
