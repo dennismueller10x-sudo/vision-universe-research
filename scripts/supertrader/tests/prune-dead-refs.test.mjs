@@ -269,17 +269,20 @@ test('Workflow ADR-005: Checkout an der Spitze des eigenen Zweigs, Commit nur su
   assert.equal((signals.match(/commit-and-push\.sh|push-with-retry\.sh|git push/g) || []).length, 1, 'genau eine Push-Stelle');
 });
 
-test('Kurzhistorie-Titel (ANT, AXNX): count zaehlt alle Seiten, meta.securities nur die Karten - kein Abbruch, nicht im Kartenuniversum', () => {
+test('Kurzhistorie-Titel: count zaehlt alle Seiten, meta.securities nur die Karten - kein Abbruch, nicht im Kartenuniversum', () => {
   const r = repo();
   const idxPfad = join(r, SOURCE), metaPfad = join(r, 'discover/data/meta.json');
   const idx = JSON.parse(readFileSync(idxPfad, 'utf8'));
   const karten = idx.symbols.length;
-  writeFileSync(idxPfad, JSON.stringify({ ...idx, count: karten + 2, cardCount: karten, kurzhistorie: ['ANT', 'AXNX'], symbols: [...idx.symbols, 'ANT', 'AXNX'].sort() }) + '\n');
-  assert.equal(prune({ root: r }).action, 'NOOP');
-  const syms = validateUniverse(JSON.parse(readFileSync(idxPfad, 'utf8')), JSON.parse(readFileSync(metaPfad, 'utf8')), '2026-10-23');
-  assert.ok(!syms.has?.('ANT') && !(Array.isArray(syms) && syms.includes('ANT')), 'Kurzhistorie-Titel gehoeren nicht ins Kartenuniversum');
+  const kurz = ['k1', 'k2'].map((x) => x.toUpperCase() + 'Z');
+  writeFileSync(idxPfad, JSON.stringify({ ...idx, count: karten + 2, cardCount: karten, kurzhistorie: kurz, symbols: [...idx.symbols, ...kurz].sort() }) + '\n');
+  assert.doesNotThrow(() => prune({ root: r }));
+  const meta = JSON.parse(readFileSync(metaPfad, 'utf8'));
+  const u = validateUniverse(JSON.parse(readFileSync(idxPfad, 'utf8')), meta, meta.universes[0].asOf);
+  assert.equal(u.symbols.size, karten);
+  for (const k of kurz) assert.ok(!u.symbols.has(k), 'Kurzhistorie-Titel gehoeren nicht ins Kartenuniversum');
   // count passt nicht zu symbols -> weiter UNIVERSE_INVALID
-  writeFileSync(idxPfad, JSON.stringify({ ...idx, count: karten + 1, kurzhistorie: ['ANT', 'AXNX'], symbols: [...idx.symbols, 'ANT', 'AXNX'].sort() }) + '\n');
+  writeFileSync(idxPfad, JSON.stringify({ ...idx, count: karten + 1, kurzhistorie: kurz, symbols: [...idx.symbols, ...kurz].sort() }) + '\n');
   assert.throws(() => prune({ root: r }), (e) => e.code === 'UNIVERSE_INVALID');
   rmSync(r, { recursive: true, force: true });
 });

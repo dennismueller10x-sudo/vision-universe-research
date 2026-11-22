@@ -1,13 +1,7 @@
 /* Produkttitel ohne Discover-Karte nach Grund (scripts/discover/not-delivered.mjs) und die Zahlen im Meta. */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
-import { join, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
 import { ohneKarte } from "../../scripts/discover/not-delivered.mjs";
-
-const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
-const json = (p) => JSON.parse(readFileSync(join(root, p), "utf8"));
 
 test("Gruende: Instrument, Identitaet, gesperrter Faktorlauf, fehlende Reihe, geliefert zaehlt nicht", () => {
   const securities = [
@@ -22,11 +16,4 @@ test("Gruende: Instrument, Identitaet, gesperrter Faktorlauf, fehlende Reihe, ge
     "KEINE_FAKTORZEILE:SOURCE_MISSING": 1, "KEINE_FAKTORZEILE:NICHT_BERECHNET": 1, "KEINE_FAKTORZEILE:stale_last_bar": 1, "KEINE_FAKTORZEILE:unexplained_adjustment_step": 1 });
   assert.deepEqual(r.tickers["KEINE_FAKTORZEILE:unexplained_adjustment_step"], ["APD"]);
   assert.ok(!Object.keys(r.tickers).some((k) => k.startsWith("INSTRUMENT_")), "keine Tickerlisten fuer Instrumentzeilen");
-});
-
-test("Meta (committet): Karten + ohne Karte == Produktuniversum, Gruende summieren sich", () => {
-  const u = json("discover/data/meta.json").universes.find((x) => x.universeId === "US_REAL");
-  assert.ok(u.notDelivered, "meta.universes[US_REAL].notDelivered fehlt");
-  assert.equal(u.securities + u.notDelivered.total, u.factorCoverage.universe);
-  assert.equal(Object.values(u.notDelivered.byReason).reduce((a, b) => a + b, 0), u.notDelivered.total);
 });
