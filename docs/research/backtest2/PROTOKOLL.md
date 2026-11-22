@@ -108,6 +108,18 @@ Versuchen ist das ein Hinweis, kein Beweis: die Auswahl kannte alle Jahre.
 - Urteil „schlägt SPY“ nur, wenn Fassung A auf den verketteten Bestätigungsjahren nach Kosten vor SPY liegt und der Block-Bootstrap
   p < 0,10 ergibt; sonst „nicht belegt“. Folgen für den Quant-Score nur in einem eigenen PR mit Vorher/Nachher.
 
+**Ergebnis Stufe 3** (Lauf 45050488159, Bestätigung 2014–09/2026 verkettet, SPY 14,1 % p. a., QQQ 19,4 %, RSP 10,9 %):
+- Fassung A 12,9 % p. a. (−1,1 Pp gegen SPY, p 0,44): **nicht belegt.** Aus vier bis dreizehn Lernjahren findet die Auswahl keine
+  stabile Regel (Runde 2 ohne Kandidat, Runde 3 niedrige Schwankung).
+- Fassung B 16,4 % p. a. (+2,3 Pp, max. Verlust −25,6 % gegen −23,9 %, 7 von 13 Jahren vorn, p 0,15): **Hinweis, nicht belegt.**
+  Ohne Marktfilter liegen 7 der 8 Einstellungen vor SPY (+2,3 bis +5,5 Pp; bestes Zehntel der Top 500 p 0,07); **mit** Marktfilter
+  liegen alle 8 dahinter (−2,8 bis −6,5 Pp).
+- Quant-Näherung 12,7 % p. a. (−1,3 Pp): Bewertung, Wachstum und niedrige Schwankung ziehen den Score auf diesen Jahren nach unten;
+  Bruttogewinn je Bilanzsumme trägt heute nur 3 % des Gesamtgewichts.
+- Folgerung (eigene PRs): Quant-Variante „Momentum + Profitabilität“ gegen quant-v2.4.1 auf den PIT-Dokumenten vergleichen;
+  Supertrader-Marktfilter und Profitabilitätsfilter prüfen; Kurssignale allein (200-Tage-Linie, 52-Wochen-Hoch, Umkehr) schlagen
+  SPY nicht.
+
 ## 5. Ausführung und Veröffentlichung
 
 - Umsetzung: `scripts/research/backtest2/` (Markt, Signale, Depotführung, Suche, Lauf mit Workern). Workflow `research.yml`, Teil
