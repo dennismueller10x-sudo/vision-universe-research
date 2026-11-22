@@ -93,7 +93,7 @@ for (const vp of VIEWPORTS) {
     check(await page.locator('.ek-form').count() === 0 || (/Schema[^.]*keine echten Kurse/.test(await page.locator('#el-main').innerText()) && await page.locator('.ek-form[aria-label*="Schema, keine echten Kurse"]').count() === await page.locator('.ek-form').count()), 'Wellenlagen: als Schema beschriftet');
     await page.locator('.ek-cover').click();
     await page.waitForSelector('#ek-kopf-pop:not([hidden])', { timeout: 5000 });
-    check(/Gut anwendbar/.test(await page.locator('#ek-kopf-pop').innerText()), 'Kopfkachel öffnet das Erklärfenster');
+    check(/Klarheit A–C/.test(await page.locator('#ek-kopf-pop').innerText()), 'Kopfkachel öffnet das Erklärfenster');
     await page.keyboard.press('Escape');
     await page.waitForSelector('#ek-kopf-pop', { state: 'hidden' });
     await page.locator('.el-about').click();
@@ -223,7 +223,8 @@ for (const vp of VIEWPORTS) {
     // Weg 5: Aktie ohne Lesart: ehrliche Aussage, Aktie bleibt sichtbar
     // Konzept EHV (PR 2): die Aktie ohne Zählung zeigt die Karte .cb-ew-none unter dem Kopf .cb-head (früher .cb-nothesis unter .cb-hero)
     const nothesis = await page.locator('.cb-nothesis, .cb-ew-none').count(), hero = await page.locator('.cb-hero, .cb-head').count();
-    check(hero === 1 && (nothesis === 1 || await page.locator('.cb-pj-hl, .cb-ewp').count() > 0), 'NVDA: Lesart oder ehrliche "Keine belastbare Elliott-Lesart"');
+    // Elliott-Neustart (Owner 22.11.2026): jede Hauptlesart steht mit Klarheit A–D (.cb-ew-say) und Wellenmarken im Chart
+    check(hero === 1 && (nothesis === 1 || await page.locator('.cb-pj-hl, .cb-ewp, .cb-ew-say').count() > 0), 'NVDA: Lesart oder ehrliche "Keine belastbare Elliott-Lesart"');
 
     // Weg 3: Aktienseite -> Elliott
     await page.goto(BASE + '/quant/#/aktie/NVDA', { waitUntil: 'networkidle' });
