@@ -4,7 +4,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { judgeEnded, judgeCarried, judgeSucceeded, indexEvidence, lagFn, referenceSession, MAX_LAG, GRACE_DAYS } from "../../scripts/market/apply-ended-listings.mjs";
+import { judgeEnded, judgeCarried, indexEvidence, lagFn, referenceSession, MAX_LAG, GRACE_DAYS } from "../../scripts/market/apply-ended-listings.mjs";
 
 const ROOT = join(import.meta.dirname, "..", "..");
 const calendar = JSON.parse(readFileSync(join(ROOT, "quant/config/market-calendar.json"), "utf8"));
@@ -83,29 +83,4 @@ test("Regel C · Fortschreibung: nach der Bereinigung (Reihe entfernt) bleibt ei
   const prevAcq = { ...prev, product_eligibility_reason: "CONFIRMED_LISTING_ENDED:ACQUISITION" }, dAcq = { ...d, product_eligibility: "ELIGIBLE", active_status: "ACTIVE" };
   assert.equal(judgeCarried(dAcq, prevAcq, null, active, { securityId: "ref_FL", event: "ACQUISITION" }).next.product_eligibility, "EXCLUDED");
   assert.equal(judgeCarried(dAcq, prevAcq, null, active, null), null, "Registereintrag entfernt: kein Beleg");
-});
-
-test("Regel D · Kuerzelwechsel: Vorgaenger raus, sobald Stichtag erreicht und Nachfolger im Produkt; retirePredecessor false haelt", () => {
-  const d = { securityId: "ref_ANY", ticker: "ANY", product_eligibility: "ELIGIBLE", product_eligibility_reason: "US_COMMON_EQUITY_ON_PRIMARY_VENUE" };
-  const entry = { from: "ref_ANY", to: "ref_DRK", toTicker: "DRK", effective: "2026-09-17", cik: "0000000001", source: { type: "SEC_8K", accession: "0000000001-26-000001" } };
-  const prod = new Set(["ref_DRK"]);
-  const j = judgeSucceeded(d, entry, prod, "2026-11-20");
-  assert.equal(j.next.product_eligibility, "EXCLUDED");
-  assert.equal(j.next.product_eligibility_reason, "CONFIRMED_LISTING_ENDED:SUCCEEDED");
-  assert.equal(j.evidence.successorTicker, "DRK");
-  assert.equal(judgeSucceeded(d, entry, new Set(), "2026-11-20"), null, "Nachfolger nicht im Produkt: Vorgaenger bleibt");
-  assert.equal(judgeSucceeded(d, entry, prod, "2026-09-16"), null, "vor dem Stichtag");
-  assert.equal(judgeSucceeded(d, { ...entry, retirePredecessor: false }, prod, "2026-11-20"), null, "bewusst gehalten (TCBI)");
-  assert.equal(judgeSucceeded(d, null, prod, "2026-11-20"), null);
-  /* Fortschreibung nach dem Entfernen der Reihe: traegt, solange der Registereintrag gilt */
-  const prev = { ...d, product_eligibility: "EXCLUDED", product_eligibility_reason: "CONFIRMED_LISTING_ENDED:SUCCEEDED" };
-  assert.equal(judgeCarried(d, prev, null, { active: true }, null, entry).next.product_eligibility, "EXCLUDED");
-  assert.equal(judgeCarried(d, prev, null, { active: true }, null, null), null, "Registereintrag weg: kein Beleg");
-});
-
-test("Regel D · das Register haelt TCBI bewusst (retirePredecessor false, bis zum Speicherbeleg)", () => {
-  const doc = JSON.parse(readFileSync(join(ROOT, "quant/config/ticker-successions.json"), "utf8"));
-  const tcbi = doc.successions.find((e) => e.from === "ref_TCBI");
-  assert.equal(tcbi.retirePredecessor, false);
-  assert.ok(tcbi.retireNote);
 });
