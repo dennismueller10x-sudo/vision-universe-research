@@ -5,7 +5,7 @@
    core/registry/test-input-allowlist.json. Die Liste darf nur kleiner werden. Siehe docs/quality/TESTARTEN.md. */
 import test from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync } from "node:fs";
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync, readdirSync, statSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { ROOT, scanAll, scanFile, loadRegistry } from "../../scripts/quality/test-inputs.mjs";
@@ -109,4 +109,27 @@ test("TI-9 · ein Test mit frozen-data.mjs und Buendel gilt nicht als Live-Leser
   assert.equal(scanFile(root, "core/tests/a.test.mjs")?.reads, true, "ohne Buendel");
   writeFileSync(join(root, "core/tests/fixtures/frozen/a.json.gz"), "x");
   assert.equal(scanFile(root, "core/tests/a.test.mjs"), null, "mit Buendel");
+});
+
+test("TI-10 · Fixture-Buendel haben eine Obergrenze (Repo-Groesse): alle eingefrorenen Datenstaende zusammen hoechstens 21 MiB", () => {
+  /* Steuerung 22.11.2026: Repo wird verschlankt; eingefrorene Stände (fixtures/frozen/*.json.gz und die benannten data.json.gz) zusammen
+     ~20 MB. Wer ein Buendel braucht, das nicht mehr hineinpasst, teilt ein Buendel zwischen Tests (gleiche Dateien nur einmal) oder
+     verzichtet. Je Buendel hoechstens 2 MiB (freeze-frozen-data.mjs), ausser den drei benannten Altbestaenden. */
+  
+  const gross = new Set(["quant/tests/fixtures/product-services/data.json.gz", "quant/tests/fixtures/canonical-product-search/data.json.gz"]);
+  const dateien = [];
+  const gehe = (dir) => {
+    for (const n of readdirSync(join(ROOT, dir))) {
+      if (n === "node_modules" || n === ".git" || n === "data") continue;
+      const rel = dir ? dir + "/" + n : n;
+      const st = statSync(join(ROOT, rel));
+      if (st.isDirectory()) { if (/(^|\/)tests$|^(core|quant|discover|technical|screener|scripts|products)(\/.*)?$/.test(rel)) gehe(rel); continue; }
+      if (/\/fixtures\/frozen\/[^/]+\.json\.gz$/.test(rel) || /\/fixtures\/[^/]+\/data\.json\.gz$/.test(rel)) dateien.push({ rel, bytes: st.size });
+    }
+  };
+  for (const d of ["core/tests", "quant/tests", "discover/tests", "technical/tests", "screener/tests", "scripts/supertrader/tests", "products"]) gehe(d);
+  const summe = dateien.reduce((s, f) => s + f.bytes, 0);
+  const zuGross = dateien.filter((f) => f.bytes > 2 * 1048576 && !gross.has(f.rel)).map((f) => f.rel);
+  assert.deepEqual(zuGross, [], "Buendel ueber 2 MiB");
+  assert.ok(summe <= 21 * 1048576, `Fixture-Buendel zusammen ${(summe / 1048576).toFixed(1)} MiB (${dateien.length} Dateien), Grenze 21 MiB`);
 });
