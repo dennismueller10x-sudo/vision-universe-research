@@ -166,7 +166,7 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
  for(const [view,hash,budgetKey] of ROUTES){await versuch(view,width,async()=>{
   const started=performance.now();await frisch(page,hash);
   const resources=await page.evaluate(()=>performance.getEntriesByType('resource').map(r=>({path:new URL(r.name).pathname,bytes:r.decodedBodySize,durationMs:Math.round(r.duration)})));performanceSamples.push({view,width,renderMs:Math.round(performance.now()-started),decodedBytes:resources.reduce((sum,r)=>sum+r.bytes,0),requests:resources.length});
-  if(budgetKey){const budget=assessResourceBudget(budgetKey,resources);if(budget){resourceBudgets.push({...budget,route:hash,width});
+  if(budgetKey){const logoSlots=await page.evaluate(()=>{let n=0;const walk=(root)=>{n+=root.querySelectorAll('img[src*="/discover/logos/files/"]').length;root.querySelectorAll('*').forEach((e)=>{if(e.shadowRoot)walk(e.shadowRoot);});};walk(document);return n;});const budget=assessResourceBudget(budgetKey,resources,{logoSlots});if(budget){resourceBudgets.push({...budget,route:hash,width});
    /* Bei einer Verletzung die groessten Posten ausgeben - sonst ist ein
       roter Budget-Lauf in CI nicht ohne das Artefakt zu deuten. */
    if(!budget.pass)console.log('BUDGET '+view+'@'+width+': '+resources.slice().sort((a,b)=>b.bytes-a.bytes).slice(0,15).map(r=>r.bytes+' '+r.path).join(' | '));}}
@@ -853,7 +853,7 @@ Object.defineProperty(window,'QXPages',{configurable:true,set(pages){
 
  await writeFile(out+'/results.json',JSON.stringify({checks,findings},null,2));await writeFile(out+'/performance.json',JSON.stringify({environment:'GitHub Actions local static server; not production performance',samples:performanceSamples},null,2));console.log(JSON.stringify({passed:checks.length,findings:findings.length,output:out}));
  await writeFile(out+'/resource-budgets.json',JSON.stringify({scope:'Decoded subresource bytes and request count; not production latency',results:resourceBudgets},null,2));
- console.log(JSON.stringify({resourceBudgetChecks:resourceBudgets.length,resourceBudgets:resourceBudgets.map(r=>({view:r.view,width:r.width,decodedBytes:r.decodedBytes,requests:r.requests,pass:r.pass}))}));
+ console.log(JSON.stringify({resourceBudgetChecks:resourceBudgets.length,resourceBudgets:resourceBudgets.map(r=>({view:r.view,width:r.width,decodedBytes:r.decodedBytes,requests:r.requests,logoRequests:r.logoRequests,logoSlots:r.logoSlots,pass:r.pass}))}));
  const violations=accessibility.flatMap(r=>r.violations.map(v=>({view:r.view,width:r.width,id:v.id,impact:v.impact,nodes:v.nodes.map(n=>({target:n.target,summary:n.failureSummary}))})));
  console.log(JSON.stringify({accessibilityPages:accessibility.length,violations}));
  if(findings.length)throw Error(findings.length+' QA findings; see results.json');
