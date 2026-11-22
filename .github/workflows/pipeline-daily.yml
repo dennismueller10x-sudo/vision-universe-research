@@ -727,7 +727,7 @@ jobs:
         id: inputs
         run: |
           set -euo pipefail
-          FP=$(for p in quant/data/market/discover-series-long quant/data/market/golden-preview/daily \
+          FP=$(for p in quant/data/market/discover-series-long quant/data/market/golden-preview/daily quant/data/product/technical-signals-v1 \
                         quant/data/market/index-membership \
                         quant/engines/technical/ti quant/engines/technical/elliott quant/engines/technical/projection \
                         quant/engines/technical/feature-store.js quant/engines/technical/pivot-engine.js \
