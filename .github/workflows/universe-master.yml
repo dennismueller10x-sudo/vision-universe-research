@@ -1,4 +1,7 @@
 name: Company Master — Universum, Suchindex, CIK
+# Zeitplan (Sync): core/registry/schedule.json, Takt ueber den Cloudflare-Wecker (RUNBOOK §10), woechentlich nach dem
+# Security-Master-Wochenlauf - die CIK-Zuordnung (quant/data/universe/cik-map.json) lag vom 13.09. bis 22.11.2026 still.
+run-name: ${{ inputs.zeitplan && format('{0} · Takt {1}', github.workflow, inputs.zeitplan) || '' }}
 
 # Der kanonische Company Master. Zwei Jobs, und der Unterschied zwischen
 # ihnen ist der ganze Punkt dieser Datei.
@@ -9,9 +12,9 @@ name: Company Master — Universum, Suchindex, CIK
 #             dieser Job rot wird, ist der Master kaputt - unabhaengig
 #             von jedem Anbieter.
 #
-#   sync      Laeuft nur auf Ansage. Er holt das VOLLSTAENDIGE
-#             Anbieterverzeichnis (Tiingo) und die CIK-Zuordnung (SEC),
-#             baut den Master daraus neu und committet das Ergebnis.
+#   sync      Laeuft auf Ansage und woechentlich ueber den Wecker. Er holt
+#             die CIK-Zuordnung (SEC), baut den Master aus den committeten
+#             Gate-Universen neu und committet das Ergebnis.
 #
 # WARUM DER SYNC NICHT AUTOMATISCH LAEUFT
 #
@@ -32,6 +35,10 @@ name: Company Master — Universum, Suchindex, CIK
 on:
   workflow_dispatch:
     inputs:
+      zeitplan:
+        description: 'Vom Cloudflare-Wecker gesetzt (Cron des Termins, core/registry/schedule.json); manuell leer lassen'
+        type: string
+        default: ''
       sync:
         description: 'Anbieterverzeichnis und CIK-Zuordnung neu holen und committen'
         type: boolean
@@ -52,6 +59,7 @@ on:
       - 'scripts/universe/**'
       - 'quant/tests/company-master.test.mjs'
       - 'quant/tests/sec-universe-scale.test.mjs'
+      - 'quant/tests/cik-succession-guard.test.mjs'
       - '.github/workflows/universe-master.yml'
   pull_request:
     paths:
@@ -116,6 +124,7 @@ jobs:
         run: |
           node --test quant/tests/company-master.test.mjs
           node --test quant/tests/sec-universe-scale.test.mjs
+          node --test quant/tests/cik-succession-guard.test.mjs
 
       - name: Es gibt keine Zielgroesse im Code
         # §6. Eine Obergrenze wieder einzufuehren ist die naheliegendste
@@ -143,7 +152,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: pruefen
     if: >
-      (github.event_name == 'workflow_dispatch' && inputs.sync) ||
+      (github.event_name == 'workflow_dispatch' && !inputs.zeitplan && inputs.sync) || (inputs.zeitplan != '' && inputs.sync) ||
       (github.event_name == 'push' && contains(github.event.head_commit.message, '[universe-sync]'))
     steps:
       - uses: actions/checkout@v4
@@ -154,20 +163,22 @@ jobs:
         with:
           node-version: '22'
 
-      # Erst das Anbieterverzeichnis. Ohne Schluessel bricht dieser
-      # Schritt ab, und das ist richtig: ein Sync gegen den committeten
-      # Auszug waere kein Sync.
-      - name: Anbieterverzeichnis holen (Tiingo)
-        env:
-          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
-        run: node scripts/market/build-market-universe.mjs
+      # Kein Anbieterverzeichnis mehr (22.11.2026): Der Master entsteht aus den committeten Gate-Universen
+      # (quant/data/market/scale, Erzeuger security-master-eligibility.yml). Das volle Tiingo-Verzeichnis im
+      # Arbeitsbaum machte ihn zum PROVIDER_DIRECTORY-Master (24.795 statt 7.841 Instrumente) und die
+      # Pruefung des Masters schlug fehl (Lauf 45028028782). Der Sync holt nur noch die CIK-Zuordnung.
 
       # Dann die SEC. Zwei Anfragen fuer den ganzen US-Markt - Kuerzel,
       # CIK und Firmenname. Kostenlos, ohne Vertrag (§32).
       - name: CIK-Zuordnung holen (SEC)
         env:
           SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
-        run: node scripts/universe/build-cik-map.mjs
+        # --require-source (22.11.2026): ohne frische SEC-Tickerliste bricht der Sync ab, statt einen alten Stand
+        # fortzuschreiben oder zu committen (wie sec-fundamentals-universe.yml).
+        # Nachfolge-Regel (22.11.2026, scripts/universe/lib/cik-succession-guard.mjs): ein neues Produktkuerzel an
+        # einer CIK, die im Produkt schon haengt, bekommt sie nur mit Eintrag in quant/config/ticker-successions.json;
+        # sonst PENDING_SUCCESSION_EVIDENCE als Warnung im Lauf, kein Abbruch.
+        run: node scripts/universe/build-cik-map.mjs --require-source
 
       - name: Company Master bauen
         run: node scripts/universe/build-company-master.mjs
@@ -197,6 +208,7 @@ jobs:
         run: |
           node --test quant/tests/company-master.test.mjs
           node --test quant/tests/sec-universe-scale.test.mjs
+          node --test quant/tests/cik-succession-guard.test.mjs
           node --test "discover/tests/*.test.mjs"
 
       # Dieselbe Gegenprobe wie in allen Anbieter-Workflows: kein

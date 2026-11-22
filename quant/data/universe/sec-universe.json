@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated": true,
-  "generated_at_utc": "2026-11-21T06:27:20.750Z",
+  "generated_at_utc": "2026-11-22T13:49:54.787Z",
   "generator": "scripts/universe/build-sec-universe.mjs",
   "description": "SEC-Universum aus dem kanonischen Company Master. NICHT von Hand pflegen - Aenderungen gehoeren in den Master oder in die CIK-Zuordnung. quant/config/sec-universe.json bleibt der handgepflegte Validierungssatz und steht hier an erster Stelle; eine Regression an diesen fuenf Titeln faellt damit weiterhin zuerst auf. Das Feld `cik` ist wie dort ein Hinweis: die Pipeline loest den Ticker gegen die SEC-Ticker-Map auf. Fuer ein generiertes Universum gehoert `--skip-unresolved` dazu - ein Kuerzel, das die SEC nicht kennt, ist hier der Normalfall und kein Konfigurationsfehler.",
   "sources": {
@@ -9,7 +9,7 @@
     "cikMap": {
       "file": "quant/data/universe/cik-map.json",
       "status": "OK",
-      "generatedAt": "2026-09-13T19:06:28.769Z"
+      "generatedAt": "2026-11-22T13:49:53.279Z"
     },
     "validationSet": "quant/config/sec-universe.json",
     "deliveredStockPages": "discover/data/stock-index/US_REAL.json"
@@ -24,23 +24,23 @@
   "limitNote": "Keine Obergrenze. Die Groesse ergibt sich aus dem Master und der CIK-Zuordnung.",
   "totals": {
     "instrumentsInMaster": 7840,
-    "candidates": 5473,
-    "companies": 5474,
+    "candidates": 5479,
+    "companies": 5480,
     "validationSet": 5,
-    "withDeliveredStockPage": 5279,
+    "withDeliveredStockPage": 5290,
     "excluded": {
-      "noCik": 1227,
+      "noCik": 1201,
       "notUs": 0,
-      "wrongType": 156,
+      "wrongType": 163,
       "inactive": 0,
-      "duplicateCik": 984
+      "duplicateCik": 997
     }
   },
   "requestBudget": {
-    "submissionsRequests": 5474,
-    "companyFactsRequests": 5474,
+    "submissionsRequests": 5480,
+    "companyFactsRequests": 5480,
     "companyFactsRequestsWithBulk": 1,
-    "note": "Zwei Anfragen je Emittent auf dem Einzelweg. Mit --bulk wird die zweite zu EINER Anfrage fuer alle zusammen; die Einreichungsuebersicht bleibt je Emittent, weil es sie als Sammelform nicht gibt. Bei fuenf Anfragen je Sekunde sind 5474 Emittenten rund 18 Minuten reine Anfragezeit.",
+    "note": "Zwei Anfragen je Emittent auf dem Einzelweg. Mit --bulk wird die zweite zu EINER Anfrage fuer alle zusammen; die Einreichungsuebersicht bleibt je Emittent, weil es sie als Sammelform nicht gibt. Bei fuenf Anfragen je Sekunde sind 5480 Emittenten rund 18 Minuten reine Anfragezeit.",
     "rateLimit": "5 Anfragen/s (scripts/quant/sec/http_client.py), die Haelfte der von der SEC genannten Obergrenze."
   },
   "companies": [
@@ -1648,7 +1648,7 @@
     },
     {
       "ticker": "AGMB",
-      "name": "Agomab Therapeutics NV",
+      "name": "AgomAb Therapeutics NV",
       "cik": "0002020932",
       "instrumentId": "vu_333b23fcffb07b",
       "exchange": "NASDAQ",
@@ -2326,7 +2326,7 @@
     },
     {
       "ticker": "ALDF",
-      "name": "Aldel Financial II Inc.",
+      "name": "Aldel Financial II",
       "cik": "0002031561",
       "instrumentId": "vu_3477208422965f",
       "exchange": "NASDAQ",
@@ -3223,7 +3223,7 @@
     },
     {
       "ticker": "AMRN",
-      "name": "Amarin Corp Plc\\uk",
+      "name": "Amarin Corp Plcuk",
       "cik": "0000897448",
       "instrumentId": "vu_f5d5917917ec62",
       "exchange": "NASDAQ",
@@ -3607,6 +3607,17 @@
       "cik": "0001999480",
       "instrumentId": "vu_1c81f8546f5e61",
       "exchange": "NYSE",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Traegt heute eine Aktienseite.",
+      "role": "deliveredStockPage"
+    },
+    {
+      "ticker": "ANT",
+      "name": "Anthropic, PBC",
+      "cik": "0002130357",
+      "instrumentId": "vu_8d16b236f4fbf7",
+      "exchange": "NASDAQ",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Traegt heute eine Aktienseite.",
@@ -4600,7 +4611,7 @@
     },
     {
       "ticker": "ASBP",
-      "name": "Aspire Biopharma Holdings, Inc.",
+      "name": "Aspire-Lakewood Holdings, Inc.",
       "cik": "0001847345",
       "instrumentId": "vu_95178819abebed",
       "exchange": "NASDAQ",
@@ -5069,7 +5080,7 @@
     },
     {
       "ticker": "ATLQ",
-      "name": "JAB Acquisition Corp I",
+      "name": "Atlantic Acquisition Corp I",
       "cik": "0002128739",
       "instrumentId": "vu_d31706351e00a0",
       "exchange": "NASDAQ",
@@ -5240,7 +5251,7 @@
     },
     {
       "ticker": "ATTT",
-      "name": "Raytech Holding Ltd",
+      "name": "Atlas Trinity Tech Co., Ltd.",
       "cik": "0001948443",
       "instrumentId": "vu_479e8fc2a0376a",
       "exchange": "NASDAQ",
@@ -5379,9 +5390,6 @@
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Traegt heute eine Aktienseite.",
-      "alsoTickers": [
-        "AUROW"
-      ],
       "role": "deliveredStockPage"
     },
     {
@@ -5822,6 +5830,20 @@
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Traegt heute eine Aktienseite.",
+      "role": "deliveredStockPage"
+    },
+    {
+      "ticker": "AXNX",
+      "name": "Axonex AI Group Ltd",
+      "cik": "0001998560",
+      "instrumentId": "vu_e05d72bca8d042",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Traegt heute eine Aktienseite.",
+      "alsoTickers": [
+        "MIMI"
+      ],
       "role": "deliveredStockPage"
     },
     {
@@ -6731,6 +6753,17 @@
       "role": "deliveredStockPage"
     },
     {
+      "ticker": "BDAI",
+      "name": "Biddance AI Systems, Inc.",
+      "cik": "0001742341",
+      "instrumentId": "vu_bbf20e8bbeb3fb",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Traegt heute eine Aktienseite.",
+      "role": "deliveredStockPage"
+    },
+    {
       "ticker": "BDC",
       "name": "Belden Inc.",
       "cik": "0000913142",
@@ -7510,18 +7543,13 @@
     },
     {
       "ticker": "BIP",
-      "name": "Brookfield Infrastructure Partners L.P.",
-      "cik": "0001406234",
+      "name": "Brookfield Infrastructure Partners Inc.",
+      "cik": "0002155396",
       "instrumentId": "vu_ba996155b238c6",
       "exchange": "NYSE",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Traegt heute eine Aktienseite.",
-      "alsoTickers": [
-        "BIPH",
-        "BIPI",
-        "BIPJ"
-      ],
       "role": "deliveredStockPage"
     },
     {
@@ -8204,7 +8232,7 @@
     },
     {
       "ticker": "BNC",
-      "name": "CEA Industries Inc.",
+      "name": "BNB Standard Corp",
       "cik": "0001482541",
       "instrumentId": "vu_59aef7b655a769",
       "exchange": "NASDAQ",
@@ -8732,7 +8760,7 @@
     },
     {
       "ticker": "BRNS",
-      "name": "Barinthus Biotherapeutics plc.",
+      "name": "Barinthus Biotherapeutics",
       "cik": "0001828185",
       "instrumentId": "vu_417b0608083a4d",
       "exchange": "NASDAQ",
@@ -9139,7 +9167,7 @@
     },
     {
       "ticker": "BTLN",
-      "name": "Glimpse Group, Inc.",
+      "name": "Brightline Interactive, Inc./NV",
       "cik": "0001854445",
       "instrumentId": "vu_7b05304ba5f6b2",
       "exchange": "NASDAQ",
@@ -10110,6 +10138,20 @@
       "role": "deliveredStockPage"
     },
     {
+      "ticker": "CASK",
+      "name": "Sempreon, Inc",
+      "cik": "0000835011",
+      "instrumentId": "vu_07015539367343",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Traegt heute eine Aktienseite.",
+      "alsoTickers": [
+        "MGPI"
+      ],
+      "role": "deliveredStockPage"
+    },
+    {
       "ticker": "CASS",
       "name": "Cass Information Systems Inc",
       "cik": "0000708781",
@@ -10513,7 +10555,7 @@
     },
     {
       "ticker": "CCHH",
-      "name": "CCH Holdings Ltd",
+      "name": "Foodverse Holding Ltd",
       "cik": "0002074123",
       "instrumentId": "vu_c228bbb5eed18f",
       "exchange": "NASDAQ",
@@ -10713,8 +10755,8 @@
     },
     {
       "ticker": "CDLR",
-      "name": "Cadeler A/S",
-      "cik": "0001978867",
+      "name": "Cadeler plc",
+      "cik": "0002063345",
       "instrumentId": "vu_b72383691e9138",
       "exchange": "NYSE",
       "active": true,
@@ -12999,7 +13041,7 @@
     },
     {
       "ticker": "COLA",
-      "name": "Columbus Acquisition Corp/Cayman Islands",
+      "name": "Columbus Acquisition",
       "cik": "0002028201",
       "instrumentId": "vu_88109466a829cd",
       "exchange": "NASDAQ",
@@ -13438,7 +13480,7 @@
     },
     {
       "ticker": "CPTAF",
-      "name": "Captivision Inc.",
+      "name": "Captivision",
       "cik": "0001967478",
       "instrumentId": "vu_66ddf051a7b3d7",
       "exchange": "NASDAQ",
@@ -13757,6 +13799,20 @@
       "why": "Traegt heute eine Aktienseite.",
       "alsoTickers": [
         "CRMLW"
+      ],
+      "role": "deliveredStockPage"
+    },
+    {
+      "ticker": "CRMN",
+      "name": "Skyline Builders Group Holding Ltd",
+      "cik": "0002031009",
+      "instrumentId": "vu_b8ac15e9e6d600",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Traegt heute eine Aktienseite.",
+      "alsoTickers": [
+        "KAZR"
       ],
       "role": "deliveredStockPage"
     },
@@ -16357,7 +16413,7 @@
     },
     {
       "ticker": "DPU",
-      "name": "Top KingWin Ltd",
+      "name": "Nexpu Ltd.",
       "cik": "0001938865",
       "instrumentId": "vu_847b6d10ddb148",
       "exchange": "NASDAQ",
@@ -16949,7 +17005,7 @@
     },
     {
       "ticker": "DYNC",
-      "name": "Dynamix Corp",
+      "name": "Dynamix",
       "cik": "0002028699",
       "instrumentId": "vu_c1d819c36276b1",
       "exchange": "NASDAQ",
@@ -17633,7 +17689,7 @@
     },
     {
       "ticker": "EIC",
-      "name": "Eagle Point Income Co Inc.",
+      "name": "Eagle Point Income Co",
       "cik": "0001754836",
       "instrumentId": "vu_296e3c39357a4b",
       "exchange": "NYSE",
@@ -18302,7 +18358,7 @@
     },
     {
       "ticker": "EOCN",
-      "name": "Galmed Pharmaceuticals Ltd.",
+      "name": "EoCene Ltd.",
       "cik": "0001595353",
       "instrumentId": "vu_a7284c0e02d349",
       "exchange": "NASDAQ",
@@ -18839,6 +18895,20 @@
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Traegt heute eine Aktienseite.",
+      "role": "deliveredStockPage"
+    },
+    {
+      "ticker": "ESYN",
+      "name": "EnerSyn Global Inc.",
+      "cik": "0001897245",
+      "instrumentId": "vu_3b4a0b24ba02ee",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Traegt heute eine Aktienseite.",
+      "alsoTickers": [
+        "HWH"
+      ],
       "role": "deliveredStockPage"
     },
     {
@@ -19451,6 +19521,9 @@
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Traegt heute eine Aktienseite.",
+      "alsoTickers": [
+        "XGPU"
+      ],
       "role": "deliveredStockPage"
     },
     {
@@ -19758,6 +19831,20 @@
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Traegt heute eine Aktienseite.",
+      "role": "deliveredStockPage"
+    },
+    {
+      "ticker": "FCDH",
+      "name": "Forcendra Holding Ltd",
+      "cik": "0001951294",
+      "instrumentId": "vu_7a622d288f6167",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Traegt heute eine Aktienseite.",
+      "alsoTickers": [
+        "VSME"
+      ],
       "role": "deliveredStockPage"
     },
     {
@@ -20206,6 +20293,21 @@
       "why": "Traegt heute eine Aktienseite.",
       "alsoTickers": [
         "FGBIP"
+      ],
+      "role": "deliveredStockPage"
+    },
+    {
+      "ticker": "FGC",
+      "name": "FG Communities Holdings Inc.",
+      "cik": "0001591890",
+      "instrumentId": "vu_e122f18fbebc43",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Traegt heute eine Aktienseite.",
+      "alsoTickers": [
+        "FGNX",
+        "FGNXP"
       ],
       "role": "deliveredStockPage"
     },
@@ -22174,7 +22276,7 @@
     },
     {
       "ticker": "GCBC",
-      "name": "Greene County Bancorp Inc",
+      "name": "Greene Bancorp, Inc.",
       "cik": "0001070524",
       "instrumentId": "vu_12131946851991",
       "exchange": "NASDAQ",
@@ -24958,7 +25060,7 @@
     },
     {
       "ticker": "HELP",
-      "name": "Cybin Inc.",
+      "name": "Helus Pharma Inc.",
       "cik": "0001833141",
       "instrumentId": "vu_7fff670cca8958",
       "exchange": "NASDAQ",
@@ -27914,7 +28016,7 @@
     },
     {
       "ticker": "INVE",
-      "name": "Identiv, Inc.",
+      "name": "INVE Technologies, Inc.",
       "cik": "0001036044",
       "instrumentId": "vu_47ca41513d720e",
       "exchange": "NASDAQ",
@@ -28358,6 +28460,20 @@
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Traegt heute eine Aktienseite.",
+      "role": "deliveredStockPage"
+    },
+    {
+      "ticker": "IRLA",
+      "name": "IRulya Therapeutics Inc.",
+      "cik": "0001662774",
+      "instrumentId": "vu_032de3ebf9a96c",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Traegt heute eine Aktienseite.",
+      "alsoTickers": [
+        "QNCX"
+      ],
       "role": "deliveredStockPage"
     },
     {
@@ -29187,7 +29303,7 @@
     },
     {
       "ticker": "JKS",
-      "name": "JinkoSolar Holding Co., Ltd.",
+      "name": "Jinko Holdings Ltd",
       "cik": "0001481513",
       "instrumentId": "vu_cdf00a1a3e0d06",
       "exchange": "NYSE",
@@ -30351,7 +30467,7 @@
     },
     {
       "ticker": "KOYN",
-      "name": "CSLM Digital Asset Acquisition Corp III, Ltd",
+      "name": "First Digital Acquisition Corp Ltd.",
       "cik": "0002068454",
       "instrumentId": "vu_c6b70fbe5b52f1",
       "exchange": "NASDAQ",
@@ -31000,7 +31116,7 @@
     },
     {
       "ticker": "LASE",
-      "name": "Laser Photonics Corp",
+      "name": "LASE Corp.",
       "cik": "0001807887",
       "instrumentId": "vu_221d6bb8590e67",
       "exchange": "NASDAQ",
@@ -31081,7 +31197,7 @@
     },
     {
       "ticker": "LB",
-      "name": "LandBridge Co LLC",
+      "name": "LandBridge Corp",
       "cik": "0001995807",
       "instrumentId": "vu_fd2b31b2332df2",
       "exchange": "NYSE",
@@ -33132,7 +33248,7 @@
     },
     {
       "ticker": "MAMK",
-      "name": "MaxsMaking Inc.",
+      "name": "MaxsMaking Class A",
       "cik": "0002008007",
       "instrumentId": "vu_0147ff7551b9c9",
       "exchange": "NASDAQ",
@@ -33352,7 +33468,7 @@
     },
     {
       "ticker": "MBAI",
-      "name": "Check-Cap Ltd",
+      "name": "MBody AI Ltd.",
       "cik": "0001610590",
       "instrumentId": "vu_c22e1f12cde3cc",
       "exchange": "NASDAQ",
@@ -33939,7 +34055,7 @@
     },
     {
       "ticker": "MEGI",
-      "name": "NYLI CBRE Global Infrastructure Megatrends Term Fund",
+      "name": "NYLIM CBRE Global Infrastructure Megatrends Term Fund",
       "cik": "0001855066",
       "instrumentId": "vu_6a8141f2b09374",
       "exchange": "NYSE",
@@ -34661,7 +34777,7 @@
     },
     {
       "ticker": "MLEC",
-      "name": "Moolec Science SA",
+      "name": "Moolec Science",
       "cik": "0001937737",
       "instrumentId": "vu_49d32916750acd",
       "exchange": "NASDAQ",
@@ -35062,7 +35178,7 @@
     },
     {
       "ticker": "MOD",
-      "name": "Modine Manufacturing Co",
+      "name": "Modexus Solutions, Inc.",
       "cik": "0000067347",
       "instrumentId": "vu_3f63027a80ad80",
       "exchange": "NYSE",
@@ -38880,6 +38996,17 @@
       "role": "deliveredStockPage"
     },
     {
+      "ticker": "NXH",
+      "name": "Neighborhood Intelligence, Inc.",
+      "cik": "0001130713",
+      "instrumentId": "vu_8f469cb1b406b4",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Traegt heute eine Aktienseite.",
+      "role": "deliveredStockPage"
+    },
+    {
       "ticker": "NXL",
       "name": "Nexalin Technology, Inc.",
       "cik": "0001527352",
@@ -39698,7 +39825,7 @@
     },
     {
       "ticker": "OLMA",
-      "name": "Olema Pharmaceuticals, Inc.",
+      "name": "Olema Oncology, Inc.",
       "cik": "0001750284",
       "instrumentId": "vu_19ca80ca7d6444",
       "exchange": "NASDAQ",
@@ -39830,7 +39957,7 @@
     },
     {
       "ticker": "OMH",
-      "name": "Ohmyhome Ltd",
+      "name": "Ohmyswift Ltd",
       "cik": "0001944902",
       "instrumentId": "vu_f5249d4333f125",
       "exchange": "NASDAQ",
@@ -40153,6 +40280,20 @@
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Traegt heute eine Aktienseite.",
+      "role": "deliveredStockPage"
+    },
+    {
+      "ticker": "OPNW",
+      "name": "OpenWorld, Inc.",
+      "cik": "0001104038",
+      "instrumentId": "vu_c31eff33dea41a",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Traegt heute eine Aktienseite.",
+      "alsoTickers": [
+        "VRME"
+      ],
       "role": "deliveredStockPage"
     },
     {
@@ -41045,7 +41186,7 @@
     },
     {
       "ticker": "PARA",
-      "name": "Banzai International, Inc.",
+      "name": "Parabolic Technologies, Inc.",
       "cik": "0001826011",
       "instrumentId": "vu_3c045e991a20d7",
       "exchange": "NASDAQ",
@@ -42473,7 +42614,7 @@
     },
     {
       "ticker": "PLMK",
-      "name": "Plum Acquisition Corp, IV",
+      "name": "Plum Acquisition Corp. IV",
       "cik": "0002030482",
       "instrumentId": "vu_7f3a1f7781c492",
       "exchange": "NASDAQ",
@@ -42598,7 +42739,7 @@
     },
     {
       "ticker": "PLTS",
-      "name": "Platinum Analytics Cayman Ltd",
+      "name": "Platinum Analytics Cayman Class A",
       "cik": "0002053033",
       "instrumentId": "vu_13e6535a28d696",
       "exchange": "NASDAQ",
@@ -43405,7 +43546,7 @@
     },
     {
       "ticker": "PRM",
-      "name": "Perimeter Solutions, Inc.",
+      "name": "Perimeter Group Inc.",
       "cik": "0001880319",
       "instrumentId": "vu_93b09d3b1ebba2",
       "exchange": "NYSE",
@@ -43979,7 +44120,7 @@
     },
     {
       "ticker": "PUSA",
-      "name": "Aureus Greenway Holdings Inc",
+      "name": "Powerus Corp",
       "cik": "0002009312",
       "instrumentId": "vu_7a3fd66c5811ec",
       "exchange": "NASDAQ",
@@ -46421,6 +46562,17 @@
       "role": "deliveredStockPage"
     },
     {
+      "ticker": "ROSS",
+      "name": "BPGC Acquisition Corp.",
+      "cik": "0001841610",
+      "instrumentId": "vu_7f959ab5186fac",
+      "exchange": "NYSE",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Traegt heute eine Aktienseite.",
+      "role": "deliveredStockPage"
+    },
+    {
       "ticker": "ROST",
       "name": "Ross Stores",
       "cik": "0000745732",
@@ -46741,7 +46893,7 @@
     },
     {
       "ticker": "RUSHA",
-      "name": "Rush Enterprises Inc \\tx\\",
+      "name": "Rush Enterprises Inc Tx",
       "cik": "0001012019",
       "instrumentId": "vu_535f88425a1792",
       "exchange": "NASDAQ",
@@ -49161,7 +49313,7 @@
     },
     {
       "ticker": "SLMT",
-      "name": "Brera Holdings PLC",
+      "name": "Solmate Infrastructure PLC",
       "cik": "0001939965",
       "instrumentId": "vu_5d06db51a076d3",
       "exchange": "NASDAQ",
@@ -49829,7 +49981,7 @@
     },
     {
       "ticker": "SOAR",
-      "name": "Volato Group, Inc.",
+      "name": "SOAR AI, Inc.",
       "cik": "0001853070",
       "instrumentId": "vu_5c586bf3dfe275",
       "exchange": "AMEX",
@@ -51325,7 +51477,7 @@
     },
     {
       "ticker": "SUPN",
-      "name": "Supernus Pharmaceuticals, Inc.",
+      "name": "Supernus, Inc.",
       "cik": "0001356576",
       "instrumentId": "vu_1dc9445dc2cb34",
       "exchange": "NASDAQ",
@@ -51483,7 +51635,7 @@
     },
     {
       "ticker": "SVRN",
-      "name": "OceanPal Inc.",
+      "name": "SVRN, Inc.",
       "cik": "0001869467",
       "instrumentId": "vu_3f37250613026f",
       "exchange": "NASDAQ",
@@ -53123,9 +53275,6 @@
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Traegt heute eine Aktienseite.",
-      "alsoTickers": [
-        "TMCWW"
-      ],
       "role": "deliveredStockPage"
     },
     {
@@ -54400,20 +54549,6 @@
       "alsoTickers": [
         "TVAIR",
         "TVAIU"
-      ],
-      "role": "deliveredStockPage"
-    },
-    {
-      "ticker": "TVC",
-      "name": "Tennessee Valley Authority",
-      "cik": "0001376986",
-      "instrumentId": "vu_d6edd86d48a305",
-      "exchange": "NYSE",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "alsoTickers": [
-        "TVE"
       ],
       "role": "deliveredStockPage"
     },
@@ -55779,7 +55914,7 @@
     },
     {
       "ticker": "VAI",
-      "name": "Senmiao Technology Ltd",
+      "name": "Valor Energy Inc",
       "cik": "0001711012",
       "instrumentId": "vu_e1e461d3adb6fc",
       "exchange": "NASDAQ",
@@ -56437,9 +56572,6 @@
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Traegt heute eine Aktienseite.",
-      "alsoTickers": [
-        "VLNWF"
-      ],
       "role": "deliveredStockPage"
     },
     {
@@ -56772,7 +56904,7 @@
     },
     {
       "ticker": "VRDN",
-      "name": "Viridian Therapeutics, Inc.\\DE",
+      "name": "Viridian Therapeutics, Inc.DE",
       "cik": "0001590750",
       "instrumentId": "vu_80f271c18877b6",
       "exchange": "NASDAQ",
@@ -57271,7 +57403,7 @@
     },
     {
       "ticker": "WAFU",
-      "name": "Wah Fu Education Group Ltd",
+      "name": "Wah Fu Education & Technology Group Ltd.",
       "cik": "0001716770",
       "instrumentId": "vu_811105269228a6",
       "exchange": "NASDAQ",
@@ -57715,7 +57847,7 @@
     },
     {
       "ticker": "WFRD",
-      "name": "Weatherford International plc",
+      "name": "Weatherford International Corp",
       "cik": "0001603923",
       "instrumentId": "vu_309da44c336c46",
       "exchange": "NASDAQ",
@@ -59097,15 +59229,14 @@
     },
     {
       "ticker": "XRPN",
-      "name": "Armada Acquisition Corp. II",
-      "cik": "0002044009",
+      "name": "Evernorth Holdings Inc.",
+      "cik": "0002092592",
       "instrumentId": "vu_ff94eacf99b5d4",
       "exchange": "NASDAQ",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Traegt heute eine Aktienseite.",
       "alsoTickers": [
-        "XRPNU",
         "XRPNW"
       ],
       "role": "deliveredStockPage"
@@ -59152,7 +59283,7 @@
     },
     {
       "ticker": "XTER",
-      "name": "Karman Line Acquisition Corp.",
+      "name": "Xterax Corp II",
       "cik": "0002134856",
       "instrumentId": "vu_4fa2578827d375",
       "exchange": "NASDAQ",
@@ -59990,7 +60121,7 @@
     },
     {
       "ticker": "ZONE",
-      "name": "CleanCore Solutions, Inc.",
+      "name": "Zone Frontier Inc.",
       "cik": "0001956741",
       "instrumentId": "vu_699233e6a459b1",
       "exchange": "NYSE MKT",
@@ -60158,7 +60289,7 @@
     },
     {
       "ticker": "ACA",
-      "name": "Arcosa, Inc.",
+      "name": "Arcosa",
       "cik": "0001739445",
       "instrumentId": "vu_dc3518bd0a2004",
       "exchange": "NYSE",
@@ -60176,11 +60307,14 @@
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "alsoTickers": [
+        "QUIT"
+      ],
       "role": "universe"
     },
     {
       "ticker": "ACVA",
-      "name": "ACV Auctions Inc.",
+      "name": "ACV Auctions Class A",
       "cik": "0001637873",
       "instrumentId": "vu_35c507012d9936",
       "exchange": "NYSE",
@@ -60191,13 +60325,16 @@
     },
     {
       "ticker": "ADIL",
-      "name": "Adial Pharmaceuticals, Inc.",
+      "name": "Azora Therapeutics, Inc. (DE)",
       "cik": "0001513525",
       "instrumentId": "vu_d0a8bdeb074a41",
       "exchange": "NASDAQ",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "alsoTickers": [
+        "AZR"
+      ],
       "role": "universe"
     },
     {
@@ -60279,13 +60416,16 @@
     },
     {
       "ticker": "AIXC",
-      "name": "AIxCrypto Holdings, Inc.",
+      "name": "AIxCrypto Holdings",
       "cik": "0001460702",
       "instrumentId": "vu_961dfbc03bed9f",
       "exchange": "NASDAQ",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "alsoTickers": [
+        "FFR"
+      ],
       "role": "universe"
     },
     {
@@ -60305,13 +60445,16 @@
     },
     {
       "ticker": "ANY",
-      "name": "Sphere 3D Corp.",
+      "name": "Sphere 3D",
       "cik": "0001591956",
       "instrumentId": "vu_06090121a38e00",
       "exchange": "NASDAQ",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "alsoTickers": [
+        "DRK"
+      ],
       "role": "universe"
     },
     {
@@ -60353,7 +60496,7 @@
     },
     {
       "ticker": "APGE",
-      "name": "Apogee Therapeutics, Inc.",
+      "name": "Apogee Therapeutics",
       "cik": "0001974640",
       "instrumentId": "vu_92fa1e8e3e14df",
       "exchange": "NASDAQ",
@@ -60375,7 +60518,7 @@
     },
     {
       "ticker": "AREN",
-      "name": "Paradium.AI, Inc.",
+      "name": "Paradium.AI",
       "cik": "0000894871",
       "instrumentId": "vu_51d850d4ddab63",
       "exchange": "NYSE MKT",
@@ -60389,7 +60532,7 @@
     },
     {
       "ticker": "ARI",
-      "name": "Apollo Commercial Real Estate Finance, Inc.",
+      "name": "Apollo Commercial Real Estate Finance",
       "cik": "0001467760",
       "instrumentId": "vu_613624d41bc76b",
       "exchange": "NYSE",
@@ -60411,7 +60554,7 @@
     },
     {
       "ticker": "ATAI",
-      "name": "AtaiBeckley Inc.",
+      "name": "AtaiBeckley",
       "cik": "0002081043",
       "instrumentId": "vu_cb4528485d1494",
       "exchange": "NASDAQ",
@@ -60433,7 +60576,7 @@
     },
     {
       "ticker": "ATII",
-      "name": "Archimedes Tech SPAC Partners II Co.",
+      "name": "Archimedes Tech SPAC Partners II",
       "cik": "0002028516",
       "instrumentId": "vu_3b0988e05f6ca5",
       "exchange": "NASDAQ",
@@ -60448,7 +60591,7 @@
     },
     {
       "ticker": "ATKR",
-      "name": "Atkore Inc.",
+      "name": "Atkore",
       "cik": "0001666138",
       "instrumentId": "vu_b4ac1fac6570fb",
       "exchange": "NYSE",
@@ -60477,20 +60620,6 @@
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Aus dem Company Master; US-Emittent mit CIK.",
-      "role": "universe"
-    },
-    {
-      "ticker": "BBBYW",
-      "name": "Neighborhood Intelligence, Inc.",
-      "cik": "0001130713",
-      "instrumentId": "vu_08aaa4dd65fd04",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Aus dem Company Master; US-Emittent mit CIK.",
-      "alsoTickers": [
-        "NXH"
-      ],
       "role": "universe"
     },
     {
@@ -60525,8 +60654,23 @@
       "role": "universe"
     },
     {
+      "ticker": "BIPH",
+      "name": "Brookfield Infrastructure Partners L.P.",
+      "cik": "0001406234",
+      "instrumentId": "vu_7f9bdf1592dda2",
+      "exchange": "NYSE",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "alsoTickers": [
+        "BIPI",
+        "BIPJ"
+      ],
+      "role": "universe"
+    },
+    {
       "ticker": "BLFS",
-      "name": "Biolife Solutions Inc",
+      "name": "Biolife Solutions",
       "cik": "0000834365",
       "instrumentId": "vu_ef3fdc1236bedb",
       "exchange": "NASDAQ",
@@ -60564,13 +60708,16 @@
     },
     {
       "ticker": "BRRWW",
-      "name": "ProCap Financial, Inc.",
+      "name": "ProCap Financial",
       "cik": "0002076163",
       "instrumentId": "vu_eff3c2030ad77c",
       "exchange": "NASDAQ",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "alsoTickers": [
+        "SVIA"
+      ],
       "role": "universe"
     },
     {
@@ -60597,7 +60744,7 @@
     },
     {
       "ticker": "BTOG",
-      "name": "Sangrix Inc.",
+      "name": "SANGRIX",
       "cik": "0001735556",
       "instrumentId": "vu_d60c6c7b731a5f",
       "exchange": "NASDAQ",
@@ -60611,7 +60758,7 @@
     },
     {
       "ticker": "BWMN",
-      "name": "Bowman Consulting Group Ltd.",
+      "name": "Bowman Consulting Group",
       "cik": "0001847590",
       "instrumentId": "vu_471852d3175a01",
       "exchange": "NASDAQ",
@@ -60622,7 +60769,7 @@
     },
     {
       "ticker": "BZH",
-      "name": "Beazer Homes Usa Inc",
+      "name": "Beazer Homes USA",
       "cik": "0000915840",
       "instrumentId": "vu_ad85507ed6b9b3",
       "exchange": "NYSE",
@@ -60647,7 +60794,7 @@
     },
     {
       "ticker": "CBZ",
-      "name": "CBIZ, Inc.",
+      "name": "Cbiz",
       "cik": "0000944148",
       "instrumentId": "vu_e4d2097b180d70",
       "exchange": "NYSE",
@@ -60680,7 +60827,7 @@
     },
     {
       "ticker": "CCO",
-      "name": "Clear Channel Outdoor Holdings, Inc.",
+      "name": "Clear Channel Outdoor Holdings",
       "cik": "0001334978",
       "instrumentId": "vu_67168e4d448baf",
       "exchange": "NYSE",
@@ -60691,7 +60838,7 @@
     },
     {
       "ticker": "CCXI",
-      "name": "Churchill Capital Corp XI",
+      "name": "Agility Robotics",
       "cik": "0002074973",
       "instrumentId": "vu_d12ab33e2c42b6",
       "exchange": "NASDAQ",
@@ -60787,7 +60934,7 @@
     },
     {
       "ticker": "CRNX",
-      "name": "Crinetics Pharmaceuticals, Inc.",
+      "name": "Crinetics Pharmaceuticals",
       "cik": "0001658247",
       "instrumentId": "vu_ba1bde5cec5217",
       "exchange": "NASDAQ",
@@ -60798,7 +60945,7 @@
     },
     {
       "ticker": "CSAN",
-      "name": "Cosan S.A.",
+      "name": "Cosan",
       "cik": "0001430162",
       "instrumentId": "vu_fb7f48c98e5dcb",
       "exchange": "NYSE",
@@ -60862,7 +61009,7 @@
     },
     {
       "ticker": "DBRG",
-      "name": "DigitalBridge Group, Inc.",
+      "name": "DigitalBridge Group Class A",
       "cik": "0001679688",
       "instrumentId": "vu_231e6cc5badd65",
       "exchange": "NYSE",
@@ -60899,13 +61046,16 @@
     },
     {
       "ticker": "DOMO",
-      "name": "Domo, Inc.",
+      "name": "Domo Inc - Class B",
       "cik": "0001505952",
       "instrumentId": "vu_40f563feef94fd",
       "exchange": "NASDAQ",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "alsoTickers": [
+        "HUCK"
+      ],
       "role": "universe"
     },
     {
@@ -61028,17 +61178,14 @@
       "role": "universe"
     },
     {
-      "ticker": "FGNX",
-      "name": "FG Nexus Inc.",
-      "cik": "0001591890",
-      "instrumentId": "vu_3b0c620a88693e",
+      "ticker": "FFTT",
+      "name": "Masonglory Ltd",
+      "cik": "0002020228",
+      "instrumentId": "vu_ee34c0dfbd43ce",
       "exchange": "NASDAQ",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Aus dem Company Master; US-Emittent mit CIK.",
-      "alsoTickers": [
-        "FGNXP"
-      ],
       "role": "universe"
     },
     {
@@ -61065,7 +61212,7 @@
     },
     {
       "ticker": "FSEA",
-      "name": "First Seacoast Bancorp, Inc.",
+      "name": "First Seacoast Bancorp",
       "cik": "0001943802",
       "instrumentId": "vu_f97b3c960d3d42",
       "exchange": "NASDAQ",
@@ -61101,7 +61248,7 @@
     },
     {
       "ticker": "GBTG",
-      "name": "Global Business Travel Group, Inc.",
+      "name": "Global Business Travel Group Class A",
       "cik": "0001820872",
       "instrumentId": "vu_c4a32e60f1d292",
       "exchange": "NYSE",
@@ -61112,7 +61259,7 @@
     },
     {
       "ticker": "GETY",
-      "name": "Getty Images Holdings, Inc.",
+      "name": "Getty Images Holdings Class A",
       "cik": "0001898496",
       "instrumentId": "vu_11eda8ef1435e2",
       "exchange": "NYSE",
@@ -61145,13 +61292,16 @@
     },
     {
       "ticker": "GNTA",
-      "name": "Genenta Science S.p.A.",
+      "name": "Genenta Science SpA",
       "cik": "0001838716",
       "instrumentId": "vu_000114c1ab36d5",
       "exchange": "NASDAQ",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "alsoTickers": [
+        "SAEN"
+      ],
       "role": "universe"
     },
     {
@@ -61167,7 +61317,7 @@
     },
     {
       "ticker": "GREEL",
-      "name": "Vulcan Infrastructure & Power Inc.",
+      "name": "Vulcan Infrastructure & Power",
       "cik": "0001844971",
       "instrumentId": "vu_638312ca24324d",
       "exchange": "NASDAQ",
@@ -61181,7 +61331,7 @@
     },
     {
       "ticker": "GWH",
-      "name": "ESS Tech, Inc.",
+      "name": "ESS Tech",
       "cik": "0001819438",
       "instrumentId": "vu_eedcd0ec584d3b",
       "exchange": "NYSE",
@@ -61192,7 +61342,7 @@
     },
     {
       "ticker": "HCWC",
-      "name": "Healthy Choice Wellness Corp.",
+      "name": "Healthy Choice Wellness Class A",
       "cik": "0001948864",
       "instrumentId": "vu_c890e1cdc5d468",
       "exchange": "AMEX",
@@ -61217,7 +61367,7 @@
     },
     {
       "ticker": "HLX",
-      "name": "Hornbeck Offshore Services, Inc.",
+      "name": "Hornbeck Offshore Services",
       "cik": "0000866829",
       "instrumentId": "vu_43237682f5d3cf",
       "exchange": "NYSE",
@@ -61239,17 +61389,6 @@
         "HVIIR",
         "HVIIU"
       ],
-      "role": "universe"
-    },
-    {
-      "ticker": "HWH",
-      "name": "HWH International Inc.",
-      "cik": "0001897245",
-      "instrumentId": "vu_0a7b56c83bbf8f",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Aus dem Company Master; US-Emittent mit CIK.",
       "role": "universe"
     },
     {
@@ -61298,7 +61437,7 @@
     },
     {
       "ticker": "INDV",
-      "name": "Indivior Pharmaceuticals, Inc.",
+      "name": "Supernus",
       "cik": "0001625297",
       "instrumentId": "vu_815aace214764f",
       "exchange": "NASDAQ",
@@ -61309,13 +61448,16 @@
     },
     {
       "ticker": "INM",
-      "name": "InMed Pharmaceuticals Inc.",
+      "name": "InMed Pharmaceuticals",
       "cik": "0001728328",
       "instrumentId": "vu_d364c5ddb75352",
       "exchange": "NASDAQ",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "alsoTickers": [
+        "MTRI"
+      ],
       "role": "universe"
     },
     {
@@ -61331,7 +61473,7 @@
     },
     {
       "ticker": "IPEX",
-      "name": "Inflection Point Acquisition Corp. V",
+      "name": "Inflection Point Acquisition Corp V Class A",
       "cik": "0002028355",
       "instrumentId": "vu_188d31e7c6b3da",
       "exchange": "NASDAQ",
@@ -61357,8 +61499,8 @@
     },
     {
       "ticker": "JSM",
-      "name": "Navient Corp",
-      "cik": "0001593538",
+      "name": "Navient Holdings, Inc.",
+      "cik": "0002152623",
       "instrumentId": "vu_bbbfe6717f18c9",
       "exchange": "NASDAQ",
       "active": true,
@@ -61367,17 +61509,6 @@
       "alsoTickers": [
         "NAVI"
       ],
-      "role": "universe"
-    },
-    {
-      "ticker": "KAZR",
-      "name": "Skyline Builders Group Holding Ltd",
-      "cik": "0002031009",
-      "instrumentId": "vu_8b5ffe63fecf00",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Aus dem Company Master; US-Emittent mit CIK.",
       "role": "universe"
     },
     {
@@ -61443,7 +61574,7 @@
     },
     {
       "ticker": "KVUE",
-      "name": "Kenvue Inc.",
+      "name": "Kenvue",
       "cik": "0001944048",
       "instrumentId": "vu_07c58ff7238a6a",
       "exchange": "NYSE",
@@ -61454,7 +61585,7 @@
     },
     {
       "ticker": "KWM",
-      "name": "K Wave Media Ltd.",
+      "name": "K Wave Media",
       "cik": "0002000756",
       "instrumentId": "vu_212cb1ee45568a",
       "exchange": "NASDAQ",
@@ -61462,7 +61593,6 @@
       "cikSource": "sec:company_tickers_exchange",
       "why": "Aus dem Company Master; US-Emittent mit CIK.",
       "alsoTickers": [
-        "KWMWW",
         "NXAT",
         "NXATW"
       ],
@@ -61470,7 +61600,7 @@
     },
     {
       "ticker": "LESL",
-      "name": "Leslie's, Inc.",
+      "name": "Leslies",
       "cik": "0001821806",
       "instrumentId": "vu_232479439579a6",
       "exchange": "NASDAQ",
@@ -61481,7 +61611,7 @@
     },
     {
       "ticker": "LNAI",
-      "name": "Lunai Bioworks Inc.",
+      "name": "Lunai Bioworks",
       "cik": "0001527728",
       "instrumentId": "vu_679c1463c8debd",
       "exchange": "NASDAQ",
@@ -61503,7 +61633,7 @@
     },
     {
       "ticker": "LPSN",
-      "name": "Liveperson Inc",
+      "name": "Liveperson",
       "cik": "0001102993",
       "instrumentId": "vu_78a0cc0617e7c4",
       "exchange": "NASDAQ",
@@ -61514,18 +61644,21 @@
     },
     {
       "ticker": "LRHC",
-      "name": "La Rosa Holdings Corp.",
+      "name": "La Rosa Holdings",
       "cik": "0001879403",
       "instrumentId": "vu_19d5c610676f89",
       "exchange": "NASDAQ",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "alsoTickers": [
+        "SRTM"
+      ],
       "role": "universe"
     },
     {
       "ticker": "LTRYW",
-      "name": "Sports Entertainment Gaming Global Corp",
+      "name": "Sports Entertainment Gaming Global",
       "cik": "0001673481",
       "instrumentId": "vu_8b95c5e935dc19",
       "exchange": "NASDAQ",
@@ -61574,17 +61707,6 @@
       "role": "universe"
     },
     {
-      "ticker": "MGPI",
-      "name": "Mgp Ingredients Inc",
-      "cik": "0000835011",
-      "instrumentId": "vu_d0d2a2e8b7ebfc",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Aus dem Company Master; US-Emittent mit CIK.",
-      "role": "universe"
-    },
-    {
       "ticker": "MHLA",
       "name": "Maiden Holdings, Ltd.",
       "cik": "0001412100",
@@ -61596,17 +61718,6 @@
       "alsoTickers": [
         "MHNC"
       ],
-      "role": "universe"
-    },
-    {
-      "ticker": "MIMI",
-      "name": "Mint Inc Ltd",
-      "cik": "0001998560",
-      "instrumentId": "vu_9659400fa0a4f2",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Aus dem Company Master; US-Emittent mit CIK.",
       "role": "universe"
     },
     {
@@ -61648,7 +61759,7 @@
     },
     {
       "ticker": "MSGS",
-      "name": "Madison Square Garden Sports Corp.",
+      "name": "MSG Knickerbockers",
       "cik": "0001636519",
       "instrumentId": "vu_ff8f44daf592f5",
       "exchange": "NYSE",
@@ -61659,7 +61770,7 @@
     },
     {
       "ticker": "NATH",
-      "name": "Nathans Famous, Inc.",
+      "name": "Nathan`s Famous",
       "cik": "0000069733",
       "instrumentId": "vu_0a4755e6922342",
       "exchange": "NASDAQ",
@@ -61670,7 +61781,7 @@
     },
     {
       "ticker": "NCSM",
-      "name": "NCS Multistage Holdings, Inc.",
+      "name": "NCS Multistage Holdings",
       "cik": "0001692427",
       "instrumentId": "vu_7eb6c1f4c9a3f8",
       "exchange": "NASDAQ",
@@ -61681,7 +61792,7 @@
     },
     {
       "ticker": "NHPAP",
-      "name": "National Healthcare Properties, Inc.",
+      "name": "National Healthcare Properties",
       "cik": "0001561032",
       "instrumentId": "vu_3f55904cf71b05",
       "exchange": "NASDAQ",
@@ -61717,7 +61828,7 @@
     },
     {
       "ticker": "NSTS",
-      "name": "NSTS Bancorp, Inc.",
+      "name": "NSTS Bancorp",
       "cik": "0001881592",
       "instrumentId": "vu_312f41751f82ff",
       "exchange": "NASDAQ",
@@ -61750,7 +61861,7 @@
     },
     {
       "ticker": "NVNI",
-      "name": "Nvni Group Ltd",
+      "name": "Nvni Group",
       "cik": "0001965143",
       "instrumentId": "vu_119c59260cea53",
       "exchange": "NASDAQ",
@@ -61805,18 +61916,21 @@
     },
     {
       "ticker": "PAPL",
-      "name": "Pineapple Financial Inc.",
+      "name": "Pineapple Financial",
       "cik": "0001938109",
       "instrumentId": "vu_707524b19a6e43",
       "exchange": "AMEX",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "alsoTickers": [
+        "PTIV"
+      ],
       "role": "universe"
     },
     {
       "ticker": "PERF",
-      "name": "Perfect Corp.",
+      "name": "Perfect Class A",
       "cik": "0001899830",
       "instrumentId": "vu_3a0a5053262ec1",
       "exchange": "NYSE",
@@ -61890,7 +62004,7 @@
     },
     {
       "ticker": "PSKY",
-      "name": "Paramount Skydance Corp",
+      "name": "Paramount Skydance Class B",
       "cik": "0002041610",
       "instrumentId": "vu_dd9ef162cc5f4a",
       "exchange": "NASDAQ",
@@ -61911,19 +62025,8 @@
       "role": "universe"
     },
     {
-      "ticker": "QNCX",
-      "name": "Quince Therapeutics, Inc.",
-      "cik": "0001662774",
-      "instrumentId": "vu_9838fa174a4343",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Aus dem Company Master; US-Emittent mit CIK.",
-      "role": "universe"
-    },
-    {
       "ticker": "QRVO",
-      "name": "Qorvo, Inc.",
+      "name": "Qorvo",
       "cik": "0001604778",
       "instrumentId": "vu_f1aa018f680762",
       "exchange": "NASDAQ",
@@ -61934,7 +62037,7 @@
     },
     {
       "ticker": "RAMP",
-      "name": "LiveRamp Holdings, Inc.",
+      "name": "LiveRamp Holdings",
       "cik": "0000733269",
       "instrumentId": "vu_2ca9d874e506d6",
       "exchange": "NYSE",
@@ -61945,7 +62048,7 @@
     },
     {
       "ticker": "RITR",
-      "name": "Reitar Logtech Holdings Ltd",
+      "name": "Reitar Logtech Holdings Class A",
       "cik": "0001951229",
       "instrumentId": "vu_e90c705c9889cc",
       "exchange": "NASDAQ",
@@ -61956,7 +62059,7 @@
     },
     {
       "ticker": "ROKU",
-      "name": "Roku, Inc",
+      "name": "Roku Inc - Class A",
       "cik": "0001428439",
       "instrumentId": "vu_bf1d17ccea0f0e",
       "exchange": "NASDAQ",
@@ -61986,7 +62089,7 @@
     },
     {
       "ticker": "SBXD",
-      "name": "SilverBox Corp IV",
+      "name": "SilverBox Corp IV Class A",
       "cik": "0002015947",
       "instrumentId": "vu_9a79d6ad4909f7",
       "exchange": "NYSE",
@@ -62061,7 +62164,7 @@
     },
     {
       "ticker": "SLP",
-      "name": "Simulations Plus, Inc.",
+      "name": "Simulations Plus",
       "cik": "0001023459",
       "instrumentId": "vu_6ed2fb8a656d58",
       "exchange": "NASDAQ",
@@ -62072,7 +62175,7 @@
     },
     {
       "ticker": "SNYR",
-      "name": "Synergy CHC Corp.",
+      "name": "Synergy CHC",
       "cik": "0001562733",
       "instrumentId": "vu_a92e6d254f4864",
       "exchange": "NASDAQ",
@@ -62094,7 +62197,7 @@
     },
     {
       "ticker": "SPKL",
-      "name": "Spark I Acquisition Corp",
+      "name": "Spark I Acquisition Class A",
       "cik": "0001884046",
       "instrumentId": "vu_c52f70775a7f5b",
       "exchange": "NASDAQ",
@@ -62135,7 +62238,7 @@
     },
     {
       "ticker": "SWKHL",
-      "name": "SWK Holdings Corp",
+      "name": "Swk Holdings",
       "cik": "0001089907",
       "instrumentId": "vu_4a357898e7d844",
       "exchange": "NASDAQ",
@@ -62185,7 +62288,7 @@
     },
     {
       "ticker": "TBPH",
-      "name": "Theravance Biopharma, Inc.",
+      "name": "Theravance Biopharma",
       "cik": "0001583107",
       "instrumentId": "vu_c3943ef52a2fb8",
       "exchange": "NASDAQ",
@@ -62196,7 +62299,7 @@
     },
     {
       "ticker": "TCBI",
-      "name": "Texas Capital Bancshares Inc/Tx",
+      "name": "Texas Capital Bancshares",
       "cik": "0001077428",
       "instrumentId": "vu_19101b673a234e",
       "exchange": "NASDAQ",
@@ -62204,7 +62307,8 @@
       "cikSource": "sec:company_tickers_exchange",
       "why": "Aus dem Company Master; US-Emittent mit CIK.",
       "alsoTickers": [
-        "TCBIO"
+        "TCBIO",
+        "TXCP"
       ],
       "role": "universe"
     },
@@ -62264,6 +62368,20 @@
       "role": "universe"
     },
     {
+      "ticker": "TVC",
+      "name": "Tennessee Valley Authority",
+      "cik": "0001376986",
+      "instrumentId": "vu_d6edd86d48a305",
+      "exchange": "NYSE",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "alsoTickers": [
+        "TVE"
+      ],
+      "role": "universe"
+    },
+    {
       "ticker": "TWLVR",
       "name": "Twelve Seas Investment Co III/Cayman",
       "cik": "0002052243",
@@ -62287,7 +62405,7 @@
     },
     {
       "ticker": "UUU",
-      "name": "Universal Safety Products, Inc.",
+      "name": "Universal Security Instruments",
       "cik": "0000102109",
       "instrumentId": "vu_3373d965d1470d",
       "exchange": "AMEX",
@@ -62298,7 +62416,7 @@
     },
     {
       "ticker": "VACI",
-      "name": "Viking Acquisition Corp I",
+      "name": "Viking Acquisition Corp I Class A",
       "cik": "0002080023",
       "instrumentId": "vu_f13d79f9999feb",
       "exchange": "NYSE",
@@ -62322,30 +62440,8 @@
       "role": "universe"
     },
     {
-      "ticker": "VRME",
-      "name": "VerifyMe, Inc.",
-      "cik": "0001104038",
-      "instrumentId": "vu_a5acaffdde2921",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Aus dem Company Master; US-Emittent mit CIK.",
-      "role": "universe"
-    },
-    {
-      "ticker": "VSME",
-      "name": "VS MEDIA Holdings Ltd",
-      "cik": "0001951294",
-      "instrumentId": "vu_3c10a86afd6fd5",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Aus dem Company Master; US-Emittent mit CIK.",
-      "role": "universe"
-    },
-    {
       "ticker": "VTAK",
-      "name": "Catheter Precision, Inc.",
+      "name": "Catheter Precision",
       "cik": "0001716621",
       "instrumentId": "vu_95c9964022e6ae",
       "exchange": "AMEX",
@@ -62356,7 +62452,7 @@
     },
     {
       "ticker": "WALD",
-      "name": "Waldencast plc",
+      "name": "Waldencast Class A",
       "cik": "0001840199",
       "instrumentId": "vu_7ce23ad35c64de",
       "exchange": "NASDAQ",
@@ -62370,7 +62466,7 @@
     },
     {
       "ticker": "WBD",
-      "name": "Warner Bros. Discovery, Inc.",
+      "name": "Warner Bros. Discovery Class A",
       "cik": "0001437107",
       "instrumentId": "vu_028e67d0695377",
       "exchange": "NASDAQ",
@@ -62381,7 +62477,7 @@
     },
     {
       "ticker": "WEAV",
-      "name": "Weave Communications, Inc.",
+      "name": "Weave Communications",
       "cik": "0001609151",
       "instrumentId": "vu_19bcd72fb9259b",
       "exchange": "NYSE",
@@ -62392,7 +62488,7 @@
     },
     {
       "ticker": "WKEY",
-      "name": "Wisekey International Holding S.A.",
+      "name": "WISeKey International Holding",
       "cik": "0001738699",
       "instrumentId": "vu_09029ef7d93b23",
       "exchange": "NASDAQ",
@@ -62403,7 +62499,7 @@
     },
     {
       "ticker": "WPRT",
-      "name": "Westport Fuel Systems Inc.",
+      "name": "Aetherion Technologies",
       "cik": "0001370416",
       "instrumentId": "vu_8413236620649a",
       "exchange": "NASDAQ",
@@ -62438,6 +62534,17 @@
       "role": "universe"
     },
     {
+      "ticker": "XRPNU",
+      "name": "Armada Acquisition Corp. II",
+      "cik": "0002044009",
+      "instrumentId": "vu_ce0beab08bdc06",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "role": "universe"
+    },
+    {
       "ticker": "XRPZ",
       "name": "Franklin XRP Trust",
       "cik": "0002059438",
@@ -62450,7 +62557,7 @@
     },
     {
       "ticker": "YHNA",
-      "name": "YHN Acquisition I Ltd",
+      "name": "YHN Acquisition I",
       "cik": "0002020987",
       "instrumentId": "vu_883a221b4df6ee",
       "exchange": "NASDAQ",
@@ -62465,7 +62572,7 @@
     },
     {
       "ticker": "ZTEK",
-      "name": "Zentek Ltd.",
+      "name": "Zentek",
       "cik": "0001904501",
       "instrumentId": "vu_cc0f20ed827890",
       "exchange": "NASDAQ",

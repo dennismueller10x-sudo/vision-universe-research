@@ -85,6 +85,9 @@ const soon = (R) => `<p class="soon"><span class="os">${ICON_APPLE}${ICON_ANDROI
 const storesBlock = (R) => `<div class="stores"><div class="b"><img src="${R}web/img/badge-apple.svg" alt="Laden im App Store (bald verfügbar)" width="120" height="40"><img src="${R}web/img/badge-google.png" alt="Jetzt bei Google Play (bald verfügbar)" width="646" height="192"></div><p class="cap"><b>Bald im App Store und bei Google Play</b>Zum Start kostenlos</p></div>`;
 const cta = (R) => `<div class="pvcta"><a class="btn" href="${R}#newsletter"><span>Zum Start benachrichtigen</span><span class="dot">${ARROW}</span></a></div>`;
 
+// Unterseiten (Owner 22.11.2026): das Inhaltsverzeichnis zeigt sechs Themen, der Rest klappt auf.
+const tocShort = (toc) => { const li = toc.match(/<li>[\s\S]*?<\/li>/g) || [];
+  return li.length <= 6 ? `<ol class="pvtoc">${toc}</ol>` : `<ol class="pvtoc">${li.slice(0, 6).join("")}</ol><details class="pvmore"><summary>Alle ${li.length} Themen anzeigen</summary><ol class="pvtoc" start="7">${li.slice(6).join("")}</ol></details>`; };
 /** Vorschau-Seite für Heft oder Report: Titel, Erklärung, verschwommene Seiten, Inhalt, „Bald in der App“. */
 function preview(R, { kicker, h1, lead, about, titel, unterzeile, cover, coverAlt, pages, inhalt, what }) {
   const stack = `<div class="m3 pvm" aria-hidden="true">${pages.slice(0, 3).map((p, i) => `<span class="pg p${i + 1}">${img(R, p)}</span>`).join("")}<span class="cv">${img(R, cover)}<i class="shine"></i></span></div>`;
@@ -95,7 +98,7 @@ function preview(R, { kicker, h1, lead, about, titel, unterzeile, cover, coverAl
     + `<section class="full pvabout"><h2>Was ist das?</h2><div class="pvgrid"><div><p class="t">${esc(about)}</p><ul class="pvwhat">${what.map((w) => `<li>${esc(w)}</li>`).join("")}</ul></div>`
     + `<div class="pvissue"><span class="k">Aktuelle Ausgabe</span><h3>${esc(titel)}</h3>${unterzeile ? `<p>${esc(unterzeile)}</p>` : ""}</div></div></section>`
     + `<section class="full"><h2>Ein Blick hinein</h2><p class="t pvnote">Hier siehst du nur eine Vorschau. Lesen kannst du ${esc(coverAlt)} bald in der App.</p><div class="pvpeek">${peek}</div></section>`
-    + (toc ? `<section class="full"><h2>Das steht drin</h2><ol class="pvtoc">${toc}</ol></section>` : "")
+    + (toc ? `<section class="full"><h2>Das steht drin</h2>${tocShort(toc)}</section>` : "")
     + `<section class="full pvend"><div class="pvbox">${soon(R)}<h2>Bald in der App.</h2><p class="t">Trag dich ein, dann sagen wir dir Bescheid, sobald die App da ist.</p>${cta(R)}${storesBlock(R)}</div></section>`;
 }
 
@@ -111,9 +114,9 @@ export function regions(state) {
     return `<div class="pubs-g">${mag}${rep}</div>`;
   };
   const vwCard = (R, x) => `<a class="vw-card" href="${link(x.href)}">${x.img ? `<img src="${R}web/img/news/${x.img}" alt="" loading="lazy">` : ""}<span><small>${esc(x.rubrik)} · ${dmy(x.datum)}</small><b>${esc(x.titel)}</b><em>${esc(x.teaser)}</em></span></a>`;
-  const tv = (R) => `<div class="vw-bill">${a0.img ? `<img class="bg" src="${R}web/img/news/${a0.img}" alt="">` : ""}<div class="w"><p class="vw-tag">${esc(a0.rubrik)} · ${dmy(a0.datum)}</p><h2>${esc(a0.titel)}</h2><p>${esc(a0.teaser)}</p>`
-    + `<div class="vw-bbtn"><a class="p" href="${link(a0.href)}">▶ Jetzt lesen</a><a class="s" href="${R}news/">Alle News</a></div></div></div>`
-    + `<div class="vw-rows"><div class="vw-row"><div class="vw-rh w"><h3>Neu bei Vision Universe</h3><span class="vw-rh-r"><a href="${R}news/">Alle News</a><span class="vw-arr"><button type="button" aria-label="Zurück">‹</button><button type="button" aria-label="Weiter">›</button></span></span></div>`
+  const tv = (R, all = `${R}news/`) => `<div class="vw-bill">${a0.img ? `<img class="bg" src="${R}web/img/news/${a0.img}" alt="">` : ""}<div class="w"><p class="vw-tag">${esc(a0.rubrik)} · ${dmy(a0.datum)}</p><h2>${esc(a0.titel)}</h2><p>${esc(a0.teaser)}</p>`
+    + `<div class="vw-bbtn"><a class="p" href="${link(a0.href)}">▶ Jetzt lesen</a><a class="s" href="${all}">Alle News</a></div></div></div>`
+    + `<div class="vw-rows"><div class="vw-row"><div class="vw-rh w"><h3>Neu bei Vision Universe</h3><span class="vw-rh-r"><a href="${all}">Alle News</a><span class="vw-arr"><button type="button" aria-label="Zurück">‹</button><button type="button" aria-label="Weiter">›</button></span></span></div>`
     + `<div class="vw-track">${artikel.slice(1, 15).map((x) => vwCard(R, x)).join("")}</div></div></div>`;
   // News-Seite (Owner 18.11.2026): eine Kachel je Zeile, nach Tagen gruppiert, das Neueste oben.
   const DAYS = ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"];
@@ -137,7 +140,7 @@ export function regions(state) {
       titel: report.titel, unterzeile: report.unterzeile, cover: report.cover, coverAlt: "den ganzen Report", pages: report.preview, inhalt: report.alles }) } } : {}),
     // News-Seite (Owner 17.11.2026): nur Artikel; Magazin und Aktienreports haben eigene Seiten im Menü.
     // Großer gestalteter Kopf steht fest in news/index.html (kein Tagesbild oben); hier nur die Artikel als kleine Kacheln.
-    "news/index.html": { page: `<section class="full nfirst">${stand(a0)}${byDay("../")}</section>` }
+    "news/index.html": { tv: tv("../", "#archiv"), page: `<section class="full nfirst" id="archiv" data-ch>${stand(a0)}${byDay("../")}</section>` }
   };
 }
 

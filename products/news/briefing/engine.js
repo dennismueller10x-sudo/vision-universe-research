@@ -40,6 +40,9 @@
     "Federal Reserve", "EZB", "BLS", "Census Bureau", "BEA", "Destatis", "Eurostat", "CME FedWatch", "SEC",
     "Bank of America", "Goldman Sachs", "JPMorgan", "Morgan Stanley", "UBS", "FactSet", "Check Point", "Unternehmensmeldung"];
   var MAX_PER_SOURCE = 2;
+  // Ausblick (Owner 22.11.2026): Termine der nächsten Handelstage. Arten mit Anzeigename; jede Angabe braucht Quelle und https-Link.
+  var AGENDA_KINDS = { zahlen: "Quartalszahlen", daten: "Wirtschaftsdaten", notenbank: "Notenbank", dividende: "Dividende", markt: "Börsenkalender" };
+  var AGENDA_MAX_DAYS = 4, AGENDA_MAX_ITEMS = 12, AGENDA_HORIZON = 7;
   var WEEKDAY = ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"];
 
   function isDate(s) { return typeof s === "string" && /^\d{4}-\d{2}-\d{2}$/.test(s); }
@@ -125,6 +128,15 @@
     if (C.context) out.push(C.context.title + ".");
     if (C.rates) { var r10 = C.rates.bars.rows.filter(function (r) { return r.label === "US 10 Jahre"; })[0];
       if (r10 && r10.value) out.push("Die Rendite zehnjähriger US-Staatsanleihen " + (r10.value < 0 ? "fiel" : "stieg") + " um " + Math.abs(r10.value) + " Basispunkte auf " + r10.sub + "."); }
+    if (C.agenda) {
+      var pick = [];
+      // je Tag ein Termin, Wirtschaftsdaten und Notenbank vor Quartalszahlen, höchstens drei Tage
+      C.agenda.agenda.days.forEach(function (dd) {
+        var x = ["daten", "notenbank", "zahlen"].map(function (k) { return dd.items.filter(function (y) { return y.kind === k; })[0]; }).filter(Boolean)[0];
+        if (x && pick.length < 3) pick.push(dd.weekday + " " + (x.kind === "zahlen" ? "Quartalszahlen von " : "") + x.label);
+      });
+      if (pick.length) out.push("Als Nächstes: " + pick.join("; ") + ".");
+    }
     return out;
   }
 
@@ -398,6 +410,33 @@
     return { kept: kept, dropped: dropped };
   }
 
+  /* Ausblick aus radar.agenda: [{date, kind, label, time?, sub?, source, url}]. Nur Tage nach dem Handelstag (höchstens
+     AGENDA_HORIZON Kalendertage, kein Wochenende), höchstens AGENDA_MAX_DAYS Tage. Verworfenes steht mit Grund im Ergebnis. */
+  function cardAgenda(radar, session) {
+    var days = {}, dropped = [], n = 0;
+    (radar && radar.agenda || []).forEach(function (it, i) {
+      var why = null, dd = it && isDate(it.date) ? daysBetween(session, it.date) : null, wd = dd != null ? new Date(it.date + "T12:00:00Z").getUTCDay() : null;
+      if (!it || !it.label || !it.source || !isDate(it.date)) why = "Pflichtfeld fehlt";
+      else if (!AGENDA_KINDS[it.kind]) why = "unbekannte Art: " + it.kind;
+      else if (dd < 1 || dd > AGENDA_HORIZON) why = "nicht in den nächsten Tagen (" + it.date + ")";
+      else if (wd === 0 || wd === 6) why = "Wochenende (" + it.date + ")";
+      else if (!it.url || !/^https:\/\//.test(it.url)) why = "keine Quell-URL";
+      else if (n >= AGENDA_MAX_ITEMS) why = "mehr als " + AGENDA_MAX_ITEMS + " Termine";
+      else if (!days[it.date] && Object.keys(days).length >= AGENDA_MAX_DAYS) why = "mehr als " + AGENDA_MAX_DAYS + " Tage";
+      if (why) { dropped.push({ index: i, title: it && it.label, reason: "Ausblick: " + why }); return; }
+      n++;
+      (days[it.date] = days[it.date] || []).push({ kind: it.kind, kindLabel: AGENDA_KINDS[it.kind], label: it.label, time: it.time || null, sub: it.sub || null, source: it.source, url: it.url });
+    });
+    var list = Object.keys(days).sort().map(function (d) { return { date: d, weekday: WEEKDAY[new Date(d + "T12:00:00Z").getUTCDay()], items: days[d] }; });
+    if (!list.length) return { card: null, dropped: dropped };
+    var count = {}; list.forEach(function (d) { d.items.forEach(function (x) { count[x.kind] = (count[x.kind] || 0) + 1; }); });
+    var src = [];
+    list.forEach(function (d) { d.items.forEach(function (x) { if (src.indexOf(x.source) < 0) src.push(x.source); }); });
+    return { dropped: dropped, card: { id: "agenda", type: "AGENDA", kicker: "Ausblick", title: (radar.agendaTitle || "Die nächsten Tage"),
+      sub: null, agenda: { days: list, counts: count },
+      source: "Termine laut " + src.join(", "), sources: list.reduce(function (a, d) { return a.concat(d.items.map(function (x) { return { label: x.label, source: x.source, url: x.url }; })); }, []) } };
+  }
+
   function thousands(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, "."); }
   function fmtPct(x, d) {
     var v = Math.abs(x).toFixed(d == null ? 1 : d).replace(".", ",");
@@ -435,16 +474,18 @@
       cardPicture(inp)
     ].filter(Boolean);
     third.kept.slice(4).forEach(function (c) { cards.splice(cards.length - 1, 0, c); });
+    var agenda = cardAgenda(inp.radar, session);
+    if (agenda.card) cards.push(agenda.card);
     out.cards = cards;
-    out.dropped = third.dropped;
-    out.counts = { MARKET: 0, OWN: 0, THIRD: 0 };
+    out.dropped = third.dropped.concat(agenda.dropped);
+    out.counts = { MARKET: 0, OWN: 0, THIRD: 0, AGENDA: 0 };
     cards.forEach(function (c) { out.counts[c.type]++; });
     out.summary = summary(out);
     return out;
   }
 
   var api = { SCHEMA: SCHEMA, METHOD: METHOD, THIRD_SOURCES: THIRD_SOURCES, MAX_PER_SOURCE: MAX_PER_SOURCE,
-    buildBriefing: buildBriefing, checkFresh: checkFresh, summary: summary, episodes: episodes, lastComparable: lastComparable, thirdCards: thirdCards,
+    buildBriefing: buildBriefing, checkFresh: checkFresh, summary: summary, episodes: episodes, lastComparable: lastComparable, thirdCards: thirdCards, cardAgenda: cardAgenda, AGENDA_KINDS: AGENDA_KINDS,
     fmtPct: fmtPct, headline: headline };
   if (isNode) module.exports = api;
   else global.VUMarketBriefing = api;

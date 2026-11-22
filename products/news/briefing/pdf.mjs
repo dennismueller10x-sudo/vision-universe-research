@@ -172,12 +172,14 @@ export async function writePdf(b, out, { png = null, cards = [] } = {}) {
     await page.evaluate(() => document.fonts.ready);
     await page.pdf({ path: out, format: 'A4', printBackground: true, preferCSSPageSize: true, outline: true, tagged: true });
     if (png) {
-      // Bilder für die Website: Titelblatt des PDF (titel.png) und Karten (karte-NN.png; 01 = Vorschaubild).
+      // Bilder für die Website: Titelblatt des PDF (titel.png), Innenseiten (seite-NN.png) und Karten (karte-NN.png; 01 = Vorschaubild).
       fs.mkdirSync(png, { recursive: true });
       const p1 = await browser.newPage({ viewport: { width: 794, height: 1123 }, deviceScaleFactor: 1.4 });
       await p1.goto(pathToFileURL(tmp).href);
       await p1.evaluate(() => document.fonts.ready);
       await p1.locator('section.cover').screenshot({ path: path.join(png, 'titel.png') });
+      // Innenseiten 2 bis 4 für das aufklappende Heft auf der Produktseite (seite-02.png ... seite-04.png).
+      for (let k = 1; k <= 3; k++) await p1.locator('section.page').nth(k).screenshot({ path: path.join(png, 'seite-' + String(k + 1).padStart(2, '0') + '.png') });
       const p2 = await browser.newPage({ viewport: { width: Render.W, height: Render.H } });
       const ids = [0].concat((cards || []).filter((i) => i > 0 && i < b.cards.length));
       await p2.setContent('<!doctype html><meta charset=utf-8><style>@font-face{font-family:Inter;src:url(' + font + ') format("woff2");font-weight:100 900}body{margin:0}svg{display:block}</style>' + ids.map((i) => Render.cardSvg(b.cards[i], i, b.cards.length, b.session)).join(''));

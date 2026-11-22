@@ -1,7 +1,7 @@
 {
   "version": "company-master-1.0.0",
   "masterId": "VU_COMPANY_MASTER",
-  "generatedAt": "2026-11-22T08:56:14.262Z",
+  "generatedAt": "2026-11-22T13:49:53.994Z",
   "asOf": "2026-11-22",
   "provider": "tiingo",
   "source": {
@@ -2692,30 +2692,30 @@
   },
   "run": {
     "source": "github-actions",
-    "runId": "45004987157",
-    "commit": "7a1d0f05d1ba4947a0785ca43d3779cc8a1943f4",
-    "normalizeMs": 82,
-    "syncMs": 90,
-    "shardsWritten": 6,
-    "shardsUnchanged": 640,
-    "publishedBytes": 10139502
+    "runId": "45029202193",
+    "commit": "0647706abeaa701c5cdf916e99206ceffabce620",
+    "normalizeMs": 97,
+    "syncMs": 116,
+    "shardsWritten": 150,
+    "shardsUnchanged": 496,
+    "publishedBytes": 10141535
   },
   "identifiers": {
     "cikMap": {
       "status": "OK",
-      "generatedAt": "2026-09-13T19:06:28.769Z",
-      "entries": 10426,
+      "generatedAt": "2026-11-22T13:49:53.279Z",
+      "entries": 10399,
       "fromConfig": 1,
       "declaredOverrides": 1,
       "successorResolved": 1,
       "ambiguous": 0,
       "reason": null
     },
-    "withIssuerId": 6469,
-    "distinctIssuers": 5485,
-    "withCik": 6469,
-    "withName": 7615,
-    "withoutName": 225,
+    "withIssuerId": 6351,
+    "distinctIssuers": 5421,
+    "withCik": 6495,
+    "withName": 7617,
+    "withoutName": 223,
     "note": "isin/cusip/figi/lei bleiben null: keine der vorhandenen Quellen fuehrt sie, und eine neue kostenpflichtige Quelle ist ausgeschlossen (§32). Die Felder stehen im Schema, damit ein spaeterer Anbieter sie fuellen kann, ohne das Modell zu aendern."
   },
   "quality": {
@@ -2761,7 +2761,7 @@
           ]
         }
       ],
-      "missingName": 225,
+      "missingName": 223,
       "missingExchange": 0,
       "missingCurrency": 0,
       "missingCountry": 0,
@@ -2770,12 +2770,12 @@
       "inactive": 15,
       "noFirstTradeDate": 0,
       "symbolWithWhitespace": [],
-      "classificationDisagreement": 1605,
+      "classificationDisagreement": 1598,
       "classificationDisagreementByClass": {
         "RIGHT->COMMON_STOCK": 129,
         "UNIT->COMMON_STOCK": 290,
-        "WARRANT->COMMON_STOCK": 452,
-        "ETF->COMMON_STOCK": 263,
+        "WARRANT->COMMON_STOCK": 447,
+        "ETF->COMMON_STOCK": 261,
         "TRUST->COMMON_STOCK": 84,
         "PREFERRED->COMMON_STOCK": 143,
         "EQUITY_COMMON->ADR": 2,

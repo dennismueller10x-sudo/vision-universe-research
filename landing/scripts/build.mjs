@@ -101,7 +101,7 @@ export async function build({output = resolve(root,'dist'), config = {}, product
     html=html.replace(`${attribute}="./${asset}"`,`${attribute}="./${asset}?v=${version}"`);
   }
   // Story-Website: Stil und Skript mit inhaltsabhängigen Adressen auf allen Seiten.
-  const stamp={};for(const asset of ['web/site.css','web/site.js','web/home.css','web/home.js','web/consent.js','web/liste.css','newsletter.js'])stamp[asset]=createHash('sha256').update(await readFile(resolve(output,asset))).digest('hex').slice(0,16);
+  const stamp={};for(const asset of ['web/site.css','web/site.js','web/home.css','web/home.js','web/sub.css','web/sub.js','web/consent.js','web/liste.css','newsletter.js'])stamp[asset]=createHash('sha256').update(await readFile(resolve(output,asset))).digest('hex').slice(0,16);
   for(const asset of ['marktbriefing/mb.css','marktbriefing/mb.js']){try{stamp[asset]=createHash('sha256').update(await readFile(resolve(output,asset))).digest('hex').slice(0,16);}catch{/* noch nicht vorhanden */}}
   const stampPage=(page,prefix)=>{for(const asset of Object.keys(stamp))page=page.replaceAll(`"${prefix}${asset}"`,`"${prefix}${asset}?v=${stamp[asset]}"`);return page;};
   html=stampPage(html,'./').replace('<meta name="vu-ga" content="">',`<meta name="vu-ga" content="${ga}">`);
