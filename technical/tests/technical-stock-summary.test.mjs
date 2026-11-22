@@ -1,6 +1,7 @@
 /* Technical-Stand je Aktie (technical/engine/stock-summary.js, docs/technical/STOCK_SUMMARY.md): kleine Scherben fuer andere
    Produktwelten. Gebaut aus dem committeten Screener-Datensatz; jede Einordnung stimmt mit templates.js#checklist ueberein,
    die Scherbe ist core/identity.js#shardKey, keine Signal- oder Renditesprache. Schreibt nur in ein temporaeres Verzeichnis. */
+import "../../scripts/quant/lib/frozen-data.mjs"; /* eingefrorener Datenstand (scripts/quant/lib/frozen-data.mjs, 22.11.2026) */
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, existsSync, mkdtempSync, writeFileSync, readdirSync, rmSync, mkdirSync } from "node:fs";

@@ -3,6 +3,7 @@
    und laufen dann unveraendert durch quant/engines/return-series.js#splitFactors (ADR-002). Erster und einziger
    Eintrag: PZZA 2:1 als Aktiendividende, Stichtag 2013-12-12, verteilt 2013-12-27, Ex-Tag 2013-12-30 - der
    splitFactor des Anbieters fuehrt ihn nicht, die Wochenreihe springt 89,95 -> 46,08. */
+import "../../scripts/quant/lib/frozen-data.mjs"; /* eingefrorener Datenstand (scripts/quant/lib/frozen-data.mjs, 22.11.2026) */
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";

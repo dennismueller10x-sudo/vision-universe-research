@@ -2,6 +2,7 @@
    ausgelieferte Artefakt. Kein Ticker als Name, keine leeren Strings,
    deterministischer Vorrang, gleiche securityId = gleicher Name,
    Klassenaktien getrennt, Mitgliedschaft unveraendert. */
+import "../../scripts/quant/lib/frozen-data.mjs"; /* eingefrorener Datenstand (scripts/quant/lib/frozen-data.mjs, 22.11.2026) */
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, existsSync, mkdirSync, writeFileSync, rmSync, mkdtempSync, cpSync } from "node:fs";

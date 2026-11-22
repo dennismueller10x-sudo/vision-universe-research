@@ -1,5 +1,6 @@
 // Vorschlag masterContentHash (Entwurf, nicht verdrahtet): Golden Cases, Gegenproben und die Festschreibung der
 // bestehenden masterHash-Semantik (ganze Datei), die dieser Entwurf ausdrücklich NICHT ändert.
+import "../../scripts/quant/lib/frozen-data.mjs"; /* eingefrorener Datenstand (scripts/quant/lib/frozen-data.mjs, 22.11.2026) */
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
