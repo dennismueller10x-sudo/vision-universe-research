@@ -4,6 +4,7 @@
 // identical reason, keep their identity, count towards the 22-blocked limit,
 // and are requested again only on an explicit re-probe.
 // Synthetic transport only; every output goes to temp dirs, never discover/data.
+import "../../scripts/quant/lib/frozen-data.mjs"; /* eingefrorener Datenstand (scripts/quant/lib/frozen-data.mjs, 22.11.2026) */
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {mkdtemp,rm,readFile,cp} from 'node:fs/promises';
