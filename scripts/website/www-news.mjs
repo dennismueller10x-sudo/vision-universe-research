@@ -20,7 +20,6 @@ export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "
 const LANDING = path.join(ROOT, "landing");
 const IMG = path.join(LANDING, "web/img/news");
 const RESEARCH = "https://research.visionuniverse.de";
-const HERO_ARTICLES = 8;
 
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 const dmy = (iso) => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || ""); return m ? `${m[3]}.${m[2]}.${m[1]}` : ""; };
@@ -103,16 +102,19 @@ function preview(R, { kicker, h1, lead, about, titel, unterzeile, cover, coverAl
 /** Inhalt der Bereiche je Seite. */
 export function regions(state) {
   const { artikel, heft, report } = state, a0 = artikel[0];
-  const hero = (R) => {
-    const cards = artikel.slice(0, HERO_ARTICLES).map((x) => `<a class="hlc" href="${link(x.href)}">${x.img ? `<img src="${R}web/img/news/${x.img}" alt="" loading="lazy">` : ""}<span><small>${esc(x.rubrik)} · ${dmy(x.datum)}</small><b>${esc(x.titel)}</b></span></a>`).join("");
-    const mag = `<a class="hlm" href="${R}magazin/">${img(R, heft.cover, "Titel des aktuellen Aktienmagazins")}<span><small>Aktienmagazin · KW ${esc(heft.kw)}</small><b>${esc(heft.titel)}</b><em>${esc(heft.seiten)} Seiten</em></span></a>`;
-    const rep = report ? `<a class="hlm" href="${R}report/">${img(R, report.cover, "Titel des aktuellen Aktienreports")}<span><small>${esc(report.art)} · Nr. ${esc(report.nr)}</small><b>${esc(report.titel)}</b>${report.seiten ? `<em>${esc(report.seiten)} Seiten</em>` : ""}</span></a>` : "";
-    return `<div class="hlnews">${cards}</div><div class="hlfix">${mag}${rep}</div>`;
+  // Startseite (Owner 22.11.2026): Aktienmagazin und Aktienreport als eigener Abschnitt über den News,
+  // darunter die News-Bühne: großer Aufmacher (wechselt im Browser, web/home.js) und eine Reihe „Neu bei Vision Universe“.
+  const pubs = (R) => {
+    const card = (cls, href, cover, alt, k, t, e) => `<a class="pub${cls}" href="${R}${href}"><span class="pub-c">${img(R, cover, alt, ' loading="lazy"')}</span><span class="pub-t"><small>${k}</small><b>${esc(t)}</b><em>${e}</em><i>Reinschauen →</i></span></a>`;
+    const mag = card("", "magazin/", heft.cover, `Titel des Aktienmagazins, KW ${heft.kw}`, "Aktienmagazin · jede Woche", heft.titel, `Ausgabe KW ${esc(heft.kw)} · ${esc(heft.seiten)} Seiten`);
+    const rep = report ? card(" dk", "report/", report.cover, `Titel des Aktienreports: ${report.titel}`, "Aktienreport · eine Aktie im Detail", report.titel, `Nr. ${esc(report.nr)}${report.seiten ? ` · ${esc(report.seiten)} Seiten` : ""}`) : "";
+    return `<div class="pubs-g">${mag}${rep}</div>`;
   };
-  // Startseite (Owner 17.11.2026): kompakt, viele kleine Kacheln statt großer Karten. Die News-Seite bleibt groß.
-  const tile = (R, x) => `<a class="ntile" href="${link(x.href)}">${x.img ? `<img src="${R}web/img/news/${x.img}" alt="" loading="lazy">` : "<span class=\"noimg\"></span>"}<span class="k">${esc(x.rubrik)} · ${dmy(x.datum)}</span><b>${esc(x.titel)}</b></a>`;
-  const compact = (R) => `<div class="ncompact"><div class="nfix">${hero(R).split('<div class="hlfix">')[1].replace(/<\/div>$/, "")}</div>`
-    + `<div class="ntiles">${artikel.slice(0, 8).map((x) => tile(R, x)).join("")}</div></div>`;
+  const vwCard = (R, x) => `<a class="vw-card" href="${link(x.href)}">${x.img ? `<img src="${R}web/img/news/${x.img}" alt="" loading="lazy">` : ""}<span><small>${esc(x.rubrik)} · ${dmy(x.datum)}</small><b>${esc(x.titel)}</b><em>${esc(x.teaser)}</em></span></a>`;
+  const tv = (R) => `<div class="vw-bill">${a0.img ? `<img class="bg" src="${R}web/img/news/${a0.img}" alt="">` : ""}<div class="w"><p class="vw-tag">${esc(a0.rubrik)} · ${dmy(a0.datum)}</p><h2>${esc(a0.titel)}</h2><p>${esc(a0.teaser)}</p>`
+    + `<div class="vw-bbtn"><a class="p" href="${link(a0.href)}">▶ Jetzt lesen</a><a class="s" href="${R}news/">Alle News</a></div></div></div>`
+    + `<div class="vw-rows"><div class="vw-row"><div class="vw-rh w"><h3>Neu bei Vision Universe</h3><span class="vw-rh-r"><a href="${R}news/">Alle News</a><span class="vw-arr"><button type="button" aria-label="Zurück">‹</button><button type="button" aria-label="Weiter">›</button></span></span></div>`
+    + `<div class="vw-track">${artikel.slice(1, 15).map((x) => vwCard(R, x)).join("")}</div></div></div>`;
   // News-Seite (Owner 18.11.2026): eine Kachel je Zeile, nach Tagen gruppiert, das Neueste oben.
   const DAYS = ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"];
   const MONTHS = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"];
@@ -122,7 +124,7 @@ export function regions(state) {
     return days.map((g) => `<div class="nday"><h2>${dayName(g.d)}</h2><div class="nrows">${g.a.map((x) => row(R, x)).join("")}</div></div>`).join(""); };
   const grid = (R, n, ids) => `<div class="newsgrid">${lead(R, a0)}${heftCard(R, heft, ids ? "magazin" : "")}${reportCard(R, report, ids ? "report" : "")}<div class="n3">${artikel.slice(1, 1 + n).map((x) => box(R, x)).join("")}</div></div>`;
   return {
-    "index.html": { hero: hero("./"), start: stand(a0) + compact("./") },
+    "index.html": { pubs: pubs("./"), tv: tv("./") },
     "magazin/index.html": { page: preview("../", { kicker: `Aktienmagazin · Nr. ${heft.nr} · KW ${heft.kw}`, h1: "Das <mark>Aktienmagazin.</mark>",
       lead: `Jede Woche ein neues Heft: was an der Börse los war, einfach erklärt. ${heft.seiten} Seiten zum Durchblättern.`,
       about: "Das Aktienmagazin ist unser Wochenheft. Es fasst die Börsenwoche zusammen und erklärt die wichtigsten Aktien in einfachen Sätzen, mit Bildern und Charts.",
