@@ -21,6 +21,7 @@ name: Forschung (Buendel research)
 #   edge2-paper                  vormals research-edge2-paper.yml
 #   europa-esef                  neu (Strang M5, 08.11.2026): Konzern-Kennzahlen deutscher Emittenten aus ESEF, nur manuell
 #   quality-marge-pit            neu (16.11.2026): Quality-Margenformen auf neu gebauten PIT-Dokumenten, nur manuell
+#   anpassung-diagnose           neu (22.11.2026): Faktorspruenge gesperrter Reihen offenlegen (R2, nur lesend), nur manuell
 # Der Job `auswahl` bildet die Ausloeser der Quellen nach (Dispatch `teil`, Zeitplan am Cron, Push nach
 # Zweig/Pfad, workflow_run nach Name/Typ/Zweig, repository_dispatch nach Typ). Generiert, siehe A-Doc.
 
@@ -51,6 +52,7 @@ on:
           - hausstrategie-forschung
           - europa-esef
           - quality-marge-pit
+          - anpassung-diagnose
           - edge2-paper
       mode:
         description: 'portfolio: Musterportfolios, versiegelter Holdout, EMA DEV/Archiv/Walk-Forward oder Backtest 2.0 (backtest2-smoke zuerst)'
@@ -108,6 +110,7 @@ jobs:
       hausstrategie_forschung: ${{ steps.wahl.outputs.hausstrategie_forschung }}
       europa_esef: ${{ steps.wahl.outputs.europa_esef }}
       quality_marge_pit: ${{ steps.wahl.outputs.quality_marge_pit }}
+      anpassung_diagnose: ${{ steps.wahl.outputs.anpassung_diagnose }}
       edge2_paper: ${{ steps.wahl.outputs.edge2_paper }}
     steps:
       - name: Teil waehlen
@@ -143,7 +146,7 @@ jobs:
           export PUSH_FILES PUSH_FILES_UNKNOWN
           python3 - <<'PY'
           import fnmatch, json, os, re
-          SPEC = json.loads(r"""{"delisting-probe": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "edge2-paper": {"crons": ["47 8 * * 6"], "dispatch": true, "required": []}, "elliott-register": {"crons": ["23 9 * * 6", "47 7 * * 0", "17 6 * * 1", "41 5 * * 3"], "dispatch": true, "required": []}, "emerging-leaders": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "etf-universum": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"], "paths": ["products/vorsorge/producer/**", "vorsorge/engines/**", ".github/workflows/research.yml"]}, "required": []}, "europa-esef": {"crons": [], "dispatch": true, "required": []}, "hausstrategie-forschung": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "labor": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": ["phase"]}, "muster-gesamtrendite": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "mustervolumen": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "portfolio": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "quality-marge-pit": {"crons": [], "dispatch": true, "required": []}, "v13-archiv": {"crons": [], "dispatch": false, "push": {"branches": ["claude/**"]}, "required": []}, "vorsorge-etf": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"], "paths": ["products/vorsorge/producer/**", "vorsorge/engines/**", ".github/workflows/research.yml"]}, "required": []}, "vorsorge-recht": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"], "paths": [".github/workflows/research.yml", "products/vorsorge/producer/fetch-legal-sources.sh"]}, "required": []}}""")
+          SPEC = json.loads(r"""{"anpassung-diagnose": {"crons": [], "dispatch": true, "required": []}, "delisting-probe": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "edge2-paper": {"crons": ["47 8 * * 6"], "dispatch": true, "required": []}, "elliott-register": {"crons": ["23 9 * * 6", "47 7 * * 0", "17 6 * * 1", "41 5 * * 3"], "dispatch": true, "required": []}, "emerging-leaders": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "etf-universum": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"], "paths": ["products/vorsorge/producer/**", "vorsorge/engines/**", ".github/workflows/research.yml"]}, "required": []}, "europa-esef": {"crons": [], "dispatch": true, "required": []}, "hausstrategie-forschung": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "labor": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": ["phase"]}, "muster-gesamtrendite": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "mustervolumen": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "portfolio": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "quality-marge-pit": {"crons": [], "dispatch": true, "required": []}, "v13-archiv": {"crons": [], "dispatch": false, "push": {"branches": ["claude/**"]}, "required": []}, "vorsorge-etf": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"], "paths": ["products/vorsorge/producer/**", "vorsorge/engines/**", ".github/workflows/research.yml"]}, "required": []}, "vorsorge-recht": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"], "paths": [".github/workflows/research.yml", "products/vorsorge/producer/fetch-legal-sources.sh"]}, "required": []}}""")
           ev, ref = os.environ.get("EVENT", ""), os.environ.get("REF", "")
           def glob_re(p):
               # GitHub-Filtermuster: ** beliebig, * ohne '/', ? ein Zeichen, [..] Klasse; Praefix '!' = Ausschluss
@@ -1995,3 +1998,39 @@ jobs:
       - name: Private Daten entfernen
         if: always()
         run: rm -rf "$RUNNER_TEMP/v10"
+
+  # --- anpassung-diagnose: neu (22.11.2026, Steuerung): warum sperrt der Faktorlauf eine Reihe mit
+  # unexplained_adjustment_step? scripts/diagnose/adjustment-steps.mjs --blocked liest die Tagesreihen der gesperrten
+  # Titel NUR LESEND aus R2 (ein GET je Titel), legt jeden Faktorsprung offen (Split, Dividende, implizite Dividende)
+  # und schreibt nichts ins Repository. Ergebnis als CI-Artefakt.
+  anpassung-diagnose:
+    needs: [auswahl]
+    if: needs.auswahl.outputs.anpassung_diagnose == 'true'
+    permissions: {contents: read}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Faktorspruenge der gesperrten Reihen (R2, nur lesend)
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/anpassung"
+          node scripts/diagnose/adjustment-steps.mjs --blocked --out "$RUNNER_TEMP/anpassung/adjustment-steps.json" | tee "$RUNNER_TEMP/anpassung/adjustment-steps.txt"
+      - name: Bericht als CI-Artefakt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: anpassung-diagnose-${{ github.run_id }}
+          path: ${{ runner.temp }}/anpassung
+          retention-days: 30
