@@ -86,6 +86,28 @@ weil die Regel nach Einsicht festgelegt wurde, gilt ein positives Ergebnis nur a
 **Datenprüfung im selben Lauf:** Sitzungssprünge ×2 bis ×5 (unterhalb DQ-K5) je Gruppe heutige / delistete Titel und die Spalten der
 delisteten Rohreihen; dazu Modus `backtest2-survivors` ohne delistete Titel als Vergleich (zu gut gerechnet, nicht für das Urteil).
 
+## 4b. Stufe 2 Ergebnis und Stufe 3: Faktor-Depots im Walk-forward (22.11.2026, vor dem ersten Lauf festgelegt)
+
+**Ergebnis Stufe 2** (Lauf 45004821417, 201 Monate 2010–09/2026, nach Kosten): phasenfest gegen das Universum sind nur
+Momentum + Bruttogewinn je Bilanzsumme (17,0 % p. a., SPY 14,5 %), dieselbe Kombination mit Rückkäufen (16,3 %) und Rückkäufe allein
+(15,2 %). Rule of 40, Bewertung, Wachstum, niedrige Schwankung, Nähe zum 52-Wochen-Hoch und kurzfristige Umkehr tragen nicht. Bei 30
+Versuchen ist das ein Hinweis, kein Beweis: die Auswahl kannte alle Jahre.
+
+**Stufe 3** prüft deshalb, ob eine Auswahl, die nur die Lernjahre kennt, SPY auf den folgenden Jahren schlägt
+(`scripts/research/backtest2/faktor-wf.mjs`, Modus `merkmale-wf-smoke` / `merkmale-wf`). Festgelegt vor dem ersten Lauf:
+- Raster 512 Depots: Signal (22 Merkmale, 7 Kombinationen der Stufe 2, Trend + Bruttogewinn/Bilanz, 52-Wochen-Hoch +
+  Bruttogewinn/Bilanz, Näherung des Quant-Scores) × bestes Zehntel/Fünftel × Top 500/1.000 × gleich/nach Börsenwert gewichtet ×
+  ohne/mit Marktfilter (SPY über 200-Tage-Linie, sonst Kasse ohne Zins). Monatlich neu, Kosten = Umschlag × Kosten je Seite.
+- Runden: Lernen 2010–2013/2016/2019/2022, Bestätigen 2014–2016, 2017–2019, 2020–2022, 2023–Ende; Bestätigungsjahre verkettet.
+- **Fassung A** (das Urteil): zugelassen sind Depots, die in den Lernjahren in beiden Hälften und in ≥ 60 % der Jahre vor SPY lagen und
+  höchstens 50 % verloren; gewählt wird der höchste Median der Lern-Überrendite aus Depot und Nachbarn (eine Einstellung anders,
+  Signal fest). Ohne Kandidat hält die Runde SPY.
+- **Fassung B** (Hypothese, vor 2014 veröffentlicht: Momentum, Jegadeesh/Titman 1993; Bruttogewinn je Bilanzsumme, Novy-Marx 2013):
+  Momentum + Bruttogewinn/Bilanz, bestes Fünftel, Top 1.000, gleich gewichtet, ohne Filter; dazu alle 16 Einstellungen dieses Signals.
+- **Vergleich Quant:** Näherung von quant-v2.4.1 (Faktorgewichte des Vertrags, nur hier verfügbare Bausteine, ohne Revisionen).
+- Urteil „schlägt SPY“ nur, wenn Fassung A auf den verketteten Bestätigungsjahren nach Kosten vor SPY liegt und der Block-Bootstrap
+  p < 0,10 ergibt; sonst „nicht belegt“. Folgen für den Quant-Score nur in einem eigenen PR mit Vorher/Nachher.
+
 ## 5. Ausführung und Veröffentlichung
 
 - Umsetzung: `scripts/research/backtest2/` (Markt, Signale, Depotführung, Suche, Lauf mit Workern). Workflow `research.yml`, Teil
