@@ -189,6 +189,30 @@
   .an-skeleton i{height:12px;width:70%;background:var(--surface2);border-radius:6px}
   .an-skeleton i:nth-child(2){height:24px;width:45%}
   @media(max-width:430px){#uTitle{min-height:56px}.summary-grid{min-height:250px}.an-skeleton{min-height:120px}}
+  /* iPad und Desktop (22.11.2026): unter 761 px unverändert */
+  @media(min-width:761px){
+    .wrapper{max-width:948px;padding:32px 24px 60px}
+    .detail-inner{max-width:900px}
+    .bar-row{grid-template-columns:150px 1fr 190px}
+    .page-sub{max-width:68ch}
+  }
+  @media(min-width:1024px){
+    .topbar{padding-inline:max(20px,calc((100% - 1240px)/2))}
+    .wrapper{max-width:1048px}
+    .wrapper>#summaryGrid{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .u-form{max-width:620px}
+  }
+  @media(min-width:1180px){
+    .wrapper{max-width:1288px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:repeat(10,auto) 1fr auto;column-gap:40px;align-items:start}
+    .wrapper>*{grid-column:1/-1;min-width:0}
+    .wrapper>.page-title{grid-row:1}.wrapper>.page-sub{grid-row:2}.wrapper>.universe-block{grid-row:3;margin-top:0}
+    .wrapper>.section-label:has(+#summaryGrid){grid-row:4}.wrapper>#summaryGrid{grid-row:5}
+    .wrapper>.section-label:has(+.legend){grid-column:1;grid-row:6}.wrapper>.legend{grid-column:1;grid-row:7}.wrapper>#consensusList{grid-column:1;grid-row:8}
+    .wrapper>.section-label:has(+#upsideList){grid-column:1;grid-row:9}.wrapper>#upsideList{grid-column:1;grid-row:10}
+    .wrapper>.section-label:has(+#stockList){grid-column:2;grid-row:6}.wrapper>#stockList{grid-column:2;grid-row:7/12}
+    .wrapper>#infoNote{grid-row:12;margin-top:24px}
+    .bar-row{grid-template-columns:120px 1fr 196px}
+  }
   @media(prefers-reduced-motion:reduce){.detail,.toast{transition:none}.btn-refresh .spin{animation:none}}
 </style>
 <link rel="stylesheet" href="/assets/site-navigation.css"></head>

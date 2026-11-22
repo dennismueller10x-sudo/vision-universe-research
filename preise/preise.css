@@ -62,3 +62,20 @@ button.pr-hd-login{justify-content:center;width:44px;padding:0;border:0;font:inh
 .pr-legal a{display:inline-flex;align-items:center;min-height:44px;font-size:12.5px;color:var(--vu-mute)}
 .pr-hd-login:focus-visible,.pr-hd-logo:focus-visible,.pr-faq summary:focus-visible,.pr-legal a:focus-visible{outline:2px solid var(--vu-focus-ring);outline-offset:2px}
 .pr-same{margin:8px 0 0}
+/* iPad und Desktop (22.11.2026): unter 761 px unverändert. Kopfzeile auf Startseiten-Breite (1120 px), Tarife nebeneinander. */
+@media (min-width:761px){
+  .pr-hd{padding-inline:max(24px,calc((100% - 1120px)/2))}
+  .pr{--ka-max:calc(900px + 2 * var(--vu-gutter,24px))}
+  .pr-plans{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch}
+  .pr-plan{display:flex;flex-direction:column}
+  .pr-plan .pr-ticks{margin-bottom:auto;padding-bottom:16px}
+  .pr-have{max-width:440px;margin-inline:auto}
+  .pr-faq p{max-width:68ch}
+}
+@media (min-width:1024px){
+  .pr{--ka-max:calc(1120px + 2 * var(--vu-gutter,24px));display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:40px;align-content:start}
+  .pr>*{grid-column:1/-1;min-width:0}
+  .pr>.pr-compare{grid-column:1}
+  .pr>.pr-faq{grid-column:2;margin-top:8px}
+  .pr-plan{padding:24px}
+}

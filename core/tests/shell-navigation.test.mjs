@@ -23,7 +23,7 @@ const loc = (url) => { const u = new URL(url, 'https://research.visionuniverse.d
 
 test('the former dock places of every product start with the product name, never Home or Start, and stay four entries', () => {
   assert.deepEqual(JSON.parse(JSON.stringify(PRODUCTS.map(p => [p.id, p.items.map(([, label]) => label)]))), [
-    ['discover', ['Discover','Welten','Strategien','Swipen']],
+    ['discover', ['Discover','Swipen','Themen','Strategien']], /* Owner 22.11.2026: Bereiche im Kopf, Swipen vorn, Welten heißen Themen */
     ['elliott', ['Elliott','Zählbar','Neu','Suche']],
     ['quant', ['Quant','Screener','Anlagestile','Aktien']], /* Konzept Quant 2026-11, Entscheidung 3 */
     ['fundamental', ['Fundamental','Ranglisten','Branchen','Methodik']],
@@ -60,7 +60,7 @@ test('one global dock on every page with a dock: Home, Discover, Universe button
   assert.match(source, /menu\.className='menu uni'/);
   assert.match(source, /menu\.setAttribute\('aria-label','Alle Module'\)/);
   assert.match(source, /menu\.innerHTML=dockProductIcon\('layers'\)/);
-  assert.match(source, /if\(b!==this\.dockMenuButton&&b!==world\)b\.setAttribute\('aria-label'/, 'der Name des Universe-Knopfs bleibt „Alle Module“, der des Welten-Wechslers auch');
+  assert.match(source, /if\(b!==this\.dockMenuButton&&b!==world&&!b\.classList\.contains\('grid'\)\)b\.setAttribute\('aria-label'/, 'der Name des Universe-Knopfs bleibt „Alle Module“, der des Welten-Wechslers auch');
   // Aktiv nach Ort; in den uebrigen Produkten ist kein Platz aktiv
   const on = url => dockActive(loc(url));
   assert.equal(on('/willkommen/'), 'home');
@@ -106,7 +106,7 @@ test('Insights and Portfolios carry the dock: News leads to a page with the glob
 
 test('product tabs: former dock places first, then the remaining entries of the menu group, each destination once', () => {
   const labels = id => Array.from(tabEntries(PRODUCTS.find(p => p.id === id)), e => e.label);
-  assert.deepEqual(labels('discover'), ['Discover','Welten','Strategien','Swipen','Suchen','Märkte','Watchlist']);
+  assert.deepEqual(labels('discover'), ['Discover','Swipen','Themen','Strategien','Suchen','Märkte','Watchlist','Alle Reihen']);
   assert.deepEqual(labels('quant'), ['Quant','Screener','Anlagestile','Aktien','Meldungen','Forschung','Methodik','Technische Lagen','Fundamentaldaten']);
   assert.deepEqual(labels('technical'), ['Technical','Screener','Chart','Muster','Vorlagen','Gespeichert','Lernen']);
   assert.deepEqual(labels('fundamental'), ['Fundamental','Ranglisten','Branchen','Methodik','Suchen']);
@@ -138,7 +138,7 @@ test('the active tab is the tab of the current page: a tab from the menu group w
   assert.equal(active('quant', '/quant/'), 'Quant');
   assert.equal(active('quant', '/quant/#/screener/profi'), 'Screener');
   assert.equal(active('quant', '/quant/#/aktie/AAPL/technik'), 'Aktien');
-  assert.equal(active('discover', '/discover/#/thema/ki'), 'Welten');
+  assert.equal(active('discover', '/discover/#/thema/ki'), 'Themen');
   assert.equal(active('discover', '/discover/#/s/US_REAL/NVDA'), null, 'Aktienseite: kein Reiter aktiv, wie bisher kein Leistenplatz');
   assert.equal(active('vorsorge', '/vorsorge/etf/IWR/'), 'ETFs');
   assert.equal(active('screener', '/screener/?f=pe'), 'Filter');
@@ -287,7 +287,7 @@ test('the dock respects safe areas, keeps touch targets and sits below overlays 
   assert.match(dockDark, /a\{flex:1 1 0;gap:3px;min-width:0;height:56px;[^}]*color:#a1a7af;font-size:10\.5px;font-weight:700/);
   assert.match(dockDark, /z-index:900/);
   assert.match(dockLight, /nav\{[^}]*border-radius:28px;background:rgba\(255,255,255,\.92\);[^}]*border:1px solid rgba\(0,0,0,\.1\);color:#000\}/, 'Hell: helle Leiste');
-  assert.match(dockLight, /a\[aria-current=page\],a\[aria-current=page\]:hover\{color:#4f6b00\}/, 'Hell: aktiver Platz in dunklem Gruen (Kontrast auf Weiss)');
+  assert.match(dockLight, /a\[aria-current=page\],a\[aria-current=page\]:hover\{color:#000\}/, 'Hell: aktiver Platz schwarz (Owner 22.11.2026: kein Dunkelgrün, nur Schwarz oder Neongrün)');
   assert.match(dockLight, /box-shadow:0 0 0 6px #fff,0 8px 30px/, 'Hell: Ring um den Universe-Knopf in Seitenweiss');
   assert.match(dockLight, /color:#5d636b;font-size:10\.5px/);
   assert.doesNotMatch(dockLight, /rgba\(12,12,13|#a1a7af/, 'Hell: keine dunklen Werte in der Leiste');
@@ -300,8 +300,9 @@ test('the dock respects safe areas, keeps touch targets and sits below overlays 
   assert.match(css, /html\.vu-menu-open/);
   // Reiterzeile: Platz im Dokument (nichts liegt unter Kopf und Reitern), 44px-Ziele, sichtbarer Fokus
   assert.match(css, /:root\{--vu-navigation-height:64px\}/);
-  assert.match(css, /html\[data-vu-tabs\]\{--vu-navigation-height:116px\}/);
-  assert.match(css, /@media\(max-width:760px\)\{html\[data-vu-tabs\]\{--vu-navigation-height:108px\}\}/);
+  // Owner 22.11.2026 (Menü im Kopf): ohne sichtbare Reiterzeile nimmt data-vu-tabs keinen Platz mehr ein.
+  assert.match(css, /html\[data-vu-tabs\]\{--vu-navigation-height:64px\}/);
+  assert.match(css, /@media\(max-width:760px\)\{html\[data-vu-tabs\]\{--vu-navigation-height:56px\}\}/);
   assert.match(css, /body\{padding-top:var\(--vu-navigation-height\)!important\}/);
   for (const t of [THEMES.light, THEMES.dark]) {
     const st = styles(t);
@@ -314,7 +315,9 @@ test('the dock respects safe areas, keeps touch targets and sits below overlays 
   assert.match(source, /<nav class="tabs" hidden><\/nav><\/header>/, 'Reiterzeile im festen Kopf, direkt unter der Kopfzeile');
   assert.match(source, /html\.setAttribute\('data-vu-tabs',this\.tabsFor\)/);
   // Kopf nach Prototyp: Welten-Wechsler links, KI, Suche, Profil rechts (Owner 16.11.2026: ohne „i“ und Datum)
-  assert.match(styles(THEMES.light), /:host\(\[dock\]\) \.quick,:host\(\[dock\]\) \.toggle\{display:none\}/);
+  // Mit Dock: kein Menue-Knopf; der Direktzugriff erscheint erst ab 1200 px (Desktop-Kopf, Owner 22.11.2026)
+  assert.match(styles(THEMES.light), /:host\(\[dock\]\) \.toggle\{display:none\}/);
+  assert.match(styles(THEMES.light), /@media\(max-width:1199px\)\{:host\(\[dock\]\) \.quick\{display:none\}\}/);
   assert.match(source, /class="world mod" type="button" hidden/);
   assert.match(source, /class="hb search" href="\/discover\/#\/suche"/);
   assert.match(source, /class="hb profile" href="\/mein-dashboard\/"/);
@@ -643,16 +646,20 @@ test('Portfolios: eigener Menueeintrag, Direktzugriff, Leiste mit Gruppen und De
 test('Kopf nach Prototyp: Welten-Wechsler als Pille, KI (neongrüner Funke), Suche, Profil mit Lime-Ring; ohne „i“ und Datums-Pille', () => {
   const head = source.slice(source.indexOf('<header><div class="shell">'), source.indexOf('</header>'));
   // Owner 16.11.2026: „das i würde ich rausmachen …“, „das Datum … auch ausblenden“; neuer Knopf KI vor Suche und Profil
-  const order = ['<button class="world mod" type="button" hidden aria-haspopup="true" aria-expanded="false" aria-controls="site-panel"><span class="hud mi"></span><span class="world-name"></span><svg class="chev"',
+  const order = ['<button class="world mod" type="button" hidden aria-haspopup="true" aria-expanded="false" aria-controls="site-panel"><span class="hud mi"></span><span class="world-t"><span class="world-name"></span><small class="world-area"></small></span><svg class="chev"',
     '<a class="hb ki" href="/ask/?fokus=1" aria-label="Vision Universe KI fragen">${SPARK}<span class="ki-t" aria-hidden="true"><small>Vision Universe</small><b>KI</b></span></a>',
+    '<button class="hb grid" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="site-panel" aria-label="Hauptmenü: alle Module">',
     '<a class="hb search" href="/discover/#/suche" aria-label="Aktie suchen">', '<a class="hb profile" href="/mein-dashboard/" aria-label="Mein Bereich">'];
   let at = 0;
   for (const part of order) { const next = head.indexOf(part, at); assert.ok(next >= at && next >= 0, part); at = next + 1; }
   assert.doesNotMatch(head, /class="hb info"|class="live"|aria-label="Daten und Hinweise"/, '„i“ und Datums-Pille sind entfallen');
   assert.doesNotMatch(head, /Atlas/, 'sichtbarer Name ist Vision Universe KI');
   assert.doesNotMatch(source, /live\.onclick|root\.querySelector\('\.info'\)/);
-  // Der Wechsler oeffnet das Menue „Dein Universe“
-  assert.match(source, /world\.onclick=\(\)=>this\.openMenu\(world\)/);
+  // Menü im Kopf (Owner 22.11.2026): der Wechsler öffnet die Bereiche des Moduls, der Rasterknopf das Menü „Dein Universe“;
+  // mit Dock entfällt das Profil im Kopf („Ich“ steht im Dock) und die Dachzeile der KI-Pille.
+  assert.match(source, /world\.onclick=\(\)=>\{hideHint\(\);this\.openAreas\(world\);\};/);
+  assert.match(source, /root\.querySelector\('\.grid'\)\.onclick=event=>this\.openMenu\(event\.currentTarget\);/);
+  for (const t of [THEMES.light, THEMES.dark]) { const st = styles(t); assert.ok(st.includes(':host([dock]) .profile{display:none}')); assert.ok(st.includes(':host([dock]) .ki .ki-t small{display:none}')); assert.ok(st.includes(':host([areas]) .panel>*:not(.grab):not(.panel-head):not(.areas){display:none!important}')); }
   // Masse des Prototyps (shell.js .hdr/.mod/.mi/.hb/.live), in beiden Schemata dieselben
   for (const t of [THEMES.light, THEMES.dark]) {
     const st = styles(t), phone = st.slice(st.indexOf('@media(max-width:760px)'));
@@ -778,7 +785,9 @@ test('Schalter des Rahmens: data-vu-bleed (Kopf durchsichtig bis 24 px) und data
   assert.match(source, /const solid=\(\)=>this\.toggleAttribute\('solid',!document\.documentElement\.hasAttribute\('data-vu-bleed'\)\|\|\(window\.scrollY\|\|0\)>24\);/);
   assert.match(source, /window\.addEventListener\('scroll',solid,\{passive:true\}\)/);
   assert.match(source, /attributeFilter:\['data-vu-bleed','data-vu-tabs'\]/);
-  assert.match(source, /const own=html\.getAttribute\('data-vu-tabs'\)==='inhalt';\n      nav\.hidden=own;/);
+  // Owner 22.11.2026: die Reiterzeile des Rahmens ist nie sichtbar; der Kopf ist mit und ohne data-vu-tabs gleich hoch.
+  assert.match(source, /nav\.hidden=true;/);
+  assert.match(readFileSync(join(root, 'assets/site-navigation.css'), 'utf8'), /html\[data-vu-tabs\]\{--vu-navigation-height:64px\}/);
   assert.match(source, /rahmen: o => \{/);
   const css = readFileSync(join(root, 'assets/site-navigation.css'), 'utf8');
   assert.match(css, /html\[data-vu-tabs=inhalt\]\{--vu-navigation-height:64px\}/);

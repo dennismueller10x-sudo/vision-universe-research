@@ -48,7 +48,7 @@
   // Product links navigate directly; their separate disclosure opens existing routes.
   const groups = [
     /* Portfolios (Owner 06.11.2026): alle Musterdepots gesammelt; breite Kachel unter dem 3 x 3-Raster. */
-    {id:'discover', label:'Discover', href:'/discover/#/', icon:'discover', claim:'Aktien entdecken', entries:[['Übersicht','/discover/#/','⌂'],['Welten','/discover/#/welten','◎'],['Strategien','/discover/#/strategien','◬'],['Entdecken','/discover/#/einzeln/US_REAL','◇'],['Suchen','/discover/#/suche','⌕'],['Märkte','/discover/#/maerkte','≋'],['Watchlist','/discover/#/watchlist','♡']]},
+    {id:'discover', label:'Discover', href:'/discover/#/', icon:'discover', claim:'Aktien entdecken', entries:[['Übersicht','/discover/#/','⌂'],['Themen','/discover/#/welten','◎'],['Strategien','/discover/#/strategien','◬'],['Swipen','/discover/#/einzeln/US_REAL','◇'],['Suchen','/discover/#/suche','⌕'],['Märkte','/discover/#/maerkte','≋'],['Watchlist','/discover/#/watchlist','♡'],['Alle Reihen','/discover/#/reihen','▦']]},
     {id:'quant', label:'Quant', href:'/quant/', icon:'quant', claim:'Faktoren je Aktie', entries:[['Übersicht','/quant/','⌂'],['Quant Screener','/quant/#/screener','⧩'],['Anlagestile','/quant/#/stile','◬'],['Meldungen','/quant/#/meldungen','◉'],['Aktien','/quant/#/aktien','⌁'],['Forschung','/quant/#/forschung','◇'],['Methodik','/quant/#/methodik','▤'],['Technische Lagen','/quant/#/chartlagen','⌁'],['Fundamentaldaten','/quant/#/aktie/NVDA/zahlen','▧']]},
     {id:'technical', label:'Technical', href:'/technical/#/', icon:'technical', claim:'Charts und Muster', entries:[['Übersicht','/technical/#/','⌂'],['Screener','/technical/#/screener','⧩'],['Chart Studio','/technical/#/chart','⌁'],['Vorlagen','/technical/#/screener?reiter=vorlagen','◇'],['Gespeichert','/technical/#/screener/gespeichert','▤'],['Muster','/technical/#/muster','▤'],['Lernen','/technical/#/lernen','✧']]},
     {id:'fundamental', label:'Fundamental', href:'/fundamental/#/', icon:'fundamental', claim:'Zahlen aus Geschäftsberichten', entries:[['Übersicht','/fundamental/#/','⌂'],['Ranglisten','/fundamental/#/ranglisten','◇'],['Branchen','/fundamental/#/branchen','◇'],['Suchen','/fundamental/#/suche','⌕'],['Methodik','/fundamental/#/methodik','▤']]},
@@ -80,7 +80,7 @@
   const isElliottDetail = (p, loc) => p === '/quant/' && !!loc && /^#\/elliott(\/|$|\?)/.test(loc.hash || '');
   const PRODUCTS = [
     {id: 'discover', label: 'Discover', match: p => p.startsWith('/discover/'),
-      items: [['discover','Discover','/discover/#/','discover'],['welten','Welten','/discover/#/welten','worlds'],['strategien','Strategien','/discover/#/strategien','strategies'],['entdecken','Swipen','/discover/#/einzeln/US_REAL','explore']],
+      items: [['discover','Discover','/discover/#/','discover'],['entdecken','Swipen','/discover/#/einzeln/US_REAL','explore'],['welten','Themen','/discover/#/welten','worlds'],['strategien','Strategien','/discover/#/strategien','strategies']],
       active: loc => {
         const k = hashPart(loc, 0);
         if (!k) return 'discover';
@@ -499,7 +499,7 @@
   const THEMES = {
     light: {bg: 'rgba(255,255,255,.86)', border: '#e9e9e9', ink: '#000', inv: '#fff', card: '#f1f1f1', glass: 'rgba(238,238,238,.82)', mute: '#5d636b', ring: '#c8f531', me: 'rgba(238,238,238,.82)', meInk: '#000', on: '#000', onInk: '#fff', outline: '#4f6b00',
       /* Hell vollstaendig hell (Owner 16.11.2026): Dock, Menue „Dein Universe“ und Modul-Symbol hell; dunkel = Prototyp, unveraendert */
-      page: '#fff', accent: '#4f6b00', dockBg: 'rgba(255,255,255,.92)', dockLine: 'rgba(0,0,0,.1)', dockInk: '#000', dockMute: '#5d636b', dockOn: '#4f6b00',
+      page: '#fff', accent: '#4f6b00', dockBg: 'rgba(255,255,255,.92)', dockLine: 'rgba(0,0,0,.1)', dockInk: '#000', dockMute: '#5d636b', dockOn: '#000',
       panel: '#fff', panelInk: '#000', panelMute: '#5d636b', field: '#f1f1f1', fieldHover: '#e9e9e9', grabBar: '#c9c9cc', hair: 'rgba(0,0,0,.1)', closeInk: '#000', fieldInk: '#000',
       icoBg: '#c8f531', icoLine: 'rgba(0,0,0,.08)', icoLineHead: 'rgba(0,0,0,.08)', icoInk: '#101318', current: '0 0 0 1.5px #000', accentLine: 'rgba(79,107,0,.5)', pressed: '#000', pressedInk: '#fff'},
     dark: {bg: 'rgba(0,0,0,.82)', border: '#262626', ink: '#f4f5f1', inv: '#000', card: '#151516', glass: 'rgba(20,20,22,.7)', mute: '#a1a7af', ring: '#c8f531', me: 'rgba(20,20,22,.7)', meInk: '#f4f5f1', on: '#fff', onInk: '#000', outline: '#c8f531',
@@ -633,6 +633,34 @@
         .profile{border:2px solid ${t.ring};background:${t.me};color:${t.meInk}}
         .profile svg{stroke-width:2.4}
         :host([tight]) .mod .chev{display:none}:host([tighter]) .row{gap:6px}:host([tighter]) .tools{gap:6px}:host([tighter]) .mod{padding-right:10px}:host([tighter]) .ki{padding:0 11px 0 9px;gap:5px}:host([tighter]) .ki .ki-t small{font-size:7.5px;letter-spacing:.06em}:host([tightest]) .ki .ki-t small{display:none}:host([tightest]) .ki{padding:0 12px 0 10px}
+        /* Menü im Kopf (Owner 22.11.2026, Variante 2): keine Reiterzeile. Links steht Modul und Bereich; ein Tipp öffnet die Bereiche
+           des Moduls. Rechts KI (ohne Dachzeile), der Rasterknopf (Hauptmenü, wie der Universe-Knopf im Dock) und die Suche; „Ich“
+           steht im Dock, das Profil im Kopf entfällt dort. */
+        .world-t{display:flex;flex-direction:column;justify-content:center;min-width:0;line-height:1.05}
+        .world-area{font-size:11.5px;font-weight:700;letter-spacing:0;color:${t.mute};overflow:hidden;text-overflow:ellipsis}
+        .world-area:empty{display:none}
+        :host([dock]) .mod{height:44px}
+        :host([dock]) .hb:not(.ki){width:44px;height:44px}
+        :host([dock]) .ki{height:44px}
+        :host([dock]) .ki .ki-t small{display:none}
+        :host([dock]) .profile{display:none}
+        .grid{display:none}
+        :host([dock]) .grid{display:grid;background:${t.on};color:${t.on === '#000' ? '#c8f531' : '#000'};-webkit-backdrop-filter:none;backdrop-filter:none}
+        .hint{position:absolute;z-index:3;left:12px;top:calc(100% + 2px);display:flex;align-items:center;gap:8px;max-width:min(300px,calc(100vw - 24px));padding:10px 8px 10px 14px;border-radius:16px;background:${t.on};color:${t.onInk};font-size:13.5px;font-weight:700;box-shadow:0 10px 30px rgba(0,0,0,.22)}
+        .hint::before{content:"";position:absolute;left:28px;top:-6px;width:12px;height:12px;background:inherit;transform:rotate(45deg)}
+        .hint button{flex:none;width:32px;height:32px;border:0;border-radius:99px;background:transparent;color:inherit;font-size:18px;line-height:1;cursor:pointer}
+        .areas{display:none}
+        :host([areas]) .areas{display:block}
+        :host([areas]) .panel>*:not(.grab):not(.panel-head):not(.areas){display:none!important}
+        .areas-sub{margin:-2px 0 12px;color:${t.panelMute};font-size:14px}
+        .areas-list{display:grid;gap:8px}
+        .areas-list a{display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 12px;border-radius:18px;background:${t.field};color:${t.panelInk};text-decoration:none;font-weight:800;font-size:15.5px}
+        .areas-list a i{flex:none;display:grid;place-items:center;width:36px;height:36px;border-radius:11px;background:#c8f531;color:#101318;font-style:normal;font-size:15px}
+        .areas-list a span{flex:1}
+        .areas-list a>svg{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;opacity:.6}
+        .areas-list a[aria-current=page]{background:${t.on};color:${t.onInk}}
+        .all-mods{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:52px;margin-top:10px;padding:0 4px;border:0;background:none;color:${t.panelInk};font:inherit;font-weight:800;font-size:15px;cursor:pointer}
+        .all-mods svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2}
         .mod:active,.hb:active{transform:scale(.97)}
         .toggle{flex-shrink:0;border:3px solid transparent;margin:-3px;background:${t.glass};background-clip:padding-box;color:${t.ink};height:44px;padding:0 15px;border-radius:99px;font-weight:800;font-size:14px}
         :host([world]) .toggle{display:none}
@@ -704,7 +732,10 @@
         @media(max-width:360px){.row{padding:0 10px;gap:6px}.tools{gap:6px}.mod{font-size:15px}.tabs{padding-inline:10px}.panel{padding-inline:12px}.grab{margin-inline:-12px}.tile{padding:10px}}
         :host([menu-only]) header{display:none}
         :host([theme="dark"]) header .brand img{filter:invert(1) brightness(1.08)}
-        :host([dock]) .quick,:host([dock]) .toggle{display:none}
+        :host([dock]) .toggle{display:none}
+        /* Desktop (ab 1200 px, Owner 22.11.2026): auch Seiten mit Dock zeigen den Direktzugriff im Kopf; darunter bleibt er dem Dock. */
+        @media(max-width:1199px){:host([dock]) .quick{display:none}}
+        @media(min-width:1200px){:host([dock]) .quick+.tools{margin-left:12px}}
         @media(prefers-reduced-motion:reduce){header,.backdrop,.panel,.tile{transition:none}.mod:active,.hb:active,.tile:active{transform:none}}
 `;
 
@@ -734,7 +765,7 @@
       const SPARK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2c.5 3.9 2.3 6.2 6.4 6.8-4.1.6-5.9 2.9-6.4 6.8-.5-3.9-2.3-6.2-6.4-6.8 4.1-.6 5.9-2.9 6.4-6.8z"/><path d="M18.6 14.6c.2 1.6.9 2.5 2.6 2.8-1.7.3-2.4 1.2-2.6 2.8-.2-1.6-.9-2.5-2.6-2.8 1.7-.3 2.4-1.2 2.6-2.8z"/></svg>';
       /* Kopfzeile nach Prototyp (shell.js .hdr): links der Welten-Wechsler (oeffnet das Menue) oder auf Seiten ausserhalb
          der Welten das Logo, rechts KI, Suche, Profil. Das Farbschema wechselt im Menue (Hell/Dunkel). */
-      root.innerHTML = `<style>${styles(t)}</style><header><div class="shell"><div class="row"><a class="brand" href="/" aria-label="Vision Universe Startseite"><img src="/assets/vision-universe-logo-web.png" alt="Vision Universe" width="190" height="63"></a><button class="world mod" type="button" hidden aria-haspopup="true" aria-expanded="false" aria-controls="site-panel"><span class="hud mi"></span><span class="world-name"></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"/></svg></button><nav class="quick" aria-label="Direktzugriff"><a href="/discover/">Discover</a><a href="/quant/">Quant</a><a href="/technical/">Technical</a><a href="/elliott/">Elliott</a><a href="/screener/">Screener</a><a class="q-extra" href="/vorsorge/">Vorsorge</a><a class="q-extra" href="/portfolios/">Portfolios</a></nav><div class="tools"><a class="hb ki" href="/ask/?fokus=1" aria-label="Vision Universe KI fragen">${SPARK}<span class="ki-t" aria-hidden="true"><small>Vision Universe</small><b>KI</b></span></a><a class="hb search" href="/discover/#/suche" aria-label="Aktie suchen">${ico(dockIcons.search)}</a><a class="hb profile" href="/mein-dashboard/" aria-label="Mein Bereich">${ico(dockIcons.person)}</a><button class="toggle" type="button" aria-label="Menü öffnen" aria-controls="site-panel" aria-expanded="false">☰<span class="menu-label"> Menü</span></button></div></div></div><nav class="tabs" hidden></nav></header><div class="backdrop"></div><nav class="panel" id="site-panel" aria-label="Vision Universe Menü" aria-hidden="true"><span class="grab" aria-hidden="true"></span><div class="panel-head"><h2 class="uni-title">Dein Universe</h2><button class="close" type="button" aria-label="Menü schließen"><i>${ico(dockIcons.close)}</i></button></div><p class="uni-sub">Alle Module, von jeder Seite aus.</p><div class="groups"></div><form class="find" role="search">${ico(dockIcons.search)}<input type="search" name="q" placeholder="Aktie, Produkt oder Frage …" aria-label="Aktie, Produkt oder Frage" autocomplete="off" enterkeyhint="search"><button type="submit" aria-label="Vision Universe KI fragen">${SPARK}</button></form><section class="here" hidden><h2 class="here-title"></h2><div class="links here-links"></div></section><h2>Mein Bereich</h2><div class="mine">${MINE.map(([label,href,icon])=>`<a href="${href}"><i>${ico(dockIcons[icon])}</i><b>${label}</b>${ico(dockIcons.next)}</a>`).join('')}</div><details class="more"><summary><span>Weitere Produkte</span></summary><div class="links more-links"></div></details><div class="settings" role="group" aria-label="Einstellungen"><div class="choices appearance" role="group" aria-label="Darstellung"></div><div class="choices currency" role="group" aria-label="Anzeigewährung"></div></div>${legalMenu()}</nav>`;
+      root.innerHTML = `<style>${styles(t)}</style><header><div class="shell"><div class="row"><a class="brand" href="/" aria-label="Vision Universe Startseite"><img src="/assets/vision-universe-logo-web.png" alt="Vision Universe" width="190" height="63"></a><button class="world mod" type="button" hidden aria-haspopup="true" aria-expanded="false" aria-controls="site-panel"><span class="hud mi"></span><span class="world-t"><span class="world-name"></span><small class="world-area"></small></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"/></svg></button><nav class="quick" aria-label="Direktzugriff"><a href="/discover/">Discover</a><a href="/quant/">Quant</a><a href="/technical/">Technical</a><a href="/elliott/">Elliott</a><a href="/screener/">Screener</a><a class="q-extra" href="/vorsorge/">Vorsorge</a><a class="q-extra" href="/portfolios/">Portfolios</a></nav><div class="tools"><a class="hb ki" href="/ask/?fokus=1" aria-label="Vision Universe KI fragen">${SPARK}<span class="ki-t" aria-hidden="true"><small>Vision Universe</small><b>KI</b></span></a><button class="hb grid" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="site-panel" aria-label="Hauptmenü: alle Module">${ico(dockIcons.grid)}</button><a class="hb search" href="/discover/#/suche" aria-label="Aktie suchen">${ico(dockIcons.search)}</a><a class="hb profile" href="/mein-dashboard/" aria-label="Mein Bereich">${ico(dockIcons.person)}</a><button class="toggle" type="button" aria-label="Menü öffnen" aria-controls="site-panel" aria-expanded="false">☰<span class="menu-label"> Menü</span></button></div></div></div><nav class="tabs" hidden></nav></header><div class="backdrop"></div><nav class="panel" id="site-panel" aria-label="Vision Universe Menü" aria-hidden="true"><span class="grab" aria-hidden="true"></span><div class="panel-head"><h2 class="uni-title">Dein Universe</h2><button class="close" type="button" aria-label="Menü schließen"><i>${ico(dockIcons.close)}</i></button></div><p class="uni-sub">Alle Module, von jeder Seite aus.</p><section class="areas" aria-label="Bereiche"><p class="areas-sub"></p><div class="areas-list"></div><button class="all-mods" type="button">Anderes Modul wählen${ico(dockIcons.next)}</button></section><div class="groups"></div><form class="find" role="search">${ico(dockIcons.search)}<input type="search" name="q" placeholder="Aktie, Produkt oder Frage …" aria-label="Aktie, Produkt oder Frage" autocomplete="off" enterkeyhint="search"><button type="submit" aria-label="Vision Universe KI fragen">${SPARK}</button></form><section class="here" hidden><h2 class="here-title"></h2><div class="links here-links"></div></section><h2>Mein Bereich</h2><div class="mine">${MINE.map(([label,href,icon])=>`<a href="${href}"><i>${ico(dockIcons[icon])}</i><b>${label}</b>${ico(dockIcons.next)}</a>`).join('')}</div><details class="more"><summary><span>Weitere Produkte</span></summary><div class="links more-links"></div></details><div class="settings" role="group" aria-label="Einstellungen"><div class="choices appearance" role="group" aria-label="Darstellung"></div><div class="choices currency" role="group" aria-label="Anzeigewährung"></div></div>${legalMenu()}</nav>`;
       /* Menue „Dein Universe“ (Prototyp build.js T.universe): Titel und Schliessen, vier Gruppen mit je zwei Kacheln
          nebeneinander, darunter - was der Prototyp nicht zeigt, aber bleiben muss - Suche/KI, die Unterseiten der aktuellen
          Welt, Mein Bereich, Weitere Produkte, Darstellung, Rechtliches. Bis 760 px ein Sheet von unten (Griff, runde Ecken,
@@ -772,10 +803,60 @@
         world.setAttribute('aria-label','Modul wechseln, aktuell '+w.label);
         world.querySelector('.hud').innerHTML=dockProductIcon(w.icon);
         world.querySelector('.world-name').textContent=w.label;
+        syncArea();
         fit();
       };
+      /* Menü im Kopf (Owner 22.11.2026): unter dem Modulnamen steht der Bereich, in dem man ist (der erste Bereich heißt „Start“). */
+      const areaOf=()=>{
+        const product=PRODUCTS.find(p=>p.match(location.pathname,location));if(!product)return null;
+        const entries=tabEntries(product),on=tabActive(product,entries,location,dockBus.state);
+        return {product,entries,on,label:on?(on===entries[0]?'Start':on.label):''};
+      };
+      const syncArea=()=>{
+        const a=areaOf(),label=a&&!world.hidden?a.label:'';
+        world.querySelector('.world-area').textContent=label;
+        if(a&&!world.hidden)world.setAttribute('aria-label',a.product.label+(label?' · '+label:'')+': Bereiche öffnen');
+      };
+      dockBus.listeners.push(()=>{syncArea();fit();});
       syncWorld();
-      world.onclick=()=>this.openMenu(world);
+      const glyph=(product,href)=>{const g=groups.find(x=>x.id===product.id),e=g&&g.entries.find(x=>routeKey(x[1])===routeKey(href));return e&&e[2]?e[2]:'›';};
+      this.openAreas=from=>{
+        const a=areaOf();if(!a){this.openMenu(from);return;}
+        if(this.hasAttribute('open')){this.openMenu(from);return;}
+        const list=root.querySelector('.areas-list');list.replaceChildren();
+        a.entries.forEach((e,i)=>{
+          const link=document.createElement('a');link.href=e.href;if(e===a.on)link.setAttribute('aria-current','page');
+          link.innerHTML='<i aria-hidden="true"></i><span></span>'+ico(dockIcons.next);
+          link.querySelector('i').textContent=i===0?'⌂':glyph(a.product,e.href);link.querySelector('span').textContent=i===0?'Start':(e.name||e.label);
+          link.addEventListener('click',event=>{
+            if(event.defaultPrevented||event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
+            const intent=new CustomEvent('vu-dock-navigate',{cancelable:true,detail:{product:a.product.id,id:e.id,href:link.getAttribute('href')}});
+            if(!document.dispatchEvent(intent))event.preventDefault();
+            /* Produkte mit pushState (Screener) melden keinen hashchange: den Bereich oben links danach nachziehen. */
+            setTimeout(syncArea,0);setTimeout(syncArea,400);
+          });
+          list.append(link);
+        });
+        const g=groups.find(x=>x.id===a.product.id);
+        root.querySelector('.areas-sub').textContent=(g&&g.claim?g.claim+' – ':'')+'alle Bereiche.';
+        this.areasTitle=a.product.label;this.setAttribute('areas','');
+        this.openMenu(from);
+      };
+      world.onclick=()=>{hideHint();this.openAreas(world);};
+      root.querySelector('.grid').onclick=event=>this.openMenu(event.currentTarget);
+      root.querySelector('.all-mods').onclick=()=>{this.removeAttribute('areas');root.querySelector('.uni-title').textContent='Dein Universe';syncActive();root.querySelector('.close').focus();};
+      /* Einmaliger Hinweis am Knopf oben links (erster Besuch mit Dock). */
+      let hint=null;
+      const hideHint=()=>{if(hint){hint.remove();hint=null;}try{localStorage.setItem('vu-nav-kopf-hinweis','1');}catch(_){}};
+      const showHint=()=>{
+        let seen=true;try{seen=localStorage.getItem('vu-nav-kopf-hinweis')==='1';}catch(_){}
+        if(seen||hint||world.hidden||!this.hasAttribute('dock'))return;
+        hint=document.createElement('p');hint.className='hint';hint.setAttribute('role','status');
+        hint.innerHTML='<span>Hier findest du alle Bereiche.</span><button type="button" aria-label="Hinweis schließen">×</button>';
+        hint.querySelector('button').onclick=hideHint;root.querySelector('header').append(hint);
+        setTimeout(()=>{if(hint)hideHint();},9000);
+      };
+      this.showHint=showHint;
       window.addEventListener('resize',fit);if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fit).catch(()=>{});
       /* Kopf deckend oder durchsichtig (Prototyp hdr()): deckend, sobald 24 px gescrollt sind oder die Seite kein
          <html data-vu-bleed> traegt. Die Reiterzeile folgt <html data-vu-tabs="inhalt"> (VUNavigation.rahmen). */
@@ -819,10 +900,10 @@
       /* Ein Menue fuer zwei Oeffner: den Knopf im Kopf (Seiten ohne Dock)
          und den Universe-Knopf im Dock („Alle Module“). Der Fokus kehrt zum Oeffner zurueck. */
       let opener=null;
-      const setExpanded=open=>{[button,this.dockMenuButton,opener].forEach(b=>{if(!b)return;b.setAttribute('aria-expanded',String(open));if(b!==this.dockMenuButton&&b!==world)b.setAttribute('aria-label',open?'Menü schließen':(b===button?'Menü öffnen':'Vision Universe Menü öffnen'));});};
-      const close=()=>{if(!this.hasAttribute('open'))return;this.removeAttribute('open');panel.inert=true;panel.setAttribute('aria-hidden','true');setExpanded(false);document.documentElement.classList.remove('vu-menu-open');if(this.dockHost)this.dockHost.inert=false;};
+      const setExpanded=open=>{[button,this.dockMenuButton,opener].forEach(b=>{if(!b)return;b.setAttribute('aria-expanded',String(open));if(b!==this.dockMenuButton&&b!==world&&!b.classList.contains('grid'))b.setAttribute('aria-label',open?'Menü schließen':(b===button?'Menü öffnen':'Vision Universe Menü öffnen'));});};
+      const close=()=>{if(!this.hasAttribute('open'))return;this.removeAttribute('open');setTimeout(()=>{if(!this.hasAttribute('open')){this.removeAttribute('areas');root.querySelector('.uni-title').textContent='Dein Universe';}},340);panel.inert=true;panel.setAttribute('aria-hidden','true');setExpanded(false);document.documentElement.classList.remove('vu-menu-open');if(this.dockHost)this.dockHost.inert=false;};
       const restore=()=>{const target=opener&&opener.isConnected&&opener.getClientRects().length?opener:(world.hidden?button:world);if(target&&target.focus)target.focus();};
-      this.openMenu=from=>{if(this.hasAttribute('open')){close();restore();return;}opener=from||button;syncActive();root.querySelectorAll('.menu-product-icon use[data-href]').forEach(icon=>{icon.setAttribute('href',icon.getAttribute('data-href'));icon.removeAttribute('data-href');});this.setAttribute('open','');panel.inert=false;panel.removeAttribute('aria-hidden');setExpanded(true);document.documentElement.classList.add('vu-menu-open');if(this.dockHost)this.dockHost.inert=true;const focusClose=()=>{if(!this.hasAttribute('open'))return;if(getComputedStyle(panel).visibility!=='visible'){requestAnimationFrame(focusClose);return;}root.querySelector('.close').focus();};requestAnimationFrame(focusClose);};
+      this.openMenu=from=>{if(this.hasAttribute('open')){close();restore();return;}opener=from||button;syncActive();root.querySelector('.uni-title').textContent=this.hasAttribute('areas')?this.areasTitle:'Dein Universe';root.querySelectorAll('.menu-product-icon use[data-href]').forEach(icon=>{icon.setAttribute('href',icon.getAttribute('data-href'));icon.removeAttribute('data-href');});this.setAttribute('open','');panel.inert=false;panel.removeAttribute('aria-hidden');setExpanded(true);document.documentElement.classList.add('vu-menu-open');if(this.dockHost)this.dockHost.inert=true;const focusClose=()=>{if(!this.hasAttribute('open'))return;if(getComputedStyle(panel).visibility!=='visible'){requestAnimationFrame(focusClose);return;}root.querySelector('.close').focus();};requestAnimationFrame(focusClose);};
       button.onclick=()=>this.openMenu(button);
       root.querySelector('.close').onclick=()=>{close();restore();};root.querySelector('.backdrop').onclick=()=>{close();restore();};
       // Sheet: am Griff nach unten ziehen schliesst (wie Hintergrund und Escape).
@@ -847,6 +928,7 @@
       /* Konto-Unterseiten (self): der Rahmen fordert das Dock selbst an. */
       if(early&&early.self&&early.self(location.pathname))dockBus.requested=true;
       if(dockBus.requested)this.mountDock();
+      setTimeout(()=>{if(this.showHint)this.showHint();},1200);
       this.renderSettings();
       document.addEventListener('vu-currency-change',()=>this.renderSettings());
       document.addEventListener('vu-fx-ready',()=>this.renderSettings());
@@ -861,7 +943,8 @@
       const nav=this.shadowRoot&&this.shadowRoot.querySelector('.tabs'),html=document.documentElement;
       if(!nav||!this.tabsFor)return;
       const own=html.getAttribute('data-vu-tabs')==='inhalt';
-      nav.hidden=own;
+      /* Owner 22.11.2026: keine Reiterzeile mehr; die Bereiche stehen im Knopf oben links (Menü im Kopf). */
+      nav.hidden=true;
       if(!own&&html.getAttribute('data-vu-tabs')!==this.tabsFor)html.setAttribute('data-vu-tabs',this.tabsFor);
     }
     mountTabs(){

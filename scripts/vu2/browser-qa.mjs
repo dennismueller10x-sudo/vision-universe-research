@@ -216,12 +216,13 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    /* Ohne Aktienkopf (unbekanntes oder nicht gefuehrtes Kuerzel) gibt es auch keine Pillen. */
    if(await page.locator('.vu-shead--k2').count()&&await page.locator('.vu-sothers').count()!==1)befund(view,width,'„Diese Aktie in anderen Modulen“ fehlt');
   }
-  else if(imInhalt){
-   const inhalt=page.locator('main nav.qp-tabs');
-   if(await inhalt.count()!==1||!await inhalt.isVisible())befund(view,width,'die Reiter im Inhalt fehlen: main nav.qp-tabs');
-   else{const r=(await inhalt.locator('a').allTextContents()).map(t=>t.trim()).join('|');if(r!=='Heute|Landkarte|Anlagestile|Screener|Forschung|Aktien|Meldungen|Methodik|Technische Lagen|Fundamentaldaten')befund(view,width,'Reiter im Inhalt falsch: '+r);}
+  /* Menü im Kopf (Owner 22.11.2026): keine sichtbare Reiterzeile und keine Reiter im Inhalt; die Bereiche (dieselben Ziele wie die
+     verborgene Zeile oben) öffnet der Knopf oben links, der Modul und Bereich zeigt. */
+  else{
+   if(await page.locator('main nav.qp-tabs').isVisible().catch(()=>false))befund(view,width,'Reiter im Inhalt noch sichtbar: main nav.qp-tabs');
+   if(await page.locator(leiste).isVisible())befund(view,width,'Reiterzeile des Rahmens noch sichtbar: '+leiste);
+   if(!await page.locator('vu-navigation button.world').isVisible())befund(view,width,'Knopf oben links (Modul und Bereich) nicht sichtbar');
   }
-  else if(!await page.locator(leiste).isVisible())befund(view,width,'die Navigation dieser Breite ist nicht sichtbar: '+leiste);
   if(!await page.locator(dock).isVisible())befund(view,width,'das Dock dieser Breite ist nicht sichtbar: '+dock);
   {
    /* Die Reiter stehen im festen Kopf; der Inhalt beginnt darunter (body-Abstand = Kopf samt Reitern). */

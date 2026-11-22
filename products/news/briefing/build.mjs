@@ -73,7 +73,8 @@ export function writeBriefing(briefing, outRoot) {
 
 /* Website: /marktbriefing/ ist die Produktseite (wie Magazin und Aktienreport), jede Ausgabe steht unter
    /marktbriefing/<sitzung>/ mit eigenem PDF und eigenen Bildern. Kopf, Menü und Fuß aus landing/news, Bausteine aus landing/report. */
-export const PEEK = ['context', 'breadth', 'valuation'];
+// Alle Karten außer der ersten (die ist vorschau.png) als Bilder für „Ein Blick hinein“ und das Handy auf der Produktseite.
+const ANCHOR = { indices: 'indizes', context: 'einordnung', megacaps: 'schwergewichte', valuation: 'bewertung', breadth: 'marktbreite', rates: 'zinsen', movers: 'bewegungen', picture: 'marktbild' };
 export async function writeWww(briefing, landingDir, { pdf = false } = {}) {
   const dir = path.join(landingDir, 'marktbriefing'), ed = path.join(dir, briefing.session);
   const chrome = Www.chromeFrom(fs.readFileSync(path.join(landingDir, 'news/index.html'), 'utf8'));
@@ -82,7 +83,7 @@ export async function writeWww(briefing, landingDir, { pdf = false } = {}) {
   const files = [];
   const put = (rel, html) => { const f = path.join(dir, rel); fs.mkdirSync(path.dirname(f), { recursive: true }); fs.writeFileSync(f, html); files.push(f); };
   const pdfName = 'marktbriefing-' + briefing.session + '.pdf';
-  const peekIdx = PEEK.map((id) => briefing.cards.findIndex((c) => c.id === id)).filter((i) => i > 0);
+  const peekIdx = briefing.cards.map((c, i) => i).filter((i) => i > 0);
   let havePdf = false;
   if (pdf) {
     // PDF und Bilder mit Playwright; fehlt es, entstehen die Seiten ohne beides.
@@ -100,10 +101,10 @@ export async function writeWww(briefing, landingDir, { pdf = false } = {}) {
   put(briefing.session + '/index.html', Www.page(briefing, { chrome, archive, depth: 2, pdf: havePdf ? pdfName : null,
     image: has('vorschau.png') ? '/marktbriefing/' + briefing.session + '/vorschau.png' : null }));
   if (briefing.session === archive[0]) {
-    const cards = peekIdx.map((i) => ({ file: 'karte-' + String(i + 1).padStart(2, '0') + '.png', anchor: briefing.cards[i].id === 'context' ? 'einordnung' : briefing.cards[i].id === 'breadth' ? 'marktbreite' : 'bewertung',
+    const cards = peekIdx.map((i) => ({ file: 'karte-' + String(i + 1).padStart(2, '0') + '.png', anchor: ANCHOR[briefing.cards[i].id] || 'start',
       title: briefing.cards[i].title, kicker: briefing.cards[i].kicker })).filter((c) => has(c.file));
     put('index.html', Www.productPage(briefing, { chrome, parts, archive, pdf: havePdf ? pdfName : null,
-      img: { story0: has('vorschau.png') ? 'vorschau.png' : null, cards } }));
+      img: { story0: has('vorschau.png') ? 'vorschau.png' : null, cover: has('titel.png') ? 'titel.png' : null, cards } }));
     const home = path.join(landingDir, 'index.html');
     if (fs.existsSync(home)) { const before = fs.readFileSync(home, 'utf8'), after = Www.withTeaser(before, briefing); if (after !== before) { fs.writeFileSync(home, after); files.push(home); } }
   }

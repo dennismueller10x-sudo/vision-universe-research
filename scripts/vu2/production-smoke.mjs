@@ -373,12 +373,12 @@ for(const width of [1440,390]){
      if(await page.locator('main nav.qp-tabs').count())bad.push('REITER_AUF_AKTIENSEITE');
      if(await page.locator('.vu-shead--k2').count()&&await page.locator('.vu-sothers').count()!==1)bad.push('PILLEN_ANDERE_MODULE_FEHLEN');
     }
-    else if(await page.evaluate(()=>document.documentElement.getAttribute('data-vu-tabs')==='inhalt')){
-     const inhalt=page.locator('main nav.qp-tabs');
-     if(await inhalt.count()!==1||!await inhalt.isVisible())bad.push('REITER_IM_INHALT:false');
-     else{const r=(await inhalt.locator('a').allTextContents()).map(t=>t.trim()).join('|');if(r!=='Heute|Landkarte|Anlagestile|Screener|Forschung|Aktien|Meldungen|Methodik|Technische Lagen|Fundamentaldaten')bad.push('REITER_IM_INHALT:'+r);}
+    /* Menü im Kopf (Owner 22.11.2026): keine sichtbare Reiterzeile, keine Reiter im Inhalt; oben links Modul und Bereich. */
+    else{
+     if(await page.locator('main nav.qp-tabs').isVisible().catch(()=>false))bad.push('REITER_IM_INHALT_SICHTBAR');
+     if(await page.locator(leiste).isVisible())bad.push('REITERZEILE_SICHTBAR');
+     if(!await page.locator('vu-navigation button.world').isVisible())bad.push('KNOPF_OBEN_LINKS:false');
     }
-    else if(!await page.locator(leiste).isVisible())bad.push('REITER_SICHTBAR:false');
    }
    const box=await page.locator(dock).boundingBox();
    const hoehe=page.viewportSize().height;

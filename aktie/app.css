@@ -19,3 +19,25 @@ body.ak-body{margin:0;background:#fff}
 .ak .k-tile .k-pill{white-space:normal;height:auto;min-height:26px;padding-top:4px;padding-bottom:4px;line-height:1.15;text-align:left;max-width:100%}
 .ak .ak-ew-none{stroke:#55595f}
 :root:not([data-theme=dark]) .ak .ak-ew-none{stroke:#8b9097}
+/* Responsiv (iPad/Desktop, 22.11.2026): unter 761 px bleibt alles wie oben. Ab 761 px füllt die Seite die Breite (Rand 24 px),
+   ab 1024 px bis 1240 px wie der Kopf. Module und Geschäft stehen nebeneinander; kurze Schienen werden zu Gittern. */
+@media(min-width:761px){
+  .ak{box-sizing:border-box;max-width:900px;padding-left:10px;padding-right:10px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-auto-flow:row dense;align-content:start}
+  .ak>*{grid-column:1/-1}
+  .ak>.k-sh:has(+#ak-mods),.ak>#ak-mods,.ak>.k-px:has(>[data-ak-sheet=discover]){grid-column:1;padding-right:5px}
+  .ak>.k-sh:has(+.k-px>#ak-biz),.ak>.k-px:has(>#ak-biz){grid-column:2;padding-left:5px}
+  .ak>.k-px:has(>#ak-biz){grid-row:span 2}
+  .ak>.k-px:has(>[data-ak-sheet=discover]){align-self:start}
+  .ak .vu-ranges{max-width:480px}
+  .ak .k-rail{margin-inline:-10px;padding-inline:24px;scroll-padding-inline:24px}
+  .ak .k-rail:has(>.k-tile:not(.k-tap)){display:grid;grid-template-columns:repeat(3,minmax(0,1fr));overflow:visible;margin-inline:0;padding-inline:14px}
+  .ak .k-rail>.k-tile:not(.k-tap){width:auto!important;min-width:0}
+}
+@media(min-width:1024px){
+  .ak{max-width:1240px}
+  .ak #ak-mods{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+  .ak .k-rail{display:grid;overflow:visible;margin-inline:0;padding-inline:14px;grid-template-columns:repeat(auto-fill,minmax(128px,1fr))}
+  .ak .k-rail>*{width:auto!important;min-width:0}
+  .ak .k-rail:has(>.k-cover){grid-template-columns:repeat(4,minmax(0,1fr))}
+  .ak .k-rail>.k-cover{height:auto!important;aspect-ratio:16/10}
+}

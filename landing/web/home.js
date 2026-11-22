@@ -15,6 +15,12 @@
   }
   addEventListener("scroll", navTone, { passive: true }); navTone();
 
+  /* Einstieg: Höhe des Textblocks messen, damit das Telefon genau den restlichen Platz bekommt */
+  var fhc = $(".fh-copy");
+  function fhSize() { if (fhc) document.documentElement.style.setProperty("--fh-copy", fhc.offsetHeight + "px"); }
+  fhSize(); addEventListener("resize", fhSize);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fhSize);
+
   /* Kachel klappt ihr Kapitel unter ihrer Zeile auf. Die Kapitel stehen versteckt in der Seite (.chapters)
      und werden nur verschoben, nicht kopiert: Ids, Links und Bausteine bleiben dieselben. */
   var store = $(".chapters"), pan = null, onTile = null, moved = null;
