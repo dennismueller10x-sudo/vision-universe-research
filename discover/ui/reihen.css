@@ -325,12 +325,12 @@ html body #v2-main .dp-rnd[aria-pressed=true]{background:#c8f531;color:#101318}
 .dp-hero--wait .v2-load-state,.dp-hero--wait .dp-hero__body{position:absolute;left:14px;right:14px;bottom:36px;margin:0;color:#a1a7af}
 /* Aktie des Tages im Hellen: weiße Bühne, dunkle Schrift, Kurslinie in dunklem Grün (Kontrast ≥ 3:1 auf Weiß); dunkel unverändert */
 :root:not([data-theme=dark]) .dp-hero{background:radial-gradient(120% 70% at 70% 8%,#eef7d2,#fff 62%) #fff;color:#000;
-  --vu-ink:#000;--vu-inv:#fff;--vu-card:#f4f4f4;--vu-hair:#e9e9e9;--vu-mute:#5d636b;--vu-bg:#fff;--vu-focus-ring:#4f6b00}
-:root:not([data-theme=dark]) .dp-hero__chart svg path:not([fill^=url]){stroke:#4f6b00}
+  --vu-ink:#000;--vu-inv:#fff;--vu-card:#f4f4f4;--vu-hair:#e9e9e9;--vu-mute:#5d636b;--vu-bg:#fff;--vu-focus-ring:#101318}
+:root:not([data-theme=dark]) .dp-hero__chart svg path:not([fill^=url]){stroke:#101318}
 :root:not([data-theme=dark]) .dp-hero__chart svg path[fill^=url]{opacity:.55}
 :root:not([data-theme=dark]) .dp-hero__chart svg circle{stroke:#fff}
-:root:not([data-theme=dark]) body .dp-hero .dp-hero__chart .dx-art-node{fill:#4f6b00}
-:root:not([data-theme=dark]) body .dp-hero .dp-hero__chart .dx-art-line{stroke:#4f6b00}
+:root:not([data-theme=dark]) body .dp-hero .dp-hero__chart .dx-art-node{fill:#101318}
+:root:not([data-theme=dark]) body .dp-hero .dp-hero__chart .dx-art-line{stroke:#101318}
 :root:not([data-theme=dark]) .dp-hero__chart .dx-micro--intraday{color:#5d636b}
 :root:not([data-theme=dark]) .dp-hero__day{background:rgba(255,255,255,.8);color:#000}
 :root:not([data-theme=dark]) .dp-hero__shade{background:linear-gradient(rgba(255,255,255,0) 42%,rgba(255,255,255,.94) 80%)}
@@ -478,18 +478,18 @@ html body.dv2 .v2-home:has(>.dp-home){padding-bottom:0}
 
 /* Hell ist vollständig hell (Owner 16.11.2026: „wenn ich auf hell den Schalter umlege, dann muss natürlich auch alles hell sein“).
    Symbolkacheln im Hellen neongrün mit dunklem Zeichen, dunkle Flächen hellgrau mit dunkler Schrift; dunkel unverändert. */
-:root:not([data-theme=dark]) .dr-rowhero{background:#f4f4f4;color:#000;--vu-ink:#000;--vu-inv:#fff;--vu-hair:#dcdcdc;--vu-mute:#5d636b;--vu-card:#e9e9e9;--vu-focus-ring:#4f6b00}
+:root:not([data-theme=dark]) .dr-rowhero{background:#f4f4f4;color:#000;--vu-ink:#000;--vu-inv:#fff;--vu-hair:#dcdcdc;--vu-mute:#5d636b;--vu-card:#e9e9e9;--vu-focus-ring:#101318}
 :root:not([data-theme=dark]) .dr-rowhero__b{background:#e4e4e4;color:#000}
 :root:not([data-theme=dark]) .dr-tag--ink{background:#e4e4e4;color:#3a3d42}
-:root:not([data-theme=dark]) .dr-rowhero h1 span{color:#4f6b00}
+:root:not([data-theme=dark]) .dr-rowhero h1 span{color:#101318}
 :root:not([data-theme=dark]) .dr-rowhero__sub{color:#3a3d42}
 :root:not([data-theme=dark]) .dr-rowhero__n{color:#5d636b}
-:root:not([data-theme=dark]) .dr-all{background:#fff;color:#000;--vu-ink:#000;--vu-inv:#fff;--vu-card:#f4f4f4;--vu-hair:#e9e9e9;--vu-mute:#5d636b;--vu-bg:#fff;--vu-focus-ring:#4f6b00}
+:root:not([data-theme=dark]) .dr-all{background:#fff;color:#000;--vu-ink:#000;--vu-inv:#fff;--vu-card:#f4f4f4;--vu-hair:#e9e9e9;--vu-mute:#5d636b;--vu-bg:#fff;--vu-focus-ring:#101318}
 :root:not([data-theme=dark]) .dr-all__head .vu-round{background:#f4f4f4;color:#000}
 :root:not([data-theme=dark]) .dr-all .vu-lead,:root:not([data-theme=dark]) .dr-all__g>span,:root:not([data-theme=dark]) .dr-all__g>a,:root:not([data-theme=dark]) .dr-all__r>span:last-child{color:#5d636b}
 :root:not([data-theme=dark]) .dr-all__list{background:#f4f4f4}
 :root:not([data-theme=dark]) .dr-all__r{border-top-color:#e4e4e4;color:#000}
-:root:not([data-theme=dark]) .dr-all__r:focus-visible{outline-color:#4f6b00}
+:root:not([data-theme=dark]) .dr-all__r:focus-visible{outline-color:#101318}
 :root:not([data-theme=dark]) .dr-rowhero__act .vu-btn--line:not([aria-pressed=true]){border-color:#b4b8bd;color:#000}
 :root:not([data-theme=dark]) .dr-all__r>span:not(:first-child){color:#5d636b}
 /* Platz für „Top 10 heute“ (Ladezeit 22.11.2026): der Slot unter der Aktie des Tages wird beim Eintreffen der Daten durch die Sektion ersetzt;

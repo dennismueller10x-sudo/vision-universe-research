@@ -56,7 +56,7 @@ test("UI5 C06: eine Zeitleiste, Kleinformat ohne erfundene Punkte", () => {
 
 test("UI6 Regel 1: nur Weiß, Schwarz, Neongrün und Graustufen in den Bausteinen", () => {
   const colors = new Set((css.match(/#[0-9a-f]{3,8}\b/gi) || []).map(c => c.toLowerCase()));
-  const allowed = new Set(["#fff", "#ffffff", "#000", "#000000", "#c8f531", "#f4f4f4", "#e9e9e9", "#6e6e6e", "#151515", "#262626", "#9b9b9b", "#0e1013", "#4f6b00"]);
+  const allowed = new Set(["#fff", "#ffffff", "#000", "#000000", "#c8f531", "#f4f4f4", "#e9e9e9", "#6e6e6e", "#151515", "#262626", "#9b9b9b", "#0e1013"]); /* Owner 22.11.2026: kein Dunkelgrün (#4f6b00) mehr – Akzentschrift und Fokus sind schwarz */
   for (const c of colors) assert.ok(allowed.has(c), `Farbe ${c} ist nicht erlaubt`);
 });
 

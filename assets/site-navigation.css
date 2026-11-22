@@ -22,6 +22,9 @@ html[data-vu-tabs]{--vu-navigation-height:64px}
 @media(max-width:760px){html[data-vu-tabs]{--vu-navigation-height:56px}}
 /* Die Bereichs-Reiter im Inhalt der Modul-Startseiten entfallen ebenso: die Bereiche stehen im Knopf oben links. */
 html[data-vu-dock] :is(.dp-tabs,.qp-tabs,.tk-tabs,.ek-tabs,.fp-tabs,.pfp-tabs,.vsp-tabs,.stp-tabs,.hp-tabw,.hp-tabs,.sc-ak-tabs){display:none!important}
+/* Owner 22.11.2026: jede Seite endet mit ihrem letzten Knopf (meist der „Weiter“-Karte). Kleine Hinweistexte, „Daten & Hinweise“,
+   Quellen, Haftungssätze und RSS stehen nicht mehr am Seitenende, sondern nur im Menü (Rechtliches & Infos, Quellen). */
+html[data-vu-dock] :is(.q-foot,.tk-end,.ek-end,.ew-end-l,.fp-lk,.fp-foot,.stp-end,.hp-endl,.sc-ak-end,.pfp-end,.wk-end,.in-end,.in-fuss,.in-ueber,.vs-dm,.vs-disclaimer,.dp-end,.vu-dm,.st-foot,.tc-foot,.sc-foot,.ew-dm,.k-end,.fu-k2-foot,main .hf-dm,main .hf-legal){display:none!important}
 /* Schalter des Rahmens (site-navigation.js, VUNavigation.rahmen):
    <html data-vu-tabs="inhalt">  Die Seite zeigt ihre Reiter selbst im Inhalt; die Zeile des Rahmens und ihr Platz entfallen.
    <html data-vu-bleed>          Der Bildschirm beginnt unter dem Kopf (Titelbild bis oben); der Kopf ist durchsichtig, bis
@@ -47,8 +50,8 @@ html.vu-menu-open,html.vu-menu-open body{overflow:hidden}
   --vu-bg:#fff;--vu-surface:#f5f5f5;--vu-elevated:#fff;
   --vu-text:#0d0f12;--vu-text-secondary:#3d424a;--vu-muted:#626872;
   --vu-line:#e5e5e5;--vu-line-strong:#d4d4d4;
-  --vu-accent:#c8f531;--vu-on-accent:#101318;--vu-accent-text:#4f6b00;
-  --vu-accent-soft:#eef9cc;--vu-focus:#4f6b00;
+  --vu-accent:#c8f531;--vu-on-accent:#101318;--vu-accent-text:#101318;
+  --vu-accent-soft:#eef9cc;--vu-focus:#101318;
   --vu-radius:22px;--vu-radius-control:999px;
   --vu-space-1:8px;--vu-space-2:12px;--vu-space-3:20px;
   --vu-space-4:32px;--vu-space-5:48px;--vu-space-6:72px;
@@ -245,10 +248,10 @@ html.vu-menu-open,html.vu-menu-open body{overflow:hidden}
 :root:not([data-theme=dark]) .vu-fs-sub,:root:not([data-theme=dark]) .vu-fs-row span{color:#5d636b}
 :root:not([data-theme=dark]) .vu-fs-row{border-bottom-color:rgba(0,0,0,.1);color:#000}
 :root:not([data-theme=dark]) .vu-fs-row svg{stroke:#5d636b}
-:root:not([data-theme=dark]) .vu-fs-dot{background:#5f8000}
+:root:not([data-theme=dark]) .vu-fs-dot{background:#101318}
 :root:not([data-theme=dark]) .vu-fs-dot[data-off]{background:#b4b8bd}
 :root:not([data-theme=dark]) .vu-fs-btn{border-color:rgba(0,0,0,.28);color:#000}
-:root:not([data-theme=dark]) .vu-fs-row:focus-visible,:root:not([data-theme=dark]) .vu-fs-btn:focus-visible{outline-color:#4f6b00}
+:root:not([data-theme=dark]) .vu-fs-row:focus-visible,:root:not([data-theme=dark]) .vu-fs-btn:focus-visible{outline-color:#101318}
 
 /* Bausteine C04–C20 des Redesigns: assets/vu-ui.css (eigene Datei, nicht Teil der Navigation). */
 /* Einheitlicher Seitenfuß (Strang F): erscheint erst mit legalApproved */

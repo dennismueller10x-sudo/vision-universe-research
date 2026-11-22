@@ -76,7 +76,7 @@
     ".vu-as-chip{display:inline-flex;align-items:center;min-height:44px;padding:0 14px;border-radius:999px;background:#f4f4f4;color:inherit;font-size:13px;font-weight:700;text-decoration:none}:root[data-theme=dark] .vu-as-chip{background:#151515}" +
     ".vu-as-fine{margin:12px 0 0;font-size:11.5px;color:#6e6e6e}:root[data-theme=dark] .vu-as-fine{color:#9b9b9b}" +
     ".vu-as-vh{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}" +
-    ".vu-as-x:focus-visible,.vu-as-go:focus-visible,.vu-as-chip:focus-visible{outline:2px solid #4f6b00;outline-offset:2px}:root[data-theme=dark] .vu-as :focus-visible{outline-color:#c8f531}";
+    ".vu-as-x:focus-visible,.vu-as-go:focus-visible,.vu-as-chip:focus-visible{outline:2px solid #101318;outline-offset:2px}:root[data-theme=dark] .vu-as :focus-visible{outline-color:#c8f531}";
 
   /** Öffnet das Sheet für die Aktie der Seite. Liefert false, wenn die Seite keine Aktie zeigt (dann gilt der normale Link). */
   function open(doc, opener) {

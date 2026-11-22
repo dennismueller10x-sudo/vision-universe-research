@@ -251,8 +251,8 @@
         return '<a class="k-cover k-tap" href="' + esc(a.href) + '" style="width:270px;height:170px">' + (a.image ? '<img data-src="' + esc(a.image) + '" alt="" decoding="async">' : "") + '<div class="sc"></div><div class="ct2">' + (a.tag ? '<span class="k-pill sm">' + esc(a.tag) + "</span>" : "") + '<div class="k-b8 k-mt4" style="line-height:1.1">' + esc(a.title) + "</div></div></a>";
       }).join("") + "</div>" : "") +
       (v.similar.length ? sh("Mehr wie " + v.short) + '<div class="k-rail">' + v.similar.map(poster).join("") + "</div>" : "") +
-      (partner ? '<div class="k-px k-fl k-g8" style="margin-top:22px"><button type="button" class="k-btn k-f1 k-tap" data-ak-compare>Vergleichen</button></div>' : "") +
-      '<div class="k-end"><button type="button" class="k-lk" data-ak-sheet="hinweise">Daten &amp; Hinweise' + (v.asOf.kurs ? " · Schluss " + F.dateShort(v.asOf.kurs) : "") + "</button></div>";
+      /* Owner 22.11.2026: die Seite endet mit ihrem letzten Knopf; „Daten & Hinweise“ steht im Menü (Rechtliches & Infos). */
+      (partner ? '<div class="k-px k-fl k-g8" style="margin-top:22px"><button type="button" class="k-btn k-f1 k-tap" data-ak-compare>Vergleichen</button></div>' : "");
   }
   /* Titelbilder der News erst laden, wenn sie (fast) im Bild sind: Chrome-eigenes loading=lazy holt sie auf dem Handy
      weit vor dem Sichtbereich (3 Bilder, ca. 640 KB, beim Öffnen der Aktie). Ohne IntersectionObserver sofort laden. */
