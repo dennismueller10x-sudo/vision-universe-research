@@ -18,6 +18,11 @@ on:
         type: choice
         options: [alle, news, marktbriefing, ratings, hedgefonds, morning, analysten, analysten-probe, search-console]
         default: alle
+      website:
+        description: 'Marktbriefing: Ausgabe auf www.visionuniverse.de veroeffentlichen (Seite, PDF, Startseiten-Teaser). Der Zeitplan rechnet nur intern.'
+        type: choice
+        options: [nein, ja]
+        default: nein
 
 permissions:
   contents: write
@@ -66,21 +71,29 @@ jobs:
       # Eigener Stand zuerst (Archiv und fruehere Ausgaben), sonst spiegelt push-data-branch.sh sie weg; dazu der Market Pulse.
       - name: Datenzweig in den Arbeitsbaum (marktbriefing, marketPulse)
         run: scripts/ci/seed-data-branch.sh marktbriefing,marketPulse
-      # Chromium fuer PDF und Vorschaubild (products/news/briefing/pdf.mjs); fehlt es, entsteht die Seite ohne beides.
-      - name: Playwright fuer das PDF
+      # Owner 22.11.2026: Die Website bekommt eine Ausgabe nur auf Ausloesung (Dispatch website=ja); der Zeitplan rechnet
+      # das Briefing nur intern in den Datenzweig. Chromium nur fuer PDF und Bilder der Website-Ausgabe.
+      - name: Playwright fuer das PDF (nur Website-Ausgabe)
+        if: inputs.website == 'ja'
         run: |
           npm install --prefix /tmp/mb-pw --no-audit --no-fund playwright@1.57.0
           node /tmp/mb-pw/node_modules/playwright/cli.js install --with-deps chromium
-      - name: Marktbriefing bauen (Datenzweig und www-Seite mit PDF)
+      - name: Marktbriefing bauen
         env:
           PLAYWRIGHT_PREFIX: /tmp/mb-pw
-        run: node products/news/briefing/build.mjs --www landing --pdf
+          WEBSITE: ${{ inputs.website }}
+        run: |
+          if [ "$WEBSITE" = "ja" ]; then
+            node products/news/briefing/build.mjs --www landing --pdf
+          else
+            node products/news/briefing/build.mjs
+          fi
       - name: Marktbriefing in den Datenzweig (nur main)
         if: github.ref == 'refs/heads/main'
         run: scripts/ci/push-data-branch.sh data/live news/marktbriefing
-      # www.visionuniverse.de baut Cloudflare Pages aus main (landing/): Seite, Archiv, PDF, Vorschaubild und Startseiten-Teaser.
-      - name: Marktbriefing auf die Website (nur main)
-        if: github.ref == 'refs/heads/main'
+      # www.visionuniverse.de baut Cloudflare Pages aus main (landing/): Produktseite, Ausgabe mit PDF und Bildern, Startseiten-Teaser.
+      - name: Marktbriefing auf die Website (nur main, nur website=ja)
+        if: github.ref == 'refs/heads/main' && inputs.website == 'ja'
         shell: bash
         run: |
           git add landing/marktbriefing landing/index.html

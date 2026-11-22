@@ -20,6 +20,9 @@
   var Render = isNode ? require("./render.js") : global.VUMarketBriefingRender;
 
   var SITE = "https://www.visionuniverse.de";
+  /* Wie landing/news/index.html: Research-Navigation im Quelltext, der Website-Build (landing/scripts/build.mjs) entfernt sie. */
+  var NAV_HEAD = '<link rel="stylesheet" href="/assets/site-navigation.css">';
+  var NAV_BODY = '<vu-navigation></vu-navigation><script src="/assets/site-navigation.js"></script>';
   var WD = ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"];
   var MO = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"];
   var MS = ["Jan.", "Feb.", "März", "Apr.", "Mai", "Juni", "Juli", "Aug.", "Sep.", "Okt.", "Nov.", "Dez."];
@@ -148,7 +151,7 @@
 
     S.push({ id: "ende", bg: "l", toc: "Karten, PDF und Quellen", html:
       '<div class="mb-in"><p class="mb-eye">Das war der Börsentag</p><h2 class="mb-claim mb-h1">' + b.cards.length + ' Karten zum Teilen.</h2><p class="mb-say">Dieselben Grafiken als Story, als PDF und in der App.</p><div class="mb-acts">' + play + pdf + "</div>" +
-      (o.archive && o.archive.length > 1 ? '<nav class="mb-arch" aria-label="Frühere Ausgaben"><p class="mb-sub">Frühere Ausgaben</p>' + o.archive.slice(0, 15).map(function (d) { return '<a href="' + o.base + "marktbriefing/" + (d === o.latest ? "" : d + "/") + '"' + (d === b.session ? ' aria-current="page"' : "") + ">" + dmy(d) + d.slice(0, 4) + "</a>"; }).join("") + "</nav>" : "") +
+      (o.archive && o.archive.length > 1 ? '<nav class="mb-arch" aria-label="Frühere Ausgaben"><p class="mb-sub">Frühere Ausgaben</p>' + o.archive.slice(0, 15).map(function (d) { return '<a href="' + o.base + "marktbriefing/" + d + "/" + '"' + (d === b.session ? ' aria-current="page"' : "") + ">" + dmy(d) + d.slice(0, 4) + "</a>"; }).join("") + "</nav>" : "") +
       '<details class="mb-src"><summary>Quellen und Hinweise</summary><ul>' + b.cards.map(function (c) { return "<li>" + esc(c.title) + ": " + esc(c.source) + (c.url ? ' · <a href="' + esc(c.url) + '" rel="noopener">Originalquelle</a>' : "") + "</li>"; }).join("") + "</ul>" +
       "<p>Marktbriefing zum US-Handelstag " + esc(day) + ". Indizes über ETF-Proxies, Kurse zum Tagesschluss und im Tagesverlauf verzögert. Renditen: US Treasury und Bundesbank. Fundamentaldaten: SEC EDGAR. Marktbreite, Einordnung, Bewertung und Marktbild: eigene Auswertungen von Vision Universe. Angaben Dritter geben die genannte Quelle wieder.</p>" +
       "<p>Redaktionelle Einordnung, keine Anlageberatung und keine Kauf- oder Verkaufsempfehlung. " + esc(b.notes.forecast) + "</p></details></div>" });
@@ -161,7 +164,7 @@
     var depth = o.depth || 1, base = depth === 2 ? "../../" : "../";
     var S = scenes(b, { pdf: o.pdf, archive: o.archive, latest: o.latest, base: base });
     var C = {}; b.cards.forEach(function (c) { C[c.id] = c; });
-    var path = "/marktbriefing/" + (b.session === o.latest ? "" : b.session + "/");
+    var path = "/marktbriefing/" + b.session + "/";
     var url = SITE + path, day = longDate(b.session);
     var title = "Börse am " + dmy(b.session) + b.session.slice(0, 4) + ": " + C.overview.title + " | Marktbriefing";
     var desc = (b.summary || []).slice(0, 2).join(" ").slice(0, 300);
@@ -175,7 +178,7 @@
       isAccessibleForFree: true };
     var crumbs = { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [
       { "@type": "ListItem", position: 1, name: "Vision Universe", item: SITE + "/" },
-      { "@type": "ListItem", position: 2, name: "Marktbriefing", item: SITE + "/marktbriefing/" }].concat(path !== "/marktbriefing/" ? [{ "@type": "ListItem", position: 3, name: "Börsenschluss " + dmy(b.session) + b.session.slice(0, 4), item: url }] : []) };
+      { "@type": "ListItem", position: 2, name: "Marktbriefing", item: SITE + "/marktbriefing/" }].concat([{ "@type": "ListItem", position: 3, name: "Börsenschluss " + dmy(b.session) + b.session.slice(0, 4), item: url }]) };
     var shift = function (h) { return depth === 2 ? h.replace(/(["'(])\.\.\//g, "$1../../") : h; };
     var chrome = o.chrome || { top: "", bottom: "" };
     var cards = b.cards.map(function (c, i) { return '<template data-mb-card="' + i + '">' + Render.cardSvg(c, i, b.cards.length, b.session) + "</template>"; }).join("");
@@ -186,9 +189,9 @@
       '<meta name="twitter:card" content="summary_large_image">\n<meta property="article:published_time" content="' + esc(b.generatedAt) + '">\n' +
       '<meta name="theme-color" content="#ffffff">\n<link rel="icon" href="' + base + 'assets/icon-192.png" type="image/png">\n<link rel="apple-touch-icon" href="' + base + 'assets/apple-touch-icon.png">\n<link rel="preload" href="' + base + 'assets/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>\n<link rel="stylesheet" href="' + base + 'web/site.css">\n<link rel="stylesheet" href="' + base + 'marktbriefing/mb.css">\n' +
       '<script src="' + base + 'web/site.js" defer></script>\n<script src="' + base + 'web/consent.js" defer></script>\n<script src="' + base + 'marktbriefing/mb.js" defer></script>\n<meta name="vu-ga" content="">\n' +
-      ldTag(ld) + "\n" + ldTag(crumbs) + "\n</head>\n<body>\n" + shift(chrome.top) + "\n" +
+      ldTag(ld) + "\n" + ldTag(crumbs) + "\n" + NAV_HEAD + "</head>\n<body>" + NAV_BODY + "\n" + shift(chrome.top) + "\n" +
       '<main id="inhalt" class="mb" data-session="' + b.session + '">\n<div class="mb-bars" aria-hidden="true">' + S.map(function () { return "<i></i>"; }).join("") + "</div>\n" +
-      '<aside class="mb-nav" aria-label="Kapitel"><p class="mb-brand"><span class="mb-logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#c8f531" stroke-width="2.2" stroke-linejoin="round"><path d="M12 3 3 8l9 5 9-5-9-5Z"/><path d="m3 13 9 5 9-5"/></svg></span>Marktbriefing</p><p class="mb-stamp"><i></i>Börsenschluss ' + dmy(b.session) + '</p><ol class="mb-toc">' +
+      '<aside class="mb-nav" aria-label="Kapitel"><a class="mb-back" href="../">← Alle Ausgaben</a><p class="mb-brand"><span class="mb-logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#c8f531" stroke-width="2.2" stroke-linejoin="round"><path d="M12 3 3 8l9 5 9-5-9-5Z"/><path d="m3 13 9 5 9-5"/></svg></span>Marktbriefing</p><p class="mb-stamp"><i></i>Börsenschluss ' + dmy(b.session) + '</p><ol class="mb-toc">' +
       S.map(function (s, i) { return '<li><a href="#' + s.id + '" data-go="' + i + '"><b>' + (i < 9 ? "0" : "") + (i + 1) + "</b><span>" + esc(s.toc) + "</span></a></li>"; }).join("") + '</ol><div class="mb-navfoot"><button class="mb-btn" type="button" data-mb-play>▶ Als Karten ansehen</button>' + (o.pdf ? '<a class="mb-btn mb-soft" href="' + esc(o.pdf) + '" download>PDF herunterladen</a>' : "") + "</div></aside>\n" +
       '<div class="mb-scenes">' + S.map(function (s, i) { return '<section class="mb-sc ' + s.bg + '" id="' + s.id + '" data-i="' + i + '" aria-label="' + esc(s.toc) + '">' + s.html + "</section>"; }).join("\n") + "</div>\n" +
       '<div class="mb-story" role="dialog" aria-modal="true" aria-label="Karten ansehen" hidden><div class="mb-stage"><div class="mb-prog"></div><button class="mb-x" type="button" aria-label="Schließen">✕</button><div class="mb-slide"></div><button class="mb-hit l" type="button" aria-label="Zurück"></button><button class="mb-hit r" type="button" aria-label="Weiter"></button></div></div>\n' +
@@ -206,6 +209,51 @@
     return { top: top.trim(), bottom: bottom.trim() };
   }
 
+  /* Produktseite /marktbriefing/ wie Magazin und Aktienreport (Bausteine pvhero, m3, pvabout, pvpeek, pvtoc, pvend aus
+     landing/web/site.css). o: { chrome, parts: {dot, soon, stores} aus landing/report/index.html, archive, pdf, img } */
+  function productPage(b, o) {
+    var C = {}; b.cards.forEach(function (c) { C[c.id] = c; });
+    var chrome = o.chrome || { top: "", bottom: "" }, P = o.parts || {}, ed = b.session + "/", img = o.img || {};
+    var title = "Das Marktbriefing: der Börsentag in Szenen | Vision Universe";
+    var desc = "Was an der Börse los war, als Story zum Durchwischen: eine Aussage je Bildschirm, eigene Auswertungen und Grafiken. Aktuelle Ausgabe: " + C.overview.title + " (" + dmy(b.session) + b.session.slice(0, 4) + ").";
+    var cta = function (href, text) { return '<a class="btn" href="' + href + '"><span>' + esc(text) + "</span>" + (P.dot || "") + "</a>"; };
+    var peek = (img.cards || []).map(function (c) { return '<figure class="pvp mbp"><a href="' + ed + "#" + c.anchor + '"><img src="' + ed + c.file + '" alt="' + esc(c.title) + '" loading="lazy"></a><figcaption>' + esc(c.kicker) + "</figcaption></figure>"; }).join("");
+    var ld = { "@context": "https://schema.org", "@type": "CollectionPage", name: "Marktbriefing", url: SITE + "/marktbriefing/", description: desc, inLanguage: "de-DE",
+      publisher: { "@type": "Organization", name: "Vision Universe", url: SITE + "/" },
+      hasPart: (o.archive || [b.session]).slice(0, 20).map(function (d) { return { "@type": "NewsArticle", url: SITE + "/marktbriefing/" + d + "/", datePublished: d }; }) };
+    var main = '<main id="inhalt" class="w"><section class="ahero pvhero" data-hero><div>' +
+      '<p class="k pvk">Marktbriefing · Börsenschluss ' + dmy(b.session) + b.session.slice(0, 4) + " · " + b.cards.length + " Karten</p>" +
+      "<h1>Das <mark>Marktbriefing.</mark></h1>" +
+      '<p class="t">Was an der Börse los war, als Story zum Durchwischen: eine Aussage je Bildschirm, eigene Auswertungen und Grafiken zum Teilen.</p>' +
+      '<div class="pvcta">' + cta(ed, "Aktuelle Ausgabe ansehen") + "</div>" +
+      (o.pdf ? '<p class="mbpdf"><a href="' + ed + esc(o.pdf) + '" download>Als PDF herunterladen</a> · ' + (b.cards.length + 4) + " Seiten</p>" : "") +
+      '</div><div class="pvcover"><a class="mbcov" href="' + ed + '" aria-label="Aktuelle Ausgabe ansehen"><div class="m3 pvm" aria-hidden="true">' +
+      (img.p1 ? '<span class="pg p1"><img src="' + ed + img.p1 + '" alt=""></span>' : "") + (img.p2 ? '<span class="pg p2"><img src="' + ed + img.p2 + '" alt=""></span>' : "") +
+      (img.cover ? '<span class="cv"><img src="' + ed + img.cover + '" alt=""><i class="shine"></i></span>' : "") +
+      '</div></a><p class="pvnow"><small>Aktuelle Ausgabe</small><b>' + esc(C.overview.title) + "</b></p></div></section>" +
+      '<section class="full pvabout"><h2>Was ist das?</h2><div class="pvgrid"><div><p class="t">Das Marktbriefing erzählt einen Börsentag in Szenen: was passiert ist, wie es einzuordnen ist und was dahintersteckt. Am Handy zum Wischen, am Rechner mit Kapiteln, dazu als PDF.</p>' +
+      '<ul class="pvwhat"><li>Indizes, Schwergewichte, Zinsen und Sachwerte zum Börsenschluss</li><li>Eigene Auswertungen: Marktbreite, historische Einordnung, Bewertung</li><li>Nachrichten des Tages mit Quelle, als Angabe Dritter gekennzeichnet</li><li>Alle Grafiken als Story-Karten zum Teilen und als PDF</li></ul></div>' +
+      '<div class="pvissue"><span class="k">Aktuelle Ausgabe · ' + dmy(b.session) + b.session.slice(0, 4) + "</span><h3>" + esc(C.overview.title) + "</h3><p>" + esc((b.summary || []).slice(0, 2).join(" ")) + '</p><p><a class="mbmore" href="' + ed + '">Ausgabe ansehen →</a></p></div></div></section>' +
+      (peek ? '<section class="full"><h2>Ein Blick hinein</h2><p class="t pvnote">Drei von ' + b.cards.length + ' Karten der aktuellen Ausgabe. Antippen öffnet die Ausgabe an dieser Stelle.</p><div class="pvpeek">' + peek + "</div></section>" : "") +
+      '<section class="full"><h2>Das steht drin</h2><ol class="pvtoc">' + b.cards.map(function (c, i) { return "<li><b>" + (i + 1) + "</b><span><small>" + esc(c.kicker) + "</small>" + esc(c.title) + "</span></li>"; }).join("") + "</ol></section>" +
+      ((o.archive || []).length > 1 ? '<section class="full"><h2>Frühere Ausgaben</h2><p class="mbarch">' + o.archive.slice(1, 30).map(function (d) { return '<a href="' + d + '/">' + dmy(d) + d.slice(0, 4) + "</a>"; }).join("") + "</p></section>" : "") +
+      '<section class="full pvend"><div class="pvbox">' + (P.soon || "") + "<h2>Bald auch in der App.</h2><p class=\"t\">Das Marktbriefing gibt es in der App mit allen Kursen zum Antippen. Trag dich ein, dann sagen wir dir Bescheid, sobald die App da ist.</p>" +
+      '<div class="pvcta">' + cta("../#newsletter", "Zum Start benachrichtigen") + "</div>" + (P.stores || "") + "</div></section></main>";
+    return "<!doctype html>\n<html lang=\"de\">\n<head>\n<meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n<title>" + esc(title) + "</title>\n<meta name=\"description\" content=\"" + esc(desc) + "\">\n" +
+      '<meta name="robots" content="noindex, nofollow">\n<link rel="canonical" href="' + SITE + '/marktbriefing/">\n<meta property="og:type" content="website">\n<meta property="og:site_name" content="Vision Universe">\n<meta property="og:locale" content="de_DE">\n' +
+      '<meta property="og:url" content="' + SITE + '/marktbriefing/">\n<meta property="og:title" content="Das Marktbriefing · Vision Universe">\n<meta property="og:description" content="' + esc(desc) + '">\n' +
+      (img.cover ? '<meta property="og:image" content="' + SITE + "/marktbriefing/" + ed + img.cover + '">\n' : "") + '<meta name="twitter:card" content="summary_large_image">\n<meta name="theme-color" content="#ffffff">\n' +
+      '<link rel="icon" href="../assets/icon-192.png" type="image/png">\n<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">\n<link rel="preload" href="../assets/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>\n' +
+      '<link rel="stylesheet" href="../web/site.css">\n<link rel="stylesheet" href="../marktbriefing/mb.css">\n<script src="../web/site.js" defer></script>\n<script src="../web/consent.js" defer></script>\n<meta name="vu-ga" content="">\n' +
+      ldTag(ld) + "\n" + NAV_HEAD + "</head>\n<body>" + NAV_BODY + "\n" + chrome.top + "\n" + main + "\n" + chrome.bottom + "\n</body>\n</html>\n";
+  }
+
+  /* Bausteine aus landing/report/index.html: Pfeil im Knopf, „Bald in der App“, Store-Abzeichen (eine Quelle für das Aussehen). */
+  function partsFrom(reportHtml) {
+    var pick = function (re) { var m = reportHtml.match(re); return m ? m[0] : ""; };
+    return { dot: pick(/<span class="dot">[\s\S]*?<\/svg><\/span>/), soon: pick(/<p class="soon">[\s\S]*?<\/p>/), stores: pick(/<div class="stores">[\s\S]*?<\/p><\/div>/) };
+  }
+
   /* Teaser für die Startseite (Region <!--MB:teaser--> in landing/index.html). */
   function teaser(b, href) {
     var C = {}; b.cards.forEach(function (c) { C[c.id] = c; });
@@ -220,7 +268,7 @@
     return indexHtml.slice(0, i + a.length) + teaser(b, "./marktbriefing/") + indexHtml.slice(j);
   }
 
-  var api = { page: page, scenes: scenes, chromeFrom: chromeFrom, teaser: teaser, withTeaser: withTeaser, SITE: SITE };
+  var api = { page: page, scenes: scenes, chromeFrom: chromeFrom, productPage: productPage, partsFrom: partsFrom, teaser: teaser, withTeaser: withTeaser, SITE: SITE };
   if (isNode) module.exports = api;
   else global.VUMarketBriefingWww = api;
 })(typeof window !== "undefined" ? window : globalThis);

@@ -148,7 +148,7 @@ export function pdfHtml(b, { font }) {
     <p>Marktbriefing zum US-Handelstag ${esc(day)}. Indizes über ETF-Proxies, Kurse zum Tagesschluss und im Tagesverlauf verzögert. Renditen: US Treasury und Bundesbank. Fundamentaldaten: SEC EDGAR. Marktbreite, Einordnung, Bewertung und Marktbild: eigene Auswertungen von Vision Universe. Angaben Dritter geben die genannte Quelle wieder.</p>
     <p><b>Wichtiger Hinweis:</b> Redaktionelle Einordnung, keine Anlageberatung und keine Kauf- oder Verkaufsempfehlung. ${esc(b.notes.forecast)} Vergangene Entwicklungen sind kein verlässlicher Hinweis auf künftige.</p>
     <p>Herausgeber: Vision Universe · www.visionuniverse.de · Impressum: www.visionuniverse.de/impressum/</p>${foot(srcN)}</section>`;
-  const back = `<section class="page lime back"><div class="brand" style="font-size:13pt;font-weight:900">VISION UNIVERSE®</div><div class="big">Jeden Börsentag neu.<br>Als Story, als PDF und in der App.</div><div class="url">www.visionuniverse.de/marktbriefing</div></section>`;
+  const back = `<section class="page lime back"><div class="brand" style="font-size:13pt;font-weight:900">VISION UNIVERSE®</div><div class="big">Der Börsentag in Szenen.<br>Als Story, als PDF und bald in der App.</div><div class="url">www.visionuniverse.de/marktbriefing</div></section>`;
   return `<!doctype html><html lang="de"><meta charset="utf-8"><title>Marktbriefing ${dmy(b.session)}</title><style>${CSS(font)}</style><body>${cover}${glance}${inhalt}${cardPages}${sources}${back}</body></html>`;
 }
 
@@ -159,7 +159,7 @@ function playwright() {
   throw new Error('Playwright fehlt (PLAYWRIGHT_PREFIX oder NODE_PATH setzen).');
 }
 
-export async function writePdf(b, out, { png = null } = {}) {
+export async function writePdf(b, out, { png = null, cards = [] } = {}) {
   const font = pathToFileURL(path.join(root, 'landing/assets/fonts/inter-latin.woff2')).href;
   const tmp = path.join(path.dirname(out), '.mb-pdf-' + process.pid + '.html');
   fs.mkdirSync(path.dirname(out), { recursive: true });
@@ -172,11 +172,17 @@ export async function writePdf(b, out, { png = null } = {}) {
     await page.evaluate(() => document.fonts.ready);
     await page.pdf({ path: out, format: 'A4', printBackground: true, preferCSSPageSize: true, outline: true, tagged: true });
     if (png) {
+      // Bilder für die Website: Titelblatt des PDF (titel.png) und Karten (karte-NN.png; 01 = Vorschaubild).
       fs.mkdirSync(png, { recursive: true });
+      const p1 = await browser.newPage({ viewport: { width: 794, height: 1123 }, deviceScaleFactor: 1.4 });
+      await p1.goto(pathToFileURL(tmp).href);
+      await p1.evaluate(() => document.fonts.ready);
+      await p1.locator('section.cover').screenshot({ path: path.join(png, 'titel.png') });
       const p2 = await browser.newPage({ viewport: { width: Render.W, height: Render.H } });
-      await p2.setContent('<!doctype html><meta charset=utf-8><style>@font-face{font-family:Inter;src:url(' + font + ') format("woff2");font-weight:100 900}body{margin:0}svg{display:block}</style>' + Render.cardSvg(b.cards[0], 0, b.cards.length, b.session));
+      const ids = [0].concat((cards || []).filter((i) => i > 0 && i < b.cards.length));
+      await p2.setContent('<!doctype html><meta charset=utf-8><style>@font-face{font-family:Inter;src:url(' + font + ') format("woff2");font-weight:100 900}body{margin:0}svg{display:block}</style>' + ids.map((i) => Render.cardSvg(b.cards[i], i, b.cards.length, b.session)).join(''));
       await p2.evaluate(() => document.fonts.ready);
-      await p2.locator('svg').first().screenshot({ path: path.join(png, 'karte-01.png') });
+      for (let k = 0; k < ids.length; k++) await p2.locator('svg').nth(k).screenshot({ path: path.join(png, 'karte-' + String(ids[k] + 1).padStart(2, '0') + '.png') });
     }
   } finally { await browser.close(); fs.rmSync(tmp, { force: true }); }
   return out;
