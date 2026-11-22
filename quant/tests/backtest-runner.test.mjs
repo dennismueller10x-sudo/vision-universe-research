@@ -1,7 +1,6 @@
 // Research backtest runner (scripts/quant/research/backtest-runner.cjs): fast tests on synthetic inputs (test seam deps),
 // committed demonstration results, negative cases, PIT, determinism, cache and isolation. Real-data runs of all demo cases
 // and the Python re-computation: quant/tests/backtest-runner-real.test.mjs (BACKTEST_RUNNER_FULL=1).
-import "../../scripts/quant/lib/frozen-data.mjs"; /* eingefrorener Datenstand (scripts/quant/lib/frozen-data.mjs, 22.11.2026) */
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';

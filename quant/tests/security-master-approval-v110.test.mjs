@@ -1,6 +1,5 @@
 // Sonderfreigabe security-master-approved-changes-1.1.0 (Owner-Entscheidung 30.10.2026): exakte, quellengebundene Listen
 // für alle G6/G7/G9-Arten, gleiche Bindung wie 1.0.0, Grenzen unverändert; 1.0.0 verhält sich byte-gleich.
-import "../../scripts/quant/lib/frozen-data.mjs"; /* eingefrorener Datenstand (scripts/quant/lib/frozen-data.mjs, 22.11.2026) */
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, mkdtempSync, rmSync, writeFileSync, mkdirSync } from "node:fs";
