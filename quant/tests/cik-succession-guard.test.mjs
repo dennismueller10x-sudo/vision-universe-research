@@ -76,3 +76,18 @@ test("CG-6: CIK-Wechsel eines Produktkuerzels ohne Registereintrag behaelt die b
   assert.equal(by.get("HOLD").status, PENDING);
   assert.equal(g.pending[0].cikChange, true);
 });
+
+test("CG-7: gepinnte CIK gilt auch, wenn der vorige Stand schon die neue CIK fuehrt", () => {
+  const by = new Map([["HOLD", { cik: C3, status: "RESOLVED" }]]);
+  guardNewIssuerAttachments({ byTicker: by, previous: { HOLD: { cik: C3, status: "RESOLVED" } },
+                              productTickers: ["HOLD"], successions: [], pins: [{ ticker: "HOLD", cik: C1 }] });
+  assert.equal(by.get("HOLD").cik, C1);
+  assert.equal(by.get("HOLD").status, PENDING);
+});
+
+test("CG-8: das Pin-Register ist wohlgeformt", async () => {
+  const { readFileSync } = await import("node:fs");
+  const doc = JSON.parse(readFileSync(new URL("../config/cik-pins.json", import.meta.url), "utf8"));
+  assert.equal(doc.schema, "vu-cik-pins-1.0.0");
+  for (const p of doc.pins) { assert.match(p.ticker, /^[A-Z0-9.\-]+$/); assert.match(p.cik, /^\d{10}$/); assert.ok(p.note); }
+});

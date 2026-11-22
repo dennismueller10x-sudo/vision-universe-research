@@ -1,0 +1,13 @@
+{
+  "schema": "vu-cik-pins-1.0.0",
+  "purpose": "Kuerzel, deren CIK bis zu einem Beleg gehalten wird, obwohl die SEC-Tickerliste eine andere fuehrt (Holding-Umgruendung, Umfirmierung). Gelesen von scripts/universe/lib/cik-succession-guard.mjs: weicht die SEC-CIK ab, bleibt die gepinnte CIK und damit die issuerId (PENDING_SUCCESSION_EVIDENCE, cikChange). Ein Eintrag wird entfernt oder ins Nachfolge-Register ueberfuehrt, sobald der Beleg geprueft ist.",
+  "decidedBy": "Steuerung 22.11.2026 (mit BA): alte issuerIds ohne Beleg behalten - Profil, News und Finanzdaten haengen an der Emittenten-ID.",
+  "pins": [
+    { "ticker": "BIP", "cik": "0001406234", "secCik": "0002155396", "note": "Brookfield Infrastructure Partners L.P. -> Brookfield Infrastructure Partners Inc. (SEC-Liste 22.11.2026)" },
+    { "ticker": "CDLR", "cik": "0001978867", "secCik": "0002063345", "note": "Cadeler A/S -> Cadeler plc" },
+    { "ticker": "NAVI", "cik": "0001593538", "secCik": "0002152623", "note": "Navient Corp -> Navient Holdings, Inc." },
+    { "ticker": "JSM", "cik": "0001593538", "secCik": "0002152623", "note": "Navient-Anleihe/Klasse, wie NAVI" },
+    { "ticker": "XRPN", "cik": "0002044009", "secCik": "0002092592", "note": "Armada Acquisition Corp. II -> Evernorth Holdings Inc." },
+    { "ticker": "XRPNW", "cik": "0002044009", "secCik": "0002092592", "note": "Optionsschein zu XRPN" }
+  ]
+}
