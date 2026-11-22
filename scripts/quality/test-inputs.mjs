@@ -39,7 +39,7 @@ const TICKER_RE = /["'`](?:NVDA|AAPL|MSFT|AMZN|GOOGL?|META|TSLA|AVGO|SAP|ASML|NF
    liest, ist ein fester Live-Wert: der Titel wandert aus dem Universum oder aendert Zahlen, und main ist rot, ohne dass Code falsch ist.
    Woerter wie PASS/FAIL/USD sind keine Kuerzel. */
 const KUERZEL_RE = /["'`]([A-Z]{1,5}(?:[.-][A-Z])?)["'`]/g;
-const KEIN_KUERZEL = new Set(["OK", "NA", "NO", "YES", "PASS", "FAIL", "WARN", "USD", "EUR", "GBP", "JPY", "CHF", "NYSE", "NASDAQ", "AMEX", "OTC", "ETF", "ADR", "SEC", "NULL", "TRUE", "FALSE", "GET", "POST", "PUT", "ALL", "NONE", "ON", "OFF", "BUY", "SELL", "HOLD", "CALL", "A", "B", "C", "D", "E", "X", "Y", "Z", "N", "P", "R", "S", "T", "U"]);
+const KEIN_KUERZEL = new Set(["OK", "NA", "NO", "YES", "PASS", "FAIL", "WARN", "USD", "EUR", "GBP", "JPY", "CHF", "ETF", "ADR", "SEC", "NULL", "TRUE", "FALSE", "GET", "POST", "PUT", "ALL", "NONE", "ON", "OFF", "BUY", "SELL", "HOLD", "CALL", "A", "B", "C", "D", "E", "X", "Y", "Z", "N", "P", "R", "S", "T", "U"]);
 export const LIVE_PRUEFUNG_RE = /LIVE-PRUEFUNG:\s*Monitor/;
 const DATE_RE = /["'`]20\d\d-\d\d-\d\d/;
 const ASSERT_RE = /\b(?:assert(?:\.\w+)?|expect)\s*\(/;
