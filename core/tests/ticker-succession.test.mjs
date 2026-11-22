@@ -37,6 +37,9 @@ test("TS-3 · fail closed: fehlender Beleg, fehlende CIK, zwei Nachfolger, Kette
   assert.throws(() => TS.tickerSuccessions({ successions: [{ ...ok, source: {} }] }), /Belegart/);
   assert.throws(() => TS.tickerSuccessions({ successions: [{ ...ok, source: { type: "SEC_8K", filed: "2026-01-02" } }] }), /Accession/);
   assert.throws(() => TS.tickerSuccessions({ successions: [{ ...ok, source: { ...ok.source, filed: "2026-02-01" } }] }), /vor dem Stichtag/);
+  const sechs = { ...ok, source: { type: "SEC_6K", accession: "0000000001-26-000002", filed: "2026-01-05" } };
+  assert.doesNotThrow(() => TS.tickerSuccessions({ successions: [sechs] }));
+  assert.throws(() => TS.tickerSuccessions({ successions: [{ ...ok, source: { type: "SEC_6K", filed: "2026-01-02" } }] }), /6-K ohne Accession/);
   assert.throws(() => TS.tickerSuccessions({ successions: [{ ...ok, cik: "1" }] }), /CIK/);
   assert.throws(() => TS.tickerSuccessions({ successions: [ok, { ...ok, to: "ref_C" }] }), /zwei Nachfolger/);
   assert.throws(() => TS.tickerSuccessions({ successions: [ok, { ...ok, from: "ref_X" }] }), /zwei Vorgaenger/);
