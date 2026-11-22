@@ -110,11 +110,19 @@ jobs:
         env:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Eingaben nur ueber env (ADR-005), nie im Shell-Text.
+          IN_INTERVAL: ${{ github.event_name == 'workflow_dispatch' && inputs.intervalSeconds || '300' }}
+          IN_BLOCK: ${{ github.event_name == 'workflow_dispatch' && inputs.blockMinutes || '345' }}
+          IN_SCOPE: ${{ github.event_name == 'workflow_dispatch' && inputs.scope || 'discover' }}
         run: |
+          set -euo pipefail
+          [[ "$IN_INTERVAL" =~ ^[0-9]{1,6}$ ]] || { echo "intervalSeconds ungueltig"; exit 1; }
+          [[ "$IN_BLOCK" =~ ^[0-9]{1,6}$ ]] || { echo "blockMinutes ungueltig"; exit 1; }
+          [[ "$IN_SCOPE" =~ ^[A-Za-z0-9,._-]{1,2000}$ ]] || { echo "scope ungueltig"; exit 1; }
           node scripts/market/run-pacemaker.mjs \
-            --interval-ms=$(( ${{ github.event_name == 'workflow_dispatch' && inputs.intervalSeconds || '300' }} * 1000 )) \
-            --block-max-ms=$(( ${{ github.event_name == 'workflow_dispatch' && inputs.blockMinutes || '345' }} * 60000 )) \
-            --scope=${{ github.event_name == 'workflow_dispatch' && inputs.scope || 'discover' }}
+            --interval-ms=$(( IN_INTERVAL * 1000 )) \
+            --block-max-ms=$(( IN_BLOCK * 60000 )) \
+            --scope="$IN_SCOPE"
 
       - name: Kein Schluessel im Statusbericht
         if: always()
