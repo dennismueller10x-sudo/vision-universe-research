@@ -1,0 +1,56 @@
+/* Unterseiten im Stil der Startseite (Owner 22.11.2026): ein Bereich je Seite, gründlich erklärt. Ergänzt site.css und home.css. */
+.vw main>[data-ch]{margin-top:0}
+.ps-crumb{font-size:13px;font-weight:800;color:#6e6e6e;display:flex;gap:8px;justify-content:center;margin-bottom:10px}
+.ps-crumb a{text-decoration:underline;text-decoration-color:var(--lime);text-decoration-thickness:3px;text-underline-offset:4px;color:#000}
+.ps-tag{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 14px 0 6px;border-radius:99px;background:#000;color:#fff;font-weight:800;font-size:14px}
+.ps-tag .ic{width:26px;height:26px;border-radius:50%;background:var(--lime);color:#000;display:grid;place-items:center}.ps-tag .ic svg{width:16px;height:16px}
+.ps-hero h1{margin-top:14px}
+@media(min-width:1000px){.ps-crumb{justify-content:flex-start}}
+
+/* So funktioniert es: Text und das Beispiel aus der App nebeneinander, als graue Kachel */
+.ps-how{padding-top:70px}
+.ps-how-g{display:grid;gap:22px;margin-top:14px;background:#f3f3f1;border-radius:32px;padding:26px 20px}
+.ps-how-t h2{margin-top:6px}.ps-how-t p.t{margin-top:14px;font-size:clamp(17px,1.5vw,20px);font-weight:600;color:#333;max-width:46ch}
+.ps-how-t>*{max-width:100%}
+.ps-how-v{min-height:0;border:0;padding:0;margin:0;background:none;display:block;min-width:0;overflow:hidden}
+.ps-how-v>*{max-width:100%}
+@media(min-width:1000px){.ps-how-g{grid-template-columns:1fr 1fr;align-items:center;padding:48px}}
+
+/* Film */
+.ps-film{margin-top:90px;background:#f3f3f1;border-radius:32px;padding:28px 22px}
+@media(min-width:900px){.ps-film{padding:40px 48px}}
+
+/* News */
+.ps-ntv{margin-top:40px}.ps-narch{padding-top:70px}
+.nfirst{padding-top:20px}
+.nfirst .nstand{margin-top:16px}
+.nday h2{font-size:clamp(20px,2vw,26px);font-weight:900;letter-spacing:-.03em;margin:34px 0 14px}
+.nday .nrows{display:grid;gap:14px}
+@media(min-width:700px){.nday .nrows{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(min-width:1100px){.nday .nrows{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.nday .nrow{display:flex;flex-direction:column;gap:0;background:#f3f3f1;border-radius:22px;overflow:hidden;border:0;padding:0}
+.nday .nrow img{width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;border-radius:0}
+.nday .nrow .nr-t{padding:14px 16px 18px}
+/* Magazin und Report */
+.pvpeek{display:flex!important;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px;scrollbar-width:none}
+.pvpeek::-webkit-scrollbar{display:none}
+.pvpeek .pvp{flex:0 0 min(320px,78vw);scroll-snap-align:start;margin:0}
+.pvmore{margin-top:10px}.pvmore summary{cursor:pointer;font-weight:800;display:inline-flex;gap:8px;align-items:center;padding:10px 16px;border-radius:99px;background:#f3f3f1}
+.pvabout .pvgrid{background:#f3f3f1;border-radius:28px;padding:24px}
+/* Im Detail: je Punkt eine Zeile, grau und schwarz im Wechsel */
+.ps-hero .fh-copy{padding-bottom:8px}
+.ps-flist{margin-top:30px;display:grid;gap:12px}
+.ps-flist .ps-fact{display:grid;grid-template-columns:1fr;gap:6px;background:#f3f3f1;border-radius:24px;padding:22px 22px 24px}
+.ps-flist .ps-fact:nth-child(even){background:#0b0b0b;color:#fff}.ps-flist .ps-fact:nth-child(even) p{color:#c4c4c4}
+.ps-flist .ps-n{color:#000;background:linear-gradient(transparent 12%,var(--lime) 12%,var(--lime) 90%,transparent 90%);align-self:start;justify-self:start;padding:0 .08em}
+.ps-flist .ps-fact:nth-child(even) .ps-n{background:none;color:var(--lime);padding:0}
+.ps-flist .ps-l{font-size:clamp(19px,1.8vw,24px);font-weight:900;letter-spacing:-.02em}
+.ps-flist .ps-fact p{font-size:16px;line-height:1.5;color:#444;max-width:60ch}
+@media(min-width:900px){.ps-flist .ps-fact{grid-template-columns:240px 1fr;column-gap:36px;align-items:start;padding:32px 36px}.ps-flist .ps-n{grid-row:span 2}}
+.ps-app{padding-top:90px}
+.ps-app-g{display:grid;gap:26px;align-items:center;background:#f3f3f1;border-radius:32px;padding:28px 22px}
+.ps-app-g .fh-ph{height:min(62svh,560px);justify-self:center}
+.ps-app-t{margin-top:14px;font-size:clamp(17px,1.5vw,20px);font-weight:600;color:#333;max-width:46ch}
+.ps-note{margin-top:14px;font-size:13px;font-weight:700;color:#6e6e6e}
+@media(min-width:1000px){.ps-app-g{grid-template-columns:1fr auto;padding:48px 56px}}
+.ps-film{margin-bottom:60px}
