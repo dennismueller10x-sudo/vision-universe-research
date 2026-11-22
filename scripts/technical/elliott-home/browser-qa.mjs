@@ -79,7 +79,8 @@ for (const vp of VIEWPORTS) {
     check(/Wellen/i.test(await page.locator('h1.el-title').innerText()) && await page.evaluate(() => document.querySelectorAll('h1').length) === 1 && await page.locator('.ek-kopf h1.el-title').count() === 1, 'Startseite zeigt Elliott (Frage als Titel), keine Aktie');
     check(!/NVIDIA|NVDA/.test(await page.locator('h1.el-title').innerText()), 'kein Standardtitel');
     check(await page.locator('#el-main .ek-rail').count() >= 1, 'mindestens eine Schiene');
-    check(await page.evaluate(() => document.documentElement.getAttribute('data-vu-tabs') === 'inhalt' && document.querySelector('vu-navigation').shadowRoot.querySelector('nav.tabs').hidden) && /Heute/.test(await page.locator('#el-main .ek-tab.is-on').innerText()), 'Reiter im Inhalt: Heute aktiv, Reiterzeile des Rahmens verborgen');
+    // Menü im Kopf (Owner 22.11.2026): keine Reiter, oben links „Elliott · Start“.
+    check(await page.evaluate(() => { const r = document.querySelector('vu-navigation').shadowRoot, t = document.querySelector('#el-main .ek-tabs'); return r.querySelector('nav.tabs').hidden && (!t || getComputedStyle(t).display === 'none') && r.querySelector('.world-name').textContent.trim() === 'Elliott' && r.querySelector('.world-area').textContent.trim() === 'Start'; }), 'Kopf: Elliott · Start, keine Reiter');
     check(!page.__requests.some((u) => /technical-intelligence\/v3\/shards|index\.json\.gz/.test(u)), 'kein Shard-/Voll-Index-Abruf auf der Startseite');
     const bytes = await page.evaluate(() => performance.getEntriesByType('resource').reduce((n, e) => n + (e.transferSize || 0), 0));
     console.log('    Anfragen:', page.__requests.length, ' uebertragen ca.', Math.round(bytes / 1024), 'KB');
