@@ -226,6 +226,16 @@ test("Anthropic-Fehler: keine Kosten, Kontingent zurueck, Tagesgrenze bleibt bel
   assert.equal(storage.map.get("d:2026-09-29").llm, 1);
 });
 
+test("Berechneter Fehlschlag (abgeschnitten) gibt das Nutzerkontingent NICHT zurueck", async () => {
+  const { gate } = makeGate(ENV, anthropic({}, { stop: "max_tokens" }));
+  const r = await ask(gate, "Welche Aktien sind guenstig bewertet?");
+  assert.equal(r.status, 502);
+  assert.equal(r.body.quota.remainingToday, 0);
+  const r2 = await ask(gate, "Eine andere Frage zu Aktien bitte");
+  assert.equal(r2.status, 429);
+  assert.equal(r2.body.reason, "USER_DAILY_LIMIT");
+});
+
 test("Ohne Schalter, ohne Schluessel: keine Anfrage hinaus", async () => {
   for (const env of [{ ...ENV, VU_ASK_ENABLED: "false" }, { ...ENV, ANTHROPIC_API_KEY: "" }]) {
     const { gate, fetchImpl } = makeGate(env);
