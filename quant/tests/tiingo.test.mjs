@@ -5,6 +5,7 @@
    aus einer gegebenen Anbieterantwort macht - und vor allem, was er NICHT
    daraus macht: eine Bereinigungsstufe, die niemand nachgewiesen hat.
    ========================================================================= */
+import "../../scripts/quant/lib/frozen-data.mjs"; /* eingefrorener Datenstand (scripts/quant/lib/frozen-data.mjs, 22.11.2026) */
 import test from "node:test";
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";
