@@ -353,12 +353,13 @@ Wirtschaftskalender (FMP-Endpunkte geprüft in `scripts/market/probe-free-source
 
 **Website www.visionuniverse.de/marktbriefing/ (Owner 22.11.2026)**
 - `/marktbriefing/` ist die Produktseite, visuell und allgemein (Owner 22.11.2026: App zuerst, PDF bleibt, wenig Text):
-  Kopf mit dem Handy (durchlaufende Story-Karten, reines CSS), darunter ein eigener PDF-Block mit aufklappendem Heft wie bei
+  Kopf mit einem Fächer echter Handy-Bildschirme der neuesten Ausgabe (`bildschirm-NN.jpg` aus `screens.mjs`; Owner 22.11.2026:
+  kein dunkles Handy-Mockup, es soll wie das Marktbriefing selbst aussehen), darunter ein Story-Block (ein Bildschirm mit
+  durchlaufenden Szenen, Text mit Icons) und ein eigener PDF-Block mit aufklappendem Heft wie bei
   Magazin und Aktienreport (`.m3` aus `landing/web/site.css`; Titelblatt und Innenseiten `seite-02.png` bis `seite-04.png`
   aus `pdf.mjs`), schwarzes Zahlenband „Aus Millionen
   Datenpunkten. Weltweit.“ (6 Mio. Kursdaten, 5.200+ US-Aktien je Börsentag, 5.277 Firmenbilanzen der SEC, 119 Hedgefonds aus
-  13F-Meldungen; gezählt am 22.11.2026, abgerundet) mit Quellenarten, Kartenleiste aller Karten der neuesten Ausgabe, Schritte
-  Wischen/Antippen/Mitnehmen, Kapitel als Kacheln, alle Ausgaben. Bilder, PDF und „Neueste Ausgabe“ wechseln mit jeder
+  13F-Meldungen; gezählt am 22.11.2026, abgerundet) mit Quellenarten, Kartenleiste aller Karten der neuesten Ausgabe, Kapitel als Kacheln, alle Ausgaben. Bilder, PDF und „Neueste Ausgabe“ wechseln mit jeder
   Veröffentlichung; der Text bleibt allgemein. Banken werden nicht beim Namen genannt (keine Partnerschaft andeuten).
 - Jede Ausgabe steht unter `/marktbriefing/<sitzung>/` im Szenen-Format (eine Aussage je Bildschirm, Kapitelliste am
   Desktop, Karten als Story) mit eigenem PDF (`marktbriefing-<sitzung>.pdf`), Titelbild, Vorschaubild und Karten-Bildern.
