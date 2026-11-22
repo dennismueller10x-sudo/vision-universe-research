@@ -44,6 +44,7 @@ const Semantics = require(join(engines, "return-semantics.js"));
 const MarketQuality = require(join(engines, "market-quality.js"));
 const MarketStore = require(join(engines, "market-store.js"));
 const RankingHygiene = require(join(engines, "ranking-hygiene.js"));
+const RankingPopulation = require(join(engines, "ranking-population.js"));
 
 const SCALE = JSON.parse(readFileSync(join(root, "quant", "config", "tiingo-scale.json"), "utf8"));
 
@@ -317,14 +318,16 @@ function booleanQuestion(id, label, pick) {
              : null };
 }
 
+/* Ranglisten nur ueber Stammaktien und ADR (quant/engines/ranking-population.js, Steuerung 22.11.2026). */
+const RANKABLE_ROWS = rows.filter((r) => RankingPopulation.isRankable(r.instrumentType));
 function rankedQuestion(id, label, metric, pick, direction) {
-  const ranked = RankingHygiene.rankRows(rows, { metric, pick, direction, limit: RANK_LIMIT });
+  const ranked = RankingHygiene.rankRows(RANKABLE_ROWS, { metric, pick, direction, limit: RANK_LIMIT });
   return { id, label, kind: "ranked", direction,
            metric, evaluated: ranked.evaluated, notEvaluable: ranked.notEvaluable.length,
            quarantined: ranked.quarantined,
            quarantinedCount: ranked.quarantinedCount,
            rankingHygiene: { version: ranked.hygieneVersion, policy: ranked.policy },
-           evaluatedOf: rows.length,
+           evaluatedOf: RANKABLE_ROWS.length, population: { rule: RankingPopulation.VERSION, rankable: RankingPopulation.RANKABLE, notRanked: rows.length - RANKABLE_ROWS.length },
            top: ranked.top,
            notEvaluableSample: ranked.notEvaluable.slice(0, 10) };
 }

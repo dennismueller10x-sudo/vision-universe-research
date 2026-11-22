@@ -51,6 +51,7 @@
   var FACTOR_STATES = ["AVAILABLE", "UNAVAILABLE", "NOT_APPLICABLE"];
   var FACTOR_REASONS = [
     "INSUFFICIENT_COMPONENTS",          /* fewer components than the contract demands */
+    "NOT_IN_COMMON_STOCK_RANKING",      /* separate class (preferred, SPAC, trust): ranked only among common stock + ADR */
     "INSUFFICIENT_WEIGHTED_COVERAGE",   /* available component weight below minimum */
     "MANDATORY_COMPONENT_MISSING",      /* a component the contract marks mandatory is absent */
     "INPUT_NOT_MATERIALIZED",           /* the input exists in the contract, not in any artifact */
@@ -165,6 +166,7 @@
   /* Typed reason wording. A user must be able to read why something is
      missing without reading the code. */
   var REASON_TEXT = {
+    NOT_IN_COMMON_STOCK_RANKING: "Nicht in der Stammaktien-Rangliste: Rang und Perzentil gelten nur unter Stammaktien und ADR. Getrennte Klassen (Vorzug, SPAC, Trust) bleiben im Produkt.",
     INSUFFICIENT_COMPONENTS: "Zu wenige Einzelkennzahlen erfüllen die Methodik. Der Faktorwert bleibt geschlossen; die vorhandenen Kennzahlen stehen als Evidenz darunter.",
     INSUFFICIENT_WEIGHTED_COVERAGE: "Die vorhandenen Einzelkennzahlen decken zu wenig Gewicht der Methodik ab. Der Faktorwert bleibt geschlossen; die vorhandenen Kennzahlen stehen als Evidenz darunter.",
     MANDATORY_COMPONENT_MISSING: "Eine in der Methodik zwingende Kennzahl fehlt. Es wird kein Ersatzwert gebildet.",
