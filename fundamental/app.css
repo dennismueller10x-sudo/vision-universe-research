@@ -1192,3 +1192,36 @@ html[data-theme=dark] #fu-main[data-view=company] .fu-fin-per [data-p]:not([aria
 #fu-main[data-view=company] .fu-fin-big{align-items:center;gap:4px 10px;margin-top:14px}
 #fu-main[data-view=company] .fu-fin-big>.vu-chg{order:2}
 #fu-main[data-view=company] .fu-fin-when{order:3;flex-basis:100%;font-size:11px}
+
+/* =========================================================================
+   iPad und Desktop (ab 761 px): Handy-Bausteine nutzen die Breite. Unter 761 px gilt nichts hiervon.
+   Ab 1024 px Inhalt bis 1240 px (Kopf-Breite des Rahmens), mittig; Schienen mit wenigen Karten werden Raster.
+   ========================================================================= */
+@media (min-width:761px){
+  /* Start (.fp): bündig mit der Inhaltskante statt Handy-Innenrand von 14 px */
+  .fp{margin-left:0;margin-right:0}
+  .fp .fp-px,.fp .fp-sh,.fp .fp-tabs,.fp .fp-rail{padding-left:0;padding-right:0}
+  .fp .fp-end,.fp .fp-foot{margin-left:0;margin-right:0}
+  .fp .fp-find .fu-qchips{margin-right:0;padding-right:0}
+  /* Checklisten (drei Kacheln) und Ranglisten als Raster statt Schiene */
+  .fp .fp-rail:has(>.fp-ck){display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));overflow:visible}
+  .fp .fp-rail>.fp-ck{width:auto}
+  .fp .fp-rail.fp-rlrail{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));overflow:visible}
+  .fp .fp-rail.fp-rlrail>.fu-rlc{width:auto;max-width:none}
+  .fp .fp-rlrail+.fp-px{margin-top:14px}
+}
+@media (min-width:1024px){
+  .fu{max-width:1240px}
+  .fp .fp-rail.fp-rlrail{grid-template-columns:repeat(3,minmax(0,1fr))}
+  /* Methodik: Kennzahlen in Worten zweispaltig */
+  .fu-mlist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:28px}
+  .fu-mlist>.fu-mrow:nth-child(2){border-top:0}
+  /* Aktie: Kennzahlen neben den Finanzen, Kapitel zweispaltig */
+  #fu-main[data-view=company]:has(>div>.fu-strip):has(>.fu-fin){display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:28px;grid-auto-flow:row dense;align-content:start}
+  #fu-main[data-view=company]>*{grid-column:1/-1;min-width:0}
+  #fu-main[data-view=company]>.fu-k2-sh:has(+div>.fu-strip),#fu-main[data-view=company]>div:has(>.fu-strip){grid-column:1}
+  #fu-main[data-view=company]>.fu-k2-sh:has(+.fu-fin),#fu-main[data-view=company]>.fu-fin{grid-column:2}
+  #fu-main[data-view=company]>div>.fu-strip{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #fu-main[data-view=company] .fu-chap.fu-k2-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:28px}
+  #fu-main[data-view=company] .fu-k2-list li:nth-last-child(2):nth-child(odd) a{border-bottom:0}
+}

@@ -920,3 +920,23 @@ body[data-page=stock] .st-k .st-k-sh>span{color:var(--k2-mut)}
 body[data-page=stock] .st-k .vu-rail{--vu-rail-w:250px}
 body[data-page=stock] .st-foot .st-k2-others .vu-sothers{margin:26px 0 0}
 body[data-page=stock] .st-foot .st-legal{margin-top:28px;font-size:11px;line-height:1.45;text-align:center}
+
+/* ===================================================== Breite Bildschirme (iPad, Laptop, Desktop)
+   Handy (< 761 px) bleibt unverändert; einzige Ausnahme: der lange Abschnittslink („Rechenmodell, kein echtes Geld ›“)
+   bricht unter 390 px um, statt über den rechten Rand zu laufen. Ab 761 px füllt die Startseite die Breite bis 900 px
+   (Kacheln am Seitenrand --vu-gutter); ab 1024 px nutzen Start und Unterseiten die Kopfbreite (1240 px): Start als
+   Zwei-Spalten-Raster (Heute und Trader über beide Spalten, Trader als umbrechendes Gitter), Listen dreispaltig. */
+@media (max-width:389px){.stp .stp-sh .stp-more{min-width:0;white-space:normal;text-align:right}}
+@media (min-width:761px){
+  .stp.st-k{max-width:928px;margin-left:max(-14px,calc((100% - 928px) / 2));margin-right:max(-14px,calc((100% - 928px) / 2))}
+  .stp.st-k .stp-rail{scroll-padding-inline:14px}
+}
+@media (min-width:1024px){
+  .st-k{max-width:none}
+  .stp.st-k{max-width:none;margin-left:-14px;margin-right:-14px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}
+  .stp.st-k>*{min-width:0}
+  .stp.st-k>h1,.stp.st-k>nav,.stp.st-k>#stp-heute,.stp.st-k>div:has(>.stp-rail){grid-column:1/-1}
+  .stp.st-k .stp-rail{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));overflow:visible;scroll-snap-type:none}
+  .stp.st-k .stp-rail>.stp-trader{width:auto;min-width:0}
+}
+@media (min-width:1200px){.st-k-cols{grid-template-columns:repeat(3,minmax(0,1fr))}}

@@ -1370,3 +1370,25 @@ body.sc .sc-rchip-add{display:inline-flex}
 :root:not([data-theme=dark]) body.sc .sc-hero2 .sc-counter strong,:root:not([data-theme=dark]) body.sc .sc-hero2 .sc-count{color:#000}
 :root:not([data-theme=dark]) body.sc .sc-hero2 .sc-sentence .sc-gap.is-empty{background:#e4e4e4;color:#5d636b}
 :root:not([data-theme=dark]) body.sc .sc-hero2 .sc-sentence .sc-gap.is-add{color:#5d636b}
+
+/* =========================================================================
+   iPad und Desktop (22.11.2026): unter 761 px unverändert. Ab 1024 px dieselbe
+   Inhaltsbreite wie die Kopfzeile (1240 px), Karussell „Fertige Suchen“ als Gitter,
+   „Gespeichert“ ohne gestreckte Knöpfe.
+   ========================================================================= */
+@media (min-width:761px){
+  body.sc .sc-ak .sc-ak-rail{scroll-padding-inline:14px}
+  body.sc .sc-app:has(>.sc-modeseg.is-wide) .sc-modeseg.is-wide{max-width:440px}
+  body.sc .sc-app:has(>.sc-modeseg.is-wide) .sc-emptycard .vu-btn--block{width:auto;min-width:300px;padding-inline:32px}
+  body.sc .sc-app:has(>.sc-modeseg.is-wide) .sc-emptycard p{max-width:62ch}
+  body.sc .sc-app:has(>.sc-modeseg.is-wide) .sc-stack-s:not(.sc-acct){grid-template-columns:repeat(auto-fill,minmax(320px,1fr))}
+  body.sc .sc-acct .vu-btn--block{width:auto;justify-self:start;padding-inline:32px}
+}
+@media (min-width:1024px){
+  body.sc .sc-app{max-width:calc(1240px + 2 * var(--sc-gutter))}
+  body.sc .sc-app.sc-ak{max-width:1268px}
+  body.sc .sc-ak .sc-ak-rail{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));overflow:visible}
+  body.sc .sc-ak .sc-ak-rail>.sc-ak-fs{width:auto}
+  body.sc .sc-ak .sc-ak-more{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:28px}
+  body.sc .sc-ak .sc-ak-more .sc-ak-row{border-bottom:0}
+}

@@ -2172,3 +2172,52 @@ main.qx-main:has(>.qp){padding-bottom:20px}
 :root:not([data-theme=dark]) .qd .qv3-pro{--vu-ink:#000;--vu-inv:#fff;--vu-card:#e9e9e9;--vu-hair:#dcdcdc;--vu-mute:#5d636b;background:#f4f4f4;color:#000}
 :root:not([data-theme=dark]) .qv3 .qv3-ch-hist{background:#f4f4f4;color:#000}
 :root:not([data-theme=dark]) .qd .qk-pro-light .qv3-prow--h{background:#e9e9e9;color:#000}
+
+/* ===================================================== Breite Ansichten (iPad, Laptop, Desktop)
+   Handy (< 761 px) bleibt unverändert; alle Regeln hier nur ab 761 px. Spalte füllt die Breite mit Seitenrand
+   (--vu-gutter) bis 900 px, ab 1024 px bis zur Kopf-Breite 1240 px (--q-shell); Schienen mit wenigen Kacheln werden Gitter. */
+@media (min-width:761px){
+  .qd .v2-main.qx-main,.qd .qx-main,.qd .q-foot{padding-left:var(--vu-gutter,24px);padding-right:var(--vu-gutter,24px)}
+  .qv3{max-width:900px}
+  /* Kacheln der Startseite am Seitenrand ausrichten (Handy: bis 14 px an den Rand) */
+  .qp{margin-left:calc(10px - var(--vu-gutter,24px));margin-right:calc(10px - var(--vu-gutter,24px))}
+  .qk2-next{max-width:900px;padding-left:var(--vu-gutter,24px);padding-right:var(--vu-gutter,24px)}
+  /* Anlagestile: Karten zweispaltig */
+  .qv3 .qv3-strategies{grid-template-columns:repeat(2,minmax(0,1fr))}
+  /* Fließtext nicht breiter als ~70 Zeichen */
+  .qv3 .vu-lead,.qv3 .qx-prose p{max-width:68ch}
+}
+@media (min-width:1024px){
+  .qv3{max-width:var(--q-shell)}
+  .qk2-next{max-width:var(--q-shell)}
+  .qv3 .qv3-strategies{grid-template-columns:repeat(3,minmax(0,1fr))}
+  /* Quant „Heute“: Marktlage links, „Heute im Markt“ und Faktor-Landkarte rechts; alles Weitere volle Breite */
+  .qp.q-home{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-auto-flow:row dense;align-items:start}
+  .qp.q-home>*{grid-column:1/-1;min-width:0}
+  .qp.q-home>#qp-heute{grid-column:1;grid-row:3/span 2;margin-top:10px}
+  .qp.q-home>.qk-today-host{grid-column:2;grid-row:3}
+  .qp.q-home>#qp-karte{grid-column:2;grid-row:4}
+  .qp.q-home>.qk-today-host>.qp-sh:first-child{margin-top:10px}
+  /* Forschung ans Ende der Startseite: sie laedt Backtest-Module erst beim Sichtbarwerden; weiter oben laege sie auf dem
+     Desktop schon im ersten Bild, solange die Seite noch aufbaut (Ressourcenbudget home@1440, scripts/vu2/resource-budget.mjs). */
+  .qp.q-home>#qp-for{order:99}
+  .qp.q-home>.qk-today-host>.qp-sh,.qp.q-home>#qp-karte>.qp-sh{padding-left:0}
+  .qp.q-home>.qk-today-host>.qp-px,.qp.q-home>#qp-karte>.qp-px{padding-left:0}
+  /* Anlagestile-Schiene (7 Kacheln) wird Gitter */
+  .qp #qp-stile>.qp-rail{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));overflow:visible}
+  .qp #qp-stile>.qp-rail>*>.qp-stil,.qp #qp-stile>.qp-rail .qp-stil{width:auto;flex:1}
+  .qp .qp-chips{flex-wrap:wrap;overflow:visible}
+  .qp .vu-stack.qp-px{grid-template-columns:repeat(2,minmax(0,1fr))}
+  /* Aktien: Suche und Leiste oben, „Setup bestätigt“ und „Neu in einer Strategie“ nebeneinander, bekannte Aktien zweispaltig */
+  .qd .qv3:has(>label.qv3-search){display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:28px;align-items:start}
+  .qd .qv3:has(>label.qv3-search)>*{grid-column:1/-1;min-width:0}
+  .qd .qv3:has(>label.qv3-search)>div:has(>div>.vu-stack){grid-column:1}
+  .qd .qv3:has(>label.qv3-search)>div:has(>div>.qv3-strats){grid-column:2}
+  .qd .qv3:has(>label.qv3-search)>label.qv3-search{max-width:720px}
+  .qd .qv3 .qv3-rows{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:28px}
+  .qd .qv3 .qv3-rows>.vu-lrow:nth-child(2){border-top:0}
+  /* Methodik: „Was ist was“ dreispaltig, lange Linklisten zweispaltig */
+  .qd .qv3 #qv3-was>.vu-stack{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .qd .qv3 .qv3-liste:has(>.qv3-li:nth-child(7)){display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:28px}
+  .qd .qv3 .qv3-liste:has(>.qv3-li:nth-child(7))>.qv3-li:nth-child(2){border-top:0}
+}

@@ -732,7 +732,10 @@
         @media(max-width:360px){.row{padding:0 10px;gap:6px}.tools{gap:6px}.mod{font-size:15px}.tabs{padding-inline:10px}.panel{padding-inline:12px}.grab{margin-inline:-12px}.tile{padding:10px}}
         :host([menu-only]) header{display:none}
         :host([theme="dark"]) header .brand img{filter:invert(1) brightness(1.08)}
-        :host([dock]) .quick,:host([dock]) .toggle{display:none}
+        :host([dock]) .toggle{display:none}
+        /* Desktop (ab 1200 px, Owner 22.11.2026): auch Seiten mit Dock zeigen den Direktzugriff im Kopf; darunter bleibt er dem Dock. */
+        @media(max-width:1199px){:host([dock]) .quick{display:none}}
+        @media(min-width:1200px){:host([dock]) .quick+.tools{margin-left:12px}}
         @media(prefers-reduced-motion:reduce){header,.backdrop,.panel,.tile{transition:none}.mod:active,.hb:active,.tile:active{transform:none}}
 `;
 
