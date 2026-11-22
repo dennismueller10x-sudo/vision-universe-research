@@ -307,6 +307,9 @@ Ziel: mindestens die Hälfte der Karten sind Markt oder eigene Auswertung. Jede 
 - Jede Grafik wird mit unseren Vorlagen neu gezeichnet, nie ein Screenshot.
 - Höchstens zwei Karten je Quelle und Briefing.
 - Eine Zahl, die nur eine einzige Sekundärquelle ohne genannten Datenanbieter nennt, wird nicht verwendet.
+- Darstellung (Owner 22.11.2026): keine Quellenzeile unter Grafiken oder auf Karten; alle Quellen gesammelt am Seitenende
+  unter „Quellen und Hinweise“ (zugeklappt), auf Social in der Caption. Angaben Dritter tragen den Herausgeber im Etikett.
+  Der Anbieter der Kursdaten wird öffentlich nirgends genannt (Test MB-4).
 - Wortwahl nach `docs/legal/WORTWAHL.md`: „Größte Anstiege/Rückgänge“, keine eigene Prognose; Kursziele von Banken nur als
   Angabe Dritter mit dem Zusatz „keine Prognose von Vision Universe“.
 
