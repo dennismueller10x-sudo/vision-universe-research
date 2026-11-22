@@ -11,7 +11,7 @@ import {LEGAL_VERSION, LEGAL_STATUS} from '../src/legal/texts.mjs';
 import {normalizeStripeSubscription, normalizeStripeInvoice} from '../src/providers/stripe-adapter.mjs';
 import {normalizeAppleTransaction, normalizeGoogleSubscription} from '../src/providers/store-adapters.mjs';
 import {subscriptionGrantsAccess, featureDecision} from '../src/entitlements.mjs';
-import {cookie, assertCsrf, HttpError} from '../src/http.mjs';
+import {cookie, assertCsrf, parseCookies, HttpError} from '../src/http.mjs';
 import * as v from '../src/validate.mjs';
 import {createApp} from '../src/index.mjs';
 
@@ -482,4 +482,12 @@ test('Impressum: E-Mail und Kontaktformular als schnelle Kontaktwege, USt-IdNr.,
   assert.match(plainText('datenschutz'), /Datenschutzbeauftragter ist nicht benannt, weil weniger als 20 Personen.*§ 38 Abs\. 1 BDSG/);
   assert.ok(!/Telefon/.test(plainText('widerrufsbelehrung')), 'Telefon nur, sofern vorhanden');
   assert.equal(LINKS.kontakt, '/kontakt');
+});
+
+test('Cookie-Kopf mit fehlerhafter Prozent-Kodierung bricht die Anfrage nicht ab', async () => {
+  const req = h => new Request('https://konto.example/v1/session', {headers: h});
+  assert.deepEqual(parseCookies(req({Cookie: 'a=%zz; b=ok'})), {a: '', b: 'ok'});
+  const app = createApp({env: {VU_ENVIRONMENT: 'production'}, log: () => {}});
+  const res = await app.handle(req({Cookie: '__Host-vu_at=%E0%A4%A'}));
+  assert.notEqual(res.status, 500);
 });
