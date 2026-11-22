@@ -32,7 +32,7 @@ import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 import { execSync } from "node:child_process";
 import { Worker, isMainThread, parentPort, workerData } from "node:worker_threads";
-import { ROOT, readJson, weeklySeriesFromPoints } from "../lib/ti-data.mjs";
+import { ROOT, readJson, weeklySeriesFromPoints, attachWeeklyExtremes } from "../lib/ti-data.mjs";
 import * as Core from "../hsab/lib/replay-core.mjs";
 import { PRODUCT_METHODOLOGY } from "../lib/ti-product.mjs";
 import { classify, researchInternalWave3, SPEC_SHA256, LIBRARY_VERSION, SPEC } from "../elliott-setups/setup-library.mjs";
@@ -98,6 +98,7 @@ function analyzeSymbol(file, F, W) {
   }
   if (k + 1 < MIN_BARS) return { s: sym, skip: "TOO_SHORT" };
   const used = pts.slice(0, k + 1), series = weeklySeriesFromPoints(used, x.ticker || sym), t = series.length - 1;
+  attachWeeklyExtremes(series, x.ticker || sym);   // Elliott 4.0: dieselben Wochenkerzen wie das Produkt (abgeschlossene Wochen, kein Blick nach vorn)
   const P = Core.prepareSeries(series);
   const rec = Core.recordAt(P, series, t, { symbol: sym, cohort: "REGISTRY" });
   const E = EV3.analyzeElliottV3({ series, features: P.main.features, pivots: P.main.pivots, asOfIndex: t, barsPerYear: P.main.profile.barsPerYear, previous: null, methodology: PRODUCT_METHODOLOGY, forensics: true, debugAll: true });

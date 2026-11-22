@@ -35,7 +35,7 @@ import { readdirSync, writeFileSync, mkdirSync, existsSync, readFileSync } from 
 import { join } from "node:path";
 import { gzipSync, gunzipSync } from "node:zlib";
 import { createRequire } from "node:module";
-import { ROOT, readJson, weeklySeriesFromPoints, dailySeriesFromPayload } from "./lib/ti-data.mjs";
+import { ROOT, readJson, weeklySeriesFromPoints, dailySeriesFromPayload, attachWeeklyExtremes } from "./lib/ti-data.mjs";
 import { analyzeProduct, replaySnapshots, clarityOf, evidenceBadge, overlaysOf, elliottTransparency, PRODUCT_METHODOLOGY } from "./lib/ti-product.mjs";
 import { Worker, isMainThread, parentPort, workerData } from "node:worker_threads";
 import { projectFor, motiveCandidateFor, candidatePool, exploreCandidatesFor, exploreLegacyPick, wave3PoolAudit, projectionInput, splitResolutionFor, dataIntegrity, rsInput, rsRanks, advanceStore, attachLifecycle, PROJECTION_VERSION, STORE_SCHEMA } from "./lib/ti-projection.mjs";
@@ -113,6 +113,8 @@ function chartOf(series, bars) {
   const pick = (a) => a.slice(from).map((v) => r(v, 4));
   const closeOnly = !!(series.meta && series.meta.closeOnly);
   /* Reine Schlusskurs-Reihen: O=H=L=C — nur einmal ausliefern. */
+  /* Elliott 4.0: Schlusskurs-Reihe mit Wochenkerzen (series.extremes) → Kerzen im Chartbild; Wellenmarken sitzen an Hoch und Tief. */
+  if (closeOnly && series.extremes) return { timeframe: series.timeframe, timestamps: series.timestamps.slice(from), open: pick(series.extremes.open), high: pick(series.extremes.high), low: pick(series.extremes.low), close: pick(series.close), closeOnly: false, candles: "weekly-extremes" };
   if (closeOnly) return { timeframe: series.timeframe, timestamps: series.timestamps.slice(from), close: pick(series.close), closeOnly: true };
   return { timeframe: series.timeframe, timestamps: series.timestamps.slice(from), open: pick(series.open), high: pick(series.high), low: pick(series.low), close: pick(series.close), closeOnly: false };
 }
@@ -274,6 +276,7 @@ function weeklyFor(ticker, C) {
   if (!existsSync(f)) return null;
   const j = readJson(f), series = weeklySeriesFromPoints(j.points || [], j.ticker);
   series.corporateActions = j.corporateActions || null;
+  attachWeeklyExtremes(series, j.ticker);   // Elliott 4.0: Wochenkerzen
   if (series.length < 160) return null;
   const p = payload(series, analyzeProduct(series, productOpts("weekly", C, j.ticker)), "$", null);
   return { symbol: p.symbol, timeframe: p.timeframe, asOf: p.asOf, price: p.price, pro: { elliott: p.pro.elliott, trend: p.pro.trend, volume: p.pro.volume }, confluence: p.confluence, motiveCandidate: p.motiveCandidate, exploreCandidates: p.exploreCandidates, exploreAudit: p.exploreAudit,
@@ -289,6 +292,7 @@ function runUnit(u, C) {
   const j = readJson(join(C.wdir, u.f));
   const series = weeklySeriesFromPoints(j.points || [], j.ticker);
   series.corporateActions = j.corporateActions || null;   // Kapitalmassnahmen-Beleg der Wochenreihe (Split-Aufloesung)
+  attachWeeklyExtremes(series, j.ticker);   // Elliott 4.0: Wochenkerzen (Seitenkanal; Serie, ATR und Szenarien bleiben Schlusskurs)
   if (series.length < 160) return { skip: true };
   const opts = productOpts("weekly", C, j.ticker);
   return { p: payload(series, analyzeProduct(series, opts), j.currency === "USD" || !j.currency ? "$" : j.currency, C.members[j.ticker] ? opts : null) };

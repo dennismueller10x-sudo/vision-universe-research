@@ -45,11 +45,16 @@
   var P = isNode ? require("./patterns.js") : global.VUTechnical.ElliottPatterns;
   var V2 = isNode ? require("./elliott-v2.js") : global.VUTechnical.ElliottV2;
 
-  var ENGINE_VERSION = "elliott-3.2.2";   // 3.2.1 = 3.2.0 + Datenlage-Fix fuer Tagesreihen (nach HOLDOUT-3); 3.2.2 = abgeschlossene WXY hoechstens NIEDRIG (Mission IV, nur Anwendbarkeit, Zaehlung unveraendert)
+  var ENGINE_VERSION = "elliott-3.4.0";   // 3.2.1 = 3.2.0 + Datenlage-Fix fuer Tagesreihen (nach HOLDOUT-3); 3.2.2 = abgeschlossene WXY hoechstens NIEDRIG (Mission IV, nur Anwendbarkeit, Zaehlung unveraendert)
+                                           // 3.4.0 (Elliott-Neustart, 22.11.2026) = 3.2.2 mit Ursprung hoechstens 3 statt 6 Jahre zurueck (aktuellere Lesart; Vorher/Nachher scripts/technical/elliott-engine4/compare.mjs)   // 3.2.1 = 3.2.0 + Datenlage-Fix fuer Tagesreihen (nach HOLDOUT-3); 3.2.2 = abgeschlossene WXY hoechstens NIEDRIG (Mission IV, nur Anwendbarkeit, Zaehlung unveraendert)
 
   var DEFAULTS = {
     poolAtr: 1.0,                 // Monowellen-Schwelle in ATR
-    windowYears: 6,               // Ursprung hoechstens so weit zurueck
+    /* 3.4.0: 3 statt 6 Jahre. Vorher/Nachher (311 Titel, 11.243 Stichtage 2012–2026, gleiche Auswertung): Alter der heutigen Lesart
+       (Wochen seit dem letzten bestaetigten Wellenende) Median 61 → 28, Ungueltig-Abstand 15,2 → 9,6 ATR, Laufzeit 43 → 20 ms; Richtungs-
+       vorsprung gegen Drift −0,1 → −0,4 Pp. (beide nicht von null verschieden); Korpus VALIDATION (480 Faelle) 62,7 → 63,1 %; Wechsel der
+       Lesart je Woche 14,6 → 17,0 % (Preis der Aktualitaet). 2 Jahre verlor im Korpus (59,6 %), 10 Jahre verdoppelte das Alter (116). */
+    windowYears: 3,               // Ursprung hoechstens so weit zurueck
     maxNodes: 25000,              // Suchbudget je Analyse (Korpus DEVELOPMENT: 60 000 → 25 000 ohne Genauigkeitsverlust)
     maxScored: 500,               // vollstaendig bewertete Kandidaten (nach pfadbasierter Vorauswahl)
     similarity: 1 / 3,            // NEoWave Rule of Similarity
@@ -59,6 +64,11 @@
     orthodoxMax: 0.4,             // Ueberschiessen der Folgewelle (B eines expandierten Flats) relativ zu ihrer Laenge
     orthodoxShortMax: 0.7,        // Ende hinter dem Extrem (Dreieck-E, Running-Flat-C): Abstand zum Extrem relativ zur Ausdehnung
     anchorMinAtr: 4,
+    /* Forschung Elliott-Neustart (22.11.2026, scripts/technical/elliott-engine4/compare.mjs): Wellenenden an Hoch/Tief der Wochenkerze
+       (series.extremes). Ergebnis: kein Prognosevorteil (311 Titel, 11.243 Stichtage: Vorsprung −0,8 statt −0,1 Pp.), deshalb AUS;
+       nur ueber das Profil elliott-4.0.0-rc1-extremes. Mit extremes = false ist die Ausgabe byte-gleich mit 3.2.2 (Test ti-elliott-extremes). */
+    extremes: false,
+    extremeWindow: 2,             // Bar ist Hoch- bzw. Tiefpunkt, wenn sein Hoch (Tief) das Extrem von ±2 Bars ist (kausal: nur Bars bis asOf)
     subNoise: 0,                  // 3.2: Rauschschwelle der Unterteilung in σ·√Dauer (0 = aus)              // Ursprung schliesst eine Bewegung >= 4 ATR ab (Suchbudget; Korpus DEVELOPMENT: keine Genauigkeitseinbusse, 34 → 23 ms)
     /* 3.1: kalibriert auf Korpus DEVELOPMENT, Layout A und B (Ende + Mitte; scripts/technical/elliott-calibration/calibrate-weights.mjs; Koordinatensuche, Sensitivitaet ±50 % dokumentiert in
        ELLIOTT_ENGINE3_REPORT.md). Keine VALIDATION- oder HOLDOUT-Faelle verwendet. */
@@ -80,7 +90,7 @@
     applicability: { coef: [-9.665, 7.516, 0.852, 1.339, 0, -2.677, -0.801, 3.151, -2.667], high: 0.75, moderate: 0.55, highMinZ: null, developingCap: true, capPatterns: ["WXY"] }
   };
 
-  /* VERSIONIERTE PROFILE (Mission VI §90). Produktionsstandard bleibt elliott-3.2.2 (DEFAULTS). Ein Profil aendert NUR die
+  /* VERSIONIERTE PROFILE (Mission VI §90). Produktionsstandard ist elliott-3.4.0 (DEFAULTS). Ein Profil aendert NUR die
      aufgefuehrten Parameter und meldet seinen Namen als engineVersion. Datenmodus: Schlusskurse (Close-only).
        elliott-3.3.0-rc1 = NICHT EINGEFROREN, NUR FORSCHUNG (Red-Team §57, reviews/ELLIOTT_33_REDTEAM.md: zweiter Blick auf
                        VALIDATION, praktikerinformierte Auswahl, budgetabhaengig). 3.2.2 + (a) keine Aehnlichkeitsschranke in der
@@ -88,7 +98,9 @@
                        dem gemessenen Trend widerspricht, erhaelt 0 (auch laufende Gegentrend-Impulse), alles andere 0,5.
                        Uebersteuerungen durch input.engine sind fuer Profile verboten (Ergebnis waere nicht mehr das Profil). */
   var PROFILES = {
-    "elliott-3.3.0-rc1": { noSimilarity: true, trendContextMode: "COUNTER_DEVELOPING", weights: { trendContext: 0.2 } }
+    "elliott-3.3.0-rc1": { noSimilarity: true, trendContextMode: "COUNTER_DEVELOPING", weights: { trendContext: 0.2 } },
+    /* NICHT EINGEFROREN, NUR FORSCHUNG (Elliott-Neustart 22.11.2026): Wellenenden an Hoch/Tief der Wochenkerzen, Schwelle aus True-Range-ATR. */
+    "elliott-4.0.0-rc1-extremes": { extremes: true }
   };
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
   function round(v, d) { var m = Math.pow(10, d === undefined ? 4 : d); return Math.round(v * m) / m; }
@@ -121,6 +133,44 @@
     var dev = null;
     if (dir !== 0 && (!pts.length || ext > pts[pts.length - 1].i)) dev = { i: ext, s: dir, c: null, dev: true };
     return { pts: dev ? pts.concat([dev]) : pts, dev: dev };
+  }
+
+  /** 4.0: Preis je Bar fuer die Wellensuche. Hochpunkt-Bar (Hoch = Maximum der Hochs in ±w Bars, nur bis asOf) → Hoch, Tiefpunkt-Bar → Tief,
+      beides → das weiter vom Schluss entfernte Extrem, sonst Schlusskurs. Fehlende oder unplausible Kerzen (Hoch < Schluss, Tief > Schluss)
+      fallen auf den Schlusskurs zurueck. Kausal: Bars nach asOf werden nie gelesen. */
+  function extremePrices(ex, close, asOf, w) {
+    var hi = ex.high, lo = ex.low, n = close.length, px = new Array(n);
+    function okH(i) { return isNum(hi[i]) && hi[i] >= close[i] - 1e-12; }
+    function okL(i) { return isNum(lo[i]) && lo[i] <= close[i] + 1e-12 && lo[i] > 0; }
+    for (var i = 0; i < n; i++) {
+      px[i] = close[i];
+      if (i > asOf || !isNum(close[i])) continue;
+      var isH = okH(i), isL = okL(i);
+      for (var j = Math.max(0, i - w); j <= Math.min(asOf, i + w) && (isH || isL); j++) {
+        if (j === i) continue;
+        if (isH && okH(j) && hi[j] > hi[i]) isH = false;
+        if (isL && okL(j) && lo[j] < lo[i]) isL = false;
+      }
+      if (isH && isL) { if (hi[i] - close[i] >= close[i] - lo[i]) isL = false; else isH = false; }
+      if (isH) px[i] = hi[i]; else if (isL) px[i] = lo[i];
+    }
+    return px;
+  }
+
+  /** 4.0: Wilder-ATR auf True Range (Hoch/Tief/Vorschluss), kausal bis asOf; vor der ersten vollen Periode die Spalte der Features. */
+  function trueRangeAtr(ex, close, asOf, p, fallback) {
+    var out = new Array(close.length), a = null, sum = 0, cnt = 0;
+    for (var i = 0; i < close.length; i++) {
+      out[i] = fallback[i];
+      if (i > asOf) continue;
+      var h = ex.high[i], l = ex.low[i], pc = i > 0 ? close[i - 1] : close[i];
+      if (!isNum(h) || !isNum(l) || !isNum(pc)) continue;
+      var tr = Math.max(h - l, Math.abs(h - pc), Math.abs(l - pc));
+      if (a === null) { sum += tr; cnt++; if (cnt === p) a = sum / p; }
+      else a = (a * (p - 1) + tr) / p;
+      if (a !== null) out[i] = a;
+    }
+    return out;
   }
 
   /** Trendfreie Rauschstaerke je Bar: 1,4826·MAD der zweiten Differenzen / √2 (Zufallspfad mit Drift: Δ²x = σ(e_t − e_{t−1})),
@@ -232,12 +282,21 @@
     cfg.weights = Object.assign({}, DEFAULTS.weights, prof.weights || {}, (m.engine && m.engine.weights) || (input.engine && input.engine.weights) || {});
     var engineVersion = profileName || ENGINE_VERSION;
     cfg.typePrior = Object.assign({}, DEFAULTS.typePrior, (m.engine && m.engine.typePrior) || {}, (input.engine && input.engine.typePrior) || {});
-    var series = input.series, features = input.features, close = series.close;
+    var series = input.series, features = input.features, rawClose = series.close;
     var asOf = isNum(input.asOfIndex) ? Math.min(input.asOfIndex, series.length - 1) : series.length - 1;
+    /* 4.0: Wellenpreise. Mit Kerzen (series.extremes) liegt ein Wellenende am Hoch bzw. Tief der Wendebar, wie bei menschlicher
+       Zaehlung; alle Regeln, Fibonacci-Bezuege und Ungueltig-Marken beziehen sich dann auf diese Extreme. Rauschmass und Trend
+       bleiben auf den Schlusskursen. Ohne Kerzen (Schlusskurs-Reihen, synthetischer Korpus) ist close = Schlusskurs wie in 3.2.2. */
+    var close = cfg.extremes && series.extremes ? extremePrices(series.extremes, rawClose, asOf, cfg.extremeWindow || 2) : rawClose;
+    var wser = close === rawClose ? series : Object.assign({}, series, { close: close });   // Wellenreihe: Unterteilung und Wellenpreise auf denselben Preisen
     var bpy = input.barsPerYear || (series.timeframe === "1W" ? 52 : 252);
-    var atrCol = features.columns.atr, atr = isNum(atrCol[asOf]) ? atrCol[asOf] : close[asOf] * 0.02;
+    var atrCol = features.columns.atr;
+    /* 4.0: mit Kerzen misst die Schwelle der Wendepunkte die echte Spanne (Wilder-ATR auf True Range aus Hoch/Tief), sonst wuerden
+       Hoch und Tief gegen eine Schlusskurs-ATR gemessen und die Engine zaehlte feiner (mehr Wendepunkte, Unterwellen als Wellen). */
+    if (wser !== series && cfg.extremesAtr !== false) atrCol = trueRangeAtr(series.extremes, rawClose, asOf, 14, atrCol);
+    var atr = isNum(atrCol[asOf]) ? atrCol[asOf] : close[asOf] * 0.02;
     var pool = buildPool(close, atrCol, asOf, cfg.poolAtr), pts = pool.pts, n = pts.length;
-    cfg._sigma = noiseSigma(close, asOf, 260);
+    cfg._sigma = noiseSigma(rawClose, asOf, 260);
     /* FORENSIK (Mission VI, nur Forschung): zaehlt, wo Suchpfade je Musterklasse enden. Ohne input.forensics wird nichts
        gezaehlt; die Ausgabe ist mit und ohne Forensik identisch (Test practitioner-forensics). */
     var F = input.forensics ? { byType: {}, anchors: { total: 0, visited: 0, skippedWindow: 0, skippedAnchorAtr: 0, skippedDev: 0 }, scoreDrops: {}, prerank: {}, final: {} } : null;
@@ -298,9 +357,9 @@
     var subMemo = {};
     function legsOfPath(path, withSub, devLast) {
       var idx = path.map(function (q) { return pts[q].i; }), last = pts[path[path.length - 1]];
-      var legs = legsFromIdx(series, idx, !!last.dev || !!devLast);
+      var legs = legsFromIdx(wser, idx, !!last.dev || !!devLast);
       legs.forEach(function (l, k) { var p = pts[path[k + 1]]; l.confirmedIndex = p.dev ? null : p.c; l.fromPivotId = "p" + l.fromIndex; l.toPivotId = (p.dev ? "dev" : "p") + l.toIndex;
-        if (withSub) { var sub = classifySegment(series, l.fromIndex, l.toIndex, cfg, subMemo); l.sub = { count: sub.count, cls: sub.cls, pattern: sub.pattern, variant: sub.variant || null, motive: sub.motive, corrective: sub.corrective, resolved: sub.resolved, points: sub.points, maxCounter: sub.maxCounter }; } });
+        if (withSub) { var sub = classifySegment(wser, l.fromIndex, l.toIndex, cfg, subMemo); l.sub = { count: sub.count, cls: sub.cls, pattern: sub.pattern, variant: sub.variant || null, motive: sub.motive, corrective: sub.corrective, resolved: sub.resolved, points: sub.points, maxCounter: sub.maxCounter }; } });
       return legs;
     }
     function similar(l1, l2) {
@@ -357,7 +416,7 @@
       l = { fromIndex: A.i, toIndex: B.i, fromPrice: close[A.i], toPrice: close[B.i], fromTime: series.timestamps[A.i], toTime: series.timestamps[B.i],
             duration: Math.max(1, B.i - A.i), status: B.dev || devLast ? "DEVELOPING" : "CONFIRMED", perBar: Math.abs(close[B.i] - close[A.i]) / Math.max(1, B.i - A.i), meanVolume: null,
             confirmedIndex: B.dev ? null : B.c, fromPivotId: "p" + A.i, toPivotId: (B.dev ? "dev" : "p") + B.i };
-      if (withSub) { var sub = classifySegment(series, A.i, B.i, cfg, subMemo); l.sub = { count: sub.count, cls: sub.cls, pattern: sub.pattern }; }
+      if (withSub) { var sub = classifySegment(wser, A.i, B.i, cfg, subMemo); l.sub = { count: sub.count, cls: sub.cls, pattern: sub.pattern }; }
       legMemo[key] = l;
       return l;
     }
@@ -386,7 +445,7 @@
         if (nx[q].short > 0) {
           /* 3.1 (Red-Team H1): ein Ende hinter dem Extrem nur an Korrekturpositionen (Unterteilung K) — Motivwellen enden am Extrem */
           if (P.PATTERNS[type].subdivision[k] !== "K") { fz(type, k + 1, "SHORT_END_AT_MOTIVE_POSITION"); continue; }
-          var cs = classifySegment(series, lastP.i, pts[nx[q].j].i, cfg, subMemo); if (!orthodoxShort(cs)) { fz(type, k + 1, "SHORT_END_NOT_ORTHODOX"); continue; }
+          var cs = classifySegment(wser, lastP.i, pts[nx[q].j].i, cfg, subMemo); if (!orthodoxShort(cs)) { fz(type, k + 1, "SHORT_END_NOT_ORTHODOX"); continue; }
         }
         path.push(nx[q].j); overs.push(nx[q].over); legs.push(legAB(path[k], nx[q].j, false, ws));
         dfs(type, w, path, legs);
@@ -421,7 +480,7 @@
         if (z > 0) {
           var sx = succ(path[z - 1]).filter(function (o) { return o.j === bestQ; })[0];
           if (!sx) why = "NOT_SUCCESSOR_w" + z;
-          else if (sx.short > 0 && !orthodoxShort(classifySegment(series, pts[path[z - 1]].i, pts[bestQ].i, cfg, subMemo))) why = "SHORT_END_NOT_ORTHODOX_w" + z;
+          else if (sx.short > 0 && !orthodoxShort(classifySegment(wser, pts[path[z - 1]].i, pts[bestQ].i, cfg, subMemo))) why = "SHORT_END_NOT_ORTHODOX_w" + z;
         }
         path.push(bestQ);
         if (!why && z >= 1) {
@@ -828,7 +887,7 @@
     return pick;
   }
 
-  var api = { ENGINE_VERSION: ENGINE_VERSION, DEFAULTS: DEFAULTS, PROFILES: PROFILES, analyzeElliottV3: analyze, buildPool: buildPool, classifySegment: classifySegment, zigzagSegment: zigzagSegment };
+  var api = { ENGINE_VERSION: ENGINE_VERSION, DEFAULTS: DEFAULTS, PROFILES: PROFILES, analyzeElliottV3: analyze, buildPool: buildPool, extremePrices: extremePrices, classifySegment: classifySegment, zigzagSegment: zigzagSegment };
   if (isNode) module.exports = api;
   else { global.VUTechnical = global.VUTechnical || {}; global.VUTechnical.ElliottV3 = api; }
 })(typeof window !== "undefined" ? window : globalThis);

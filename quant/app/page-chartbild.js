@@ -746,7 +746,7 @@
     var chartHost = el("div", { class: "cb-chart", tabindex: "0", role: "region", "aria-label": "Chart mit Zonen und Szenario" });
     /* Elliott-Neustart (Owner 22.11.2026): im Elliott-Produkt stehen die Wellen der Hauptlesart immer im Chart, auch bei niedriger
        Klarheit (dann als Klarheit D gekennzeichnet), und der Zeitraum beginnt vor der ersten Welle der Lesart. */
-    var range = a.timeframe === "1W" ? (inElliott ? ewRange(a, E) : "3J") : (inElliott ? ewRange(a, E) : "6M"), mode = "line", wavesOn = view === "pro" || (inElliott ? !!(E && E.primary) : (!abstain && E && E.primary));
+    var range = a.timeframe === "1W" ? (inElliott ? ewRange(a, E) : "3J") : (inElliott ? ewRange(a, E) : "6M"), mode = inElliott && a.chart && !a.chart.closeOnly ? "candles" : "line", wavesOn = view === "pro" || (inElliott ? !!(E && E.primary) : (!abstain && E && E.primary));
     var ranges = a.timeframe === "1W" ? [["1J", "1 J", 52], ["3J", "3 J", 156], ["5J", "5 J", 260]] : [["3M", "3 M", 63], ["6M", "6 M", 126], ["1J", "1 J", 252]];
     var replayStep = null, waveSet = "primary";
     /* Elliott-Projektion als eigene Chart-Ebene (Szenario | Projektion), Preisachse logarithmisch bei großer Spanne */
