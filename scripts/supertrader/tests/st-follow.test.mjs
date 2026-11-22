@@ -103,7 +103,7 @@ test('ST-FOLLOW-4: Fenster „Methode“ und „Ablauf“ tragen die Knöpfe wie
   assert.match(css, /\.stp-sheet \.stp-bell\.stp-bell--w\{flex:none;width:120px/);
   assert.match(css, /\.stp-sheet \.stp-btn\{flex:1;height:52px/, '52 px wie .btn');
   assert.match(css, /\.stp-sheet \.stp-bell\[aria-pressed=true\]\{border:2px solid var\(--stp-lc\);color:var\(--stp-lc\)\}/, 'Zustand sichtbar');
-  assert.match(SRC('supertrader/assets/supertrader.js'), /var ASSET_V = 'st-2026\.11\.16-1';/, 'Kennung erhöht');
+  assert.match(SRC('supertrader/assets/supertrader.js'), /var ASSET_V = 'st-2026\.11\.22-1';/, 'Kennung erhöht');
 });
 
 // Eingebaut, AUS bis zur Anwaltsprüfung (Owner 16.11.2026; docs/accounts/FREIGABEN.md): Frontend-Schalter ST_ALERTS_UI.
