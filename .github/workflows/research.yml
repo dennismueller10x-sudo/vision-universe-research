@@ -59,7 +59,7 @@ on:
         required: false
         default: portfolios
         type: choice
-        options: [portfolios, holdout-quant, ema-cluster-dev, ema-cluster-archive, ema-cluster-complete, backtest2-smoke, backtest2, backtest2-survivors, merkmale-smoke, merkmale]
+        options: [portfolios, holdout-quant, ema-cluster-dev, ema-cluster-archive, ema-cluster-complete, backtest2-smoke, backtest2, backtest2-survivors, merkmale-smoke, merkmale, merkmale-wf-smoke, merkmale-wf, quant-varianten]
       ema_archive_metadata: {description: 'EMA-Archiv/Vervollstaendigung: Pruefsummen und verschluesselte Dateischluessel, keine Klartextschluessel', required: false, default: '', type: string}
       reviewer_public_key_b64: {description: 'portfolio: Nur holdout-quant: oeffentlicher RSA-Schluessel (PEM, base64 in einer Zeile) der Steuerung', required: false, default: '', type: string}
       phase: {description: 'labor: dev, test oder holdout', required: false, default: dev}
@@ -262,7 +262,7 @@ jobs:
             printf '%s' "$REVIEWER_B64" | base64 -d > "$RUNNER_TEMP/holdout/reviewer.pem"
             openssl pkey -pubin -in "$RUNNER_TEMP/holdout/reviewer.pem" -noout || { echo "REVIEWER_KEY_NOT_A_PUBLIC_KEY"; exit 2; }
           fi
-          case "${IN_MODE:-}" in ema-cluster-dev|ema-cluster-archive|ema-cluster-complete|backtest2-smoke|backtest2|backtest2-survivors|merkmale-smoke|merkmale) m="$IN_MODE";; esac
+          case "${IN_MODE:-}" in ema-cluster-dev|ema-cluster-archive|ema-cluster-complete|backtest2-smoke|backtest2|backtest2-survivors|merkmale-smoke|merkmale|merkmale-wf-smoke|merkmale-wf) m="$IN_MODE";; esac
           echo "mode=${m:-portfolios}" >> "$GITHUB_OUTPUT"
           echo "Modus: ${m:-portfolios}"
 
@@ -432,17 +432,19 @@ jobs:
             --out "$RUNNER_TEMP/backtest2/upload" --workers "$(nproc)" $smoke
           rm -rf "$RUNNER_TEMP/priv" "$RUNNER_TEMP/canonical-history"
 
-      # Backtest 2.0, Stufe 2: Merkmals-Studie auf eigenen Daten (PIT-Fundamentaldaten aus dem Schritt oben). Nur Artefakt.
+      # Backtest 2.0, Stufe 2 (Merkmals-Studie) und Stufe 3 (Faktor-Walk-forward) auf eigenen Daten (PIT-Fundamentaldaten aus dem Schritt oben). Nur Artefakt.
       - name: Merkmals-Studie rechnen (Ergebnis nur als Artefakt)
         if: startsWith(steps.m.outputs.mode, 'merkmale')
         env:
           MODE: ${{ steps.m.outputs.mode }}
         run: |
           set -euo pipefail
-          node --test scripts/research/backtest2/merkmale.test.mjs
+          node --test scripts/research/backtest2/merkmale.test.mjs scripts/research/backtest2/faktor-wf.test.mjs
           mkdir -p "$RUNNER_TEMP/backtest2/upload"
-          smoke=""; if [ "$MODE" = "merkmale-smoke" ]; then smoke="--smoke"; fi
-          node --max-old-space-size=12288 scripts/research/backtest2/merkmale.mjs \
+          smoke=""; case "$MODE" in *-smoke) smoke="--smoke";; esac
+          # Stufe 3 (merkmale-wf*): Faktor-Depots im Walk-forward; sonst Stufe 2 (Merkmals-Studie)
+          script=merkmale.mjs; case "$MODE" in merkmale-wf*) script=faktor-wf.mjs;; esac
+          node --max-old-space-size=12288 "scripts/research/backtest2/$script" \
             --work-dir "$RUNNER_TEMP/canonical-history" --delisted-dir "$DELISTED_DIR" --delisted-raw-dir "$DELISTED_RAW_DIR" \
             --fundamentals "$RUNNER_TEMP/pit-fundamentals" --out "$RUNNER_TEMP/backtest2/upload" $smoke
           rm -rf "$RUNNER_TEMP/priv" "$RUNNER_TEMP/canonical-history"
@@ -1979,7 +1981,7 @@ jobs:
       - name: Tests der Pruefung
         run: |
           set -euo pipefail
-          node --test quant/tests/quality-margin-substitute.test.mjs
+          node --test quant/tests/quality-margin-substitute.test.mjs scripts/research/quantscore/variant-pit.test.mjs
       - name: SEC companyfacts.zip (eine Anfrage)
         env:
           SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT || 'VisionUniverseResearch info@visionuniverse.de' }}
@@ -2000,10 +2002,19 @@ jobs:
       # Satz iv (18.11.2026, Steuerung nach Owner-Ja): Einbruch ueber drei Geschaeftsjahre (iv) gegen das bisherige Fenster
       # (ii) und ohne Margenkomponente. Der Satz vom 16.11. (i-iii) steht in docs/quant/QUANT_FINAL_HANDOVER.md.
       - name: Margenformen rechnen (nur Zaehlungen im Log)
+        if: inputs.mode != 'quant-varianten'
         run: |
           set -euo pipefail
           node --max-old-space-size=12288 scripts/quant/research/quality-margin-pit.cjs --docs "$RUNNER_TEMP/v10/docs" \
             --set iv --out "$RUNNER_TEMP/quality-margin-pit/quality-margin-pit.json"
+      # Modus quant-varianten (22.11.2026, Plan nach Backtest 2.0 Stufe 3): Gesamtscore-Gewichte live gegen tilt, mp, mgpa auf
+      # denselben PIT-Dokumenten (scripts/research/quantscore/variant-pit.cjs, Protokoll docs/research/backtest2/PROTOKOLL.md §4c).
+      - name: Quant-Varianten rechnen (nur Zaehlungen und Mittelwerte)
+        if: inputs.mode == 'quant-varianten'
+        run: |
+          set -euo pipefail
+          node --max-old-space-size=12288 scripts/research/quantscore/variant-pit.cjs --docs "$RUNNER_TEMP/v10/docs" \
+            --out "$RUNNER_TEMP/quality-margin-pit/quant-varianten.json"
       - uses: actions/upload-artifact@v4
         with:
           name: quality-margin-pit-${{ github.run_id }}
