@@ -475,6 +475,10 @@
     options = options || {};
     var config = Object.assign({}, DEFAULTS, options.config || {});
     var claimed = options.claimedStatus || null;
+    /* Belegte Spruenge (quant/config/adjustment-step-evidence.json, nur SPIN_OFF): ein Eintrag erklaert genau den Sprung
+       an seinem Tag, wenn der beobachtete Faktorsprung innerhalb seiner Toleranz liegt. Jeder andere Sprung bleibt ein
+       Fehler; Kurse und Faktoren werden nicht veraendert. */
+    var explainedSteps = Array.isArray(options.explainedSteps) ? options.explainedSteps : [];
     // Generic callers retain their historic prior-close convention. Tiingo
     // ingestion supplies its reinvestment-close convention explicitly.
     var dividendConvention = options.dividendConvention || "PREVIOUS_CLOSE";
@@ -523,7 +527,16 @@
       if (faktorAenderung > config.adjustmentRatioTolerance) observed.factorChanges++;
       if (!istSplittag && !istDividendentag && isNum(faktorAenderung) &&
           faktorAenderung > config.corporateActionTolerance) {
-        findings.push(finding("error", "unexplained_adjustment_step",
+        var beobachtet = cur.factor / prev.factor, beleg = null;
+        for (var e = 0; e < explainedSteps.length; e++) {
+          var x = explainedSteps[e];
+          if (x && String(x.date).slice(0, 10) === String(cur.date).slice(0, 10) && isNum(x.expectedStep) && isNum(x.tolerance) &&
+              Math.abs(beobachtet - x.expectedStep) <= x.tolerance) { beleg = x; break; }
+        }
+        if (beleg) findings.push(finding("info", "adjustment_step_explained",
+          "Adjustment factor step explained by registered evidence " + beleg.id + " (" + beleg.kind + ").",
+          { date: cur.date, evidenceId: beleg.id, kind: beleg.kind, observedStep: round(beobachtet, 6) }));
+        else findings.push(finding("error", "unexplained_adjustment_step",
           "Adjustment factor changed without a reported split or cash dividend.", { date: cur.date }));
       }
 
@@ -817,7 +830,8 @@
         ? "TIINGO_REINVESTMENT_CLOSE" : "PREVIOUS_CLOSE");
       adjustment = validateAdjustmentConsistency(base.bars, {
         claimedStatus: payload.adjustmentStatus,
-        dividendConvention: convention
+        dividendConvention: convention,
+        explainedSteps: options.explainedSteps
       });
       findings = findings.concat(adjustment.findings);
     }
