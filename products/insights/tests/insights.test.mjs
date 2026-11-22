@@ -24,6 +24,11 @@ test('IN-2 · jeder Artikel hat Pflichtfelder, Bild, Quellen mit Adresse und ein
       assert.ok(a.bild.ki || a.bild.quelle, `${a.slug}: Bild braucht Bildnachweis (quelle) oder ki: true`);
     }
     assert.ok(!a.pruefung || ['redaktion', 'automatisch'].includes(a.pruefung), `${a.slug}: unbekannte pruefung`);
+    for (const s of a.abschnitte) for (const g of [].concat(s.diagramm || [])) {
+      assert.ok(g.titel && g.quelle && ['saeulen', 'balken'].includes(g.art || 'saeulen'), `${a.slug}: Diagramm braucht titel, quelle und art saeulen|balken`);
+      assert.ok(Array.isArray(g.werte) && g.werte.length >= 2 && g.werte.every(([k, v]) => typeof k === 'string' && Number.isFinite(v)), `${a.slug}: Diagramm-Werte [[Beschriftung, Zahl], …]`);
+      if ((g.art || 'saeulen') === 'saeulen') assert.ok(g.werte.every(([, v]) => v >= 0), `${a.slug}: Säulen nur mit Werten >= 0 (sonst art balken)`);
+    }
     for (const s of a.abschnitte) if (s.bild) { assert.ok(s.bild.quelle && fs.existsSync('.' + s.bild.src), `${a.slug}: Bild im Text ohne Nachweis oder Datei`); }
     for (const [t, list] of Object.entries(a.appScreens || {})) for (const sc of list) assert.ok(fs.existsSync('.' + sc.src), `${a.slug}: App-Screen ${sc.src} fehlt (${t})`);
     assert.ok(a.quellen.length >= 2, `${a.slug}: weniger als zwei Quellen`);
@@ -157,4 +162,27 @@ test('IN-9 · news.js: keine Wortwahl-Verstöße, Tagesbewegung nur über publis
   assert.match(js, /PC\.dayChange\(series, today\)/);
   assert.match(js, /Id\.securityIdForTicker\(t\)/);
   assert.doesNotMatch(js, /["']ref_["']\s*\+/, 'keine eigene Identitätsbildung (ADR-001)');
+});
+
+// Größe eines JPEG aus dem SOF-Kopf (ohne Abhängigkeiten).
+function jpegSize(file) {
+  const b = fs.readFileSync(file);
+  for (let i = 2; i < b.length - 9;) {
+    if (b[i] !== 0xff) { i++; continue; }
+    const m = b[i + 1], len = b.readUInt16BE(i + 2);
+    if (m >= 0xc0 && m <= 0xcf && ![0xc4, 0xc8, 0xcc].includes(m)) return { h: b.readUInt16BE(i + 5), w: b.readUInt16BE(i + 7) };
+    i += 2 + len;
+  }
+  return null;
+}
+test('IN-20 · Aufmacher ab 23.11.2026: 16:9, mindestens 1600 px breit, Themen und Firma für die News-Seite', () => {
+  // News-Seite „Top Shelf“ (Owner 22.11.2026): der Aufmacher füllt die Bühne im Format 16:9; hochkante oder kleine Bilder
+  // wirken dort abgeschnitten oder unscharf. Ältere Artikel bleiben, wie sie sind.
+  for (const a of artikel.filter((x) => x.datum >= '2026-11-23')) {
+    assert.ok(Array.isArray(a.themen) && a.themen.length, `${a.slug}: "themen" fehlt (Themenwelten aus Discover, z. B. „Künstliche Intelligenz“)`);
+    if (a.bild.typ === 'app' || !/\.jpe?g$/i.test(a.bild.src)) continue;
+    const s = jpegSize('.' + a.bild.src);
+    assert.ok(s, `${a.slug}: Bildgröße nicht lesbar`);
+    assert.ok(s.w >= 1600 && Math.abs(s.w / s.h / (16 / 9) - 1) < 0.02, `${a.slug}: Aufmacher ${s.w}×${s.h}, verlangt 16:9 mit mindestens 1600 px Breite`);
+  }
 });

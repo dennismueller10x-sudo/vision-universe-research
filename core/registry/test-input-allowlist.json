@@ -16,15 +16,8 @@
         "discover/data",
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
-    },
-    {
-      "file": "core/tests/discover-universe.test.mjs",
-      "kategorie": "fixture-offen",
-      "liest": [
-        "discover/data"
-      ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "core/tests/eligibility-gate.test.mjs",
@@ -32,12 +25,14 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "core/tests/equity-quality.test.mjs",
       "kategorie": "scan-fehlalarm",
-      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem."
+      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem.",
+      "harteWerte": 8
     },
     {
       "file": "core/tests/europe-discover-known-invalid.test.mjs",
@@ -45,7 +40,8 @@
       "liest": [
         "discover/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen.",
+      "harteWerte": 2
     },
     {
       "file": "core/tests/europe-discover-refresh.test.mjs",
@@ -53,7 +49,8 @@
       "liest": [
         "discover/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): prueft Datenstand gegen Uhr/Frische; in die Datenqualitaet verlegen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): prueft Datenstand gegen Uhr/Frische; in die Datenqualitaet verlegen.",
+      "harteWerte": 13
     },
     {
       "file": "core/tests/europe-discover-schedule.test.mjs",
@@ -61,7 +58,8 @@
       "liest": [
         "discover/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen.",
+      "harteWerte": 1
     },
     {
       "file": "core/tests/global-published-contract.test.mjs",
@@ -70,16 +68,14 @@
       "liest": [
         "discover/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "core/tests/golden-paths.test.mjs",
-      "kategorie": "schema-vertrag",
-      "liest": [
-        "discover/data",
-        "quant/data"
-      ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "kategorie": "scan-fehlalarm",
+      "grund": "22.11.2026: rechnet auf eingefrorenem Stand (core/tests/fixtures/golden-paths, Muster #2122); der Scan meldet die Datenpfade als Zeichenketten. Live-Lauf nur mit DATA_FIXTURE_LIVE=1.",
+      "harteWerte": 0
     },
     {
       "file": "core/tests/health.test.mjs",
@@ -92,23 +88,8 @@
         "supertrader/data",
         "technical/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
-    },
-    {
-      "file": "core/tests/identity.test.mjs",
-      "kategorie": "fixture-offen",
-      "liest": [
-        "quant/data"
-      ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
-    },
-    {
-      "file": "core/tests/industry-classification-sec.test.mjs",
-      "kategorie": "fixture-offen",
-      "liest": [
-        "quant/data"
-      ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "core/tests/legal-notices-frontend.test.mjs",
@@ -116,12 +97,14 @@
       "liest": [
         "supertrader/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 3
     },
     {
       "file": "core/tests/long-series-repair.test.mjs",
       "kategorie": "schema-vertrag",
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 7
     },
     {
       "file": "core/tests/product-contracts.test.mjs",
@@ -131,7 +114,8 @@
         "quant/data",
         "technical/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "core/tests/query-engine-universe.test.mjs",
@@ -139,26 +123,29 @@
       "liest": [
         "technical/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 4
     },
     {
-      "file": "core/tests/sf8-data-quality.test.mjs",
-      "kategorie": "fixture-offen",
+      "file": "core/tests/research-series-guard.test.mjs",
+      "kategorie": "schema-vertrag",
       "liest": [
-        "quant/data",
-        "supertrader/data"
+        "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "grund": "21.11.2026 (Teil B1): prueft den Loeschschutz gegen die echten Quellen der Forschungsreihen (V10-Rahmen, Register, Elliott-Ledger, Tests mit Wochenreihen-Pfad). Die Faelle vom 17.11. (ALOT, HVII, AFBI, ANSC, GBTG, AACT) muessen geschuetzt sein; eine fehlende Quelle bricht ab. Muss den Live-Stand der Quellen lesen, sonst schuetzt der Schutz nichts.",
+      "harteWerte": 0
     },
     {
       "file": "core/tests/state-gate.test.mjs",
       "kategorie": "schema-vertrag",
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "core/tests/state/supertrader-discover.test.mjs",
       "kategorie": "schema-vertrag",
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "core/tests/stock-availability.test.mjs",
@@ -169,7 +156,8 @@
         "supertrader/data",
         "technical/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen.",
+      "harteWerte": 1
     },
     {
       "file": "core/tests/stock-context.test.mjs",
@@ -180,22 +168,26 @@
         "supertrader/data",
         "technical/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen.",
+      "harteWerte": 24
     },
     {
       "file": "core/tests/supertrader-chain.test.mjs",
       "kategorie": "scan-fehlalarm",
-      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem."
+      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem.",
+      "harteWerte": 14
     },
     {
       "file": "core/tests/universe-follow-chain.test.mjs",
       "kategorie": "schema-vertrag",
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "core/tests/watchlist-fetch-published.test.mjs",
       "kategorie": "schema-vertrag",
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 2
     },
     {
       "file": "core/tests/watchlist-identity-quarantine.test.mjs",
@@ -205,7 +197,8 @@
         "supertrader/data",
         "technical/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 6
     },
     {
       "file": "core/tests/watchlist-view.test.mjs",
@@ -215,7 +208,8 @@
         "supertrader/data",
         "technical/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen.",
+      "harteWerte": 45
     },
     {
       "file": "discover/tests/company-logos.test.mjs",
@@ -224,7 +218,8 @@
       "liest": [
         "social/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "discover/tests/data.test.mjs",
@@ -232,12 +227,14 @@
       "liest": [
         "discover/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "discover/tests/direct-link-lib.test.mjs",
       "kategorie": "scan-fehlalarm",
-      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem."
+      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem.",
+      "harteWerte": 3
     },
     {
       "file": "discover/tests/einordnung.test.mjs",
@@ -246,12 +243,14 @@
         "discover/data",
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 2
     },
     {
       "file": "discover/tests/europe-bootstrap.test.mjs",
       "kategorie": "schema-vertrag",
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 2
     },
     {
       "file": "discover/tests/europe-continuity-rematerialization.test.mjs",
@@ -259,7 +258,8 @@
       "liest": [
         "discover/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen.",
+      "harteWerte": 1
     },
     {
       "file": "discover/tests/fundamentals-no-cik.test.mjs",
@@ -268,7 +268,8 @@
         "discover/data",
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "discover/tests/home-market.test.mjs",
@@ -276,7 +277,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "discover/tests/identity-quarantine.test.mjs",
@@ -284,22 +286,26 @@
       "liest": [
         "discover/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "discover/tests/im-blick-live.test.mjs",
       "kategorie": "scan-fehlalarm",
-      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem."
+      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem.",
+      "harteWerte": 9
     },
     {
       "file": "discover/tests/im-blick-nachtlauf.test.mjs",
       "kategorie": "scan-fehlalarm",
-      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem."
+      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem.",
+      "harteWerte": 12
     },
     {
       "file": "discover/tests/im-blick-refresh.test.mjs",
       "kategorie": "scan-fehlalarm",
-      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem."
+      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem.",
+      "harteWerte": 29
     },
     {
       "file": "discover/tests/indicators.test.mjs",
@@ -307,7 +313,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "discover/tests/klartext.test.mjs",
@@ -315,7 +322,8 @@
       "liest": [
         "discover/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "discover/tests/known-defects.test.mjs",
@@ -324,7 +332,8 @@
       "liest": [
         "discover/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "discover/tests/market-cap-basis.test.mjs",
@@ -333,7 +342,8 @@
       "liest": [
         "discover/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "discover/tests/names.test.mjs",
@@ -342,12 +352,14 @@
         "discover/data",
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "discover/tests/overview.test.mjs",
       "kategorie": "schema-vertrag",
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "discover/tests/price-rounding.test.mjs",
@@ -356,7 +368,8 @@
         "discover/data",
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "discover/tests/producer-ownership.test.mjs",
@@ -364,7 +377,8 @@
       "liest": [
         "discover/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "discover/tests/scale.test.mjs",
@@ -373,7 +387,8 @@
         "discover/data",
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "discover/tests/series-reason-honest.test.mjs",
@@ -382,7 +397,8 @@
       "liest": [
         "discover/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "discover/tests/technical-intelligence.test.mjs",
@@ -390,7 +406,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "discover/tests/unternehmen-currency.test.mjs",
@@ -399,7 +416,8 @@
       "liest": [
         "discover/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "discover/tests/v3.test.mjs",
@@ -408,7 +426,8 @@
         "discover/data",
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen.",
+      "harteWerte": 6
     },
     {
       "file": "products/fundamental/tests/catalog.test.mjs",
@@ -417,7 +436,8 @@
         "discover/data",
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen.",
+      "harteWerte": 34
     },
     {
       "file": "products/fundamental/tests/compare.test.mjs",
@@ -426,12 +446,14 @@
         "discover/data",
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "products/fundamental/tests/history-extension.test.mjs",
       "kategorie": "scan-fehlalarm",
-      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem."
+      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem.",
+      "harteWerte": 9
     },
     {
       "file": "products/fundamental/tests/model.test.mjs",
@@ -439,7 +461,8 @@
       "liest": [
         "discover/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen.",
+      "harteWerte": 16
     },
     {
       "file": "products/fundamental/tests/spinoff-share-basis.test.mjs",
@@ -448,7 +471,8 @@
         "discover/data",
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen.",
+      "harteWerte": 1
     },
     {
       "file": "products/social/tests/approval-decision.test.mjs",
@@ -456,7 +480,8 @@
       "liest": [
         "social/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 1
     },
     {
       "file": "products/social/tests/approval-projection.test.mjs",
@@ -465,12 +490,14 @@
       "liest": [
         "social/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "products/social/tests/asset-delivery.test.mjs",
       "kategorie": "schema-vertrag",
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "products/social/tests/asset-hashtag-done.test.mjs",
@@ -478,7 +505,8 @@
       "liest": [
         "social/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "products/social/tests/creative-job.test.mjs",
@@ -486,7 +514,8 @@
       "liest": [
         "social/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "products/social/tests/creative-reuse.test.mjs",
@@ -495,7 +524,8 @@
         "quant/data",
         "social/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "products/social/tests/creator-discovery.test.mjs",
@@ -505,7 +535,8 @@
         "discover/data",
         "social/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "products/social/tests/discover-evidence.test.mjs",
@@ -513,7 +544,8 @@
       "liest": [
         "discover/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "products/social/tests/dryrun-evidence-classes.test.mjs",
@@ -522,7 +554,8 @@
         "discover/data",
         "social/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 1
     },
     {
       "file": "products/social/tests/evidence-package.test.mjs",
@@ -530,16 +563,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
-    },
-    {
-      "file": "products/social/tests/final-public-text.test.mjs",
-      "kategorie": "fixture-offen",
-      "liest": [
-        "social/data"
-      ],
-      "grund": "10.11.2026 (S2): die direkte Lesung der Publish-Kandidaten steht jetzt als Fixture (social/tests/fixtures/final-public-text); uebrig bleibt der indirekte Lesezugriff der Producer-Funktionen auf Serien (quant/data/market/discover-series-long), den der Test nicht selbst steuert.",
-      "dynamisch": true
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "products/social/tests/hashtags.test.mjs",
@@ -547,21 +572,14 @@
       "liest": [
         "social/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 3
     },
     {
       "file": "products/social/tests/loop-closure.test.mjs",
       "kategorie": "scan-fehlalarm",
-      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem."
-    },
-    {
-      "file": "products/social/tests/manual-topic-in-cycle.test.mjs",
-      "kategorie": "fixture-offen",
-      "liest": [
-        "quant/data",
-        "social/data"
-      ],
-      "grund": "10.11.2026 (S2): das Job-Register steht als Fixture; Teil A faehrt bewusst den echten Zyklus (MSFT/NVDA-Bundles aus quant/data) und prueft nur datumsunabhaengige Eigenschaften."
+      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem.",
+      "harteWerte": 0
     },
     {
       "file": "products/social/tests/opportunity-slate.test.mjs",
@@ -571,12 +589,14 @@
         "discover/data",
         "social/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "products/social/tests/orchestrator.test.mjs",
       "kategorie": "scan-fehlalarm",
-      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem."
+      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem.",
+      "harteWerte": 2
     },
     {
       "file": "products/social/tests/owner-decision.test.mjs",
@@ -584,12 +604,14 @@
       "liest": [
         "social/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "products/social/tests/performance-ingest.test.mjs",
       "kategorie": "schema-vertrag",
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 2
     },
     {
       "file": "products/social/tests/product-readiness.test.mjs",
@@ -597,12 +619,14 @@
       "liest": [
         "social/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "products/social/tests/production-readiness.test.mjs",
       "kategorie": "schema-vertrag",
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 1
     },
     {
       "file": "products/social/tests/publish-candidate.test.mjs",
@@ -610,7 +634,8 @@
       "liest": [
         "social/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 1
     },
     {
       "file": "products/social/tests/request-creative-web-force-attempt.test.mjs",
@@ -618,7 +643,8 @@
       "liest": [
         "social/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "products/social/tests/revision-lookup.test.mjs",
@@ -627,7 +653,8 @@
       "liest": [
         "social/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "products/social/tests/secrets.test.mjs",
@@ -636,7 +663,8 @@
       "liest": [
         "social/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "products/social/tests/source-registry.test.mjs",
@@ -644,7 +672,8 @@
       "liest": [
         "social/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "products/social/tests/visual-motif.test.mjs",
@@ -653,7 +682,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/acceptance.test.mjs",
@@ -661,7 +691,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): prueft Datenstand gegen Uhr/Frische; in die Datenqualitaet verlegen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): prueft Datenstand gegen Uhr/Frische; in die Datenqualitaet verlegen.",
+      "harteWerte": 3
     },
     {
       "file": "quant/tests/adjustment-consistency.test.mjs",
@@ -670,7 +701,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/assignment-change.test.mjs",
@@ -678,7 +710,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 2
     },
     {
       "file": "quant/tests/backtest-artifact-consistency.test.mjs",
@@ -686,12 +719,14 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/backtest-catalog.test.mjs",
       "kategorie": "schema-vertrag",
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/backtest-certification-fv1.test.mjs",
@@ -699,7 +734,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/backtest-certification.test.mjs",
@@ -707,7 +743,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen.",
+      "harteWerte": 20
     },
     {
       "file": "quant/tests/backtest-consolidation-boundary.test.mjs",
@@ -716,7 +753,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/backtest-coverage-matrix.test.mjs",
@@ -725,7 +763,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/backtest-demo-freshness.test.mjs",
@@ -734,7 +773,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/backtest-kinds.test.mjs",
@@ -742,7 +782,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 1
     },
     {
       "file": "quant/tests/backtest-metrics.test.mjs",
@@ -751,7 +792,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/backtest-p2-deficits.test.mjs",
@@ -759,7 +801,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): prueft Datenstand gegen Uhr/Frische; in die Datenqualitaet verlegen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): prueft Datenstand gegen Uhr/Frische; in die Datenqualitaet verlegen.",
+      "harteWerte": 7
     },
     {
       "file": "quant/tests/backtest-preview.test.mjs",
@@ -767,7 +810,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/backtest-refresh.test.mjs",
@@ -775,15 +819,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
-    },
-    {
-      "file": "quant/tests/backtest-result-contract.test.mjs",
-      "kategorie": "datenzustand-offen",
-      "liest": [
-        "quant/data"
-      ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): prueft Datenstand gegen Uhr/Frische; in die Datenqualitaet verlegen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen.",
+      "harteWerte": 18
     },
     {
       "file": "quant/tests/backtest-review-bundle.test.mjs",
@@ -791,7 +828,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/backtest-run-cli-metrics-hash.test.mjs",
@@ -800,15 +838,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
-    },
-    {
-      "file": "quant/tests/backtest-runner.test.mjs",
-      "kategorie": "datenzustand-offen",
-      "liest": [
-        "quant/data"
-      ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): prueft Datenstand gegen Uhr/Frische; in die Datenqualitaet verlegen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/benchmark-freshness.test.mjs",
@@ -816,7 +847,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 2
     },
     {
       "file": "quant/tests/benchmark-reference.test.mjs",
@@ -824,16 +856,18 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "10.11.2026 (S2): die Zustandspruefungen des Artefakts sind in die Datenqualitaet gewandert (DQ-PQ, core/product-quality.js); uebrig bleibt Code, der gegen den Live-Stand laeuft und noch eine Fixture braucht."
+      "grund": "10.11.2026 (S2): die Zustandspruefungen des Artefakts sind in die Datenqualitaet gewandert (DQ-PQ, core/product-quality.js); uebrig bleibt Code, der gegen den Live-Stand laeuft und noch eine Fixture braucht.",
+      "harteWerte": 7
     },
     {
       "file": "quant/tests/canonical-product-search.test.mjs",
-      "kategorie": "fixture-offen",
+      "kategorie": "scan-fehlalarm",
       "liest": [
         "discover/data",
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "grund": "18.11.2026: rechnet auf dem eingefrorenen Datenstand quant/tests/fixtures/canonical-product-search/data.json.gz (Spiegelwurzel, scripts/quant/lib/data-fixture.mjs); die Datenpfade loesen gegen das Fixture auf, Laufzeitmessung mit scripts/quant/lib/trace-data-reads.cjs: 0 Zugriffe auf */data im Repository. Live-Deckung meldet DQ-PQ-11.",
+      "harteWerte": 18
     },
     {
       "file": "quant/tests/canonical-total-return.test.mjs",
@@ -842,7 +876,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/capability-matrix.test.mjs",
@@ -851,12 +886,14 @@
         "discover/data",
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/classify-rejections-cli.test.mjs",
       "kategorie": "scan-fehlalarm",
-      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem."
+      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/company-master.test.mjs",
@@ -865,7 +902,8 @@
         "discover/data",
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen.",
+      "harteWerte": 18
     },
     {
       "file": "quant/tests/company-name-coverage.test.mjs",
@@ -874,15 +912,8 @@
         "discover/data",
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
-    },
-    {
-      "file": "quant/tests/company-names.test.mjs",
-      "kategorie": "fixture-offen",
-      "liest": [
-        "quant/data"
-      ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 6
     },
     {
       "file": "quant/tests/coverage-audits.test.mjs",
@@ -890,15 +921,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
-    },
-    {
-      "file": "quant/tests/currency-fx-matrix.test.mjs",
-      "kategorie": "fixture-offen",
-      "liest": [
-        "quant/data"
-      ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 1
     },
     {
       "file": "quant/tests/debt-instrument-classification.test.mjs",
@@ -906,7 +930,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): prueft Datenstand gegen Uhr/Frische; in die Datenqualitaet verlegen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): prueft Datenstand gegen Uhr/Frische; in die Datenqualitaet verlegen.",
+      "harteWerte": 19
     },
     {
       "file": "quant/tests/development-preview.test.mjs",
@@ -919,20 +944,14 @@
         "supertrader/data",
         "technical/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/direct-link-lib.test.mjs",
       "kategorie": "scan-fehlalarm",
-      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem."
-    },
-    {
-      "file": "quant/tests/discover-series-hygiene.test.mjs",
-      "kategorie": "fixture-offen",
-      "liest": [
-        "quant/data"
-      ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem.",
+      "harteWerte": 8
     },
     {
       "file": "quant/tests/elliott-explore.test.mjs",
@@ -941,7 +960,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/elliott-home.test.mjs",
@@ -949,7 +969,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen.",
+      "harteWerte": 45
     },
     {
       "file": "quant/tests/elliott-projection.test.mjs",
@@ -958,7 +979,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/elliott-registry-product-view.test.mjs",
@@ -966,15 +988,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
-    },
-    {
-      "file": "quant/tests/elliott-registry.test.mjs",
-      "kategorie": "fixture-offen",
-      "liest": [
-        "quant/data"
-      ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen.",
+      "harteWerte": 17
     },
     {
       "file": "quant/tests/exchange-directory-class.test.mjs",
@@ -983,7 +998,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/factor-evidence.test.mjs",
@@ -991,7 +1007,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): prueft Datenstand gegen Uhr/Frische; in die Datenqualitaet verlegen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): prueft Datenstand gegen Uhr/Frische; in die Datenqualitaet verlegen.",
+      "harteWerte": 3
     },
     {
       "file": "quant/tests/factor-product-projection.test.mjs",
@@ -1000,7 +1017,8 @@
         "discover/data",
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/frontend-transformation.test.mjs",
@@ -1009,7 +1027,8 @@
         "discover/data",
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen.",
+      "harteWerte": 5
     },
     {
       "file": "quant/tests/golden-five-backtest-readiness.test.mjs",
@@ -1017,7 +1036,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/golden-five-pit-coverage.test.mjs",
@@ -1025,12 +1045,14 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen.",
+      "harteWerte": 1
     },
     {
       "file": "quant/tests/history-sync-boundary.test.mjs",
       "kategorie": "scan-fehlalarm",
-      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem."
+      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem.",
+      "harteWerte": 9
     },
     {
       "file": "quant/tests/home-elliott-v3.test.mjs",
@@ -1038,7 +1060,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/intelligence-brief.test.mjs",
@@ -1047,7 +1070,8 @@
         "discover/data",
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 2
     },
     {
       "file": "quant/tests/intelligence-contract.test.mjs",
@@ -1056,12 +1080,14 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/internal-links.test.mjs",
       "kategorie": "schema-vertrag",
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 2
     },
     {
       "file": "quant/tests/intraday-delivery-contract.test.mjs",
@@ -1069,15 +1095,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
-    },
-    {
-      "file": "quant/tests/issuer-master.test.mjs",
-      "kategorie": "datenzustand-offen",
-      "liest": [
-        "quant/data"
-      ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): prueft Datenstand gegen Uhr/Frische; in die Datenqualitaet verlegen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/journey-coverage.test.mjs",
@@ -1085,7 +1104,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/journey-shape.test.mjs",
@@ -1094,7 +1114,8 @@
         "discover/data",
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 5
     },
     {
       "file": "quant/tests/last-price-from-series.test.mjs",
@@ -1104,7 +1125,8 @@
         "discover/data",
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/launch-gates.test.mjs",
@@ -1113,7 +1135,8 @@
         "discover/data",
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 3
     },
     {
       "file": "quant/tests/listing-continuity.test.mjs",
@@ -1121,7 +1144,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen.",
+      "harteWerte": 11
     },
     {
       "file": "quant/tests/market-calendar.test.mjs",
@@ -1129,17 +1153,20 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen.",
+      "harteWerte": 1
     },
     {
       "file": "quant/tests/market-data-freshness-p0.test.mjs",
       "kategorie": "scan-fehlalarm",
-      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem."
+      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem.",
+      "harteWerte": 19
     },
     {
       "file": "quant/tests/market-eod-cli.test.mjs",
       "kategorie": "scan-fehlalarm",
-      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem."
+      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem.",
+      "harteWerte": 12
     },
     {
       "file": "quant/tests/market-scale.test.mjs",
@@ -1148,7 +1175,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/market-signal-contract.test.mjs",
@@ -1157,12 +1185,14 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/market-store.test.mjs",
       "kategorie": "scan-fehlalarm",
-      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem."
+      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem.",
+      "harteWerte": 6
     },
     {
       "file": "quant/tests/methodology-change.test.mjs",
@@ -1170,15 +1200,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
-    },
-    {
-      "file": "quant/tests/model-depots.test.mjs",
-      "kategorie": "datenzustand-offen",
-      "liest": [
-        "quant/data"
-      ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): prueft Datenstand gegen Uhr/Frische; in die Datenqualitaet verlegen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 2
     },
     {
       "file": "quant/tests/multi-asset-market-environment.test.mjs",
@@ -1186,7 +1209,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 25
     },
     {
       "file": "quant/tests/naming-contract.test.mjs",
@@ -1195,7 +1219,8 @@
         "discover/data",
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/no-mock-in-product.test.mjs",
@@ -1207,7 +1232,8 @@
         "supertrader/data",
         "technical/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen.",
+      "harteWerte": 2
     },
     {
       "file": "quant/tests/pattern-research.test.mjs",
@@ -1216,7 +1242,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/pattern-return-basis-check.test.mjs",
@@ -1224,7 +1251,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/pattern-unavailability.test.mjs",
@@ -1232,7 +1260,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/pit-fundamental-history.test.mjs",
@@ -1241,7 +1270,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/pit-snapshot-integrity.test.mjs",
@@ -1249,7 +1279,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen.",
+      "harteWerte": 13
     },
     {
       "file": "quant/tests/plain-verdict.test.mjs",
@@ -1257,7 +1288,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/portfolio-standard.test.mjs",
@@ -1265,7 +1297,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen.",
+      "harteWerte": 7
     },
     {
       "file": "quant/tests/product-capabilities.test.mjs",
@@ -1274,7 +1307,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/product-data-service.test.mjs",
@@ -1283,25 +1317,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
-    },
-    {
-      "file": "quant/tests/product-identity-release.test.mjs",
-      "kategorie": "fixture-offen",
-      "liest": [
-        "discover/data",
-        "quant/data"
-      ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
-    },
-    {
-      "file": "quant/tests/product-intelligence-materialization.test.mjs",
-      "kategorie": "fixture-offen",
-      "liest": [
-        "quant/data"
-      ],
-      "grund": "10.11.2026 (S2): alle Eingaben des Tests stehen als Fixture-Wurzel; uebrig bleibt der indirekte Lesezugriff des Materialisierers auf quant/data/universe/market-capability.json (Produktcode, vom Test nicht steuerbar).",
-      "dynamisch": true
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/product-language.test.mjs",
@@ -1311,16 +1328,18 @@
         "discover/data",
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/product-services.test.mjs",
-      "kategorie": "fixture-offen",
+      "kategorie": "scan-fehlalarm",
       "liest": [
         "discover/data",
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "grund": "18.11.2026: rechnet auf dem eingefrorenen Datenstand quant/tests/fixtures/product-services/data.json.gz (Spiegelwurzel, scripts/quant/lib/data-fixture.mjs); die Datenpfade loesen gegen das Fixture auf, Laufzeitmessung mit scripts/quant/lib/trace-data-reads.cjs: 0 Zugriffe auf */data im Repository. Live-Deckung meldet DQ-PQ-11.",
+      "harteWerte": 70
     },
     {
       "file": "quant/tests/published-close.test.mjs",
@@ -1328,12 +1347,14 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen.",
+      "harteWerte": 9
     },
     {
       "file": "quant/tests/push-with-retry.test.mjs",
       "kategorie": "scan-fehlalarm",
-      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem."
+      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/quant-app-view-model.test.mjs",
@@ -1343,7 +1364,8 @@
         "discover/data",
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/quant-home-golden-five.test.mjs",
@@ -1351,7 +1373,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/radar-event-quarantine.test.mjs",
@@ -1360,7 +1383,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/real-backtest-read.test.mjs",
@@ -1368,7 +1392,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen.",
+      "harteWerte": 44
     },
     {
       "file": "quant/tests/real-backtest-selection.test.mjs",
@@ -1377,15 +1402,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
-    },
-    {
-      "file": "quant/tests/real-weekly-backtest.test.mjs",
-      "kategorie": "fixture-offen",
-      "liest": [
-        "quant/data"
-      ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/realtime-integration.test.mjs",
@@ -1394,7 +1412,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/realtime-matrix.test.mjs",
@@ -1403,7 +1422,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/realtime-sessions.test.mjs",
@@ -1412,7 +1432,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/regime-observation-immutability.test.mjs",
@@ -1420,7 +1441,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 1
     },
     {
       "file": "quant/tests/release-delivery.test.mjs",
@@ -1428,7 +1450,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 1
     },
     {
       "file": "quant/tests/release-id.test.mjs",
@@ -1436,12 +1459,14 @@
       "liest": [
         "supertrader/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/release-packs.test.mjs",
       "kategorie": "schema-vertrag",
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/research-ca-evidence.test.mjs",
@@ -1449,7 +1474,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 2
     },
     {
       "file": "quant/tests/research-exposure.test.mjs",
@@ -1457,7 +1483,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/research-identity-evidence.test.mjs",
@@ -1465,7 +1492,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 2
     },
     {
       "file": "quant/tests/research-population.test.mjs",
@@ -1474,12 +1502,14 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/research-v8-archive-assessment.test.mjs",
       "kategorie": "schema-vertrag",
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/research-v8-classification.test.mjs",
@@ -1487,7 +1517,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 2
     },
     {
       "file": "quant/tests/research-v8-r2-ca-cases.test.mjs",
@@ -1496,12 +1527,14 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/research-v8-sec-archive-schema.test.mjs",
       "kategorie": "schema-vertrag",
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/research-weekly-source.test.mjs",
@@ -1510,7 +1543,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/return-basis-study.test.mjs",
@@ -1518,7 +1552,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/return-semantics.test.mjs",
@@ -1526,20 +1561,14 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
-    },
-    {
-      "file": "quant/tests/return-series.test.mjs",
-      "kategorie": "fixture-offen",
-      "liest": [
-        "quant/data"
-      ],
-      "grund": "10.11.2026 (S2): bleibt auf Live-Daten. Eine Umstellung auf Fixtures machte den Test zum Vorab-Gate A des Marktlaufs (eod-publish-gates EG8 verbietet das fuer diese Vorfall-Datei); der Helper confirmed-golden-evidence liest bereits die Fixture."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/scale-gate.test.mjs",
       "kategorie": "scan-fehlalarm",
-      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem."
+      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem.",
+      "harteWerte": 9
     },
     {
       "file": "quant/tests/screener-hit-row.test.mjs",
@@ -1547,7 +1576,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/screener-surface.test.mjs",
@@ -1556,7 +1586,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/screener-workspace.test.mjs",
@@ -1565,7 +1596,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/sec-panel-published-close.test.mjs",
@@ -1573,15 +1605,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
-    },
-    {
-      "file": "quant/tests/sec-universe-scale.test.mjs",
-      "kategorie": "datenzustand-offen",
-      "liest": [
-        "quant/data"
-      ],
-      "grund": "10.11.2026 (S2): die Zustandspruefungen des Artefakts sind in die Datenqualitaet gewandert (DQ-PQ, core/product-quality.js); uebrig bleibt Code, der gegen den Live-Stand laeuft und noch eine Fixture braucht."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/secrets.test.mjs",
@@ -1594,23 +1619,8 @@
         "supertrader/data",
         "technical/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
-    },
-    {
-      "file": "quant/tests/security-master-approval-v110.test.mjs",
-      "kategorie": "datenzustand-offen",
-      "liest": [
-        "quant/data"
-      ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): prueft Datenstand gegen Uhr/Frische; in die Datenqualitaet verlegen."
-    },
-    {
-      "file": "quant/tests/security-master-content-hash.test.mjs",
-      "kategorie": "datenzustand-offen",
-      "liest": [
-        "quant/data"
-      ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): prueft Datenstand gegen Uhr/Frische; in die Datenqualitaet verlegen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/security-master-generations.test.mjs",
@@ -1618,7 +1628,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 2
     },
     {
       "file": "quant/tests/security-master-v130-freeze.test.mjs",
@@ -1626,15 +1637,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
-    },
-    {
-      "file": "quant/tests/security-master-weekly.test.mjs",
-      "kategorie": "datenzustand-offen",
-      "liest": [
-        "quant/data"
-      ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): prueft Datenstand gegen Uhr/Frische; in die Datenqualitaet verlegen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/security-type-safety.test.mjs",
@@ -1643,7 +1647,8 @@
         "discover/data",
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen.",
+      "harteWerte": 2
     },
     {
       "file": "quant/tests/setup-oos-rows-export.test.mjs",
@@ -1651,7 +1656,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/setup-state-contract.test.mjs",
@@ -1660,7 +1666,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/sic-peer-taxonomy.test.mjs",
@@ -1669,7 +1676,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/signal-backtest.test.mjs",
@@ -1677,7 +1685,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 3
     },
     {
       "file": "quant/tests/signal-split-adjusted-bars.test.mjs",
@@ -1686,7 +1695,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/split-adjust-single-definition.test.mjs",
@@ -1694,15 +1704,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
-    },
-    {
-      "file": "quant/tests/split-evidence-supplements.test.mjs",
-      "kategorie": "fixture-offen",
-      "liest": [
-        "quant/data"
-      ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/stock-chart-basis.test.mjs",
@@ -1710,7 +1713,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/stock-page-payload.test.mjs",
@@ -1719,7 +1723,8 @@
         "discover/data",
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 1
     },
     {
       "file": "quant/tests/stock-page-shards.test.mjs",
@@ -1728,7 +1733,8 @@
         "discover/data",
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen.",
+      "harteWerte": 1
     },
     {
       "file": "quant/tests/strategy-history.test.mjs",
@@ -1736,7 +1742,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/strategy-match.test.mjs",
@@ -1744,7 +1751,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/survivorship-control.test.mjs",
@@ -1752,7 +1760,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen.",
+      "harteWerte": 10
     },
     {
       "file": "quant/tests/technical-ap8-l1.test.mjs",
@@ -1761,7 +1770,8 @@
         "quant/data",
         "technical/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/technical-ap8-l2.test.mjs",
@@ -1770,7 +1780,8 @@
         "quant/data",
         "technical/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/technical-ap8-l3.test.mjs",
@@ -1779,7 +1790,8 @@
         "quant/data",
         "technical/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 1
     },
     {
       "file": "quant/tests/technical-ap8-l4.test.mjs",
@@ -1787,7 +1799,8 @@
       "liest": [
         "technical/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/technical-ap8-l5.test.mjs",
@@ -1795,7 +1808,8 @@
       "liest": [
         "technical/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 2
     },
     {
       "file": "quant/tests/technical-ema200-materialization.test.mjs",
@@ -1803,7 +1817,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/technical-evidence-phases.test.mjs",
@@ -1812,7 +1827,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/technical-momentum-labels.test.mjs",
@@ -1821,7 +1837,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/technical-ui.test.mjs",
@@ -1830,7 +1847,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/technical-unavailability.test.mjs",
@@ -1838,7 +1856,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen.",
+      "harteWerte": 6
     },
     {
       "file": "quant/tests/technical-workspace-contract.test.mjs",
@@ -1847,7 +1866,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/ti-engine.test.mjs",
@@ -1856,7 +1876,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/ti-product.test.mjs",
@@ -1865,7 +1886,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/ti-shard-hygiene.test.mjs",
@@ -1873,7 +1895,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 2
     },
     {
       "file": "quant/tests/ti-ui.test.mjs",
@@ -1881,12 +1904,14 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 13
     },
     {
       "file": "quant/tests/ticker-reuse-consumers.test.mjs",
       "kategorie": "scan-fehlalarm",
-      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem."
+      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem.",
+      "harteWerte": 9
     },
     {
       "file": "quant/tests/ticker-reuse-quarantine.test.mjs",
@@ -1894,15 +1919,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
-    },
-    {
-      "file": "quant/tests/tiingo.test.mjs",
-      "kategorie": "fixture-offen",
-      "liest": [
-        "quant/data"
-      ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 4
     },
     {
       "file": "quant/tests/tiingo2-foundation-classifier-merge.test.mjs",
@@ -1911,17 +1929,20 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/tiingo2-publication.test.mjs",
       "kategorie": "schema-vertrag",
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 2
     },
     {
       "file": "quant/tests/tiingo2-refresh.test.mjs",
       "kategorie": "scan-fehlalarm",
-      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem."
+      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem.",
+      "harteWerte": 13
     },
     {
       "file": "quant/tests/total-return-contract.test.mjs",
@@ -1929,7 +1950,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen.",
+      "harteWerte": 7
     },
     {
       "file": "quant/tests/total-return-verification.test.mjs",
@@ -1937,7 +1959,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "10.11.2026 (S2): Daten kommen aus quant/tests/fixtures/golden-preview; der Zustandsteil ist DQ-PQ-9. Die Sandbox schreibt quant/data-Pfade nur in ein Temp-Verzeichnis; Laufzeitmessung 0 Zugriffe, der Scan meldet die Zeichenkette trotzdem."
+      "grund": "10.11.2026 (S2): Daten kommen aus quant/tests/fixtures/golden-preview; der Zustandsteil ist DQ-PQ-9. Die Sandbox schreibt quant/data-Pfade nur in ein Temp-Verzeichnis; Laufzeitmessung 0 Zugriffe, der Scan meldet die Zeichenkette trotzdem.",
+      "harteWerte": 4
     },
     {
       "file": "quant/tests/universe-list.test.mjs",
@@ -1946,7 +1969,8 @@
         "discover/data",
         "quant/data"
       ],
-      "grund": "10.11.2026 (S2): die Zustandspruefungen des Artefakts sind in die Datenqualitaet gewandert (DQ-PQ, core/product-quality.js); uebrig bleibt Code, der gegen den Live-Stand laeuft und noch eine Fixture braucht."
+      "grund": "10.11.2026 (S2): die Zustandspruefungen des Artefakts sind in die Datenqualitaet gewandert (DQ-PQ, core/product-quality.js); uebrig bleibt Code, der gegen den Live-Stand laeuft und noch eine Fixture braucht.",
+      "harteWerte": 4
     },
     {
       "file": "quant/tests/universe-source.test.mjs",
@@ -1954,7 +1978,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 3
     },
     {
       "file": "quant/tests/us-security-master-artefacts.test.mjs",
@@ -1962,7 +1987,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/v10-corporate-actions.test.mjs",
@@ -1971,7 +1997,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/v10-population.test.mjs",
@@ -1979,7 +2006,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 2
     },
     {
       "file": "quant/tests/v12-largecap.test.mjs",
@@ -1987,23 +2015,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
-    },
-    {
-      "file": "quant/tests/v13-largecap.test.mjs",
-      "kategorie": "fixture-offen",
-      "liest": [
-        "quant/data"
-      ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
-    },
-    {
-      "file": "quant/tests/v13b-largecap-strict.test.mjs",
-      "kategorie": "fixture-offen",
-      "liest": [
-        "quant/data"
-      ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/valuation-consistency.test.mjs",
@@ -2012,20 +2025,14 @@
         "discover/data",
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/vercel-preview-boundary.test.mjs",
       "kategorie": "schema-vertrag",
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
-    },
-    {
-      "file": "quant/tests/weekly-benchmark-batch.test.mjs",
-      "kategorie": "fixture-offen",
-      "liest": [
-        "quant/data"
-      ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "screener/tests/europe-close-metrics.test.mjs",
@@ -2033,7 +2040,8 @@
       "liest": [
         "discover/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 1
     },
     {
       "file": "scripts/supertrader/tests/artifacts.test.mjs",
@@ -2041,12 +2049,14 @@
       "liest": [
         "supertrader/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 3
     },
     {
       "file": "scripts/supertrader/tests/discover-availability.test.mjs",
       "kategorie": "scan-fehlalarm",
-      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem."
+      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem.",
+      "harteWerte": 4
     },
     {
       "file": "scripts/supertrader/tests/payload-slices.test.mjs",
@@ -2054,29 +2064,14 @@
       "liest": [
         "supertrader/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "scripts/supertrader/tests/prune-dead-refs.test.mjs",
       "kategorie": "scan-fehlalarm",
-      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem."
-    },
-    {
-      "file": "scripts/supertrader/tests/r10-cases.test.mjs",
-      "kategorie": "fixture-offen",
-      "liest": [
-        "discover/data",
-        "quant/data"
-      ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
-    },
-    {
-      "file": "scripts/supertrader/tests/r4.test.mjs",
-      "kategorie": "fixture-offen",
-      "liest": [
-        "supertrader/data"
-      ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem.",
+      "harteWerte": 25
     },
     {
       "file": "scripts/supertrader/tests/r5.test.mjs",
@@ -2084,7 +2079,8 @@
       "liest": [
         "supertrader/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 1
     },
     {
       "file": "scripts/supertrader/tests/r6.test.mjs",
@@ -2092,7 +2088,18 @@
       "liest": [
         "supertrader/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
+    },
+    {
+      "file": "scripts/supertrader/tests/seitenhuellen-drift.test.mjs",
+      "kategorie": "schema-vertrag",
+      "liest": [
+        "supertrader/data",
+        "supertrader/stock"
+      ],
+      "grund": "Vertrag Erzeuger gegen Auslieferung (22.11.2026): jede ausgelieferte Aktienseiten-Hülle muss der Vorlage des Erzeugers entsprechen; muss den Live-Stand der Hüllen prüfen, keine festen Datenwerte (Fixture von 1995 Hüllen wäre selbst Drift).",
+      "harteWerte": 0
     },
     {
       "file": "scripts/supertrader/tests/sf-completion.test.mjs",
@@ -2101,7 +2108,8 @@
       "liest": [
         "supertrader/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "scripts/supertrader/tests/sf-mc3-evidence-matrix.test.mjs",
@@ -2111,7 +2119,8 @@
         "quant/data",
         "supertrader/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "scripts/supertrader/tests/sf-mc3-product-wording.test.mjs",
@@ -2120,12 +2129,14 @@
         "quant/data",
         "supertrader/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "scripts/supertrader/tests/sf-product-contract.test.mjs",
       "kategorie": "scan-fehlalarm",
-      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem."
+      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem.",
+      "harteWerte": 3
     },
     {
       "file": "scripts/supertrader/tests/sf-screener-export.test.mjs",
@@ -2133,7 +2144,8 @@
       "liest": [
         "supertrader/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 1
     },
     {
       "file": "scripts/supertrader/tests/sf-sf8-candidates.test.mjs",
@@ -2141,7 +2153,8 @@
       "liest": [
         "supertrader/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen.",
+      "harteWerte": 8
     },
     {
       "file": "scripts/supertrader/tests/sf-sf8-daily.test.mjs",
@@ -2151,12 +2164,14 @@
         "discover/data",
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "scripts/supertrader/tests/sf-sf8-data-adapter.test.mjs",
       "kategorie": "scan-fehlalarm",
-      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem."
+      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem.",
+      "harteWerte": 19
     },
     {
       "file": "scripts/supertrader/tests/sf-sf9-e2e.test.mjs",
@@ -2164,7 +2179,8 @@
       "liest": [
         "supertrader/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): prueft Datenstand gegen Uhr/Frische; in die Datenqualitaet verlegen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): prueft Datenstand gegen Uhr/Frische; in die Datenqualitaet verlegen.",
+      "harteWerte": 3
     },
     {
       "file": "scripts/supertrader/tests/sf-sf9-publication.test.mjs",
@@ -2172,17 +2188,20 @@
       "liest": [
         "supertrader/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "scripts/supertrader/tests/sf-st9-v13-delisted-study.test.mjs",
       "kategorie": "scan-fehlalarm",
-      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem."
+      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem.",
+      "harteWerte": 11
     },
     {
       "file": "scripts/supertrader/tests/snapshot.test.mjs",
       "kategorie": "scan-fehlalarm",
-      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem."
+      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem.",
+      "harteWerte": 9
     },
     {
       "file": "scripts/supertrader/tests/st-recipe-names.test.mjs",
@@ -2190,17 +2209,20 @@
       "liest": [
         "supertrader/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 2
     },
     {
       "file": "scripts/supertrader/tests/validation.test.mjs",
       "kategorie": "scan-fehlalarm",
-      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem."
+      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem.",
+      "harteWerte": 4
     },
     {
       "file": "scripts/vu2/browser-qa.mjs",
       "kategorie": "datenzustand-offen",
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): prueft Datenstand gegen Uhr/Frische; in die Datenqualitaet verlegen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): prueft Datenstand gegen Uhr/Frische; in die Datenqualitaet verlegen.",
+      "harteWerte": 0
     },
     {
       "file": "technical/tests/technical-assistant.test.mjs",
@@ -2208,7 +2230,8 @@
       "liest": [
         "technical/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 1
     },
     {
       "file": "technical/tests/technical-data-contract.test.mjs",
@@ -2216,7 +2239,8 @@
       "liest": [
         "technical/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "technical/tests/technical-e2e-consistency.test.mjs",
@@ -2225,7 +2249,8 @@
         "quant/data",
         "technical/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "technical/tests/technical-identity-quarantine.test.mjs",
@@ -2233,15 +2258,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
-    },
-    {
-      "file": "technical/tests/technical-stock-summary.test.mjs",
-      "kategorie": "fixture-offen",
-      "liest": [
-        "technical/data"
-      ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 4
     },
     {
       "file": "technical/tests/technical-templates-dq-order.test.mjs",
@@ -2249,15 +2267,8 @@
       "liest": [
         "technical/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
-    },
-    {
-      "file": "technical/tests/technical-templates.test.mjs",
-      "kategorie": "fixture-offen",
-      "liest": [
-        "technical/data"
-      ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "technical/tests/technical-world-context.test.mjs",
@@ -2266,12 +2277,14 @@
         "quant/data",
         "supertrader/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen.",
+      "harteWerte": 24
     },
     {
       "file": "technical/tests/technical-world-workflow.test.mjs",
       "kategorie": "schema-vertrag",
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
     },
     {
       "file": "technical/tests/technical-world.test.mjs",
@@ -2279,7 +2292,18 @@
       "liest": [
         "technical/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen.",
+      "harteWerte": 17
+    },
+    {
+      "file": "discover/tests/stock-index-count.test.mjs",
+      "kategorie": "schema-vertrag",
+      "dynamisch": true,
+      "liest": [
+        "discover/data"
+      ],
+      "grund": "Zaehl-Vertrag des Repositorys (22.11.2026): stock-index count == symbols.length == cardCount + kurzhistorie, Karten + notDelivered == Produktuniversum; Struktur, keine festen Datenwerte.",
+      "harteWerte": 0
     }
   ]
 }

@@ -35,6 +35,12 @@ const LIVE_RE = new RegExp(
 );
 const READ_RE = /readFileSync|readFile\(|readJson|loadJson|readJSON|JSON\.parse|readdirSync|statSync|existsSync|\bimport\(|\brequire\(/;
 const TICKER_RE = /["'`](?:NVDA|AAPL|MSFT|AMZN|GOOGL?|META|TSLA|AVGO|SAP|ASML|NFLX|AMD|JPM|V|KO|BRK[.-]B)["'`]/;
+/* Leitplanke TI-7 (22.11.2026): ein Kuerzel in Anfuehrungszeichen (NVDA, IBN, APGE, BRK.B) in einer Erwartung eines Tests, der Live-Daten
+   liest, ist ein fester Live-Wert: der Titel wandert aus dem Universum oder aendert Zahlen, und main ist rot, ohne dass Code falsch ist.
+   Woerter wie PASS/FAIL/USD sind keine Kuerzel. */
+const KUERZEL_RE = /["'`]([A-Z]{1,5}(?:[.-][A-Z])?)["'`]/g;
+const KEIN_KUERZEL = new Set(["OK", "NA", "NO", "YES", "PASS", "FAIL", "WARN", "USD", "EUR", "GBP", "JPY", "CHF", "ETF", "ADR", "SEC", "NULL", "TRUE", "FALSE", "GET", "POST", "PUT", "ALL", "NONE", "ON", "OFF", "BUY", "SELL", "HOLD", "CALL", "A", "B", "C", "D", "E", "X", "Y", "Z", "N", "P", "R", "S", "T", "U"]);
+export const LIVE_PRUEFUNG_RE = /LIVE-PRUEFUNG:\s*Monitor/;
 const DATE_RE = /["'`]20\d\d-\d\d-\d\d/;
 const ASSERT_RE = /\b(?:assert(?:\.\w+)?|expect)\s*\(/;
 const NUM_RE = /(?:equal|deepEqual|strictEqual)\s*\([^)]*,\s*-?\d+(?:\.\d+)?\s*[,)]|length\s*,\s*\d+|\.length\s*(?:===|>=|<=|>|<)\s*\d{2,}/;
@@ -69,6 +75,10 @@ export function scanFile(root, file) {
   const refs = [];
   lines.forEach((l, i) => { if (!isComment(l) && LIVE_RE.test(l)) refs.push(i + 1); });
   if (!refs.length) return null;
+  /* Eingefrorener Datenstand (22.11.2026): importiert der Test scripts/quant/lib/frozen-data.mjs und liegt sein Buendel
+     fixtures/frozen/<name>.json.gz daneben, liest er keine Produktionsdaten (die Lesezugriffe sind umgelenkt). */
+  if (lines.some((l) => !isComment(l) && /lib\/frozen-data\.mjs/.test(l))
+      && existsSync(join(root, dirname(file), "fixtures", "frozen", file.split("/").pop().replace(/\.test\.(mjs|js)$/, "") + ".json.gz"))) return null;
   const body = lines.filter((l) => !isComment(l));
   const reads = body.some((l) => READ_RE.test(l));
   let dates = 0, tickers = 0, nums = 0, firstFix = 0;
@@ -78,6 +88,13 @@ export function scanFile(root, file) {
     if (d || t || n) { if (!firstFix) firstFix = i + 1; }
     dates += d; tickers += t; nums += n;
   });
+  let harte = 0;
+  lines.forEach((l) => {
+    if (isComment(l) || !ASSERT_RE.test(l)) return;
+    for (const m of l.matchAll(KUERZEL_RE)) if (!KEIN_KUERZEL.has(m[1]) && m[1].length >= 2) harte++;
+    if (DATE_RE.test(l)) harte++;
+  });
+  const liveCheck = lines.slice(0, 40).some((l) => LIVE_PRUEFUNG_RE.test(l));
   const signals = dates + tickers + nums;
   const nowDep = body.some((l) => NOW_RE.test(l));
   const fresh = body.some((l) => FRESH_RE.test(l));
@@ -91,7 +108,7 @@ export function scanFile(root, file) {
   if (!reads) risiko = "KEIN LESEN";
   else if (score >= 5) risiko = "HOCH";
   else if (score >= 2) risiko = "MITTEL";
-  return { file, line: refs[0], refs: refs.length, reads, art, risiko, score, dates, tickers, nums, firstFix };
+  return { file, line: refs[0], refs: refs.length, reads, art, risiko, score, dates, tickers, nums, firstFix, harte, liveCheck };
 }
 
 export function scanAll(root = ROOT) {
@@ -127,6 +144,8 @@ Rote Tests sollen nur kommen, wenn Code kaputt ist, nicht weil sich taeglich Mar
 2. **Zustandspruefungen** (Frische, Schema, Plausibilitaet des heutigen Standes) gehoeren in \`scripts/core/data-quality.mjs\` bzw. den Freshness-Monitor. Dort alarmieren sie und blockieren keinen Code-PR (CLAUDE.md).
 3. **Zustaende wie INSUFFICIENT_SAMPLE, fehlende Daten, zurueckgehaltene Evidenz** bekommen je einen Fixture-Test mit eigener Eingabe (\`quant/tests/evidence-states.test.mjs\`), nie einen Ticker, der heute zufaellig in diesem Zustand ist.
 4. **Rueckfallschutz:** \`core/tests/test-inputs.test.mjs\` verbietet neue Tests, die Live-Artefakte lesen, ausser mit Eintrag samt Grund in \`${REGISTRY}\`. Die Liste darf nur kleiner werden.
+5. **Keine festen Live-Werte (TI-7, 22.11.2026):** Kuerzel und Daten in Erwartungen eines Tests, der Live-Daten liest, werden gezaehlt (\`harteWerte\` je Eintrag, Basis mit \`--baseline\`); die Zahl darf nur sinken. Neue Kuerzel gehoeren in eine eingefrorene Fixture (\`scripts/quant/lib/data-fixture.mjs\`) oder unter die Halbstand-Regel (\`scripts/quant/lib/follow-artifact.mjs\`); ausdrueckliche Live-Pruefungen im Monitor tragen \`LIVE-PRUEFUNG: Monitor\` im Kopf.
+6. **Eingefroren ohne Umbau (22.11.2026):** \`import "<rel>/scripts/quant/lib/frozen-data.mjs"\` als erster Import plus Buendel \`<testdir>/fixtures/frozen/<name>.json.gz\` (Erzeuger \`node scripts/quant/freeze-frozen-data.mjs --test <datei>\`: live gruen, Buendel gruen, hoechstens 2 MB; Quell-Commit im Buendel; danach \`node scripts/quant/dedupe-frozen-bundles.mjs\`, TI-11) lenkt die Lesezugriffe auf \`*/data\` um. Solche Tests stehen nicht mehr in der Allowlist. Kindprozesse erben den eingefrorenen Stand (NODE_OPTIONS). Nicht geeignet: Buendel ueber 2 MB. Alle Buendel zusammen hoechstens 21 MiB (TI-10), gleiche Dateien nur einmal (geteilte Blobs in core/tests/fixtures/frozen-shared).
 
 ## Messung
 
@@ -164,7 +183,12 @@ Bereits umgestellt: \`discover/tests/market-detail.test.mjs\` und \`core/tests/c
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   const rows = scanAll();
   const i = process.argv.indexOf("--out"), d = process.argv.indexOf("--doc");
-  if (d > 0) writeFileSync(process.argv[d + 1], renderDoc(rows, loadRegistry()));
+  if (process.argv.includes("--baseline")) {
+    /* TI-7: Basis der festen Live-Werte je Eintrag setzen (nur zum einmaligen Anlegen oder nach einem Rueckbau, sie darf nur sinken). */
+    const reg = loadRegistry(); const by = Object.fromEntries(rows.map((r) => [r.file, r]));
+    for (const e of reg.eintraege) { const h = by[e.file] ? by[e.file].harte : 0; e.harteWerte = Math.min(h, e.harteWerte ?? h); }
+    writeFileSync(join(ROOT, REGISTRY), JSON.stringify(reg, null, 2) + "\n");
+  } else if (d > 0) writeFileSync(process.argv[d + 1], renderDoc(rows, loadRegistry()));
   else if (i > 0) writeFileSync(process.argv[i + 1], renderTable(rows));
   else process.stdout.write(renderTable(rows));
 }

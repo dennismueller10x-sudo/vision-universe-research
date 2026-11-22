@@ -195,6 +195,8 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
     ]));
     root.appendChild(hero(detail, state));
 
+    var kurz = !!detail.kurzhistorie; /* Neu an der Börse: Kopf, Chart (ab 2 Schlusskursen) und Etikett, keine Kapitel */
+
     /* Die Reihenfolge der Seite ist das Produkt.
 
        Zuerst der Kurs und sein Verlauf - das ist die Frage, mit der
@@ -211,6 +213,7 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
     root.appendChild(chartHost);
     chartHost.appendChild(el("h2", { text: "Kursverlauf" }));
     chartHost.appendChild(el("div", { class: "dx-chart", style: "height:320px" }));
+    if (kurz) root.appendChild(kurzhistorieHinweis(detail));
 
     /* Ein Kapitel, das fuer diesen Titel nichts zu sagen hat (kein Signal,
        keine Belege), gibt null zurueck - und faellt dann weg, statt die
@@ -230,6 +233,7 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
     /* Redesign 2027 (Folie D09): unter Kopf und Chart der Überblick nach dem Mockup (discover/ui/overview.js).
        Die bisherigen Kapitel (Belege, Fundamental Journey, Bewertung im Detail, Analyse, weitere Nachbarn) bleiben
        vollständig erreichbar – gebündelt in der Profi-Ansicht „Alle Kennzahlen“ (PRO). Nichts fällt weg. */
+    if (!kurz) {
     var uebersicht = D.Overview ? D.Overview.render(detail, options) : null;
     if (uebersicht) {
       kapitel(uebersicht);
@@ -264,6 +268,7 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
     if (DF.nextDiscovery) kapitel(DF.nextDiscovery(detail, options));
     }
     kapitel(provenance(detail));
+    }
 
     /* Der Tagesverlauf kommt aus demselben Hub wie die Karte: ein Strom je
        Titel. Er wird abgewartet, bevor der Chart entsteht - damit der
@@ -702,6 +707,26 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
    * Geschaeftszahlen. Dann steht hier kein leeres Raster und kein
    * Platzhalter, sondern ein Satz, der sagt, was fehlt und warum.
    */
+  /* Neu an der Börse (weniger als 30 Handelstage): Etikett, Kurs, Ersttag - ohne Scores, Rangliste und Renditekennzahlen. */
+  function kurzhistorieHinweis(detail) {
+    var kh = detail.kurzhistorie, stand = kh.stand || {};
+    var quelle = stand.art === "TAGESSCHLUSS"
+      ? (stand.sessionDate ? "Kurs: Schlusskurs vom " + stand.sessionDate + ". " : "")
+      : (stand.sessionDate ? "Kurs: letzter Punkt der Sitzung vom " + stand.sessionDate + (stand.lokal ? ", " + stand.lokal + " Uhr (Ortszeit New York)" : "") + ". " : "");
+    return el("section", { class: "dx-chapter dx-chapter--kurzhistorie dx-fade", "data-kurzhistorie": "1" }, [
+      el("p", { class: "dx-kicker", text: "Neu an der Börse" }),
+      el("h2", { text: kh.label || "Zu kurze Historie" }),
+      (detail.price && isNum(detail.price.value)) ? el("p", { class: "dx-kurzhistorie-kurs" }, [
+        el("b", { class: "num", text: nativePrice(detail.price.value, "USD") }),
+        isNum(detail.changePercent && detail.changePercent.value)
+          ? el("span", { class: "num " + tonVon(detail.changePercent.value), text: " " + (detail.changePercent.value > 0 ? "+" : "") + detail.changePercent.value.toLocaleString("de-DE", { maximumFractionDigits: 2 }) + " % zum Vortag" })
+          : null
+      ]) : null,
+      el("p", { class: "dx-chapter-lead", text: (kh.firstTradeDate ? "Erster Handelstag: " + kh.firstTradeDate + ". " : "") + quelle }),
+      el("p", { class: "dx-why-empty", text: "Es gibt noch keine Scores, keine Rangliste und keine Renditekennzahlen, und es wird nichts geschätzt. Sobald 30 Handelstage vorliegen, erscheint die volle Seite." })
+    ]);
+  }
+
   function unternehmen(detail) {
     var g = detail.geschaeftszahlen;
     if (!g) return null;
@@ -715,6 +740,26 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
                         detail.exchange ? "Notiert an der " + detail.exchange : null].filter(Boolean);
     if (beschreibung.length) section.appendChild(el("p", { class: "dx-chapter-lead", text: beschreibung.join(" · ") }));
     else section.appendChild(el("p", { class: "dx-chapter-lead dx-why-empty", text: "Für diesen Titel ist keine Beschreibung des Geschäfts hinterlegt — erfunden wird keine." }));
+    if (g.status === "QUARTER_ONLY" && g.quartal) {
+      /* Neu an der Börse: nur Quartale. Beschriftet als Quartal, nie als zwölf Monate, ohne KGV. */
+      var KQ = D.Klartext, ql = (g.quartal.fp || "") + " " + g.quartal.fy;
+      var gq = el("div", { class: "dx-firma" });
+      [{ label: "Umsatz (Quartal " + ql + ")", wert: geld(g.umsatzQuartal), v: g.umsatzWachstumQuartal },
+       { label: (g.gewinnQuartal < 0 ? "Verlust" : "Gewinn") + " (Quartal " + ql + ")", wert: geld(g.gewinnQuartal), v: g.gewinnWachstumQuartal }]
+        .forEach(function (z) {
+          gq.appendChild(el("div", {}, [
+            el("span", { text: z.label }),
+            el("b", { class: "num", text: z.wert }),
+            isNum(z.v) ? el("em", { class: tonVon(z.v), text: KQ.prozent(z.v) + " gegenüber dem gleichen Quartal des Vorjahres" }) : null
+          ]));
+        });
+      section.appendChild(gq);
+      section.appendChild(el("p", { class: "dx-kapitel-fuss dx-kapitel-fuss--link" }, [
+        document.createTextNode("Neu an der Börse: nur Quartalszahlen, noch kein Geschäftsjahr und keine zwölf Monate · "),
+        el("a", { href: "#/daten", text: "Daten & Quellen" })
+      ]));
+      return section;
+    }
     if (g.status !== "CALCULATED") {
       section.appendChild(el("p", { class: "dx-why-empty",
         text: g.message || "Für diesen Titel liegen keine Geschäftszahlen vor. Vision Universe " +
@@ -1024,16 +1069,17 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
      andere Kennzahlen als die der Tagesreihe, und der Werkzeugkasten
      bleibt deshalb zu. */
   /* Reihenfolge nach dem Chartstandard (core/chart-standard.js): Hauptleiste
-     1T 1W 1M 1J 5J MAX, die weiteren Zeitraeume dahinter. Ein Zeitraum, den die
+     1T 1W 1M 6M 1J 3J 5J MAX, die weiteren Zeitraeume dahinter. Ein Zeitraum, den die
      Reihe nicht traegt, bleibt sichtbar und abgeschaltet - mit Grund im Titel. */
   var VERBRAUCHER_ZEITRAEUME = [
-    { id: "1W", label: "1W", quelle: "daily", wort: "in einer Woche", tage: 7 },
-    { id: "1M", label: "1M", quelle: "daily", wort: "in einem Monat", tage: 31 },
-    { id: "1Y", label: "1J", quelle: "daily", wort: "in einem Jahr", tage: 366 },
-    { id: "5Y", label: "5J", quelle: "weekly", wort: "in fünf Jahren", tage: 1827 },
-    { id: "MAX", label: "Max", quelle: "weekly", wort: "seit Beginn der Reihe", tage: null }
-    /* Redesign 2027 (C06): nur die eine Zeitleiste 1T · 1W · 1M · 1J · 5J · Max; 3M, 6M und 3J stehen als
-       Zahlen in der Zeitachse des Überblicks und im Chart Studio (Technical). */
+    { id: "1W", label: "1W", quelle: "daily", wort: "in einer Woche", tage: 7, lang: "1 Woche" },
+    { id: "1M", label: "1M", quelle: "daily", wort: "in einem Monat", tage: 31, lang: "1 Monat" },
+    { id: "6M", label: "6M", quelle: "daily", wort: "in sechs Monaten", tage: 183, lang: "6 Monate" },
+    { id: "1Y", label: "1J", quelle: "daily", wort: "in einem Jahr", tage: 366, lang: "1 Jahr" },
+    { id: "3Y", label: "3J", quelle: "weekly", wort: "in drei Jahren", tage: 1096, lang: "3 Jahre" },
+    { id: "5Y", label: "5J", quelle: "weekly", wort: "in fünf Jahren", tage: 1827, lang: "5 Jahre" },
+    { id: "MAX", label: "Max", quelle: "weekly", wort: "seit Beginn der Reihe", tage: null, lang: "Maximum" }
+    /* Owner 18.11.2026: eine Zeitleiste überall, 1T · 1W · 1M · 6M · 1J · 3J · 5J · Max (assets/vu-chart.js#RANGES). */
   ];
   function CStd() { return global.VUCore && global.VUCore.ChartStandard || null; }
   /* Fenster: ChartHistory fuer die Zeitraeume, die es kennt; 1W schneidet der Chartstandard nach derselben Regel. */
@@ -1205,19 +1251,15 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
       kopf = el("div", { class: "dx-chart-hero dx-chart-hero--c04", "data-range": z.id }, [
         el("div", { class: "dx-chart-hero-preis" }, [
           el("b", { class: "num", text: alsAngezeigt(tage.length ? tage[tage.length - 1][1] : letzter, waehrung) }),
-          el("span", { class: "num " + C().toneClass(tag), title: "zum Vortagesschluss", text: isNum(tag) ? prozentGross(tag) : "" }),
+          /* Owner 18.11.2026: die Pille neben dem Kurs ist die Veränderung im gewählten Zeitraum (nicht mehr die Tagesbewegung). */
+          el("span", { class: "num " + C().toneClass(veraenderung), title: "Veränderung im gewählten Zeitraum", text: isNum(veraenderung) ? prozentGross(veraenderung) : "" }),
           el("span", { class: "dx-chart-hero-wort" })
         ]),
         el("div", { class: "dx-chart-hero-meta" }, [
           frischeTages(state),
-          el("span", { class: "dx-chart-hero-vt", text: "Veränderung zum Vortag" }),
+          el("span", { class: "dx-chart-hero-vt dx-chart-hero-zr", text: (z.lang || z.wort) + " · seit " + String(sel.from).slice(8, 10) + "." + String(sel.from).slice(5, 7) + "." + String(sel.from).slice(0, 4) }),
           el("span", { class: "dx-chart-hero-span dv3-sr", text: "Kursverlauf " + z.wort + ": " + spanText })
-        ]),
-        /* Klickentwurf 17.11.2026: Veränderung im gewählten Zeitraum als Zeile über dem Chart („▼ −5,2 % seit 12.11.2025“). */
-        isNum(veraenderung) ? el("p", { class: "dx-chart-hero-zr num " + C().toneClass(veraenderung) }, [
-          el("b", { text: (veraenderung > 0 ? "▲ " : veraenderung < 0 ? "▼ " : "") + (veraenderung > 0 ? "+" : veraenderung < 0 ? "−" : "") + Math.abs(veraenderung).toFixed(1).replace(".", ",") + " %" }),
-          el("span", { text: "seit " + String(sel.from).slice(8, 10) + "." + String(sel.from).slice(5, 7) + "." + String(sel.from).slice(0, 4) })
-        ]) : null
+        ])
       ].filter(Boolean));
       chartPillen(state, tage, euroDaneben, waehrung);
     }

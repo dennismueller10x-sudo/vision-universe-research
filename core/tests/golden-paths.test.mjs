@@ -10,13 +10,19 @@ import { readFileSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import { fixtureRoot } from "../../scripts/quant/lib/data-fixture.mjs";
 
 const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const Client = require(join(ROOT, "core", "client.js"));
 const Identity = require(join(ROOT, "core", "identity.js"));
-const json = (rel) => JSON.parse(readFileSync(join(ROOT, rel.replace(/^\//, "")), "utf8"));
-const repo = async (p) => { const f = join(ROOT, p.replace(/^\//, "")); if (!existsSync(f)) throw new Error("fehlt: " + p); return json(p); };
+/* EINGEFRORENER DATENSTAND (Steuerung 22.11.2026, Muster #2122): Die Startseite rotiert taeglich (19.11. IBN, 21.11. APGE/AACT), und ein
+   Datenlauf zwischen Discover und Quant zeigt einen Halbstand. Der Pfad prueft deshalb einen gruenen Stand aus
+   core/tests/fixtures/golden-paths/data.json.gz (Erzeuger: scripts/quant/freeze-test-fixture.mjs). Code kommt aus dem Repository.
+   DATA_FIXTURE_LIVE=1 prueft gegen das Repository; die Live-Deckung melden die Datenqualitaets-Regeln. */
+const DATA = fileURLToPath(fixtureRoot(fileURLToPath(new URL("fixtures/golden-paths/data.json.gz", import.meta.url))).url);
+const json = (rel) => JSON.parse(readFileSync(join(DATA, rel.replace(/^\//, "")), "utf8"));
+const repo = async (p) => { const f = join(DATA, p.replace(/^\//, "")); if (!existsSync(f)) throw new Error("fehlt: " + p); return json(p); };
 const c = Client.create({ load: repo });
 
 test("Discover · jede Karte der Startseite fuehrt zu einer Aktienseite mit demselben Kurs und einer Reihe", async () => {
@@ -32,7 +38,7 @@ test("Discover · jede Karte der Startseite fuehrt zu einer Aktienseite mit dems
     if (px.state !== "AVAILABLE") { fehler.push(k.symbol + ": keine Reihe"); continue; }
     if (k.price && typeof k.price.value === "number" && k.price.value !== px.data.close) fehler.push(k.symbol + ": Karte " + k.price.value + " / Reihe " + px.data.close);
     if (page.data.price.value !== px.data.close) fehler.push(k.symbol + ": Seite " + page.data.price.value + " / Reihe " + px.data.close);
-    if (k.priceSeries && k.priceSeries.path && !existsSync(join(ROOT, k.priceSeries.path.slice(1)))) fehler.push(k.symbol + ": Chartpfad " + k.priceSeries.path);
+    if (k.priceSeries && k.priceSeries.path && !existsSync(join(DATA, k.priceSeries.path.slice(1)))) fehler.push(k.symbol + ": Chartpfad " + k.priceSeries.path);
   }
   assert.deepEqual(fehler, []);
 });
@@ -41,7 +47,9 @@ test("Discover · Rangfolge-Universum und Aktienindex stammen aus demselben Stan
   const meta = json("discover/data/meta.json"), home = json("discover/data/home/US_REAL.json");
   const u = meta.universes.find((x) => x.universeId === "US_REAL");
   assert.equal(home.asOf, u.asOf, "Startseite und Universum aus verschiedenen Laeufen");
-  assert.equal(json("discover/data/stock-index/US_REAL.json").count, u.securities);
+  const idx = json("discover/data/stock-index/US_REAL.json");
+  // Karten-Zahl: neu cardCount (count zaehlt alle Seiten inkl. Kurzhistorie); aeltere Staende (eingefrorene Fixture) nur count.
+  assert.equal(idx.cardCount === undefined ? idx.count : idx.cardCount, u.securities);
 });
 
 /* Stock-Pfad (Mega-Mission §20) fuer jeden Titel der Discover-Startseite:
@@ -69,7 +77,12 @@ test("Stock · Security -> Kurs -> Chart -> Fundamentals -> Quant fuer jeden Sta
     if (!seite.ok) fehler.push(t + ": Aktienseite fehlt");
     else if (seite.data.price.value !== letzter[1]) fehler.push(t + ": Seite " + seite.data.price.value + " / Chartende " + letzter[1]);
     const fu = await c.getFundamentals(t);
-    if (fu.state !== "AVAILABLE" && fu.reason !== "NO_CIK") fehler.push(t + ": Fundamentals " + fu.reason);
+    /* Ein Startseitentitel ohne SEC-Zahlen (20-F-Filer wie IBN, nicht im Companyfacts-Archiv) ist zulaessig, solange die
+       Aktienseite es SELBST benennt (fundamentals.available=false, reason und message). Die Startseite rotiert taeglich
+       (19.11. 23:54: IBN kam hinein); der Pfad verlangt Ehrlichkeit, nicht Vollstaendigkeit. */
+    const benannt = fu.reason === "FUNDAMENTALS_MISSING" && seite.ok && seite.data.fundamentals && seite.data.fundamentals.available === false
+      && typeof seite.data.fundamentals.reason === "string" && typeof seite.data.fundamentals.message === "string" && seite.data.fundamentals.message.length > 0;
+    if (fu.state !== "AVAILABLE" && fu.reason !== "NO_CIK" && !benannt) fehler.push(t + ": Fundamentals " + fu.reason);
     const q = await c.getQuantData(t);
     if (q.state !== "AVAILABLE") fehler.push(t + ": Quant " + q.reason);
     else if (!q.data.identityConsistent) fehler.push(t + ": Quant-Zeile gehoert zu " + q.data.securityId);

@@ -113,7 +113,7 @@ main.vs-main{padding-bottom:110px;min-height:70vh}
 .vs-bilanz i{font-style:normal;font-weight:750}.vs-bilanz b{color:var(--app-ink)}
 .vs-bilanz .ok:not(.is-zero) i{color:var(--accent)}.vs-bilanz .warn:not(.is-zero) i{color:#fff}
 /* Hell: Kleintext (--dim, 4,0-4,3:1) und Gruen auf zarter Flaeche (4,2:1) unter WCAG AA 4,5:1 */
-html:not([data-theme=dark]) .vs-badge.ok,html:not([data-theme=dark]) .vs-mp-kpis .up{color:#176a2a}
+html:not([data-theme=dark]) .vs-badge.ok,html:not([data-theme=dark]) .vs-mp-kpis .up{color:#101318}
 /* Dunkle App-Flaechen behalten ihren eigenen gedaempften Ton fuer Kleintext */
 .vs-card.app,.vs-play{--dim:var(--app-muted)}
 
@@ -1259,7 +1259,7 @@ html:not([data-theme=dark]) .vs-card.app .down,html:not([data-theme=dark]) .vs-b
 html:not([data-theme=dark]) .vs-card.app .up{color:#000}
 html:not([data-theme=dark]) .vs-intro.vs-head,html:not([data-theme=dark]) body.vs .vs-hero{background:#f4f4f4;color:#000;
   --ink:#000;--ink-2:#000;--muted:#5d636b;--dim:#5d636b;--line:#dcdcdc;--line-soft:#dcdcdc;--bg-soft:#e9e9e9;--panel:#e9e9e9;--panel-2:#dcdcdc;--card:#e9e9e9;--accent-text:#000;--s1:#000;
-  --vu-ink:#000;--vu-inv:#fff;--vu-card:#e9e9e9;--vu-hair:#dcdcdc;--vu-mute:#5d636b;--vu-focus-ring:#4f6b00}
+  --vu-ink:#000;--vu-inv:#fff;--vu-card:#e9e9e9;--vu-hair:#dcdcdc;--vu-mute:#5d636b;--vu-focus-ring:#101318}
 html:not([data-theme=dark]) .vs-head .vu-ltag,html:not([data-theme=dark]) body.vs .vs-hero .vs-eyebrow,html:not([data-theme=dark]) .vs-way-h,html:not([data-theme=dark]) .vs-way-h svg,
 html:not([data-theme=dark]) .vs-way>.vu-ltag,html:not([data-theme=dark]) .vs-head .vs-way>.vu-ltag{color:#5d636b}
 html:not([data-theme=dark]) .vs-head .vu-lt,html:not([data-theme=dark]) body.vs .vs-hero h1{color:#000}
@@ -1277,4 +1277,46 @@ html:not([data-theme=dark]) .vs-head .vu-round{background:#e9e9e9;color:#000}
 html:not([data-theme=dark]) body.vs .vs-more a.vu-next,html:not([data-theme=dark]) body.vs .vs-more a.vu-next:hover{color:#000}
 html:not([data-theme=dark]) body.vs .vu-box--ink,html:not([data-theme=dark]) body.vs .vs-lage.is-ink,html:not([data-theme=dark]) .vs-vsheet .vu-box--ink{background:#f4f4f4;color:#000}
 html:not([data-theme=dark]) body.vs .vs-mod.vu-box--ink,html:not([data-theme=dark]) body.vs .vs-mod.vu-box--ink *{color:#000}
-html:not([data-theme=dark]) body.vs .vs-mod.vu-box--ink .vu-ltag{color:#4f6b00}
+html:not([data-theme=dark]) body.vs .vs-mod.vu-box--ink .vu-ltag{color:#101318}
+
+/* =========================================================================
+   iPad und Desktop (ab 761 px): die Handy-Spalte wächst mit der Breite. Unter 761 px gilt nichts hiervon.
+   761–1023 px: Breite bis ca. 900 px mit 24 px Rand; ab 1024 px Inhalt bis 1240 px (Kopf-Breite des Rahmens), mittig.
+   ========================================================================= */
+@media (min-width:761px){
+  main.vs-main.vsp{max-width:948px;padding-left:var(--vu-gutter,24px);padding-right:var(--vu-gutter,24px);--gutter:24px}
+}
+@media (min-width:761px){
+  /* Start: die drei Schritte als Raster statt Schiene */
+  main.vs-main.vsp .vsp-rail:has(>.vsp-step){display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));overflow:visible}
+  body.vs main.vs-main.vsp .vsp-step{width:auto}
+  /* Veränderungen ohne Plan: Knöpfe nicht über die ganze Breite */
+  main.vs-main.vsp .vs-noplan .vu-btn--block{max-width:420px;margin-left:auto;margin-right:auto}
+  body.vs main.vs-main.vsp .vsp-lime .vsp-btn--bk{max-width:420px}
+}
+@media (min-width:1024px){
+  main.vs-main.vsp{max-width:1288px}
+  /* Planer: Angaben links, Ergebnis rechts (die Werte ändern sich neben den Reglern) */
+  main.vs-main.vsp>.vsp-sh:has(+#vs-plan-form),main.vs-main.vsp>#vs-plan-form,main.vs-main.vsp>#vs-plan-form+p{float:left;clear:left;width:calc(42% - 14px)}
+  main.vs-main.vsp>#vs-plan-out{margin-left:42%}
+  main.vs-main.vsp>#vs-plan-out~*{clear:both}
+  /* Förderung: Eingaben links, Rechnung rechts; danach volle Breite */
+  #vs-fd:has(>#vs-fd-out){display:grid;grid-template-columns:minmax(0,42fr) minmax(0,58fr);grid-template-rows:repeat(3,auto) 1fr;column-gap:28px;align-items:start}
+  #vs-fd>*{grid-column:1/-1}
+  #vs-fd>#vs-fd-form,#vs-fd>#vs-fd-form~.vs-kv:not(#vs-fd-out~*),#vs-fd>#vs-fd-form~details:not(#vs-fd-out~*){grid-column:1}
+  #vs-fd>#vs-fd-out{grid-column:2;grid-row:1/5}
+  #vs-fd>#vs-fd-out{margin-top:14px}
+  #vs-fd>#vs-fd-out>.vu-sect:first-child{margin-top:0}
+  #vs-fd>.vu-stack{grid-template-columns:repeat(2,minmax(0,1fr))}
+  /* Portfolio: Eingabe, Verlauf und Kennzahlen links; Durchschau rechts */
+  main.vs-main.vsp .vs-pf{max-width:none;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:repeat(12,auto) 1fr;column-gap:28px;align-items:start}
+  main.vs-main.vsp .vs-pf>#vs-pf-out{display:contents}
+  main.vs-main.vsp .vs-pf>*,main.vs-main.vsp #vs-pf-out>*{grid-column:1}
+  main.vs-main.vsp #vs-pf-out>#vs-lt{grid-column:2;grid-row:1/-1}
+  /* ETFs: Zeilen und ETF-Welten zweispaltig */
+  main.vs-main.vsp .vs-erows{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:28px}
+  main.vs-main.vsp .vs-worlds{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:28px;grid-auto-flow:row dense;align-items:start}
+  main.vs-main.vsp .vs-world[aria-expanded=true]{grid-column:1/-1}
+  #vs-es-worlds:has(>.vs-wlink){display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:28px}
+  #vs-es-worlds>:not(.vs-wlink){grid-column:1/-1}
+}

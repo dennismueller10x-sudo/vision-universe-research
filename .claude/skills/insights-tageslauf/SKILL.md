@@ -44,6 +44,11 @@ den Stand nennen („Schlusskurs vom …“) und die nächsten Termine. Grundlag
    mit `"daten": "<TICKER>"`. Ton: sachlich, konkret, kein Hype, keine Empfehlung, kein Kursziel (auch keine Kursziele
    Dritter), keine Aufforderung. Wörtliche Zitate nur mit Sprecher und Medium, englische als „(übersetzt)“.
    Privatpersonen, gegen die nur Vorwürfe bestehen, nicht namentlich nennen.
+4b. **Diagramme (Owner 18.11.2026).** Wo der Text Zahlen nennt, kommt mindestens ein Diagramm dazu, in der Regel eins
+   bis zwei je Artikel: `abschnitte[].diagramm` (Objekt oder Liste) mit `titel`, `art` (`saeulen` für Zeitreihen wie
+   Quartalsumsätze, `balken` für Vergleiche wie Sparten oder Börsenwerte), `einheit`, `werte` (`[["Q3 26", 16.9, true], …]`,
+   `true` = hervorgehoben in Neongrün, meist der jüngste oder der Hauptwert), `quelle` und optional `hinweis` (z. B. „Ausblick“
+   oder „eigene Rechnung“). Nur Zahlen aus den Quellen des Artikels oder aus unseren Daten; keine Kursreihen in Dollar.
 5. **Daten und App-Screens.** `node products/insights/snapshot.mjs <datei>`, dann `node products/insights/screens.mjs <datei>`.
 6. **Bilder (Pflicht, jeder Artikel).** Jeder Artikel bekommt einen Aufmacher mit Bezug zur Firma und mindestens ein
    Bild im Text (`abschnitte[].bild` mit `text` als Bildunterschrift). Reihenfolge der Quellen:
@@ -68,6 +73,12 @@ den Stand nennen („Schlusskurs vom …“) und die nächsten Termine. Grundlag
    Standort oder Rechenzentrum. Zuschnitt 16:9 auf 1600 × 900 nach `insights/img/<slug>-<motiv>.jpg`, freigestellte
    Produktbilder auf Weiß, mit `"quelle"` (Firmenname). Jedes Bild vor dem Einbau ansehen: Es muss zum Artikel passen,
    nicht nur zur Branche.
+   Der Aufmacher muss 16:9 mit mindestens 1600 px Breite sein (Test IN-20): Er füllt auf www die News-Bühne; hochkante
+   oder kleine Bilder wirken dort abgeschnitten oder unscharf.
+   **Themen und Firma (www-News, „Nach Aktien“ / „Nach Themen“).** `"themen"`: ein bis zwei Themenwelten aus Discover
+   (`themes[].title` in `discover/data/stocks/US_REAL/<TICKER>.json`, in normaler Schreibweise, z. B. „Halbleiter & Chips“),
+   die zum Artikel passen, nicht alle der Aktie. `"firma"` nur, wenn die Hauptfirma nicht der erste Ticker ist
+   (z. B. Anthropic: `{"ticker": "ANT", "name": "Anthropic"}`); sonst nimmt der Bau den Namen der ersten Aktie.
 7. **Bauen und prüfen.** `node products/insights/build.mjs`, dann
    `node --test "products/insights/tests/*.test.mjs" "core/tests/*.test.mjs"`. Jede Quellenadresse einmal abrufen; tote
    Adressen ersetzen. Die Artikelseite im Browser ansehen (Desktop und 390 px): keine leeren Bilder, kein Überlauf.

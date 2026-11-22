@@ -85,6 +85,29 @@ function json(daten, status, ursprung) {
   });
 }
 
+/* Limit je IP und Minute, VOR dem Durable Object: jede Verbindung dort
+   kostet eine Anfrage des gemeinsamen Tageskontingents (100.000 je
+   Konto). Zwei Stufen wie in vu-account/limits.mjs: das Rate-Limit-Binding
+   (gilt ueber alle Isolates), dahinter ein Zaehler je Isolate als
+   Untergrenze. Ein Browser baut je Seite eine Verbindung auf; 10 je
+   Minute lassen Seitenwechsel und Wiederholungen zu. */
+const IP_PER_MINUTE = 10;
+const fenster = new Map();
+function ipLimit(request, env, jetztMs) {
+  const ip = request.headers.get("CF-Connecting-IP");
+  if (!ip) return Promise.resolve(true);
+  const max = Number(env.LIVE_IP_PER_MINUTE) > 0 ? Number(env.LIVE_IP_PER_MINUTE) : IP_PER_MINUTE;
+  const schluessel = ip + ":" + Math.floor(jetztMs / 60000);
+  const n = (fenster.get(schluessel) || 0) + 1;
+  fenster.set(schluessel, n);
+  if (fenster.size > 5000) for (const k of [...fenster.keys()].slice(0, 2500)) fenster.delete(k);
+  if (n > max) return Promise.resolve(false);
+  if (env.VU_LIVE_LIMITER && typeof env.VU_LIVE_LIMITER.limit === "function") {
+    return env.VU_LIVE_LIMITER.limit({ key: "live:" + ip }).then((r) => r.success !== false, () => true);
+  }
+  return Promise.resolve(true);
+}
+
 function objekt(env) {
   const id = env.VU_LIVE.idFromName(OBJECT_NAME);
   return env.VU_LIVE.get(id);
@@ -136,6 +159,20 @@ export default {
         return json({ error: "originNotAllowed",
                       message: "Dieser Ursprung ist fuer vu-live nicht freigegeben." },
                     403, null);
+      }
+      /* Browser nennen die Herkunft der Anfrage selbst (Sec-Fetch-Site,
+         nicht faelschbar durch Seiten-Skripte). Ein Browser von einer
+         fremden Website ist so zusaetzlich zum Origin-Kopf erkannt. Wer
+         ausserhalb eines Browsers den Origin-Kopf setzt, wird hier nicht
+         erkannt - dafuer sind Verbindungsdeckel und Limit je IP da. */
+      const site = request.headers.get("Sec-Fetch-Site");
+      if (site && env.ALLOW_LOCAL_ORIGIN !== "true" && site !== "same-site" && site !== "same-origin") {
+        return json({ error: "originNotAllowed",
+                      message: "Dieser Ursprung ist fuer vu-live nicht freigegeben." }, 403, null);
+      }
+      if (!(await ipLimit(request, env, Date.now()))) {
+        return json({ error: "rateLimited", message: "Zu viele Verbindungen von dieser Adresse." },
+                    429, null);
       }
       return objekt(env).fetch(request);
     }

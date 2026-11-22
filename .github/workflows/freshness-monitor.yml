@@ -16,9 +16,13 @@ name: Freshness-Monitor (zeigt die Seite den letzten Handelstag?)
 #   15:15 Mo-Fr   45 Minuten nach 09:30 EST / 105 nach 09:30 EDT: laeuft der
 #                 Intraday-Takt der laufenden Sitzung?
 #   23:15 Mo-Fr   nach dem Abendlauf (22:30) plus Build und Auslieferung.
-#   0,6,12,18 Sa+So :41 - Wochenende: vor allem expectLive (eine Datenart, die AN
+#   2,6,12,18 Sa+So :41 - Wochenende: vor allem expectLive (eine Datenart, die AN
 #                 sein soll, ist live aus); die uebrigen Jobs erwarten die
-#                 Freitagssitzung bzw. schweigen am Wochenende.
+#                 Freitagssitzung bzw. schweigen am Wochenende. Der erste
+#                 Takt liegt um 02:41, nicht um 00:41: die Tageskette endet
+#                 gegen 01:45 (Materialisierung 01:07, Startseite 01:31-01:43);
+#                 um 00:41 (21.11.2026) meldete der Monitor den Freitagsschluss
+#                 als fehlend (P0, Startseite nicht neu eingesetzt), 50 Minuten zu frueh.
 # Der Zeitplan laeuft nur auf dem Default-Branch; auf Entwicklungsbranches
 # dient ein Push mit der Marke `[freshness-check]` als Ausloeser.
 

@@ -24,9 +24,10 @@
        2026-09-26 fuehrt der Vertrag eigene Branchenvorlagen fuer Banken,
        Versicherungstraeger und REITs - quant-v2.2.0. Seit 2026-11-13 zaehlt der
        Marktvorsprung nicht mehr doppelt in Momentum - quant-v2.3.0. Seit 2026-11-16
-       misst Quality nur Margeneinbrueche, nicht steigende Margen - quant-v2.4.0. */
-    if (!config || config.methodologyVersion !== "quant-v2.4.0" ||
-        config.modelProfileId !== "quant-v2.4.0-full-7f") errors.push("VERSION");
+       misst Quality nur Margeneinbrueche, nicht steigende Margen - quant-v2.4.0. Seit 2026-11-18
+       nur ueber die letzten drei Geschaeftsjahre - quant-v2.4.1. */
+    if (!config || config.methodologyVersion !== "quant-v2.4.1" ||
+        config.modelProfileId !== "quant-v2.4.1-full-7f") errors.push("VERSION");
     if (JSON.stringify(config && config.factorOrder) !== JSON.stringify(FACTORS)) errors.push("FACTOR_ORDER");
     var sum = 0, componentOwners = Object.create(null);
     FACTORS.forEach(function (id) {

@@ -111,3 +111,17 @@ test('PQ-10: Faktordeckung ab 97 % besteht; darunter faellt sie mit Gruenden; oh
   assert.match(low.samples.join(), /5935 von 6309 \(94\.1 %\).*FAIL/);
   assert.equal(Q.factorCoverage(null).checked, 0);
 });
+
+test('PQ-11: Dienste-Deckung des Live-Stands: Breite, Technical, Signale, ein Universum; ohne Artefakt nichts geprueft', () => {
+  const cap = (n) => ({ members: Array.from({ length: n }, (_, i) => 'ref_' + i) });
+  const tech = (n, k = 5600) => ({ counts: { productUniverse: n, signalsCapable: k, technicalFullBundles: k, elliottCapable: k } });
+  const sig = (n, a = 5700) => ({ counts: { requested: n, available: a } });
+  assert.equal(Q.serviceCoverage(cap(6340), tech(6340), sig(6340)).status, 'PASS');
+  const halb = Q.serviceCoverage(cap(6340), tech(6315), sig(6340));
+  assert.equal(halb.status, 'FAIL');
+  assert.match(halb.samples.join(), /Technical zaehlt 6315 Titel, die Faehigkeitsliste 6340/);
+  assert.match(Q.serviceCoverage(cap(5900), tech(5900), sig(5900)).samples.join(), /Produktuniversum 5900/);
+  assert.match(Q.serviceCoverage(cap(6340), tech(6340, 4900), sig(6340)).samples.join(), /elliottCapable 4900/);
+  assert.match(Q.serviceCoverage(cap(6340), tech(6340), sig(6340, 4000)).samples.join(), /Signale verfuegbar 4000/);
+  assert.equal(Q.serviceCoverage(null).checked, 0);
+});

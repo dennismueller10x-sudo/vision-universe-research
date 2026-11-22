@@ -43,23 +43,22 @@
   function chg(v, digits) { return isNum(v) ? '<span class="k-pill ' + (v < 0 ? "wh" : "") + '">' + (v < 0 ? "▼" : "▲") + " " + esc(F.pct(v, digits == null ? 0 : digits)) + "</span>" : ""; }
 
   /* ---------------------------------------------------------------- Chart */
-  var RANGES = [["1M", 31], ["6M", 183], ["1J", 366], ["5J", 1827, true], ["Max", 0, true]];
-  function windowOf(points, days) {
-    if (!days || !points.length) return points;
-    var from = new Date(Date.parse(points[points.length - 1][0]) - days * 864e5).toISOString().slice(0, 10);
-    return points.filter(function (p) { return p[0] >= from; });
-  }
+  /* Owner 18.11.2026: derselbe Kurschart wie in der Vorschau und den Modulen (VUStockSheet.chart.mount): Leiste
+     1T 1W 1M 6M 1J 3J 5J Max, Zeit- und Kursachse; die Pille neben dem Kurs folgt dem gewählten Zeitraum. */
   function drawChart() {
     var host = doc.getElementById("ak-chart"), st = state;
-    if (!host || !st) return;
-    var r = RANGES.filter(function (x) { return x[0] === st.range; })[0] || RANGES[2];
-    var src = r[2] ? st.long : st.daily;
-    if (!src) { if (r[2] && !st.longAsked) { st.longAsked = true; S.data.loadSeries(st.ticker, true).then(function (p) { if (state === st) { st.long = p; drawChart(); } }); } return; }
-    var pts = windowOf(src, r[1]);
-    host.innerHTML = pts.length > 1 ? D.line(pts.map(function (p) { return p[1]; }), Math.max(280, Math.round(host.clientWidth || 390)), 230, { fill: true, base: true, sw: 2.4 }) : "";
-    var note = doc.getElementById("ak-chart-note");
-    if (note && pts.length > 1) { var a = pts[0], b = pts[pts.length - 1]; note.textContent = F.pct((b[1] / a[1] - 1) * 100, 1) + " seit " + F.dateShort(a[0]) + a[0].slice(0, 4); }
-    Array.prototype.forEach.call(doc.querySelectorAll("#ak-ranges [data-range]"), function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-range") === st.range)); b.style.background = b.getAttribute("data-range") === st.range ? "" : "none"; });
+    if (!host || !st || !st.view || host.getAttribute("data-mounted") === st.ticker) return;
+    host.setAttribute("data-mounted", st.ticker);
+    if (st.chart) st.chart.dispose();
+    S.chart.mount(host, st.ticker, { label: st.view.name, onRange: function (r) {
+      if (state !== st) return;
+      var mv = doc.getElementById("ak-move"), since = doc.getElementById("ak-since"), note = doc.getElementById("ak-chart-note");
+      /* 1T: die amtliche Tagesveränderung zum Vortagesschluss (wie bisher), nicht der letzte 5-Minuten-Kurs. */
+      var pct = r.id === "1T" && st.view.price && isNum(st.view.price.changePct) ? st.view.price.changePct : r.pct;
+      if (mv && isNum(pct)) mv.innerHTML = D.move(pct, true);
+      if (since) since.textContent = r.label;
+      if (note && isNum(pct)) note.textContent = F.pct(pct, 1) + " · " + r.label;
+    } }).then(function (c) { if (state === st) st.chart = c; else if (c) c.dispose(); });
   }
 
   /* ------------------------------------------------------------- Kacheln */
@@ -241,23 +240,36 @@
     var n = moduleCount(v), note = moduleNote(v), partner = S.ui.comparePartner(v), d = v.modules.discover;
     return '<header class="k-px k-fl k-g12" data-vu-stock="' + esc(v.ticker) + '" data-vu-stock-name="' + esc(v.name) + '">' + D.logo(v.ticker, "x") + '<div class="k-f1" style="min-width:0"><h1 style="margin:0;font-size:34px;line-height:1.02;overflow-wrap:anywhere">' + esc(v.short) + '</h1><div class="k-sm k-mut k-mt4">' + esc([v.what || v.rest, v.ticker].filter(Boolean).join(" · ")) + "</div></div>" +
       '<button type="button" class="k-rnd k-tap k-heart" data-vsk-heart="' + esc(v.ticker) + '" aria-pressed="false" style="width:46px;height:46px">' + D.HEART + "</button></header>" +
-      (v.price ? '<div class="k-px k-fl k-g10 k-mt12" style="align-items:flex-end;flex-wrap:wrap"><span class="k-num" style="font-size:52px">' + esc(F.money(v.price.value, v.price.currency)) + '</span><div style="padding-bottom:4px">' + D.move(v.price.changePct, true) + "</div></div>" : "") +
-      '<div id="ak-chart" style="margin-top:6px;position:relative;min-height:230px;overflow:hidden"></div><span id="ak-chart-note" class="ak-sr" aria-live="polite"></span>' +
-      '<div class="k-px k-fl k-sb k-xs k-b7 k-mut k-mt4" id="ak-ranges" role="group" aria-label="Zeitraum">' + RANGES.map(function (r) { return '<button type="button" class="k-tab" data-range="' + r[0] + '" aria-pressed="' + (r[0] === "1J") + '" style="height:30px;padding:0 13px;font-size:12.5px' + (r[0] === "1J" ? "" : ";background:none") + '">' + r[0] + "</button>"; }).join("") + "</div>" +
+      (v.price ? '<div class="k-px k-fl k-g10 k-mt12" style="align-items:flex-end;flex-wrap:wrap"><span class="k-num" style="font-size:52px">' + esc(F.money(v.price.value, v.price.currency)) + '</span><div style="padding-bottom:4px" id="ak-move">' + D.move(v.price.changePct, true) + "</div></div>" +
+        '<div class="k-px k-xs k-b7 k-mut k-mt4" id="ak-since">1 Tag · zum Vortag</div>' : "") +
+      '<div id="ak-chart" class="k-px" style="margin-top:6px;position:relative;min-height:230px"></div><span id="ak-chart-note" class="ak-sr" aria-live="polite"></span>' +
       storyHtml(v) +
       (n ? sh("Analyse aus " + n + " Modulen", "") .replace("</h2>", "</h2>" + (note ? "<span>" + esc(note) + "</span>" : "")) + '<div class="k-px" id="ak-mods" style="display:grid;grid-template-columns:1fr 1fr;gap:10px">' + modulesHtml(v) + "</div>" : "") +
       (d ? '<div class="k-px k-mt8"><button type="button" class="k-tile k-tap k-fl k-g10" data-ak-sheet="discover" aria-haspopup="dialog" style="padding:12px 14px;text-align:left"><div class="k-hud" style="width:30px;height:30px;border-radius:9px">' + D.icon("discover", 17) + '</div><div class="k-f1"><b class="k-sm">Discover</b><div class="k-xs k-mut" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (d.best ? "Platz " + d.best.rank + " · " + esc(titleCase(d.best.title)) : "Anlass, Kurs und Unternehmen im Überblick") + "</div></div>" + (d.rows ? '<span class="k-pill">' + d.rows + (d.rows === 1 ? " Reihe" : " Reihen") + "</span>" : "") + "</button></div>" : "") +
       businessHtml(v) +
       (v.news.length ? '<div class="k-sh"><h2>Aus den News</h2><a class="k-tap" href="/insights/"><span>Alle ›</span></a></div><div class="k-rail">' + v.news.map(function (a) {
-        return '<a class="k-cover k-tap" href="' + esc(a.href) + '" style="width:270px;height:170px">' + (a.image ? '<img src="' + esc(a.image) + '" alt="" loading="lazy" decoding="async">' : "") + '<div class="sc"></div><div class="ct2">' + (a.tag ? '<span class="k-pill sm">' + esc(a.tag) + "</span>" : "") + '<div class="k-b8 k-mt4" style="line-height:1.1">' + esc(a.title) + "</div></div></a>";
+        return '<a class="k-cover k-tap" href="' + esc(a.href) + '" style="width:270px;height:170px">' + (a.image ? '<img data-src="' + esc(a.image) + '" alt="" decoding="async">' : "") + '<div class="sc"></div><div class="ct2">' + (a.tag ? '<span class="k-pill sm">' + esc(a.tag) + "</span>" : "") + '<div class="k-b8 k-mt4" style="line-height:1.1">' + esc(a.title) + "</div></div></a>";
       }).join("") + "</div>" : "") +
       (v.similar.length ? sh("Mehr wie " + v.short) + '<div class="k-rail">' + v.similar.map(poster).join("") + "</div>" : "") +
-      (partner ? '<div class="k-px k-fl k-g8" style="margin-top:22px"><button type="button" class="k-btn k-f1 k-tap" data-ak-compare>Vergleichen</button></div>' : "") +
-      '<div class="k-end"><button type="button" class="k-lk" data-ak-sheet="hinweise">Daten &amp; Hinweise' + (v.asOf.kurs ? " · Schluss " + F.dateShort(v.asOf.kurs) : "") + "</button></div>";
+      /* Owner 22.11.2026: die Seite endet mit ihrem letzten Knopf; „Daten & Hinweise“ steht im Menü (Rechtliches & Infos). */
+      (partner ? '<div class="k-px k-fl k-g8" style="margin-top:22px"><button type="button" class="k-btn k-f1 k-tap" data-ak-compare>Vergleichen</button></div>' : "");
+  }
+  /* Titelbilder der News erst laden, wenn sie (fast) im Bild sind: Chrome-eigenes loading=lazy holt sie auf dem Handy
+     weit vor dem Sichtbereich (3 Bilder, ca. 640 KB, beim Öffnen der Aktie). Ohne IntersectionObserver sofort laden. */
+  function lazyCovers(root) {
+    var imgs = root.querySelectorAll("img[data-src]");
+    if (!imgs.length) return;
+    function load(img) { img.src = img.getAttribute("data-src"); img.removeAttribute("data-src"); }
+    if (!("IntersectionObserver" in window)) { Array.prototype.forEach.call(imgs, load); return; }
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (e.isIntersecting) { io.unobserve(e.target); load(e.target); } });
+    }, { rootMargin: "0px 120px 200px 120px" });
+    Array.prototype.forEach.call(imgs, function (img) { io.observe(img); });
   }
   function fill() {
     var st = state, v = st.view;
     main.innerHTML = pageHtml(v);
+    lazyCovers(main);
     main.setAttribute("aria-busy", "false");
     doc.title = v.name + " (" + v.ticker + ") · Aktie — Vision Universe®";
     S.ui.bindHearts(main);
@@ -326,10 +338,9 @@
   }
 
   main.addEventListener("click", function (e) {
-    var n = e.target.closest("[data-ak-sheet],[data-range],[data-ak-track],[data-ak-compare]");
+    var n = e.target.closest("[data-ak-sheet],[data-ak-track],[data-ak-compare]");
     if (!n || !state || !state.view) return;
     if (n.hasAttribute("data-ak-sheet")) return openSheet(n.getAttribute("data-ak-sheet"));
-    if (n.hasAttribute("data-range")) { state.range = n.getAttribute("data-range"); return drawChart(); }
     if (n.hasAttribute("data-ak-track")) {
       var id = n.getAttribute("data-ak-track"), box = doc.getElementById("ak-biz");
       Array.prototype.forEach.call(box.querySelectorAll("[data-ak-track]"), function (b) { var on = b === n; b.setAttribute("aria-pressed", String(on)); b.style.background = on ? "" : "var(--k-dk)"; });
@@ -340,8 +351,6 @@
     if (p) S.ui.openCompare(state.view, p.ticker, p.name);
   });
   S.bind(main);
-  var rz = null;
-  root.addEventListener("resize", function () { clearTimeout(rz); rz = setTimeout(drawChart, 120); });
   root.addEventListener("hashchange", route);
   S.data.ready().then(route);
 })(typeof globalThis !== "undefined" ? globalThis : this);

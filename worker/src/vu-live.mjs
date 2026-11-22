@@ -57,10 +57,28 @@ const ALARM_MS = 30000;
 const IDLE_CLOSE_MS = 60000;
 /* Eine harte Obergrenze, unabhaengig vom Budget. */
 const MAX_SYMBOLS = 50;
+/* Obergrenze gleichzeitiger Zuschauer. Gemessen (Lasttest 21.11.2026,
+   docs/accounts/PRODUKTIONSPLAN.md §7): Rechenzeit ist kein Engpass,
+   der Speicher ist es - rund 20 KB je Client gegen 128 MB. 2.500 lassen
+   die Haelfte als Sicherheitsabstand. Darueber wird die Verbindung
+   angenommen, der Browser erfaehrt den Grund und der Chart faellt auf den
+   Snapshot-Pfad zurueck (kein stilles Haengen, keine Wiederholschleife:
+   live-relay-client.js beendet bei status BLOCKED). */
+const MAX_CLIENTS = 2500;
+/* Ein Browser schickt alle 15 s einen Ping und beim Oeffnen ein subscribe.
+   Mehr als so viele Nachrichten in 10 s ist kein Browser; jede 20. kostet
+   eine Anfrage des Tageskontingents. */
+const CLIENT_MSG_WINDOW_MS = 10000;
+const CLIENT_MSG_MAX = 30;
 /* Nachlauf eines Titels, den gerade niemand mehr ansieht. Wer zwischen
    zwei Aktienseiten hin- und herspringt, soll nicht zweimal einen
    Verbindungsaufbau bezahlen. */
 const GRACE_MS = 60000;
+/* Sicherheitspruefung 22.11.2026: Eine Verbindung darf nicht alle 50 Plaetze
+   belegen (Nicht-Browser setzen den Origin beliebig), und Symbole haben eine
+   feste Form - alles andere geht weder an den Manager noch an Tiingo. */
+const MAX_SYMBOLS_PER_CLIENT = 12;
+const SYMBOL_RE = /^[A-Z0-9][A-Z0-9.\-]{0,9}$/;
 
 function jetzt() { return Date.now(); }
 
@@ -94,7 +112,10 @@ function laufzeit(env) {
     alarmMs: zahl(env.ALARM_MS, ALARM_MS),
     idleCloseMs: zahl(env.IDLE_CLOSE_MS, IDLE_CLOSE_MS),
     graceMs: zahl(env.GRACE_MS, GRACE_MS),
+    maxSymbolsPerClient: zahl(env.MAX_SYMBOLS_PER_CLIENT, MAX_SYMBOLS_PER_CLIENT),
     maxSymbols: zahl(env.MAX_SYMBOLS, MAX_SYMBOLS),
+    maxClients: zahl(env.MAX_CLIENTS, MAX_CLIENTS),
+    clientMsgMax: zahl(env.CLIENT_MSG_MAX, CLIENT_MSG_MAX),
     dynamic: env.TIINGO_DYNAMIC_SUBSCRIBE === "true"
   };
 }
@@ -201,8 +222,23 @@ export class VuLive {
     const [client, server] = Object.values(paar);
     server.accept();
 
+    /* Voll: nichts registrieren, den Grund nennen, schliessen. Die
+       Verbindung selbst hat schon eine Anfrage gekostet; sie jetzt
+       abzuweisen schuetzt den Speicher, nicht das Tageskontingent -
+       das schuetzt das Limit je IP im Eingangs-Worker. */
+    if (this.clients.size >= this.cfg.maxClients) {
+      this.abgewiesen = (this.abgewiesen || 0) + 1;
+      try {
+        server.send(JSON.stringify({ op: "status", state: "BLOCKED", reason: "CAPACITY",
+                                     message: "Der Live-Kanal ist gerade voll. Es gelten die Kurse der letzten Aktualisierung.",
+                                     retryAfterSec: 60 }));
+        server.close(1013, "capacity");
+      } catch (err) { /* schon zu */ }
+      return new Response(null, { status: 101, webSocket: client });
+    }
+
     const id = crypto.randomUUID();
-    this.clients.set(server, { id, symbols: new Set() });
+    this.clients.set(server, { id, symbols: new Set(), fenster: this.now(), n: 0 });
     this.budget.noteConnection(1);
     this.budget.noteClients(this.clients.size);
     this.letzterAktivStempel = this.now();
@@ -232,10 +268,23 @@ export class VuLive {
     this.budget.noteClientMessages(1);
     this.letzterAktivStempel = this.now();
 
+    /* Nachrichtenrate je Client: ein Browser sendet alle 15 s einen Ping.
+       Wer in 10 s mehr als die Grenze schickt, wird getrennt. */
+    const t = this.now();
+    if (t - eintrag.fenster >= CLIENT_MSG_WINDOW_MS) { eintrag.fenster = t; eintrag.n = 0; }
+    eintrag.n += 1;
+    if (eintrag.n > this.cfg.clientMsgMax) {
+      this.zuSchnell = (this.zuSchnell || 0) + 1;
+      try { ws.close(1008, "rate"); } catch (err) { /* schon zu */ }
+      this.clientWeg(ws);
+      return;
+    }
+
     let nachricht;
     try { nachricht = JSON.parse(typeof ev.data === "string" ? ev.data : ""); }
     catch (err) { return; }
     if (!nachricht || typeof nachricht.op !== "string") return;
+    if ((nachricht.op === "subscribe" || nachricht.op === "unsubscribe") && !Array.isArray(nachricht.symbols)) return;
 
     if (nachricht.op === "ping") { this.sende(ws, { op: "pong", t: this.now() }); return; }
 
@@ -247,8 +296,8 @@ export class VuLive {
          zurueckfallen und den Stand mit Uhrzeit nennen. */
       const phase = sitzung(this.now()).phase;
       if (phase !== "REGULAR") {
-        for (const roh of (nachricht.symbols || []).slice(0, 200)) {
-          const sym = String(roh || "").trim().toUpperCase();
+        for (const roh of nachricht.symbols.slice(0, 200)) {
+          const sym = String(roh || "").trim().toUpperCase().slice(0, 12);
           if (sym) this.sende(ws, { op: "denied", symbol: sym, reason: "sessionClosed", session: phase });
         }
         this.sende(ws, { op: "subscribed", symbols: [...eintrag.symbols], session: phase });
@@ -258,10 +307,12 @@ export class VuLive {
          und benannt. Stillschweigend die Liste zu kuerzen hiesse, dem
          Browser einen Titel zu versprechen, der nie kommt. Die 200 sind
          nur ein Riegel gegen eine sinnlos lange Nachricht. */
-      const symbole = (nachricht.symbols || []).slice(0, 200);
+      const symbole = nachricht.symbols.slice(0, 200);
       for (const roh of symbole) {
         const sym = String(roh || "").trim().toUpperCase();
         if (!sym || eintrag.symbols.has(sym)) continue;
+        if (!SYMBOL_RE.test(sym)) { this.sende(ws, { op: "denied", symbol: sym.slice(0, 12), reason: "invalidSymbol" }); continue; }
+        if (eintrag.symbols.size >= this.cfg.maxSymbolsPerClient) { this.sende(ws, { op: "denied", symbol: sym, reason: "clientSymbolLimit" }); continue; }
         const urteil = this.manager.acquire(sym, eintrag.id);
         if (!urteil.allowed) {
           /* Abgelehnt heisst abgelehnt, mit Grund - der Browser faellt
@@ -286,7 +337,7 @@ export class VuLive {
     }
 
     if (nachricht.op === "unsubscribe") {
-      for (const roh of (nachricht.symbols || [])) {
+      for (const roh of nachricht.symbols.slice(0, 200)) {
         const sym = String(roh || "").trim().toUpperCase();
         if (!eintrag.symbols.delete(sym)) continue;
         this.manager.release(sym, eintrag.id);
@@ -470,7 +521,9 @@ export class VuLive {
       session: sitzung(this.now()).phase,
       sessionRemainingSeconds: restSekunden(this.now()),
       manager: { state: s.state, reason: s.reason, mode: s.mode, modeReason: s.modeReason,
-                 symbols: s.symbols, clients: this.clients.size },
+                 symbols: s.symbols, clients: this.clients.size,
+                 maxClients: this.cfg.maxClients, rejectedFull: this.abgewiesen || 0,
+                 rejectedRate: this.zuSchnell || 0 },
       budget: this.budget.snapshot(),
       values: this.werte.size,
       series: this.serien.size,

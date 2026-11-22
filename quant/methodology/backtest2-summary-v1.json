@@ -1,0 +1,82 @@
+{
+ "schema": "backtest2-summary-frontend-1.0.0",
+ "label": "Forschung, nicht zertifiziert",
+ "purpose": "Zusammenfassung der eigenen Prüfung (Backtest 2.0) für die interne Forschungsseite: ob feste Kursregeln, auf vergangenen Jahren gewählt, auf ungesehenen Jahren einen Index-ETF geschlagen hätten. Vergangenheit, keine Prognose.",
+ "source": "Übertragen aus dem Bericht von Lauf 44946289866 (research.yml, Modus backtest2, 21.11.2026); Protokoll docs/research/backtest2/PROTOKOLL.md",
+ "window": [
+  "2007-12-31",
+  "2026-10-02"
+ ],
+ "combos": 46620,
+ "titles": 7032,
+ "delisted": 1675,
+ "question": "Hätte eine feste Regel aus Kursdaten, auf vergangenen Jahren gefunden, auf den folgenden Jahren mehr erzielt als ein Index-ETF?",
+ "method": "Alle Kombinationen aus Marktführer-, Trend- und Ausbruchsregeln mit 1–30 Positionen, Gewichtung, Ausstieg, Marktfilter und Universum. Auswahl je Runde nur auf den Lernjahren, gezählt werden nur die folgenden, ungesehenen Jahre. Mit Kosten und delisteten Titeln.",
+ "selections": [
+  {
+   "id": "fassung2",
+   "label": "Beste Rückschau gewählt",
+   "verdict": "schlägt nicht",
+   "cagr": -0.299,
+   "maxDrawdown": -0.994,
+   "lesson": "Gewählt wurden Depots mit einer bis drei Aktien, die in den Lernjahren Glück hatten. Auf den folgenden Jahren brachen sie zusammen."
+  },
+  {
+   "id": "fassung3",
+   "label": "Robust gewählt (mind. 10 Aktien, stabile Nachbarschaft)",
+   "verdict": "schlägt nicht",
+   "cagr": 0.07,
+   "maxDrawdown": -0.613,
+   "lesson": "Gewählt wurden in jeder Runde Marktführer-Depots mit 15–30 Aktien und Marktfilter. In Aufwärtsphasen gleichauf mit dem S&P 500, nach Crashs zurück, weil der Filter im Geldmarkt die schnellen Erholungen verpasste.",
+   "rounds": [
+    {
+     "learn": "2008–2013",
+     "confirm": "2014–2016",
+     "pick": "Marktführer, 20 Aktien, Marktfilter",
+     "cagr": -0.025,
+     "spy": 0.089,
+     "qqq": 0.12
+    },
+    {
+     "learn": "2008–2016",
+     "confirm": "2017–2019",
+     "pick": "Marktführer, 20 Aktien, Marktfilter",
+     "cagr": 0.043,
+     "spy": 0.152,
+     "qqq": 0.228
+    },
+    {
+     "learn": "2008–2019",
+     "confirm": "2020–2022",
+     "pick": "Marktführer, 30 Aktien, Marktfilter",
+     "cagr": 0.071,
+     "spy": 0.075,
+     "qqq": 0.083
+    },
+    {
+     "learn": "2008–2022",
+     "confirm": "2023–2026",
+     "pick": "Trendvorlage, 15 Aktien, Marktfilter",
+     "cagr": 0.175,
+     "spy": 0.22,
+     "qqq": 0.325
+    }
+   ]
+  }
+ ],
+ "benchmarks": {
+  "SPY": {
+   "cagr": 0.138,
+   "maxDrawdown": -0.318
+  },
+  "QQQ": {
+   "cagr": 0.194,
+   "maxDrawdown": -0.351
+  },
+  "RSP": {
+   "cagr": 0.108,
+   "maxDrawdown": -0.367
+  }
+ },
+ "next": "Stufe 2: Merkmale aus Geschäftszahlen (u. a. Profitabilität, Rückkäufe, Rule of 40) in Kombination mit Momentum, auf denselben Regeln geprüft."
+}

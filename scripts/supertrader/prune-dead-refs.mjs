@@ -73,9 +73,12 @@ function lies(datei, code) {
 /** Ist das Universum vollstaendig und in sich stimmig? Liefert die Symbolmenge. */
 export function validateUniverse(index, meta, signalsAsOf) {
   if (!index || index.universeId !== 'US_REAL' || !Array.isArray(index.symbols)) abbruch('UNIVERSE_INVALID', 'stock-index/US_REAL.json ohne universeId US_REAL oder ohne symbols');
-  const syms = index.symbols;
+  // Kurzhistorie-Titel (junge Notierungen, schlanke Seite ohne Karte) stehen in symbols, sind aber kein Universum der Karten:
+  // count zaehlt alle Seiten, meta.securities nur die Karten (Auftrag 22.11.2026, ANT/AXNX).
+  const kurz = new Set(Array.isArray(index.kurzhistorie) ? index.kurzhistorie : []);
+  if (index.count !== index.symbols.length) abbruch('UNIVERSE_INVALID', 'count ' + index.count + ' != ' + index.symbols.length + ' Symbole');
+  const syms = index.symbols.filter((s) => !kurz.has(s));
   if (syms.length < LIMITS.minUniverse) abbruch('UNIVERSE_INCOMPLETE', syms.length + ' Titel (< ' + LIMITS.minUniverse + ')');
-  if (index.count !== syms.length) abbruch('UNIVERSE_INVALID', 'count ' + index.count + ' != ' + syms.length + ' Symbole');
   const ids = new Map();
   for (const s of syms) {
     if (typeof s !== 'string' || Identity.normalizeTicker(s) !== s) abbruch('UNIVERSE_INVALID', 'kein kanonisches Kuerzel: ' + JSON.stringify(s));

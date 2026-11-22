@@ -1,0 +1,559 @@
+{
+ "status": "FREIGEGEBEN",
+ "statusNote": "Steuerung 22.11.2026: Kuerzelwechsel ohne neuen Mechanismus. Die Nachfolger stehen bereits im Produkt; die Vorgaenger verlassen es als CONFIRMED_LISTING_ENDED:SUCCEEDED (apply-ended-listings Regel D, Beleg 8-K aus dem Nachfolgeregister). Die Historie fuehrt ticker-succession (ADR-009) im Nachfolger zusammen. TCBI -> TXCP eingeschlossen (retirePredecessor true, Steuerung 22.11.2026).",
+ "schema": "vu-eligibility-catchup-1",
+ "id": "eligibility-succession-2026-11-22",
+ "prevSha256": "d92ebc01e3b6352f0f47c31a6b5a870a2864debaa2ffdc32cc70ec4dbfdaa631",
+ "sourceRun": "lokal 22.11.2026 gegen main 18d0f938124 (apply-ended-listings Regel D auf den committeten Stand; die uebrige Kette reproduziert ihn)",
+ "productUniverseBefore": 6024,
+ "productUniverseAfter": 6009,
+ "counts": {
+  "changes": 15,
+  "leaveProduct": 15,
+  "enterProduct": 0
+ },
+ "leaveReasons": {
+  "CONFIRMED_LISTING_ENDED:SUCCEEDED": 15
+ },
+ "enterReasons": {},
+ "impact": {
+  "discover": {
+   "before": 5513,
+   "removed": 1,
+   "addedWithPage": 0
+  },
+  "elliott": {
+   "before": 4901,
+   "removed": 11,
+   "addedWithPage": 0
+  },
+  "fundamental": {
+   "before": 5252,
+   "removed": 1,
+   "addedWithPage": 0
+  },
+  "hedgefonds": {
+   "before": 4503,
+   "removed": 4,
+   "addedWithPage": 0
+  },
+  "quant": {
+   "before": 6021,
+   "removed": 15,
+   "addedWithPage": 0
+  },
+  "supertrader": {
+   "before": 1587,
+   "removed": 1,
+   "addedWithPage": 0
+  },
+  "technical": {
+   "before": 5676,
+   "removed": 14,
+   "addedWithPage": 0
+  },
+  "technik": {
+   "before": 4901,
+   "removed": 11,
+   "addedWithPage": 0
+  }
+ },
+ "changes": [
+  {
+   "securityId": "ref_MGPI",
+   "ticker": "MGPI",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:SUCCEEDED"
+  },
+  {
+   "securityId": "ref_ACHV",
+   "ticker": "ACHV",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:SUCCEEDED"
+  },
+  {
+   "securityId": "ref_TCBI",
+   "ticker": "TCBI",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:SUCCEEDED"
+  },
+  {
+   "securityId": "ref_ANY",
+   "ticker": "ANY",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:SUCCEEDED"
+  },
+  {
+   "securityId": "ref_VRME",
+   "ticker": "VRME",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:SUCCEEDED"
+  },
+  {
+   "securityId": "ref_INM",
+   "ticker": "INM",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:SUCCEEDED"
+  },
+  {
+   "securityId": "ref_AIXC",
+   "ticker": "AIXC",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:SUCCEEDED"
+  },
+  {
+   "securityId": "ref_DOMO",
+   "ticker": "DOMO",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:SUCCEEDED"
+  },
+  {
+   "securityId": "ref_ADIL",
+   "ticker": "ADIL",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:SUCCEEDED"
+  },
+  {
+   "securityId": "ref_GNTA",
+   "ticker": "GNTA",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:SUCCEEDED"
+  },
+  {
+   "securityId": "ref_EZRA",
+   "ticker": "EZRA",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:SUCCEEDED"
+  },
+  {
+   "securityId": "ref_HWH",
+   "ticker": "HWH",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:SUCCEEDED"
+  },
+  {
+   "securityId": "ref_KAZR",
+   "ticker": "KAZR",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:SUCCEEDED"
+  },
+  {
+   "securityId": "ref_PAPL",
+   "ticker": "PAPL",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:SUCCEEDED"
+  },
+  {
+   "securityId": "ref_VSME",
+   "ticker": "VSME",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:SUCCEEDED"
+  }
+ ],
+ "leave": [
+  {
+   "ticker": "MGPI",
+   "securityId": "ref_MGPI",
+   "reason": "CONFIRMED_LISTING_ENDED:SUCCEEDED",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "ACHV",
+   "securityId": "ref_ACHV",
+   "reason": "CONFIRMED_LISTING_ENDED:SUCCEEDED",
+   "products": [
+    "elliott",
+    "hedgefonds",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "TCBI",
+   "securityId": "ref_TCBI",
+   "reason": "CONFIRMED_LISTING_ENDED:SUCCEEDED",
+   "products": [
+    "elliott",
+    "hedgefonds",
+    "quant",
+    "supertrader",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "ANY",
+   "securityId": "ref_ANY",
+   "reason": "CONFIRMED_LISTING_ENDED:SUCCEEDED",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "VRME",
+   "securityId": "ref_VRME",
+   "reason": "CONFIRMED_LISTING_ENDED:SUCCEEDED",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "INM",
+   "securityId": "ref_INM",
+   "reason": "CONFIRMED_LISTING_ENDED:SUCCEEDED",
+   "products": [
+    "elliott",
+    "hedgefonds",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "AIXC",
+   "securityId": "ref_AIXC",
+   "reason": "CONFIRMED_LISTING_ENDED:SUCCEEDED",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "DOMO",
+   "securityId": "ref_DOMO",
+   "reason": "CONFIRMED_LISTING_ENDED:SUCCEEDED",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "ADIL",
+   "securityId": "ref_ADIL",
+   "reason": "CONFIRMED_LISTING_ENDED:SUCCEEDED",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "GNTA",
+   "securityId": "ref_GNTA",
+   "reason": "CONFIRMED_LISTING_ENDED:SUCCEEDED",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "EZRA",
+   "securityId": "ref_EZRA",
+   "reason": "CONFIRMED_LISTING_ENDED:SUCCEEDED",
+   "products": [
+    "discover",
+    "fundamental",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "HWH",
+   "securityId": "ref_HWH",
+   "reason": "CONFIRMED_LISTING_ENDED:SUCCEEDED",
+   "products": [
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "KAZR",
+   "securityId": "ref_KAZR",
+   "reason": "CONFIRMED_LISTING_ENDED:SUCCEEDED",
+   "products": [
+    "hedgefonds",
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "PAPL",
+   "securityId": "ref_PAPL",
+   "reason": "CONFIRMED_LISTING_ENDED:SUCCEEDED",
+   "products": [
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "VSME",
+   "securityId": "ref_VSME",
+   "reason": "CONFIRMED_LISTING_ENDED:SUCCEEDED",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  }
+ ],
+ "enter": [],
+ "decidedBy": "Steuerung 22.11.2026: Weg (b) - neues Kuerzel per Erweiterung (hier schon Mitglied), altes ueber das Nachfolgeregister als beendet raus; Forschungsreihen vorher eingefroren und nach R2 gesichert; BA und AX vorab informiert. TCBI -> TXCP: retirePredecessor true. Register: #2234 (6), #2256 (8, BJ), TCBI (Quant).",
+ "evidence": [
+  {
+   "securityId": "ref_TCBI",
+   "ticker": "TCBI",
+   "successor": "TXCP",
+   "effective": "2026-11-09",
+   "cik": "0001077428",
+   "source": {
+    "type": "SEC_8K",
+    "accession": "0001077428-26-000061",
+    "filed": "2026-09-14",
+    "item": "3.01",
+    "quote": "On November 9, 2026, the Common Stock and the Preferred Stock are expected to begin trading under the new ticker symbols \"TXCP\" and \"TXCP PRB\", respectively."
+   }
+  },
+  {
+   "securityId": "ref_ANY",
+   "ticker": "ANY",
+   "successor": "DRK",
+   "effective": "2026-09-17",
+   "cik": "0001591956",
+   "source": {
+    "type": "SEC_8K",
+    "accession": "0001213900-26-100953",
+    "filed": "2026-09-17",
+    "item": "5.03",
+    "quote": "In connection with the name change, the Company's common shares began trading on the Nasdaq Capital Market under the new name and the new ticker symbol DRK at the market open on September 17, 2026."
+   }
+  },
+  {
+   "securityId": "ref_DOMO",
+   "ticker": "DOMO",
+   "successor": "HUCK",
+   "effective": "2026-09-24",
+   "cik": "0001505952",
+   "source": {
+    "type": "SEC_8K",
+    "accession": "0001104659-26-109635",
+    "filed": "2026-09-22",
+    "item": "5.03",
+    "quote": "... will begin trading on the Nasdaq Global Market under the trading symbol, HUCK, on September 24, 2026."
+   }
+  },
+  {
+   "securityId": "ref_AIXC",
+   "ticker": "AIXC",
+   "successor": "FFR",
+   "effective": "2026-09-30",
+   "cik": "0001460702",
+   "source": {
+    "type": "SEC_8K",
+    "accession": "0001493152-26-044923",
+    "filed": "2026-09-29",
+    "item": "5.03",
+    "quote": "In connection with the Name Change, the trading symbol for the Company's common stock on The Nasdaq Capital Market will change from AIXC to FFR, effective at market open on September 30, 2026."
+   }
+  },
+  {
+   "securityId": "ref_VRME",
+   "ticker": "VRME",
+   "successor": "OPNW",
+   "effective": "2026-10-01",
+   "cik": "0001104038",
+   "source": {
+    "type": "SEC_8K",
+    "accession": "0001214659-26-012283",
+    "filed": "2026-09-30",
+    "item": "5.03",
+    "quote": "Effective October 1, 2026, our common stock will begin to trade on The Nasdaq Capital Market on a post-Merger basis under the ticker symbol OPNW."
+   }
+  },
+  {
+   "securityId": "ref_ADIL",
+   "ticker": "ADIL",
+   "successor": "AZR",
+   "effective": "2026-10-29",
+   "cik": "0001513525",
+   "source": {
+    "type": "SEC_8K",
+    "accession": "0001213900-26-113337",
+    "filed": "2026-10-28",
+    "item": "5.03",
+    "quote": "... beginning with the opening of trading on October 29, 2026, trading is expected to be under the new symbol AZR (the Symbol Change)."
+   }
+  },
+  {
+   "securityId": "ref_MGPI",
+   "ticker": "MGPI",
+   "successor": "CASK",
+   "effective": "2026-11-02",
+   "cik": "0000835011",
+   "source": {
+    "type": "SEC_8K",
+    "accession": "0000835011-26-000115",
+    "filed": "2026-10-15",
+    "item": "5.03",
+    "quote": "... to be effective on November 2, 2026, at which time it expects its ticker symbol will also change to CASK."
+   }
+  },
+  {
+   "securityId": "ref_HWH",
+   "ticker": "HWH",
+   "successor": "ESYN",
+   "effective": "2026-09-22",
+   "cik": "0001897245",
+   "source": {
+    "type": "SEC_8K",
+    "accession": "0001493152-26-043411",
+    "filed": "2026-09-18",
+    "item": "5.03",
+    "quote": "Beginning with the opening of trading on September 22, 2026, trading will be under the new corporate name EnerSyn Global Inc. and the symbol ESYN."
+   }
+  },
+  {
+   "securityId": "ref_VSME",
+   "ticker": "VSME",
+   "successor": "FCDH",
+   "effective": "2026-10-26",
+   "cik": "0001951294",
+   "source": {
+    "type": "SEC_6K",
+    "accession": "0001493152-26-047921",
+    "filed": "2026-10-21",
+    "quote": "In connection with the Name Change, the Company expects that its Class A Ordinary Shares will begin trading on the Nasdaq Capital Market under the new ticker symbol \"FCDH\" at the open of trading on October 26, 2026, replacing the Company's current ticker symbol, \"VSME\"."
+   }
+  },
+  {
+   "securityId": "ref_GNTA",
+   "ticker": "GNTA",
+   "successor": "SAEN",
+   "effective": "2026-11-04",
+   "cik": "0001838716",
+   "source": {
+    "type": "SEC_6K",
+    "accession": "0001493152-26-049506",
+    "filed": "2026-11-02",
+    "quote": "... effective upon the commencement of trading on November 4, 2026, its American Depositary Shares, currently trading on the Nasdaq Capital Market under the ticker symbol \"GNTA,\" are expected to begin trading under the new ticker symbol \"SAEN\", subject to final confirmation by The Nasdaq Stock Market LLC."
+   }
+  },
+  {
+   "securityId": "ref_EZRA",
+   "ticker": "EZRA",
+   "successor": "XGPU",
+   "effective": "2026-11-10",
+   "cik": "0001812727",
+   "source": {
+    "type": "SEC_8K",
+    "accession": "0001493152-26-050810",
+    "filed": "2026-11-09",
+    "item": "8.01",
+    "quote": "The Company intends for its common stock to begin trading on The Nasdaq Capital Market under the new trading symbol XGPU at the opening of trading on November 10, 2026."
+   }
+  },
+  {
+   "securityId": "ref_KAZR",
+   "ticker": "KAZR",
+   "successor": "CRMN",
+   "effective": "2026-11-12",
+   "cik": "0002031009",
+   "source": {
+    "type": "SEC_6K",
+    "accession": "0001213900-26-118491",
+    "filed": "2026-11-12",
+    "quote": "On November 12, 2026, Skyline Builders Group Holding Limited announced that its Nasdaq ticker symbol will change from \"KAZR\" to \"CRMN\", effective at the opening of trading on November 12, 2026."
+   }
+  },
+  {
+   "securityId": "ref_INM",
+   "ticker": "INM",
+   "successor": "MTRI",
+   "effective": "2026-11-09",
+   "cik": "0001728328",
+   "source": {
+    "type": "SEC_8K",
+    "accession": "0001193125-26-452706",
+    "filed": "2026-11-09",
+    "item": "7.01",
+    "quote": "Shares to trade on Nasdaq under the ticker symbol MTRI commencing today, November 9, 2026 (Pressemitteilung, Anlage 99.1)."
+   }
+  },
+  {
+   "securityId": "ref_PAPL",
+   "ticker": "PAPL",
+   "successor": "PTIV",
+   "effective": "2026-10-26",
+   "cik": "0001938109",
+   "source": {
+    "type": "SEC_8K",
+    "accession": "0001493152-26-047167",
+    "filed": "2026-10-15",
+    "item": "7.01",
+    "quote": "The company's common shares will continue to trade under the ticker PAPL until the ticker change to PTIV becomes effective on NYSE American, which is anticipated to occur on or about October 26, 2026 (Pressemitteilung, Anlage 99.1)."
+   }
+  },
+  {
+   "securityId": "ref_ACHV",
+   "ticker": "ACHV",
+   "successor": "QUIT",
+   "effective": "2026-11-10",
+   "cik": "0000949858",
+   "source": {
+    "type": "SEC_8K",
+    "accession": "0001193125-26-455404",
+    "filed": "2026-11-10",
+    "item": "2.02",
+    "quote": "... is now doing business as AchieveRx, The Quit Company, and has begun trading under the Nasdaq ticker symbol QUIT (Pressemitteilung, Anlage 99.1)."
+   }
+  }
+ ]
+}

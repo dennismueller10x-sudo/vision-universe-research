@@ -483,9 +483,9 @@
       "cik": "0002024203",
       "name": "Cayson Acquisition Corp",
       "sic": "6770",
-      "rawFacts": 811,
-      "mappedFacts": 263,
-      "unmappedFacts": 542,
+      "rawFacts": 961,
+      "mappedFacts": 319,
+      "unmappedFacts": 654,
       "calendarYears": 2,
       "industry": null,
       "industryMetrics": {},
@@ -497,9 +497,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 2,
-      "quarterlyPeriods": 9,
+      "quarterlyPeriods": 10,
       "firstPeriodEnd": "2024-06-30",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 1.0,
       "metrics": {
         "capital_expenditures": {
@@ -538,14 +538,14 @@
         },
         "net_income": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 7,
+          "quarterlyPeriods": 8,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
         },
         "operating_cash_flow": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 6,
+          "quarterlyPeriods": 7,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
@@ -566,14 +566,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 9,
+          "quarterlyPeriods": 10,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0
         },
         "total_assets": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 8,
+          "quarterlyPeriods": 9,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0
@@ -596,46 +596,47 @@
         }
       },
       "quality": {
-        "HIGH": 36
+        "HIGH": 40
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 36,
-        "resolvedValues": 36
+        "datableValues": 40,
+        "resolvedValues": 40
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 585,
+        "rules_version": "1.1.0",
+        "total": 700,
         "by_severity": {
-          "INFO": 542,
-          "WARNING": 43
+          "INFO": 654,
+          "WARNING": 46
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 11,
-          "PERIOD_MISMATCH": 2,
+          "CONCEPT_DISAGREEMENT": 12,
+          "PERIOD_MISMATCH": 4,
           "RESTATEMENT_CONFLICT": 4,
           "UNEXPECTED_DURATION": 26,
-          "UNKNOWN_CONCEPT": 542
+          "UNKNOWN_CONCEPT": 654
         }
       },
       "latestFiling": {
-        "accession": "0001493152-26-036602",
-        "filing_date": "2026-08-07",
+        "accession": "0001493152-26-053276",
+        "filing_date": "2026-11-19",
         "form": "10-Q",
-        "periodic_filings": 8
+        "periodic_filings": 9,
+        "acceptance_datetime": "2026-11-19T21:30:33.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
-        "formula": "1.2.0",
+        "normalization_logic": "1.15.0",
+        "formula": "1.3.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.8.0"
         }
       },
-      "sourceDigest": "2d7a9d6e34fa0a295acbe0ef836aff546d39f8ea8c395a247d417e66eeca636f",
+      "sourceDigest": "2fefd974ef8b28e561e22adeba88addbeee5f09fc11094065b3d53b9c58b3e20",
       "issuerId": "iss_cik_0002024203"
     }
   ]

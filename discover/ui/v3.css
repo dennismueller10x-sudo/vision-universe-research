@@ -336,6 +336,7 @@ body.dv2 .dx-search .dx-search-close{border:0;padding:0 2px;font:700 14px/1 var(
 .dx-search-link{border:0;background:none;color:var(--vu-mute);font:600 14px/1 var(--vu-font);cursor:pointer;min-height:36px}
 .dx-chipwrap{display:flex;flex-wrap:wrap;gap:8px}
 .dx-chipwrap .vu-chip{min-height:38px}
+.dx-search-known{min-height:243px}/* 4 Zeilen à 60 px + 3 Trennlinien: Platz vor dem Laden, sonst springen Themen und KI-Fragen (CLS 0,2) */
 .dx-known{border-top:1px solid var(--vu-hair)}
 .dx-known:first-child{border-top:0}
 .dx-search .val{display:grid;justify-items:end;gap:3px}

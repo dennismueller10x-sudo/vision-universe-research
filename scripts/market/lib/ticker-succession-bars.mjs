@@ -28,16 +28,21 @@ export function loadSuccessions(root) {
  * @param {object} security          { securityId, ticker }
  * @param {object} succ              Ergebnis von loadSuccessions
  * @param {(entry) => object|null} readPredecessor  liefert die Vorgaenger-Nutzlast
+ * @param {{ relabel?: boolean }} [opts]  relabel: Vorgaenger-Bars tragen danach die securityId des Nachfolgers (dasselbe
+ *        Wertpapier unter neuem Kuerzel), und die Nutzlast nennt Nachfolger-ID und -Ticker. Fuer Leser, die jede Bar
+ *        gegen die eigene ID pruefen (Technical-Materialisierung).
  * @returns {{ payload: object|null, joined: object|null }}
  */
-export function withPredecessor(payload, security, succ, readPredecessor) {
+export function withPredecessor(payload, security, succ, readPredecessor, opts = {}) {
   const entry = succ.TS.predecessorOf(security.securityId, succ.map);
   if (!entry) return { payload, joined: null };
   const pred = readPredecessor(entry);
   if (!pred || !Array.isArray(pred.bars) || !pred.bars.length) return { payload, joined: { from: entry.from, predecessorBars: 0 } };
-  const j = succ.TS.joinBars(pred.bars, (payload && payload.bars) || [], entry.effective);
+  const predBars = opts.relabel ? pred.bars.map((b) => ("securityId" in b ? { ...b, securityId: security.securityId } : b)) : pred.bars;
+  const j = succ.TS.joinBars(predBars, (payload && payload.bars) || [], entry.effective);
   const base = payload || pred;
-  return { payload: { ...base, bars: j.bars },
+  const ident = opts.relabel ? { securityId: security.securityId, ticker: security.ticker } : {};
+  return { payload: { ...base, ...ident, bars: j.bars },
            joined: { from: entry.from, effective: entry.effective, predecessorBars: j.predecessorBars, successorBars: j.successorBars,
                      lastPredecessor: j.lastPredecessor, firstSuccessor: j.firstSuccessor } };
 }

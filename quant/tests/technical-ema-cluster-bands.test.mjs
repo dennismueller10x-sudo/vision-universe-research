@@ -49,6 +49,11 @@ test("EMA-Bänder: rein additiv, alle bisherigen Felder unverändert und determi
   const b = Analysis.analyze({ series, methodology: METH, options: opts });
   const without = JSON.parse(JSON.stringify(b));
   for (const k of BANDS) delete without.chartSeries[k];
+  /* SMA 150 (18.11.2026): gleich der Engine-SMA, Laenge wie die Reihe. */
+  const s150 = without.chartSeries.sma150; delete without.chartSeries.sma150;
+  assert.equal(s150.length, series.length);
+  const ref150 = series.close.map((_, i) => i < 149 ? null : r4(series.close.slice(i - 149, i + 1).reduce((a, x) => a + x, 0) / 150));
+  s150.forEach((v, i) => { if (ref150[i] === null) assert.equal(v, null, "SMA 150 im Anlauf " + i); else assert.ok(Math.abs(v - ref150[i]) < 1e-3, "SMA 150 an " + i); });
   assert.deepEqual(Object.keys(without.chartSeries), ["sma20", "sma50", "sma200", "atr", "rsi14", "relativeVolume", "ema20", "ema50", "ema200"]);
   const plain = Analysis.analyze({ series, methodology: METH, options: { elliott: false, annotations: false, includeChartSeries: false } });
   delete without.chartSeries;

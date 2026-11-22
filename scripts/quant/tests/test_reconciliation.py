@@ -13,6 +13,7 @@ und etwas anderes misst als behauptet:
 
 Jeder dieser Fehler steckte in einem frueheren Entwurf dieses Moduls.
 """
+import json
 import sys
 import unittest
 from pathlib import Path
@@ -241,6 +242,60 @@ class BerichtTests(unittest.TestCase):
         """Eine Stichprobe darf sich nicht als Deckung ausgeben."""
         a = rec.overlap_report(self.records, None)["acceptedMarketDataState"]
         self.assertEqual(a["status"], "LEGACY_GATE_RUNS")
+
+
+class FreigegebeneZugaengeTests(unittest.TestCase):
+    """Steuerung 19.11.2026 (analog #2022): Abweichungen, die genau durch freigegebene Zugaenge erklaert sind, nimmt der
+    Abgleich an und meldet sie als Hinweis; alles andere bleibt rot."""
+
+    AKZ = {"PRODUCT_TITLES": 10, "HISTORICAL_CHART_AVAILABLE": 9, "TECHNICAL_HISTORY_ELIGIBLE": 7}
+    MARKT = {"source": {"kind": "CANONICAL", "runId": "1", "accepted": AKZ}}
+
+    @staticmethod
+    def zug(members, ohne_kurs=(), nicht_tech=()):
+        return lambda basis, verzeichnis=None: {"members": list(members), "freigaben": ["eligibility-expansion-x"],
+                                                 "ohneKurshistorie": list(ohne_kurs), "nichtTechnisch": list(nicht_tech)}
+
+    def test_genau_erklaert_wird_angenommen_und_gemeldet(self):
+        a = rec._accepted_state(self.MARKT, 11, 9, 12, zugaenge=self.zug(["ref_A", "ref_B"]))
+        self.assertTrue(a["reconciled"])
+        self.assertIsNone(a["explanation"])
+        self.assertEqual(a["explainedDelta"]["class"], "APPROVED_UNIVERSE_ADDITION")
+        self.assertEqual(a["explainedDelta"]["members"], ["ref_A", "ref_B"])
+        self.assertEqual(a["delta"], {"HISTORICAL_CHART_AVAILABLE": 2, "TECHNICAL_HISTORY_ELIGIBLE": 2})
+
+    def test_alles_andere_bleibt_rot(self):
+        faelle = [
+            (11, 9, 12, self.zug(["ref_A"]), "freigegebene Zugaenge im Produkt 1"),          # ein Titel ohne Freigabe
+            (11, 9, 12, self.zug(["ref_A", "ref_B"], ohne_kurs=["ref_B"]), "schon in einer Ausnahmeliste"),
+            (11, 8, 12, self.zug(["ref_A", "ref_B"], nicht_tech=["ref_B"]), "schon in einer Ausnahmeliste"),
+            (10, 9, 12, self.zug(["ref_A", "ref_B"]), "nicht genau die Zahl"),               # ein Altbestand verliert Kurse
+        ]
+        for preis, tech, gesamt, z, grund in faelle:
+            a = rec._accepted_state(self.MARKT, preis, tech, gesamt, zugaenge=z)
+            self.assertFalse(a["reconciled"], grund)
+            self.assertEqual(a["explainedDelta"]["class"], "NOT_AUTO_ACCEPTED")
+            self.assertIn(grund, a["explainedDelta"]["reason"])
+        # Schrumpfen oder gleicher Umfang mit Abweichung: keine Annahme, keine Zugangsklasse
+        a = rec._accepted_state(self.MARKT, 8, 7, 10, zugaenge=self.zug([]))
+        self.assertFalse(a["reconciled"])
+        self.assertIsNone(a["explainedDelta"])
+
+    def test_freigaben_ab_dem_abgenommenen_umfang(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as d:
+            for name, vorher, members in (("eligibility-expansion-a.json", 9, ["ref_ALT"]),
+                                          ("eligibility-expansion-b.json", 10, ["ref_A"]),
+                                          ("eligibility-expansion-c.json", 11, ["ref_B"])):
+                (Path(d) / name).write_text(json.dumps({"id": name[:-5], "productUniverseBefore": vorher, "membersAdded": members}))
+            self.assertEqual(rec.freigegebene_zugaenge(10, d), {"ref_A": "eligibility-expansion-b", "ref_B": "eligibility-expansion-c"})
+
+    def test_die_echten_freigaben_tragen_die_felder(self):
+        self.assertTrue(rec.FREIGABEN_DIR.is_dir(), rec.FREIGABEN_DIR)
+        for path in rec.FREIGABEN_DIR.glob("eligibility-expansion-*.json"):
+            doc = json.loads(path.read_text())
+            if "membersAdded" in doc:
+                self.assertIsInstance(doc.get("productUniverseBefore"), int, path.name)
 
 
 class QualitaetTests(unittest.TestCase):

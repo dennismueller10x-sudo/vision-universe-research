@@ -269,6 +269,11 @@ body.ak-answering.ak-asking .ak-hero{margin-bottom:16px}
   .ak-can .vu-rail{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));overflow:visible;margin-inline:0;padding:0}
   .ak-can .vu-rail>*{width:auto;max-width:none}
 }
+/* Desktop (22.11.2026): breitere Spalte für Antworten mit Tabellen und Charts; Fließtext bleibt lesbar */
+@media(min-width:1024px){
+  .ak-app{max-width:1028px}
+  .ak-hero .ak-lead,.ak-body p{max-width:72ch}
+}
 @media(prefers-reduced-motion:reduce){.ak-spin,.ak-state .vu-skeleton{animation:none}.ak-mic,.ak-send,.ak-bar{transition:none}.ak-mic:active,.ak-send:active{transform:none}}
 
 /* Hell ist vollständig hell (Owner 16.11.2026: „wenn ich auf hell den Schalter umlege, dann muss natürlich auch alles hell sein“).

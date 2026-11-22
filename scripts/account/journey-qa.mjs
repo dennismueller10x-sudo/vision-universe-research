@@ -172,8 +172,8 @@ const me = page => page.evaluate(async b => (await fetch(b + '/v1/me', {credenti
   // im Dock und das Profil im Kopf, Watchlist und Konto stehen dort als getrennte Reiter (siehe Kontoseite weiter unten).
   await page.waitForSelector('#vu-dock a[data-id=ich][href="/mein-dashboard/"]');
   check(await page.isVisible('#vu-dock a[data-id=home][aria-current=page]') && await page.isVisible('#vu-dock a[data-id=ich][href="/mein-dashboard/"]')
-    && await page.isVisible('vu-navigation a.hb.profile[href="/mein-dashboard/"]') && !(await page.isVisible('vu-navigation nav.tabs')),
-    'Willkommensseite: Mein Bereich ueber Dock und Profil, keine Reiterzeile');
+    && await page.isVisible('vu-navigation button.hb.grid') && !(await page.isVisible('vu-navigation nav.tabs')),
+    'Willkommensseite: Mein Bereich ueber „Ich“ im Dock, Hauptmenü im Kopf, keine Reiterzeile');
   check(await page.isVisible('#wk-hero-play') && await page.isVisible('#wk-products'), 'Willkommensseite: Video und Produktwelten da');
   // E08: die persoenliche Begruessung steht jetzt auf Mein Bereich (/willkommen/), das Dashboard heisst „Watchlist“.
   await page.waitForFunction(() => document.getElementById('wk-title').textContent.includes('QA free'));

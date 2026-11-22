@@ -13,7 +13,7 @@
   --sc-line:rgba(0,0,0,.08);--sc-line-strong:rgba(0,0,0,.16);
   --sc-text:#0b0b0d;--sc-muted:#5f5f69;--sc-dim:#8b8b95;
   --sc-ink:#0b0b0d;--sc-on-ink:#ffffff;
-  --sc-up:#12864a;--sc-up-soft:rgba(18,134,74,.10);--sc-down:#cc3b30;--sc-down-soft:rgba(204,59,48,.09);
+  --sc-up:#101318;--sc-up-soft:rgba(200,245,49,.28);--sc-down:#cc3b30;--sc-down-soft:rgba(204,59,48,.09);
   --sc-accent:#2f5bd3;--sc-accent-soft:rgba(47,91,211,.09);--sc-warn:#a86b0c;--sc-warn-soft:rgba(168,107,12,.10);
   --sc-shadow:0 1px 2px rgba(0,0,0,.04),0 8px 24px rgba(0,0,0,.05);
   --sc-shadow-lg:0 -10px 40px rgba(0,0,0,.14);
@@ -329,7 +329,7 @@ html[data-theme=dark] .sc-seg button[aria-pressed=true]{background:var(--sc-surf
 .sc-why-tally .is-ok:not(.is-zero){background:var(--sc-up-soft)}.sc-why-tally .is-ok:not(.is-zero) i{color:var(--sc-up)}
 .sc-why-tally .is-no:not(.is-zero){background:var(--sc-down-soft)}.sc-why-tally .is-no:not(.is-zero) i{color:var(--sc-down)}
 /* Hell: Gruen und Bernstein auf ihrer zarten Flaeche erreichten nur 4,0-4,3:1 (WCAG AA verlangt 4,5:1) */
-html:not([data-theme=dark]) .sc-allgood b,html:not([data-theme=dark]) .sc-tl-chip:not(.is-base),html:not([data-theme=dark]) .sc-why-tally .is-ok:not(.is-zero) i{color:#0e7040}
+html:not([data-theme=dark]) .sc-allgood b,html:not([data-theme=dark]) .sc-tl-chip:not(.is-base),html:not([data-theme=dark]) .sc-why-tally .is-ok:not(.is-zero) i{color:#101318}
 html:not([data-theme=dark]) .sc-legend span[style*="--sc-warn"]{color:#8a5806!important}
 html:not([data-theme=dark]) .sc-tl-main small{color:var(--sc-muted)}
 .sc-allgood{margin-top:12px;padding:18px;border-radius:16px;background:var(--sc-up-soft);text-align:center}
@@ -1016,7 +1016,7 @@ body.sc{--sc-lime:#c8f531}
 .sc-peek-id span{display:block;font-size:12.5px;color:var(--sc-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sc-peek-px{display:grid;justify-items:end;gap:4px}.sc-peek-px b{font-size:18px;font-weight:900}
 .sc-peek-why{margin-top:14px;padding:12px 14px;border-radius:18px;background:var(--sc-lime);color:#000}
-.sc-peek-why .vu-ltag{color:#3d4a00;margin:0}
+.sc-peek-why .vu-ltag{color:#101318;margin:0}
 .sc-peek-why .sc-kvrow{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-top:6px;border:0;padding:0}
 .sc-peek-why .sc-kvrow b{font-size:15px}
 .sc-peek-want{font-size:12.5px;font-weight:700}
@@ -1370,3 +1370,25 @@ body.sc .sc-rchip-add{display:inline-flex}
 :root:not([data-theme=dark]) body.sc .sc-hero2 .sc-counter strong,:root:not([data-theme=dark]) body.sc .sc-hero2 .sc-count{color:#000}
 :root:not([data-theme=dark]) body.sc .sc-hero2 .sc-sentence .sc-gap.is-empty{background:#e4e4e4;color:#5d636b}
 :root:not([data-theme=dark]) body.sc .sc-hero2 .sc-sentence .sc-gap.is-add{color:#5d636b}
+
+/* =========================================================================
+   iPad und Desktop (22.11.2026): unter 761 px unverändert. Ab 1024 px dieselbe
+   Inhaltsbreite wie die Kopfzeile (1240 px), Karussell „Fertige Suchen“ als Gitter,
+   „Gespeichert“ ohne gestreckte Knöpfe.
+   ========================================================================= */
+@media (min-width:761px){
+  body.sc .sc-ak .sc-ak-rail{scroll-padding-inline:14px}
+  body.sc .sc-app:has(>.sc-modeseg.is-wide) .sc-modeseg.is-wide{max-width:440px}
+  body.sc .sc-app:has(>.sc-modeseg.is-wide) .sc-emptycard .vu-btn--block{width:auto;min-width:300px;padding-inline:32px}
+  body.sc .sc-app:has(>.sc-modeseg.is-wide) .sc-emptycard p{max-width:62ch}
+  body.sc .sc-app:has(>.sc-modeseg.is-wide) .sc-stack-s:not(.sc-acct){grid-template-columns:repeat(auto-fill,minmax(320px,1fr))}
+  body.sc .sc-acct .vu-btn--block{width:auto;justify-self:start;padding-inline:32px}
+}
+@media (min-width:1024px){
+  body.sc .sc-app{max-width:calc(1240px + 2 * var(--sc-gutter))}
+  body.sc .sc-app.sc-ak{max-width:1268px}
+  body.sc .sc-ak .sc-ak-rail{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));overflow:visible}
+  body.sc .sc-ak .sc-ak-rail>.sc-ak-fs{width:auto}
+  body.sc .sc-ak .sc-ak-more{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:28px}
+  body.sc .sc-ak .sc-ak-more .sc-ak-row{border-bottom:0}
+}

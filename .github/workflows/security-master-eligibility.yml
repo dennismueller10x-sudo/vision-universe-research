@@ -13,6 +13,8 @@ name: Produktuniversum (Eignung aus dem Security Master, mit Gate)
 # neu gebaut, und die Materialisierung wird
 # mit force neu angestossen (Technical-Signale). Sonst scheitern alle Laeufe mit Public-Data-Hygiene, auch
 # der naechtliche Marktdatenlauf vor seiner Materialisierung (Befund 05.11.2026: 131 ETFs nach dem Nachholen).
+# Zeitplan: core/registry/schedule.json (Wecker, Eintrag security-master-eligibility-schnellweg), RUNBOOK §10.
+run-name: ${{ inputs.zeitplan && format('{0} · Takt {1}', github.workflow, inputs.zeitplan) || '' }}
 on:
   workflow_run:
     workflows: ['Security Master + Firmennamen (wöchentlich)']
@@ -20,6 +22,14 @@ on:
     branches: [main]
   workflow_dispatch:
     inputs:
+      zeitplan:
+        description: 'Vom Cloudflare-Wecker gesetzt (Cron des Termins, core/registry/schedule.json); manuell leer lassen'
+        type: string
+        default: ''
+      schnell_tage:
+        description: 'Schnellweg fuer Boersengaenge (nur mit neuzugaenge): nur Titel, deren Anbieter-Beginn hoechstens so viele Tage zurueckliegt (1-30), hoechstens schnellMembersAdded je Lauf'
+        type: string
+        default: ''
       commit:
         description: 'Ergebnis committen (nur bei Gate COMMIT)'
         type: boolean
@@ -82,10 +92,12 @@ jobs:
         if: inputs.erweiterung != '' || inputs.neuzugaenge == true || github.event_name == 'workflow_run'
         env:
           IN_ERWEITERUNG: ${{ inputs.erweiterung }}
+          IN_SCHNELL: ${{ inputs.schnell_tage }}
           SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
         run: |
           set -euo pipefail
           case "${IN_ERWEITERUNG:-}" in *[!A-Za-z0-9,.\ -]*) echo "::error::erweiterung: nur Ticker, Komma, Leerzeichen"; exit 2;; esac
+          case "${IN_SCHNELL:-}" in ''|*[!0-9]*) [ -z "${IN_SCHNELL:-}" ] || { echo "::error::schnell_tage: nur eine Zahl"; exit 2; };; esac
           heute="$(date -u +%F)"; X="$RUNNER_TEMP/erw"; N=quant/data/market/security-master
           mkdir -p "$X/work0" "$X/next0" "$X/scale" "$X/out" "$X/work1" "$X/next1" "$X/prev"
           if [ -z "${IN_ERWEITERUNG:-}" ]; then
@@ -103,7 +115,13 @@ jobs:
               --scale-dir "$X/scale" --out "$X/out" --today "$heute"
           else
             max="$(node -e 'console.log(require("./core/registry/eligibility-gate.json").limits.autoMembersAdded)')"
-            node scripts/market/expand-us-universe.mjs --auto "$max" --sec "$X/sec-tickers.json" \
+            recent=()
+            if [ -n "${IN_SCHNELL:-}" ]; then
+              # Schnellweg (Boersengaenge): dieselbe Kette und derselbe SEC-Abgleich, nur Titel der letzten Tage, kleine Obergrenze
+              max="$(node -e 'console.log(require("./core/registry/eligibility-gate.json").limits.schnellMembersAdded)')"
+              recent=(--recent-days "$IN_SCHNELL")
+            fi
+            node scripts/market/expand-us-universe.mjs --auto "$max" --sec "$X/sec-tickers.json" --sec-submissions "${recent[@]}" \
               --master "$X/work0/us-security-master.json" --scale-dir "$X/scale" --out "$X/out" --today "$heute"
             echo "ELIG_AUTO_ADDED=$X/out/expansion.json" >> "$GITHUB_ENV"
           fi
@@ -119,6 +137,9 @@ jobs:
           echo "ELIG_MASTER=$X/next1/us-security-master.json" >> "$GITHUB_ENV"
 
       - name: Neuer Stand (bestehender Erzeuger, nach RUNNER_TEMP)
+        # Nur Umfangsfolgen (Steuerung 21.11.2026): die committete Eignung bleibt, nichts wird neu gerechnet oder abgerufen
+        # (21.11.: nasdaqtrader.com HTTP 503 blockierte sonst das reine Nachziehen). Die Neuberechnung bleibt fail closed.
+        if: ${{ !(github.event_name == 'workflow_dispatch' && !inputs.zeitplan && inputs.umfangsfolgen == true && inputs.erweiterung == '' && inputs.neuzugaenge != true && inputs.approved_catchup != true) }}
         run: |
           set -euo pipefail
           N=quant/data/market/security-master
@@ -139,11 +160,15 @@ jobs:
           node scripts/market/apply-exchange-directory.mjs --classes DEBT,ETN,PREFERRED,WARRANT,RIGHT,UNIT,ETF \
             --dir "$E/exchange-directory" --eligibility "$E/out/eligibility.json" \
             --reconciliation "$E/out/eligibility-reconciliation.json" --product-universe "$E/scale/universe-ELIGIBLE_US_EQUITY.json"
-          # Beendete Notierungen (scripts/market/apply-ended-listings.mjs, #2054) sind ZURUECKGESTELLT (Steuerung 17.11.2026,
-          # Entscheidung A): Die Umfangsfolge loeschte lange Reihen, auf die eingefrorene Forschung (V10-Population,
-          # Elliott-Registry, Backtest-Tests) verweist. Wieder eingeschaltet erst, wenn die Forschung private Kopien (R2) liest.
+          # Beendete Notierungen (scripts/market/apply-ended-listings.mjs, #2054): Stamm INACTIVE und Tagesreihe zu Ende bzw.
+          # belegte Uebernahme -> EXCLUDED. Am 17.11.2026 zurueckgestellt (Entscheidung A), seit Teil B3 (21.11.2026) wieder an:
+          # die Forschung liest fehlende Reihen aus der privaten Kopie (B2b) bzw. dem Fixture (B2c), und die Umfangsfolge
+          # sichert jede Reihe vor dem Loeschen nach R2 (B2a, Abbruch ohne Sicherung).
+          node scripts/market/apply-ended-listings.mjs --eligibility "$E/out/eligibility.json" \
+            --reconciliation "$E/out/eligibility-reconciliation.json" --product-universe "$E/scale/universe-ELIGIBLE_US_EQUITY.json"
 
       - name: Gate (fail closed)
+        if: ${{ !(github.event_name == 'workflow_dispatch' && !inputs.zeitplan && inputs.umfangsfolgen == true && inputs.erweiterung == '' && inputs.neuzugaenge != true && inputs.approved_catchup != true) }}
         id: gate
         env:
           IN_APPROVED: ${{ inputs.approved_catchup }}
@@ -175,6 +200,15 @@ jobs:
           path: ${{ runner.temp }}/elig
           retention-days: 30
 
+      - name: Forschungsreihen der Abgaenge eingefroren? (vor dem Commit)
+        # Steuerung 22.11.2026: die Umfangsfolge entfernt die Reihen jedes Abgangs. Forschungs-Tests lesen Forschungsreihen
+        # dann aus quant/tests/fixtures/research-series/ - fehlt die Kopie, waere main nach dem Lauf rot. Abbruch vor dem Commit.
+        if: (github.event_name == 'workflow_run' || inputs.commit == true) && steps.gate.outputs.decision == 'COMMIT'
+        run: |
+          set -euo pipefail
+          node scripts/market/check-research-frozen.mjs --prev-universe quant/data/market/scale/universe-ELIGIBLE_US_EQUITY.json \
+            --next-universe "$RUNNER_TEMP/elig/scale/universe-ELIGIBLE_US_EQUITY.json"
+
       - name: Commit (nur mit commit=true und Gate COMMIT)
         id: commit
         if: (github.event_name == 'workflow_run' || inputs.commit == true) && steps.gate.outputs.decision == 'COMMIT'
@@ -201,7 +235,11 @@ jobs:
         id: folgen
         if: steps.commit.outputs.changed == 'true' || inputs.umfangsfolgen == true
         env:
-          PUSH_OWNED_PATHS: quant/data/market/discover-series/ quant/data/market/discover-series-long/ quant/data/market/intraday/ quant/data/universe/ quant/data/market/capabilities/ quant/data/product/capabilities-v1.json quant/data/product/capabilities-summary-v1.json quant/data/market/security-master/company-names.json quant/data/market/security-master/company-names-summary.json quant/data/fundamentals/
+          PUSH_OWNED_PATHS: quant/data/market/discover-series/ quant/data/market/discover-series-kurz/ quant/data/market/discover-series-long/ quant/data/market/intraday/ quant/data/universe/ quant/data/market/capabilities/ quant/data/product/capabilities-v1.json quant/data/product/capabilities-summary-v1.json quant/data/market/security-master/company-names.json quant/data/market/security-master/company-names-summary.json quant/data/fundamentals/
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
           SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT || 'VisionUniverseResearch info@visionuniverse.de' }}
         run: |
           set -euo pipefail
@@ -222,6 +260,12 @@ jobs:
           # dieselben Schritte wie im Marktdatenlauf, ohne Kursabruf.
           node scripts/market/build-capability-matrix.mjs
           node scripts/vu2/build-product-capabilities.mjs
+          # Teil B2a (Steuerung 21.11.2026): jede Reihe, die die Umfangsfolge gleich loescht, vorher privat sichern
+          # (R2, Praefix research-series-long/, Lesetest je Datei). Die Loeschschritte loeschen nur, was mit gleichem Hash
+          # im Manifest steht; sonst Abbruch vor dem Loeschen. Das Manifest wird als Beleg mitcommittet.
+          sicherung="$RUNNER_TEMP/series-backup.json"
+          node scripts/market/backup-series.mjs --plan --out "$sicherung"
+          export VU_SERIES_BACKUP_MANIFEST="$sicherung"
           node scripts/market/publish-discover-series.mjs --prune-only
           node scripts/market/publish-long-series.mjs --prune-only
           node scripts/market/ingest-intraday.mjs --index-only
@@ -231,7 +275,16 @@ jobs:
           node scripts/discover/verify-discover-data.mjs
           git config user.name "vision-universe-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add -A $PUSH_OWNED_PATHS discover/data
+          # Nur vorhandene bzw. getrackte Pfade: ein noch leeres Verzeichnis (z. B. discover-series-kurz vor der ersten
+          # Kurzreihe) lässt "git add" sonst mit "pathspec did not match" (128) scheitern und der Schritt bricht ab.
+          if [ "$(node -e 'console.log(require(process.argv[1]).count)' "$sicherung")" != "0" ]; then
+            mkdir -p docs/data/security-master/series-backup
+            cp "$sicherung" "docs/data/security-master/series-backup/$(date -u +%F)-${GITHUB_RUN_ID}.json"
+            git add docs/data/security-master/series-backup
+          fi
+          for pfad in $PUSH_OWNED_PATHS discover/data; do
+            if [ -e "$pfad" ] || git ls-files --error-unmatch -- "$pfad" >/dev/null 2>&1; then git add -A -- "$pfad"; fi
+          done
           if git diff --cached --quiet; then echo "nichts ausserhalb des Umfangs"; else
             git commit -q -m "Umfangsfolgen: Reihen ausserhalb des Produktuniversums entfernt, Discover neu gebaut (Erzeuger)"
             # wie long-series.yml: nach dem Rebase Discover auf dem zusammengefuehrten Stand neu bauen und pruefen
@@ -261,6 +314,17 @@ jobs:
           if [ "$offen" != "0" ]; then echo "Materialisierung laeuft schon ($offen) - kein zweiter Anstoss"; exit 0; fi
           gh workflow run product-intelligence-materialization.yml --ref main -f force=true
 
+      - name: Umfangsfolgen - Deckung und Fundamentalschicht-Abgleich neu messen (pipeline-weekly, Teil deckung)
+        # Steuerung 19.11.2026: Der abgenommene Marktdatenstand (coverage-metrics.json, reconciliation.json) zieht bei jeder
+        # Eignungsaenderung im selben Zug nach. Sonst ist der Abgleich der Fundamentalschicht bis zur naechsten Messung rot und
+        # blockiert jeden PR auf Fundamental-Pfaden (19.11.: 6309 abgenommen, 6340 im Produkt). Der Teil erklaert jede
+        # Abweichung je Titel (coverage-delta.mjs) und bricht bei Unerklaertem vor dem Commit ab.
+        if: steps.folgen.outcome == 'success' && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        # Ein zweiter Anstoss waehrend einer laufenden Messung wartet in der Gruppe market-data-main und misst danach erneut.
+        run: gh workflow run pipeline-weekly.yml --ref main -f teil=deckung
+
       - name: Umfangsfolgen - Vorsorge-Ingest anstossen (ausgeschiedene ETFs)
         # Vorsorge las Reihen ausgeschiedener ETFs aus den Discover-Reihen (05.11.2026, 121 ETFs). Der Ingest holt
         # alles, was noch nicht im Vorsorge-Universum steht (Zusatz-ETFs aus dem Company Master), und baut neu.
@@ -270,7 +334,7 @@ jobs:
         run: gh workflow run research.yml --ref main -f teil=etf-universum -f nur_zusatz=true
 
       - name: Ergebnis
-        if: steps.gate.outputs.decision != 'COMMIT'
+        if: ${{ !(github.event_name == 'workflow_dispatch' && !inputs.zeitplan && inputs.umfangsfolgen == true && inputs.erweiterung == '' && inputs.neuzugaenge != true && inputs.approved_catchup != true) && steps.gate.outputs.decision != 'COMMIT' }}
         run: |
           echo "::error::Gate BLOCKED: Produktuniversum nicht uebernommen (Bericht im Artefakt und in der Zusammenfassung)."
           exit 1

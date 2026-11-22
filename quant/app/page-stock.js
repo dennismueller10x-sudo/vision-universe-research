@@ -695,9 +695,10 @@
   function figuresSection(s, ticker) {
     if (!s.quant || s.quant.state !== "AVAILABLE") return [X.notice("Keine Unternehmenszahlen", "Für diesen Titel liegen keine auswertbaren Geschäftszahlen aus Pflichtmeldungen vor.")];
     var wanted = { quality: ["operatingMargin", "fcfMargin", "netMargin"], growth: ["revenueGrowth", "epsGrowth"], value: ["priceEarnings", "priceSales", "earningsYield", "priceToFcf", "fcfYield"], risk: ["volatility", "maxDrawdown"] };
-    var stats = [], withheld = {};
+    var stats = [], withheld = {}, pct = {}, afterGrowth = -1;
     s.quant.families.forEach(function (fam) {
       (fam.metrics || []).forEach(function (m) {
+        if (m.state === "AVAILABLE" && typeof m.value === "number" && m.unit === "pct") pct[m.metricId] = m.value;
         if (!wanted[fam.id] || wanted[fam.id].indexOf(m.metricId) < 0) return;
         /* Bewusst zurueckgehalten ist nicht dasselbe wie fehlend: der Wert
            steht als "bewusst nicht genannt" da, der Grund darunter. */
@@ -707,8 +708,17 @@
         if (m.state !== "AVAILABLE" || typeof m.value !== "number") return;
         var v = m.value.toLocaleString("de-DE", { maximumFractionDigits: 1 }) + (m.unit === "pct" ? " %" : m.unit === "x" ? " ×" : m.metricId === "marginExpansion" ? " Pp." : "");
         var node = X.stat(m.label, v); if (m.description) node.title = m.description; stats.push(node);
+        if (fam.id === "growth") afterGrowth = stats.length;
       });
     });
+    /* Rule of 40 (Owner 22.11.2026): Umsatzwachstum TTM + Free-Cashflow-Marge, beide aus den gezeigten Geschaeftszahlen;
+       reine Anzeige, fliesst in keinen Score ein. Ab 40 % gilt die Regel als erfuellt. */
+    if (typeof pct.revenueGrowth === "number" && typeof pct.fcfMargin === "number") {
+      var r40 = pct.revenueGrowth + pct.fcfMargin;
+      var r40node = X.stat("Rule of 40", r40.toLocaleString("de-DE", { maximumFractionDigits: 1 }) + " %" + (r40 >= 40 ? " · erfüllt" : " · nicht erfüllt"));
+      r40node.title = "Umsatzwachstum zum Vorjahr plus Free-Cashflow-Marge. Ab 40 % gilt die Regel als erfüllt: schnelles Wachstum, ohne dauerhaft Geld zu verbrennen. Vor allem bei Software- und Technologiewerten gebräuchlich.";
+      stats.splice(afterGrowth >= 0 ? afterGrowth : stats.length, 0, r40node);
+    }
     if (!stats.length) return [X.notice("Keine Unternehmenszahlen", "Die Geschäftszahlen dieses Titels erfüllen die Anforderungen der Methodik nicht.")];
     return [X.stats(stats.slice(0, 10)),
       Object.keys(withheld).length ? el("p", { class: "qx-small", text: Object.keys(withheld).map(function (r) { return VM.reasonText(r); }).join(" ") }) : null,
@@ -1184,7 +1194,9 @@
       longPath: s.masterMemberId && /^[A-Za-z0-9_-]+$/.test(s.masterMemberId) ? "/quant/data/market/discover-series-long/" + s.masterMemberId + ".json" : null,
       loadJSON: global.QuantShell.loadJSON,
       realtime: function () { return api.getRealtimeCapability(ticker); },
-      onPrice: function (p) { if (typeof p.price === "number" && (p.live || !hasDailyPrice)) setLive(p); } });
+      onPrice: function (p) { if (typeof p.price === "number" && (p.live || !hasDailyPrice)) setLive(p); },
+      /* Owner 18.11.2026: die Pille neben dem Kurs folgt dem Zeitraum des Charts. */
+      onRange: function (r) { if (headApi && headApi.setRange) headApi.setRange(r); } });
     disposers.push(chart.dispose);
 
     /* Aufbau nach dem Owner-Mockup "Quant – Optimiertes UI Konzept" (23.10.2026): sechs kompakte Bereiche derselben

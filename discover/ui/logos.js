@@ -17,7 +17,7 @@
   "use strict";
 
   var BASE = "/discover/logos/";
-  var files = null, dunkel = {}, breit = {}, credits = null, creditsLaden = null, warten = [];
+  var files = null, dunkel = {}, breit = {}, credits = null, creditsLaden = null, shards = {}, warten = [];
 
   function laden() {
     if (!global.fetch) { files = {}; return; }
@@ -90,15 +90,23 @@
 
   /** Urheber und Lizenz fuer die Aktienseite - laedt erst, wenn sie gebraucht werden. */
   function credit(symbol) {
-    if (!creditsLaden) {
-      creditsLaden = global.fetch
-        ? global.fetch(BASE + "credits.json", { cache: "default" })
+    var Id = global.VUCore && global.VUCore.Identity, key = Id && Id.shardKey ? Id.shardKey(symbol) : null;
+    function gesamt() {
+      if (!creditsLaden) {
+        creditsLaden = global.fetch
+          ? global.fetch(BASE + "credits.json", { cache: "default" })
             .then(function (r) { return r.ok ? r.json() : { credits: {} }; })
             .catch(function () { return { credits: {} }; })
             .then(function (d) { credits = (d && d.credits) || {}; return credits; })
-        : Promise.resolve({});
+          : Promise.resolve({});
+      }
+      return creditsLaden.then(function (c) { return c[symbol] || null; });
     }
-    return creditsLaden.then(function (c) { return c[symbol] || null; });
+    /* Release-Ausschnitt credits/<shardKey>.json (nur wenige KB statt 1,8 MB); fehlt er (lokal, aelterer Stand), die volle Datei. */
+    if (!global.fetch || !key || creditsLaden) return gesamt();
+    return (shards[key] || (shards[key] = global.fetch(BASE + "credits/" + key + ".json", { cache: "default" })
+      .then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })))
+      .then(function (d) { return d && d.credits ? (d.credits[symbol] || null) : gesamt(); });
   }
 
   /** Zeile "Logo: Urheber · Lizenz · Wikimedia Commons" bzw. "Logo: Website des

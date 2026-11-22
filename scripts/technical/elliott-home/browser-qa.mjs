@@ -79,7 +79,8 @@ for (const vp of VIEWPORTS) {
     check(/Wellen/i.test(await page.locator('h1.el-title').innerText()) && await page.evaluate(() => document.querySelectorAll('h1').length) === 1 && await page.locator('.ek-kopf h1.el-title').count() === 1, 'Startseite zeigt Elliott (Frage als Titel), keine Aktie');
     check(!/NVIDIA|NVDA/.test(await page.locator('h1.el-title').innerText()), 'kein Standardtitel');
     check(await page.locator('#el-main .ek-rail').count() >= 1, 'mindestens eine Schiene');
-    check(await page.evaluate(() => document.documentElement.getAttribute('data-vu-tabs') === 'inhalt' && document.querySelector('vu-navigation').shadowRoot.querySelector('nav.tabs').hidden) && /Heute/.test(await page.locator('#el-main .ek-tab.is-on').innerText()), 'Reiter im Inhalt: Heute aktiv, Reiterzeile des Rahmens verborgen');
+    // Menü im Kopf (Owner 22.11.2026): keine Reiter, oben links „Elliott · Start“.
+    check(await page.evaluate(() => { const r = document.querySelector('vu-navigation').shadowRoot, t = document.querySelector('#el-main .ek-tabs'); return r.querySelector('nav.tabs').hidden && (!t || getComputedStyle(t).display === 'none') && r.querySelector('.world-name').textContent.trim() === 'Elliott' && r.querySelector('.world-area').textContent.trim() === 'Start'; }), 'Kopf: Elliott · Start, keine Reiter');
     check(!page.__requests.some((u) => /technical-intelligence\/v3\/shards|index\.json\.gz/.test(u)), 'kein Shard-/Voll-Index-Abruf auf der Startseite');
     const bytes = await page.evaluate(() => performance.getEntriesByType('resource').reduce((n, e) => n + (e.transferSize || 0), 0));
     console.log('    Anfragen:', page.__requests.length, ' uebertragen ca.', Math.round(bytes / 1024), 'KB');
@@ -145,11 +146,8 @@ for (const vp of VIEWPORTS) {
         await sheet.waitFor({ state: 'detached', timeout: 5000 }).catch(() => {});
       }
       check(await page.locator('#el-detail .cb-eps > details.cb-ep > .cb-ep-body').count() === 3 && !(await page.evaluate(() => document.documentElement.classList.contains('vu-sheet-open'))), 'Aktie: nach dem Schließen liegt jeder Kapitelinhalt wieder im Kapitel, die Seite rollt wieder');
-      await page.locator('#el-detail .ew-end .ew-dm > details.cb-foot > summary').click();
-      await sheet.waitFor({ timeout: 5000 }).catch(() => {});
-      check(/keine Vorhersage, keine Empfehlung, keine Order/.test(await sheet.count() ? await sheet.innerText() : '') && await sheet.locator('a[href="/quant/#/methodik/chartbild"]').count() === 1, 'Aktie: Daten & Methodik als Fenster, Hinweis und Methodik-Link (nach /quant/) erhalten');
-      await page.keyboard.press('Escape');
-      await sheet.waitFor({ state: 'detached', timeout: 5000 }).catch(() => {});
+      /* Owner 22.11.2026: „Daten & Methodik“ steht nicht mehr am Seitenende (Hinweise im Menü); der Text bleibt im Dokument. */
+      check(await page.evaluate(() => { const d = document.querySelector('#el-detail .ew-dm'); return !!d && getComputedStyle(d).display === 'none' && /keine Vorhersage, keine Empfehlung, keine Order/.test(d.textContent); }), 'Aktie: Daten & Methodik ausgeblendet, Hinweis im Dokument');
       check(await page.locator('#el-detail .ew-end a.vu-next[href="/technical/#/chart/' + encodeURIComponent(symbol) + '"]').count() === 1 && await page.locator('#el-detail .ew-end .cb-crumbs a.ew-ask').count() === 1 && await page.locator('#el-detail .ew-end .ew-dm a.ew-home[href="/elliott/#/"]').count() === 1 && /Folgeschritte/.test(await page.locator('#el-detail .ew-end').innerText()), 'Aktie: Folgeschritte mit „Weiter“-Karte zur Chart-Lage in Technical und Frag VU, Daten & Methodik mit Rückweg zur Übersicht');
       check(/Ungültig/.test(await page.locator('#el-detail .cb').innerText()), 'Aktie: Ungültig-Marke steht auf der Seite');
       // Balken „Kurs gegen Ungültig-Marke“ nach „Die Lesart in drei Sätzen“: derselbe Abstand wie auf der Karte, genau eine h1, Kontrast ≥ 4,5 : 1

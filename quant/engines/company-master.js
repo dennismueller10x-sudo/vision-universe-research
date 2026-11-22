@@ -40,6 +40,7 @@
   "use strict";
 
   var isNode = (typeof module !== "undefined" && module.exports);
+  var Exchanges = isNode ? require("../../core/exchanges.js") : global.VUCore.Exchanges;
 
   var Hash = isNode ? require("./hash.js") : global.VUHash;
   var Classification = isNode
@@ -109,13 +110,7 @@
      Die Anbieter-Tickerliste sagt nicht, ob ein Listing primaer ist - sie
      sagt nur, wo gehandelt wird. Diese Liste ist deshalb eine Ableitung
      mit benannter Grundlage und keine Anbieterangabe. */
-  var PRIMARY_EXCHANGES = {
-    "NASDAQ": "XNAS", "NYSE": "XNYS", "NYSE ARCA": "ARCX", "NYSE MKT": "XASE",
-    "NYSE AMERICAN": "XASE", "AMEX": "XASE", "BATS": "BATS", "IEX": "IEXG",
-    /* Texas Stock Exchange: Operating MIC TXSE (txse.com, ID-Codes). Regulaerer US-Platz wie in
-       us-security-master.js#US_PRIMARY_EXCHANGES; erster Fall TXCP (8-A12B 0001077428-26-000068). */
-    "TXSE": "TXSE"
-  };
+  var PRIMARY_EXCHANGES = Exchanges.micTable();   /* core/exchanges.js (Boersenregister): Platz -> Operating MIC */
 
   /* Die Schreibweise der bestehenden securityIds. Sie stammt aus
      scripts/market/select-gate-universe.mjs und muss hier Zeichen fuer
@@ -448,8 +443,10 @@
       /* Kennungen aus dem Bestand nicht mit einem leeren Eingang
          ueberschreiben. Eine einmal aufgeloeste CIK geht nicht dadurch
          verloren, dass die Tickerliste sie nicht kennt. */
+      /* issuerId folgt der CIK (22.11.2026): bleibt die CIK aus dem Bestand stehen, bleibt auch ihre issuerId -
+         sonst verlor der erste Sync seit September 144 Instrumenten die issuerId bei erhaltener CIK. */
       if ((f === "cik" || f === "isin" || f === "cusip" || f === "figi" || f === "lei" ||
-           f === "cikSource" || f === "companyName") &&
+           f === "cikSource" || f === "companyName" || f === "issuerId" || f === "issuerIdSource") &&
           (incoming[f] === null || incoming[f] === undefined)) return;
       if (f === "companyNameStatus" && incoming.companyName === null && previous.companyName) return;
       merged[f] = incoming[f] === undefined ? null : incoming[f];

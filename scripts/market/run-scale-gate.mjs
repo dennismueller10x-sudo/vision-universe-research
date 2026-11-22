@@ -33,7 +33,10 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync, statSync } from "no
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import { loadAdjustmentStepEvidence } from "./lib/adjustment-step-evidence.mjs";
 
+/* Belegte Faktorspruenge (quant/config/adjustment-step-evidence.json, nur SPIN_OFF): erklaeren genau ihren Sprung. */
+const STEP_EVIDENCE = loadAdjustmentStepEvidence();
 const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const Identity = require(join(root, "core", "identity.js"));
@@ -360,7 +363,7 @@ async function fetchAndAssess(sec, opts) {
   if (from > today) {
     const stored = store.readBars(sec.securityId, "working");
     return { ticker: sec.ticker, securityId: sec.securityId, fetched: false,
-             reason: "upToDate", assessment: MarketQuality.assessSeries(stored, { today }) };
+             reason: "upToDate", assessment: MarketQuality.assessSeries(stored, { today, explainedSteps: STEP_EVIDENCE.get(sec.securityId) }) };
   }
 
   const started = Date.now();
@@ -391,7 +394,7 @@ async function fetchAndAssess(sec, opts) {
   }
 
   const stored = store.readBars(sec.securityId, "working");
-  const assessment = MarketQuality.assessSeries(stored, { today });
+  const assessment = MarketQuality.assessSeries(stored, { today, explainedSteps: STEP_EVIDENCE.get(sec.securityId) });
   return { ticker: sec.ticker, securityId: sec.securityId, fetched: true,
            added: merged ? merged.added : 0, total: merged ? merged.total : (stored ? stored.bars.length : 0),
            first: merged ? merged.first : null, last: merged ? merged.last : null,
@@ -659,7 +662,7 @@ async function main() {
       ausBestand.push({
         ticker: sec.ticker, securityId: sec.securityId, fetched: false,
         fromCheckpoint: true,
-        assessment: MarketQuality.assessSeries(stored, { today })
+        assessment: MarketQuality.assessSeries(stored, { today, explainedSteps: STEP_EVIDENCE.get(sec.securityId) })
       });
     }
     if (ausBestand.length) {

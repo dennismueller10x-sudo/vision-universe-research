@@ -9,6 +9,7 @@ on:
         default: ''
 permissions:
   contents: read
+  actions: read
 concurrency:
   group: company-intelligence-refresh-health
   cancel-in-progress: false
@@ -36,6 +37,7 @@ jobs:
           VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
           VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           # Exit contract: 0 = HEALTHY/WARNING/OFF (deliberately closed gate, fresh data),
           # 1 = SLO CRITICAL (a verdict file with status CRITICAL exists),
@@ -49,6 +51,12 @@ jobs:
           if [ "$rc" -eq 1 ] && ! grep -q '"status": *"CRITICAL"' "$out" 2>/dev/null; then
             echo "::error::health crashed (exit 1 without an SLO verdict file); not an SLO finding"
             rc=2
+          fi
+          # Vollumfang: Refresh-SLO ueber Rueckstandsquote und Lane-Stempel (backlog-slo.mjs); ein
+          # unlesbares Artefakt laesst das strenge Stempel-Urteil stehen. Nur Lesen.
+          if [ "$rc" -le 1 ] && [ -s "$out" ]; then
+            rc=0
+            node scripts/company_intelligence/backlog-slo.mjs --verdict "$out" || rc=$?
           fi
           case "$rc" in
             0) ;;

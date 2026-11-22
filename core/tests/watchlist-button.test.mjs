@@ -111,6 +111,20 @@ test("Kopplung angemeldet: Zustand = lokal ODER Konto, ein Klick schreibt beide 
   delete globalThis.VUAccount; signIn(false);
 });
 
+test("Kopplung angemeldet: Entfernen zeigt sofort „aus“, auch bevor das Konto antwortet (Herz liess sich nicht leeren, 21.11.2026)", async () => {
+  B._reset(); withMaster(); signIn(true); const calls = [];
+  globalThis.VUAccount = signedInAccount([{ instrumentId: IDS.MSFT, ticker: "MSFT" }, { instrumentId: IDS.NVDA, ticker: "NVDA" }], calls); B._ready(Promise.resolve(true));
+  const s = B.couple(localStore(["NVDA"]));
+  await new Promise(r => setTimeout(r, 0));
+  assert.equal(s.has("NVDA"), true); assert.equal(s.has("MSFT"), true);
+  assert.equal(s.toggle("NVDA"), false); assert.equal(s.has("NVDA"), false, "lokal UND im Konto: sofort aus");
+  assert.equal(s.toggle("MSFT"), false); assert.equal(s.has("MSFT"), false, "nur im Konto: sofort aus");
+  assert.equal(s.toggle("MSFT"), true, "zweiter Klick setzt wieder"); assert.equal(s.has("MSFT"), true);
+  await s.lastSync; await new Promise(r => setTimeout(r, 0));
+  assert.equal(s.has("NVDA"), false, "nach der Antwort bleibt aus"); assert.equal(s.has("MSFT"), true);
+  delete globalThis.VUAccount; signIn(false);
+});
+
 test("Kopplung: Fehler im Konto (Tarifgrenze) laesst die lokale Liste wie geklickt", async () => {
   B._reset(); withMaster(); signIn(true); const calls = [];
   globalThis.VUAccount = signedInAccount([], calls, "WATCHLIST_ITEMS_LIMIT_REACHED"); B._ready(Promise.resolve(true));

@@ -332,8 +332,13 @@
        vergleicht). Liegt die Median-Marge im Fenster unter null, zaehlt ihr Abstand zur Null als Einbruch, wenn er groesser
        ist: ein Dauerverlust ist keine stabile Marge (Plausibilitaetsprobe 16.11.2026: ohne diese Regel bekaeme SOBR mit
        schrumpfendem Verlust von -29.481 % auf -2.094 % den besten Wert; mit ihr 1,0 = 100 Prozentpunkte). */
-    if (marginWindow.length >= 4) {
-      var capped = marginWindow.map(function (entry) { return Math.max(-1, Math.min(1, entry.value)); });
+    /* quant-v2.4.1 (Rueckwaertsvergleich 18.11.2026, Steuerung nach Owner-Ja): Der Einbruch zaehlt nur ueber die letzten
+       drei Geschaeftsjahre (ab drei). Auf dem PIT-Panel 2010-2025 traegt das im IC mindestens so viel wie das bisherige
+       Fenster (12 Monate 0,032 gegen 0,024, Differenz t 2,0, nach Holm nicht signifikant); ein Einbruch vor vier, fuenf
+       Jahren (NVDA 2023, AMZN 2022) belastet Quality nicht mehr. Regel, Kappung und Dauerverlust unveraendert. */
+    var drawdownWindow = operatingMargins.slice(-3);
+    if (drawdownWindow.length >= 3) {
+      var capped = drawdownWindow.map(function (entry) { return Math.max(-1, Math.min(1, entry.value)); });
       var peak = -Infinity, drawdown = 0;
       capped.forEach(function (value) {
         if (value > peak) peak = value;

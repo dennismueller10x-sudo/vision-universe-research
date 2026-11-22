@@ -390,13 +390,19 @@ function marginDoc(margins) {
 test("a rising operating margin has no drawdown; a fall from an earlier high counts in full", () => {
   const cutoff = "2026-09-18";
   assert.equal(Inputs.compute(marginDoc([0.1, 0.2, 0.3, 0.4, 0.5]), cutoff, 1000).raws.operatingMarginDrawdown, 0);
+  /* quant-v2.4.1 (18.11.2026): nur die letzten drei Geschaeftsjahre. Der Einbruch 0,37 -> 0,16 liegt davor und zaehlt
+     nicht mehr; der kleine Rueckgang 0,62 -> 0,60 schon. */
   const nvdaLike = Inputs.compute(marginDoc([0.37, 0.16, 0.54, 0.62, 0.60]), cutoff, 1000).raws.operatingMarginDrawdown;
-  assert.ok(Math.abs(nvdaLike - 0.21) < 1e-12);
+  assert.ok(Math.abs(nvdaLike - 0.02) < 1e-12);
+  const recent = Inputs.compute(marginDoc([0.30, 0.31, 0.62, 0.40, 0.45]), cutoff, 1000).raws.operatingMarginDrawdown;
+  assert.ok(Math.abs(recent - 0.22) < 1e-12, "ein Einbruch in den letzten drei Jahren zaehlt voll");
+  assert.equal(Inputs.compute(marginDoc([0.1, 0.2]), cutoff, 1000).raws.operatingMarginDrawdown, undefined, "ab drei Jahren");
+  assert.ok(Number.isFinite(Inputs.compute(marginDoc([0.1, 0.2, 0.15]), cutoff, 1000).raws.operatingMarginDrawdown));
 });
 test("a business without an operating margin is not stable because its losses shrink", () => {
   const cutoff = "2026-09-18";
   // Verlust vom Hundertfachen des Umsatzes, schrumpfend: gekappt auf -100 %, Abstand der Median-Marge zur Null zaehlt.
   assert.equal(Inputs.compute(marginDoc([-290, -61, -36, -21, -15]), cutoff, 1000).raws.operatingMarginDrawdown, 1);
-  const small = Inputs.compute(marginDoc([-0.12, -0.12, -0.12, 0.18, 0.2]), cutoff, 1000).raws.operatingMarginDrawdown;
-  assert.ok(Math.abs(small - 0.12) < 1e-12);
+  const small = Inputs.compute(marginDoc([0.18, 0.2, -0.12, -0.12, -0.12]), cutoff, 1000).raws.operatingMarginDrawdown;
+  assert.ok(Math.abs(small - 0.12) < 1e-12, "Dauerverlust der letzten drei Jahre");
 });

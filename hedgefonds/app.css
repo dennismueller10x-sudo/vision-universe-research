@@ -421,7 +421,7 @@ main.hf-main:has(>.hp){padding-bottom:20px}
 :is(.hp,.hp-tabw) .hp-tab{position:relative;height:36px;padding:0 15px;border-radius:99px;border:0;background:var(--hp-tile);color:var(--hp-ink);font:700 14px/1 var(--vu-font,Inter,sans-serif);display:inline-flex;align-items:center;white-space:nowrap;flex:none;text-decoration:none;cursor:pointer}
 :is(.hp,.hp-tabw) .hp-tab::after{content:"";position:absolute;inset:-4px 0}
 :is(.hp,.hp-tabw) .hp-tab.is-on,.hp .hp-tab[aria-pressed=true]{background:var(--hp-ink);color:var(--hp-bg)}
-:is(.hp,.hp-tabw) .hp-tab:focus-visible,.hp .hp-tap:focus-visible,.hp .hp-more:focus-visible,.hp .hp-lk:focus-visible{outline:2px solid var(--vu-focus-ring,#4f6b00);outline-offset:2px}
+:is(.hp,.hp-tabw) .hp-tab:focus-visible,.hp .hp-tap:focus-visible,.hp .hp-more:focus-visible,.hp .hp-lk:focus-visible{outline:2px solid var(--vu-focus-ring,#101318);outline-offset:2px}
 /* Abschnittskopf (Prototyp .sh) */
 .hp .hp-sh{display:flex;align-items:baseline;justify-content:space-between;gap:0;padding:0 14px;margin:26px 0 10px}
 .hp .hp-sh h2{font-size:22px;line-height:1.1;font-weight:800;letter-spacing:-.025em;margin:0;color:var(--hp-ink)}
@@ -506,14 +506,14 @@ main.hf-main:has(>.hp){padding-bottom:20px}
 /* Kennzahlen in der Geschichte der Aktie (#/aktie/<T>) im Hellen: dunkle Zahl, Unterzeile grau (axe color-contrast ≥ 4,5:1) */
 :root:not([data-theme=dark]) .hf-story .vu-stats>div{border-color:#dcdcdc}
 :root:not([data-theme=dark]) .hf-story .vu-stats b{color:#000}
-:root:not([data-theme=dark]) .hf-story .vu-stats .is-lime b{color:#4f6b00}
+:root:not([data-theme=dark]) .hf-story .vu-stats .is-lime b{color:#101318}
 :root:not([data-theme=dark]) .hf-story .vu-stats span{color:#5d636b}
 
 /* ------------------------------------------------------------ Aktie #/aktie/<T> nach dem Klickentwurf (Owner 17.11.2026)
    Meldezeitraum als Karte, vier Zahlen als 2×2-Kacheln, Schiene Fonds · Bewegung · Insider mit großem Urteil,
    Star-Investoren und ausgestiegene Fonds als Zeilen in einer Karte, „Mehr dazu“ als Zeilen, Fuß zentriert. Nur Darstellung. */
 .hf-k2{--k2-card:#151516;--k2-dk:#232325;--k2-track:#3a3a3d;--k2-ink:#f4f5f1;--k2-hi:#fff;--k2-on-hi:#000;--k2-mut:#a1a7af;--k2-sec:#c3c7cc;--k2-line:rgba(255,255,255,.09);--k2-lime:#c8f531;--k2-lc:#c8f531}
-:root:not([data-theme=dark]) .hf-k2{--k2-card:#f4f4f4;--k2-dk:#e4e4e4;--k2-track:#c9ccd0;--k2-ink:#0d0f12;--k2-hi:#000;--k2-on-hi:#fff;--k2-mut:#5f646b;--k2-sec:#3a3d42;--k2-line:rgba(0,0,0,.09);--k2-lc:#4f6b00}
+:root:not([data-theme=dark]) .hf-k2{--k2-card:#f4f4f4;--k2-dk:#e4e4e4;--k2-track:#c9ccd0;--k2-ink:#0d0f12;--k2-hi:#000;--k2-on-hi:#fff;--k2-mut:#5f646b;--k2-sec:#3a3d42;--k2-line:rgba(0,0,0,.09);--k2-lc:#101318}
 .hf-k2 .vu-sect.hf-k2-sh,.hf-k2>.vu-sect{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:26px 0 10px}
 .hf-k2 .vu-sect h2{margin:0;font-size:22px;line-height:1.1;font-weight:800;letter-spacing:-.025em;color:var(--k2-hi)}
 .hf-k2 .hf-k2-sh>span,.hf-k2 .vu-sect .hf-link{font-size:13px;font-weight:700;color:var(--k2-mut);white-space:nowrap}
@@ -580,3 +580,34 @@ main.hf-main:has(>.hp){padding-bottom:20px}
 .hf-k2 .hf-dm{margin-top:16px}
 .hf-k2 .vu-sothers{margin-top:26px}
 .hf-k2>.hf-legal{margin:28px 0 0;font-size:11px;line-height:1.45;text-align:center;color:var(--k2-mut)}
+
+/* =========================================================================
+   iPad und Desktop (ab 761 px): die Handy-Spalte wächst mit der Breite. Unter 761 px gilt nichts hiervon.
+   761–1023 px: Breite bis ca. 900 px mit 24 px Rand; ab 1024 px Inhalt bis 1240 px (Kopf-Breite des Rahmens), mittig.
+   ========================================================================= */
+@media (min-width:761px){
+  .hf-wrap{max-width:948px}
+  /* Bildschirme nach App-Konzept 2 (.hp): bündig mit der Inhaltskante statt Handy-Innenrand von 14 px */
+  .hp,.hp-tabw{margin-left:0;margin-right:0}
+  :is(.hp,.hp-tabw) .hp-tabs{padding-left:0;padding-right:0}
+  .hp .hp-px,.hp .hp-sh,.hp .hp-rail{padding-left:0;padding-right:0}
+  .hp .hp-endl{margin-left:0;margin-right:0}
+}
+@media (min-width:1024px){
+  .hf-wrap{max-width:1288px}
+  /* Start: „Was die Stars bewegt haben“ neben „Gekauft, verkauft, gehalten“ */
+  .hp:has(>.hp-px>.hp-mv):has(>.hp-px>#hf-agg){display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:28px;grid-auto-flow:row dense;align-items:start}
+  .hp>*{grid-column:1/-1}
+  .hp>.hp-sh:has(+.hp-px>.hp-mv),.hp>.hp-px:has(>.hp-mv){grid-column:1}
+  .hp>.hp-sh:has(+.hp-px>#hf-agg),.hp>.hp-px:has(>#hf-agg){grid-column:2}
+  /* Listen zweispaltig: Investoren, Fonds, Aktien, Fondsströme, Gruppen-Käufe */
+  #hf-invlist,#hf-sgrid,#hf-flows,#hf-ni,#hf-nd{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:28px;align-content:start}
+  .hf-main .vu-stack{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .hf-main .hf-seg{max-width:620px}
+  /* Fonds: größte Positionen neben dem Depotwert-Verlauf */
+  .hf-detail:has(>.hf-mvl+.vu-sect+.vu-box>svg){display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:28px;grid-auto-flow:row dense}
+  .hf-detail>*{grid-column:1/-1}
+  .hf-detail>.vu-sect:has(+.hf-mvl),.hf-detail>.vu-sect+.hf-mvl{grid-column:1}
+  .hf-detail>.hf-mvl+.vu-sect,.hf-detail>.hf-mvl+.vu-sect+.vu-box{grid-column:2}
+  .hf-detail>.hf-back{justify-self:start}
+}

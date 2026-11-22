@@ -18,11 +18,14 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 
+import { loadAdjustmentStepEvidence } from "../market/lib/adjustment-step-evidence.mjs";
 const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const Store = require(join(root, "quant", "engines", "history-store.js"));
 const Guard = require(join(root, "quant", "engines", "zero-cost-guard.js"));
 const MQ = require(join(root, "quant", "engines", "market-quality.js"));
+const Identity = require(join(root, "core", "identity.js"));
+const STEP_EVIDENCE = loadAdjustmentStepEvidence(root);
 
 const argv = process.argv.slice(2);
 const arg = (n, d = null) => { const i = argv.indexOf(n); return i >= 0 && argv[i + 1] ? argv[i + 1] : d; };
@@ -107,15 +110,20 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     if (!doc) { report.tickers[t] = { state: "NOT_IN_STORE" }; console.log(`${t}: nicht in der Ablage`); continue; }
     const bars = doc.bars;
     const verdict = MQ.validateAdjustmentConsistency(bars, { claimedStatus: doc.adjustmentStatus, dividendConvention: "TIINGO_REINVESTMENT_CLOSE" });
+    /* Vorher/Nachher mit dem Register belegter Spruenge (quant/config/adjustment-step-evidence.json) */
+    const withEvidence = MQ.validateAdjustmentConsistency(bars, { claimedStatus: doc.adjustmentStatus, dividendConvention: "TIINGO_REINVESTMENT_CLOSE",
+      explainedSteps: STEP_EVIDENCE.get(Identity.securityIdForTicker(t)) });
+    const blocked = (v) => v.findings.some((f) => f.code === "unexplained_adjustment_step");
     const steps = explainSteps(bars);
     const divs = bars.filter((b) => b.dividend > 0).map((b) => ({ date: b.date, dividend: b.dividend, close: b.close }));
     report.tickers[t] = {
       state: "READ", first: doc.first, last: doc.last, barCount: doc.barCount, adjustmentStatus: doc.adjustmentStatus,
-      findings: verdict.findings, dividendsReported: divs, splitsReported: bars.filter((b) => b.splitFactor && b.splitFactor !== 1).map((b) => ({ date: b.date, splitFactor: b.splitFactor })),
+      findings: verdict.findings, blockedWithoutRegister: blocked(verdict), blockedWithRegister: blocked(withEvidence),
+      explainedByRegister: withEvidence.findings.filter((f) => f.code === "adjustment_step_explained").map((f) => f.context), dividendsReported: divs, splitsReported: bars.filter((b) => b.splitFactor && b.splitFactor !== 1).map((b) => ({ date: b.date, splitFactor: b.splitFactor })),
       unexplainedSteps: steps.filter((s) => !s.explained).map((s) => ({ ...s, classification: classifyStep(s, bars) })),
       explainedSteps: steps.filter((s) => s.explained).length
     };
-    console.log(`\n== ${t} (${doc.first} .. ${doc.last}, ${doc.barCount} Bars)`);
+    console.log(`\n== ${t} (${doc.first} .. ${doc.last}, ${doc.barCount} Bars) gesperrt ohne Register: ${blocked(verdict)}, mit Register: ${blocked(withEvidence)}`);
     console.log(`Befunde: ${verdict.findings.filter((f) => f.severity === "error").map((f) => f.code + "@" + (f.details && f.details.date || "")).join(", ") || "keine Fehler"}`);
     console.log(`Gemeldete Dividenden: ${divs.map((d) => d.date + " " + d.dividend).join(" | ") || "keine"}`);
     for (const s of steps.filter((x) => !x.explained).slice(-3)) {

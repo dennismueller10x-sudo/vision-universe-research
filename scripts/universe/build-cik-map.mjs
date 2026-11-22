@@ -40,6 +40,7 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { guardNewIssuerAttachments, PENDING } from "./lib/cik-succession-guard.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..", "..");
@@ -66,6 +67,11 @@ const OUT_FILE = pfad(arg("--out", "quant/data/universe/cik-map.json"));
    staende ein gruener Haken unter einem Ergebnis, das niemand wollte.
    Der Backfill-Workflow setzt deshalb --require-source. */
 const REQUIRE_SOURCE = process.argv.slice(2).indexOf("--require-source") >= 0;
+/* Nachfolge-Regel (lib/cik-succession-guard.mjs): voriger Stand, Produktuniversum, Register. */
+const PREVIOUS_FILE = pfad(arg("--previous", "quant/data/universe/cik-map.json"));
+const PRODUCT_FILE = pfad(arg("--product-universe", "quant/data/market/scale/universe-ELIGIBLE_US_EQUITY.json"));
+const SUCCESSIONS_FILE = pfad(arg("--successions", "quant/config/ticker-successions.json"));
+function readOptional(file) { return existsSync(file) ? JSON.parse(readFileSync(file, "utf8")) : null; }
 const CACHE_DIR = join(root, ".sec-cache", "universe");
 const USER_AGENT = process.env.SEC_USER_AGENT || "VisionUniverseResearch info@visionuniverse.de";
 
@@ -246,6 +252,25 @@ async function main() {
     });
   }
 
+  /* Neue Notierung an einem Emittenten, der schon ein Produktkuerzel hat: nur mit Nachfolge-Beleg
+     (Steuerung 22.11.2026). Der vorige Stand wird VOR dem Schreiben gelesen. */
+  const prevDoc = readOptional(PREVIOUS_FILE);
+  const previous = prevDoc && (prevDoc.status === "OK" || prevDoc.status === "FROM_CACHE") ? prevDoc.byTicker || {} : null;
+  const productDoc = readOptional(PRODUCT_FILE);
+  const succDoc = readOptional(SUCCESSIONS_FILE);
+  const guard = guardNewIssuerAttachments({
+    byTicker, previous,
+    productTickers: ((productDoc && productDoc.securities) || []).map((s) => s.ticker),
+    successions: (succDoc && succDoc.successions) || [],
+    pins: ((readOptional(pfad(arg("--pins", "quant/config/cik-pins.json")))) || {}).pins || []
+  });
+  if (!guard.checked) console.log("  Nachfolge-Regel: kein voriger Stand - nicht geprueft.");
+  for (const p of guard.pending) {
+    console.log(`::warning::${PENDING}: ${p.ticker} bekommt CIK ${p.cik} nicht - sie haengt im Produkt an ` +
+                `${p.heldBy.join(", ")}, und das Nachfolge-Register fuehrt ${p.ticker} nicht als Nachfolger` +
+                (p.keptCik ? ` (bisherige CIK ${p.keptCik} bleibt).` : "."));
+  }
+
   /* Eine CIK mit mehreren Kuerzeln ist der Normalfall (Aktienklassen,
      Vorzuege) und kein Befund. Gezaehlt wird sie trotzdem: ohne die Zahl
      liest sich "12.000 Kuerzel" wie "12.000 Unternehmen". */
@@ -279,16 +304,25 @@ async function main() {
         "Kein Befund. Aktienklassen und Vorzuege desselben Emittenten teilen sich eine CIK - " +
         "genau deshalb gehoeren Fundamentaldaten an den Emittenten und nicht an das Papier (§15).",
       withExchange: Array.from(byTicker.values()).filter((r) => r.exchange).length,
-      withName: Array.from(byTicker.values()).filter((r) => r.name).length
+      withName: Array.from(byTicker.values()).filter((r) => r.name).length,
+      pendingSuccessionEvidence: guard.pending.length
     },
     ambiguous,
+    successionGuard: {
+      rule: "Eine CIK, die im Produkt schon an einem Kuerzel haengt, bekommt ein neues Produktkuerzel nur mit " +
+            "Eintrag im Nachfolge-Register (quant/config/ticker-successions.json). Sonst " + PENDING +
+            ": keine CIK, Alarm, kein Abbruch (Steuerung 22.11.2026).",
+      checked: guard.checked,
+      pending: guard.pending,
+      registered: guard.registered
+    },
     note: "Kuerzel -> CIK + Firmenname, wie die SEC sie fuehrt. Die SEC ist die Autoritaet fuer " +
           "die CIK; ein Kuerzel, das hier fehlt, hat keinen US-Einreicher - kein Fehler, sondern " +
           "ein Befund (auslaendische Emittenten ohne 20-F, ETFs, delistete Titel).",
     byTicker: Object.fromEntries(
       Array.from(byTicker.entries()).sort().map(([k, v]) => [k, {
         cik: v.cik, name: v.name, exchange: v.exchange, source: v.source,
-        status: v.status, candidates: v.candidates || undefined
+        status: v.status, candidates: v.candidates || undefined, heldBy: v.heldBy || undefined
       }]))
   };
 

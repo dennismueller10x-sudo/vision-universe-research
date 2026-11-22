@@ -27,6 +27,7 @@ import { resolveProductUniverse } from "../market/universe-source.mjs";
 const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const FactorEvidence = require(join(ROOT, "quant/engines/factor-evidence.js"));
+const RankingPopulation = require(join(ROOT, "quant/engines/ranking-population.js"));
 const ChangeEngine = require(join(ROOT, "quant/engines/change-engine.js"));
 const FundamentalInputs = require(join(ROOT, "quant/engines/fundamental-inputs.js"));
 const PublishedClose = require(join(ROOT, "quant/engines/published-close.js"));
@@ -100,7 +101,7 @@ const FUNDAMENTAL_COMPONENTS = {
     { id: "equityToAssets", weight: 0.15, direction: "higher", label: "Eigenkapitalquote", unit: "ratio" },
     { id: "positiveFcfYears", weight: 0.20, direction: "higher", label: "Jahre mit positivem freien Zahlungsfluss", unit: "count", noWinsor: true },
     { id: "operatingMarginDrawdown", weight: 0.20, direction: "lower", label: "Größter Einbruch der operativen Marge", unit: "ratio",
-      note: "Größter Rückgang der jährlichen operativen Marge vom früheren Hoch, bis zu fünf Geschäftsjahre (ab vier); steigende Margen zählen nicht." }
+      note: "Größter Rückgang der jährlichen operativen Marge vom früheren Hoch in den letzten drei Geschäftsjahren; steigende Margen zählen nicht." }
   ],
   growth: [
     { id: "revenueCagr3y", weight: 0.30, direction: "higher", label: "Umsatzwachstum pro Jahr, 3 Jahre", unit: "ratio" },
@@ -620,6 +621,13 @@ function main() {
     records.push({ security, ticker, peer, price, priceStatus, fundamentals, quote });
   }
 
+  /* Ranglisten- und Perzentil-Grundgesamtheit (Steuerung 22.11.2026): nur Stammaktien und ADR (quant/engines/
+     ranking-population.js). Getrennte Klassen bleiben im Produkt, rechnen aber in keine Normalisierung und tragen je
+     Faktor NOT_APPLICABLE / NOT_IN_COMMON_STOCK_RANKING. Gattung aus der Eignungsschicht. */
+  const gattung = new Map(JSON.parse(readFileSync(join(ROOT, "quant/data/market/security-master/eligibility.json"), "utf8")).decisions
+    .map((d) => [d.securityId, d.instrument_type]));
+  const rankable = records.map((record) => RankingPopulation.isRankable(gattung.get(record.security.securityId)));
+
   /* 3. Cross-sectional normalization, per component, universe and peer. */
   const allComponents = [];
   for (const [factorId, list] of Object.entries(PRICE_COMPONENTS)) list.forEach((spec) => allComponents.push({ factorId, spec, source: "price" }));
@@ -653,7 +661,8 @@ function main() {
     const key = (source === "template" ? TEMPLATE_COHORT + ":" : "") + factorId + ":" + spec.id;
     if (spec.unavailable) { scores.set(key, records.map(() => null)); continue; }
 
-    const raws = records.map((record) => {
+    const raws = records.map((record, index) => {
+      if (!rankable[index]) return null;
       if (source === "price") {
         /* Der Zustand kommt mit: eine Komponente darf einen Wert
            ablehnen, dessen fieldStatus ihn nicht traegt. */
@@ -744,6 +753,14 @@ function main() {
     const recordTemplate = templateFor(templates, record.peer?.sic4);
 
     for (const factorId of FactorEvidence.FACTOR_ORDER) {
+      /* revisions ist fuer jeden Titel BLOCKED_EXTERNAL (Vertrag), auch ausserhalb der Stammaktien-Rangliste. */
+      if (!rankable[index] && factorId !== "revisions") {
+        factors[factorId] = { state: "NOT_APPLICABLE", reason: RankingPopulation.REASON, reasonText: RankingPopulation.TEXT, score: null,
+          availableWeight: 0, confidence: null, components: [], peer: null };
+        factorStates[factorId].NOT_APPLICABLE += 1;
+        reasonCounts[RankingPopulation.REASON] = (reasonCounts[RankingPopulation.REASON] || 0) + 1;
+        continue;
+      }
       if (factorId === "revisions") {
         factors.revisions = {
           state: "UNAVAILABLE", reason: "BLOCKED_EXTERNAL", score: null, availableWeight: 0, confidence: null,

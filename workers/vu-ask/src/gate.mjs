@@ -98,8 +98,9 @@ export class AskGate {
     const url = new URL(request.url);
     const ip = request.headers.get("x-vu-ip") || "unknown";
     try {
-      if (url.pathname === "/ask" && request.method === "POST") return await this.ask(await request.json(), ip);
-      if (url.pathname === "/quota") return json(200, await this.quota(ip, url.searchParams.get("client")));
+      const account = request.headers.get("x-vu-account") || null;
+      if (url.pathname === "/ask" && request.method === "POST") return await this.ask(await request.json(), ip, account);
+      if (url.pathname === "/quota") return json(200, await this.quota(ip, url.searchParams.get("client"), account));
       if (url.pathname === "/report") return json(200, await this.report(Number(url.searchParams.get("limit")) || 200));
       return json(404, { ok: false, reason: "NOT_FOUND" });
     } catch (e) {
@@ -121,42 +122,52 @@ export class AskGate {
     return (this._salt = salt);
   }
 
-  async identities(ip, clientId, day) {
+  /* account: die geprueften Konto-ID aus dem Eingangs-Worker (nur wenn
+     VU_ASK_ACCOUNT_LIMITS an ist und das Token gueltig war), sonst null.
+     Ein Konto zaehlt NUR je Konto: hinter einer gemeinsamen Adresse
+     (Firma, Mobilfunk) sollen sich Konten nicht gegenseitig aussperren.
+     Anonym zaehlen Anschluss UND Browser, wie bisher. Die grobe Bremse
+     je Anschluss (rateKey) gilt fuer alle. */
+  async identities(ip, clientId, day, account) {
     const salt = await this.salt();
     const ipHash = await sha(`${salt}|${day}|ip|${ip}`);
     const clientHash = CLIENT_ID.test(clientId || "") ? await sha(`${salt}|${day}|client|${clientId}`) : null;
-    return { ipKey: `u:${day}:${ipHash}`, clientKey: clientHash ? `u:${day}:c${clientHash}` : null, rateKey: `r:${day}:${ipHash}` };
+    const accountHash = account ? await sha(`${salt}|${day}|account|${account}`) : null;
+    const userKeys = accountHash ? [`u:${day}:a${accountHash}`]
+      : [`u:${day}:${ipHash}`, clientHash ? `u:${day}:c${clientHash}` : null].filter(Boolean);
+    return { userKeys, account: !!accountHash, rateKey: `r:${day}:${ipHash}` };
   }
 
-  async userUsage(ids) {
-    const keys = [ids.ipKey, ids.clientKey].filter(Boolean);
-    const got = await this.storage.get(keys);
-    return { llm: Math.max(...keys.map((k) => (got.get(k) || { llm: 0 }).llm)) };
+  async userUsage(ids, limits) {
+    const got = await this.storage.get(ids.userKeys);
+    return { llm: Math.max(...ids.userKeys.map((k) => (got.get(k) || { llm: 0 }).llm)),
+             limit: ids.account ? limits.perAccountDaily : limits.perUserDaily };
   }
 
-  async quota(ip, clientId) {
+  async quota(ip, clientId, account) {
     const now = this.now(), day = dayKey(now), limits = limitsFrom(this.env);
-    const user = await this.userUsage(await this.identities(ip, clientId, day));
+    const user = await this.userUsage(await this.identities(ip, clientId, day, account), limits);
     return {
       enabled: limits.enabled && !!this.env.ANTHROPIC_API_KEY,
-      perUserDaily: limits.perUserDaily,
-      remainingToday: Math.max(0, limits.perUserDaily - user.llm),
+      perUserDaily: user.limit,
+      account: !!account,
+      remainingToday: Math.max(0, user.limit - user.llm),
       resetsAt: nextResetIso(now),
     };
   }
 
-  async ask(body, ip) {
+  async ask(body, ip, account) {
     const question = cleanQuestion(body && body.question);
     if (!question) return json(400, { ok: false, reason: "INVALID_QUESTION", message: "Bitte eine Frage mit 3 bis 400 Zeichen stellen." });
 
     const now = this.now(), day = dayKey(now), month = monthKey(now);
     const limits = limitsFrom(this.env);
-    const ids = await this.identities(ip, body.clientId, day);
+    const ids = await this.identities(ip, body.clientId, day, account);
     await this.sweep(day);
 
     /* 1 — Grobe Bremse gegen Dauerfeuer, auch fuer kostenlose Anfragen. */
     const rate = (await this.storage.get(ids.rateKey)) || { n: 0 };
-    if (rate.n >= limits.requestsPerIpDaily) return this.refuse(429, "RATE_LIMIT", ip, body.clientId);
+    if (rate.n >= limits.requestsPerIpDaily) return this.refuse(429, "RATE_LIMIT", ip, body.clientId, account);
     await this.storage.put(ids.rateKey, { n: rate.n + 1 });
 
     /* 2 — Schon einmal uebersetzt? Dann kostet die Frage nichts und
@@ -168,7 +179,7 @@ export class AskGate {
     const cached = await this.storage.get(cacheKey);
     if (cached && now - cached.at < CACHE_DAYS * 864e5) {
       await this.log({ question, source: "cache", result: cached.result, status: cached.status });
-      return json(200, { ok: true, source: "cache", status: cached.status, result: cached.result, quota: await this.quota(ip, body.clientId) });
+      return json(200, { ok: true, source: "cache", status: cached.status, result: cached.result, quota: await this.quota(ip, body.clientId, account) });
     }
 
     /* 3 — Bot-Pruefung (wenn eingerichtet). Nur Anfragen, die Geld kosten
@@ -176,13 +187,13 @@ export class AskGate {
            Zwischen Pruefen und Reservieren darf nichts liegen als
            Speicherzugriffe, sonst koennten sich zwei Anfragen waehrend
            eines Netzwerkaufrufs gegenseitig ueberholen. */
-    if (!this.env.ANTHROPIC_API_KEY || !limits.enabled) return this.refuse(503, "DISABLED", ip, body.clientId);
-    if (this.env.TURNSTILE_SECRET && !(await this.turnstile(body.turnstileToken, ip))) {
-      return this.refuse(403, "BOT_CHECK", ip, body.clientId);
+    if (!this.env.ANTHROPIC_API_KEY || !limits.enabled) return this.refuse(503, "DISABLED", ip, body.clientId, account);
+    if (this.turnstileOn() && !(await this.turnstile(body.turnstileToken, ip))) {
+      return this.refuse(403, "BOT_CHECK", ip, body.clientId, account);
     }
 
     const emptyAt = await this.storage.get("creditEmptyAt");
-    if (emptyAt && now - emptyAt < 15 * 60e3) return this.refuse(429, "CREDIT_EXHAUSTED", ip, body.clientId);
+    if (emptyAt && now - emptyAt < 15 * 60e3) return this.refuse(429, "CREDIT_EXHAUSTED", ip, body.clientId, account);
 
     /* 4 — Die Grenzen. Gerechnet wird mit dem schlechtesten Fall. */
     const reserve = worstCase(limits.model, promptChars(prompt), limits.maxOutputTokens);
@@ -190,11 +201,11 @@ export class AskGate {
     const total = got.get("t") || { usd: 0, calls: 0 };
     const monthly = got.get("m:" + month) || { usd: 0, calls: 0 };
     const daily = got.get("d:" + day) || { llm: 0 };
-    const user = await this.userUsage(ids);
+    const user = await this.userUsage(ids, limits);
     const verdict = admit({ limits, reserve, user, day: daily, month: monthly, total });
     if (!verdict.ok) {
       await this.log({ question, source: "none", status: "rejected", error: verdict.reason });
-      return this.refuse(429, verdict.reason, ip, body.clientId);
+      return this.refuse(429, verdict.reason, ip, body.clientId, account);
     }
 
     /* 5 — Reservieren, dann erst fragen. */
@@ -205,10 +216,14 @@ export class AskGate {
     /* 6 — Abrechnen: Reservierung durch die echten Kosten ersetzen. */
     const actual = answer.usage ? costOf(limits.model, answer.usage) : null;
     const usd = answer.billed === false ? -reserve : actual !== null ? actual - reserve : 0;
-    /* Scheitert die Frage, bekommt der Nutzer sein Kontingent zurueck -
+    /* Scheitert die Frage UNBERECHNET (billed === false), bekommt der Nutzer
+       sein Kontingent zurueck; berechnete Fehlschlaege (abgeschnitten,
+       unlesbar, abgelehnt) und unbekannte (Zeitueberschreitung) kosten es,
+       sonst liessen sich Kosten mit absichtlich scheiternden Fragen am
+       Nutzerlimit vorbei erzeugen. Der Rest:
        der Tageszaehler aller Nutzer aber nicht: sonst liesse sich die
        Tagesgrenze mit absichtlich scheiternden Fragen umgehen. */
-    await this.book({ month, day, ids, usd, userLlm: answer.ok ? 0 : -1, dayLlm: 0, calls: answer.billed === false ? 0 : 1 });
+    await this.book({ month, day, ids, usd, userLlm: answer.ok || answer.billed !== false ? 0 : -1, dayLlm: 0, calls: answer.billed === false ? 0 : 1 });
 
     if (answer.error === "CREDIT_EXHAUSTED") {
       /* Das Prepaid-Guthaben bei Anthropic ist leer - die gewollte harte
@@ -216,27 +231,27 @@ export class AskGate {
          einmal neu versucht, damit eine Aufladung ohne Eingriff wirkt. */
       await this.storage.put("creditEmptyAt", now);
       await this.log({ question, source: "claude", status: "rejected", error: "CREDIT_EXHAUSTED" });
-      return this.refuse(429, "CREDIT_EXHAUSTED", ip, body.clientId);
+      return this.refuse(429, "CREDIT_EXHAUSTED", ip, body.clientId, account);
     }
     if (!answer.ok) {
       await this.log({ question, source: "claude", status: "error", error: answer.error + (answer.detail ? " | " + answer.detail : ""), usd: actual });
       return json(502, { ok: false, reason: "UPSTREAM", code: answer.error, detail: answer.detail || null,
         message: "Die Frage konnte gerade nicht ausgewertet werden. Ihr Kontingent wurde nicht belastet.",
-        quota: await this.quota(ip, body.clientId) });
+        quota: await this.quota(ip, body.clientId, account) });
     }
 
     const result = translate(answer.output);
     const status = statusOf(result);
     await this.storage.put(cacheKey, { at: now, result, status });
     await this.log({ question, source: "claude", result, status, usd: actual });
-    return json(200, { ok: true, source: "claude", status, result, quota: await this.quota(ip, body.clientId) });
+    return json(200, { ok: true, source: "claude", status, result, quota: await this.quota(ip, body.clientId, account) });
   }
 
   /* Bucht Kosten und Kontingent in einem Schreibvorgang. Liest die
      Zaehler frisch, weil waehrend des Wartens auf Anthropic andere
      Fragen gebucht haben koennen. */
   async book({ month, day, ids, usd, userLlm, dayLlm, calls = 0 }) {
-    const keys = ["t", "m:" + month, "d:" + day, ids.ipKey, ids.clientKey].filter(Boolean);
+    const keys = ["t", "m:" + month, "d:" + day, ...ids.userKeys];
     const got = await this.storage.get(keys);
     const out = {};
     for (const k of keys) {
@@ -247,8 +262,15 @@ export class AskGate {
     await this.storage.put(out);
   }
 
-  async refuse(status, reason, ip, clientId) {
-    return json(status, { ok: false, reason, message: REASON_TEXT[reason] || REASON_TEXT.DISABLED, quota: await this.quota(ip, clientId) });
+  async refuse(status, reason, ip, clientId, account) {
+    return json(status, { ok: false, reason, message: REASON_TEXT[reason] || REASON_TEXT.DISABLED, quota: await this.quota(ip, clientId, account) });
+  }
+
+  /* Schalter, Standard AUS (wrangler.toml VU_ASK_TURNSTILE = "false"):
+     auch ein gesetztes Secret wirkt erst, wenn der Schalter "true" ist.
+     Ohne Schalter (Variable fehlt) gilt wie bisher: Secret gesetzt = an. */
+  turnstileOn() {
+    return !!this.env.TURNSTILE_SECRET && String(this.env.VU_ASK_TURNSTILE || "true") !== "false";
   }
 
   async turnstile(token, ip) {
@@ -320,7 +342,7 @@ export class AskGate {
       generatedAt: new Date(now).toISOString(),
       spend: { totalUsd: (got.get("t") || { usd: 0 }).usd, monthUsd: (got.get("m:" + monthKey(now)) || { usd: 0 }).usd,
         todayQuestions: (got.get("d:" + dayKey(now)) || { llm: 0 }).llm },
-      limits: { ...limits, apiKeyPresent: !!this.env.ANTHROPIC_API_KEY, botCheck: !!this.env.TURNSTILE_SECRET },
+      limits: { ...limits, apiKeyPresent: !!this.env.ANTHROPIC_API_KEY, botCheck: this.turnstileOn() },
       logged: logs.length,
       byStatus,
       missingData: [...wishes.values()].sort((a, b) => b.count - a.count).slice(0, 100),

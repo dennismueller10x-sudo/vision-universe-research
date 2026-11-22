@@ -1,0 +1,17 @@
+/* VISION UNIVERSE ELLIOTT — breit.css: breite Ansichten (iPad, Laptop, Desktop), nur ab 761 px geladen (media im <link>), damit
+   das Handy-Bündel elliott.css klein bleibt. Spalte bis 900 px mit Seitenrand, ab 1024 px bis zur Kopf-Breite 1240 px; kurze Schienen
+   („Was sich geändert hat“, Wellenlagen) werden Gitter, lange Schienen nutzen die volle Breite, die Zählbar-Liste wird zweispaltig. */
+@media (min-width:761px){
+  .el{max-width:900px;padding:0 var(--vu-gutter,24px) 32px}
+  .ek .ek-tabs,.ek .ek-rail{margin:0 calc(-1 * var(--vu-gutter,24px));padding-inline:var(--vu-gutter,24px);scroll-padding-inline:var(--vu-gutter,24px)}
+  .ek .ek-rail:has(>.ek-stat){display:grid;grid-template-columns:repeat(auto-fit,minmax(128px,1fr))}
+  .ek .ek-rail:has(>.ek-form){display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+  .ek .ek-rail>.ek-stat,.ek .ek-rail>.ek-form{width:auto}
+  .el-lead{max-width:68ch}
+}
+@media (min-width:1024px){
+  .el{max-width:calc(1240px - 2 * var(--vu-gutter,24px))}
+  .ek .ek-rail:has(>.ek-form){grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+  .el-clist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:28px}
+  .el-clist>li:nth-child(2){border-top:0}
+}

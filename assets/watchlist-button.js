@@ -37,7 +37,7 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function (root) {
   "use strict";
 
-  var VERSION = "watchlist-button-1.2.0";
+  var VERSION = "watchlist-button-1.2.1";
   var PATH = "M6 3h12v18l-6-4-6 4z";
   var cache = null;          /* Promise<{signedIn, ids:{instrumentId: Ticker beim Speichern}}> je Seite */
   var resolved = {};         /* ticker -> Promise<instrumentId|null> */
@@ -215,11 +215,18 @@
   function couple(store) {
     if (!store || store.vuCoupled) return store;
     var has = store.has, flip = store.toggle;
-    store.has = function (t) { return has.call(store, t) || centralHas(t); };
+    /* Geklickt, Konto noch nicht bestätigt: der Klick gilt, bis follow() fertig ist. Sonst meldete has() beim Entfernen
+       weiter „an“ (der Titel steht bis zur Antwort noch im Kontostand), und das Herz liess sich nicht leeren (Owner 21.11.2026). */
+    var pending = {};
+    function own(t) { return Object.prototype.hasOwnProperty.call(pending, t); }
+    store.has = function (t) { return own(t) ? pending[t] : (has.call(store, t) || centralHas(t)); };
     store.toggle = function (t) {
-      var local = has.call(store, t), want = !(local || centralHas(t));
+      var local = has.call(store, t), want = !store.has(t);
       if (local !== want) flip.call(store, t);           /* lokal genau so, wie geklickt */
-      store.lastSync = follow(t, want);
+      pending[t] = want;
+      var sync = follow(t, want), done = function () { if (own(t) && pending[t] === want) delete pending[t]; };
+      sync.then(done, done);
+      store.lastSync = sync;
       return want;
     };
     store.vuCoupled = true;
@@ -230,12 +237,12 @@
   var CSS = ".vu-shead-watch{position:relative;display:inline-flex}" +
     ".vu-watch{width:44px;height:44px;display:grid;place-items:center;border-radius:999px;border:1px solid var(--vu-line-strong,#d4d4d4);background:transparent;color:var(--vu-text,#0d0f12);cursor:pointer}" +
     ".vu-watch svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linejoin:round}" +
-    ".vu-watch[aria-pressed=true]{border-color:transparent;background:var(--vu-accent-soft,#eef9cc);color:var(--vu-accent-text,#4f6b00)}" +
-    ".vu-watch[aria-pressed=true] svg{fill:currentColor}.vu-watch:focus-visible{outline:2px solid var(--vu-focus,#4f6b00);outline-offset:2px}" +
+    ".vu-watch[aria-pressed=true]{border-color:transparent;background:var(--vu-accent-soft,#eef9cc);color:var(--vu-accent-text,#101318)}" +
+    ".vu-watch[aria-pressed=true] svg{fill:currentColor}.vu-watch:focus-visible{outline:2px solid var(--vu-focus,#101318);outline-offset:2px}" +
     ".vu-watch[disabled]{opacity:.6;cursor:wait}" +
     ".vu-watch-hint{position:absolute;z-index:20;top:calc(100% + 6px);right:0;width:max-content;max-width:min(280px,80vw);padding:8px 12px;border-radius:12px;font-size:13px;line-height:1.4;" +
     "background:var(--vu-elevated,#fff);color:var(--vu-text,#0d0f12);border:1px solid var(--vu-line-strong,#d4d4d4);box-shadow:0 8px 24px rgba(0,0,0,.14)}" +
-    ".vu-watch-hint a{color:var(--vu-accent-text,#4f6b00);font-weight:600}";
+    ".vu-watch-hint a{color:var(--vu-accent-text,#101318);font-weight:600}";
 
   function script(doc, src) {
     return new Promise(function (done) {

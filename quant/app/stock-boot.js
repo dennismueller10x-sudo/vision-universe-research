@@ -10,7 +10,7 @@
     w.VUQuantBoot={takeMain:function(root){return active&&home&&home.main.parentNode===root?home.main:null;},get:function(t,main){return active&&t==='home'&&home&&home.main===main&&home.page.isConnected?home:null;}};
     function mountHome(){
       var root=doc.getElementById('qx-app');if(!root)return false;
-      var main=root.querySelector('main')||el('main','qx-main'),page=el('div','q-home vu-ui qv3');
+      var main=root.querySelector('main')||el('main','qx-main'),page=el('div','q-home vu-ui qv3 qk qk2 qp');
       main.id='qx-main';main.tabIndex=-1;page.innerHTML=w.VUQuantHomeIntro;var intro=page.firstElementChild;
       var pending=el('div','vu-skeleton');pending.setAttribute('aria-hidden','true');pending.style.height='180px';pending.append(el('i'),el('i'),el('i'));page.appendChild(pending);
       main.replaceChildren(page);if(!main.parentNode)root.appendChild(main);home={main:main,page:page,intro:intro};return true;

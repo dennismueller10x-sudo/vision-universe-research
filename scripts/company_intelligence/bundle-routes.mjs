@@ -48,10 +48,21 @@ export async function routeDeliveryBundles(page, overrides, origin) {
     resolved[path] = await value(await response.text());
   }
   await page.route('**/discover/delivery/*.js*', async (route) => {
-    const response = await route.fetch();
+    // Ein Fehler im Route-Handler ist eine unbehandelte Promise-Ablehnung und beendet den ganzen QA-Prozess
+    // (21.11.2026, Wiederherstellung 44870838472: "route.fetch: read ECONNRESET" auf dx-start-1.js, Exit 1, kein Befund).
+    // Netzfehler beim Holen des Buendels: begrenzt wiederholen; bleibt er, bricht nur DIESE Anfrage ab, die Seite meldet
+    // den fehlgeschlagenen Request, und die QA bewertet ihn wie jeden anderen Seitenfehler (kein Prozessabsturz).
+    let response = null;
+    for (let attempt = 1; attempt <= FETCH_ATTEMPTS && !response; attempt++) {
+      try { response = await route.fetch(); }
+      catch { if (attempt < FETCH_ATTEMPTS) await new Promise((r) => setTimeout(r, FETCH_PAUSE_MS * attempt)); }
+    }
+    if (!response) { await route.abort('failed').catch(() => {}); return; }
     const { code, appended } = appendOverrides(await response.text(), resolved);
     appended.forEach((p) => seen.add(p));
     await route.fulfill({ response, body: code, contentType: 'application/javascript' });
   });
   return seen;
 }
+export const FETCH_ATTEMPTS = 4;
+const FETCH_PAUSE_MS = Number(process.env.CI_BUNDLE_ROUTE_PAUSE_MS) || 500;

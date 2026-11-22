@@ -26,6 +26,34 @@ from quant.tests.fixtures import build_year_ends, standard_company
 from quant.tests.test_pipeline_and_store import StubSEC
 
 TODAY = date(2026, 9, 14)
+MAX_FOLGE_STUNDEN = 6
+
+
+def _zeit(text):
+    from datetime import datetime
+    try:
+        return datetime.fromisoformat(str(text).replace("Z", "+00:00"))
+    except (TypeError, ValueError):
+        return None
+
+
+def _master_stand(root):
+    pfad = Path(root) / "quant" / "data" / "universe" / "master-manifest.json"
+    return json.loads(pfad.read_text()).get("generatedAt") if pfad.exists() else None
+
+
+def folge_nach_zeit(artefakt_stand, quell_stand, jetzt=None, max_stunden=MAX_FOLGE_STUNDEN):
+    """CURRENT, WAITING oder STALE wie followByTime in scripts/quant/lib/follow-artifact.mjs."""
+    from datetime import datetime, timezone
+    a, q = _zeit(artefakt_stand), _zeit(quell_stand)
+    if a is None or q is None:
+        return "STALE", "Zeitstempel fehlt, Abweichung nicht einzuordnen"
+    if a >= q:
+        return "CURRENT", "Artefakt juenger als seine Quelle"
+    stunden = round(((jetzt or datetime.now(timezone.utc)) - q).total_seconds() / 3600, 1)
+    if stunden > max_stunden:
+        return "STALE", "Bericht aelter als der Company Master seit %s h (Grenze %s h): SEC-Lauf ausgeblieben?" % (stunden, max_stunden)
+    return "WAITING", "wartet auf den SEC-Lauf (Company Master seit %s h neu, Grenze %s h)" % (stunden, max_stunden)
 
 
 class DailyStub(StubSEC):
@@ -374,10 +402,30 @@ class ScherbenUndAggregateTests(unittest.TestCase):
             self.skipTest("kein Company Master")
         reports = uc.reports_from_records(root, shards, universe=universe)
         erwartet = json.loads((root / "quant" / "data" / "fundamentals" / "coverage-report.json").read_text())
+        # Halbstand (18.11.2026, wie scripts/quant/lib/follow-artifact.mjs#followByTime): Baut der Company Master das Universum
+        # neu, zieht der Bericht erst mit dem naechsten SEC-Lauf nach. Ist er aelter als der Master, wartet der Abgleich bis 6 h
+        # sichtbar, danach ist er ein Fehler.
+        neu = (reports["coverage"]["fundamentals"]["COMPANY_FACTS_AVAILABLE"],
+               reports["coverage"]["metrics"]["revenue"]["COUNT"])
+        alt = (erwartet["fundamentals"]["COMPANY_FACTS_AVAILABLE"], erwartet["metrics"]["revenue"]["COUNT"])
+        if neu != alt:
+            zustand, grund = folge_nach_zeit(erwartet.get("generatedAtUtc"), _master_stand(root))
+            if zustand == "WAITING":
+                self.skipTest(grund)
         self.assertEqual(reports["coverage"]["fundamentals"]["COMPANY_FACTS_AVAILABLE"],
                          erwartet["fundamentals"]["COMPANY_FACTS_AVAILABLE"])
         self.assertEqual(reports["coverage"]["metrics"]["revenue"]["COUNT"],
                          erwartet["metrics"]["revenue"]["COUNT"])
+
+
+class FolgeNachZeitTests(unittest.TestCase):
+    def test_juenger_wartend_veraltet(self):
+        from datetime import datetime, timezone
+        jetzt = datetime(2026, 11, 18, 10, tzinfo=timezone.utc)
+        self.assertEqual(folge_nach_zeit("2026-11-18T09:00:00+00:00", "2026-11-18T08:00:00Z", jetzt)[0], "CURRENT")
+        self.assertEqual(folge_nach_zeit("2026-11-18T03:00:00+00:00", "2026-11-18T05:00:00Z", jetzt)[0], "WAITING")
+        self.assertEqual(folge_nach_zeit("2026-11-18T01:00:00+00:00", "2026-11-18T03:00:00Z", jetzt)[0], "STALE")
+        self.assertEqual(folge_nach_zeit(None, "2026-11-18T03:00:00Z", jetzt)[0], "STALE")
 
 
 class ErwarteteStatusTests(unittest.TestCase):

@@ -1,5 +1,6 @@
 // V13b LARGECAP-STRICT: amendment 1.1.0 (STRICT_INTERVAL_BOUNDARY), registry research-largecap-price-anchors-1.1.0.cjs,
 // loader option identityEvidenceProtocolV13LargecapStrict (LOADER_OPTIONS_V13B). 1.0.x artefacts and every existing option stay unchanged.
+import "../../scripts/quant/lib/frozen-data.mjs"; /* eingefrorener Datenstand (scripts/quant/lib/frozen-data.mjs, 22.11.2026) */
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createRequire, Module } from 'node:module';

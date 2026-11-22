@@ -38,6 +38,7 @@ import { splitAdjustedCloses } from "./publish-discover-series.mjs";
 import { benchmarkSpec } from "./benchmark-reference.mjs";
 import { applySupplements, supplementedEntries } from "./lib/split-evidence-supplements.mjs";
 import { loadSuccessions, withPredecessor } from "./lib/ticker-succession-bars.mjs";
+import { assertNoResearchSeries } from "./lib/research-series.mjs";
 import { applyConfirmations } from "./lib/corporate-action-confirmations.mjs";
 
 const require = createRequire(import.meta.url);
@@ -92,6 +93,8 @@ console.log(`  Umfang: ${securities.length} Titel`);
 if (PRUNE_ONLY) {
   const imUmfang = new Set(securities.map((s) => s.securityId + ".json"));
   let entfernt = 0;
+  /* Loeschschutz (Teil B1): keine Forschungsreihe loeschen; Abbruch vor dem ersten Loeschen (auch im Trockenlauf). */
+  assertNoResearchSeries(root, readdirSync(OUT_DIR).filter((n) => n.endsWith(".json") && n !== "index.json" && !imUmfang.has(n)), OUT_DIR);
   for (const name of readdirSync(OUT_DIR).filter((n) => n.endsWith(".json") && n !== "index.json")) {
     if (imUmfang.has(name)) continue;
     if (!DRY_RUN) rmSync(join(OUT_DIR, name));
@@ -200,6 +203,7 @@ await Promise.all(Array.from({ length: Math.max(1, CONCURRENCY) }, arbeiter));
 /* Reihen ausserhalb des Umfangs (Universumswechsel) verschwinden. */
 if (PRUNE && !DRY_RUN && !ONLY) {
   const imUmfang = new Set(securities.map((s) => s.securityId + ".json"));
+  assertNoResearchSeries(root, readdirSync(OUT_DIR).filter((n) => n.endsWith(".json") && n !== "index.json" && !imUmfang.has(n)), OUT_DIR);
   for (const name of readdirSync(OUT_DIR).filter((n) => n.endsWith(".json") && n !== "index.json")) {
     if (!imUmfang.has(name)) { rmSync(join(OUT_DIR, name)); console.log(`  entfernt: ${name} (nicht im Umfang)`); }
   }

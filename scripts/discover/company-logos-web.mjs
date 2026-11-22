@@ -498,3 +498,13 @@ export function icoLargestBmp(buf) {
   }
   return { raw: rgba, width: w, height: h };
 }
+
+/**
+ * Mantelgesellschaften (SPAC) und Fonds haben keine eigene Firmenmarke und
+ * meist keine Website: ohne Logo ist dort der Normalfall, kein Fehler.
+ * Nur der Name entscheidet; angewendet wird es erst auf Titel, fuer die
+ * keine Website bekannt ist (KEINE_WEBSITE_BEKANNT).
+ */
+export function keinLogoErwartet(name) {
+  return /\b(acquisition|merger|blank check|fund|trust|etf|income)\b/i.test(String(name || ""));
+}

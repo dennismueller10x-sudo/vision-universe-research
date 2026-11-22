@@ -24,3 +24,18 @@ test('Discover dependency chunks stay bounded as source modules grow',async()=>{
   assert.equal(chunks.length,3);assert(chunks.every(c=>c.bytes<262144));assert.equal(chunks.flatMap(c=>c.inputs).length,6);
  }finally{await rm(dir,{recursive:true});}
 });
+
+test('Discover start bundles are preloaded in the head, lazy groups are not',async()=>{
+ const dir=await mkdtemp(join(tmpdir(),'e5-preload-'));
+ try{
+  await mkdir(join(dir,'discover'),{recursive:true});
+  const tags=(p,n)=>Array.from({length:n},(_,i)=>'<script src="/core/'+p+i+'.js"></script>').join('');
+  await writeFile(join(dir,'discover/index.html'),'<head><link rel="stylesheet" href="/a.css"></head><template id="dx-start">'+tags('s',2)+'</template><template id="dx-lazy-x">'+tags('l',2)+'</template>');
+  const chunks=await bundleDiscover({root:dir,output:dir,readSource:async()=>'x'}),html=await readFile(join(dir,'discover/index.html'),'utf8');
+  const pre=[...html.matchAll(/<link rel="preload" href="([^"]+)" as="script">/g)].map(m=>m[1]);
+  assert.equal(pre.length,1);assert(/^\/discover\/delivery\/dx-start-1\.js\?v=[0-9a-f]{16}$/.test(pre[0]));
+  assert(html.indexOf(pre[0])<html.indexOf('rel="stylesheet"'));
+  assert(html.includes('<script src="'+pre[0]+'"></script>'),'derselbe Pfad wird als Skript genutzt');
+  assert.equal(chunks.length,2);
+ }finally{await rm(dir,{recursive:true});}
+});

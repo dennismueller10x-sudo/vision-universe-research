@@ -26,13 +26,16 @@ import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
 import { compareMasters, compareNames, baselineIndex, identityFindings, APPROVED_CHANGES_SCHEMA_V11 } from "./security-master-refresh-gate.mjs";
 
+const Exchanges = createRequire(import.meta.url)("../../core/exchanges.js");
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 export const BUILDER_VERSION = "security-master-approval-list-1.0.0";
 const RECENT_RESTART_DAYS = 60;
-const EXCHANGE_FAMILY = { NASDAQ: "Nasdaq", NYSE: "NYSE", "NYSE MKT": "NYSE", AMEX: "NYSE", "NYSE ARCA": "NYSE", BATS: "CBOE", OTCMKTS: "OTC", PINK: "OTC", OTCBB: "OTC", EXPM: "OTC" };
-const LISTED = new Set(["Nasdaq", "NYSE", "CBOE", "TXSE"]);
+/* Anbieterplatz -> SEC-Schreibweise der Boersenfamilie, und die Familien mit Boersenlisting (core/exchanges.js). */
+const EXCHANGE_FAMILY = Exchanges.secLabelTable();
+const LISTED = new Set(Exchanges.listedSecLabels());
 const sha256 = (b) => createHash("sha256").update(b).digest("hex");
 const days = (from, to) => (Date.parse(`${to}T00:00:00Z`) - Date.parse(`${String(from).slice(0, 10)}T00:00:00Z`)) / 864e5;
 const rowText = (r) => `${r.exchange}:${r.start_date || "?"}..${r.end_date || "offen"} ${r.active_status} ${r.instrument_type}${r.eligible_us_equity ? " geeignet" : ""}`;

@@ -1,53 +1,53 @@
 {
  "schemaVersion": "vu-vorsorge-data-qa-2.0.0",
- "asOf": "2026-11-16",
+ "asOf": "2026-11-18",
  "scope": "TIINGO_ETF_INGEST",
  "ingest": {
   "status": "COMPLETE",
   "report": {
    "schemaVersion": "vu-vorsorge-ingest-report-1.0.0",
    "ingest": "vorsorge-ingest-2.0.0",
-   "activeTickers": 396,
-   "extraEtfs": 386,
+   "activeTickers": 415,
+   "extraEtfs": 387,
    "onlyExtra": true,
-   "universeRows": 7547,
-   "keptFromPreviousRuns": 7162,
-   "processedOk": 385,
+   "universeRows": 7542,
+   "keptFromPreviousRuns": 7156,
+   "processedOk": 386,
    "notFound": 0,
-   "noPrices": 11,
-   "failed": 11,
+   "noPrices": 29,
+   "failed": 29,
    "pending": 0,
    "complete": true,
    "stoppedBecause": null,
    "thisRun": {
-    "requests": 17,
+    "requests": 1,
     "rateLimited": 0,
     "minutes": 0,
-    "newlyAttempted": 8
+    "newlyAttempted": 0
    }
   },
   "catalog": {
    "schemaVersion": "vu-vorsorge-catalog-stats-1.0.0",
    "source": "https://apimedia.tiingo.com/docs/tiingo/daily/supported_tickers.zip",
-   "catalogRows": 109323,
-   "etfRows": 9947,
-   "malformedRows": 163,
-   "activeRows": 7172,
-   "inactiveRows": 2612,
+   "catalogRows": 109368,
+   "etfRows": 9973,
+   "malformedRows": 170,
+   "activeRows": 7184,
+   "inactiveRows": 2619,
    "rowsWithoutPriceDates": 0,
-   "uniqueTickers": 9567,
+   "uniqueTickers": 9586,
    "tickersWithMultipleRows": 213,
-   "activeUniqueTickers": 7172,
+   "activeUniqueTickers": 7184,
    "byExchange": {
     "SHE": 426,
-    "SHG": 426,
-    "NYSE": 2943,
-    "BATS": 1814,
-    "NASDAQ": 1641,
+    "SHG": 428,
+    "NYSE": 2931,
+    "BATS": 1817,
+    "NASDAQ": 1645,
     "NYSE MKT": 24,
-    "NYSE ARCA": 1610,
+    "NYSE ARCA": 1630,
     "PINK": 548,
-    "OTCMKTS": 133,
+    "OTCMKTS": 135,
     "AMEX": 50,
     "OTCQB": 8,
     "OTCGREY": 110,
@@ -58,19 +58,19 @@
     "OTCCE": 1
    },
    "byCurrency": {
-    "USD": 9028,
+    "USD": 9047,
     "CNY": 754,
     "AUD": 2
    },
    "activeByExchange": {
     "SHE": 398,
-    "SHG": 426,
-    "NYSE": 2637,
-    "BATS": 1479,
-    "NASDAQ": 1326,
-    "NYSE ARCA": 283,
+    "SHG": 428,
+    "NYSE": 2624,
+    "BATS": 1481,
+    "NASDAQ": 1327,
+    "NYSE ARCA": 301,
     "PINK": 449,
-    "OTCMKTS": 111,
+    "OTCMKTS": 113,
     "AMEX": 31,
     "OTCQB": 8,
     "OTCD": 2,
@@ -80,51 +80,51 @@
     "NMFQS": 1
    },
    "otherAssetTypes": {
-    "Stock": 49494,
+    "Stock": 49513,
     "Mutual Fund": 49882
    },
-   "staleBefore": "2026-10-18",
-   "maxEndDate": "2026-11-17"
+   "staleBefore": "2026-10-21",
+   "maxEndDate": "2026-11-20"
   },
-  "failedCount": 11
+  "failedCount": 29
  },
  "layers": {
-  "raw": 9947,
-  "canonical": 7540,
-  "listings": 7557,
-  "publicAnalysis": 3962,
-  "complex": 2127,
+  "raw": 9973,
+  "canonical": 7535,
+  "listings": 7552,
+  "publicAnalysis": 3960,
+  "complex": 2124,
   "archive": 8,
   "review": 1460
  },
  "counts": {
-  "rowsRead": 15412,
-  "listings": 7557,
-  "canonicalFunds": 7540,
-  "shareClasses": 7540,
-  "uniqueTickers": 7556,
-  "publicAnalysis": 3962,
-  "complex": 2127,
+  "rowsRead": 15408,
+  "listings": 7552,
+  "canonicalFunds": 7535,
+  "shareClasses": 7535,
+  "uniqueTickers": 7551,
+  "publicAnalysis": 3960,
+  "complex": 2124,
   "archive": 8,
   "review": 1460,
-  "consumerVisible": 6089,
-  "withPriceHistory": 7547,
-  "withHistory1Y": 5135,
-  "withHistory3Y": 3468,
-  "withHistory5Y": 2726,
-  "withHistory10Y": 1611,
-  "withTotalReturn": 7160,
-  "leveragedOrInverse": 838,
+  "consumerVisible": 6084,
+  "withPriceHistory": 7542,
+  "withHistory1Y": 5131,
+  "withHistory3Y": 3464,
+  "withHistory5Y": 2725,
+  "withHistory10Y": 1610,
+  "withTotalReturn": 7155,
+  "leveragedOrInverse": 836,
   "inactive": 8
  },
  "priceCoverage": {
-  "withAnyHistory": 7547,
-  "ratio": 0.9986767235675532,
-  "y1": 5135,
-  "y3": 3468,
-  "y5": 2726,
-  "y10": 1611,
-  "totalReturn": 7160
+  "withAnyHistory": 7542,
+  "ratio": 0.9986758474576272,
+  "y1": 5131,
+  "y3": 3464,
+  "y5": 2725,
+  "y10": 1610,
+  "totalReturn": 7155
  },
  "metadataCoverage": {
   "symbol": 1,
@@ -133,7 +133,7 @@
   "currency": 1,
   "country": 1,
   "assetClass": 0.881,
-  "issuer": 0.567,
+  "issuer": 0.568,
   "index": 0.148,
   "category": 1,
   "region": 0.445,
@@ -154,21 +154,21 @@
   "priceHistoryAvailable": 1
  },
  "missingMetadata": {
-  "issuer": 3269,
-  "sector": 7557,
-  "theme": 6008,
-  "distributionPolicy": 2629,
-  "replicationMethod": 7557,
-  "ter": 7557,
-  "fundSize": 7557,
-  "inceptionDate": 7557,
-  "holdingsCount": 7557,
-  "isin": 7557,
-  "wkn": 7557,
-  "index": 6440,
-  "benchmark": 6440,
-  "assetClass": 898,
-  "region": 4195,
+  "issuer": 3266,
+  "sector": 7552,
+  "theme": 6005,
+  "distributionPolicy": 2627,
+  "replicationMethod": 7552,
+  "ter": 7552,
+  "fundSize": 7552,
+  "inceptionDate": 7552,
+  "holdingsCount": 7552,
+  "isin": 7552,
+  "wkn": 7552,
+  "index": 6435,
+  "benchmark": 6435,
+  "assetClass": 897,
+  "region": 4190,
   "name": 11
  },
  "missingName": 11,
@@ -340,14 +340,6 @@
    "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
    "names": [
     "ACCOM INC"
-   ]
-  },
-  {
-   "symbol": "ADDS",
-   "exchange": "NYSE",
-   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
-   "names": [
-    "Hedgeye Index Adds"
    ]
   },
   {
@@ -1548,8 +1540,9 @@
   {
    "symbol": "HBR",
    "exchange": "NASDAQ",
-   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "conflict": "NAME_VARIANTS_DISAGREE",
    "names": [
+    "Canary HBAR ETF",
     "Canary Capital Group LLX"
    ]
   },
@@ -1988,8 +1981,9 @@
   {
    "symbol": "LTCC",
    "exchange": "NASDAQ",
-   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "conflict": "NAME_VARIANTS_DISAGREE",
    "names": [
+    "Canary Litecoin ETF",
     "Canary Capital Group LLC"
    ]
   },
@@ -2015,6 +2009,14 @@
    "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
    "names": [
     "Mill City Ventures III Ltd"
+   ]
+  },
+  {
+   "symbol": "MEMY",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "MEMORY PHARMACEUTICALS CORP"
    ]
   },
   {
@@ -3484,21 +3486,21 @@
   }
  ],
  "productTypes": {
-  "ETF": 7459,
+  "ETF": 7454,
   "ETN": 20,
   "CEF": 37,
   "ETP": 33,
   "ETC": 8
  },
  "strategies": {
-  "EQUITY": 3069,
-  "THEMATIC": 508,
+  "EQUITY": 3067,
+  "THEMATIC": 507,
   "COMMODITY": 141,
-  "UNKNOWN": 778,
-  "BOND": 1149,
+  "UNKNOWN": 777,
+  "BOND": 1150,
   "ALTERNATIVE": 154,
   "MULTI_ASSET": 61,
-  "LEVERAGED": 637,
+  "LEVERAGED": 635,
   "LEVERAGED_INVERSE": 154,
   "INVERSE": 47,
   "SINGLE_STOCK": 77,
@@ -3510,25 +3512,25 @@
   "MONEY_MARKET": 28
  },
  "retirementClasses": {
-  "STANDARD": 4580,
+  "STANDARD": 4578,
   "KOMPLEX": 1368,
-  "NICHT_EINORDENBAR": 694,
-  "SEHR_KOMPLEX": 915
+  "NICHT_EINORDENBAR": 693,
+  "SEHR_KOMPLEX": 913
  },
- "leveragedInverse": 838,
- "singleStock": 450,
+ "leveragedInverse": 836,
+ "singleStock": 448,
  "currencies": {
-  "USD": 6829,
+  "USD": 6824,
   "CNY": 726,
   "AUD": 2
  },
  "exchanges": {
   "SHE": 398,
   "SHG": 425,
-  "NYSE": 2822,
-  "BATS": 1671,
+  "NYSE": 2819,
+  "BATS": 1672,
   "NYSE ARCA": 253,
-  "NASDAQ": 1365,
+  "NASDAQ": 1362,
   "PINK": 487,
   "AMEX": 31,
   "OTCMKTS": 70,
@@ -3541,13 +3543,13 @@
  },
  "countries": {
   "CN": 823,
-  "US": 6734
+  "US": 6729
  },
  "assetClasses": {
-  "EQUITY": 4690,
+  "EQUITY": 4685,
   "COMMODITY": 176,
-  "UNKNOWN": 898,
-  "BOND": 1199,
+  "UNKNOWN": 897,
+  "BOND": 1200,
   "MULTI_ASSET": 286,
   "CRYPTO": 181,
   "REAL_ESTATE": 74,
@@ -3557,18 +3559,18 @@
   "CHINA": 876,
   "GERMANY": 6,
   "USA": 1457,
-  "UNKNOWN": 4195,
-  "GLOBAL": 417,
+  "UNKNOWN": 4190,
+  "GLOBAL": 416,
   "JAPAN": 42,
   "INTERNATIONAL": 220,
-  "EMERGING_MARKETS": 170,
+  "EMERGING_MARKETS": 171,
   "EUROPE": 76,
   "INDIA": 23,
   "DEVELOPED_EX_US": 73,
   "VIETNAM": 2
  },
  "issuers": {
-  "UNKNOWN": 3269,
+  "UNKNOWN": 3266,
   "Invesco": 309,
   "UBS": 15,
   "Corgi": 205,
@@ -3576,8 +3578,8 @@
   "PGIM": 70,
   "Pacer": 74,
   "Goldman Sachs": 49,
-  "Leverage Shares": 116,
-  "Tradr": 82,
+  "Leverage Shares": 115,
+  "Tradr": 81,
   "GraniteShares": 86,
   "Direxion": 141,
   "Innovator": 181,
@@ -3605,9 +3607,9 @@
   "Bitwise": 13,
   "J.P. Morgan": 89,
   "Baron": 7,
-  "Principal": 20,
+  "Principal": 19,
   "Grayscale": 16,
-  "Vanguard": 155,
+  "Vanguard": 156,
   "MFS": 15,
   "AllianceBernstein": 21,
   "Franklin Templeton": 70,
@@ -3624,33 +3626,33 @@
   "T. Rowe Price": 36
  },
  "statuses": {
-  "ACTIVE": 7197,
+  "ACTIVE": 7192,
   "REVIEW": 352,
   "INACTIVE": 8
  },
- "unknownClassification": 898,
+ "unknownClassification": 897,
  "intelligence": {
-  "publicUniverse": 6089,
+  "publicUniverse": 6084,
   "coverage": {
    "costs": {
-    "count": 3953,
-    "ratio": 0.6492
+    "count": 3948,
+    "ratio": 0.6489
    },
    "aum": {
-    "count": 3978,
-    "ratio": 0.6533
+    "count": 3974,
+    "ratio": 0.6532
    },
    "holdings": {
-    "count": 3978,
-    "ratio": 0.6533
+    "count": 3974,
+    "ratio": 0.6532
    },
    "domicile": {
-    "count": 3978,
-    "ratio": 0.6533
+    "count": 3974,
+    "ratio": 0.6532
    },
    "ucitsStatus": {
-    "count": 3978,
-    "ratio": 0.6533
+    "count": 3974,
+    "ratio": 0.6532
    },
    "isin": {
     "count": 0,
@@ -3760,8 +3762,8 @@
     "id": "TIINGO",
     "type": "MARKET_DATA_PROVIDER",
     "status": "HEALTHY",
-    "lastSuccessfulFetch": "2026-11-16",
-    "items": 7547,
+    "lastSuccessfulFetch": "2026-11-18",
+    "items": 7542,
     "fields": "Kurse, Ausschüttungen, Splits, Namen"
    },
    {

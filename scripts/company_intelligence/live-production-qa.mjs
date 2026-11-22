@@ -14,6 +14,37 @@ const require=createRequire(import.meta.url),{chromium}=require('playwright');
 const {fetchWithRetry}=require('../../company-intelligence/api/contract.js');
 const args=process.argv.slice(2),arg=(k,f)=>args.includes(k)?args[args.indexOf(k)+1]:f;
 const routine=args.includes('--routine');
+/* Kapitel sichtbar machen: Oeffnen der umschliessenden Profi-Ansicht und Sichtbarkeit der Ueberschrift sind ein
+   begrenzt wiederholbarer Schritt (3 Versuche je 15 s), nie ein Pruefpunkt. Eine Neudarstellung der Discover-Seite nach dem
+   Oeffnen schliesst das <details> wieder (21.11.2026, Pages-Lauf 44861854189: h2 62x "hidden", dann Rollback). Danach wie bisher. */
+async function showChapter(page,attempts=3){
+ for(let n=1;;n++){
+  await openCompanyIntelligence(page);
+  try{await page.waitForSelector('.ci-company-intelligence h2',{state:'visible',timeout:15000});return;}
+  catch(e){if(n>=attempts||e?.name!=='TimeoutError')throw e;}
+ }
+}
+/* Darstellungs-Timing ist kein Pruefpunkt (Audit 21.11.2026, fuenfte Abschaltung). Begrenzt wiederholbar, nie unbegrenzt:
+   - eventually: wartet hoechstens ~5 s (10 x 500 ms) darauf, dass eine Zustandsabfrage wahr wird, und gibt den letzten Wert zurueck.
+     Die anschliessende Pruefung bleibt unveraendert; ein dauerhaft falscher Zustand scheitert also weiter sofort mit demselben Fehler.
+   - gotoWithRetry: Navigation (Timeout/Netz) hoechstens 3 mal, jeder andere Fehler sofort.
+   - shoot: Screenshot ist Kosmetik; 3 Versuche, scheitert er weiter, wird ohne Bild weiter geprueft (Bericht: screenshot=false). */
+async function eventually(read,{tries=10,delayMs=500}={}){
+ let v=await read();
+ for(let i=1;i<tries&&!v;i++){await new Promise(r=>setTimeout(r,delayMs));v=await read();}
+ return v;
+}
+async function gotoWithRetry(page,url,options,attempts=3){
+ for(let n=1;;n++){
+  try{return await page.goto(url,options);}
+  catch(e){if(n>=attempts||e?.name!=='TimeoutError')throw e;}
+ }
+}
+async function shoot(page,path){
+ for(let i=0;i<3;i++){try{await page.screenshot({path,timeout:10000});return true;}catch{await new Promise(r=>setTimeout(r,500));}}
+ return false;
+}
+
 const origin=arg('--url','https://research.visionuniverse.de').replace(/\/$/,''),out=arg('--out','/tmp/company-intelligence-live');
 assert(origin==='https://research.visionuniverse.de','EXISTING_PRODUCTION_ORIGIN_REQUIRED');mkdirSync(out,{recursive:true});
 const expectedSha=process.env.EXPECTED_PRODUCTION_SHA||null;
@@ -27,6 +58,13 @@ const writeReport=report=>writeFileSync(out+'/report.json',redact(JSON.stringify
 const brief=p=>p&&{referenceData:dataRef.reason??'SHA256',status:p.status,cause:p.cause,message:p.message,elapsedMs:p.elapsedMs,maxMs:p.maxMs,attemptCount:p.attemptCount,intermediateSeen:p.intermediateSeen,fingerprint:p.fingerprint,observed:p.observed,expectedSha:p.expectedSha,attempts:p.attempts};
 let failure=null;
 /* Eine Browser-Bewertung des bereits als ausgeliefert BEWIESENEN Releases. Fehler hier sind echte Fehler. */
+/* Das Scrollen vor dem Screenshot ist Kosmetik, keine Pruefung. Rendert die Seite den Abschnitt gerade neu (Lauf 44312137021,
+   18.11.2026: "Element is not attached to the DOM / not stable"), wird mit frisch aufgeloestem Element hoechstens 3 mal wiederholt;
+   scheitert es weiter, wird ohne Scrollen fotografiert. Alle Pruefungen (Text, Links, Antworten, Seitenfehler) laufen davor. */
+async function scrollForScreenshot(chapter){
+ for(let i=0;i<3;i++){try{await chapter.scrollIntoViewIfNeeded({timeout:5000});return true;}catch{await new Promise(r=>setTimeout(r,500));}}
+ return false;
+}
 async function phase({propagation,attempt,previousFailure}){
 const deliveryRetries=[];
 const get=path=>fetchWithRetry(fetch,origin+path+'?ci-proof='+Date.now(),{signal:AbortSignal.timeout(30000),cache:'no-store'},retry=>deliveryRetries.push({path,...retry}));
@@ -44,18 +82,18 @@ try{
   const r=await get('/company-intelligence/data/'+path);assert(r.ok,path+' '+r.status);const bytes=Buffer.from(await r.arrayBuffer());assert.equal(bytes.length,meta.bytes,path);assert.equal(createHash('sha256').update(bytes).digest('hex'),meta.sha256,path);
  }
  browser=await chromium.launch({headless:true,args:['--no-sandbox'],executablePath:process.env.CHROMIUM_PATH||undefined});
- const closed=await browser.newPage();await closed.goto(origin+'/discover/#/s/US_REAL/AAPL');await closed.waitForSelector('#research-access-gate');assert.equal(await closed.locator('.ci-company-intelligence').count(),0);await closed.close();
+ const closed=await browser.newPage();await gotoWithRetry(closed,origin+'/discover/#/s/US_REAL/AAPL');await closed.waitForSelector('#research-access-gate',{timeout:45000});assert.equal(await closed.locator('.ci-company-intelligence').count(),0);await closed.close();
  const state=accessStateFor(process.env.RESEARCH_ACCESS_PASSWORD);
  for(const ticker of (routine?['AAPL','XPEV']:['AAPL','NVDA','TSLA','MSFT','PLTR','GOOG','GOOGL','XPEV','BOH','SBSI','AMPY'])){
   const page=await browser.newPage({viewport:{width:390,height:860}}),errors=[],responses=[],diagnostics=attachDiagnostics(page,{origin});
   activePage=page;active={ticker,errors,responses,diagnostics};
   await page.addInitScript(({key,state})=>localStorage.setItem(key,JSON.stringify(state)),{key:STORAGE_KEY,state});
   page.on('pageerror',e=>errors.push(e.message));page.on('response',r=>{if(r.url().includes('/company-intelligence/data/'))responses.push({url:r.url(),status:r.status()});});
-  await page.goto(origin+'/discover/#/s/US_REAL/'+ticker,{waitUntil:'domcontentloaded'});await openCompanyIntelligence(page);await page.waitForSelector('.ci-company-intelligence h2');
-  const chapter=page.locator('.ci-company-intelligence');assert(!(await chapter.innerText()).includes('derzeit nicht verfügbar'),ticker);assert.deepEqual(errors,[]);assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+  await gotoWithRetry(page,origin+'/discover/#/s/US_REAL/'+ticker,{waitUntil:'domcontentloaded'});await showChapter(page);
+  const chapter=page.locator('.ci-company-intelligence');assert(!(await chapter.innerText()).includes('derzeit nicht verfügbar'),ticker);assert.deepEqual(errors,[]);await eventually(async()=>!(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)));assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
   assertConsumerResponses(responses,ticker);
-  assert.equal(await page.locator('vu-navigation').count(),1);assert(await chapter.locator('a').count()>0);await chapter.scrollIntoViewIfNeeded();await page.screenshot({path:out+'/'+ticker+'-390.png'});
-  cases.push({ticker,width:390,status:'PASS',consumerRequests:responses});await page.close();
+  await eventually(async()=>(await page.locator('vu-navigation').count())===1&&(await chapter.locator('a').count())>0);assert.equal(await page.locator('vu-navigation').count(),1);assert(await chapter.locator('a').count()>0);await scrollForScreenshot(chapter);const screenshot=await shoot(page,out+'/'+ticker+'-390.png');
+  cases.push({ticker,width:390,status:'PASS',screenshot,consumerRequests:responses});await page.close();
  }
  writeReport({status:'PASS',origin,sourceCommit:release.sourceCommit,generation:delivery.generation,verifiedAssetHashes:assetEntries.length,deliveryRetries,routine,protectedExistingAccessGate:true,noQueryOptIn:true,attempt,previousFailure,propagation:brief(propagation),cases});
  console.log(JSON.stringify({status:'PASS',sourceCommit:release.sourceCommit,generation:delivery.generation,assets:assetEntries.length,stocks:cases.length,routine,attempt,propagationAttempts:propagation.attemptCount}));

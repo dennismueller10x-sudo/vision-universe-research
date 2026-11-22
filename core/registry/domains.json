@@ -63,6 +63,21 @@
       "consumers": ["quant/api/product-services.js", "instrument-directory.js (Suche)", "company_intelligence", "build-discover-data"]
     },
     {
+      "id": "cikMap",
+      "label": "CIK-Zuordnung (SEC)",
+      "layer": "CORE",
+      "group": "Securities",
+      "critical": false,
+      "artifact": "/quant/data/universe/cik-map.json",
+      "timestamp": ["generatedAt"],
+      "role": "Kuerzel -> CIK aus der SEC-Tickerliste; Quelle von cik und issuerId im Company Master. Veraltet sie, bekommen neue Kuerzel keine issuerId (13.09.-22.11.2026: 24 Produkttitel, u. a. alle Kuerzelwechsel-Nachfolger). Neue Notierung an einem Emittenten mit Produktkuerzel nur mit Nachfolge-Beleg, sonst PENDING_SUCCESSION_EVIDENCE (successionGuard.pending, Warnung im Lauf).",
+      "producer": "scripts/universe/build-cik-map.mjs",
+      "workflow": "universe-master.yml (Job sync)",
+      "schedule": "woechentlich Mi 11:23 UTC ueber den Wecker (core/registry/schedule.json universe-master-sync), nach security-master-weekly",
+      "freshness": { "kind": "hours", "warnAfter": 192, "staleAfter": 240 },
+      "consumers": ["scripts/universe/build-company-master.mjs", "company_intelligence"]
+    },
+    {
       "id": "eodPrices",
       "label": "EOD Prices",
       "layer": "CORE",
@@ -73,7 +88,7 @@
       "timestamp": ["generatedAt"],
       "records": "coverage.computed",
       "expectedRecords": "coverage.requested",
-      "role": "Tagesschlusskurse (Tiingo EOD, roh + splitFactor + Dividende) in der Arbeitsablage und der dauerhaften Ablage (R2); veroeffentlicht als discover-series (1J, split-bereinigt), golden-preview (volle OHLC), discover-series-long (Wochen). Probe: Faktorlauf ueber denselben Abruf.",
+      "role": "Tagesschlusskurse (Tiingo EOD, roh + splitFactor + Dividende) in der Arbeitsablage und der dauerhaften Ablage (R2); veroeffentlicht als discover-series (1J, split-bereinigt), discover-series-kurz (Neuemittent, 1-29 Schlusskurse), golden-preview (volle OHLC), discover-series-long (Wochen). Probe: Faktorlauf ueber denselben Abruf.",
       "producer": "scripts/market/ingest-tiingo.mjs -> publish-discover-series.mjs -> build-market-factors.mjs",
       "workflow": "market-data-refresh.yml",
       "schedule": "Mo-Fr 22:30 UTC",
@@ -450,6 +465,24 @@
       "schedule": "taeglich 05:17, 11:17, 17:17 UTC",
       "freshness": { "kind": "hours", "warnAfter": 72, "staleAfter": 168 },
       "consumers": ["/news/"]
+    },
+    {
+      "id": "marktbriefing",
+      "label": "Marktbriefing (Closing Bell)",
+      "layer": "CONTENT",
+      "group": "Content",
+      "critical": false,
+      "artifact": "/news/marktbriefing/data/latest.json",
+      "timestamp": ["generatedAt"],
+      "records": "cards",
+      "minRecords": 1,
+      "role": "Grafikkarten zum US-Handelstag aus Market Pulse, Tagesschluessen und SEC-Daten (Markt, eigene Auswertung, Angaben Dritter aus dem Themen-Radar); Seite, Karussell und Video.",
+      "producer": "products/news/briefing/build.mjs",
+      "workflow": "content.yml (Teil marktbriefing)",
+      "schedule": "Mo-Fr 23:50 UTC, nur im Datenzweig data/live",
+      "freshness": { "kind": "hours", "warnAfter": 72, "staleAfter": 120 },
+      "consumers": ["/news/marktbriefing/"],
+      "activation": { "state": "ACTIVATING", "decision": "Owner 21.11.2026: Generator fuer das Marktbriefing; erster Lauf content.yml Teil marktbriefing nach dem Merge, danach Feld entfernen." }
     },
     {
       "id": "analystRatings",

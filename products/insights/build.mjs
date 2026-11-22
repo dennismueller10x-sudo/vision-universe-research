@@ -93,6 +93,25 @@ function datenBox(t, a) {
 
 // Bild im Text: groß über die Spalte oder als Porträt neben dem Text; Bildnachweis immer sichtbar
 const figur = (b) => `<figure class="in-figur${b.stil === 'portrait' ? ' in-figur--portrait' : ''}"><img src="${b.src}" alt="${esc(b.alt)}" loading="lazy"><figcaption>${b.text ? esc(b.text) + ' · ' : ''}Bild: ${esc(b.quelle)}</figcaption></figure>`;
+// Diagramm im Artikel (Owner 18.11.2026: Zahlen im Text bekommen ein Diagramm). Statisches HTML, kein Skript.
+//   "diagramm": { "titel": "...", "art": "saeulen" | "balken", "einheit": "Mrd. $", "quelle": "...", "hinweis": "...",
+//                 "werte": [["Q3 25", 57.0], ["Q3 26", 115.8, true]] }   (true = hervorgehoben, Neongrün)
+// Säulen für Zeitreihen (nur Werte >= 0), Balken für Vergleiche (negative Werte als dunkler Balken mit Minus).
+const zahl = (v, d = 1) => (v < 0 ? '−' : '') + Math.abs(v).toLocaleString('de-DE', { minimumFractionDigits: d, maximumFractionDigits: d });
+function diagramm(g) {
+  const max = Math.max(...g.werte.map(([, v]) => Math.abs(v))) || 1;
+  const d = g.werte.some(([, v]) => !Number.isInteger(v)) ? 1 : 0; // eine Nachkommastelle für alle, sobald ein Wert eine hat
+  const z = (v) => zahl(v, d);
+  const kopf = `<figcaption class="in-dia-kopf"><b>${esc(g.titel)}</b>${g.einheit ? `<span>${esc(g.einheit)}</span>` : ''}</figcaption>`;
+  const fuss = `<p class="in-dia-fuss">${g.hinweis ? esc(g.hinweis) + ' · ' : ''}Quelle: ${esc(g.quelle)}</p>`;
+  const label = `${esc(g.titel)} (${g.werte.map(([k, v]) => `${k}: ${z(v)}`).join(', ')}${g.einheit ? ' ' + g.einheit : ''})`;
+  if (g.art === 'balken') {
+    return `<figure class="in-dia in-dia--balken" role="img" aria-label="${esc(label)}">${kopf}<div class="in-dia-zeilen">${g.werte.map(([k, v, hi]) => `<div class="in-dia-zeile"><span>${esc(k)}</span><i class="${hi ? 'hi' : v < 0 ? 'minus' : ''}" style="width:${Math.max(1.5, (Math.abs(v) / max) * 100).toFixed(1)}%"></i><b>${z(v)}</b></div>`).join('')}</div>${fuss}</figure>`;
+  }
+  return `<figure class="in-dia in-dia--saeulen" role="img" aria-label="${esc(label)}">${kopf}<div class="in-dia-saeulen">${g.werte.map(([k, v, hi]) => `<div class="in-dia-saeule"><b>${z(v)}</b><i class="${hi ? 'hi' : ''}" style="height:${Math.max(2, (Math.max(0, v) / max) * 100).toFixed(1)}%"></i><span>${esc(k)}</span></div>`).join('')}</div>${fuss}</figure>`;
+}
+const diagramme = (s) => [].concat(s.diagramm || []).map(diagramm).join('');
+
 // Prüfvermerk: "redaktion" = vom Owner gelesen; "automatisch" = Tageslauf, der Owner liest nach und gibt Korrekturen.
 // Owner-Entscheidung 10.11.2026: kein KI-Hinweis am Text; die Redaktion (Owner) liest jeden Artikel und trägt die
 // redaktionelle Verantwortung. KI-Bilder behalten ihre Bildzeile „KI-Bild“.
@@ -105,6 +124,8 @@ const PRUEFVERMERK = {
 const aufmacher = (a) => (a.bild.typ === 'app'
   ? `<figure class="in-bild in-bild--app" aria-label="${esc(a.bild.alt)}">${(a.appScreens?.[a.ticker[0]] || []).map((s) => `<img src="${s.src}" alt="${esc(s.label)}-Ansicht in der Vision-Universe-App" width="390" height="844">`).join('')}<figcaption>Vision-Universe-App</figcaption></figure>`
   : `<figure class="in-bild"><img src="${a.bild.src}" alt="${esc(a.bild.alt)}" width="1600" height="900" fetchpriority="high"><figcaption>${nachweis(a.bild)}</figcaption></figure>`);
+// Firma für www (News-Seite, „Nach Aktien“): aus dem Artikel ("firma"), sonst der Name der ersten Aktie ohne Zusätze.
+const kurzName = (daten, t) => String(daten?.aktien?.[t]?.name || t).replace(/\s*\(.*\)$/, '').replace(/\s+(Class [A-Z]|Inc\.?|Corp\.?|Corporation|Holdings|Ltd\.?|plc|N\.V\.)(\s.*)?$/i, '').trim();
 const bildSrc = (a) => (a.bild.typ === 'app' ? a.appScreens?.[a.ticker[0]]?.[0]?.src : a.bild.src);
 const nachweis = (b) => (b.ki ? 'KI-Bild' : `Bild: ${esc(b.quelle)}`);
 
@@ -182,7 +203,7 @@ function artikelSeite(a) {
   const extra = `<meta property="article:published_time" content="${iso}">\n<meta property="article:section" content="${esc(a.rubrik)}">\n${a.tags.map((t) => `<meta property="article:tag" content="${esc(t)}">`).join('\n')}\n${ldTag(ld)}\n${ldTag(crumbs)}\n`;
   const body = a.abschnitte.map((s, i) => {
     const kopf = s.h ? `<h2>${esc(s.h)}</h2>` : '';
-    let h = s.daten ? kopf + s.html + datenBox(s.daten, a) : kopf + (s.bild?.stil === 'portrait' ? figur(s.bild) : '') + s.html + (s.bild && s.bild.stil !== 'portrait' ? figur(s.bild) : '');
+    let h = s.daten ? kopf + s.html + diagramme(s) + datenBox(s.daten, a) : kopf + (s.bild?.stil === 'portrait' ? figur(s.bild) : '') + s.html + diagramme(s) + (s.bild && s.bild.stil !== 'portrait' ? figur(s.bild) : '');
     if (i === 2 && a.zitat) h += `<blockquote class="in-zitat"><p>„${esc(a.zitat.text)}“</p><cite>${esc(a.zitat.von)}</cite></blockquote>`;
     return h;
   }).join('\n');
@@ -390,7 +411,7 @@ export function build() {
     'insights/feed.xml': feed(artikel),
     'insights/sitemap.xml': sitemap(artikel, hefte, reports),
     'insights/magazin/index.html': magazinUebersicht(hefte),
-    'insights/artikel.json': JSON.stringify({ schema: 'vu-insights-1', note: 'Erzeugt von products/insights/build.mjs', artikel: artikel.map(({ slug, datum, rubrik, titel, teaser, ticker, bild }) => ({ slug, datum, rubrik, titel, teaser, ticker, bild: bild.typ === 'app' ? null : bild.src, href: `/insights/${slug}/` })), magazin: hefte.map(({ nr, datum, kw, titel, seiten }) => ({ nr, datum, kw, titel, seiten, cover: `/insights/magazin/nr-${nr}/cover.jpg`, href: `/insights/magazin/nr-${nr}/` })), reports: reports.map(({ datum, art, titel, href }) => ({ datum, art, titel, href })) }, null, 1) + '\n',
+    'insights/artikel.json': JSON.stringify({ schema: 'vu-insights-1', note: 'Erzeugt von products/insights/build.mjs', artikel: artikel.map(({ slug, datum, rubrik, titel, teaser, ticker, firma, themen, bild, daten }) => ({ slug, datum, rubrik, titel, teaser, ticker, firma: firma || { ticker: ticker[0], name: kurzName(daten, ticker[0]) }, themen: themen || [], bild: bild.typ === 'app' ? null : bild.src, href: `/insights/${slug}/` })), magazin: hefte.map(({ nr, datum, kw, titel, seiten }) => ({ nr, datum, kw, titel, seiten, cover: `/insights/magazin/nr-${nr}/cover.jpg`, href: `/insights/magazin/nr-${nr}/` })), reports: reports.map(({ datum, art, titel, href }) => ({ datum, art, titel, href })) }, null, 1) + '\n',
   };
   for (const a of artikel) files[`insights/${a.slug}/index.html`] = artikelSeite(a);
   for (const h of hefte) files[`insights/magazin/nr-${h.nr}/index.html`] = heftSeite(h);

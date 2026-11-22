@@ -168,7 +168,7 @@
       "⌂"
      ],
      [
-      "Welten",
+      "Themen",
       "/discover/#/welten",
       "◎"
      ],
@@ -178,7 +178,7 @@
       "◬"
      ],
      [
-      "Entdecken",
+      "Swipen",
       "/discover/#/einzeln/US_REAL",
       "◇"
      ],
@@ -196,6 +196,11 @@
       "Watchlist",
       "/discover/#/watchlist",
       "♡"
+     ],
+     [
+      "Alle Reihen",
+      "/discover/#/reihen",
+      "▦"
      ]
     ]
    },
@@ -523,13 +528,21 @@
     "icon": "▤"
    },
    "data": [
-    "news"
+    "news",
+    "marktbriefing"
    ],
-   "reads": [],
+   "reads": [
+    "marketPulse",
+    "eodPrices",
+    "fundamentalsConsumer"
+   ],
    "producers": [
-    "products/news/producer/update_news.mjs"
+    "products/news/producer/update_news.mjs",
+    "products/news/briefing/build.mjs"
    ],
-   "tests": []
+   "tests": [
+    "products/news/tests/*.test.mjs"
+   ]
   },
   {
    "schema": "vu-module-2",

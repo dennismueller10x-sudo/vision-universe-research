@@ -360,7 +360,7 @@ html[data-theme=light] .qd .qv-stock,html[data-theme=light] body.qd .qv-stock{--
    Symbolkacheln im Hellen neongrün mit dunklem Zeichen, dunkle Flächen hellgrau mit dunkler Schrift; dunkel unverändert. */
 :root:not([data-theme=dark]) .qd .qv-stock .qk-hud{background:var(--vu-lime,#c8f531);color:#101318;box-shadow:none}
 :root:not([data-theme=dark]) .qd .qv-stock .qv3-ink{background:#f4f4f4;color:#000}
-:root:not([data-theme=dark]) .qd .qv-stock .qv3-ink-n{color:#4f6b00}
+:root:not([data-theme=dark]) .qd .qv-stock .qv3-ink-n{color:#101318}
 :root:not([data-theme=dark]) .qd .qv-stock .qv3-ink-s,:root:not([data-theme=dark]) .qd .qv-stock .qv3-ink-note{color:#000}
 :root:not([data-theme=dark]) .qd .qv-stock .qv3-segs i{background:#b4b8bd}
 :root:not([data-theme=dark]) .qd .qv-stock .qv3-segs i.is-good{background:var(--vu-lime,#c8f531);box-shadow:inset 0 0 0 1.5px #000}
@@ -369,7 +369,7 @@ html[data-theme=light] .qd .qv-stock,html[data-theme=light] body.qd .qv-stock{--
 /* Klickentwurf Modul-Aktienseiten (Owner 17.11.2026, #modul-quant): Abschnittskopf, Karten, Profil mit Netz und Balken, Pillen,
    Gesamtwert-Ring, drei Sätze als Schiene, Stärken und Schwächen, Kapitel als Zeilen einer Karte. Dunkel wie der Entwurf, hell voll hell. */
 .qd .qv-stock{--qk-tile:var(--vu-card,#151516);--qk-hair:var(--vu-hair,#262626);--qk-track:#2a2a2d;--qk-dk:#232325;--qk-lime:#c8f531;--qk-lime-t:#c8f531;--qk-sec:#c3c7cc}
-:root:not([data-theme=dark]) .qd .qv-stock{--qk-track:#e1e1e1;--qk-dk:#e9e9e9;--qk-lime-t:#4f6b00;--qk-sec:#3d4249}
+:root:not([data-theme=dark]) .qd .qv-stock{--qk-track:#e1e1e1;--qk-dk:#e9e9e9;--qk-lime-t:#101318;--qk-sec:#3d4249}
 .qd .qv-stock .qk-sh{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:26px 0 10px}
 .qd .qv-stock .qk-sh h2,.qd .qv-stock .qk-h2{margin:0;font-size:22px;line-height:1.1;font-weight:800;letter-spacing:-.025em}
 .qd .qv-stock .qk-chart>.qk-h2{margin:26px 0 10px}

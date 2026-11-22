@@ -226,6 +226,16 @@ test("Anthropic-Fehler: keine Kosten, Kontingent zurueck, Tagesgrenze bleibt bel
   assert.equal(storage.map.get("d:2026-09-29").llm, 1);
 });
 
+test("Berechneter Fehlschlag (abgeschnitten) gibt das Nutzerkontingent NICHT zurueck", async () => {
+  const { gate } = makeGate(ENV, anthropic({}, { stop: "max_tokens" }));
+  const r = await ask(gate, "Welche Aktien sind guenstig bewertet?");
+  assert.equal(r.status, 502);
+  assert.equal(r.body.quota.remainingToday, 0);
+  const r2 = await ask(gate, "Eine andere Frage zu Aktien bitte");
+  assert.equal(r2.status, 429);
+  assert.equal(r2.body.reason, "USER_DAILY_LIMIT");
+});
+
 test("Ohne Schalter, ohne Schluessel: keine Anfrage hinaus", async () => {
   for (const env of [{ ...ENV, VU_ASK_ENABLED: "false" }, { ...ENV, ANTHROPIC_API_KEY: "" }]) {
     const { gate, fetchImpl } = makeGate(env);
@@ -481,4 +491,92 @@ test("Zustandsbericht fuers Protokoll enthaelt nie Fragetexte", async () => {
   assert.ok(!out.includes("GEHEIME-FRAGE"));
   assert.match(out, /UPSTREAM_authentication_error/);
   assert.match(out, /"apiKeyPresent":true/);
+});
+
+/* ------------------------------------------- Konto-Limit und Turnstile-Schalter (21.11.2026) */
+
+function askAs(gate, question, { ip = "1.2.3.4", clientId = "client-aaaaaaaa", account } = {}) {
+  return gate.fetch(new Request("https://gate/ask", {
+    method: "POST", headers: { "x-vu-ip": ip, ...(account ? { "x-vu-account": account } : {}) },
+    body: JSON.stringify({ question, clientId }),
+  })).then(async (r) => ({ status: r.status, body: await r.json() }));
+}
+
+test("Konto-Limit: Konten zaehlen je Konto, nicht je Anschluss", async () => {
+  const env = { ...ENV, VU_ASK_PER_USER_DAILY: "1", VU_ASK_PER_ACCOUNT_DAILY: "2" };
+  const { gate } = makeGate(env);
+  const A = "11111111-1111-4111-8111-111111111111", B = "22222222-2222-4222-8222-222222222222";
+  /* zwei Konten hinter derselben Adresse sperren sich nicht gegenseitig */
+  assert.equal((await askAs(gate, "Aktien mit hohem Momentum bitte", { account: A })).status, 200);
+  assert.equal((await askAs(gate, "Aktien mit niedrigem KGV bitte", { account: A })).status, 200);
+  const dritte = await askAs(gate, "Aktien mit hoher Dividende bitte", { account: A });
+  assert.equal(dritte.status, 429);
+  assert.equal(dritte.body.reason, "USER_DAILY_LIMIT");
+  assert.equal(dritte.body.quota.account, true);
+  assert.equal(dritte.body.quota.perUserDaily, 2);
+  assert.equal((await askAs(gate, "Aktien mit Gewinnwachstum bitte", { account: B })).status, 200, "anderes Konto, gleiche IP");
+  /* anonym bleibt bei 1 je Anschluss/Browser */
+  assert.equal((await askAs(gate, "Aktien mit Umsatzwachstum bitte", { ip: "9.9.9.9", clientId: "client-bbbbbbbb" })).status, 200);
+  assert.equal((await askAs(gate, "Aktien mit Cashflow bitte", { ip: "9.9.9.9", clientId: "client-bbbbbbbb" })).status, 429);
+});
+
+test("Konto-Limit: das globale Tageslimit bleibt der oberste Deckel", async () => {
+  const env = { ...ENV, VU_ASK_PER_ACCOUNT_DAILY: "50", VU_ASK_GLOBAL_DAILY: "2" };
+  const { gate } = makeGate(env);
+  const konten = ["aaaaaaaa-1111-4111-8111-111111111111", "bbbbbbbb-1111-4111-8111-111111111111", "cccccccc-1111-4111-8111-111111111111"];
+  const codes = [];
+  for (const [i, a] of konten.entries()) codes.push((await askAs(gate, "Frage nummer " + i + " zu Aktien", { account: a })).status);
+  assert.deepEqual(codes, [200, 200, 429]);
+});
+
+test("Konto-ID wird nur als Tages-Hash gespeichert", async () => {
+  const { gate, storage } = makeGate({ ...ENV, VU_ASK_PER_ACCOUNT_DAILY: "2" });
+  const A = "33333333-3333-4333-8333-333333333333";
+  await askAs(gate, "Aktien mit starkem Momentum bitte", { account: A });
+  assert.ok(![...storage.map.keys()].some((k) => k.includes(A)));
+  assert.ok([...storage.map.keys()].some((k) => /^u:\d{4}-\d\d-\d\d:a/.test(k)));
+});
+
+async function bauToken(claims, { kid = "k1", alg = "ES256", tamper = false } = {}) {
+  const b64 = (o) => Buffer.from(typeof o === "string" ? o : JSON.stringify(o)).toString("base64url");
+  const pair = await crypto.subtle.generateKey({ name: "ECDSA", namedCurve: "P-256" }, true, ["sign", "verify"]);
+  const jwk = { ...(await crypto.subtle.exportKey("jwk", pair.publicKey)), kid, alg };
+  const head = b64({ alg, kid, typ: "JWT" }), body = b64(claims);
+  const sig = Buffer.from(await crypto.subtle.sign({ name: "ECDSA", hash: "SHA-256" }, pair.privateKey, new TextEncoder().encode(head + "." + body))).toString("base64url");
+  return { token: head + "." + body + "." + (tamper ? sig.slice(0, -4) + "AAAA" : sig), jwks: { get: async (k) => (k === kid ? jwk : null) } };
+}
+
+test("accountOf: gueltiges Token wird Konto, alles andere bleibt anonym, Schalter aus = immer anonym", async () => {
+  const { accountOf } = await import("../src/index.mjs");
+  const now = Date.parse("2026-11-21T12:00:00Z");
+  const claims = { iss: "https://proj.supabase.co/auth/v1", aud: "authenticated", role: "authenticated",
+    sub: "44444444-4444-4444-8444-444444444444", exp: Math.floor(now / 1000) + 600 };
+  const ok = await bauToken(claims);
+  const req = (t) => new Request("https://ask/v1/ask", { headers: { authorization: "Bearer " + t } });
+  const env = { VU_ASK_ACCOUNT_LIMITS: "true", SUPABASE_URL: "https://proj.supabase.co", __jwks: ok.jwks };
+  assert.equal(await accountOf(req(ok.token), env, now), claims.sub);
+  assert.equal(await accountOf(req(ok.token), { ...env, VU_ASK_ACCOUNT_LIMITS: "false" }, now), null, "Schalter aus");
+  assert.equal(await accountOf(new Request("https://ask/v1/ask"), env, now), null, "ohne Token");
+  assert.equal(await accountOf(req("müll"), env, now), null, "kein Token");
+  const manip = await bauToken(claims, { tamper: true });
+  assert.equal(await accountOf(req(manip.token), { ...env, __jwks: manip.jwks }, now), null, "Signatur kaputt");
+  const abgelaufen = await bauToken({ ...claims, exp: Math.floor(now / 1000) - 3600 });
+  assert.equal(await accountOf(req(abgelaufen.token), { ...env, __jwks: abgelaufen.jwks }, now), null, "abgelaufen");
+  const fremd = await bauToken({ ...claims, iss: "https://anderes.supabase.co/auth/v1" });
+  assert.equal(await accountOf(req(fremd.token), { ...env, __jwks: fremd.jwks }, now), null, "falscher Aussteller");
+  const anon = await bauToken({ ...claims, is_anonymous: true });
+  assert.equal(await accountOf(req(anon.token), { ...env, __jwks: anon.jwks }, now), null, "anonymes Supabase-Konto");
+});
+
+test("Turnstile-Schalter: Secret allein wirkt nicht, wenn VU_ASK_TURNSTILE=false; mit true wird geprueft", async () => {
+  const calls = [];
+  const fetchImpl = async (url, init) => {
+    calls.push(url);
+    if (url.includes("turnstile")) return new Response(JSON.stringify({ success: false }));
+    return anthropic(MINERVINI_ANSWER)(url, init);
+  };
+  const aus = makeGate({ ...ENV, TURNSTILE_SECRET: "ts", VU_ASK_TURNSTILE: "false" }, fetchImpl);
+  assert.equal((await ask(aus.gate, "Frage zu Aktien ohne Token")).status, 200, "Schalter aus: keine Pruefung");
+  const an = makeGate({ ...ENV, TURNSTILE_SECRET: "ts", VU_ASK_TURNSTILE: "true" }, fetchImpl);
+  assert.equal((await ask(an.gate, "Frage zu Aktien ohne Token")).body.reason, "BOT_CHECK");
 });

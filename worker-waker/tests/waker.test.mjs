@@ -516,6 +516,38 @@ test("WK-21 Gegenprobe: laeuft oder wartet schon einer, wird nicht angestossen",
   }
 });
 
+test("WK-21b ein PR-Lauf haelt die Auslieferung nicht auf, ein anderer Lauf schon (20.11.2026, Waechter FAIL 17:00)", async () => {
+  /* pages-release.yml laeuft auch auf PR-Zweigen, in eigener Gruppe (pages-production-pr-N). Ein solcher Lauf (16:39-16:51 UTC)
+     blockierte zwei Takte, obwohl die Gruppe pages-production frei war. */
+  const mitLaeufen = (laeufe) => appAntworten([
+    { enthaelt: "intraday-pacemaker.yml/runs", json: { total_count: 1 } },
+    { enthaelt: "pages-release.yml/runs?status=in_progress", json: { total_count: laeufe.length, workflow_runs: laeufe } },
+    { enthaelt: "pages-release.yml/runs?status=queued", json: { total_count: 0, workflow_runs: [] } },
+    { enthaelt: "pages-release.yml/dispatches", json: {} }
+  ]);
+  { const p = protokoll(); const n = netz(mitLaeufen([{ event: "pull_request" }, { event: "pull_request" }]));
+    try {
+      const r = await wecke(umgebung());
+      assert.equal(r.auslieferung, "ausgeliefert", "nur PR-Laeufe: anstossen");
+      assert.ok(n.gerufen.some((g) => g.url.includes("pages-release.yml/dispatches")));
+    } finally { n.zurueck(); p.zurueck(); } }
+  for (const event of ["workflow_dispatch", "workflow_run", "push"]) {
+    const p = protokoll(); const n = netz(mitLaeufen([{ event: "pull_request" }, { event }]));
+    try {
+      const r = await wecke(umgebung());
+      assert.equal(r.auslieferung, "auslieferungLaeuft", event + " haelt die Gruppe pages-production");
+      assert.ok(!n.gerufen.some((g) => g.url.includes("pages-release.yml/dispatches")));
+    } finally { n.zurueck(); p.zurueck(); }
+  }
+  /* Volle Seite nur mit PR-Laeufen: unsicher, also nicht anstossen. */
+  { const voll = Array.from({ length: 50 }, () => ({ event: "pull_request" }));
+    const p = protokoll(); const n = netz(mitLaeufen(voll));
+    try {
+      const r = await wecke(umgebung());
+      assert.equal(r.auslieferung, "auslieferungLaeuft");
+    } finally { n.zurueck(); p.zurueck(); } }
+});
+
 test("WK-22 ein gescheitertes Wecken haelt die Auslieferung nicht auf", async () => {
   /* Auch wenn der Takt nicht anspringt, kann ein frisch geschriebener
      Stand dastehen, der nur noch ausgeliefert werden muss. Die beiden

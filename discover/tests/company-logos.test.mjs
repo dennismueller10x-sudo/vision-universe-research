@@ -12,7 +12,8 @@ import {
 } from "../../scripts/discover/company-logos-web.mjs";
 import {
   normalizeCik, commonsTitle, namesAgree, namesEqual, collectItems, pickLogo, matchUniverse, checkLicense, safeSymbol,
-  entityToItem, matchByName, searchName, namesStrong, licenseCode, cleanAuthor
+  entityToItem, matchByName, searchName, namesStrong, licenseCode, cleanAuthor,
+  neueTitel, neueZuerst, watchFortschreiben
 } from "../../scripts/discover/company-logos-lib.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -465,4 +466,35 @@ test("Gewaehlte Logo-Adressen: nur https, nur gueltige Ticker, nicht gesperrt", 
     assert.match(url, /^https:\/\//, sym);
     assert.ok(!(rejects.urls || {})[url], "Gesperrte Adresse gewaehlt: " + sym);
   }
+});
+
+test("keinLogoErwartet: SPACs und Fonds ja, Betriebsunternehmen nein", async () => {
+  const { keinLogoErwartet } = await import("../../scripts/discover/company-logos-web.mjs");
+  for (const n of ["Armada Acquisition Corp I", "Virtus Artificial Intelligence & Technology Opportunities Fund", "Centurion Acquisition Class A"]) assert.equal(keinLogoErwartet(n), true, n);
+  for (const n of ["ACNB Corp", "Acco Brands", "Apogee Therapeutics", "", null]) assert.equal(keinLogoErwartet(n), false, String(n));
+});
+
+test("Neue Titel: unbekannte, Kurzhistorie und Beobachtungsliste zuerst; erster Lauf ohne Vorwissen nichts neu", () => {
+  const u = [{ symbol: "AAA", name: "A", cik: "1" }, { symbol: "ANT", name: "ANT", cik: null }, { symbol: "NEU", name: "Neu Inc", cik: "2" },
+             { symbol: "KUR", name: "Kurz", cik: "3" }, { symbol: "WCH", name: "Watch", cik: "4" }];
+  const neu = neueTitel(u, { known: new Set(["AAA", "ANT", "WCH", "KUR"]), kurz: ["KUR"], watch: { WCH: { runs: 1 } } });
+  assert.deepEqual([...neu].sort(), ["KUR", "NEU", "WCH"]);
+  assert.deepEqual(neueZuerst(u, neu).map((r) => r.symbol), ["NEU", "KUR", "WCH", "AAA", "ANT"]);
+  assert.equal(neueTitel(u, { known: null, kurz: [], watch: {} }).size, 0);
+});
+
+test("Beobachtungsliste: Logo -> raus; ohne Logo Zaehler, Alarm ab 2 Laeufen mit Grund", () => {
+  const u = [{ symbol: "ANT", name: "ANT", cik: null }, { symbol: "OK", name: "Ok Inc", cik: "9" }];
+  const neu = new Set(["ANT", "OK"]);
+  const grund = (s) => (s === "ANT" ? "NAME_ODER_CIK_WIDERSPRICHT" : null);
+  const r1 = watchFortschreiben({ neu, watch: {}, hatLogo: (s) => s === "OK", grund, universe: u, today: "2026-11-22" });
+  assert.deepEqual(Object.keys(r1.watch), ["ANT"]);
+  assert.equal(r1.alarms.length, 0);
+  const r2 = watchFortschreiben({ neu, watch: r1.watch, hatLogo: (s) => s === "OK", grund, universe: u, today: "2026-11-23" });
+  assert.equal(r2.watch.ANT.runs, 2);
+  assert.equal(r2.watch.ANT.firstSeen, "2026-11-22");
+  assert.equal(r2.alarms.length, 1);
+  assert.deepEqual([r2.alarms[0].symbol, r2.alarms[0].reason, r2.alarms[0].nameMissing, r2.alarms[0].cikMissing], ["ANT", "NAME_ODER_CIK_WIDERSPRICHT", true, true]);
+  const r3 = watchFortschreiben({ neu, watch: r2.watch, hatLogo: () => true, grund, universe: u, today: "2026-11-24" });
+  assert.equal(Object.keys(r3.watch).length, 0);
 });

@@ -17,7 +17,276 @@
         "item": "3.01",
         "quote": "On November 9, 2026, the Common Stock and the Preferred Stock are expected to begin trading under the new ticker symbols \"TXCP\" and \"TXCP PRB\", respectively."
       },
-      "note": "Boersenwechsel Nasdaq -> TXSE am 08.10.2026 (dasselbe 8-K; 8-A12B 0001077428-26-000068, Form 25 0001077428-26-000070), Kuerzel TCBI bis 06.11.2026. Tiingo fuehrt TCBI nicht mehr (404) und TXCP erst ab 11.11.2026 ohne Boersenangabe (Abruf 44079372359); die Historie bis 06.11. liegt nur in der eigenen Ablage unter ref_TCBI."
+      "note": "Boersenwechsel Nasdaq -> TXSE am 08.10.2026 (dasselbe 8-K; 8-A12B 0001077428-26-000068, Form 25 0001077428-26-000070), Kuerzel TCBI bis 06.11.2026. Tiingo fuehrt TCBI nicht mehr (404) und TXCP erst ab 11.11.2026 ohne Boersenangabe (Abruf 44079372359); die Historie bis 06.11. liegt nur in der eigenen Ablage unter ref_TCBI.",
+      "retirePredecessor": true,
+      "retireNote": "Steuerung 22.11.2026: TCBI verlaesst das Produkt wie die anderen Vorgaenger als CONFIRMED_LISTING_ENDED:SUCCEEDED (apply-ended-listings Regel D). Die Historie fuehrt ticker-succession (ADR-009) im Nachfolger zusammen; die Forschungsreihen von ref_TCBI sind eingefroren (check-research-frozen) und vor dem Abgang in R2 gesichert (Umfangsfolge backup-series)."
+    },
+    {
+      "from": "ref_ANY",
+      "fromTicker": "ANY",
+      "to": "ref_DRK",
+      "toTicker": "DRK",
+      "effective": "2026-09-17",
+      "cik": "0001591956",
+      "issuer": "DarkHorse Technologies Inc. (frueher Sphere 3D Corp.)",
+      "source": {
+        "type": "SEC_8K",
+        "accession": "0001213900-26-100953",
+        "filed": "2026-09-17",
+        "item": "5.03",
+        "quote": "In connection with the name change, the Company's common shares began trading on the Nasdaq Capital Market under the new name and the new ticker symbol DRK at the market open on September 17, 2026."
+      },
+      "note": "Tiingo liefert die Historie unter dem neuen Kuerzel (identische Schluesse); die alte Reihe endet am Kuerzelwechsel."
+    },
+    {
+      "from": "ref_DOMO",
+      "fromTicker": "DOMO",
+      "to": "ref_HUCK",
+      "toTicker": "HUCK",
+      "effective": "2026-09-24",
+      "cik": "0001505952",
+      "issuer": "Huckleberry.ai, Inc. (frueher DOMO, INC.)",
+      "source": {
+        "type": "SEC_8K",
+        "accession": "0001104659-26-109635",
+        "filed": "2026-09-22",
+        "item": "5.03",
+        "quote": "... will begin trading on the Nasdaq Global Market under the trading symbol, HUCK, on September 24, 2026."
+      },
+      "note": "Tiingo liefert die Historie unter dem neuen Kuerzel (identische Schluesse); die alte Reihe endet am Kuerzelwechsel."
+    },
+    {
+      "from": "ref_AIXC",
+      "fromTicker": "AIXC",
+      "to": "ref_FFR",
+      "toTicker": "FFR",
+      "effective": "2026-09-30",
+      "cik": "0001460702",
+      "issuer": "FF EAI Robotics Ecosystem Inc. (frueher AIxCrypto Holdings, Inc.)",
+      "source": {
+        "type": "SEC_8K",
+        "accession": "0001493152-26-044923",
+        "filed": "2026-09-29",
+        "item": "5.03",
+        "quote": "In connection with the Name Change, the trading symbol for the Company's common stock on The Nasdaq Capital Market will change from AIXC to FFR, effective at market open on September 30, 2026."
+      },
+      "note": "Tiingo liefert die Historie unter dem neuen Kuerzel (identische Schluesse); die alte Reihe endet am Kuerzelwechsel."
+    },
+    {
+      "from": "ref_VRME",
+      "fromTicker": "VRME",
+      "to": "ref_OPNW",
+      "toTicker": "OPNW",
+      "effective": "2026-10-01",
+      "cik": "0001104038",
+      "issuer": "OpenWorld, Inc. (frueher VerifyMe, Inc.)",
+      "source": {
+        "type": "SEC_8K",
+        "accession": "0001214659-26-012283",
+        "filed": "2026-09-30",
+        "item": "5.03",
+        "quote": "Effective October 1, 2026, our common stock will begin to trade on The Nasdaq Capital Market on a post-Merger basis under the ticker symbol OPNW."
+      },
+      "note": "Tiingo liefert die Historie unter dem neuen Kuerzel (identische Schluesse); die alte Reihe endet am Kuerzelwechsel."
+    },
+    {
+      "from": "ref_ADIL",
+      "fromTicker": "ADIL",
+      "to": "ref_AZR",
+      "toTicker": "AZR",
+      "effective": "2026-10-29",
+      "cik": "0001513525",
+      "issuer": "Azora Therapeutics, Inc. (frueher Adial Pharmaceuticals, Inc.)",
+      "source": {
+        "type": "SEC_8K",
+        "accession": "0001213900-26-113337",
+        "filed": "2026-10-28",
+        "item": "5.03",
+        "quote": "... beginning with the opening of trading on October 29, 2026, trading is expected to be under the new symbol AZR (the Symbol Change)."
+      },
+      "note": "Tiingo liefert die Historie unter dem neuen Kuerzel (identische Schluesse); die alte Reihe endet am Kuerzelwechsel."
+    },
+    {
+      "from": "ref_MGPI",
+      "fromTicker": "MGPI",
+      "to": "ref_CASK",
+      "toTicker": "CASK",
+      "effective": "2026-11-02",
+      "cik": "0000835011",
+      "issuer": "Sempreon, Inc. (frueher MGP Ingredients Inc.)",
+      "source": {
+        "type": "SEC_8K",
+        "accession": "0000835011-26-000115",
+        "filed": "2026-10-15",
+        "item": "5.03",
+        "quote": "... to be effective on November 2, 2026, at which time it expects its ticker symbol will also change to CASK."
+      },
+      "note": "Tiingo liefert die Historie unter dem neuen Kuerzel (identische Schluesse); die alte Reihe endet am Kuerzelwechsel."
+    },
+    {
+      "from": "ref_HWH",
+      "fromTicker": "HWH",
+      "to": "ref_ESYN",
+      "toTicker": "ESYN",
+      "effective": "2026-09-22",
+      "cik": "0001897245",
+      "issuer": "EnerSyn Global Inc. (frueher HWH International Inc.)",
+      "source": {
+        "type": "SEC_8K",
+        "accession": "0001493152-26-043411",
+        "filed": "2026-09-18",
+        "item": "5.03",
+        "quote": "Beginning with the opening of trading on September 22, 2026, trading will be under the new corporate name EnerSyn Global Inc. and the symbol ESYN."
+      },
+      "note": "Tiingo liefert die Historie unter dem neuen Kuerzel (identische Schluesse); die alte Reihe endet am Kuerzelwechsel."
+    },
+    {
+      "from": "ref_VSME",
+      "fromTicker": "VSME",
+      "to": "ref_FCDH",
+      "toTicker": "FCDH",
+      "effective": "2026-10-26",
+      "cik": "0001951294",
+      "issuer": "Forcendra Holding Ltd (frueher VS MEDIA Holdings Ltd)",
+      "source": {
+        "type": "SEC_6K",
+        "accession": "0001493152-26-047921",
+        "filed": "2026-10-21",
+        "quote": "In connection with the Name Change, the Company expects that its Class A Ordinary Shares will begin trading on the Nasdaq Capital Market under the new ticker symbol \"FCDH\" at the open of trading on October 26, 2026, replacing the Company's current ticker symbol, \"VSME\"."
+      },
+      "note": "Tiingo liefert die Historie unter dem neuen Kuerzel (identische Schluesse); die alte Reihe endet am Kuerzelwechsel."
+    },
+    {
+      "from": "ref_GNTA",
+      "fromTicker": "GNTA",
+      "to": "ref_SAEN",
+      "toTicker": "SAEN",
+      "effective": "2026-11-04",
+      "cik": "0001838716",
+      "issuer": "Genenta Science S.p.A.",
+      "source": {
+        "type": "SEC_6K",
+        "accession": "0001493152-26-049506",
+        "filed": "2026-11-02",
+        "quote": "... effective upon the commencement of trading on November 4, 2026, its American Depositary Shares, currently trading on the Nasdaq Capital Market under the ticker symbol \"GNTA,\" are expected to begin trading under the new ticker symbol \"SAEN\", subject to final confirmation by The Nasdaq Stock Market LLC."
+      },
+      "note": "Tiingo liefert die Historie unter dem neuen Kuerzel (identische Schluesse); die alte Reihe endet am Kuerzelwechsel."
+    },
+    {
+      "from": "ref_EZRA",
+      "fromTicker": "EZRA",
+      "to": "ref_XGPU",
+      "toTicker": "XGPU",
+      "effective": "2026-11-10",
+      "cik": "0001812727",
+      "issuer": "Reliance Global Group, Inc. (GPU Exchange)",
+      "source": {
+        "type": "SEC_8K",
+        "accession": "0001493152-26-050810",
+        "filed": "2026-11-09",
+        "item": "8.01",
+        "quote": "The Company intends for its common stock to begin trading on The Nasdaq Capital Market under the new trading symbol XGPU at the opening of trading on November 10, 2026."
+      },
+      "note": "Tiingo liefert die Historie unter dem neuen Kuerzel (identische Schluesse); die alte Reihe endet am Kuerzelwechsel."
+    },
+    {
+      "from": "ref_KAZR",
+      "fromTicker": "KAZR",
+      "to": "ref_CRMN",
+      "toTicker": "CRMN",
+      "effective": "2026-11-12",
+      "cik": "0002031009",
+      "issuer": "Skyline Builders Group Holding Ltd",
+      "source": {
+        "type": "SEC_6K",
+        "accession": "0001213900-26-118491",
+        "filed": "2026-11-12",
+        "quote": "On November 12, 2026, Skyline Builders Group Holding Limited announced that its Nasdaq ticker symbol will change from \"KAZR\" to \"CRMN\", effective at the opening of trading on November 12, 2026."
+      },
+      "note": "Tiingo liefert die Historie unter dem neuen Kuerzel (identische Schluesse); die alte Reihe endet am Kuerzelwechsel."
+    },
+    {
+      "from": "ref_INM",
+      "fromTicker": "INM",
+      "to": "ref_MTRI",
+      "toTicker": "MTRI",
+      "effective": "2026-11-09",
+      "cik": "0001728328",
+      "issuer": "Mentari Therapeutics, Inc. (frueher InMed Pharmaceuticals Inc.)",
+      "source": {
+        "type": "SEC_8K",
+        "accession": "0001193125-26-452706",
+        "filed": "2026-11-09",
+        "item": "7.01",
+        "quote": "Shares to trade on Nasdaq under the ticker symbol MTRI commencing today, November 9, 2026 (Pressemitteilung, Anlage 99.1)."
+      },
+      "note": "Nach Fusion. Tiingo liefert die Historie unter dem neuen Kuerzel (identische Schluesse); die alte Reihe endet am Kuerzelwechsel."
+    },
+    {
+      "from": "ref_PAPL",
+      "fromTicker": "PAPL",
+      "to": "ref_PTIV",
+      "toTicker": "PTIV",
+      "effective": "2026-10-26",
+      "cik": "0001938109",
+      "issuer": "Pineapple Financial Inc.",
+      "source": {
+        "type": "SEC_8K",
+        "accession": "0001493152-26-047167",
+        "filed": "2026-10-15",
+        "item": "7.01",
+        "quote": "The company's common shares will continue to trade under the ticker PAPL until the ticker change to PTIV becomes effective on NYSE American, which is anticipated to occur on or about October 26, 2026 (Pressemitteilung, Anlage 99.1)."
+      },
+      "note": "Stichtag nach der Ankuendigung (\"on or about\"); letzter Handelstag der alten Reihe ist der 23.10.2026. Tiingo liefert die Historie unter dem neuen Kuerzel (identische Schluesse); die alte Reihe endet am Kuerzelwechsel."
+    },
+    {
+      "from": "ref_ACHV",
+      "fromTicker": "ACHV",
+      "to": "ref_QUIT",
+      "toTicker": "QUIT",
+      "effective": "2026-11-10",
+      "cik": "0000949858",
+      "issuer": "Achieve Life Sciences, Inc. (AchieveRx, The Quit Company)",
+      "source": {
+        "type": "SEC_8K",
+        "accession": "0001193125-26-455404",
+        "filed": "2026-11-10",
+        "item": "2.02",
+        "quote": "... is now doing business as AchieveRx, The Quit Company, and has begun trading under the Nasdaq ticker symbol QUIT (Pressemitteilung, Anlage 99.1)."
+      },
+      "note": "Stichtag aus der Meldung vom 10.11. (hat begonnen) und dem Ende der alten Reihe am 09.11.2026; ein genauer Starttag steht nicht in der Meldung. Tiingo liefert die Historie unter dem neuen Kuerzel (identische Schluesse); die alte Reihe endet am Kuerzelwechsel."
+    },
+    {
+      "from": "ref_GLMD",
+      "fromTicker": "GLMD",
+      "to": "ref_EOCN",
+      "toTicker": "EOCN",
+      "effective": "2026-09-10",
+      "cik": "0001595353",
+      "issuer": "EoCene Ltd. (frueher Galmed Pharmaceuticals Ltd.)",
+      "source": {
+        "type": "SEC_6K",
+        "accession": "0001493152-26-041872",
+        "filed": "2026-09-09",
+        "quote": "The name change and trading symbol change are expected to become effective on the Nasdaq Capital Market on September 10, 2026. (Pressemitteilung \"Galmed Pharmaceuticals Becomes EoCene, Unveiling New Ticker Symbol EOCN\", Anlage 99.1)"
+      },
+      "note": "Der alte Titel hat in der eigenen Ablage keine Reihe; das Neu-Kuerzel traegt die Historie (Tiingo fuehrt die Reihe unter dem neuen Kuerzel)."
+    },
+    {
+      "from": "ref_BNRG",
+      "fromTicker": "BNRG",
+      "to": "ref_BRNX",
+      "toTicker": "BRNX",
+      "effective": "2026-08-14",
+      "cik": "0001901215",
+      "issuer": "BRENX Ltd. (frueher Brenmiller Energy Ltd.)",
+      "source": {
+        "type": "SEC_6K",
+        "accession": "0001213900-26-088731",
+        "filed": "2026-08-13",
+        "quote": "Trading under the Company's new name and ticker symbol is expected to begin on August 14, 2026. (bestaetigt im 6-K 0001213900-26-098245 vom 09.09.2026: \"our ordinary shares began trading on the Nasdaq Capital Market under the ticker symbol BRNX on August 14, 2026\")"
+      },
+      "note": "Der alte Titel hat in der eigenen Ablage keine Reihe; das Neu-Kuerzel traegt die Historie (Tiingo fuehrt die Reihe unter dem neuen Kuerzel)."
     }
   ]
 }

@@ -13,10 +13,11 @@
    Code-Releases bleiben bei vollem Bau und vollem Smoke.
 
    Unterbefehle:
-     klassifiziere --base=<sha> [--head=HEAD] [--list=<datei>]   gibt FAST oder FULL aus (+ Grund), schreibt name-status
+     klassifiziere --base=<sha> [--head=HEAD] [--list=<datei>] [--fenster=ja|nein|auto]   gibt FAST, FULL oder AUFSCHUB aus (+ Grund), schreibt name-status
      overlay --repo=<dir> --site=<dir> [--list=<datei>]           Intraday- und Datendateien ueber das Paket legen
      smoke --repo=<dir> --site=<dir> [--list=<datei>]             Pruefsumme, Schema, JSON, ein Seitenaufruf
    ========================================================================= */
+import {refreshHeroPreview} from './discover-hero-preview.mjs';
 import {execFileSync, spawn} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {existsSync, readFileSync} from 'node:fs';
@@ -78,10 +79,32 @@ export function isIntraday(path) {
 export function isIgnored(path) {
   return IGNORED_PREFIXES.some((p) => path.startsWith(p)) || IGNORED_PATTERNS.some((r) => r.test(path));
 }
-export function klassifiziere(changed) {
+/* BOERSENFENSTER (Steuerung 19.11.2026): Mo-Fr 14:00 bis 21:00 UTC (Boerse 14:30; die letzte halbe Stunde davor ist der Vorlauf, weil ein Voll-Release bis 22 Minuten dauert). In dieser Zeit blockierte ein Voll-Release (~15-30 Minuten) die
+   gemeinsame Gruppe pages-production; der Intraday-Stand lag 25-31 Minuten hinter der Boerse. Im Fenster liefert der Schnellweg
+   deshalb auch dann nur die Intraday-Dateien aus, wenn andere Dateien warten; der Voll-Release dafuer kommt nach 21:00 UTC (der
+   Wecker stoesst bis 21:55 an) oder sofort mit workflow_dispatch notfall=true. Zeitumstellung: die Grenzen sind UTC, im Sommer
+   (US-Handel ab 13:30 UTC) ist das Fenster anzupassen. Befund 19.11.: ein Voll-Release (Technical-Screener per workflow_run) startete 14:23 und
+   lief bis 14:45; die erste Live-Lieferung kam erst 14:47 (Watchdog auslieferungVerspaetet). Deshalb beginnt das Fenster um 14:00. */
+export const FENSTER = {von: 14 * 60, bis: 21 * 60};
+export function imFenster(jetzt = new Date()) {
+  const wt = jetzt.getUTCDay();
+  if (wt < 1 || wt > 5) return false;
+  const min = jetzt.getUTCHours() * 60 + jetzt.getUTCMinutes();
+  return min >= FENSTER.von && min < FENSTER.bis;
+}
+export function klassifiziere(changed, {fenster = false} = {}) {
   const other = changed.filter((p) => p && !isIntraday(p) && !isFastData(p) && !isIgnored(p));
   const intraday = changed.filter((p) => isIntraday(p) || isFastData(p));
+  if (other.length && fenster) {
+    const wartet = other.length + ' andere Dateien warten bis 21:00 UTC';
+    if (intraday.length) return {mode: 'FAST', reason: 'Fenster: ' + intraday.length + ' Intraday-/Datendateien, ' + wartet, aufgeschoben: other.length};
+    return {mode: 'AUFSCHUB', reason: 'Fenster: ' + wartet + ', keine Intraday-Aenderung', aufgeschoben: other.length};
+  }
   if (other.length) return {mode: 'FULL', reason: 'andere Dateien geaendert: ' + other.slice(0, 5).join(', ') + (other.length > 5 ? ' (+' + (other.length - 5) + ')' : '')};
+  /* Messung 20.11.2026: vor Boersenbeginn (13:45, 14:05, 14:20 UTC) liefen Voll-Releases von ~15 min, obwohl nichts Neues
+     vorlag; der von 14:20 hielt die Gruppe bis 14:35 und der erste Live-Takt (14:24) wartete. Im Fenster gibt es dann nichts
+     auszuliefern: kein Voll-Release (Notfall bleibt workflow_dispatch notfall=true). Ausserhalb des Fensters bleibt FULL. */
+  if (!intraday.length && fenster) return {mode: 'AUFSCHUB', reason: 'Fenster: keine Aenderung seit dem Basis-Release, nichts auszuliefern', aufgeschoben: 0};
   if (!intraday.length) return {mode: 'FULL', reason: 'keine Intraday-Aenderung seit dem Basis-Release (nichts zu beschleunigen)'};
   return {mode: 'FAST', reason: intraday.length + ' Intraday-/Datendateien'};
 }
@@ -120,8 +143,10 @@ export async function overlay(repo, site, liste = []) {
     await cp(resolve(repo, e.pfad), z);
     daten++;
   }
+  /* Vorschau der ersten Discover-Folie (Ladezeit 21.11.2026): zieht nach, wenn eine ihrer Quellen im Paket steckt. */
+  const heroPreview = await refreshHeroPreview(site, liste).catch((e) => ({state: 'FAILED', reason: String(e && e.message || e).slice(0, 120)}));
   const files = (await walk(dst)).length;
-  const marker = {schema: 1, kind: 'INTRADAY_FASTPATH', files, dataFiles: daten, at: new Date().toISOString(), commit: execFileSync('git', ['rev-parse', 'HEAD'], {cwd: repo, encoding: 'utf8'}).trim()};
+  const marker = {schema: 1, kind: 'INTRADAY_FASTPATH', files, dataFiles: daten, heroPreview: heroPreview.state, at: new Date().toISOString(), commit: execFileSync('git', ['rev-parse', 'HEAD'], {cwd: repo, encoding: 'utf8'}).trim()};
   await writeFile(resolve(site, 'intraday-fastpath.json'), JSON.stringify(marker) + '\n');
   return marker;
 }
@@ -177,7 +202,8 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
       if (!/^[0-9a-f]{40}$/.test(base || '')) throw Error('BASIS_SHA_UNGUELTIG');
       const status = execFileSync('git', ['diff', '--name-status', '--no-renames', base, head], {encoding: 'utf8', maxBuffer: 1 << 28});
       const changed = status.split('\n').filter(Boolean).map((l) => l.split('\t').slice(1).join('\t'));
-      const k = klassifiziere(changed);
+      const f = arg('fenster', 'nein');
+      const k = klassifiziere(changed, {fenster: f === 'ja' || (f === 'auto' && imFenster())});
       if (arg('list')) await writeFile(arg('list'), status);
       console.log(k.mode + ' ' + k.reason);
       if (process.env.GITHUB_OUTPUT) await writeFile(process.env.GITHUB_OUTPUT, 'mode=' + k.mode + '\n', {flag: 'a'});

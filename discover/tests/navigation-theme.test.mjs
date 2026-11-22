@@ -28,9 +28,9 @@ test('the shared menu groups product routes and Discover destinations', () => {
     assert.ok(routes.includes(route), `${route} fehlt`);
   }
   assert.deepEqual(normalized[0][1], [
-    ['Übersicht','/discover/#/'],['Welten','/discover/#/welten'],['Strategien','/discover/#/strategien'],
-    ['Entdecken','/discover/#/einzeln/US_REAL'],['Suchen','/discover/#/suche'],
-    ['Märkte','/discover/#/maerkte'],['Watchlist','/discover/#/watchlist']
+    ['Übersicht','/discover/#/'],['Themen','/discover/#/welten'],['Strategien','/discover/#/strategien'],
+    ['Swipen','/discover/#/einzeln/US_REAL'],['Suchen','/discover/#/suche'],
+    ['Märkte','/discover/#/maerkte'],['Watchlist','/discover/#/watchlist'],['Alle Reihen','/discover/#/reihen']
   ]);
   // Hash-Routen gehoeren zu vorhandenen Produkt-Apps; Screener nutzt Query-Routen.
   assert.ok(routes.filter(route => route.includes('#/')).every(route => /^\/(discover|vorsorge|quant|hedgefonds|elliott|fundamental|technical|portfolios)\/#\//.test(route)));
@@ -53,7 +53,7 @@ test('Discover has separate worlds and strategies routes and uses the shared pro
   assert.doesNotMatch(app.match(/function shell\(\)[\s\S]*?function setupSearch/)[0], /v2-watch-link|v2-wordmark|Quant|Academy|Hedgefonds|Research/);
   const discover = PRODUCTS.find(p => p.id === 'discover');
   assert.deepEqual(JSON.parse(JSON.stringify(discover.items.map(([, label, href]) => [label, href]))), [
-    ['Discover','/discover/#/'],['Welten','/discover/#/welten'],['Strategien','/discover/#/strategien'],['Swipen','/discover/#/einzeln/US_REAL']
+    ['Discover','/discover/#/'],['Swipen','/discover/#/einzeln/US_REAL'],['Themen','/discover/#/welten'],['Strategien','/discover/#/strategien']
   ]);
 });
 

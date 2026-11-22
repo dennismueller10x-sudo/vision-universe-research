@@ -1,0 +1,65 @@
+{
+ "schemaVersion": "confirmed-non-equity-1.0.0",
+ "consumer": "scripts/market/apply-exchange-directory.mjs (Eignungskette, security-master-eligibility.yml)",
+ "effect": "Ein einmal belegtes Nicht-Aktien-Papier bleibt EXCLUDED mit seiner Gattung, auch wenn das Boersenverzeichnis seine Zeile nicht mehr fuehrt (beendete Notierung). Ohne Eintrag stuft der Stamm einen Titel ohne Verzeichniszeile und ohne Namen als EQUITY_COMMON ein, und er rutscht zurueck ins Produkt.",
+ "rule": "Nur mit Beleg (Verzeichniszeile mit ETF = Y oder belegter Wertpapierbezeichnung) und Freigabe. Gilt, solange das Verzeichnis keine Zeile fuehrt oder seine heutige Zeile nichts einstuft (Name ohne Klassenbeleg, seit 22.11.2026); eine Zeile, die selbst eine Klasse belegt, entscheidet wie bisher. Nie allein ueber den Ticker: Schluessel ist die securityId.",
+ "decidedBy": "Steuerung 19.11.2026: MEMY ist ein ETF; ETFs sind seit dem 06.11. aus dem Produkt. Zurueck auf EXCLUDED:ETF ueber den normalen Eignungsweg mit einer Freigabe fuer genau diesen Titel.",
+ "records": [
+  {
+   "securityId": "ref_MEMY",
+   "ticker": "MEMY",
+   "instrumentType": "ETF",
+   "evidence": "Boersenverzeichnis (NASDAQ_TRADER_SYMBOL_DIRECTORY, ETF = Y), angewendet in eligibility-cleanup-2026-11-06 (CONFIRMED_NON_EQUITY:ETF, einer der 269 ETFs). Anbieterzeile tiingo:BATS:MEMY:2026-01-20 endet am 2026-11-17; danach fehlte die Verzeichniszeile und der Stamm fuehrte MEMY ohne Namen als EQUITY_COMMON.",
+   "approval": "docs/data/security-master/eligibility-exclusion-2026-11-19-memy.json"
+  },
+  {
+   "securityId": "ref_TVC",
+   "ticker": "TVC",
+   "instrumentType": "DEBT",
+   "evidence": "TVA 10-K Geschaeftsjahr 2026 (0001376986-26-000041, tve-20260930.htm): \"TVA's Putable Automatic Rate Reset Securities (\\\"PARRS\\\") are traded on the NYSE under the exchange symbols \\\"TVC\\\" and \\\"TVE.\\\"\" Boersenverzeichnis: Name \"Tennessee Valley Authority\" ohne Klassenbeleg.",
+   "approval": "docs/data/security-master/eligibility-exclusion-2026-11-22-debt.json"
+  },
+  {
+   "securityId": "ref_TVE",
+   "ticker": "TVE",
+   "instrumentType": "DEBT",
+   "evidence": "TVA 10-K Geschaeftsjahr 2026 (0001376986-26-000041, tve-20260930.htm): PARRS an der NYSE unter \"TVC\" und \"TVE\" (Anleihen der Tennessee Valley Authority). Boersenverzeichnis: Name \"Tennessee Valley Authority\" ohne Klassenbeleg.",
+   "approval": "docs/data/security-master/eligibility-exclusion-2026-11-22-debt.json"
+  },
+  {
+   "securityId": "ref_TWOD",
+   "ticker": "TWOD",
+   "instrumentType": "DEBT",
+   "evidence": "Two Harbors Investment Corp., 8-K vom 28.07.2026 (0001465740-26-000029), Section-12(b)-Tabelle: \"9.375% Senior Notes Due 2030 TWOD New York Stock Exchange\". Keine Verzeichniszeile.",
+   "approval": "docs/data/security-master/eligibility-exclusion-2026-11-22-debt.json"
+  },
+  {
+   "securityId": "ref_RILYN",
+   "ticker": "RILYN",
+   "instrumentType": "DEBT",
+   "evidence": "BRC Group Holdings, Inc. (vormals B. Riley Financial), 8-K vom 09.06.2026 (0001213900-26-066858), Section-12(b)-Tabelle: \"6.50% Senior Notes due 2026 RILYN Nasdaq Global Market\". Keine Verzeichniszeile; bisher als PREFERRED gefuehrt.",
+   "approval": "docs/data/security-master/eligibility-exclusion-2026-11-22-debt.json"
+  },
+  {
+   "securityId": "ref_GJO",
+   "ticker": "GJO",
+   "instrumentType": "DEBT",
+   "evidence": "Boersenverzeichnis (otherlisted): \"Synthetic Fixed-Income Securities, Inc. on behalf of STRATS(SM) Trust for Wal-Mart Stores, Inc. Securities, Series 2004-5\" - durchgereichte Anleihe (STRATS-Trustzertifikat). R2-Reihe: 171 Kuponspruenge, keine gemeldete Dividende.",
+   "approval": "docs/data/security-master/eligibility-exclusion-2026-11-22-debt.json"
+  },
+  {
+   "securityId": "ref_GJT",
+   "ticker": "GJT",
+   "instrumentType": "DEBT",
+   "evidence": "Boersenverzeichnis (otherlisted): \"Synthetic Fixed-Income Securities, Inc. Floating Rate Structured Repackaged Asset-Backed Trust Securities Certificates, Series 2006-3\" - forderungsbesicherte Trustzertifikate. R2-Reihe: 129 Kuponspruenge.",
+   "approval": "docs/data/security-master/eligibility-exclusion-2026-11-22-debt.json"
+  },
+  {
+   "securityId": "ref_KTN",
+   "ticker": "KTN",
+   "instrumentType": "DEBT",
+   "evidence": "Boersenverzeichnis (otherlisted): \"Structured Products Corp 8.205% CorTS 8.205% Corporate Backed Trust Securities (CorTS)\" - festverzinsliche, anleihebesicherte Trustpapiere. R2-Reihe: 100 Kuponspruenge.",
+   "approval": "docs/data/security-master/eligibility-exclusion-2026-11-22-debt.json"
+  }
+ ]
+}

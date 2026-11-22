@@ -35,6 +35,7 @@ import { readFileSync, existsSync, readdirSync } from "node:fs";
 import { gunzipSync } from "node:zlib";
 import { join } from "node:path";
 import { createRequire } from "node:module";
+import { followByTime } from "../../scripts/quant/lib/follow-artifact.mjs";
 
 const require = createRequire(import.meta.url);
 const root = new URL("../../", import.meta.url).pathname;
@@ -53,11 +54,18 @@ const api = Service.create({
 
 /* ------------------------------------------- 1. Der Produzent zaehlt alles */
 
-test("every title of the universe either has an entry or a named reason", () => {
+test("every title of the universe either has an entry or a named reason", (t) => {
   const summary = JSON.parse(readFileSync(join(root, "quant/data/product/pattern-match-v1/summary.json"), "utf8"));
   if (!summary.unavailable) return;   /* Vor dem naechsten Lauf fehlt der Block. */
   const universe = JSON.parse(readFileSync(join(root, "quant/data/universe/market-capability.json"), "utf8"));
   assert.equal(summary.unavailableSchemaVersion, SCHEMA);
+  /* Halbstand (20.11.2026, ANT; 19.11., MEMY): Ein Eignungslauf aendert das Universum, die Musterdaten baut erst die
+     angestossene Materialisierung. Ist die Zusammenfassung aelter als das Universum, wartet der Abgleich bis 6 h sichtbar
+     ("neu, noch nicht gerechnet"), danach ist er ein Fehler (scripts/quant/lib/follow-artifact.mjs). */
+  if (summary.instruments + summary.unavailable.total !== universe.members.length) {
+    const folge = followByTime({ artifactAt: summary.generatedAt, sourceAt: universe.generatedAt });
+    if (folge.state === "WAITING") { t.skip(folge.reason); return; }
+  }
   assert.equal(summary.instruments + summary.unavailable.total, universe.members.length,
     "Eintraege plus Gruende ergeben nicht das Universum - es bleibt ein unerklaerter Rest");
   assert.equal(summary.unavailable.requiredWeeks, REQUIRED);

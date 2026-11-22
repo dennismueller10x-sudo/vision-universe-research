@@ -37,6 +37,7 @@ import { loadPreviewConfig, resolveScope, expandPreviewConfig } from "./preview-
 import { applySupplements } from "./lib/split-evidence-supplements.mjs";
 import { applyConfirmations } from "./lib/corporate-action-confirmations.mjs";
 import { loadSuccessions, withPredecessor } from "./lib/ticker-succession-bars.mjs";
+import { assertNoResearchSeries } from "./lib/research-series.mjs";
 
 const require = createRequire(import.meta.url);
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -47,6 +48,12 @@ const DEFAULT_ROOT = join(HERE, "..", "..");
 
 export const SERIES_DIR = join("quant", "data", "market", "discover-series");
 export const SERIES_SCHEMA = "discover-series-1.1.0";
+/* Neu an der Boerse (Steuerung 21.11.2026, ANT): 1 bis 29 Schlusskurse. Eigenes Verzeichnis, damit kein Leser von
+   discover-series (Technical, Supertrader, Elliott, Watchlist ...) eine Reihe unter 30 Punkten sieht. Derselbe Erzeuger,
+   dieselben Regeln (Split, Rundung, Listing-Schnitt, Freigabe) - nur die Mindestlaenge faellt. Gelesen wird sie von der
+   Kurzhistorie-Seite (discover/engines/kurzhistorie.js) und dem Intraday-Ingest (Vortagesschluss). */
+export const SERIES_DIR_KURZ = join("quant", "data", "market", "discover-series-kurz");
+export const MIN_POINTS = 30;
 /* Ein Jahr Handelstage plus Reserve, damit "1J" im Chart wirklich ein
    Jahr zeigt, auch nach Feiertagen. */
 export const DEFAULT_POINTS = 270;
@@ -70,6 +77,7 @@ export function splitAdjustedCloses(bars) {
 export function compactSeries(payload, security, permission, opts) {
   opts = opts || {};
   const maxPoints = opts.maxPoints || DEFAULT_POINTS;
+  const minPoints = opts.minPoints || MIN_POINTS;
   /* Nur das juengste Listing (survivorship-control.js
      currentListingSegment): nach mehr als einem Jahr ohne Kerze traegt das
      Kuerzel eine andere Firma. Ohne diesen Schnitt zeigte DINE 2010 und
@@ -83,7 +91,7 @@ export function compactSeries(payload, security, permission, opts) {
   const belegt = applySupplements(bars, security && security.securityId).bars;
   const bestaetigt = applyConfirmations(belegt, security && security.securityId).bars;
   const dated = splitAdjustedCloses(bestaetigt).filter((b) => isNum(b.close) && b.close > 0);
-  if (dated.length < 30) return null;
+  if (dated.length < minPoints) return null;
   const fenster = dated.slice(-maxPoints);
   return {
     schemaVersion: SERIES_SCHEMA,
@@ -116,6 +124,16 @@ export function compactSeries(payload, security, permission, opts) {
   };
 }
 
+/** Kurzreihe: 1 bis 29 Schlusskurse, gleiche Regeln wie compactSeries, mit Marke `short`. null ab 30 Punkten oder ohne Kurs. */
+export function shortSeries(payload, security, permission, opts) {
+  const r = compactSeries(payload, security, permission, { ...(opts || {}), minPoints: 1 });
+  if (!r || r.barCount >= MIN_POINTS) return null;
+  r.short = true;
+  r.note = "Kurzreihe fuer Discover (neu an der Boerse): " + r.barCount + " Schlusskurse, split-bereinigt. Die volle Reihe " +
+           "(discover-series) beginnt bei " + MIN_POINTS + " Schlusskursen. Kein Intraday, keine Volumina, keine OHLC.";
+  return r;
+}
+
 /**
  * Veroeffentlicht die kompakten Reihen fuer den Umfang der Konfiguration.
  *
@@ -144,6 +162,8 @@ export function publishDiscoverSeries(opt) {
 
   const written = [], skipped = [];
   const erwartet = new Set();
+  const kurzDir = join(root, SERIES_DIR_KURZ);
+  const kurzErwartet = new Set(), kurzWritten = [];
   const succ = loadSuccessions(root);
   /* --prune-only: nichts neu schreiben, nur entfernen, was nicht mehr im
      Umfang steht (z. B. nach einem Wechsel der Universumsquelle), und das
@@ -151,12 +171,18 @@ export function publishDiscoverSeries(opt) {
   if (opt.pruneOnly) {
     const imUmfang = new Set(resolved.securities.map((s) => s.securityId + ".json"));
     let entfernt = 0;
+    /* Loeschschutz (Teil B1): keine Forschungsreihe verlassen, Abbruch vor dem ersten Loeschen. */
+    if (existsSync(outDir)) assertNoResearchSeries(root, readdirSync(outDir).filter((n) => n !== "index.json" && n.endsWith(".json") && !imUmfang.has(n)), outDir);
     if (existsSync(outDir)) for (const name of readdirSync(outDir)) {
       if (name === "index.json" || !name.endsWith(".json")) continue;
       if (imUmfang.has(name)) { erwartet.add(name); written.push(name.replace(/^ref_/, "").replace(/\.json$/, "")); continue; }
       rmSync(join(outDir, name)); entfernt++; log(`    entfernt: ${name} (nicht mehr im Umfang)`);
     }
     if (!opt.dryRun) writeIndex(outDir, resolved, written, skipped);
+    /* Kurzreihen: nur Titel im Umfang bleiben; ob sie noch kurz sind, entscheidet der naechste Lauf mit den Bars. */
+    if (!opt.dryRun && existsSync(kurzDir)) {
+      for (const name of readdirSync(kurzDir)) if (name.endsWith(".json") && !imUmfang.has(name)) { rmSync(join(kurzDir, name)); entfernt++; log(`    entfernt: ${name} (Kurzreihe, nicht mehr im Umfang)`); }
+    }
     return { written, skipped, unresolved: resolved.unresolved, scope: resolved, pruned: entfernt };
   }
   for (const security of resolved.securities) {
@@ -196,7 +222,20 @@ export function publishDiscoverSeries(opt) {
     }
     const reihe = compactSeries(payload, security, anzeige, opt);
     if (!reihe) {
-      skipped.push({ ticker: security.ticker, reason: "insufficientHistory", message: "Weniger als 30 Schlusskurse." });
+      /* Neu an der Boerse: 1-29 Schlusskurse gehen in die Kurzreihe (eigenes Verzeichnis), nicht in discover-series. */
+      const kurz = shortSeries(payload, security, anzeige, opt);
+      if (kurz) {
+        kurz.sourceScope = quelle;
+        kurzErwartet.add(security.securityId + ".json");
+        if (!opt.dryRun) {
+          mkdirSync(kurzDir, { recursive: true });
+          writeFileSync(join(kurzDir, security.securityId + ".json"), JSON.stringify(kurz));
+        }
+        kurzWritten.push(security.ticker);
+        log(`    ${security.ticker.padEnd(6)} Kurzreihe ${kurz.barCount} Punkte ${kurz.from} … ${kurz.to} (${quelle})`);
+      }
+      skipped.push({ ticker: security.ticker, reason: "insufficientHistory",
+                     message: "Weniger als " + MIN_POINTS + " Schlusskurse" + (kurz ? " (Kurzreihe veroeffentlicht)." : ".") });
       continue;
     }
     reihe.sourceScope = quelle;
@@ -213,13 +252,24 @@ export function publishDiscoverSeries(opt) {
   /* Was nicht mehr im Umfang steht, verschwindet - eine Reihe, die
      einmal freigegeben war, bleibt nicht aus Versehen liegen. */
   if (!opt.dryRun && existsSync(outDir)) {
+    assertNoResearchSeries(root, readdirSync(outDir).filter((n) => n !== "index.json" && !erwartet.has(n) && n.endsWith(".json")), outDir);
     for (const name of readdirSync(outDir)) {
       if (name === "index.json" || erwartet.has(name)) continue;
       if (name.endsWith(".json")) { rmSync(join(outDir, name)); log(`    entfernt: ${name} (nicht mehr im Umfang)`); }
     }
     writeIndex(outDir, resolved, written, skipped);
   }
-  return { written, skipped, unresolved: resolved.unresolved, scope: resolved };
+  pruneKurz(kurzDir, kurzErwartet, opt, log);
+  return { written, skipped, kurz: kurzWritten, unresolved: resolved.unresolved, scope: resolved };
+}
+
+/** Kurzreihen, die dieser Lauf nicht mehr nennt (30 Punkte erreicht, ausgeschieden), verschwinden. */
+function pruneKurz(kurzDir, kurzErwartet, opt, log) {
+  if (opt.dryRun || !existsSync(kurzDir)) return;
+  for (const name of readdirSync(kurzDir)) {
+    if (!name.endsWith(".json") || kurzErwartet.has(name)) continue;
+    rmSync(join(kurzDir, name)); log(`    entfernt: ${name} (Kurzreihe: volle Reihe oder nicht mehr im Umfang)`);
+  }
 }
 
 function writeIndex(outDir, resolved, written, skipped) {

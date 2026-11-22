@@ -2,7 +2,7 @@
    Mobile zuerst (iPhone Safari): 16-px-Eingaben gegen Fokuszoom, Bedienelemente ab 44 px, keine horizontale Seitenverschiebung.
    Farbe: Akzent fuer das eigene Unternehmen und den letzten Zeitraum, Richtung (auf/ab) ueber --vu-up/--vu-down. */
 :root{--fu-gutter:16px;--fu-card:var(--vu-elevated);--fu-radius:20px;
-  --fu-acc:#9ccf1a;--fu-acc-ink:var(--vu-accent-text,#4f6b00);--fu-s1:#b4bcc4;--fu-bar:color-mix(in srgb,var(--vu-text) 22%,transparent);
+  --fu-acc:#9ccf1a;--fu-acc-ink:var(--vu-accent-text,#101318);--fu-s1:#b4bcc4;--fu-bar:color-mix(in srgb,var(--vu-text) 22%,transparent);
   --fu-soft:color-mix(in srgb,var(--vu-text) 6%,transparent);--fu-warn:#8a5600;--fu-warn-bg:#fdf2dc}
 html[data-theme=dark]{--fu-acc:#c8f531;--fu-acc-ink:#c8f531;--fu-s1:#5d666f;--fu-bar:color-mix(in srgb,var(--vu-text) 30%,transparent);--fu-warn:#f0b54a;--fu-warn-bg:rgba(240,181,74,.13)}
 .fu-body{margin:0;background:var(--vu-bg);color:var(--vu-text);font:400 16px/1.5 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%}
@@ -269,7 +269,7 @@ html[data-theme=dark] .fu-crow-ico[data-cat=bewertung],html[data-theme=dark] .fu
 .fu-range{position:relative;height:10px;margin:18px 0 8px;border-radius:5px;background:linear-gradient(90deg,color-mix(in srgb,var(--fu-acc) 25%,transparent),color-mix(in srgb,var(--fu-acc) 60%,transparent))}
 .fu-dist{display:flex;gap:3px;height:14px;margin:10px 0 8px}
 .fu-dist i{border-radius:4px}
-.d0{background:#3d9a3a}.d1{background:var(--fu-acc)}.d2{background:var(--vu-muted)}.d3{background:#e08a5a}.d4{background:var(--vu-down)}
+.d0{background:#101318}.d1{background:var(--fu-acc)}.d2{background:var(--vu-muted)}.d3{background:#e08a5a}.d4{background:var(--vu-down)}
 .fu-legend .sw.d0,.fu-legend .sw.d1,.fu-legend .sw.d2,.fu-legend .sw.d3,.fu-legend .sw.d4{width:10px;height:10px}
 .fu-areas{margin:10px 0 0;padding:0;list-style:none}
 .fu-areas a{display:flex;align-items:center;gap:14px;min-height:72px;padding:12px 14px;margin:0 0 8px;border-radius:18px;background:var(--fu-card);border:1px solid var(--vu-line);text-decoration:none}
@@ -426,7 +426,7 @@ html body .vu-product-hero.vu-hero-fidelity[data-product] .vu-product-action{min
 /* Mehrere Kennzahlen in einem Verlauf (engine/compare.js). Feste Farbe je Platz: m0 = Hauptkennzahl (Akzent; hell eine
    dunklere Stufe fuer Kontrast auf Weiss), m1–m3 dieselben Toene wie die Wettbewerber-Linien, je Theme gestuft und auf
    Farbsehschwaechen geprueft. Kennzahlen verschiedener Einheit teilen nie eine Achse. */
-:root{--fu-m0:#6f9a00;--fu-m1:#2b6cb0;--fu-m2:#b8611a;--fu-m3:#7b58c9}
+:root{--fu-m0:#101318;--fu-m1:#2b6cb0;--fu-m2:#b8611a;--fu-m3:#7b58c9}
 html[data-theme=dark]{--fu-m0:#c8f531;--fu-m1:#4f8fdc;--fu-m2:#d07a2c;--fu-m3:#9277e8}
 .fu .m0{--fu-mt:var(--fu-m0)}.fu .m1{--fu-mt:var(--fu-m1)}.fu .m2{--fu-mt:var(--fu-m2)}.fu .m3{--fu-mt:var(--fu-m3)}
 .fu-l-m{stroke:var(--fu-mt);stroke-width:2.25}.fu-l-m.m0{stroke-width:2.75}
@@ -1043,7 +1043,7 @@ html[data-theme=dark]{--fu-m0:#c8f531;--fu-m1:#fff;--fu-m2:#9b9b9b;--fu-m3:#fff}
 .fp .fp-tab::after{content:"";position:absolute;inset:-4px 0}
 .fp .fp-tab.is-on{background:var(--fp-ink);color:var(--fp-bg)}
 .fp .fp-tabs-sep{flex:none;width:1px;align-self:center;height:20px;background:rgb(127 127 127/.35);margin:0 4px}
-.fp .fp-tab:focus-visible,.fp .fp-tap:focus-visible,.fp a:focus-visible,.fp button:focus-visible{outline:2px solid var(--vu-focus-ring,#4f6b00);outline-offset:2px}
+.fp .fp-tab:focus-visible,.fp .fp-tap:focus-visible,.fp a:focus-visible,.fp button:focus-visible{outline:2px solid var(--vu-focus-ring,#101318);outline-offset:2px}
 /* Abschnittskopf (Prototyp .sh) */
 .fp .fp-sh{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:0 14px;margin:26px 0 10px;scroll-margin-top:110px}
 .fp .fp-sh h2{font-size:22px;line-height:1.1;font-weight:800;letter-spacing:-.025em;margin:0;color:var(--fp-ink)}
@@ -1123,9 +1123,9 @@ html[data-theme=dark]{--fu-m0:#c8f531;--fu-m1:#fff;--fu-m2:#9b9b9b;--fu-m3:#fff}
 /* Hell ist vollständig hell (Owner 16.11.2026: „wenn ich auf hell den Schalter umlege, dann muss natürlich auch alles hell sein“).
    Symbolkacheln im Hellen neongrün mit dunklem Zeichen, dunkle Flächen hellgrau mit dunkler Schrift; dunkel unverändert. */
 :root:not([data-theme=dark]) .fu-chap-i,:root:not([data-theme=dark]) .fu-entry-ico{background:var(--vu-lime);color:#101318}
-:root:not([data-theme=dark]) .fu-night,:root:not([data-theme=dark]) .fu .vu-night{--vu-ink:#000;--vu-inv:#fff;--vu-card:#e9e9e9;--vu-hair:#dcdcdc;--vu-mute:#5d636b;--vu-focus-ring:#4f6b00;--vu-focus:#4f6b00;
+:root:not([data-theme=dark]) .fu-night,:root:not([data-theme=dark]) .fu .vu-night{--vu-ink:#000;--vu-inv:#fff;--vu-card:#e9e9e9;--vu-hair:#dcdcdc;--vu-mute:#5d636b;--vu-focus-ring:#101318;--vu-focus:#101318;
   --vu-text:#000;--vu-text-secondary:#3a3d42;--vu-muted:#5d636b;--vu-line:rgb(0 0 0/.1);--vu-line-strong:rgb(0 0 0/.18);--vu-bg:#fff;--vu-elevated:#e9e9e9;
-  --fu-card:#e9e9e9;--fu-soft:#e9e9e9;--fu-bar:#000;--fu-acc:#4f6b00;--fu-acc-ink:#000;--fu-s1:#dcdcdc;background:#f4f4f4;color:#000}
+  --fu-card:#e9e9e9;--fu-soft:#e9e9e9;--fu-bar:#000;--fu-acc:#101318;--fu-acc-ink:#000;--fu-s1:#dcdcdc;background:#f4f4f4;color:#000}
 :root:not([data-theme=dark]) .fu a.vu-next{color:#000}
 /* Umschalter der Finanzen auf der Aktienseite im Hellen: heller Grund, aktive Pille schwarz (axe color-contrast ≥ 4,5:1) */
 :root:not([data-theme=dark]) .fu-fin-seg{background:#fff}
@@ -1192,3 +1192,36 @@ html[data-theme=dark] #fu-main[data-view=company] .fu-fin-per [data-p]:not([aria
 #fu-main[data-view=company] .fu-fin-big{align-items:center;gap:4px 10px;margin-top:14px}
 #fu-main[data-view=company] .fu-fin-big>.vu-chg{order:2}
 #fu-main[data-view=company] .fu-fin-when{order:3;flex-basis:100%;font-size:11px}
+
+/* =========================================================================
+   iPad und Desktop (ab 761 px): Handy-Bausteine nutzen die Breite. Unter 761 px gilt nichts hiervon.
+   Ab 1024 px Inhalt bis 1240 px (Kopf-Breite des Rahmens), mittig; Schienen mit wenigen Karten werden Raster.
+   ========================================================================= */
+@media (min-width:761px){
+  /* Start (.fp): bündig mit der Inhaltskante statt Handy-Innenrand von 14 px */
+  .fp{margin-left:0;margin-right:0}
+  .fp .fp-px,.fp .fp-sh,.fp .fp-tabs,.fp .fp-rail{padding-left:0;padding-right:0}
+  .fp .fp-end,.fp .fp-foot{margin-left:0;margin-right:0}
+  .fp .fp-find .fu-qchips{margin-right:0;padding-right:0}
+  /* Checklisten (drei Kacheln) und Ranglisten als Raster statt Schiene */
+  .fp .fp-rail:has(>.fp-ck){display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));overflow:visible}
+  .fp .fp-rail>.fp-ck{width:auto}
+  .fp .fp-rail.fp-rlrail{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));overflow:visible}
+  .fp .fp-rail.fp-rlrail>.fu-rlc{width:auto;max-width:none}
+  .fp .fp-rlrail+.fp-px{margin-top:14px}
+}
+@media (min-width:1024px){
+  .fu{max-width:1240px}
+  .fp .fp-rail.fp-rlrail{grid-template-columns:repeat(3,minmax(0,1fr))}
+  /* Methodik: Kennzahlen in Worten zweispaltig */
+  .fu-mlist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:28px}
+  .fu-mlist>.fu-mrow:nth-child(2){border-top:0}
+  /* Aktie: Kennzahlen neben den Finanzen, Kapitel zweispaltig */
+  #fu-main[data-view=company]:has(>div>.fu-strip):has(>.fu-fin){display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:28px;grid-auto-flow:row dense;align-content:start}
+  #fu-main[data-view=company]>*{grid-column:1/-1;min-width:0}
+  #fu-main[data-view=company]>.fu-k2-sh:has(+div>.fu-strip),#fu-main[data-view=company]>div:has(>.fu-strip){grid-column:1}
+  #fu-main[data-view=company]>.fu-k2-sh:has(+.fu-fin),#fu-main[data-view=company]>.fu-fin{grid-column:2}
+  #fu-main[data-view=company]>div>.fu-strip{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #fu-main[data-view=company] .fu-chap.fu-k2-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:28px}
+  #fu-main[data-view=company] .fu-k2-list li:nth-last-child(2):nth-child(odd) a{border-bottom:0}
+}

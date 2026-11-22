@@ -482,7 +482,8 @@ def overlap_report(records, market):
             "PIT_READY": _pct(len(pit), gesamt),
             "TECHNICAL_AND_FUNDAMENTAL": _pct(len(tech_ids & fund_ids), gesamt),
         },
-        "acceptedMarketDataState": _accepted_state(market, len(preis), len(technisch), gesamt),
+        "acceptedMarketDataState": _accepted_state(market, len(preis), len(technisch), gesamt,
+                                                   zugaenge=_zugaenge_im_stand(records, preis_ids, tech_ids)),
     }
 
 
@@ -514,7 +515,67 @@ ACCEPTED_R2 = {
 }
 
 
-def _accepted_state(market, preis, technisch, gesamt):
+# Freigegebene Universumszugaenge (Steuerung 19.11.2026, analog #2022): Freigabelisten und Laeufe der Dauerregel legen je
+# Erweiterung eine Datei unter docs/data/security-master/eligibility-expansion-*.json ab (membersAdded, productUniverseBefore).
+FREIGABEN_DIR = Path(__file__).resolve().parents[3] / "docs" / "data" / "security-master"
+
+
+def freigegebene_zugaenge(seit_produkttitel, verzeichnis=None):
+    """Mitglieder aus allen Freigaben, deren Ausgangsstand mindestens der abgenommene Produktumfang ist."""
+    verzeichnis = Path(verzeichnis) if verzeichnis else FREIGABEN_DIR
+    out = {}
+    for path in sorted(verzeichnis.glob("eligibility-expansion-*.json")):
+        try:
+            doc = json.loads(path.read_text())
+        except (OSError, ValueError):
+            continue
+        vorher = doc.get("productUniverseBefore")
+        if not isinstance(vorher, int) or vorher < seit_produkttitel:
+            continue
+        for mid in doc.get("membersAdded") or []:
+            out[mid] = doc.get("id") or path.stem
+    return out
+
+
+def _zugaenge_im_stand(records, preis_ids, tech_ids):
+    """Liefert eine Funktion: abgenommener Produktumfang -> Zugaenge (Freigabe, Kurshistorie, technisch bereit)."""
+    produkt = {r["memberId"] for r in records}
+
+    def fuer(seit_produkttitel, verzeichnis=None):
+        frei = freigegebene_zugaenge(seit_produkttitel, verzeichnis)
+        im = sorted(m for m in frei if m in produkt)
+        return {"members": im, "freigaben": sorted({frei[m] for m in im}),
+                "ohneKurshistorie": [m for m in im if m not in preis_ids],
+                "nichtTechnisch": [m for m in im if m not in tech_ids]}
+    return fuer
+
+
+def erklaerte_zugaenge(akzeptiert, preis, technisch, gesamt, zugaenge):
+    """Erklaerte Klasse APPROVED_UNIVERSE_ADDITION: Die Abweichung ist genau durch freigegebene Zugaenge erklaert.
+
+    Die Deckung je Titel ist die Umkehrung der Ausnahmelisten der Messung (build-universe-indexes.mjs): wer in keiner Liste
+    steht, gilt als gedeckt. Ein Zugang nach der Messung steht in keiner Liste und zaehlt deshalb bis zur naechsten Messung
+    als gedeckt, auch ohne Reihe (20.11.2026: ANT). Die Regel prueft deshalb die Rechnung, nicht die Reihe des Zugangs:
+    angenommen nur, wenn (1) der Produktumfang um genau die Zahl der freigegebenen Zugaenge gewachsen ist, die heute im
+    Produkt stehen, (2) keiner davon schon in einer Ausnahmeliste der Messung steht (sonst waere er gemessen und muesste
+    im Stand sein) und (3) Kurs- und Technik-Abweichung beide genau diese Zahl sind. Ob ein Zugang eine Reihe hat, sagt erst
+    die naechste Messung (Umfangsfolge, pipeline-weekly Teil deckung). Gibt (zugaenge, befund) zurueck.
+    """
+    basis = akzeptiert.get("PRODUCT_TITLES")
+    if not isinstance(basis, int) or gesamt <= basis or zugaenge is None:
+        return None, None
+    z = zugaenge(basis)
+    n = gesamt - basis
+    if len(z["members"]) != n:
+        return z, "Produktumfang +%d, freigegebene Zugaenge im Produkt %d" % (n, len(z["members"]))
+    if z["ohneKurshistorie"] or z["nichtTechnisch"]:
+        return z, "Zugaenge stehen schon in einer Ausnahmeliste der Messung: " + ", ".join(z["ohneKurshistorie"] + z["nichtTechnisch"])
+    if (preis - akzeptiert["HISTORICAL_CHART_AVAILABLE"], technisch - akzeptiert["TECHNICAL_HISTORY_ELIGIBLE"]) != (n, n):
+        return z, "Kurs- oder Technik-Abweichung ist nicht genau die Zahl der Zugaenge (%d)" % n
+    return z, None
+
+
+def _accepted_state(market, preis, technisch, gesamt, zugaenge=None):
     """Der abgenommene R2-Stand gegen die eigene Rechnung - GEPRUEFT.
 
     Frueher stand hier eine Differenz, weil die Marktdatenseite nur als
@@ -542,6 +603,21 @@ def _accepted_state(market, preis, technisch, gesamt):
     abweichung_preis = preis - akzeptiert["HISTORICAL_CHART_AVAILABLE"]
     abweichung_tech = technisch - akzeptiert["TECHNICAL_HISTORY_ELIGIBLE"]
     stimmt = abweichung_preis == 0 and abweichung_tech == 0
+
+    # Freigegebene Zugaenge seit der Abnahme werden angenommen und als Hinweis berichtet; alles andere bleibt rot.
+    hinweis = None
+    if not stimmt and kanonisch:
+        z, befund = erklaerte_zugaenge(akzeptiert, preis, technisch, gesamt, zugaenge)
+        if z is not None and befund is None:
+            stimmt = True
+            hinweis = {"class": "APPROVED_UNIVERSE_ADDITION", "count": len(z["members"]),
+                       "members": z["members"], "approvals": z["freigaben"],
+                       "text": "%d freigegebene Zugaenge seit der Abnahme (%s) automatisch angenommen; noch nicht gemessen "
+                               "(die Umkehrung zaehlt sie bis dahin als gedeckt). Die naechste Deckungsmessung (pipeline-weekly, "
+                               "Teil deckung) nimmt sie mit ihrer Reihe in den Stand auf."
+                               % (len(z["members"]), ", ".join(z["freigaben"]))}
+        elif befund:
+            hinweis = {"class": "NOT_AUTO_ACCEPTED", "reason": befund}
 
     erklaerung = None
     if not stimmt:
@@ -575,6 +651,7 @@ def _accepted_state(market, preis, technisch, gesamt):
         },
         "reconciled": stimmt,
         "explanation": erklaerung,
+        "explainedDelta": hinweis,
         "note": "R2_SERIES_AVAILABLE (7.802) zaehlt gegen den WERTPAPIERSTAMM (7.803), "
                 "nicht gegen das Produktuniversum (7.004) - es ist die Ablagedeckung "
                 "und keine Produktkennzahl. Sie wird hier gefuehrt und NICHT in die "

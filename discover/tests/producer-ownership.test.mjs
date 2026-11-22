@@ -8,6 +8,7 @@ import { fileURLToPath } from "node:url";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { createHash } from "node:crypto";
+import { followByTime } from "../../scripts/quant/lib/follow-artifact.mjs";
 
 const run = promisify(execFile);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -23,6 +24,22 @@ function snapshot(directory, prefix = "") {
   }
   return files;
 }
+/* Halbstand (Steuerung 22.11.2026): Der Neubau liest quant/data live. Hat ein Eignungs- oder Marktlauf einen Eingang NACH dem
+   committeten Discover-Stand veraendert (Universum, Capability, Listing-Kontinuitaet, Faktoren, Technical-Index), weicht der Neubau
+   bis zum naechsten Discover-Lauf ab, ohne dass Code falsch ist (Laeufe 41965210, 44913172). Bis 6 h nach dem Eingang wartet der
+   Bytevergleich sichtbar (skip), danach ist er ein Fehler; ist kein Eingang juenger als der Stand, bleibt er streng. */
+const EINGANG_STAND = ["quant/data/market/listing-continuity-v1.json", "quant/data/market/factors/factors-FULL_UNIVERSE.json",
+  "quant/data/technical/index.json", "quant/data/universe/market-capability.json", "quant/data/universe/master-manifest.json"];
+function neuesterEingang() {
+  let best = null;
+  for (const rel of EINGANG_STAND) {
+    try {
+      const at = JSON.parse(readFileSync(join(root, rel), "utf8")).generatedAt;
+      if (Number.isFinite(Date.parse(at)) && (!best || Date.parse(at) > Date.parse(best))) best = at;
+    } catch { /* fehlt: kein Eingang */ }
+  }
+  return best;
+}
 function ownedSnapshot(directory) {
   const files = snapshot(directory);
   for (const name of Object.keys(files)) if (name.startsWith("europe/") || name.startsWith("europe-esef/")) delete files[name];
@@ -33,7 +50,7 @@ function ownedSnapshot(directory) {
   return files;
 }
 
-test("actual Discover rebuild preserves only foreign Europe and Europe-ESEF directory bytes and regenerates its own outputs", { timeout: 650000 }, async () => {
+test("actual Discover rebuild preserves only foreign Europe and Europe-ESEF directory bytes and regenerates its own outputs", { timeout: 650000 }, async (t) => {
   const temporary = mkdtempSync(join(tmpdir(), "vu-discover-ownership-"));
   try {
     // Only inputs are linked. The real producer writes exclusively to private data.
@@ -42,11 +59,13 @@ test("actual Discover rebuild preserves only foreign Europe and Europe-ESEF dire
     symlinkSync(join(root, "scripts/market"), join(temporary, "scripts/market"), "dir");
     writeFileSync(join(temporary, "scripts/discover/build-discover-data.mjs"), readFileSync(builder));
     writeFileSync(join(temporary, "scripts/discover/global-search-index.mjs"), readFileSync(join(root,"scripts/discover/global-search-index.mjs")));
+    writeFileSync(join(temporary, "scripts/discover/not-delivered.mjs"), readFileSync(join(root, "scripts/discover/not-delivered.mjs")));
     mkdirSync(join(temporary, "discover"));
     for (const entry of ["engines", "config", "methodology"]) symlinkSync(join(root, "discover", entry), join(temporary, "discover", entry), "dir");
     const data = join(temporary, "discover/data");
     mkdirSync(data);
     const original = ownedSnapshot(join(root, "discover/data"));
+    const committedGeneratedAt = JSON.parse(readFileSync(join(root, "discover/data/meta.json"), "utf8")).generatedAt;
     // Exercise the actual published directory when present; pre-publication
     // branches still verify opaque independent producer bytes below.
     if (existsSync(join(root, "discover/data/europe"))) cpSync(join(root, "discover/data/europe"), join(data, "europe"), { recursive: true });
@@ -77,7 +96,13 @@ test("actual Discover rebuild preserves only foreign Europe and Europe-ESEF dire
     assert.equal(existsSync(join(data, "rows/obsolete")), false);
     assert.equal(existsSync(join(data, "unknown-producer-entry")), false);
     assert.equal(existsSync(join(data, "Europe")), false);
-    assert.deepEqual(ownedSnapshot(data), original, "all existing producer outputs must retain their exact bytes except meta.generatedAt");
+    const neu = ownedSnapshot(data);
+    try { assert.deepEqual(neu, original, "all existing producer outputs must retain their exact bytes except meta.generatedAt"); }
+    catch (e) {
+      const folge = followByTime({ artifactAt: committedGeneratedAt, sourceAt: neuesterEingang() });
+      if (folge.state !== "WAITING") throw e;
+      t.skip("Halbstand: " + folge.reason);
+    }
   } finally {
     rmSync(temporary, { recursive: true, force: true });
   }

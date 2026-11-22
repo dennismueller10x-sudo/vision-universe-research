@@ -45,7 +45,7 @@
     if (laufend[path]) { stats.hits++; return laufend[path]; }
     stats.requests++;
     laufend[path] = laden(path).then(function (reihe) {
-      if (!reihe || reihe.status !== "CALCULATED" || !Array.isArray(reihe.points) || reihe.points.length < 5) {
+      if (!reihe || reihe.status !== "CALCULATED" || !Array.isArray(reihe.points) || reihe.points.length < (reihe.short === true ? 2 : 5)) {
         throw new Error("Reihe ohne Punkte: " + path);
       }
       fertig[path] = reihe;

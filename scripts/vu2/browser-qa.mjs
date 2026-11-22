@@ -216,12 +216,13 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    /* Ohne Aktienkopf (unbekanntes oder nicht gefuehrtes Kuerzel) gibt es auch keine Pillen. */
    if(await page.locator('.vu-shead--k2').count()&&await page.locator('.vu-sothers').count()!==1)befund(view,width,'„Diese Aktie in anderen Modulen“ fehlt');
   }
-  else if(imInhalt){
-   const inhalt=page.locator('main nav.qp-tabs');
-   if(await inhalt.count()!==1||!await inhalt.isVisible())befund(view,width,'die Reiter im Inhalt fehlen: main nav.qp-tabs');
-   else{const r=(await inhalt.locator('a').allTextContents()).map(t=>t.trim()).join('|');if(r!=='Heute|Landkarte|Anlagestile|Screener|Forschung|Aktien|Meldungen|Methodik|Technische Lagen|Fundamentaldaten')befund(view,width,'Reiter im Inhalt falsch: '+r);}
+  /* Menü im Kopf (Owner 22.11.2026): keine sichtbare Reiterzeile und keine Reiter im Inhalt; die Bereiche (dieselben Ziele wie die
+     verborgene Zeile oben) öffnet der Knopf oben links, der Modul und Bereich zeigt. */
+  else{
+   if(await page.locator('main nav.qp-tabs').isVisible().catch(()=>false))befund(view,width,'Reiter im Inhalt noch sichtbar: main nav.qp-tabs');
+   if(await page.locator(leiste).isVisible())befund(view,width,'Reiterzeile des Rahmens noch sichtbar: '+leiste);
+   if(!await page.locator('vu-navigation button.world').isVisible())befund(view,width,'Knopf oben links (Modul und Bereich) nicht sichtbar');
   }
-  else if(!await page.locator(leiste).isVisible())befund(view,width,'die Navigation dieser Breite ist nicht sichtbar: '+leiste);
   if(!await page.locator(dock).isVisible())befund(view,width,'das Dock dieser Breite ist nicht sichtbar: '+dock);
   {
    /* Die Reiter stehen im festen Kopf; der Inhalt beginnt darunter (body-Abstand = Kopf samt Reitern). */
@@ -261,7 +262,7 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    await page.waitForFunction(()=>/Stand \d{2}\.\d{2}\.\d{4}|Gerade keine Meldungen abrufbar/.test(document.querySelector('#qx-main').innerText),null,{timeout:30000}).catch(()=>befund(view,width,'Heute zeigt weder Zustaende mit Stichtag noch den ehrlichen Rueckfall'));
    const wege=await page.locator('#qx-main a').evaluateAll(ns=>ns.map(n=>n.getAttribute('href')||''));
    for(const ziel of ['#/meldungen','#/stile','#/methodik'])if(!wege.includes(ziel))befund(view,width,'Weg nach '+ziel+' fehlt auf Home');
-   const fuss=await page.locator('footer.qx-foot').innerText();
+   /* Owner 22.11.2026: die Fußzeile ist mit Dock ausgeblendet (Hinweise im Menü); ihr Text bleibt im Dokument. */const fuss=await page.locator('footer.qx-foot').evaluate(n=>n.textContent);if(await page.locator('footer.qx-foot').isVisible())befund(view,width,'Fusszeile am Seitenende noch sichtbar');
    if(!fuss.includes('Keine Anlageempfehlung'))befund(view,width,'Fusszeile ohne Keine Anlageempfehlung');
    /* Owner-Entscheidung 07.11.2026 (PLAN §11): Anbieter stehen zentral auf /infos/#quellen, nicht im Fuß. */
    for(const name of ['SEC EDGAR','Tiingo'])if(fuss.includes(name))befund(view,width,'Fusszeile nennt Anbieter '+name);
@@ -291,7 +292,7 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    const mitStand=/\d{2}\.\d{2}\.\d{4}/.test(heute)&&/Stand|→/.test(heute);
    if(!mitStand&&!heute.includes('Gerade keine Veränderungen abrufbar'))befund(view,width,'Heute zeigt weder Zustaende mit Stichtag noch den ehrlichen Rueckfall');
    /* Quellen und die Absage an Empfehlung, Prognose, Kursziel. */
-   const fuss=await page.locator('footer.qx-foot').innerText();
+   /* Owner 22.11.2026: die Fußzeile ist mit Dock ausgeblendet (Hinweise im Menü); ihr Text bleibt im Dokument. */const fuss=await page.locator('footer.qx-foot').evaluate(n=>n.textContent);if(await page.locator('footer.qx-foot').isVisible())befund(view,width,'Fusszeile am Seitenende noch sichtbar');
    if(!fuss.includes('Keine Anlageempfehlung'))befund(view,width,'Fusszeile ohne Keine Anlageempfehlung');
    /* Owner-Entscheidung 07.11.2026 (PLAN §11): Anbieter stehen zentral auf /infos/#quellen, nicht im Fuß. */
    for(const name of ['SEC EDGAR','Tiingo'])if(fuss.includes(name))befund(view,width,'Fusszeile nennt Anbieter '+name);
@@ -509,7 +510,7 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    for(const id of soll)if(!abschnitte.includes(id))befund(view,width,'Abschnitt fehlt: '+id);
    const ist=abschnitte.filter(id=>soll.includes(id));
    if(ist.join('|')!==soll.filter(id=>ist.includes(id)).join('|'))befund(view,width,'Abschnitte in falscher Reihenfolge: '+ist.join('|'));
-   const grenzen=await page.locator('#grenzen').innerText();
+   const grenzen=await page.locator('#grenzen').evaluate(n=>n.textContent);/* Owner 22.11.2026: „Daten & Methodik“ ist mit Dock ausgeblendet, der Text bleibt im Dokument */
    /* Owner-Entscheidung 07.11.2026: Stand ja, Anbieternamen nein (zentral auf /infos/#quellen). */
    if(!/Daten & Methodik/.test(grenzen))befund(view,width,'Daten und Grenzen ohne Daten & Methodik');
    for(const q of ['Tiingo','SEC EDGAR'])if(grenzen.includes(q))befund(view,width,'Daten und Grenzen nennt Anbieter '+q);

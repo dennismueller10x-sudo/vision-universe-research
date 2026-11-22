@@ -4,7 +4,7 @@ import {execFileSync} from 'node:child_process';
 import {mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join, dirname} from 'node:path';
-import {klassifiziere, overlay, pruefe, isIntraday, INTRADAY_DIR, INTRADAY_FILES} from '../../scripts/ci/intraday-fastpath.mjs';
+import {klassifiziere, imFenster, overlay, pruefe, isIntraday, INTRADAY_DIR, INTRADAY_FILES} from '../../scripts/ci/intraday-fastpath.mjs';
 
 const I = INTRADAY_DIR, WD = INTRADAY_FILES[0];
 test('FP-1 nur Intraday-Dateien (und Nicht-Auslieferung wie docs) ergeben FAST', () => {
@@ -67,6 +67,27 @@ test('FP-5 Schnellweg nur ohne laufende Company-Intelligence-Veroeffentlicher (W
   for (const w of ['company-intelligence-profile-source', 'company-intelligence-refresh', 'company-intelligence-universe-release', 'pages-release-marker']) assert.ok(job.includes(w), w);
   assert.match(job, /id: weiche\n\s+if: [^\n]*steps\.pub\.outputs\.frei == 'true'/);
   assert.match(job, /id: bereit\n\s+if: steps\.weiche\.outputs\.mode == 'FAST'/);
+});
+
+test('FP-5b Dauerlauf company-intelligence-refresh sperrt den Schnellweg nicht, solange er laeuft (Befund 19.11.)', async () => {
+  const {readFileSync} = await import('node:fs');
+  const wf = readFileSync(new URL('../../.github/workflows/pages-release.yml', import.meta.url), 'utf8');
+  const job = wf.slice(wf.indexOf('\n  intraday-schnell:\n'), wf.indexOf('\n  deploy-schnell:\n'));
+  assert.match(job, /if \[ "\$wf" = company-intelligence-refresh \]/);
+  assert.match(job, /\.status == \\"completed\\" and \.conclusion != \\"success\\" and \.updated_at > /, 'refresh zaehlt nur fehlgeschlagen und nach dem Basis-Paket');
+  assert.match(job, /else\n\s+filter="\[\.workflow_runs\[\] \| select\(\.status != \\"completed\\" or /, 'alle anderen Veroeffentlicher bleiben bei laeuft-noch');
+  assert.ok(job.includes('pages-release-marker'), 'Marker meldet die Veroeffentlichung des refresh');
+});
+
+test('FP-5c Basis-Paket holen: Zeitlimit, zweiter Versuch je Netzaufruf, Datei je Versuch neu (Laeufe 44598115694, 44759980300)', async () => {
+  const {readFileSync} = await import('node:fs');
+  const wf = readFileSync(new URL('../../.github/workflows/pages-release.yml', import.meta.url), 'utf8');
+  const job = wf.slice(wf.indexOf('\n  intraday-schnell:\n'), wf.indexOf('\n  deploy-schnell:\n'));
+  assert.match(job, /nett\(\) \{[^\n]*timeout "\$t" bash -c "\$1"[^\n]*-ge 2/, 'jeder Versuch in eigener Shell');
+  assert.match(job, /row=\$\(nett 60 'gh api "repos\/\$REPO\/actions\/artifacts/);
+  /* Der Redirect steht INNERHALB des Versuchs: ein abgebrochener Versuch darf kein halbes ZIP hinterlassen, an das der naechste anhaengt. */
+  assert.match(job, /nett 200 'gh api "\$url" > "\$B\/artifact\.zip"'/);
+  assert.ok(!/^\s*nett gh api "\$url" >/m.test(job), 'kein Redirect ausserhalb des Versuchs');
 });
 
 /* FP-6 (13.11.2026, Entscheidung B): Allowlist nur fuer Verzeichnisse, die der Bau byte-gleich durchreicht.
@@ -139,4 +160,42 @@ test('FP-6d overlay/smoke: Datendateien (neu, geaendert, geloescht) byte-gleich,
   assert.deepEqual((await pruefe(repo, site, liste)).fehler, []);
   writeFileSync(join(site, DD + 'rows/a.json'), '{"n":3}');
   assert.ok((await pruefe(repo, site, liste)).fehler.some((f) => /Pruefsumme/.test(f)));
+});
+
+test('FP-7 Boersenfenster: Mo-Fr 14:00 bis 21:00 UTC, Grenzen und Wochenende', () => {
+  const t = (iso) => imFenster(new Date(iso));
+  assert.equal(t('2026-11-18T13:59:59Z'), false);
+  assert.equal(t('2026-11-18T14:00:00Z'), true);
+  assert.equal(t('2026-11-18T14:23:00Z'), true, 'Befund 19.11.: Voll-Release 14:23 haette aufgeschoben werden muessen');
+  assert.equal(t('2026-11-18T14:30:00Z'), true);
+  assert.equal(t('2026-11-18T20:59:59Z'), true);
+  assert.equal(t('2026-11-18T21:00:00Z'), false);
+  assert.equal(t('2026-11-21T16:00:00Z'), false, 'Samstag');
+  assert.equal(t('2026-11-22T16:00:00Z'), false, 'Sonntag');
+  assert.equal(t('2026-11-20T16:00:00Z'), true, 'Freitag');
+});
+test('FP-7b Im Fenster liefert der Schnellweg nur Intraday, Nicht-Intraday-Dateien warten (AUFSCHUB), ausserhalb bleibt es VOLL', () => {
+  const mix = [I + '/index.json', 'discover/ui/overview.css'];
+  assert.equal(klassifiziere(mix).mode, 'FULL');
+  const f = klassifiziere(mix, {fenster: true});
+  assert.equal(f.mode, 'FAST');
+  assert.equal(f.aufgeschoben, 1);
+  assert.equal(klassifiziere(['discover/ui/overview.css'], {fenster: true}).mode, 'AUFSCHUB');
+  assert.equal(klassifiziere(['docs/x.md'], {fenster: false}).mode, 'FULL', 'ausserhalb des Fensters bleibt FULL');
+  const leer = klassifiziere(['docs/x.md'], {fenster: true});
+  assert.equal(leer.mode, 'AUFSCHUB', 'im Fenster ohne Aenderung kein Voll-Release (Messung 20.11.)');
+  assert.equal(leer.aufgeschoben, 0);
+  assert.equal(klassifiziere([], {fenster: true}).mode, 'AUFSCHUB');
+  assert.equal(klassifiziere([I + '/index.json'], {fenster: true}).mode, 'FAST');
+});
+test('FP-7c Workflow: AUFSCHUB hebt den Voll-Release auf, notfall und Veroeffentlicher bleiben Voll', () => {
+  const wf = readFileSync(new URL('../../.github/workflows/pages-release.yml', import.meta.url), 'utf8');
+  const job = wf.slice(wf.indexOf('  intraday-schnell:'), wf.indexOf('  deploy-schnell:'));
+  assert.match(job, /aufschub: \$\{\{ steps\.weiche\.outputs\.mode == 'AUFSCHUB' \}\}/);
+  assert.match(job, /klassifiziere --base="\$BASE" --head=HEAD --fenster=auto/);
+  assert.match(job, /inputs\.notfall/, 'notfall ueberspringt den Schnellweg und damit den Aufschub');
+  const pkg = wf.slice(wf.indexOf('  package:'), wf.indexOf('    steps:', wf.indexOf('  package:')));
+  assert.match(pkg, /needs\.intraday-schnell\.outputs\.aufschub != 'true'/);
+  assert.match(wf, /notfall:\n\s+description:/);
+  assert.ok(job.indexOf('Veroeffentlicher seit dem Basis-Paket') < job.indexOf('--fenster=auto'), 'Veroeffentlicher-Pruefung kommt vor der Weiche');
 });

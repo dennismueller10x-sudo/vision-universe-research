@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-11-18T06:32:27+00:00",
+  "generatedAtUtc": "2026-11-22T13:55:53+00:00",
   "versions": {
     "normalization_schema": "1.0.0",
     "normalization_logic": "1.15.0",
@@ -13,21 +13,21 @@
   },
   "note": "Gezaehlt gegen das Produktuniversum, nicht gegen die ingestierten Emittenten. Ein Nenner aus dem eigenen Bestand wuerde jede Luecke wegdefinieren (\u00a719).",
   "universe": {
-    "PRODUCT_TITLES": 6340,
-    "PRODUCT_ISSUERS": 5412,
-    "PRODUCT_TITLES_WITHOUT_ISSUER": 760,
-    "MASTER_ISSUERS": 5485
+    "PRODUCT_TITLES": 6009,
+    "PRODUCT_ISSUERS": 5341,
+    "PRODUCT_TITLES_WITHOUT_ISSUER": 516,
+    "MASTER_ISSUERS": 5493
   },
   "identity": {
-    "CIK_RESOLVED": 6469,
-    "CIK_UNRESOLVED": 1370,
+    "CIK_RESOLVED": 6495,
+    "CIK_UNRESOLVED": 1345,
     "CIK_AMBIGUOUS": 0
   },
   "fundamentals": {
-    "COMPANY_FACTS_AVAILABLE": 5412,
-    "COMPANY_FACTS_UNAVAILABLE": 0,
+    "COMPANY_FACTS_AVAILABLE": 5334,
+    "COMPANY_FACTS_UNAVAILABLE": 7,
     "ISSUERS_INGESTED_TOTAL": 5485,
-    "ISSUERS_INGESTED_OUTSIDE_PRODUCT_UNIVERSE": 73,
+    "ISSUERS_INGESTED_OUTSIDE_PRODUCT_UNIVERSE": 151,
     "BY_SOURCE": {
       "INGESTED": 5484,
       "DELIVERED_CANONICAL": 1
@@ -35,48 +35,48 @@
   },
   "metrics": {
     "revenue": {
-      "COUNT": 4404,
-      "PERCENT_OF_PRODUCT_UNIVERSE": 69.4637
+      "COUNT": 4345,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 72.3082
     },
     "net_income": {
-      "COUNT": 5025,
-      "PERCENT_OF_PRODUCT_UNIVERSE": 79.2587
+      "COUNT": 4951,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 82.3931
     },
     "eps_diluted": {
-      "COUNT": 4761,
-      "PERCENT_OF_PRODUCT_UNIVERSE": 75.0946
+      "COUNT": 4699,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 78.1994
     },
     "operating_cash_flow": {
-      "COUNT": 5013,
-      "PERCENT_OF_PRODUCT_UNIVERSE": 79.0694
+      "COUNT": 4940,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 82.21
     },
     "capital_expenditures": {
-      "COUNT": 4527,
-      "PERCENT_OF_PRODUCT_UNIVERSE": 71.4038
+      "COUNT": 4467,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 74.3385
     },
     "free_cash_flow": {
-      "COUNT": 4517,
-      "PERCENT_OF_PRODUCT_UNIVERSE": 71.2461
+      "COUNT": 4457,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 74.1721
     },
     "total_assets": {
-      "COUNT": 5248,
-      "PERCENT_OF_PRODUCT_UNIVERSE": 82.776
+      "COUNT": 5172,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 86.0709
     },
     "total_debt": {
-      "COUNT": 2853,
-      "PERCENT_OF_PRODUCT_UNIVERSE": 45.0
+      "COUNT": 2815,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 46.8464
     },
     "stockholders_equity": {
-      "COUNT": 5218,
-      "PERCENT_OF_PRODUCT_UNIVERSE": 82.3028
+      "COUNT": 5144,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 85.6049
     }
   },
   "pointInTime": {
     "note": "Ein Wert ist zeitpunktgenau abfragbar, wenn er ein Veroeffentlichungsdatum UND eine Einreichung traegt. PIT_READY verlangt das fuer ALLE aufgeloesten Werte eines Emittenten - bei einem Prozent undatierbarer Werte ist ein Backtest nicht mehr vertrauenswuerdig, und man weiss nicht, welcher Wert es war.",
     "denominator": "PRODUCT_TITLES",
-    "PIT_READY_SECURITIES": 5440,
+    "PIT_READY_SECURITIES": 5350,
     "PIT_PARTIAL_SECURITIES": 0,
-    "PIT_UNAVAILABLE_SECURITIES": 900,
+    "PIT_UNAVAILABLE_SECURITIES": 659,
     "BY_ISSUER": {
       "PIT_READY": 5349,
       "PIT_UNAVAILABLE": 136

@@ -1,0 +1,5581 @@
+{
+ "status": "FREIGEGEBEN",
+ "statusNote": "Teil B3 (Steuerung 21.11.2026): erneute Bereinigung nach B1-B2c. Ersetzt eligibility-cleanup-2026-11-17 (ZURUECKGESTELLT_BIS_B); alle 297 Titel von damals sind enthalten, dazu 12, deren Reihe seither endet bzw. deren Stamm seither INACTIVE ist (GREEL: am 17.11. noch ACTIVE, jetzt Stamm INACTIVE und Reihe bis 06.11. - damit Regel A wie bei allen anderen; ARI, SWKHL, LNAI, INM bleiben ACTIVE im Produkt). Kein endgueltiges Loeschen: jede Reihe, die die Umfangsfolge entfernt, wird im selben Lauf nach R2 (research-series-long/) gesichert und per Lesetest bestaetigt (backup-series.mjs, Manifest unter series-backup/); fehlt eine Sicherung, bricht der Lauf vor dem Loeschen ab.",
+ "schema": "vu-eligibility-catchup-1",
+ "id": "eligibility-cleanup-2026-11-21",
+ "prevSha256": "c17a182410a693dece261f041793fb4c5b2b0b75078bd1b3011713c78311b410",
+ "sourceRun": "lokal 21.11.2026 gegen main 190bdaa2174 (Kette build-us-eligibility, apply-name-layer-class DEBT, apply-exchange-directory mit ETF, apply-ended-listings)",
+ "productUniverseBefore": 6340,
+ "productUniverseAfter": 6031,
+ "counts": {
+  "changes": 309,
+  "leaveProduct": 309,
+  "enterProduct": 0
+ },
+ "leaveReasons": {
+  "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE": 303,
+  "CONFIRMED_LISTING_ENDED:ACQUISITION": 6
+ },
+ "enterReasons": {},
+ "impact": {
+  "discover": {
+   "before": 5514,
+   "removed": 0,
+   "addedWithPage": 0
+  },
+  "elliott": {
+   "before": 5052,
+   "removed": 171,
+   "addedWithPage": 0
+  },
+  "fundamental": {
+   "before": 5253,
+   "removed": 0,
+   "addedWithPage": 0
+  },
+  "hedgefonds": {
+   "before": 4503,
+   "removed": 15,
+   "addedWithPage": 0
+  },
+  "quant": {
+   "before": 6337,
+   "removed": 309,
+   "addedWithPage": 0
+  },
+  "supertrader": {
+   "before": 1587,
+   "removed": 5,
+   "addedWithPage": 0
+  },
+  "technical": {
+   "before": 5676,
+   "removed": 207,
+   "addedWithPage": 0
+  },
+  "technik": {
+   "before": 5052,
+   "removed": 171,
+   "addedWithPage": 0
+  }
+ },
+ "changes": [
+  {
+   "securityId": "ref_FL",
+   "ticker": "FL",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_ALE",
+   "ticker": "ALE",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_ALOT",
+   "ticker": "ALOT",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_WBS",
+   "ticker": "WBS",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_LEG",
+   "ticker": "LEG",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_EQC",
+   "ticker": "EQC",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_IMGN",
+   "ticker": "IMGN",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_NWLI",
+   "ticker": "NWLI",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_TSRI",
+   "ticker": "TSRI",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_ELSE",
+   "ticker": "ELSE",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_MGIC",
+   "ticker": "MGIC",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_BLFS",
+   "ticker": "BLFS",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_NTZ",
+   "ticker": "NTZ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_LXP",
+   "ticker": "LXP",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:TRUST",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:ACQUISITION"
+  },
+  {
+   "securityId": "ref_BZH",
+   "ticker": "BZH",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_ZEUS",
+   "ticker": "ZEUS",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_AVB",
+   "ticker": "AVB",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_HMNF",
+   "ticker": "HMNF",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_CBZ",
+   "ticker": "CBZ",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:ACQUISITION"
+  },
+  {
+   "securityId": "ref_FLIC",
+   "ticker": "FLIC",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_SASR",
+   "ticker": "SASR",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_STRM",
+   "ticker": "STRM",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_CASI",
+   "ticker": "CASI",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_SLP",
+   "ticker": "SLP",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_HLX",
+   "ticker": "HLX",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_CHL",
+   "ticker": "CHL",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_HTBK",
+   "ticker": "HTBK",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_SNBR",
+   "ticker": "SNBR",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_HTLF",
+   "ticker": "HTLF",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_HSII",
+   "ticker": "HSII",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_LPSN",
+   "ticker": "LPSN",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_TRUE",
+   "ticker": "TRUE",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_CSCI",
+   "ticker": "CSCI",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_CHU",
+   "ticker": "CHU",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_MBT",
+   "ticker": "MBT",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_NURO",
+   "ticker": "NURO",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_CEO",
+   "ticker": "CEO",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_SGEN",
+   "ticker": "SGEN",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_BGFV",
+   "ticker": "BGFV",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_MODV",
+   "ticker": "MODV",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_SP",
+   "ticker": "SP",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_TTM",
+   "ticker": "TTM",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_KNL",
+   "ticker": "KNL",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_WBD",
+   "ticker": "WBD",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_GENE",
+   "ticker": "GENE",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_CCO",
+   "ticker": "CCO",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_SNCR",
+   "ticker": "SNCR",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_HBI",
+   "ticker": "HBI",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_GLDD",
+   "ticker": "GLDD",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_VEDL",
+   "ticker": "VEDL",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_AREN",
+   "ticker": "AREN",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_MOFG",
+   "ticker": "MOFG",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_BEST",
+   "ticker": "BEST",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_HOLI",
+   "ticker": "HOLI",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_TBNK",
+   "ticker": "TBNK",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_TWO",
+   "ticker": "TWO",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_ALIM",
+   "ticker": "ALIM",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_PVG",
+   "ticker": "PVG",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_AL",
+   "ticker": "AL",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_THR",
+   "ticker": "THR",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_BCAR",
+   "ticker": "BCAR",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_SPLK",
+   "ticker": "SPLK",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_IBTX",
+   "ticker": "IBTX",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_MRTX",
+   "ticker": "MRTX",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_MIXT",
+   "ticker": "MIXT",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_ZIONL",
+   "ticker": "ZIONL",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_RMAX",
+   "ticker": "RMAX",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_ARAV",
+   "ticker": "ARAV",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_FGNX",
+   "ticker": "FGNX",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_TBPH",
+   "ticker": "TBPH",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_RDUS",
+   "ticker": "RDUS",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_DBRG",
+   "ticker": "DBRG",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_ZIONO",
+   "ticker": "ZIONO",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:PREFERRED",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_VBTX",
+   "ticker": "VBTX",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_AVNS",
+   "ticker": "AVNS",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_LBRDA",
+   "ticker": "LBRDA",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_LBRDK",
+   "ticker": "LBRDK",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_QRVO",
+   "ticker": "QRVO",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_AVGR",
+   "ticker": "AVGR",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_ALPN",
+   "ticker": "ALPN",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_WTFCM",
+   "ticker": "WTFCM",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:PREFERRED",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_PVBC",
+   "ticker": "PVBC",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_AGR",
+   "ticker": "AGR",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_ADVM",
+   "ticker": "ADVM",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_SNYR",
+   "ticker": "SNYR",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_ZTEK",
+   "ticker": "ZTEK",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_VIVKD",
+   "ticker": "VIVKD",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_LSXMA",
+   "ticker": "LSXMA",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_LSXMK",
+   "ticker": "LSXMK",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_LSXMB",
+   "ticker": "LSXMB",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_ATKR",
+   "ticker": "ATKR",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_RZB",
+   "ticker": "RZB",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_MINDP",
+   "ticker": "MINDP",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:PREFERRED",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_HONE",
+   "ticker": "HONE",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_LN",
+   "ticker": "LN",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_EVBG",
+   "ticker": "EVBG",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_MAA_P_I",
+   "ticker": "MAA-P-I",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:PREFERRED",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_REVG",
+   "ticker": "REVG",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_PLYA",
+   "ticker": "PLYA",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_VIASP",
+   "ticker": "VIASP",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:PREFERRED",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_ARD",
+   "ticker": "ARD",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_TWO_P_A",
+   "ticker": "TWO-P-A",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:PREFERRED",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_ICCH",
+   "ticker": "ICCH",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_FBRX",
+   "ticker": "FBRX",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_NCSM",
+   "ticker": "NCSM",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_PIXY",
+   "ticker": "PIXY",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_TWO_P_B",
+   "ticker": "TWO-P-B",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:PREFERRED",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_GOEV",
+   "ticker": "GOEV",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_ROKU",
+   "ticker": "ROKU",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:ACQUISITION"
+  },
+  {
+   "securityId": "ref_SOL",
+   "ticker": "SOL",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_SBT",
+   "ticker": "SBT",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_TWO_P_C",
+   "ticker": "TWO-P-C",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:PREFERRED",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_WBS_P_F",
+   "ticker": "WBS-P-F",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:PREFERRED",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_GECCM",
+   "ticker": "GECCM",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:PREFERRED",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_FGNXP",
+   "ticker": "FGNXP",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:PREFERRED",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_GORV",
+   "ticker": "GORV",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_MOR",
+   "ticker": "MOR",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_ASLN",
+   "ticker": "ASLN",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_NKLA",
+   "ticker": "NKLA",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_BYU",
+   "ticker": "BYU",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_CRNX",
+   "ticker": "CRNX",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_RAMP",
+   "ticker": "RAMP",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:ACQUISITION"
+  },
+  {
+   "securityId": "ref_BMTX",
+   "ticker": "BMTX",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_VTAK",
+   "ticker": "VTAK",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_JUPGF",
+   "ticker": "JUPGF",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_WKEY",
+   "ticker": "WKEY",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_GHSI",
+   "ticker": "GHSI",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_AXLA",
+   "ticker": "AXLA",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_QNCX",
+   "ticker": "QNCX",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_APLT",
+   "ticker": "APLT",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_TECTP",
+   "ticker": "TECTP",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:CLASS_PREFERRED_SEPARATE_FROM_PRIMARY_COMMON_EQUITY",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_NLY_P_I",
+   "ticker": "NLY-P-I",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:PREFERRED",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_KRTX",
+   "ticker": "KRTX",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_FSEA",
+   "ticker": "FSEA",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_BHAT",
+   "ticker": "BHAT",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_MBINO",
+   "ticker": "MBINO",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:PREFERRED",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_BTOG",
+   "ticker": "BTOG",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_TFFP",
+   "ticker": "TFFP",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_SACC",
+   "ticker": "SACC",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_FTAIO",
+   "ticker": "FTAIO",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:PREFERRED",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_OXLCP",
+   "ticker": "OXLCP",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:PREFERRED",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_RILYM",
+   "ticker": "RILYM",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:PREFERRED",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_OCFCP",
+   "ticker": "OCFCP",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:PREFERRED",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_WTFCP",
+   "ticker": "WTFCP",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:PREFERRED",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_CALT",
+   "ticker": "CALT",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_ETWO",
+   "ticker": "ETWO",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_HTLFP",
+   "ticker": "HTLFP",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:PREFERRED",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_FREE",
+   "ticker": "FREE",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_QHUOY",
+   "ticker": "QHUOY",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_GOCOQ",
+   "ticker": "GOCOQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_TALK",
+   "ticker": "TALK",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_VSTA",
+   "ticker": "VSTA",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_WSBCP",
+   "ticker": "WSBCP",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:PREFERRED",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_FRLN",
+   "ticker": "FRLN",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_ORGN",
+   "ticker": "ORGN",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_ASTR",
+   "ticker": "ASTR",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_PXSAP",
+   "ticker": "PXSAP",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:CLASS_PREFERRED_SEPARATE_FROM_PRIMARY_COMMON_EQUITY",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_GHLD",
+   "ticker": "GHLD",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_LESL",
+   "ticker": "LESL",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_GBTG",
+   "ticker": "GBTG",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_XOMAP",
+   "ticker": "XOMAP",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:PREFERRED",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_LBRDP",
+   "ticker": "LBRDP",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:CLASS_PREFERRED_SEPARATE_FROM_PRIMARY_COMMON_EQUITY",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_AFBI",
+   "ticker": "AFBI",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_FRGE",
+   "ticker": "FRGE",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_IWFL",
+   "ticker": "IWFL",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_IWML",
+   "ticker": "IWML",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_MTUL",
+   "ticker": "MTUL",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_QULL",
+   "ticker": "QULL",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_SCDL",
+   "ticker": "SCDL",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_ISPO",
+   "ticker": "ISPO",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_TCBIO",
+   "ticker": "TCBIO",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:PREFERRED",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_ACVA",
+   "ticker": "ACVA",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_STEC",
+   "ticker": "STEC",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_RILYK",
+   "ticker": "RILYK",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_KRNL",
+   "ticker": "KRNL",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_CHAA",
+   "ticker": "CHAA",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_XOMAO",
+   "ticker": "XOMAO",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:PREFERRED",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_EDR",
+   "ticker": "EDR",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_BWMN",
+   "ticker": "BWMN",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:ACQUISITION"
+  },
+  {
+   "securityId": "ref_TRML",
+   "ticker": "TRML",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_LGV",
+   "ticker": "LGV",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:SPAC",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_MMV",
+   "ticker": "MMV",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_WKME",
+   "ticker": "WKME",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_ATAI",
+   "ticker": "ATAI",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_DBRG_P_H",
+   "ticker": "DBRG-P-H",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:PREFERRED",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_DBRG_P_I",
+   "ticker": "DBRG-P-I",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:PREFERRED",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_DBRG_P_J",
+   "ticker": "DBRG-P-J",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:PREFERRED",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_GECCO",
+   "ticker": "GECCO",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:PREFERRED",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_METCL",
+   "ticker": "METCL",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_BLFY",
+   "ticker": "BLFY",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_REE",
+   "ticker": "REE",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_OMGA",
+   "ticker": "OMGA",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_LILM",
+   "ticker": "LILM",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_LILMW",
+   "ticker": "LILMW",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:CLASS_WARRANT_NOT_AN_EQUITY",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_MDV_P_A",
+   "ticker": "MDV-P-A",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:PREFERRED",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_SEPA",
+   "ticker": "SEPA",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:SPAC",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_SOVO",
+   "ticker": "SOVO",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_PFTA",
+   "ticker": "PFTA",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_PPHP",
+   "ticker": "PPHP",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:SPAC",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_GREEL",
+   "ticker": "GREEL",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_FNA",
+   "ticker": "FNA",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_SDIG",
+   "ticker": "SDIG",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_ENFN",
+   "ticker": "ENFN",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_HNNAZ",
+   "ticker": "HNNAZ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_INFA",
+   "ticker": "INFA",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_RGF",
+   "ticker": "RGF",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_HHGC",
+   "ticker": "HHGC",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_MYNA",
+   "ticker": "MYNA",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_SEVCF",
+   "ticker": "SEVCF",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_BACA",
+   "ticker": "BACA",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:SPAC",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_AHI",
+   "ticker": "AHI",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_LCW",
+   "ticker": "LCW",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_FNVT",
+   "ticker": "FNVT",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:SPAC",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_ONYX",
+   "ticker": "ONYX",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_IVCBU",
+   "ticker": "IVCBU",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:CLASS_UNIT_NOT_AN_EQUITY",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_BNOX",
+   "ticker": "BNOX",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_VSAC",
+   "ticker": "VSAC",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:SPAC",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_GTAC",
+   "ticker": "GTAC",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:SPAC",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_SEDA",
+   "ticker": "SEDA",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:SPAC",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_MCAA",
+   "ticker": "MCAA",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:SPAC",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_NPAB",
+   "ticker": "NPAB",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:SPAC",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_BCSA",
+   "ticker": "BCSA",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:SPAC",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_RCFA",
+   "ticker": "RCFA",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_DPCS",
+   "ticker": "DPCS",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:SPAC",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_BLEU",
+   "ticker": "BLEU",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_FEXD",
+   "ticker": "FEXD",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_TETEU",
+   "ticker": "TETEU",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:CLASS_UNIT_NOT_AN_EQUITY",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_NSTS",
+   "ticker": "NSTS",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_KACL",
+   "ticker": "KACL",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:SPAC",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_HAIA",
+   "ticker": "HAIA",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:SPAC",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_WBS_P_G",
+   "ticker": "WBS-P-G",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:PREFERRED",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_EVE",
+   "ticker": "EVE",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:SPAC",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_IVCB",
+   "ticker": "IVCB",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:SPAC",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_PRLH",
+   "ticker": "PRLH",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:SPAC",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_CFFS",
+   "ticker": "CFFS",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:SPAC",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_MDV",
+   "ticker": "MDV",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_BOCN",
+   "ticker": "BOCN",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:SPAC",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_BRAC",
+   "ticker": "BRAC",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:SPAC",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_PRIF_P_L",
+   "ticker": "PRIF-P-L",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:PREFERRED",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_CITE",
+   "ticker": "CITE",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:SPAC",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_ZIMV",
+   "ticker": "ZIMV",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_CSLM",
+   "ticker": "CSLM",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:SPAC",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_GAQ",
+   "ticker": "GAQ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_LATG",
+   "ticker": "LATG",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_GHIX",
+   "ticker": "GHIX",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_MSSAU",
+   "ticker": "MSSAU",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:CLASS_UNIT_NOT_AN_EQUITY",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_EVGR",
+   "ticker": "EVGR",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_SAT",
+   "ticker": "SAT",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_AFAR",
+   "ticker": "AFAR",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:SPAC",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_GBBK",
+   "ticker": "GBBK",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:SPAC",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_TRINL",
+   "ticker": "TRINL",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_PET",
+   "ticker": "PET",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_AKLI",
+   "ticker": "AKLI",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_QOMO",
+   "ticker": "QOMO",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:SPAC",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_RWAYZ",
+   "ticker": "RWAYZ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_HUDA",
+   "ticker": "HUDA",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_TMTC",
+   "ticker": "TMTC",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:SPAC",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_KVUE",
+   "ticker": "KVUE",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:ACQUISITION"
+  },
+  {
+   "securityId": "ref_TBMC",
+   "ticker": "TBMC",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_OAKU",
+   "ticker": "OAKU",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:SPAC",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_GAINL",
+   "ticker": "GAINL",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_AACT",
+   "ticker": "AACT",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_APGE",
+   "ticker": "APGE",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_WRNT",
+   "ticker": "WRNT",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_HRYU",
+   "ticker": "HRYU",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_BOWN",
+   "ticker": "BOWN",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:SPAC",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_GLADZ",
+   "ticker": "GLADZ",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_NCNC",
+   "ticker": "NCNC",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_ACV_A",
+   "ticker": "ACV-A",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_AITR",
+   "ticker": "AITR",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:SPAC",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_ANSC",
+   "ticker": "ANSC",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:SPAC",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_BRRWW",
+   "ticker": "BRRWW",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:CLASS_WARRANT_NOT_AN_EQUITY",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_BSII",
+   "ticker": "BSII",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_CCIX",
+   "ticker": "CCIX",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_CGBDL",
+   "ticker": "CGBDL",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_CMII",
+   "ticker": "CMII",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_CREV",
+   "ticker": "CREV",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_DVXE",
+   "ticker": "DVXE",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_EMPG",
+   "ticker": "EMPG",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_EPWK",
+   "ticker": "EPWK",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_GLYC",
+   "ticker": "GLYC",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_HCWC",
+   "ticker": "HCWC",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_HELS",
+   "ticker": "HELS",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_HONDW",
+   "ticker": "HONDW",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:CLASS_WARRANT_NOT_AN_EQUITY",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_HONIV",
+   "ticker": "HONIV",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_HOOZ",
+   "ticker": "HOOZ",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:TRUST",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_HVII",
+   "ticker": "HVII",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_IPCX",
+   "ticker": "IPCX",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:SPAC",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_IPEX",
+   "ticker": "IPEX",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:SPAC",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_KWM",
+   "ticker": "KWM",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_LRHC",
+   "ticker": "LRHC",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_MESA",
+   "ticker": "MESA",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_MIMI",
+   "ticker": "MIMI",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_MURA",
+   "ticker": "MURA",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_NNAG",
+   "ticker": "NNAG",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_NVNI",
+   "ticker": "NVNI",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_NYMT",
+   "ticker": "NYMT",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_PTNM",
+   "ticker": "PTNM",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_RITR",
+   "ticker": "RITR",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_RYZB",
+   "ticker": "RYZB",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_SBXD",
+   "ticker": "SBXD",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_SDM",
+   "ticker": "SDM",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_SELX",
+   "ticker": "SELX",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_SPKL",
+   "ticker": "SPKL",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:SPAC",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_SVMH",
+   "ticker": "SVMH",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_TCGL",
+   "ticker": "TCGL",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_VACI",
+   "ticker": "VACI",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:SPAC",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_VCIC",
+   "ticker": "VCIC",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  },
+  {
+   "securityId": "ref_ZK",
+   "ticker": "ZK",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE"
+  }
+ ],
+ "leave": [
+  {
+   "ticker": "FL",
+   "securityId": "ref_FL",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "ALE",
+   "securityId": "ref_ALE",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "ALOT",
+   "securityId": "ref_ALOT",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "WBS",
+   "securityId": "ref_WBS",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "LEG",
+   "securityId": "ref_LEG",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "EQC",
+   "securityId": "ref_EQC",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "IMGN",
+   "securityId": "ref_IMGN",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "NWLI",
+   "securityId": "ref_NWLI",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "TSRI",
+   "securityId": "ref_TSRI",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "ELSE",
+   "securityId": "ref_ELSE",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "MGIC",
+   "securityId": "ref_MGIC",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "BLFS",
+   "securityId": "ref_BLFS",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "hedgefonds",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "NTZ",
+   "securityId": "ref_NTZ",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "LXP",
+   "securityId": "ref_LXP",
+   "reason": "CONFIRMED_LISTING_ENDED:ACQUISITION",
+   "products": [
+    "elliott",
+    "hedgefonds",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "BZH",
+   "securityId": "ref_BZH",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "hedgefonds",
+    "quant",
+    "supertrader",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "ZEUS",
+   "securityId": "ref_ZEUS",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "AVB",
+   "securityId": "ref_AVB",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "HMNF",
+   "securityId": "ref_HMNF",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "CBZ",
+   "securityId": "ref_CBZ",
+   "reason": "CONFIRMED_LISTING_ENDED:ACQUISITION",
+   "products": [
+    "elliott",
+    "hedgefonds",
+    "quant",
+    "supertrader",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "FLIC",
+   "securityId": "ref_FLIC",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "SASR",
+   "securityId": "ref_SASR",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "STRM",
+   "securityId": "ref_STRM",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "CASI",
+   "securityId": "ref_CASI",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "SLP",
+   "securityId": "ref_SLP",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "hedgefonds",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "HLX",
+   "securityId": "ref_HLX",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "CHL",
+   "securityId": "ref_CHL",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "HTBK",
+   "securityId": "ref_HTBK",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "SNBR",
+   "securityId": "ref_SNBR",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "HTLF",
+   "securityId": "ref_HTLF",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "HSII",
+   "securityId": "ref_HSII",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "LPSN",
+   "securityId": "ref_LPSN",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "TRUE",
+   "securityId": "ref_TRUE",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "CSCI",
+   "securityId": "ref_CSCI",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "CHU",
+   "securityId": "ref_CHU",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "MBT",
+   "securityId": "ref_MBT",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "NURO",
+   "securityId": "ref_NURO",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "CEO",
+   "securityId": "ref_CEO",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "SGEN",
+   "securityId": "ref_SGEN",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "BGFV",
+   "securityId": "ref_BGFV",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "MODV",
+   "securityId": "ref_MODV",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "SP",
+   "securityId": "ref_SP",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "TTM",
+   "securityId": "ref_TTM",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "KNL",
+   "securityId": "ref_KNL",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "WBD",
+   "securityId": "ref_WBD",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "hedgefonds",
+    "quant",
+    "supertrader",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "GENE",
+   "securityId": "ref_GENE",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "CCO",
+   "securityId": "ref_CCO",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "hedgefonds",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "SNCR",
+   "securityId": "ref_SNCR",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "HBI",
+   "securityId": "ref_HBI",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "GLDD",
+   "securityId": "ref_GLDD",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "VEDL",
+   "securityId": "ref_VEDL",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "AREN",
+   "securityId": "ref_AREN",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "MOFG",
+   "securityId": "ref_MOFG",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "BEST",
+   "securityId": "ref_BEST",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "HOLI",
+   "securityId": "ref_HOLI",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "TBNK",
+   "securityId": "ref_TBNK",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "TWO",
+   "securityId": "ref_TWO",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "ALIM",
+   "securityId": "ref_ALIM",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "PVG",
+   "securityId": "ref_PVG",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "AL",
+   "securityId": "ref_AL",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "THR",
+   "securityId": "ref_THR",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "BCAR",
+   "securityId": "ref_BCAR",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "SPLK",
+   "securityId": "ref_SPLK",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "IBTX",
+   "securityId": "ref_IBTX",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "MRTX",
+   "securityId": "ref_MRTX",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "MIXT",
+   "securityId": "ref_MIXT",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "ZIONL",
+   "securityId": "ref_ZIONL",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "RMAX",
+   "securityId": "ref_RMAX",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "ARAV",
+   "securityId": "ref_ARAV",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "FGNX",
+   "securityId": "ref_FGNX",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "TBPH",
+   "securityId": "ref_TBPH",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "RDUS",
+   "securityId": "ref_RDUS",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "DBRG",
+   "securityId": "ref_DBRG",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "ZIONO",
+   "securityId": "ref_ZIONO",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "VBTX",
+   "securityId": "ref_VBTX",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "AVNS",
+   "securityId": "ref_AVNS",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "LBRDA",
+   "securityId": "ref_LBRDA",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "LBRDK",
+   "securityId": "ref_LBRDK",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "QRVO",
+   "securityId": "ref_QRVO",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "hedgefonds",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "AVGR",
+   "securityId": "ref_AVGR",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "ALPN",
+   "securityId": "ref_ALPN",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "WTFCM",
+   "securityId": "ref_WTFCM",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "PVBC",
+   "securityId": "ref_PVBC",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "AGR",
+   "securityId": "ref_AGR",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "ADVM",
+   "securityId": "ref_ADVM",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "SNYR",
+   "securityId": "ref_SNYR",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "ZTEK",
+   "securityId": "ref_ZTEK",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "VIVKD",
+   "securityId": "ref_VIVKD",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "LSXMA",
+   "securityId": "ref_LSXMA",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "LSXMK",
+   "securityId": "ref_LSXMK",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "LSXMB",
+   "securityId": "ref_LSXMB",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "ATKR",
+   "securityId": "ref_ATKR",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "hedgefonds",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "RZB",
+   "securityId": "ref_RZB",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "MINDP",
+   "securityId": "ref_MINDP",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "HONE",
+   "securityId": "ref_HONE",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "LN",
+   "securityId": "ref_LN",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "EVBG",
+   "securityId": "ref_EVBG",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "MAA-P-I",
+   "securityId": "ref_MAA_P_I",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "REVG",
+   "securityId": "ref_REVG",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "PLYA",
+   "securityId": "ref_PLYA",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "VIASP",
+   "securityId": "ref_VIASP",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "ARD",
+   "securityId": "ref_ARD",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "TWO-P-A",
+   "securityId": "ref_TWO_P_A",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "ICCH",
+   "securityId": "ref_ICCH",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "FBRX",
+   "securityId": "ref_FBRX",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "NCSM",
+   "securityId": "ref_NCSM",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "PIXY",
+   "securityId": "ref_PIXY",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "TWO-P-B",
+   "securityId": "ref_TWO_P_B",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "GOEV",
+   "securityId": "ref_GOEV",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "ROKU",
+   "securityId": "ref_ROKU",
+   "reason": "CONFIRMED_LISTING_ENDED:ACQUISITION",
+   "products": [
+    "elliott",
+    "hedgefonds",
+    "quant",
+    "supertrader",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "SOL",
+   "securityId": "ref_SOL",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "SBT",
+   "securityId": "ref_SBT",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "TWO-P-C",
+   "securityId": "ref_TWO_P_C",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "WBS-P-F",
+   "securityId": "ref_WBS_P_F",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "GECCM",
+   "securityId": "ref_GECCM",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "FGNXP",
+   "securityId": "ref_FGNXP",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "GORV",
+   "securityId": "ref_GORV",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "MOR",
+   "securityId": "ref_MOR",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "ASLN",
+   "securityId": "ref_ASLN",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "NKLA",
+   "securityId": "ref_NKLA",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "BYU",
+   "securityId": "ref_BYU",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "CRNX",
+   "securityId": "ref_CRNX",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "RAMP",
+   "securityId": "ref_RAMP",
+   "reason": "CONFIRMED_LISTING_ENDED:ACQUISITION",
+   "products": [
+    "elliott",
+    "hedgefonds",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "BMTX",
+   "securityId": "ref_BMTX",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "VTAK",
+   "securityId": "ref_VTAK",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "JUPGF",
+   "securityId": "ref_JUPGF",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "WKEY",
+   "securityId": "ref_WKEY",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "GHSI",
+   "securityId": "ref_GHSI",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "AXLA",
+   "securityId": "ref_AXLA",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "QNCX",
+   "securityId": "ref_QNCX",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "hedgefonds",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "APLT",
+   "securityId": "ref_APLT",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "TECTP",
+   "securityId": "ref_TECTP",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "NLY-P-I",
+   "securityId": "ref_NLY_P_I",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "KRTX",
+   "securityId": "ref_KRTX",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "FSEA",
+   "securityId": "ref_FSEA",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "BHAT",
+   "securityId": "ref_BHAT",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "MBINO",
+   "securityId": "ref_MBINO",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "BTOG",
+   "securityId": "ref_BTOG",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "TFFP",
+   "securityId": "ref_TFFP",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "SACC",
+   "securityId": "ref_SACC",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "FTAIO",
+   "securityId": "ref_FTAIO",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "OXLCP",
+   "securityId": "ref_OXLCP",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "RILYM",
+   "securityId": "ref_RILYM",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "OCFCP",
+   "securityId": "ref_OCFCP",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "WTFCP",
+   "securityId": "ref_WTFCP",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "CALT",
+   "securityId": "ref_CALT",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "ETWO",
+   "securityId": "ref_ETWO",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "HTLFP",
+   "securityId": "ref_HTLFP",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "FREE",
+   "securityId": "ref_FREE",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "QHUOY",
+   "securityId": "ref_QHUOY",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "GOCOQ",
+   "securityId": "ref_GOCOQ",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "TALK",
+   "securityId": "ref_TALK",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "VSTA",
+   "securityId": "ref_VSTA",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "WSBCP",
+   "securityId": "ref_WSBCP",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "FRLN",
+   "securityId": "ref_FRLN",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "ORGN",
+   "securityId": "ref_ORGN",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "ASTR",
+   "securityId": "ref_ASTR",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "PXSAP",
+   "securityId": "ref_PXSAP",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "GHLD",
+   "securityId": "ref_GHLD",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "LESL",
+   "securityId": "ref_LESL",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "GBTG",
+   "securityId": "ref_GBTG",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "XOMAP",
+   "securityId": "ref_XOMAP",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "LBRDP",
+   "securityId": "ref_LBRDP",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "AFBI",
+   "securityId": "ref_AFBI",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "FRGE",
+   "securityId": "ref_FRGE",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "IWFL",
+   "securityId": "ref_IWFL",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "IWML",
+   "securityId": "ref_IWML",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "MTUL",
+   "securityId": "ref_MTUL",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "QULL",
+   "securityId": "ref_QULL",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "SCDL",
+   "securityId": "ref_SCDL",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "ISPO",
+   "securityId": "ref_ISPO",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "TCBIO",
+   "securityId": "ref_TCBIO",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "ACVA",
+   "securityId": "ref_ACVA",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "hedgefonds",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "STEC",
+   "securityId": "ref_STEC",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "RILYK",
+   "securityId": "ref_RILYK",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "KRNL",
+   "securityId": "ref_KRNL",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "CHAA",
+   "securityId": "ref_CHAA",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "XOMAO",
+   "securityId": "ref_XOMAO",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "EDR",
+   "securityId": "ref_EDR",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "BWMN",
+   "securityId": "ref_BWMN",
+   "reason": "CONFIRMED_LISTING_ENDED:ACQUISITION",
+   "products": [
+    "elliott",
+    "hedgefonds",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "TRML",
+   "securityId": "ref_TRML",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "LGV",
+   "securityId": "ref_LGV",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "MMV",
+   "securityId": "ref_MMV",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "WKME",
+   "securityId": "ref_WKME",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "ATAI",
+   "securityId": "ref_ATAI",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "DBRG-P-H",
+   "securityId": "ref_DBRG_P_H",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "DBRG-P-I",
+   "securityId": "ref_DBRG_P_I",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "DBRG-P-J",
+   "securityId": "ref_DBRG_P_J",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "GECCO",
+   "securityId": "ref_GECCO",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "METCL",
+   "securityId": "ref_METCL",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "BLFY",
+   "securityId": "ref_BLFY",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "REE",
+   "securityId": "ref_REE",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "OMGA",
+   "securityId": "ref_OMGA",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "LILM",
+   "securityId": "ref_LILM",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "LILMW",
+   "securityId": "ref_LILMW",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "MDV-P-A",
+   "securityId": "ref_MDV_P_A",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "SEPA",
+   "securityId": "ref_SEPA",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "SOVO",
+   "securityId": "ref_SOVO",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "PFTA",
+   "securityId": "ref_PFTA",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "PPHP",
+   "securityId": "ref_PPHP",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "GREEL",
+   "securityId": "ref_GREEL",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "FNA",
+   "securityId": "ref_FNA",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "SDIG",
+   "securityId": "ref_SDIG",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "ENFN",
+   "securityId": "ref_ENFN",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "HNNAZ",
+   "securityId": "ref_HNNAZ",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "INFA",
+   "securityId": "ref_INFA",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "RGF",
+   "securityId": "ref_RGF",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "HHGC",
+   "securityId": "ref_HHGC",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "MYNA",
+   "securityId": "ref_MYNA",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "SEVCF",
+   "securityId": "ref_SEVCF",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "BACA",
+   "securityId": "ref_BACA",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "AHI",
+   "securityId": "ref_AHI",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "LCW",
+   "securityId": "ref_LCW",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "FNVT",
+   "securityId": "ref_FNVT",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "ONYX",
+   "securityId": "ref_ONYX",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "IVCBU",
+   "securityId": "ref_IVCBU",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "BNOX",
+   "securityId": "ref_BNOX",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "VSAC",
+   "securityId": "ref_VSAC",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "GTAC",
+   "securityId": "ref_GTAC",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "SEDA",
+   "securityId": "ref_SEDA",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "MCAA",
+   "securityId": "ref_MCAA",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "NPAB",
+   "securityId": "ref_NPAB",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "BCSA",
+   "securityId": "ref_BCSA",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "RCFA",
+   "securityId": "ref_RCFA",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "DPCS",
+   "securityId": "ref_DPCS",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "BLEU",
+   "securityId": "ref_BLEU",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "FEXD",
+   "securityId": "ref_FEXD",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "TETEU",
+   "securityId": "ref_TETEU",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "NSTS",
+   "securityId": "ref_NSTS",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "KACL",
+   "securityId": "ref_KACL",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "HAIA",
+   "securityId": "ref_HAIA",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "WBS-P-G",
+   "securityId": "ref_WBS_P_G",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "EVE",
+   "securityId": "ref_EVE",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "IVCB",
+   "securityId": "ref_IVCB",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "PRLH",
+   "securityId": "ref_PRLH",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "CFFS",
+   "securityId": "ref_CFFS",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "MDV",
+   "securityId": "ref_MDV",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "BOCN",
+   "securityId": "ref_BOCN",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "BRAC",
+   "securityId": "ref_BRAC",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "PRIF-P-L",
+   "securityId": "ref_PRIF_P_L",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "CITE",
+   "securityId": "ref_CITE",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "ZIMV",
+   "securityId": "ref_ZIMV",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "CSLM",
+   "securityId": "ref_CSLM",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "GAQ",
+   "securityId": "ref_GAQ",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "LATG",
+   "securityId": "ref_LATG",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "GHIX",
+   "securityId": "ref_GHIX",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "MSSAU",
+   "securityId": "ref_MSSAU",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "EVGR",
+   "securityId": "ref_EVGR",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "SAT",
+   "securityId": "ref_SAT",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "AFAR",
+   "securityId": "ref_AFAR",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "GBBK",
+   "securityId": "ref_GBBK",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "TRINL",
+   "securityId": "ref_TRINL",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "PET",
+   "securityId": "ref_PET",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "AKLI",
+   "securityId": "ref_AKLI",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "QOMO",
+   "securityId": "ref_QOMO",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "RWAYZ",
+   "securityId": "ref_RWAYZ",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "HUDA",
+   "securityId": "ref_HUDA",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "TMTC",
+   "securityId": "ref_TMTC",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "KVUE",
+   "securityId": "ref_KVUE",
+   "reason": "CONFIRMED_LISTING_ENDED:ACQUISITION",
+   "products": [
+    "elliott",
+    "hedgefonds",
+    "quant",
+    "supertrader",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "TBMC",
+   "securityId": "ref_TBMC",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "OAKU",
+   "securityId": "ref_OAKU",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "GAINL",
+   "securityId": "ref_GAINL",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "AACT",
+   "securityId": "ref_AACT",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "APGE",
+   "securityId": "ref_APGE",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "WRNT",
+   "securityId": "ref_WRNT",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "HRYU",
+   "securityId": "ref_HRYU",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "BOWN",
+   "securityId": "ref_BOWN",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "GLADZ",
+   "securityId": "ref_GLADZ",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "NCNC",
+   "securityId": "ref_NCNC",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "ACV-A",
+   "securityId": "ref_ACV_A",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "AITR",
+   "securityId": "ref_AITR",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "ANSC",
+   "securityId": "ref_ANSC",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "BRRWW",
+   "securityId": "ref_BRRWW",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "BSII",
+   "securityId": "ref_BSII",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "CCIX",
+   "securityId": "ref_CCIX",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "CGBDL",
+   "securityId": "ref_CGBDL",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "CMII",
+   "securityId": "ref_CMII",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "CREV",
+   "securityId": "ref_CREV",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "DVXE",
+   "securityId": "ref_DVXE",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "EMPG",
+   "securityId": "ref_EMPG",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "EPWK",
+   "securityId": "ref_EPWK",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "GLYC",
+   "securityId": "ref_GLYC",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "HCWC",
+   "securityId": "ref_HCWC",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "HELS",
+   "securityId": "ref_HELS",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "HONDW",
+   "securityId": "ref_HONDW",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "HONIV",
+   "securityId": "ref_HONIV",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "HOOZ",
+   "securityId": "ref_HOOZ",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "HVII",
+   "securityId": "ref_HVII",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "IPCX",
+   "securityId": "ref_IPCX",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "IPEX",
+   "securityId": "ref_IPEX",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "KWM",
+   "securityId": "ref_KWM",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "LRHC",
+   "securityId": "ref_LRHC",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "MESA",
+   "securityId": "ref_MESA",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "MIMI",
+   "securityId": "ref_MIMI",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "MURA",
+   "securityId": "ref_MURA",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "NNAG",
+   "securityId": "ref_NNAG",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "NVNI",
+   "securityId": "ref_NVNI",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "NYMT",
+   "securityId": "ref_NYMT",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "PTNM",
+   "securityId": "ref_PTNM",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "RITR",
+   "securityId": "ref_RITR",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "RYZB",
+   "securityId": "ref_RYZB",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "SBXD",
+   "securityId": "ref_SBXD",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "SDM",
+   "securityId": "ref_SDM",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "SELX",
+   "securityId": "ref_SELX",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "SPKL",
+   "securityId": "ref_SPKL",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "SVMH",
+   "securityId": "ref_SVMH",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "TCGL",
+   "securityId": "ref_TCGL",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "VACI",
+   "securityId": "ref_VACI",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "VCIC",
+   "securityId": "ref_VCIC",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "ZK",
+   "securityId": "ref_ZK",
+   "reason": "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE",
+   "products": [
+    "quant",
+    "technical"
+   ]
+  }
+ ],
+ "enter": [],
+ "decidedBy": "Steuerung 17.11.2026 (Regel) und 21.11.2026 (B3 nach privater Sicherung): Titel mit Stamm INACTIVE und beendeter Tagesreihe sowie belegte Uebernahmen verlassen das Produktuniversum (Freigabeliste plus eigener PR, kein Hochsetzen der Grenzen)."
+}

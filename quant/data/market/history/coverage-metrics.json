@@ -1,10 +1,10 @@
 {
- "generatedAt": "2026-11-15T06:01:17.161Z",
+ "generatedAt": "2026-11-22T06:06:09.023Z",
  "engine": "coverage-metrics-1.0.0",
  "gate": "FULL_UNIVERSE",
  "provider": "tiingo",
  "market": "US",
- "today": "2026-11-15",
+ "today": "2026-11-22",
  "phase": "POST_BACKFILL_CLEANUP_NO_PRICE_REQUESTS",
  "tiingoPriceRequests": 0,
  "storageSource": {
@@ -15,16 +15,16 @@
  },
  "eligibilitySource": {
   "file": "quant/data/market/security-master/eligibility.json",
-  "generatedAt": "2026-11-11T07:43:37.195Z",
+  "generatedAt": "2026-11-21T16:27:21.916Z",
   "version": "us-security-master-1.3.0"
  },
  "eligibilityCounts": {
-  "universeMembers": 7803,
-  "ELIGIBLE": 5213,
-  "SEPARATE_CLASS": 787,
-  "EXCLUDED": 1494,
-  "REVIEW": 309,
-  "productUniverse": 6309
+  "universeMembers": 7834,
+  "ELIGIBLE": 5224,
+  "SEPARATE_CLASS": 725,
+  "EXCLUDED": 1803,
+  "REVIEW": 82,
+  "productUniverse": 6031
  },
  "version": "coverage-metrics-1.0.0",
  "thresholds": {
@@ -37,31 +37,33 @@
   "tradingDaysPerYear": 252
  },
  "STORAGE_COVERAGE": {
-  "denominator": 7803,
-  "stored": 7802,
-  "missing": 1,
+  "denominator": 7834,
+  "stored": 7832,
+  "missing": 2,
   "missingProviderUnavailable": 0,
-  "missingUnexplained": 1,
+  "missingUnexplained": 2,
   "missingSymbols": [
-   "GLMD"
+   "GLMD",
+   "FFTT"
   ],
-  "STORAGE_COVERAGE_PERCENT": 99.99
+  "STORAGE_COVERAGE_PERCENT": 99.97
  },
  "CHART_AVAILABILITY": {
-  "denominator": 6309,
-  "renderable": 6306,
-  "notRenderable": 3,
+  "denominator": 6031,
+  "renderable": 6027,
+  "notRenderable": 4,
   "notRenderableSymbols": [
    "GLMD",
    "BNRG",
-   "JAB"
+   "JAB",
+   "FFTT"
   ],
-  "CHART_AVAILABILITY_PERCENT": 99.95
+  "CHART_AVAILABILITY_PERCENT": 99.93
  },
  "TECHNICAL_HISTORY_ELIGIBILITY": {
-  "denominator": 6309,
-  "eligible": 5666,
-  "tooShort": 643,
+  "denominator": 6031,
+  "eligible": 5490,
+  "tooShort": 541,
   "tooShortSymbols": [
    "AACI",
    "AACO",
@@ -71,7 +73,6 @@
    "ABL",
    "ACAA",
    "ACGC",
-   "ACV-A",
    "ADAMO",
    "ADBT",
    "ADIG",
@@ -80,8 +81,6 @@
    "AGBK",
    "AGCC",
    "AGMB",
-   "AGR",
-   "AHI",
    "AHMA",
    "AIAI",
    "AIDX",
@@ -89,14 +88,11 @@
    "AIIA",
    "AIIR",
    "AILE",
-   "AKLI",
    "AKTS",
    "ALH",
-   "ALIM",
    "ALIS",
    "ALMR",
    "ALOV",
-   "ALPN",
    "ALPS",
    "ALPX",
    "ALUB",
@@ -107,30 +103,28 @@
    "ANABV",
    "ANDG",
    "ANGIV",
-   "ANGX",
+   "ANT",
    "APMD",
    "APUR",
    "APXT",
    "ARCI",
    "ARCL",
    "ARXS",
-   "ASTR",
    "ASUP",
    "ATCX",
    "ATLQ",
    "ATMV",
    "ATTO",
    "AUC",
+   "AUXX",
    "AVAT",
    "AVEX",
    "AVLN",
    "AXG",
    "AXICY",
-   "AXLA",
-   "BACA",
+   "AXNX",
    "BBCQ",
    "BCCQ",
-   "BCSA",
    "BCSS",
    "BDCI",
    "BEBE",
@@ -144,28 +138,20 @@
    "BIOR",
    "BIXI",
    "BLAC",
-   "BLEU",
    "BLLN",
    "BLRK",
    "BLSM",
    "BLZR",
    "BMM",
-   "BMTX",
    "BNCWZ",
-   "BNOX",
    "BNRG",
    "BNZI",
    "BOBS",
-   "BOCN",
    "BOT",
    "BPAC",
    "BPRE",
-   "BRAC",
    "BRAI",
-   "BRCB",
    "BREZ",
-   "BRKRP",
-   "BRRWW",
    "BRTM",
    "BRUN",
    "BRVE",
@@ -176,11 +162,11 @@
    "BVC",
    "BWIV",
    "BXDC",
-   "BYU",
    "CAES",
    "CAII",
    "CAQ",
    "CAST",
+   "CATL",
    "CBC",
    "CBK",
    "CBRS",
@@ -193,14 +179,11 @@
    "CEPV",
    "CETH",
    "CGCF",
-   "CHAA",
    "CHEC",
    "CHOW",
    "CHTRP",
-   "CITE",
    "CITR",
    "CMCSV",
-   "CMII",
    "CNL",
    "CNXU",
    "COAG",
@@ -208,7 +191,6 @@
    "CPNX",
    "CRAC",
    "CSHR",
-   "CSLM",
    "CSQR",
    "CSWI",
    "CVII",
@@ -224,13 +206,10 @@
    "DMII",
    "DMN",
    "DNMX",
-   "DPCS",
    "DRNL",
    "DSAC",
    "DUET",
-   "DVXE",
    "DYOR",
-   "EDR",
    "EDVA",
    "EIKN",
    "ELE",
@@ -243,7 +222,6 @@
    "EROK",
    "ESEAV",
    "ETSS",
-   "EVBG",
    "EVMN",
    "EVOX",
    "EWAV",
@@ -258,7 +236,7 @@
    "FCRS",
    "FDMM",
    "FDXF",
-   "FEXD",
+   "FFTT",
    "FGII",
    "FIRY",
    "FISN",
@@ -268,17 +246,13 @@
    "FITBP",
    "FJET",
    "FMAC",
-   "FNVT",
-   "FOFO",
    "FPB",
    "FPC",
    "FPD",
    "FPS",
    "FRBN",
    "FRBT",
-   "FREE",
    "FRES",
-   "FRLN",
    "FRMI",
    "FRNM",
    "FRTT",
@@ -293,15 +267,9 @@
    "FWAC",
    "FXAC",
    "FXHO",
-   "GAQ",
-   "GBBK",
    "GCGR",
-   "GECCM",
-   "GEMI",
    "GENB",
    "GFUZ",
-   "GHIX",
-   "GHSI",
    "GHXI",
    "GIX",
    "GIXI",
@@ -312,60 +280,42 @@
    "GLND",
    "GLOO",
    "GLT",
-   "GLYC",
    "GMEX",
    "GMRS",
    "GMTL",
-   "GOEV",
    "GPAC",
    "GRCL",
    "GRML",
    "GRTS",
    "GSRF",
    "GSRV",
-   "GTAC",
    "GUAC",
    "GYGY",
    "HACQ",
-   "HAIA",
    "HAVA",
    "HBANZ",
    "HCAC",
    "HCMA",
    "HDRN",
-   "HELS",
-   "HHGC",
    "HLXC",
    "HMH",
-   "HMNF",
-   "HOLI",
    "HONA",
-   "HONDW",
    "HONG",
-   "HONIV",
-   "HOOZ",
    "HQ",
-   "HRYU",
    "HSLV",
-   "HTLF",
-   "HTLFP",
-   "HUDA",
    "HVMC",
    "HYNE",
    "IACO",
    "IACQ",
    "IACVV",
-   "IBTX",
    "IDAC",
    "IEAG",
    "ILLU",
    "ILMNV",
    "IMC",
-   "IMGN",
    "INFQ",
    "INIO",
    "IOND",
-   "IPCX",
    "IPFX",
    "IPVV",
    "IPXG",
@@ -374,8 +324,6 @@
    "IRHO",
    "ISNR",
    "ITHA",
-   "IVCB",
-   "IVCBU",
    "JAB",
    "JAGU",
    "JAN",
@@ -383,49 +331,36 @@
    "JMKE",
    "JONE",
    "JTTT",
-   "KACL",
    "KARD",
    "KBON",
    "KDK",
    "KEYY",
-   "KLAR",
    "KLRA",
    "KNRX",
    "KNWND",
    "KOYN",
    "KPET",
    "KRAQ",
-   "KRNL",
    "KRSP",
-   "KRTX",
    "KUST",
    "LABT",
    "LAFA",
    "LATA",
-   "LATG",
    "LBDAV",
    "LBDKV",
-   "LBRX",
    "LC",
    "LCLN",
-   "LCW",
    "LFS",
    "LFTO",
-   "LGN",
    "LIFE",
    "LILAP",
    "LILAV",
    "LILKV",
-   "LILM",
-   "LILMW",
    "LKSP",
    "LMRI",
    "LNC-P-D",
    "LPCV",
    "LQ",
-   "LSXMA",
-   "LSXMB",
-   "LSXMK",
    "LTGO",
    "LTGR",
    "LYNX",
@@ -434,7 +369,6 @@
    "MAYA",
    "MBAI",
    "MBIEL",
-   "MBINO",
    "MBVI",
    "MCACR",
    "MCACU",
@@ -443,7 +377,6 @@
    "MDA",
    "MDLN",
    "MDRRP",
-   "MESA",
    "MESH",
    "MEVO",
    "MFP",
@@ -451,18 +384,15 @@
    "MIAC",
    "MICC",
    "MIDDV",
-   "MINDP",
    "MINE",
    "MKLY",
    "MLAA",
-   "MLCI",
    "MMED",
    "MMTX",
-   "MMV",
    "MPLT",
    "MRCO",
-   "MRTX",
    "MSLE",
+   "MTAK",
    "MTNE",
    "MUZE",
    "MWC",
@@ -471,7 +401,6 @@
    "MZYX",
    "NAVN",
    "NBRG",
-   "NCNC",
    "NCO",
    "NEEPU",
    "NEWTO",
@@ -480,21 +409,19 @@
    "NICM",
    "NIKI",
    "NMAD",
-   "NNAG",
    "NOMA",
    "NOVV",
    "NSAI",
    "NTBL",
    "NTSK",
    "NWAX",
-   "NWLI",
    "NXAT",
    "NXB",
    "NXH",
-   "NYMT",
    "OBAI",
    "OBX",
    "OCAC",
+   "OCLT",
    "OCTV",
    "ODTX",
    "OFRM",
@@ -503,23 +430,18 @@
    "OHAC",
    "OIM",
    "OLK",
-   "ONCH",
-   "ONYX",
    "OPTH",
-   "ORIQ",
    "OSG",
    "OTGA",
    "OWLS",
    "OXLCM",
    "PAAI",
-   "PAII",
    "PALO",
    "PALX",
    "PARK",
    "PAYP",
    "PBLS",
    "PECE",
-   "PFTA",
    "PHXM",
    "PICS",
    "PIK",
@@ -543,13 +465,11 @@
    "PWRL",
    "PXDT",
    "PXED",
-   "PXSAP",
    "QADR",
    "QLEP",
    "QMLS",
    "QNC",
    "QNT",
-   "QOMO",
    "QRED",
    "QRTEA",
    "QRTEB",
@@ -560,26 +480,23 @@
    "RACC",
    "RACD",
    "RAIN",
-   "RCFA",
    "RCM",
    "REA",
    "REEDD",
    "REF",
    "RFAM",
-   "RGF",
    "RGNT",
    "RHLDV",
    "RIVR",
    "RMIX",
+   "RNAQ",
    "RNGT",
    "RPGL",
    "RREV",
    "RVII",
    "RYZ",
-   "RYZB",
    "SAAQ",
    "SAC",
-   "SACC",
    "SAGU",
    "SAMO",
    "SATA",
@@ -590,11 +507,7 @@
    "SCPQ",
    "SCTX",
    "SCZM",
-   "SDIG",
    "SECZ",
-   "SEDA",
-   "SEPA",
-   "SGEN",
    "SGLD",
    "SGP",
    "SGRX",
@@ -606,12 +519,8 @@
    "SNSC",
    "SOMN",
    "SORN",
-   "SOVO",
-   "SP",
    "SPCX",
-   "SPEG",
    "SPI",
-   "SPLK",
    "SPTX",
    "SSAC",
    "SSEA",
@@ -626,20 +535,17 @@
    "SUNC",
    "SVAC",
    "SVAQ",
+   "SVIA",
    "SVIV",
-   "SVMH",
    "SVMHW",
    "SWMR",
-   "TCGL",
    "TCGX",
    "TDWD",
    "TETE",
-   "TETEU",
    "THEO",
    "TLNC",
    "TMCR",
    "TMS",
-   "TMTC",
    "TOROV",
    "TP",
    "TRAD",
@@ -647,13 +553,12 @@
    "TRAXV",
    "TREO",
    "TRGS",
-   "TRINL",
    "TTRX",
    "TVIV",
    "TWOU",
+   "TXCP",
    "UAC",
    "UZX",
-   "VACI",
    "VBIV",
    "VBX",
    "VCRE",
@@ -665,7 +570,6 @@
    "VOGX",
    "VOOX",
    "VRXA",
-   "VSAC",
    "VSNT",
    "VTIX",
    "WATR",
@@ -674,11 +578,9 @@
    "WENC",
    "WHK",
    "WILC",
-   "WKME",
    "WLCO",
    "WLII",
    "WPAC",
-   "WRNT",
    "WSBCO",
    "WSE",
    "WTIB",
@@ -701,94 +603,32 @@
    "YICC",
    "YSS",
    "YSWY",
-   "ZIONL",
-   "ZIONO",
    "ZKP",
    "ZKPU",
    "ZTG"
   ],
-  "TECHNICAL_HISTORY_ELIGIBILITY_PERCENT": 89.81
+  "TECHNICAL_HISTORY_ELIGIBILITY_PERCENT": 91.03
  },
  "LONG_HISTORY": {
-  "universeSize": 7803,
-  "ELIGIBLE_FOR_LONG_HISTORY_CHECK": 5894,
-  "PASS": 5749,
-  "FAIL": 145,
-  "LONG_HISTORY_COVERAGE_PERCENT": 97.54,
+  "universeSize": 7834,
+  "ELIGIBLE_FOR_LONG_HISTORY_CHECK": 5624,
+  "PASS": 5566,
+  "FAIL": 58,
+  "LONG_HISTORY_COVERAGE_PERCENT": 98.97,
   "notEligibleByReason": {
-   "NOT_IN_PRODUCT_UNIVERSE": 1494,
-   "LISTING_TOO_YOUNG": 415
+   "NOT_IN_PRODUCT_UNIVERSE": 1803,
+   "LISTING_TOO_YOUNG": 407
   },
   "failSymbols": [
    {
-    "ticker": "IMGN",
-    "bars": 186,
-    "startDate": "1990-03-26"
-   },
-   {
-    "ticker": "NWLI",
-    "bars": 187,
-    "startDate": "1990-03-26"
-   },
-   {
-    "ticker": "HMNF",
-    "bars": 185,
-    "startDate": "1994-06-30"
-   },
-   {
-    "ticker": "HTLF",
-    "bars": 186,
-    "startDate": "1999-01-04"
-   },
-   {
     "ticker": "DINE",
-    "bars": 135,
+    "bars": 140,
     "startDate": "2001-01-02"
    },
    {
-    "ticker": "SGEN",
-    "bars": 186,
-    "startDate": "2001-03-09"
-   },
-   {
-    "ticker": "SP",
-    "bars": 187,
-    "startDate": "2004-06-02"
-   },
-   {
-    "ticker": "HOLI",
-    "bars": 186,
-    "startDate": "2008-10-22"
-   },
-   {
     "ticker": "MINE",
-    "bars": 203,
+    "bars": 208,
     "startDate": "2010-03-03"
-   },
-   {
-    "ticker": "ALIM",
-    "bars": 187,
-    "startDate": "2010-04-22"
-   },
-   {
-    "ticker": "SPLK",
-    "bars": 186,
-    "startDate": "2012-04-19"
-   },
-   {
-    "ticker": "IBTX",
-    "bars": 186,
-    "startDate": "2013-04-04"
-   },
-   {
-    "ticker": "MRTX",
-    "bars": 186,
-    "startDate": "2013-07-15"
-   },
-   {
-    "ticker": "ZIONL",
-    "bars": 186,
-    "startDate": "2013-09-19"
    },
    {
     "ticker": "GLMD",
@@ -797,42 +637,22 @@
    },
    {
     "ticker": "LQ",
-    "bars": 135,
+    "bars": 140,
     "startDate": "2014-04-09"
    },
    {
-    "ticker": "ZIONO",
-    "bars": 186,
-    "startDate": "2014-09-22"
-   },
-   {
-    "ticker": "ALPN",
-    "bars": 186,
-    "startDate": "2015-06-17"
-   },
-   {
     "ticker": "LILAV",
-    "bars": 125,
+    "bars": 130,
     "startDate": "2015-06-22"
    },
    {
     "ticker": "LILKV",
-    "bars": 124,
+    "bars": 129,
     "startDate": "2015-06-23"
    },
    {
-    "ticker": "OSG",
-    "bars": 247,
-    "startDate": "2015-12-01"
-   },
-   {
-    "ticker": "AGR",
-    "bars": 187,
-    "startDate": "2015-12-17"
-   },
-   {
     "ticker": "RCM",
-    "bars": 191,
+    "bars": 196,
     "startDate": "2016-01-04"
    },
    {
@@ -842,620 +662,265 @@
    },
    {
     "ticker": "CETH",
-    "bars": 119,
+    "bars": 124,
     "startDate": "2016-02-09"
    },
    {
-    "ticker": "LSXMA",
-    "bars": 186,
-    "startDate": "2016-04-18"
-   },
-   {
-    "ticker": "LSXMK",
-    "bars": 186,
-    "startDate": "2016-04-18"
-   },
-   {
-    "ticker": "LSXMB",
-    "bars": 186,
-    "startDate": "2016-04-21"
-   },
-   {
-    "ticker": "MINDP",
-    "bars": 187,
-    "startDate": "2016-06-14"
-   },
-   {
-    "ticker": "EVBG",
-    "bars": 187,
-    "startDate": "2016-09-16"
-   },
-   {
     "ticker": "OXLCM",
-    "bars": 190,
+    "bars": 195,
     "startDate": "2017-06-08"
    },
    {
-    "ticker": "GOEV",
-    "bars": 188,
-    "startDate": "2017-08-01"
-   },
-   {
     "ticker": "DCPH",
-    "bars": 192,
+    "bars": 197,
     "startDate": "2017-09-28"
    },
    {
     "ticker": "MDA",
-    "bars": 175,
+    "bars": 180,
     "startDate": "2017-10-05"
    },
    {
-    "ticker": "GECCM",
-    "bars": 185,
-    "startDate": "2018-01-26"
-   },
-   {
-    "ticker": "BYU",
-    "bars": 187,
-    "startDate": "2018-07-11"
-   },
-   {
-    "ticker": "BMTX",
-    "bars": 188,
-    "startDate": "2018-09-21"
-   },
-   {
     "ticker": "ATCX",
-    "bars": 214,
+    "bars": 219,
     "startDate": "2019-01-23"
    },
    {
     "ticker": "EDVA",
-    "bars": 60,
+    "bars": 65,
     "startDate": "2019-02-05"
    },
    {
-    "ticker": "GHSI",
-    "bars": 187,
-    "startDate": "2019-04-05"
-   },
-   {
     "ticker": "AUC",
-    "bars": 126,
+    "bars": 131,
     "startDate": "2019-05-03"
    },
    {
-    "ticker": "AXLA",
-    "bars": 188,
-    "startDate": "2019-05-09"
-   },
-   {
-    "ticker": "KRTX",
-    "bars": 186,
-    "startDate": "2019-06-28"
-   },
-   {
-    "ticker": "MBINO",
-    "bars": 187,
-    "startDate": "2019-08-13"
-   },
-   {
     "ticker": "FTAIP",
-    "bars": 191,
+    "bars": 196,
     "startDate": "2019-09-06"
    },
    {
-    "ticker": "SACC",
-    "bars": 187,
-    "startDate": "2019-11-12"
-   },
-   {
     "ticker": "MDRRP",
-    "bars": 192,
+    "bars": 197,
     "startDate": "2020-02-13"
    },
    {
-    "ticker": "HTLFP",
-    "bars": 186,
-    "startDate": "2020-06-22"
-   },
-   {
-    "ticker": "FREE",
-    "bars": 186,
-    "startDate": "2020-06-24"
-   },
-   {
-    "ticker": "FRLN",
-    "bars": 186,
-    "startDate": "2020-08-07"
-   },
-   {
-    "ticker": "ASTR",
-    "bars": 188,
-    "startDate": "2020-10-06"
-   },
-   {
-    "ticker": "PXSAP",
-    "bars": 186,
-    "startDate": "2020-10-08"
-   },
-   {
     "ticker": "GRCL",
-    "bars": 191,
+    "bars": 196,
     "startDate": "2021-01-08"
    },
    {
     "ticker": "GPAC",
-    "bars": 119,
+    "bars": 124,
     "startDate": "2021-03-05"
    },
    {
     "ticker": "OLK",
-    "bars": 192,
+    "bars": 197,
     "startDate": "2021-03-25"
    },
    {
-    "ticker": "KRNL",
-    "bars": 186,
-    "startDate": "2021-04-01"
-   },
-   {
-    "ticker": "CHAA",
-    "bars": 114,
-    "startDate": "2021-04-05"
-   },
-   {
     "ticker": "CVII",
-    "bars": 191,
+    "bars": 196,
     "startDate": "2021-04-05"
    },
    {
     "ticker": "RAIN",
-    "bars": 119,
+    "bars": 124,
     "startDate": "2021-04-23"
    },
    {
     "ticker": "AILE",
-    "bars": 191,
+    "bars": 196,
     "startDate": "2021-04-26"
    },
    {
-    "ticker": "EDR",
-    "bars": 114,
-    "startDate": "2021-04-28"
-   },
-   {
-    "ticker": "MMV",
-    "bars": 187,
-    "startDate": "2021-06-08"
-   },
-   {
-    "ticker": "WKME",
-    "bars": 185,
-    "startDate": "2021-06-16"
-   },
-   {
     "ticker": "CNL",
-    "bars": 68,
+    "bars": 73,
     "startDate": "2021-07-15"
    },
    {
-    "ticker": "LILM",
-    "bars": 187,
-    "startDate": "2021-09-14"
-   },
-   {
-    "ticker": "LILMW",
-    "bars": 187,
-    "startDate": "2021-09-15"
-   },
-   {
-    "ticker": "SEPA",
-    "bars": 187,
-    "startDate": "2021-09-17"
-   },
-   {
-    "ticker": "SOVO",
-    "bars": 186,
-    "startDate": "2021-09-23"
-   },
-   {
-    "ticker": "PFTA",
-    "bars": 187,
-    "startDate": "2021-09-27"
-   },
-   {
     "ticker": "NOVV",
-    "bars": 191,
+    "bars": 196,
     "startDate": "2021-10-01"
    },
    {
-    "ticker": "SDIG",
-    "bars": 114,
-    "startDate": "2021-10-20"
-   },
-   {
-    "ticker": "RGF",
-    "bars": 114,
-    "startDate": "2021-11-05"
-   },
-   {
     "ticker": "AACI",
-    "bars": 161,
+    "bars": 166,
     "startDate": "2021-11-10"
    },
    {
-    "ticker": "HHGC",
-    "bars": 186,
-    "startDate": "2021-11-11"
-   },
-   {
     "ticker": "PIK",
-    "bars": 189,
+    "bars": 194,
     "startDate": "2021-11-11"
-   },
-   {
-    "ticker": "BACA",
-    "bars": 185,
-    "startDate": "2021-11-18"
-   },
-   {
-    "ticker": "AHI",
-    "bars": 114,
-    "startDate": "2021-11-19"
-   },
-   {
-    "ticker": "LCW",
-    "bars": 186,
-    "startDate": "2021-11-29"
-   },
-   {
-    "ticker": "FNVT",
-    "bars": 188,
-    "startDate": "2021-12-09"
-   },
-   {
-    "ticker": "ONYX",
-    "bars": 188,
-    "startDate": "2021-12-10"
-   },
-   {
-    "ticker": "IVCBU",
-    "bars": 186,
-    "startDate": "2021-12-15"
-   },
-   {
-    "ticker": "BNOX",
-    "bars": 186,
-    "startDate": "2021-12-16"
-   },
-   {
-    "ticker": "VSAC",
-    "bars": 186,
-    "startDate": "2021-12-23"
-   },
-   {
-    "ticker": "GTAC",
-    "bars": 186,
-    "startDate": "2021-12-27"
-   },
-   {
-    "ticker": "SEDA",
-    "bars": 186,
-    "startDate": "2021-12-28"
-   },
-   {
-    "ticker": "BCSA",
-    "bars": 186,
-    "startDate": "2021-12-31"
-   },
-   {
-    "ticker": "RCFA",
-    "bars": 185,
-    "startDate": "2021-12-31"
-   },
-   {
-    "ticker": "DPCS",
-    "bars": 186,
-    "startDate": "2022-01-03"
-   },
-   {
-    "ticker": "BLEU",
-    "bars": 187,
-    "startDate": "2022-01-10"
-   },
-   {
-    "ticker": "FEXD",
-    "bars": 186,
-    "startDate": "2022-01-13"
-   },
-   {
-    "ticker": "TETEU",
-    "bars": 185,
-    "startDate": "2022-01-18"
-   },
-   {
-    "ticker": "KACL",
-    "bars": 186,
-    "startDate": "2022-01-21"
    },
    {
     "ticker": "BPAC",
-    "bars": 217,
+    "bars": 222,
     "startDate": "2022-01-25"
    },
    {
     "ticker": "FRBN",
-    "bars": 192,
-    "startDate": "2022-02-01"
-   },
-   {
-    "ticker": "HAIA",
-    "bars": 187,
+    "bars": 197,
     "startDate": "2022-02-01"
    },
    {
     "ticker": "SMTK",
-    "bars": 119,
+    "bars": 124,
     "startDate": "2022-02-03"
    },
    {
-    "ticker": "IVCB",
-    "bars": 186,
-    "startDate": "2022-02-04"
-   },
-   {
-    "ticker": "BOCN",
-    "bars": 186,
-    "startDate": "2022-02-22"
-   },
-   {
-    "ticker": "BRAC",
-    "bars": 114,
-    "startDate": "2022-02-23"
-   },
-   {
-    "ticker": "CITE",
-    "bars": 186,
-    "startDate": "2022-02-25"
-   },
-   {
-    "ticker": "CSLM",
-    "bars": 187,
-    "startDate": "2022-03-07"
-   },
-   {
     "ticker": "TETE",
-    "bars": 191,
+    "bars": 196,
     "startDate": "2022-03-09"
    },
    {
-    "ticker": "GAQ",
-    "bars": 186,
-    "startDate": "2022-03-14"
-   },
-   {
     "ticker": "DUET",
-    "bars": 192,
+    "bars": 197,
     "startDate": "2022-03-17"
    },
    {
-    "ticker": "LATG",
-    "bars": 187,
-    "startDate": "2022-03-18"
-   },
-   {
-    "ticker": "GHIX",
-    "bars": 186,
-    "startDate": "2022-03-22"
-   },
-   {
     "ticker": "GRML",
-    "bars": 127,
+    "bars": 132,
     "startDate": "2022-04-29"
    },
    {
     "ticker": "MCACU",
-    "bars": 192,
+    "bars": 197,
     "startDate": "2022-05-11"
    },
    {
-    "ticker": "GBBK",
-    "bars": 114,
-    "startDate": "2022-06-17"
-   },
-   {
     "ticker": "MCACR",
-    "bars": 191,
+    "bars": 196,
     "startDate": "2022-07-01"
    },
    {
-    "ticker": "TRINL",
-    "bars": 186,
-    "startDate": "2022-07-29"
-   },
-   {
-    "ticker": "AKLI",
-    "bars": 186,
-    "startDate": "2022-08-19"
-   },
-   {
     "ticker": "STBX",
-    "bars": 190,
+    "bars": 195,
     "startDate": "2022-08-23"
    },
    {
     "ticker": "LNC-P-D",
-    "bars": 119,
+    "bars": 124,
     "startDate": "2022-11-17"
    },
    {
-    "ticker": "QOMO",
-    "bars": 187,
-    "startDate": "2022-11-25"
-   },
-   {
-    "ticker": "HUDA",
-    "bars": 186,
-    "startDate": "2022-12-27"
-   },
-   {
     "ticker": "TOROV",
-    "bars": 192,
+    "bars": 197,
     "startDate": "2023-03-03"
    },
    {
-    "ticker": "TMTC",
-    "bars": 184,
-    "startDate": "2023-05-01"
-   },
-   {
     "ticker": "FRES",
-    "bars": 192,
+    "bars": 197,
     "startDate": "2023-05-22"
    },
    {
     "ticker": "PHXM",
-    "bars": 118,
+    "bars": 123,
     "startDate": "2023-06-29"
    },
    {
-    "ticker": "WRNT",
-    "bars": 185,
-    "startDate": "2023-07-25"
-   },
-   {
-    "ticker": "HRYU",
-    "bars": 134,
-    "startDate": "2023-08-01"
-   },
-   {
     "ticker": "PXDT",
-    "bars": 193,
+    "bars": 198,
     "startDate": "2023-08-01"
-   },
-   {
-    "ticker": "NCNC",
-    "bars": 140,
-    "startDate": "2023-08-25"
    },
    {
     "ticker": "AAPGV",
-    "bars": 192,
+    "bars": 197,
     "startDate": "2025-01-24"
    },
    {
     "ticker": "AHMA",
-    "bars": 163,
+    "bars": 168,
     "startDate": "2025-10-21"
    },
    {
     "ticker": "ANGIV",
-    "bars": 198,
+    "bars": 203,
     "startDate": "2025-03-25"
    },
    {
     "ticker": "ESEAV",
-    "bars": 198,
+    "bars": 203,
     "startDate": "2025-03-10"
    },
    {
     "ticker": "FATAV",
-    "bars": 191,
+    "bars": 196,
     "startDate": "2025-01-28"
    },
    {
     "ticker": "FATBV",
-    "bars": 191,
+    "bars": 196,
     "startDate": "2025-01-28"
    },
    {
     "ticker": "GLBAV",
-    "bars": 193,
+    "bars": 198,
     "startDate": "2025-07-11"
    },
    {
-    "ticker": "HONIV",
-    "bars": 140,
-    "startDate": "2025-10-21"
-   },
-   {
-    "ticker": "HOOZ",
-    "bars": 197,
-    "startDate": "2025-11-13"
-   },
-   {
     "ticker": "IACVV",
-    "bars": 195,
+    "bars": 200,
     "startDate": "2025-03-26"
    },
    {
     "ticker": "ILMNV",
-    "bars": 191,
+    "bars": 196,
     "startDate": "2024-06-18"
    },
    {
     "ticker": "LBDAV",
-    "bars": 192,
+    "bars": 197,
     "startDate": "2025-07-14"
    },
    {
     "ticker": "LBDKV",
-    "bars": 192,
+    "bars": 197,
     "startDate": "2025-07-11"
    },
    {
     "ticker": "MBIEL",
-    "bars": 193,
+    "bars": 198,
     "startDate": "2024-11-22"
    },
    {
-    "ticker": "NNAG",
-    "bars": 186,
-    "startDate": "2023-10-09"
-   },
-   {
     "ticker": "NTBL",
-    "bars": 191,
+    "bars": 196,
     "startDate": "2023-10-17"
    },
    {
     "ticker": "RHLDV",
-    "bars": 198,
+    "bars": 203,
     "startDate": "2025-02-20"
    },
    {
-    "ticker": "RYZB",
-    "bars": 187,
-    "startDate": "2023-09-14"
-   },
-   {
-    "ticker": "SVMH",
-    "bars": 155,
-    "startDate": "2023-12-08"
-   },
-   {
     "ticker": "SVMHW",
-    "bars": 189,
+    "bars": 194,
     "startDate": "2023-12-11"
    },
    {
     "ticker": "WDCVV",
-    "bars": 198,
+    "bars": 203,
     "startDate": "2025-02-13"
+   },
+   {
+    "ticker": "AXNX",
+    "bars": 29,
+    "startDate": "2018-10-31"
    }
   ],
   "threshold": 0.9,
   "thresholdSource": "tiingo-scale.json:pass.minHistoryCoverageRate",
   "ok": true,
-  "failSymbolsTotal": 145
+  "failSymbolsTotal": 58
  },
  "legacy": {
   "metric": "historyCoverageRate ueber das gesamte Universum",
-  "denominator": 7803,
-  "pass": 6571,
-  "percent": 84.21,
+  "denominator": 7834,
+  "pass": 6602,
+  "percent": 84.27,
   "note": "Diese Zahl mischt Ablagedeckung, Chartfaehigkeit und Listingalter. Sie wird nur noch zum Vergleich gefuehrt."
  },
  "redistribution": {

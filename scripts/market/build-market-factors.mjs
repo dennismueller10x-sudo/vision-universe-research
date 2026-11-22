@@ -31,6 +31,8 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync, rmSync } from "node
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import { loadSuccessions, withPredecessor } from "./lib/ticker-succession-bars.mjs";
+import { loadAdjustmentStepEvidence } from "./lib/adjustment-step-evidence.mjs";
 
 const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -42,6 +44,7 @@ const Semantics = require(join(engines, "return-semantics.js"));
 const MarketQuality = require(join(engines, "market-quality.js"));
 const MarketStore = require(join(engines, "market-store.js"));
 const RankingHygiene = require(join(engines, "ranking-hygiene.js"));
+const RankingPopulation = require(join(engines, "ranking-population.js"));
 
 const SCALE = JSON.parse(readFileSync(join(root, "quant", "config", "tiingo-scale.json"), "utf8"));
 
@@ -97,6 +100,8 @@ if (PRODUCT_UNIVERSE) {
   }
   universe = JSON.parse(readFileSync(universeFile, "utf8"));
 }
+/* Belegte Faktorspruenge (quant/config/adjustment-step-evidence.json, nur SPIN_OFF): erklaeren genau ihren Sprung. */
+const STEP_EVIDENCE = loadAdjustmentStepEvidence(root);
 const store = MarketStore.createMarketStore({
   root, providerId: "tiingo", workingDir: WORK_DIR || undefined
 });
@@ -163,8 +168,20 @@ function countField(name, status) {
   c[status] = (c[status] || 0) + 1;
 }
 
+/* Tickerwechsel (ADR-009, 19.11.2026): Ein Nachfolger traegt die Bars seines Vorgaengers vor dem Stichtag, wie Discover-Reihe und
+   Wochenreihe (scripts/market/lib/ticker-succession-bars.mjs). Sonst rechnet der Faktorlauf nur auf den Bars seit dem Wechsel
+   (TXCP: 6 statt 972, insufficient_history) und der Titel fehlt in Faktoren, Discover und Suche. */
+const succ = loadSuccessions(root);
+const successorsJoined = [];
+
 for (const sec of universe.securities) {
-  const payload = store.readBars(sec.securityId, "working");
+  let payload = store.readBars(sec.securityId, "working");
+  const nachfolge = withPredecessor(payload, sec, succ, (e) => store.readBars(e.from, "working"));
+  if (nachfolge.joined) {
+    payload = nachfolge.payload;
+    successorsJoined.push({ ticker: sec.ticker, ...nachfolge.joined });
+    console.log(`  ${sec.ticker}: Nachfolge von ${nachfolge.joined.from}, ${nachfolge.joined.predecessorBars} + ${nachfolge.joined.successorBars || 0} Bars`);
+  }
   if (!payload || !Array.isArray(payload.bars) || !payload.bars.length) {
     skipped.push({ ticker: sec.ticker, reason: "SOURCE_MISSING",
                    message: "Keine Kursreihe in der Arbeitsablage." });
@@ -175,7 +192,7 @@ for (const sec of universe.securities) {
      keine Faktoren. Faktoren auf einer als FAIL beurteilten Reihe waeren
      rechenbar und wertlos - und im Screener nicht von guten zu
      unterscheiden. */
-  const assessment = MarketQuality.assessSeries(payload, { today });
+  const assessment = MarketQuality.assessSeries(payload, { today, explainedSteps: STEP_EVIDENCE.get(sec.securityId) });
   if (assessment.status === "FAIL" || assessment.status === "UNAVAILABLE") {
     skipped.push({ ticker: sec.ticker, reason: assessment.status,
                    message: assessment.statusReason });
@@ -301,14 +318,16 @@ function booleanQuestion(id, label, pick) {
              : null };
 }
 
+/* Ranglisten nur ueber Stammaktien und ADR (quant/engines/ranking-population.js, Steuerung 22.11.2026). */
+const RANKABLE_ROWS = rows.filter((r) => RankingPopulation.isRankable(r.instrumentType));
 function rankedQuestion(id, label, metric, pick, direction) {
-  const ranked = RankingHygiene.rankRows(rows, { metric, pick, direction, limit: RANK_LIMIT });
+  const ranked = RankingHygiene.rankRows(RANKABLE_ROWS, { metric, pick, direction, limit: RANK_LIMIT });
   return { id, label, kind: "ranked", direction,
            metric, evaluated: ranked.evaluated, notEvaluable: ranked.notEvaluable.length,
            quarantined: ranked.quarantined,
            quarantinedCount: ranked.quarantinedCount,
            rankingHygiene: { version: ranked.hygieneVersion, policy: ranked.policy },
-           evaluatedOf: rows.length,
+           evaluatedOf: RANKABLE_ROWS.length, population: { rule: RankingPopulation.VERSION, rankable: RankingPopulation.RANKABLE, notRanked: rows.length - RANKABLE_ROWS.length },
            top: ranked.top,
            notEvaluableSample: ranked.notEvaluable.slice(0, 10) };
 }
@@ -409,7 +428,10 @@ const coverage = {
   skippedByReason: skipped.reduce((acc, s) => {
     acc[s.reason] = (acc[s.reason] || 0) + 1; return acc;
   }, {}),
-  fieldCoverage
+  fieldCoverage,
+  /* Nachfolger, deren Reihe mit der des Vorgaengers verbunden ist (ADR-009). */
+  successorsJoined: successorsJoined.map((j) => ({ ticker: j.ticker, from: j.from, effective: j.effective,
+                                                   predecessorBars: j.predecessorBars, successorBars: j.successorBars }))
 };
 
 /* Die Deckungsbilanz wird IMMER ausgeliefert. Sie ist klein, sie beantwortet

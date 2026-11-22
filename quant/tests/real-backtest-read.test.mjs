@@ -6,9 +6,10 @@ import {tmpdir} from 'node:os';
 import {resolve,join} from 'node:path';
 import {gunzipSync} from 'node:zlib';
 import {execFileSync} from 'node:child_process';
+import { researchSeriesRoot } from "../../scripts/quant/lib/data-fixture.mjs";
 const require=createRequire(import.meta.url),Service=require('../api/product-services.js'),Policy=require('../engines/display-policy.js'),Query=require('../engines/query.js');
 const A=require('../engines/weekly-real-adapter.cjs'),B=require('../engines/weekly-benchmark.cjs'),C=require('../api/real-backtest-contract.js'),{run}=require('../../scripts/quant/run-real-weekly-backtest.cjs'),{materialize}=require('../../scripts/quant/materialize-real-backtest-read.cjs');
-const repo=resolve(import.meta.dirname,'../..'),out=mkdtempSync(join(tmpdir(),'vu-backtest-read-'));
+const repo=researchSeriesRoot(),/* B2c */out=mkdtempSync(join(tmpdir(),'vu-backtest-read-'));
 /* Datenwurzel = Repository, nur die langen Reihen enden am letzten SPY-Tag. SPY (Datenzweig, multi-asset) und die langen
    Reihen (samstags) ziehen zu verschiedenen Zeiten nach; sonst fehlt der Marktvergleich am letzten Bewertungstag und der
    Test haengt am Wochentag statt am Vertrag (Daten loesen Alarm aus). Alles andere ist ein Symlink ins Repository. */
@@ -55,7 +56,9 @@ test('all five periods end on actual final mark and never use same-close signal 
  const api=create(),data=A.load(root,'ref_NVDA');for(const period of C.periods){const r=run(data,{period});assert.equal(r.history.window.endDate,data.points.at(-1)[0]);const s=await api.getRealBacktest('NVDA',{period});assert.equal(s.result.to,data.points.at(-1)[0]);for(const t of r.trades)assert.ok(t.signalDate<t.entryDate);}
 });
 test('every required real edge case returns consistent execution, quality and benchmark dimensions',async()=>{
- const api=create();for(const ticker of ['AAPL','BGC','ANDG','AACT']){for(const section of C.sections){const r=await api.getRealBacktest(ticker,{section});assert.equal(r.state,'BLOCKED',ticker+':'+JSON.stringify(r));assert.equal(r.quality.class,'C');assert.equal(r.result,undefined);assert.equal(r.certification,'NOT_CERTIFIED');assert.equal(r.benchmarkState,'NOT_EVALUATED');}}
+ const api=create();/* AACT: seit Teil B3 (21.11.2026) beendete Notierung ausserhalb des Produktuniversums - Absage ohne Ergebnis statt BLOCKED */
+ for(const section of C.sections){const r=await api.getRealBacktest('AACT',{section});assert.equal(r.state,'UNAVAILABLE','AACT:'+JSON.stringify(r));assert.equal(r.reason,'INVALID_IDENTITY');assert.equal(r.result,undefined);assert.equal(r.certification,'NOT_CERTIFIED');}
+ for(const ticker of ['AAPL','BGC','ANDG']){for(const section of C.sections){const r=await api.getRealBacktest(ticker,{section});assert.equal(r.state,'BLOCKED',ticker+':'+JSON.stringify(r));assert.equal(r.quality.class,'C');assert.equal(r.result,undefined);assert.equal(r.certification,'NOT_CERTIFIED');assert.equal(r.benchmarkState,'NOT_EVALUATED');}}
  for(const ticker of ['XOM','ARM','MSFT']){const r=await api.getRealBacktest(ticker);assert.equal(r.state,'AVAILABLE_LIMITED',ticker+':'+JSON.stringify(r));assert.equal(r.returnBasis,'PRICE_RETURN');assert.ok(r.quality.limitations.includes('DIVIDENDS_EXCLUDED'));assert.equal(r.certification,'NOT_CERTIFIED');assert.ok(r.result.endCapital>0);}
  const xom=await api.getRealBacktest('XOM');assert.equal(xom.benchmarkState,'BENCHMARK_UNAVAILABLE');assert.equal(xom.state,'AVAILABLE_LIMITED');
 });
@@ -82,7 +85,7 @@ test('materializer resumes exact snapshots; rejects corrupted saved summaries an
 });
 
 test('private filesystem store is bounded, cannot expose repository data or traverse paths',async()=>{
- const Store=require('../../server/quant-backtest-store.cjs');assert.throws(()=>Store.create({directory:repo}),/PUBLIC_BACKTEST_STORAGE_FORBIDDEN/);
+ const Store=require('../../server/quant-backtest-store.cjs');assert.throws(()=>Store.create({directory:resolve(import.meta.dirname,'../..')}),/PUBLIC_BACKTEST_STORAGE_FORBIDDEN/);/* das echte Repository, nicht die Spiegelwurzel (B2c) */
  const store=Store.create({directory:out});const release=await store.loadJSON('release.json');assert.equal(release.generation,report.generation);
  await assert.rejects(store.loadJSON('../../etc/passwd'),/INVALID_BACKTEST_PATH/);await assert.rejects(store.loadDetail('release.json'),/INVALID_BACKTEST_PATH/);
  const api=Service.create({loadJSON,displayPolicy:Policy,queryEngine:Query,realBacktestPreview:{enabled:true,audience:'INTERNAL_REVIEW'},realBacktestStore:store});assert.equal((await api.getRealBacktest('NVDA',{section:'equity'})).state,'AVAILABLE_LIMITED');

@@ -317,8 +317,8 @@
       "cik": "0001575793",
       "name": "Energous Corp",
       "sic": "3663",
-      "rawFacts": 10190,
-      "mappedFacts": 3886,
+      "rawFacts": 10191,
+      "mappedFacts": 3887,
       "unmappedFacts": 6683,
       "calendarYears": 13,
       "industry": null,
@@ -453,33 +453,33 @@
         }
       },
       "latestFiling": {
-        "accession": "0001104659-26-126344",
-        "filing_date": "2026-11-12",
-        "form": "10-Q",
-        "periodic_filings": 51,
-        "acceptance_datetime": "2026-11-12T22:15:40.000Z"
+        "accession": "0001104659-26-130226",
+        "filing_date": "2026-11-19",
+        "form": "10-Q/A",
+        "periodic_filings": 52,
+        "acceptance_datetime": "2026-11-19T22:15:27.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.14.0",
-        "formula": "1.2.0",
+        "normalization_logic": "1.15.0",
+        "formula": "1.3.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.7.0"
+          "mapping_version": "1.8.0"
         }
       },
-      "sourceDigest": "08357687d0b63acc8acc33f504a08637273b85102f6ac4a9ea7cddf44a48d4f4",
+      "sourceDigest": "d88256d66a4970df331e2475c43cb565cb65b79ae2274d533749f502cc05b83b",
       "issuerId": "iss_cik_0001575793"
     },
     {
       "cik": "0002019793",
       "name": "XCF Global, Inc.",
       "sic": "2860",
-      "rawFacts": 1233,
-      "mappedFacts": 415,
-      "unmappedFacts": 834,
+      "rawFacts": 1507,
+      "mappedFacts": 515,
+      "unmappedFacts": 1025,
       "calendarYears": 2,
       "industry": null,
       "industryMetrics": {},
@@ -489,9 +489,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 3,
-      "quarterlyPeriods": 11,
+      "quarterlyPeriods": 12,
       "firstPeriodEnd": "2023-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 2.0,
       "metrics": {
         "capital_expenditures": {
@@ -503,7 +503,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 6,
+          "quarterlyPeriods": 7,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
@@ -530,21 +530,21 @@
         },
         "net_income": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 9,
+          "quarterlyPeriods": 10,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0
         },
         "operating_cash_flow": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 8,
+          "quarterlyPeriods": 9,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0
         },
         "revenue": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 5,
+          "quarterlyPeriods": 6,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0
@@ -558,14 +558,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 11,
+          "quarterlyPeriods": 12,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
         },
         "total_assets": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 7,
+          "quarterlyPeriods": 8,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0
@@ -588,46 +588,47 @@
         }
       },
       "quality": {
-        "HIGH": 72,
+        "HIGH": 78,
         "MEDIUM": 2
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 74,
-        "resolvedValues": 74
+        "datableValues": 80,
+        "resolvedValues": 80
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 895,
+        "rules_version": "1.1.0",
+        "total": 1091,
         "by_severity": {
-          "INFO": 834,
-          "WARNING": 61
+          "INFO": 1025,
+          "WARNING": 66
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 15,
-          "RESTATEMENT_CONFLICT": 34,
+          "CONCEPT_DISAGREEMENT": 18,
+          "RESTATEMENT_CONFLICT": 36,
           "UNEXPECTED_DURATION": 12,
-          "UNKNOWN_CONCEPT": 834
+          "UNKNOWN_CONCEPT": 1025
         }
       },
       "latestFiling": {
-        "accession": "0001493152-26-038610",
-        "filing_date": "2026-08-17",
-        "form": "10-Q",
-        "periodic_filings": 7
+        "accession": "0001493152-26-053061",
+        "filing_date": "2026-11-18",
+        "form": "10-Q/A",
+        "periodic_filings": 9,
+        "acceptance_datetime": "2026-11-18T21:05:36.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
-        "formula": "1.2.0",
+        "normalization_logic": "1.15.0",
+        "formula": "1.3.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.8.0"
         }
       },
-      "sourceDigest": "153ce7b73b28f8d3972775aa0764ffb9fbb666af81d37f0f459d81000b76c7a9",
+      "sourceDigest": "10f57f03cf7676551e81525fd3dca49139110a2c191588fc6c0a541b541fadcf",
       "issuerId": "iss_cik_0002019793"
     }
   ]

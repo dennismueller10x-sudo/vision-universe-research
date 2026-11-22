@@ -10,6 +10,7 @@ Reports unter `/reports/` (Abschnitt 8).
 | Erstes Konzept (5 Seiten Magazin, 5 Seiten Aktienreport AMD), eingefroren | `docs/publishing/konzept-2026-11/` |
 | Insights: Artikel, Build, Tests | `products/insights/`, Seiten unter `insights/` und `reports/` |
 | Bildaufträge (Higgsfield) | `brand-media/publishing/` |
+| Marktbriefing (Closing Bell): Konzept, Quellen- und Frischeregeln | Abschnitt 10 |
 
 
 Heft: Stand 09.11.2026, nach dem Umbau gemäß Codex-Prüfung ([Prüfbericht](ausgaben/2026-11-09-nr01/PRUEFBERICHT_CODEX.md)).
@@ -158,6 +159,8 @@ Alles frei lesbar und für Google und KI-Suchen gebaut (statisches HTML, `NewsAr
 3. Daten einfrieren: `node products/insights/snapshot.mjs <artikel.json>`, App-Screens aufnehmen:
    `node products/insights/screens.mjs <artikel.json>` (neue Aktienseite `/aktie/#/<T>` im dunklen Design an drei Stellen: Kurs,
    Analyse aus den Modulen, Das Geschäft; fehlt ein Abschnitt, entfällt die Ansicht, mindestens zwei je Ticker; nach `insights/img/app/`).
+   Diagramme im Text (Owner 18.11.2026): `abschnitte[].diagramm` mit `art` `saeulen` oder `balken`, gebaut als statisches
+   HTML in `products/insights/build.mjs` (`diagramm()`), geprüft in IN-2; der Tageslauf setzt sie, wo Zahlen im Text stehen.
    Die Datenbox im Artikel zeigt nur Kacheln mit Wert; bei jungen Notierungen ohne vier Quartale SEC-Zahlen den Abstand zum
    Hoch seit dem ersten Handelstag und einen Satz, dass Umsatz, Marge und Bewertung noch fehlen (Owner 16.11.2026).
 4. **Bilder mit Bezug statt Symbolbild** (Owner 09.11.2026): offizielles Pressematerial des Unternehmens oder Produkts
@@ -277,3 +280,110 @@ Bereichsseite hat strukturierte Daten; `llms.txt` gibt es nicht.
 **Freischaltung selbst** (Owner-Entscheidung, danach ein PR): weitere Präfixe in `PUBLIC_PREFIXES`
 (`scripts/access-gate/build.mjs`), `robots`-Meta der freigegebenen Seiten auf `index`; IndexNow und Search Console melden
 die neuen Adressen beim nächsten Ausrollen von selbst.
+
+## 10. Marktbriefing (Closing Bell): Konzept
+
+Stand 21.11.2026, Konzept nach einem Muster vom 20.11.2026 (12 Karten 1080×1350, noch nicht im Repo).
+Ziel: nach jedem US-Handelstag ein Briefing aus Grafikkarten, das ohne Handarbeit entsteht und an drei Stellen
+verwertet wird: Seite im News-Bereich, Instagram-Karussell und Reel oder Video (Reel-Pipeline, `docs/studio/README.md`).
+
+**Grundsatz:** Format wie eine Börsensendung, Inhalte aus eigenen Daten und Primärquellen. Kein Thema, keine Zahl und
+keine Grafik wird aus anderen Sendungen, YouTube-Kanälen oder X-Konten übernommen.
+
+**Drei Kartenarten**
+
+| Art | Herkunft | Beispiele aus dem Muster |
+|---|---|---|
+| Markt | eigene Daten (`marketPulse`, Intraday, Movers, Renditen, Rohstoffe, Krypto) | Indizes über ETF-Proxies, Tagesverlauf, Anleihen, größte Anstiege und Rückgänge |
+| Eigene Auswertung | feste Rechenregeln über eigene Zeitreihen und SEC-Daten | Häufung von Tagen mit −5 % seit 2008, Marktbreite, KGV am Hoch gegen heute, Investitionen der Hyperscaler gegen operativen Cashflow (95 % gegen 26 % im Jahr 2015) |
+| Angabe Dritter | Primärquellen oder seriöse Medien, auf das Original zurückverfolgt | Reuters (Nvidia/SEC), BofA-Fondsmanager-Umfrage, CME FedWatch, Konjunkturdaten |
+
+Ziel: mindestens die Hälfte der Karten sind Markt oder eigene Auswertung. Jede Karte trägt oben „Eigene Auswertung“ oder
+„Angabe Dritter“ und unten Quelle mit Datum.
+
+**Quellenregeln**
+- Feste Quellenliste: Notenbanken, Statistikämter, SEC-Filings, Nachrichtenagenturen, öffentliches Research von Herausgebern
+  (FactSet Insight, Check Point und ähnliche); Bank-Research nur über seriöse Medien. Keine YouTuber, keine X-Konten als Quelle.
+- Jede Grafik wird mit unseren Vorlagen neu gezeichnet, nie ein Screenshot.
+- Höchstens zwei Karten je Quelle und Briefing.
+- Eine Zahl, die nur eine einzige Sekundärquelle ohne genannten Datenanbieter nennt, wird nicht verwendet.
+- Darstellung (Owner 22.11.2026): keine Quellenzeile unter Grafiken oder auf Karten; alle Quellen gesammelt am Seitenende
+  unter „Quellen und Hinweise“ (zugeklappt), auf Social in der Caption. Angaben Dritter tragen den Herausgeber im Etikett.
+  Der Anbieter der Kursdaten wird öffentlich nirgends genannt (Test MB-4).
+- Wortwahl nach `docs/legal/WORTWAHL.md`: „Größte Anstiege/Rückgänge“, keine eigene Prognose; Kursziele von Banken nur als
+  Angabe Dritter mit dem Zusatz „keine Prognose von Vision Universe“.
+
+**Frischeregeln (Owner 21.11.2026: tagesaktuell; 2–3 Tage nur für das erste Muster)**
+- Markt und eigene Auswertung: nur aus der jüngsten Handelssitzung. Hängt eine Datenart hinter ihrer Frische in
+  `core/registry/domains.json`, entsteht kein Briefing, sondern ein Alarm.
+- Angabe Dritter: veröffentlicht am Handelstag selbst (bis zum Erzeugen des Briefings); der Zeitraum der Daten steht in
+  der Quellenzeile. Monatliche Berichte (Umfragen, Cyberlage) und Konjunkturdaten laufen genau an ihrem Erscheinungstag.
+- SEC-Fundamentaldaten: jüngste Meldung; ist ein Quartal gemeldet, aber noch nicht bei der SEC, sagt die Karte das.
+- Im Muster fielen schon nach der vorläufigen 3-Tage-Regel drei Karten heraus: FactSet-Bewertung (Stand 05.11.), Goldman-Hedgefondsdaten
+  (bis 06.11.), Check-Point-Ransomware (veröffentlicht 11.11.).
+
+**Tägliche Quellen:** Kurse, Intraday und Movers aus Tiingo (Abendlauf 22:30 UTC), Marktbreite aus dem Faktorlauf
+(gegen 23:40 UTC), Renditen aus US Treasury und Bundesbank, SEC-Fundamentaldaten aus dem täglichen EDGAR-Lauf. Themen
+Dritter liefert ein täglicher Recherchelauf nach US-Handelsschluss, aufgebaut wie der Insights-Tageslauf (Skill
+`insights-tageslauf`): Nachrichtenagenturen, Fed und Statistikämter am Erscheinungstag, Unternehmensmeldungen, Research-Herausgeber.
+
+**Zeitpunkt:** Tagesschlüsse liegen ab 22:30 UTC vor; das Briefing entsteht danach oder morgens als Rückblick. Eine
+Opening Bell zum US-Handelsbeginn braucht schnellere Kursdaten als die heutigen (Intraday stündlich, IEX verzögert).
+
+**Bekannte Lücken:** echte Indexstände (heute ETF-Proxies), Sektor-ETFs für eine Heatmap, VIX, Zahlen- und
+Wirtschaftskalender (FMP-Endpunkte geprüft in `scripts/market/probe-free-sources.mjs`).
+
+**Generator (Stand 21.11.2026)**
+- Engine `products/news/briefing/engine.js` (Kartenregeln, Frische, Prüfung der Themen Dritter), Darstellung
+  `products/news/briefing/render.js` (jede Karte ein SVG 1080×1350), Build `products/news/briefing/build.mjs`, Tests
+  `products/news/tests/marktbriefing.test.mjs`.
+- Lauf: `content.yml` Teil `marktbriefing`, Mo–Fr 23:50 UTC über den Wecker (`core/registry/schedule.json`), intern im
+  Datenzweig (`news/marktbriefing/`, Datenart `marktbriefing`; Research-Seite `/news/marktbriefing/` bleibt `noindex`).
+- Themen Dritter liest der Build aus `news/marktbriefing/radar/<sitzung>.json` (`items[]` mit title, publisher, source,
+  published, url, optional sub, quote, columns, bars, stats; optional `editorial` mit eigenem Titel der Titelkarte).
+  Die Engine verwirft, was nicht vom Handelstag ist, nicht aus der Quellenliste kommt oder keine URL hat.
+- Ausblick (Owner 22.11.2026): `agenda[]` in derselben Radar-Datei, je Termin `date`, `kind` (`zahlen`, `daten`, `notenbank`,
+  `dividende`, `markt`), `label`, optional `time` (deutsche Zeit) und `sub`, Pflicht `source` und `url` (https; Primärquelle
+  bevorzugt: Unternehmen, BEA/BLS/Conference Board, Notenbank). Die Engine nimmt nur Werktage 1 bis 7 Kalendertage nach dem
+  Handelstag, höchstens 4 Tage und 12 Termine; Verworfenes steht mit Grund in `dropped`. Daraus entstehen die letzte Karte
+  „Die nächsten Tage“, die Szene `#ausblick` und der Satz „Als Nächstes: …“ in der Kurzfassung. Ohne `agenda` keine Karte.
+  Termine sind Angaben der Unternehmen und Behörden, keine Erwartung von Vision Universe.
+- Karussell und Video: `node products/news/briefing/export-png.mjs <briefing.json> <ordner>` schreibt die Karten als PNG.
+- Die Investitionskarte erscheint nur, wenn ein Hyperscaler in den letzten 3 Tagen neue Zahlen bei der SEC gemeldet hat.
+
+**Website www.visionuniverse.de/marktbriefing/ (Owner 22.11.2026)**
+- `/marktbriefing/` ist die Produktseite, visuell und allgemein (Owner 22.11.2026: App zuerst, PDF bleibt, wenig Text):
+  Kopf mit einem Fächer echter Handy-Bildschirme der neuesten Ausgabe (`bildschirm-NN.jpg` aus `screens.mjs`; Owner 22.11.2026:
+  kein dunkles Handy-Mockup, es soll wie das Marktbriefing selbst aussehen), darunter ein Story-Block (ein Bildschirm mit
+  durchlaufenden Szenen, Text mit Icons) und ein eigener PDF-Block mit aufklappendem Heft wie bei
+  Magazin und Aktienreport (`.m3` aus `landing/web/site.css`; Titelblatt und Innenseiten `seite-02.png` bis `seite-04.png`
+  aus `pdf.mjs`), schwarzes Zahlenband „Aus Millionen
+  Datenpunkten. Weltweit.“ (6 Mio. Kursdaten, 5.200+ US-Aktien je Börsentag, 5.277 Firmenbilanzen der SEC, 119 Hedgefonds aus
+  13F-Meldungen; gezählt am 22.11.2026, abgerundet) mit Quellenarten, Kartenleiste aller Karten der neuesten Ausgabe, Kapitel als Kacheln, alle Ausgaben. Bilder, PDF und „Neueste Ausgabe“ wechseln mit jeder
+  Veröffentlichung; der Text bleibt allgemein. Banken werden nicht beim Namen genannt (keine Partnerschaft andeuten).
+- Jede Ausgabe steht unter `/marktbriefing/<sitzung>/` im Szenen-Format (eine Aussage je Bildschirm, Kapitelliste am
+  Desktop, Karten als Story) mit eigenem PDF (`marktbriefing-<sitzung>.pdf`), Titelbild, Vorschaubild und Karten-Bildern.
+  Erzeugt von `products/news/briefing/www.js` (`page`, `productPage`); Verhalten `landing/marktbriefing/mb.js`, Stil `mb.css`
+  (CSP der Website: kein Inline-Skript). Kopf, Menü und Fuß kommen aus `landing/news/index.html`.
+- Für Suche und KI-Suche steht alles im HTML: Kurzfassung „Das Wichtigste in Kürze“ (`engine.js#summary`), JSON-LD
+  (`NewsArticle` und `BreadcrumbList` je Ausgabe, `CollectionPage` auf der Produktseite), Sitemap über
+  `landing/scripts/build.mjs` (`marktbriefingPages`).
+- PDF im Stil des Aktienreports (`products/news/briefing/pdf.mjs`): Titelblatt „MARKTBRIEFING“, Zahlen auf einen Blick,
+  Kurzfassung mit Inhalt, je Karte eine Seite, Quellen, Rückseite. Aufwand: ein Chromium-Lauf (rund 2 Minuten mit Installation),
+  rund 1,5 MB je Ausgabe im Repo.
+- Veröffentlichung nur auf Auslösung (Owner 22.11.2026: ob täglich, ist noch offen): `content.yml` Teil `marktbriefing` mit
+  `website=ja` baut Seite, PDF und Bilder und committet `landing/marktbriefing` und den Startseiten-Teaser nach `main`;
+  Cloudflare Pages baut www daraus. Der Zeitplan (Mo–Fr 23:50 UTC) rechnet das Briefing nur intern in den Datenzweig.
+  Seiten und PDF versprechen kein tägliches Erscheinen.
+- Startseiten-Teaser in der Region `<!--MB:teaser-->` (eigene Zeile über den Insights-Kacheln), verlinkt die Produktseite;
+  Menüpunkt „Marktbriefing“ auf allen Seiten.
+- Karten folgen der Hausregel: Plus neongrün, Minus in Schriftfarbe, kein Rot. Icons (Linien, `render.js#ICONS`, eine Quelle
+  für Karten und Seite) stehen an Kurzfassung, Überschriften, Etiketten und Terminen, damit die Szenen weniger nach Text aussehen.
+
+**Ausbau in Ergebnissen (je ein PR)**
+1. Generator für Markt- und eigene Auswertungskarten aus den Repo-Artefakten, mit Frischeprüfung, als Seite im News-Bereich (erledigt, siehe oben).
+2. Themen-Radar für Angaben Dritter: täglicher Rechercheauftrag über die Quellenliste, Prüfung von Datum und Original,
+   Ergebnis als Daten-Datei, die der Generator liest.
+3. Karussell und Reel jeden Abend ins Approval Center (Veröffentlichung nur nach Freigabe, wie bei Reels).
+4. Lücken schließen: Sektor-ETFs, VIX; Ausblick-Termine automatisch aus den Quellen (bisher von Hand recherchiert).
+

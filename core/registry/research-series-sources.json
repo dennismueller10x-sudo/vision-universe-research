@@ -1,0 +1,17 @@
+{
+  "schema": "vu-research-series-sources-1",
+  "decidedBy": "Steuerung 17./21.11.2026 (Teil B): Die Umfangsfolge darf keine Kursreihe loeschen, auf die Forschung verweist. Loeschen bricht bei einem Treffer ab.",
+  "rule": "Jede securityId (ref_...), die in einer der Quellen steht, ist eine Forschungsreihe. Der Loeschschutz (scripts/market/lib/research-series.mjs) rechnet die Menge bei jedem Lauf aus den Quellen neu, damit wachsende Register (Elliott-Ledger) nie veralten. Eine Reihe mit privater Kopie (Teil B2) steht in securedIds und darf gehen.",
+  "guards": ["quant/data/market/discover-series-long/", "quant/data/market/discover-series/"],
+  "sources": [
+    { "path": "docs/quant-recovery/v10/population/population-frame-1.0.0.json", "why": "V10-Population: eingefrorener Rahmen, liest discover-series-long je Listing" },
+    { "path": "docs/quant-recovery/v10/population/lifecycle-cases.json", "why": "V10: Lebenszyklus-Faelle" },
+    { "path": "docs/quant-recovery/v10/population/identity-cases.json", "why": "V10: Identitaets-Faelle" },
+    { "path": "quant/engines/research-listing-lifecycle.cjs", "why": "Lebenszyklus-Register (research-weekly-loader)" },
+    { "path": "quant/engines/research-identity-evidence.cjs", "why": "Identitaets-Register (research-weekly-loader)" },
+    { "path": "quant/engines/research-pit-market-cap-register.cjs", "why": "PIT-Boersenwert-Register" },
+    { "path": "quant/data/technical-intelligence/elliott-registry/ledger.jsonl", "why": "Elliott-Registry: offene Ereignisse laufen auf der Wochenreihe weiter" },
+    { "glob": "quant/tests/*.test.mjs", "mentions": "discover-series-long", "why": "Tests, die Wochenreihen per Pfad lesen (v10-population, elliott-registry, backtest-refresh, real-backtest-read ...)" }
+  ],
+  "securedIds": []
+}

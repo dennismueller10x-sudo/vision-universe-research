@@ -3,8 +3,8 @@
  "engineVersion": "vu-setup-1.0.0",
  "mappingVersion": "setup-mapping-1.0.0",
  "methodologyVersion": "setup-state-v1.0.0",
- "generatedAt": "2026-11-18T05:34:27.000Z",
- "asOf": "2026-11-17",
+ "generatedAt": "2026-11-22T15:34:01.000Z",
+ "asOf": "2026-11-20",
  "approval": {
   "state": "APPROVED",
   "approvedBy": "info@visionuniverse.de",
@@ -323,13 +323,13 @@
    "predicateHash": null
   }
  ],
- "universe": 5654,
- "observed": 5654,
+ "universe": 5451,
+ "observed": 5451,
  "unavailable": 0,
  "stateCounts": {
-  "NO_SETUP": 4584,
-  "WATCH": 566,
-  "SETUP_FORMING": 495,
+  "NO_SETUP": 4648,
+  "WATCH": 454,
+  "SETUP_FORMING": 340,
   "CONFIRMED": 9,
   "ACTIVE": 0,
   "RISK_RISING": 0,
@@ -337,11 +337,11 @@
   "EXIT": 0
  },
  "ruleCounts": {
-  "setup.forming.complete-setup-awaiting-trigger": 495,
-  "setup.none.fallback": 4584,
-  "setup.watch.bullish-trend": 407,
-  "setup.confirmed.structure-trend-volume": 9,
-  "setup.watch.confirmed-structure-near-high": 159
+  "setup.forming.complete-setup-awaiting-trigger": 340,
+  "setup.none.fallback": 4648,
+  "setup.watch.bullish-trend": 337,
+  "setup.watch.confirmed-structure-near-high": 117,
+  "setup.confirmed.structure-trend-volume": 9
  },
  "pathTier": {
   "states": [
@@ -395,14 +395,17 @@
    "2026-11-12",
    "2026-11-13",
    "2026-11-16",
-   "2026-11-17"
+   "2026-11-17",
+   "2026-11-18",
+   "2026-11-19",
+   "2026-11-20"
   ],
   "minimumRequired": 2
  },
  "inputs": {
   "technical": {
    "artifact": "technical-product-artifact-1.0.0",
-   "instruments": 5654
+   "instruments": 5451
   }
  },
  "shards": [
@@ -635,7 +638,6 @@
   "IS",
   "IT",
   "IV",
-  "IW",
   "IX",
   "IZ",
   "JA",
@@ -821,7 +823,6 @@
   "QE",
   "QF",
   "QG",
-  "QH",
   "QL",
   "QM",
   "QN",
@@ -1039,265 +1040,228 @@
   "ZZ",
   "Z_"
  ],
- "observationDrift": null,
+ "observationDrift": {
+  "asOf": "2026-11-20",
+  "publishedHash": "41bcff5e25fea160f28cc4c11ea05397",
+  "recomputedHash": "5ac4c3ab6aab57f59148ffacece078c2",
+  "rowsPublished": 5413,
+  "rowsToday": 5405,
+  "rowsAdded": 0,
+  "rowsChanged": 9,
+  "addedOnly": false,
+  "columnsDiffer": false,
+  "note": "Die veroeffentlichte Beobachtung bleibt unveraendert. Sie wurde an diesem Stichtag veroeffentlicht und wird nicht durch eine heutige Neuberechnung ersetzt - auch nicht durch eine, die nur Zeilen hinzufuegen wuerde."
+ },
  "staleBundles": {
-  "count": 261,
-  "cutoff": "2026-11-17",
+  "count": 46,
+  "cutoff": "2026-11-20",
   "rule": "Bundles mit dataCutoff vor dem Stichtag gehen nicht in die Beobachtung dieses Stichtags ein.",
   "byDataCutoff": {
-   "2026-11-06": 149,
-   "2026-10-23": 6,
-   "2026-11-09": 1,
-   "2026-10-29": 4,
-   "2026-09-29": 5,
-   "2026-09-15": 1,
-   "2026-09-04": 1,
-   "2026-08-28": 1,
-   "2026-09-11": 1,
+   "2026-10-23": 4,
+   "2026-11-19": 11,
+   "2026-11-06": 3,
    "2026-10-22": 1,
-   "2026-10-16": 2,
-   "2026-08-17": 2,
-   "2026-11-13": 3,
-   "2026-09-03": 1,
-   "2026-10-19": 1,
-   "2026-10-14": 1,
+   "2026-11-13": 2,
    "2026-11-04": 1,
-   "2026-11-16": 10,
-   "2026-09-01": 3,
-   "2026-09-18": 3,
-   "2026-09-30": 2,
-   "2026-10-02": 6,
-   "2026-09-23": 2,
-   "2026-08-27": 2,
-   "2026-09-28": 1,
-   "2026-10-01": 4,
+   "2026-11-17": 2,
+   "2026-09-18": 1,
+   "2026-10-29": 3,
    "2026-10-21": 1,
-   "2026-11-03": 1,
-   "2026-09-17": 1,
-   "2026-09-10": 2,
+   "2026-11-18": 2,
+   "2026-10-02": 2,
    "2026-11-02": 1,
-   "2026-08-18": 5,
-   "2026-08-26": 1,
-   "2026-11-11": 1,
+   "2026-11-16": 2,
    "2026-11-10": 1,
-   "2026-09-08": 1,
-   "2026-08-21": 3,
-   "2026-10-09": 1,
-   "2026-10-20": 1,
-   "2026-10-30": 2,
-   "2026-08-19": 1,
-   "2026-08-12": 1,
-   "2026-10-12": 1,
+   "2026-10-30": 1,
    "2026-10-26": 3,
-   "2026-09-09": 1,
-   "2026-10-13": 7,
-   "2026-10-05": 1,
-   "2026-08-25": 2,
-   "2026-09-25": 3,
-   "2026-10-07": 1,
-   "2026-08-20": 3,
-   "2026-09-02": 1
+   "2026-10-13": 3,
+   "2026-09-10": 1,
+   "2026-10-16": 1
   },
   "sample": [
-   {
-    "ticker": "AACT",
-    "dataCutoff": "2026-11-06"
-   },
    {
     "ticker": "ACA",
     "dataCutoff": "2026-10-23"
    },
    {
-    "ticker": "ACHV",
-    "dataCutoff": "2026-11-09"
-   },
-   {
-    "ticker": "ACVA",
-    "dataCutoff": "2026-11-06"
-   },
-   {
-    "ticker": "ADIL",
-    "dataCutoff": "2026-10-29"
-   },
-   {
-    "ticker": "ADVM",
-    "dataCutoff": "2026-11-06"
-   },
-   {
-    "ticker": "AFAR",
-    "dataCutoff": "2026-11-06"
-   },
-   {
-    "ticker": "AFBI",
-    "dataCutoff": "2026-11-06"
-   },
-   {
-    "ticker": "AITR",
-    "dataCutoff": "2026-11-06"
-   },
-   {
-    "ticker": "AIXC",
-    "dataCutoff": "2026-09-29"
-   },
-   {
-    "ticker": "AL",
-    "dataCutoff": "2026-11-06"
-   },
-   {
-    "ticker": "ALE",
-    "dataCutoff": "2026-11-06"
-   },
-   {
-    "ticker": "ALOT",
-    "dataCutoff": "2026-11-06"
-   },
-   {
-    "ticker": "ANSC",
-    "dataCutoff": "2026-11-06"
-   },
-   {
-    "ticker": "ANY",
-    "dataCutoff": "2026-09-15"
-   },
-   {
-    "ticker": "APGE",
-    "dataCutoff": "2026-09-04"
-   },
-   {
-    "ticker": "APLT",
-    "dataCutoff": "2026-11-06"
-   },
-   {
-    "ticker": "ARAV",
-    "dataCutoff": "2026-11-06"
-   },
-   {
-    "ticker": "ARD",
-    "dataCutoff": "2026-11-06"
-   },
-   {
-    "ticker": "AREN",
-    "dataCutoff": "2026-08-28"
+    "ticker": "AMZE",
+    "dataCutoff": "2026-11-19"
    },
    {
     "ticker": "ARI",
     "dataCutoff": "2026-11-06"
    },
    {
-    "ticker": "ASLN",
-    "dataCutoff": "2026-11-06"
-   },
-   {
-    "ticker": "ATAI",
-    "dataCutoff": "2026-09-11"
+    "ticker": "ATCH",
+    "dataCutoff": "2026-11-19"
    },
    {
     "ticker": "ATII",
     "dataCutoff": "2026-10-22"
    },
    {
-    "ticker": "ATKR",
-    "dataCutoff": "2026-10-16"
-   },
-   {
-    "ticker": "AVB",
-    "dataCutoff": "2026-08-17"
-   },
-   {
-    "ticker": "AVGR",
-    "dataCutoff": "2026-11-06"
-   },
-   {
-    "ticker": "AVNS",
-    "dataCutoff": "2026-11-06"
-   },
-   {
-    "ticker": "BGFV",
-    "dataCutoff": "2026-11-06"
-   },
-   {
-    "ticker": "BHAT",
-    "dataCutoff": "2026-11-06"
-   },
-   {
     "ticker": "BKH",
     "dataCutoff": "2026-11-13"
-   },
-   {
-    "ticker": "BLFS",
-    "dataCutoff": "2026-11-06"
-   },
-   {
-    "ticker": "BLFY",
-    "dataCutoff": "2026-11-06"
-   },
-   {
-    "ticker": "BOWN",
-    "dataCutoff": "2026-11-06"
-   },
-   {
-    "ticker": "BSII",
-    "dataCutoff": "2026-11-06"
-   },
-   {
-    "ticker": "BTOG",
-    "dataCutoff": "2026-09-03"
-   },
-   {
-    "ticker": "BWMN",
-    "dataCutoff": "2026-11-06"
-   },
-   {
-    "ticker": "BZH",
-    "dataCutoff": "2026-10-19"
-   },
-   {
-    "ticker": "CALT",
-    "dataCutoff": "2026-11-06"
-   },
-   {
-    "ticker": "CASI",
-    "dataCutoff": "2026-11-06"
-   },
-   {
-    "ticker": "CBZ",
-    "dataCutoff": "2026-11-06"
-   },
-   {
-    "ticker": "CCIX",
-    "dataCutoff": "2026-11-06"
-   },
-   {
-    "ticker": "CCO",
-    "dataCutoff": "2026-10-14"
    },
    {
     "ticker": "CCXI",
     "dataCutoff": "2026-11-04"
    },
    {
-    "ticker": "CEO",
-    "dataCutoff": "2026-11-06"
+    "ticker": "CLGN",
+    "dataCutoff": "2026-11-17"
    },
    {
-    "ticker": "CFFS",
-    "dataCutoff": "2026-11-06"
+    "ticker": "CNO-P-A",
+    "dataCutoff": "2026-11-19"
    },
    {
-    "ticker": "CGBDL",
-    "dataCutoff": "2026-11-06"
+    "ticker": "CSAN",
+    "dataCutoff": "2026-09-18"
    },
    {
-    "ticker": "CHL",
-    "dataCutoff": "2026-11-06"
+    "ticker": "EICA",
+    "dataCutoff": "2026-10-29"
    },
    {
-    "ticker": "CHU",
-    "dataCutoff": "2026-11-06"
+    "ticker": "ELME",
+    "dataCutoff": "2026-10-23"
    },
    {
-    "ticker": "CLRCU",
+    "ticker": "F-P-B",
+    "dataCutoff": "2026-11-19"
+   },
+   {
+    "ticker": "F-P-D",
+    "dataCutoff": "2026-11-19"
+   },
+   {
+    "ticker": "GETY",
+    "dataCutoff": "2026-10-21"
+   },
+   {
+    "ticker": "GL-P-D",
+    "dataCutoff": "2026-11-19"
+   },
+   {
+    "ticker": "GROM",
+    "dataCutoff": "2026-11-18"
+   },
+   {
+    "ticker": "GWH",
+    "dataCutoff": "2026-10-02"
+   },
+   {
+    "ticker": "INDV",
+    "dataCutoff": "2026-11-02"
+   },
+   {
+    "ticker": "ITGR",
     "dataCutoff": "2026-11-16"
+   },
+   {
+    "ticker": "KPTI",
+    "dataCutoff": "2026-11-10"
+   },
+   {
+    "ticker": "LNAI",
+    "dataCutoff": "2026-11-06"
+   },
+   {
+    "ticker": "LXFR",
+    "dataCutoff": "2026-11-18"
+   },
+   {
+    "ticker": "LXP-P-C",
+    "dataCutoff": "2026-10-30"
+   },
+   {
+    "ticker": "MERC",
+    "dataCutoff": "2026-11-19"
+   },
+   {
+    "ticker": "MSGS",
+    "dataCutoff": "2026-10-26"
+   },
+   {
+    "ticker": "NATH",
+    "dataCutoff": "2026-10-26"
+   },
+   {
+    "ticker": "NVNIW",
+    "dataCutoff": "2026-10-13"
+   },
+   {
+    "ticker": "PERF",
+    "dataCutoff": "2026-10-23"
+   },
+   {
+    "ticker": "PHGE",
+    "dataCutoff": "2026-09-10"
+   },
+   {
+    "ticker": "PLCE",
+    "dataCutoff": "2026-11-13"
+   },
+   {
+    "ticker": "PTLE",
+    "dataCutoff": "2026-11-17"
+   },
+   {
+    "ticker": "SCAG",
+    "dataCutoff": "2026-10-29"
+   },
+   {
+    "ticker": "SPKLU",
+    "dataCutoff": "2026-10-13"
+   },
+   {
+    "ticker": "SPKLW",
+    "dataCutoff": "2026-10-13"
+   },
+   {
+    "ticker": "SWKHL",
+    "dataCutoff": "2026-11-06"
+   },
+   {
+    "ticker": "UTZ",
+    "dataCutoff": "2026-11-19"
+   },
+   {
+    "ticker": "UUU",
+    "dataCutoff": "2026-10-16"
+   },
+   {
+    "ticker": "VBNK",
+    "dataCutoff": "2026-11-16"
+   },
+   {
+    "ticker": "WALD",
+    "dataCutoff": "2026-10-02"
+   },
+   {
+    "ticker": "WEAV",
+    "dataCutoff": "2026-10-26"
+   },
+   {
+    "ticker": "WPRT",
+    "dataCutoff": "2026-10-23"
+   },
+   {
+    "ticker": "WRB-P-F",
+    "dataCutoff": "2026-11-19"
+   },
+   {
+    "ticker": "WRB-P-G",
+    "dataCutoff": "2026-11-19"
+   },
+   {
+    "ticker": "WRB-P-H",
+    "dataCutoff": "2026-11-19"
+   },
+   {
+    "ticker": "YHNA",
+    "dataCutoff": "2026-10-29"
    }
   ]
  }

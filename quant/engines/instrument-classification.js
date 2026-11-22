@@ -34,6 +34,7 @@
   "use strict";
 
   var isNode = (typeof module !== "undefined" && module.exports);
+  var Exchanges = isNode ? require("../../core/exchanges.js") : global.VUCore.Exchanges;
 
   var VERSION = "instrument-classification-1.1.2";
 
@@ -55,14 +56,7 @@
   /* Boersen, an denen ein US-Listing plausibel ist. Die Liste entscheidet
      nicht ueber die Gattung, sondern ueber das Land - und darueber, ob
      eine Zeile ohne weitere Angabe ueberhaupt als US-Aktie gelten darf. */
-  var US_EXCHANGES = {
-    "NASDAQ": "US", "NYSE": "US", "NYSE ARCA": "US", "NYSE MKT": "US",
-    "AMEX": "US", "NYSE AMERICAN": "US", "BATS": "US", "IEX": "US",
-    "OTC": "US", "PINK": "US", "OTCMKTS": "US", "NMFQS": "US",
-    "NASDAQ GLOBAL SELECT": "US", "NASDAQ CAPITAL MARKET": "US",
-    "NASDAQ GLOBAL MARKET": "US",
-    "TXSE": "US"   /* Texas Stock Exchange (us-security-master.js, US_PRIMARY_EXCHANGES) */
-  };
+  var US_EXCHANGES = Exchanges.countryTable();   /* core/exchanges.js (Boersenregister) */
 
   /* Ausserboerslich gehandelte Titel sind Aktien - aber sie sind nicht
      dieselbe Datenlage. Der Screener soll sie nicht stillschweigend
@@ -73,11 +67,7 @@
      gezeigt. Ohne sie galten rund 440 ausserboerslich gehandelte Titel
      als regulaer gelistet - kein Fehler mit lauter Wirkung, aber genau
      die Art Unschaerfe, die einen Screener unbrauchbar macht. */
-  var OTC_EXCHANGES = {
-    "OTC": true, "PINK": true, "OTCMKTS": true, "NMFQS": true,
-    "OTCQB": true, "OTCQX": true, "OTCBB": true, "OTCGREY": true,
-    "OTCCE": true, "OTCD": true, "EXPM": true
-  };
+  var OTC_EXCHANGES = Exchanges.otcTable();   /* core/exchanges.js (Boersenregister) */
 
   function norm(v) {
     return v === null || v === undefined ? "" : String(v).trim();

@@ -1,6 +1,6 @@
 {
  "schemaVersion": "evidence-status-1.0.0",
- "generatedAt": "2026-11-18T05:54:47.748Z",
+ "generatedAt": "2026-11-22T15:59:24.640Z",
  "kinds": [
   {
    "id": "HISTORICAL_REPLAY",
@@ -35,22 +35,22 @@
     "outOfSample": "nicht anwendbar - beschreibt, prüft keine Regel"
    },
    "coverage": {
-    "universe": 5654,
-    "covered": 5313,
-    "available": 4467,
+    "universe": 5451,
+    "covered": 5136,
+    "available": 4182,
     "sufficient": {
-     "m1": 2197,
-     "m3": 2131,
-     "m6": 2062,
-     "m12": 1974
+     "m1": 1995,
+     "m3": 1932,
+     "m6": 1864,
+     "m12": 1786
     },
     "broad": {
-     "m6": 836
+     "m6": 671
     },
     "reasons": {
-     "NOT_COVERED": 341,
-     "NO_PRICE_CONDITION_TODAY": 761,
-     "NO_COMPARABLE_CASE": 85
+     "NOT_COVERED": 315,
+     "NO_PRICE_CONDITION_TODAY": 856,
+     "NO_COMPARABLE_CASE": 98
     }
    }
   },
@@ -78,10 +78,10 @@
     }
    },
    "trust": {
-    "sample": 955453,
+    "sample": 931839,
     "period": [
      "1992-01-31",
-     "2026-11-17"
+     "2026-11-20"
     ],
     "costs": {
      "roundTripBps": 20,
@@ -109,14 +109,14 @@
      "id": "HISTORICAL_UNIVERSE",
      "label": "Historische Index-Zugehörigkeit (Point-in-Time)",
      "required": "mindestens 24 Stichtage",
-     "measured": "9 Stichtage",
+     "measured": "10 Stichtage",
      "state": "FAIL"
     },
     {
      "id": "SURVIVORSHIP",
      "label": "Dekotierte Titel mit Kurshistorie, Überlebenden-Kontrolle",
      "required": "Kontrolle aktiv",
-     "measured": "552 Titel mit Historie, Kontrolle nicht aktiv",
+     "measured": "556 Titel mit Historie, Kontrolle nicht aktiv",
      "state": "FAIL"
     },
     {
@@ -130,7 +130,7 @@
      "id": "PIT_FUNDAMENTALS",
      "label": "Fundamentaldaten zeitpunktgenau",
      "required": "datierbar je Wert",
-     "measured": "5035 von 6309 Titeln",
+     "measured": "4965 von 6009 Titeln",
      "state": "PASS"
     },
     {
@@ -169,7 +169,7 @@
      "id": "PIT",
      "label": "Stände unverändert (contentHash)",
      "required": "bestanden",
-     "measured": "36 von 36 geprüft",
+     "measured": "39 von 39 geprüft",
      "state": "PASS"
     },
     {
@@ -183,14 +183,14 @@
      "id": "HISTORYDATES",
      "label": "veröffentlichte Stichtage",
      "required": "120",
-     "measured": "36",
+     "measured": "39",
      "state": "FAIL"
     },
     {
      "id": "HISTORYSPAN",
      "label": "Spanne der Historie",
      "required": "180 Tage",
-     "measured": "68 Tage",
+     "measured": "71 Tage",
      "state": "FAIL"
     },
     {
@@ -263,8 +263,8 @@
     {
      "id": "MOMENTUM_IMPROVED",
      "trust": "LIMITED",
-     "n": 89517,
-     "titles": 5098,
+     "n": 87485,
+     "titles": 4938,
      "displayAllowed": true,
      "failed": [
       "survivorship",
@@ -274,8 +274,8 @@
     {
      "id": "MOMENTUM_DETERIORATED",
      "trust": "LIMITED",
-     "n": 89264,
-     "titles": 5099,
+     "n": 87207,
+     "titles": 4934,
      "displayAllowed": true,
      "failed": [
       "oos",
@@ -287,8 +287,8 @@
     {
      "id": "TREND_UP",
      "trust": "LIMITED",
-     "n": 86677,
-     "titles": 5066,
+     "n": 84747,
+     "titles": 4908,
      "displayAllowed": true,
      "failed": [
       "survivorship",
@@ -298,8 +298,8 @@
     {
      "id": "TREND_DOWN",
      "trust": "LIMITED",
-     "n": 86321,
-     "titles": 5068,
+     "n": 84355,
+     "titles": 4907,
      "displayAllowed": true,
      "failed": [
       "oos",
@@ -312,8 +312,8 @@
     {
      "id": "NEW_52W_HIGH",
      "trust": "LIMITED",
-     "n": 56622,
-     "titles": 4855,
+     "n": 55458,
+     "titles": 4700,
      "displayAllowed": true,
      "failed": [
       "oos",
@@ -337,22 +337,22 @@
    "setupRules": 9
   },
   "HISTORICAL_REPLAY_COVERAGE": {
-   "universe": 5654,
-   "covered": 5313,
-   "available": 4467,
+   "universe": 5451,
+   "covered": 5136,
+   "available": 4182,
    "sufficient": {
-    "m1": 2197,
-    "m3": 2131,
-    "m6": 2062,
-    "m12": 1974
+    "m1": 1995,
+    "m3": 1932,
+    "m6": 1864,
+    "m12": 1786
    },
    "broad": {
-    "m6": 836
+    "m6": 671
    },
    "reasons": {
-    "NOT_COVERED": 341,
-    "NO_PRICE_CONDITION_TODAY": 761,
-    "NO_COMPARABLE_CASE": 85
+    "NOT_COVERED": 315,
+    "NO_PRICE_CONDITION_TODAY": 856,
+    "NO_COMPARABLE_CASE": 98
    }
   }
  }

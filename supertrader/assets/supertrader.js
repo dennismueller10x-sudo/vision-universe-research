@@ -987,7 +987,7 @@
      Seiten, die st-redesign.js im <head> ohne Kennung ankündigen (Start und Aktienseiten, erzeugt von
      scripts/supertrader/build.mjs), laden das Paar st-redesign.js/.css weiter ohne Kennung: der Preload bleibt genutzt,
      beide Dateien stammen aus derselben Anfrage, und keine erzeugte Seite ändert sich. */
-  var ASSET_V = 'st-2026.11.16-1';
+  var ASSET_V = 'st-2026.11.22-2';
   var PAIR_BARE = !!document.querySelector('link[rel="preload"][as="script"][href="' + BASE + 'assets/st-redesign.js"]');
   function stamped(src) {
     if (src.indexOf(BASE + 'assets/') !== 0 || src.indexOf('?') >= 0) return src;

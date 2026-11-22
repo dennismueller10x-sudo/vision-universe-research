@@ -10,6 +10,17 @@ import {writeStockHeadViews} from './stock-head-view.mjs';
 import {writeManifest} from './release-manifest.mjs';
 import {createRequire} from 'node:module';
 const require=createRequire(import.meta.url),Master=require('../../quant/engines/company-master.js'),History=require('../../quant/api/fundamentals-contract.js'),FactorProjection=require('../../quant/engines/factor-product-projection.js');
+/* Kopf der Quant-Startseite fuer den Fruehstart (quant/app/stock-boot.js). Quelle ist pages.js#home (geschuetzt, nur gelesen).
+   Der Kopf darf mit nWordHtml() zusammengesetzt sein (Zahlwort der Eigenschaften, 21.11.2026 repariert: die alte Suche nach einem
+   reinen String fand ihn nicht mehr, der Fruehstart lief im Release nicht). Das Zahlwort steht vorlaeufig als Standard im Platzhalter
+   <span data-nword>; refreshProfileWords() in pages.js setzt den Wert, sobald die Daten da sind. Unbekannte Bausteine: kein Kopf (null). */
+export const QUANT_INTRO_NWORD_DEFAULT='sieben';
+export function quantHomeIntro(pagesSource){
+ const m=String(pagesSource||'').match(/page\.append\(frag\('(<header class="qv3-intro">[\s\S]*?<\/header>)'\)\);/);
+ if(!m)return null;
+ const html=m[1].replace(/' \+ nWordHtml\(\) \+ '/g,'<span data-nword>'+QUANT_INTRO_NWORD_DEFAULT+'</span>');
+ return /'|\+|\(\)/.test(html.replace(/<[^>]*>/g,''))?null:html;
+}
 export const SEC_BUDGET=8*1024*1024;
 const fields=(x,keys)=>Object.fromEntries(keys.filter(k=>Object.hasOwn(x||{},k)).map(k=>[k,x[k]]));
 export function projectInspector(source){
@@ -166,8 +177,8 @@ export async function writeQuantCode({root,output,paths,stockPreload=true}){
   let headSrc=null;
   if(headEnabled){
    headChunks.unshift('globalThis.VUQuantHeadDeliveryEnabled=true;');
-   const homeSource=await readFile(resolve(root,'quant/app/pages.js'),'utf8').catch(()=>''),intro=homeSource.match(/page\.append\(frag\('(<header class="qv3-intro">[^']+<\/header>)'\)\);/);
-   if(intro)headChunks.unshift('globalThis.VUQuantHomeIntro='+JSON.stringify(intro[1])+';');
+   const homeSource=await readFile(resolve(root,'quant/app/pages.js'),'utf8').catch(()=>''),intro=quantHomeIntro(homeSource);
+   if(intro)headChunks.unshift('globalThis.VUQuantHomeIntro='+JSON.stringify(intro)+';');
    const text=headChunks.join('\n;\n');headSrc='/quant/head-bundle.js';await writeFile(resolve(output,headSrc.slice(1)),text);chunks.push('/* early-head '+createHash('sha256').update(text).digest('hex')+' */');}
   const packed={};
   for(const [name,list] of Object.entries(packChunks)){
@@ -266,6 +277,14 @@ export async function buildRelease({root,output}){
    const b=Buffer.from(JSON.stringify(part));if(b.length>CAPABILITY_SHARD_BUDGET)throw Error('CAPABILITY_SHARD_BUDGET_EXCEEDED');
    await writeFile(resolve(output,'quant/data/universe/capability-shards/'+key+'.json'),b);
   }
+ }
+ /* Logo-Urheber (credits.json, 1,8 MB): die Aktienseite braucht einen Eintrag, nicht 4.200. Je shardKey ein Ausschnitt mit den
+    unveraenderten Eintraegen; die volle Datei bleibt daneben (discover/ui/logos.js faellt darauf zurueck). */
+ if(paths.includes('discover/logos/credits.json')){
+  const src=await load('discover/logos/credits.json'),parts={};
+  for(const [sym,entry] of Object.entries(src.credits||{})){const key=Master.shardKey(sym);if(!/^[A-Z0-9_]{1,2}$/.test(key))continue;(parts[key]??={version:src.version,generatedAt:src.generatedAt,shard:key,credits:{}}).credits[sym]=entry;}
+  await mkdir(resolve(output,'discover/logos/credits'),{recursive:true});
+  for(const [key,part] of Object.entries(parts)){const b=Buffer.from(JSON.stringify(part));if(b.length>CAPABILITY_SHARD_BUDGET*2)throw Error('CREDITS_SHARD_BUDGET_EXCEEDED');await writeFile(resolve(output,'discover/logos/credits/'+key+'.json'),b);}
  }
  /* Auslieferungsansichten der Aktienseite (siehe oben). Jeder Schritt liest
     nur Quelldateien des Repositories und schreibt nur in den Release. */
@@ -382,7 +401,7 @@ export async function buildRelease({root,output}){
  try{const {writeEurope}=await import('../../products/screener/producer/build-europe.mjs');screener={...screener,europe:await writeEurope({root,out:resolve(output,'screener/data'),log:()=>{}})};}
  catch(e){screener={...screener,europe:{state:'UNAVAILABLE',reason:String(e&&e.message||e).slice(0,200)}};}
  // Keep inert Discover templates and budgeted view files, concatenate only their dependency runs.
- if(paths.includes('discover/index.html')){const {bundleDiscover}=await import('../mobile/bundle-discover.mjs');await bundleDiscover({root,output});}
+ if(paths.includes('discover/index.html')){const {bundleDiscover}=await import('../mobile/bundle-discover.mjs');await bundleDiscover({root,output});const {writeDiscoverHeroPreview}=await import('../ci/discover-hero-preview.mjs');await writeDiscoverHeroPreview({root,output});}
  const bytes=emitted.reduce((n,f)=>n+f.bytes,0);
  if(bytes>SEC_BUDGET||emitted.some(f=>f.bytes>2*1024*1024))throw Error('SEC_DELIVERY_BUDGET_EXCEEDED');
  const report={schemaVersion:1,sourceCommit:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),storage:'EXISTING_R2_UNCHANGED',secBudget:SEC_BUDGET,secBytes:bytes,files:emitted,excluded:['quant/data/sec/consumer','quant/data/sec/canonical','quant/data/fundamentals'],screener,quantBundle,status:'PASS'};

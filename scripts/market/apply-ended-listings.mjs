@@ -43,6 +43,7 @@ import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 import { loadTickerReuseQuarantine } from "./universe-source.mjs";
 import { countDecisions } from "./apply-exchange-directory.mjs";
+import { loadSuccessions } from "./lib/ticker-succession-bars.mjs";
 
 const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -111,6 +112,47 @@ export function judgeEnded(decision, series, state, evidence, ref, lag) {
   return null;
 }
 
+/**
+ * Regel C (22.11.2026): Fortschreibung. Nach der Bereinigung entfernt die Umfangsfolge die Kursreihen der beendeten
+ * Notierungen (privat gesichert, B2a). Ohne Reihe fehlte Regel A/B der Beleg "Reihe zu Ende", und der Titel kaeme
+ * beim naechsten Lauf zurueck. Ein Titel bleibt deshalb EXCLUDED mit seinem bisherigen Grund, wenn
+ *   - der VORIGE Stand ihn als CONFIRMED_LISTING_ENDED:* fuehrte,
+ *   - es keine Reihe gibt (eine wieder auftauchende Reihe - Neuvergabe des Kuerzels - entscheidet neu nach A/B),
+ *   - und sein Beleg weiter gilt: Stamm INACTIVE (Regel A) bzw. Registereintrag (Regel B).
+ * @returns {null | {next, rule, evidence}}
+ */
+export function judgeCarried(decision, previous, series, state, evidence, succession = null) {
+  if (!decision || decision.product_eligibility === "EXCLUDED" || !previous) return null;
+  const why = String(previous.product_eligibility_reason || "");
+  if (previous.product_eligibility !== "EXCLUDED" || !why.startsWith("CONFIRMED_LISTING_ENDED:")) return null;
+  if (series && Array.isArray(series.points) && series.points.length) return null;
+  const event = why.slice("CONFIRMED_LISTING_ENDED:".length);
+  const stillProven = event === "MASTER_INACTIVE" ? !!(state && !state.active)
+    : event === "SUCCEEDED" ? !!(succession && succession.retirePredecessor !== false)
+    : !!(evidence && evidence.event === event);
+  if (!stillProven) return null;
+  return { rule: "ENDED_LISTING:CARRIED", evidence: { previousReason: why, seriesRemoved: true, master: state ? state.status : null, register: evidence ? evidence.securityId : null },
+    next: { ...decision, product_eligibility: "EXCLUDED", product_eligibility_reason: why,
+      evidence_source: String(decision.evidence_source || "") + "+ENDED_LISTING", review_flags: (decision.review_flags || []).concat(["ENDED_LISTING:CARRIED"]) } };
+}
+
+/**
+ * Regel D (Steuerung 22.11.2026): Kuerzelwechsel. Ein Titel, der im Nachfolgeregister (quant/config/ticker-successions.json,
+ * ADR-009, Beleg 8-K mit gleicher CIK) Vorgaenger ist, verlaesst das Produkt, sobald der Stichtag erreicht ist und sein
+ * Nachfolger im Produkt steht - eine Zeile je Wertpapier, kein haengender Stummel. Die Historie fuehrt ticker-succession
+ * im Nachfolger zusammen. retirePredecessor: false haelt einen Vorgaenger bewusst (z. B. TCBI bis zum Speicherbeleg).
+ * @returns {null | {next, rule, evidence}}
+ */
+export function judgeSucceeded(decision, entry, productIds, ref) {
+  if (!decision || decision.product_eligibility === "EXCLUDED" || !entry || entry.retirePredecessor === false) return null;
+  if (!productIds.has(entry.to) || !ref || entry.effective > ref) return null;
+  const s = entry.source || {};
+  return { rule: "ENDED_LISTING:SUCCEEDED",
+    evidence: { successor: entry.to, successorTicker: entry.toTicker, effective: entry.effective, cik: entry.cik, source: s.type, accession: s.accession || null, referenceSession: ref },
+    next: { ...decision, product_eligibility: "EXCLUDED", product_eligibility_reason: "CONFIRMED_LISTING_ENDED:SUCCEEDED",
+      evidence_source: String(decision.evidence_source || "") + "+ENDED_LISTING", review_flags: (decision.review_flags || []).concat(["ENDED_LISTING:SUCCEEDED"]) } };
+}
+
 /** Neueste Sitzung des Datenbestands: die haeufigste letzte Bar unter allen Reihen, die nicht weiter zurueckliegt als die neueste. */
 export function referenceSession(lastDates) {
   const m = new Map();
@@ -130,9 +172,14 @@ function main() {
   const SERIES = arg("--series-dir", join(root, "quant", "data", "market", "discover-series"));
   const MASTER = arg("--master", join(SM, "us-security-master.json"));
   const EVID = arg("--evidence", join(root, "quant", "config", "listing-ended-evidence.json"));
+  /* voriger Stand fuer Regel C: im Workflow die committete Eignung (der Kandidat liegt in RUNNER_TEMP) */
+  const PREV = arg("--previous", join(SM, "eligibility.json"));
   const calendar = JSON.parse(readFileSync(join(root, "quant", "config", "market-calendar.json"), "utf8"));
 
   const elig = JSON.parse(readFileSync(ELIG, "utf8"));
+  const succession = loadSuccessions(root).map;
+  const productIds = new Set(JSON.parse(readFileSync(PRODUCT, "utf8")).securities.map((x) => x.securityId));
+  const prevById = new Map((existsSync(PREV) ? JSON.parse(readFileSync(PREV, "utf8")).decisions || [] : []).map((d) => [d.securityId, d]));
   const mIdx = Staleness.masterIndex(JSON.parse(readFileSync(MASTER, "utf8")));
   const evidence = indexEvidence(existsSync(EVID) ? JSON.parse(readFileSync(EVID, "utf8")) : null);
   const series = new Map();
@@ -148,7 +195,9 @@ function main() {
   let skippedReuse = 0;
   elig.decisions = elig.decisions.map((d) => {
     if (reuseIds.has(d.securityId)) { skippedReuse++; return d; }
-    const j = judgeEnded(d, series.get(d.securityId), mIdx.byId[d.securityId], evidence.get(d.securityId), ref, lag);
+    const j = judgeEnded(d, series.get(d.securityId), mIdx.byId[d.securityId], evidence.get(d.securityId), ref, lag)
+      || judgeSucceeded(d, succession[d.securityId], productIds, ref)
+      || judgeCarried(d, prevById.get(d.securityId), series.get(d.securityId), mIdx.byId[d.securityId], evidence.get(d.securityId), succession[d.securityId]);
     if (!j) return d;
     if (evidence.has(d.securityId)) usedEvidence.add(d.securityId);
     changes.push({ securityId: d.securityId, ticker: d.ticker, from: { productEligibility: d.product_eligibility, reason: d.product_eligibility_reason },

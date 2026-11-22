@@ -59,9 +59,10 @@ test("EG-5 · Workflow laeuft die vollstaendige Erzeugerkette (Namensschicht DEB
   const wf = readFileSync(join(ROOT, ".github/workflows/security-master-eligibility.yml"), "utf8");
   const a = wf.indexOf("node scripts/market/build-us-eligibility.mjs"), b = wf.indexOf("node scripts/market/apply-name-layer-class.mjs --classes DEBT"), c = wf.indexOf("node scripts/market/apply-exchange-directory.mjs"), g = wf.indexOf("node scripts/core/eligibility-gate.mjs");
   assert.ok(a > 0 && b > a && c > b && g > c, "Reihenfolge Erzeuger -> Namensschicht -> Boersenverzeichnis -> Gate");
-  /* Beendete Notierungen (#2054) sind zurueckgestellt (Steuerung 17.11.2026): der Schritt laeuft nicht, bis die Forschung
-     private Kopien liest. Dieser Test faellt, wenn ihn jemand ohne diese Entscheidung wieder einschaltet. */
-  assert.equal(wf.includes("node scripts/market/apply-ended-listings.mjs"), false, "apply-ended-listings ist zurueckgestellt");
+  /* Beendete Notierungen (#2054): am 17.11.2026 zurueckgestellt, seit Teil B3 (21.11.2026) wieder in der Kette - nach dem
+     Boersenverzeichnis und vor dem Gate. Die Sicherung vor dem Loeschen (B2a) prueft UF-6. */
+  const e = wf.indexOf("node scripts/market/apply-ended-listings.mjs --eligibility \"$E/out/eligibility.json\"");
+  assert.ok(e > c && g > e, "apply-ended-listings laeuft auf dem Probestand zwischen Boersenverzeichnis und Gate");
   assert.match(wf, /IN_APPROVED: \$\{\{ inputs\.approved_catchup \}\}/);
 });
 
