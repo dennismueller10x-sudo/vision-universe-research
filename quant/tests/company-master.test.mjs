@@ -662,3 +662,14 @@ test("HIGH steht nur, wo ein Beleg die Gattung aussagt", () => {
   assert.equal(ohneBasis, 0, ohneBasis + " Instrumente nennen ihren Beleg nicht");
   assert.equal(ohneBeleg, 0, "HIGH_CONFIDENCE_WITHOUT_EVIDENCE = " + ohneBeleg);
 });
+
+test("eine erhaltene CIK behaelt ihre issuerId (Sync 22.11.2026: 144 Instrumente ohne issuerId)", () => {
+  const erst = sync([], [row("ELME")]);
+  const prev = erst.instruments.map((i) => Object.assign({}, i, {
+    cik: "0000104894", cikSource: "sec:company_tickers_exchange",
+    issuerId: Master.issuerIdFromCik("0000104894"), issuerIdSource: "sec:company_tickers_exchange" }));
+  const zweit = sync(prev, [row("ELME")]);
+  const i = zweit.instruments.find((x) => x.symbol === "ELME");
+  assert.equal(i.cik, "0000104894");
+  assert.equal(i.issuerId, Master.issuerIdFromCik("0000104894"));
+});
