@@ -42,8 +42,9 @@ assert(discoverGroup,'Discover-Gruppe fehlt');
 assert.equal(discoverGroup.href,'/discover/#/','Discover bleibt ein eigenstaendiger direkter Produkteinstieg');
 const entries=Array.from(discoverGroup.entries,([label,href])=>label+' '+href);
 assert.deepEqual(entries,[
-  'Übersicht /discover/#/','Welten /discover/#/welten','Strategien /discover/#/strategien','Entdecken /discover/#/einzeln/US_REAL',
-  'Suchen /discover/#/suche','Märkte /discover/#/maerkte','Watchlist /discover/#/watchlist'
+  /* Owner 22.11.2026 (Menü im Kopf): Welten heißen Themen, Entdecken heißt Swipen, „Alle Reihen“ ist ein eigener Bereich. */
+  'Übersicht /discover/#/','Themen /discover/#/welten','Strategien /discover/#/strategien','Swipen /discover/#/einzeln/US_REAL',
+  'Suchen /discover/#/suche','Märkte /discover/#/maerkte','Watchlist /discover/#/watchlist','Alle Reihen /discover/#/reihen'
 ],'Navigation: '+JSON.stringify(entries));
 
 // 4. Der Frontend-Vertrag (Freshness, Source State, Eligibility, Zero Cost).
