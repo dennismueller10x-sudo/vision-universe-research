@@ -2103,6 +2103,15 @@
       "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
     },
     {
+      "file": "scripts/supertrader/tests/seitenhuellen-drift.test.mjs",
+      "kategorie": "schema-vertrag",
+      "liest": [
+        "supertrader/data",
+        "supertrader/stock"
+      ],
+      "grund": "Vertrag Erzeuger gegen Auslieferung (22.11.2026): jede ausgelieferte Aktienseiten-Hülle muss der Vorlage des Erzeugers entsprechen; muss den Live-Stand der Hüllen prüfen, keine festen Datenwerte (Fixture von 1995 Hüllen wäre selbst Drift)."
+    },
+    {
       "file": "scripts/supertrader/tests/sf-completion.test.mjs",
       "kategorie": "schema-vertrag",
       "dynamisch": true,
