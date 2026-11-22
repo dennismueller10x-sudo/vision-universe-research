@@ -31,6 +31,7 @@ TestFlight-Lauf 6 vom 07.11.2026 auf Commit `d871426`. Alles bleibt auf `main` g
 | #1600 (K1) | natives Rand-Wischen vor/zurück auf iOS mit Vorschau und Haptik | `ios/App/App/VUBridgeViewController.swift`, `Main.storyboard`, `www/js/main.js` (Brücke `vuNav`, Haptik) |
 | #1602 (K4, Teil) | kurzer Haptik-Impuls bei langem Drücken | Empfang in `www/js/main.js` aus K1; die Website sendet schon |
 | Strang AA | Eine Anmeldung in der App (Start: erst Sitzung klären, ohne Sitzung native Maske vor dem Laden der Seite, `www/js/start-flow.js`; Abmelden → Maske): die Seite im Rahmen nutzt die native Sitzung (Token-Brücke `vu:token-request`, Bearer statt Cookie, Anmelde-Links → `vu:open`); Build mit `VU_AUTH_TRANSPORT=worker` (E4). Nur mit neuem App-Build wirksam (`www/js/main.js`) | `www/js/main.js`, `konto/account-api.js`, `docs/mobile/SECURITY_LOGIN.md` §3a |
+| Responsiv 22.11.2026 | iPad: native Panels (Konto, Watchlist, Anmeldung) als lesbare Spalte von höchstens 720 px statt über die volle Breite; die Website im Rahmen passt sich ohne Build an (iPad Hochformat bis 900 px, Querformat/Desktop bis 1240 px) | `www/app.css` |
 | #1630 | App startet mit der Willkommensseite `/willkommen/` statt mit Discover; Zurück endet dort | `www/index.html`, `www/js/main.js` |
 
 **Wirkt schon ohne Build** (Website, live nach dem Pages-Deploy; die App lädt sie im Rahmen):

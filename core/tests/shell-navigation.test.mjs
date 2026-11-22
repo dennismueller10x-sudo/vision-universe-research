@@ -314,7 +314,9 @@ test('the dock respects safe areas, keeps touch targets and sits below overlays 
   assert.match(source, /<nav class="tabs" hidden><\/nav><\/header>/, 'Reiterzeile im festen Kopf, direkt unter der Kopfzeile');
   assert.match(source, /html\.setAttribute\('data-vu-tabs',this\.tabsFor\)/);
   // Kopf nach Prototyp: Welten-Wechsler links, KI, Suche, Profil rechts (Owner 16.11.2026: ohne „i“ und Datum)
-  assert.match(styles(THEMES.light), /:host\(\[dock\]\) \.quick,:host\(\[dock\]\) \.toggle\{display:none\}/);
+  // Mit Dock: kein Menue-Knopf; der Direktzugriff erscheint erst ab 1200 px (Desktop-Kopf, Owner 22.11.2026)
+  assert.match(styles(THEMES.light), /:host\(\[dock\]\) \.toggle\{display:none\}/);
+  assert.match(styles(THEMES.light), /@media\(max-width:1199px\)\{:host\(\[dock\]\) \.quick\{display:none\}\}/);
   assert.match(source, /class="world mod" type="button" hidden/);
   assert.match(source, /class="hb search" href="\/discover\/#\/suche"/);
   assert.match(source, /class="hb profile" href="\/mein-dashboard\/"/);
