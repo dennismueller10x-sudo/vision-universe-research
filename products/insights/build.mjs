@@ -124,6 +124,8 @@ const PRUEFVERMERK = {
 const aufmacher = (a) => (a.bild.typ === 'app'
   ? `<figure class="in-bild in-bild--app" aria-label="${esc(a.bild.alt)}">${(a.appScreens?.[a.ticker[0]] || []).map((s) => `<img src="${s.src}" alt="${esc(s.label)}-Ansicht in der Vision-Universe-App" width="390" height="844">`).join('')}<figcaption>Vision-Universe-App</figcaption></figure>`
   : `<figure class="in-bild"><img src="${a.bild.src}" alt="${esc(a.bild.alt)}" width="1600" height="900" fetchpriority="high"><figcaption>${nachweis(a.bild)}</figcaption></figure>`);
+// Firma für www (News-Seite, „Nach Aktien“): aus dem Artikel ("firma"), sonst der Name der ersten Aktie ohne Zusätze.
+const kurzName = (daten, t) => String(daten?.aktien?.[t]?.name || t).replace(/\s*\(.*\)$/, '').replace(/\s+(Class [A-Z]|Inc\.?|Corp\.?|Corporation|Holdings|Ltd\.?|plc|N\.V\.)(\s.*)?$/i, '').trim();
 const bildSrc = (a) => (a.bild.typ === 'app' ? a.appScreens?.[a.ticker[0]]?.[0]?.src : a.bild.src);
 const nachweis = (b) => (b.ki ? 'KI-Bild' : `Bild: ${esc(b.quelle)}`);
 
@@ -409,7 +411,7 @@ export function build() {
     'insights/feed.xml': feed(artikel),
     'insights/sitemap.xml': sitemap(artikel, hefte, reports),
     'insights/magazin/index.html': magazinUebersicht(hefte),
-    'insights/artikel.json': JSON.stringify({ schema: 'vu-insights-1', note: 'Erzeugt von products/insights/build.mjs', artikel: artikel.map(({ slug, datum, rubrik, titel, teaser, ticker, bild }) => ({ slug, datum, rubrik, titel, teaser, ticker, bild: bild.typ === 'app' ? null : bild.src, href: `/insights/${slug}/` })), magazin: hefte.map(({ nr, datum, kw, titel, seiten }) => ({ nr, datum, kw, titel, seiten, cover: `/insights/magazin/nr-${nr}/cover.jpg`, href: `/insights/magazin/nr-${nr}/` })), reports: reports.map(({ datum, art, titel, href }) => ({ datum, art, titel, href })) }, null, 1) + '\n',
+    'insights/artikel.json': JSON.stringify({ schema: 'vu-insights-1', note: 'Erzeugt von products/insights/build.mjs', artikel: artikel.map(({ slug, datum, rubrik, titel, teaser, ticker, firma, themen, bild, daten }) => ({ slug, datum, rubrik, titel, teaser, ticker, firma: firma || { ticker: ticker[0], name: kurzName(daten, ticker[0]) }, themen: themen || [], bild: bild.typ === 'app' ? null : bild.src, href: `/insights/${slug}/` })), magazin: hefte.map(({ nr, datum, kw, titel, seiten }) => ({ nr, datum, kw, titel, seiten, cover: `/insights/magazin/nr-${nr}/cover.jpg`, href: `/insights/magazin/nr-${nr}/` })), reports: reports.map(({ datum, art, titel, href }) => ({ datum, art, titel, href })) }, null, 1) + '\n',
   };
   for (const a of artikel) files[`insights/${a.slug}/index.html`] = artikelSeite(a);
   for (const h of hefte) files[`insights/magazin/nr-${h.nr}/index.html`] = heftSeite(h);

@@ -163,3 +163,26 @@ test('IN-9 · news.js: keine Wortwahl-Verstöße, Tagesbewegung nur über publis
   assert.match(js, /Id\.securityIdForTicker\(t\)/);
   assert.doesNotMatch(js, /["']ref_["']\s*\+/, 'keine eigene Identitätsbildung (ADR-001)');
 });
+
+// Größe eines JPEG aus dem SOF-Kopf (ohne Abhängigkeiten).
+function jpegSize(file) {
+  const b = fs.readFileSync(file);
+  for (let i = 2; i < b.length - 9;) {
+    if (b[i] !== 0xff) { i++; continue; }
+    const m = b[i + 1], len = b.readUInt16BE(i + 2);
+    if (m >= 0xc0 && m <= 0xcf && ![0xc4, 0xc8, 0xcc].includes(m)) return { h: b.readUInt16BE(i + 5), w: b.readUInt16BE(i + 7) };
+    i += 2 + len;
+  }
+  return null;
+}
+test('IN-20 · Aufmacher ab 23.11.2026: 16:9, mindestens 1600 px breit, Themen und Firma für die News-Seite', () => {
+  // News-Seite „Top Shelf“ (Owner 22.11.2026): der Aufmacher füllt die Bühne im Format 16:9; hochkante oder kleine Bilder
+  // wirken dort abgeschnitten oder unscharf. Ältere Artikel bleiben, wie sie sind.
+  for (const a of artikel.filter((x) => x.datum >= '2026-11-23')) {
+    assert.ok(Array.isArray(a.themen) && a.themen.length, `${a.slug}: "themen" fehlt (Themenwelten aus Discover, z. B. „Künstliche Intelligenz“)`);
+    if (a.bild.typ === 'app' || !/\.jpe?g$/i.test(a.bild.src)) continue;
+    const s = jpegSize('.' + a.bild.src);
+    assert.ok(s, `${a.slug}: Bildgröße nicht lesbar`);
+    assert.ok(s.w >= 1600 && Math.abs(s.w / s.h / (16 / 9) - 1) < 0.02, `${a.slug}: Aufmacher ${s.w}×${s.h}, verlangt 16:9 mit mindestens 1600 px Breite`);
+  }
+});
