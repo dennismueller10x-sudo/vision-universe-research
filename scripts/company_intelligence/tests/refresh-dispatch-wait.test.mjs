@@ -89,10 +89,14 @@ const scenarios={
   assert.equal(r.served,true);assert.equal(s.log.dispatch.length,1,'wartender Lauf wird nicht grundlos neu dispatcht');
  },
  async pendingRunAtDeadlineIsCancelledThenSloFails(mod){
+  // Live steht unveraendert die bisherige Generation (Refresh 45065568049, 22.11.2026): keine Regression, kein Rollback (Exit 4)
   const s=sim(mod,{plans:[runPlan([0,'queued'])]});const r=await s.run();
-  assert.equal(r.served,false);assert.equal(r.reason,'PRODUCTION_PUBLICATION_SLO_FAILED');
-  assert.deepEqual(s.log.cancel,[1000],'noch nicht gestarteter eigener Lauf wird vor dem Rollback abgebrochen');
+  assert.equal(r.served,false);assert.equal(r.reason,'NOT_DELIVERED_PRODUCTION_UNCHANGED');assert.equal(r.unchanged,true);assert.equal(r.ownRun,'PENDING_ONLY');
+  assert.deepEqual(s.log.cancel,[1000],'noch nicht gestarteter eigener Lauf wird weiter abgebrochen');
   assert.ok(s.clock()>=s.deadlines.waitDeadlineMs,'nie vor Fristende');
+  // Live steht weder die neue noch die bisherige Generation: unklarer Zustand, wie bisher Fehler (Rollback im Workflow)
+  const o=sim(mod,{plans:[runPlan([0,'queued'])],otherAtMin:5});const ro=await o.run();
+  assert.equal(ro.reason,'PRODUCTION_PUBLICATION_SLO_FAILED');assert.equal(ro.unchanged,undefined);assert.deepEqual(o.log.cancel,[1000]);
  },
  async runningRunGetsGraceAndIsNeverCancelled(mod){
   // jobStart = T0-70 min -> Wartefrist T0+5, harte Frist T0+15 (Live-QA-Frist T0+20)
@@ -265,7 +269,8 @@ const mutants={
  'Vorher-Menge je Dispatch neu gebildet (spaeter Lauf #1 geht verloren)':s=>s.replace('if(known===null){','if(true){'),
  'kein Status-Recheck vor dem Abbruch':s=>s.replace("if(!r||!PENDING.has(r.status)){note('cancel-skipped',{id,status:r?.status??'unknown'});return;}",""),
  'Erscheinungsfrist wird ignoriert':s=>s.replace("t-dispatchedAt>=limits.appearMs","t-dispatchedAt>=0"),
- 'unveraendert-Ausnahme auch ohne eigenen erfolgreichen Lauf':s=>s.replace("verdict!=='SUCCESS'||",""),
+ 'unveraendert-Ausnahme auch ohne eigenen erfolgreichen Lauf':s=>s.replace("(verdict!=='SUCCESS'&&verdict!=='PENDING_ONLY')||",""),
+ 'nur wartender eigener Lauf bei unveraenderter Produktion rollt zurueck (alter Stand)':s=>s.replace("if(j.verdict==='PENDING_ONLY'&&await productionUnchanged('PENDING_ONLY'))return","if(false)return"),
  'unveraendert-Ausnahme ohne Vergleich mit der bisherigen Generation':s=>s.replace("return (await current())===baseline;","return true;")
 };
 for(const [name,mutate] of Object.entries(mutants)){
