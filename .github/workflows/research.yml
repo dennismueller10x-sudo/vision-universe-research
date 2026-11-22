@@ -57,7 +57,7 @@ on:
         required: false
         default: portfolios
         type: choice
-        options: [portfolios, holdout-quant, ema-cluster-dev, ema-cluster-archive, ema-cluster-complete, backtest2-smoke, backtest2, backtest2-survivors]
+        options: [portfolios, holdout-quant, ema-cluster-dev, ema-cluster-archive, ema-cluster-complete, backtest2-smoke, backtest2, backtest2-survivors, merkmale-smoke, merkmale]
       ema_archive_metadata: {description: 'EMA-Archiv/Vervollstaendigung: Pruefsummen und verschluesselte Dateischluessel, keine Klartextschluessel', required: false, default: '', type: string}
       reviewer_public_key_b64: {description: 'portfolio: Nur holdout-quant: oeffentlicher RSA-Schluessel (PEM, base64 in einer Zeile) der Steuerung', required: false, default: '', type: string}
       phase: {description: 'labor: dev, test oder holdout', required: false, default: dev}
@@ -259,7 +259,7 @@ jobs:
             printf '%s' "$REVIEWER_B64" | base64 -d > "$RUNNER_TEMP/holdout/reviewer.pem"
             openssl pkey -pubin -in "$RUNNER_TEMP/holdout/reviewer.pem" -noout || { echo "REVIEWER_KEY_NOT_A_PUBLIC_KEY"; exit 2; }
           fi
-          case "${IN_MODE:-}" in ema-cluster-dev|ema-cluster-archive|ema-cluster-complete|backtest2-smoke|backtest2|backtest2-survivors) m="$IN_MODE";; esac
+          case "${IN_MODE:-}" in ema-cluster-dev|ema-cluster-archive|ema-cluster-complete|backtest2-smoke|backtest2|backtest2-survivors|merkmale-smoke|merkmale) m="$IN_MODE";; esac
           echo "mode=${m:-portfolios}" >> "$GITHUB_OUTPUT"
           echo "Modus: ${m:-portfolios}"
 
@@ -429,8 +429,23 @@ jobs:
             --out "$RUNNER_TEMP/backtest2/upload" --workers "$(nproc)" $smoke
           rm -rf "$RUNNER_TEMP/priv" "$RUNNER_TEMP/canonical-history"
 
+      # Backtest 2.0, Stufe 2: Merkmals-Studie auf eigenen Daten (PIT-Fundamentaldaten aus dem Schritt oben). Nur Artefakt.
+      - name: Merkmals-Studie rechnen (Ergebnis nur als Artefakt)
+        if: startsWith(steps.m.outputs.mode, 'merkmale')
+        env:
+          MODE: ${{ steps.m.outputs.mode }}
+        run: |
+          set -euo pipefail
+          node --test scripts/research/backtest2/merkmale.test.mjs
+          mkdir -p "$RUNNER_TEMP/backtest2/upload"
+          smoke=""; if [ "$MODE" = "merkmale-smoke" ]; then smoke="--smoke"; fi
+          node --max-old-space-size=12288 scripts/research/backtest2/merkmale.mjs \
+            --work-dir "$RUNNER_TEMP/canonical-history" --delisted-dir "$DELISTED_DIR" --delisted-raw-dir "$DELISTED_RAW_DIR" \
+            --fundamentals "$RUNNER_TEMP/pit-fundamentals" --out "$RUNNER_TEMP/backtest2/upload" $smoke
+          rm -rf "$RUNNER_TEMP/priv" "$RUNNER_TEMP/canonical-history"
+
       - uses: actions/upload-artifact@v4
-        if: startsWith(steps.m.outputs.mode, 'backtest2')
+        if: startsWith(steps.m.outputs.mode, 'backtest2') || startsWith(steps.m.outputs.mode, 'merkmale')
         with:
           name: ${{ steps.m.outputs.mode }}-${{ github.run_id }}
           path: ${{ runner.temp }}/backtest2/upload
@@ -510,7 +525,7 @@ jobs:
           rm -rf "$RUNNER_TEMP/priv" "$RUNNER_TEMP/canonical-history"
 
       - name: E3-Phase rechnen (Protokoll eingefroren, Hash geprueft)
-        if: steps.m.outputs.mode != 'portfolios' && steps.m.outputs.mode != 'holdout-quant' && !startsWith(steps.m.outputs.mode, 'ema-cluster-') && !startsWith(steps.m.outputs.mode, 'edge2') && !startsWith(steps.m.outputs.mode, 'backtest2')
+        if: steps.m.outputs.mode != 'portfolios' && steps.m.outputs.mode != 'holdout-quant' && !startsWith(steps.m.outputs.mode, 'ema-cluster-') && !startsWith(steps.m.outputs.mode, 'edge2') && !startsWith(steps.m.outputs.mode, 'backtest2') && !startsWith(steps.m.outputs.mode, 'merkmale')
         env:
           PHASE: ${{ steps.m.outputs.mode }}
         run: |
@@ -523,7 +538,7 @@ jobs:
           rm -rf "$RUNNER_TEMP/priv" "$RUNNER_TEMP/canonical-history"
 
       - name: Tests und Datenhygiene
-        if: ${{ !startsWith(steps.m.outputs.mode, 'ema-cluster-') && !startsWith(steps.m.outputs.mode, 'backtest2') }}
+        if: ${{ !startsWith(steps.m.outputs.mode, 'ema-cluster-') && !startsWith(steps.m.outputs.mode, 'backtest2') && !startsWith(steps.m.outputs.mode, 'merkmale') }}
         run: |
           node --test quant/tests/portfolio-standard.test.mjs quant/tests/model-portfolios-result.test.mjs workers/vu-account/tests/backtests.test.mjs
           # Der Hygiene-Check scannt das ganze Repository. Fundstellen ausserhalb der eigenen Ausgabepfade bestehen schon auf main
@@ -536,7 +551,7 @@ jobs:
           fi
 
       - name: Ergebnis auf den aktuellen Zweig committen
-        if: steps.m.outputs.mode != 'holdout-quant' && !startsWith(steps.m.outputs.mode, 'ema-cluster-') && !startsWith(steps.m.outputs.mode, 'backtest2')
+        if: steps.m.outputs.mode != 'holdout-quant' && !startsWith(steps.m.outputs.mode, 'ema-cluster-') && !startsWith(steps.m.outputs.mode, 'backtest2') && !startsWith(steps.m.outputs.mode, 'merkmale')
         env:
           MODE: ${{ steps.m.outputs.mode }}
         run: |
