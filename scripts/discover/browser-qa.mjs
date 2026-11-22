@@ -80,7 +80,7 @@ async function premiumMobileAudit(page,key){
     („Weiter ansehen“ nur mit angesehenen Aktien, davor), dann wie im Prototyp „Wie steht die Börse?“ und „Alle N Reihen“. Die uebrigen Reihen
     der Startseite folgen danach in der Reihenfolge von Reihen.homePlan. Nur Weiss, Schwarz, Neongruen und Graustufen (kein Rot, kein Gruen). */
  await page.waitForFunction(()=>document.querySelector('.dr-sec--top10 .dr-poster'),null,{timeout:15000}).catch(()=>{});
- const top=await page.evaluate(()=>Array.from(document.querySelectorAll('.v2-journey > :not(h1)')).map(n=>n.classList.contains('dr-bb')?'billboard':n.classList.contains('dr-sec--recent')?'recent':n.classList.contains('dr-sec--top10')?'top10':n.classList.contains('dr-sec--themes')?'themes':n.classList.contains('dp-moves')?'moves':n.dataset.row||n.className).filter(x=>x!=='recent').slice(0,7));
+ const top=await page.evaluate(()=>Array.from(document.querySelectorAll('.v2-journey > :not(h1)')).map(n=>n.classList.contains('dr-bb')?'billboard':n.classList.contains('dr-sec--recent')?'recent':n.classList.contains('dr-sec--top10')?'top10':n.classList.contains('dr-sec--themes')?'themes':n.classList.contains('dp-moves')?'moves':n.dataset.row||n.className).filter(x=>x!=='recent').slice(0,6));
  /* Owner 22.11.2026 (Menü im Kopf): keine Reiter im Inhalt mehr; nach der Aktie des Tages folgen direkt die Blöcke. */assert.deepEqual(top,['billboard','top10','themes','new-52-week-highs','moves','langfristige-compounder'],'n-home: oben die Aktie des Tages, dann die Bloecke des Prototyps: '+top.join(' | '));
  const order=await page.locator('.v2-journey > section .dr-head h2').allTextContents();
  const proto=order.filter(t=>t!=='Weiter ansehen').slice(0,5);
@@ -165,7 +165,7 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
   // Menue (Mockup N3): Raster der Produkte, darunter die Unterseiten der aktuellen Welt.
   const destinations=await nav.locator('.here-links a').evaluateAll(nodes=>nodes.map(n=>({label:n.textContent.trim(),href:n.getAttribute('href')})));
   assert.deepEqual(destinations.map(x=>x.label),['Übersicht','Themen','Strategien','Swipen','Suchen','Märkte','Watchlist','Alle Reihen']);
-  assert.deepEqual(destinations.map(x=>x.href),['/discover/#/','/discover/#/welten','/discover/#/strategien','/discover/#/einzeln/US_REAL','/discover/#/suche','/discover/#/maerkte','/discover/#/watchlist']);
+  assert.deepEqual(destinations.map(x=>x.href),['/discover/#/','/discover/#/welten','/discover/#/strategien','/discover/#/einzeln/US_REAL','/discover/#/suche','/discover/#/maerkte','/discover/#/watchlist','/discover/#/reihen']);
   assert.equal(await nav.locator('.tile[data-group="discover"]').getAttribute('href'),'/discover/#/');
   assert.equal(await nav.locator('a[href="/discover-v2/"]').count(),0);
   /* Gemeinsame Shell (Redesign C01): links die Welt (Discover), rechts „i“, Datenstand, Suche und Mein Bereich (atlas = rechtester Knopf); das
