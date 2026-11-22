@@ -68,3 +68,35 @@ test("TI-6 · Fixtures tragen ihren Quell-Commit (README neben den Daten)", () =
     assert.match(readFileSync(join(ROOT, d, "README.md"), "utf8"), /@ [0-9a-f]{7,}/, d);
   }
 });
+
+test("TI-7 · kein neuer fester Live-Wert: Kuerzel/Datum in Erwartungen eines Live-Lesers duerfen nicht mehr werden", () => {
+  /* Anlass 22.11.2026: main war mehrfach rot, weil Tests, die Produktionsdaten lesen, ein festes Kuerzel (IBN, APGE, ANT, AACT, MEMY)
+     oder einen Zaehler (6308) erwarteten und ein Datenlauf den Titel oder die Zahl aenderte. Jeder Eintrag der Allowlist traegt seine Basis
+     (`harteWerte`, erzeugt mit `node scripts/quality/test-inputs.mjs --baseline`). Sie darf nur sinken. Wer ein neues Kuerzel braucht,
+     friert die Eingabe ein (Muster scripts/quant/lib/data-fixture.mjs, #2122) oder wartet nach der Halbstand-Regel
+     (scripts/quant/lib/follow-artifact.mjs). Ausdrueckliche Live-Pruefungen im Monitor tragen in den ersten 40 Zeilen `LIVE-PRUEFUNG: Monitor`. */
+  const zuviel = [];
+  for (const r of rows) {
+    if (!r.reads || r.liveCheck) continue;
+    const e = allowed.get(r.file);
+    if (!e) continue; // TI-1 meldet den fehlenden Eintrag
+    if (!Number.isInteger(e.harteWerte)) zuviel.push(`${r.file}: harteWerte fehlt (node scripts/quality/test-inputs.mjs --baseline)`);
+    else if (r.harte > e.harteWerte) zuviel.push(`${r.file}: ${r.harte} feste Werte, Basis ${e.harteWerte}`);
+  }
+  assert.deepEqual(zuviel, [], "Feste Kuerzel/Daten in Erwartungen eines Tests, der Live-Daten liest. Fixture statt Live-Stand oder Halbstand-Regel (siehe oben).");
+});
+
+test("TI-8 · der Zaehler erkennt feste Kuerzel in Erwartungen und nimmt Woerter und Monitor-Pruefungen aus", () => {
+  const root = mkdtempSync(join(tmpdir(), "ti8-"));
+  mkdirSync(join(root, "core/tests"), { recursive: true });
+  const put = (n, s) => { writeFileSync(join(root, "core/tests", n), s); return "core/tests/" + n; };
+  const kopf = 'import {readFileSync} from "node:fs";\nconst j = JSON.parse(readFileSync(join(ROOT, "quant/data/x.json")));\n';
+  const a = scanFile(root, put("a.test.mjs", kopf + 'assert.equal(j.rows.find((r) => r.ticker === "NVDA").x, 1);\nassert.equal(j.status, "PASS");\n'));
+  assert.equal(a.harte, 1, "NVDA zaehlt, PASS nicht");
+  const b = scanFile(root, put("b.test.mjs", kopf + 'assert.deepEqual(j.top, ["IBN", "APGE"]);\nassert.equal(j.asOf, "2026-11-20");\n'));
+  assert.equal(b.harte, 3);
+  const c = scanFile(root, put("c.test.mjs", "// LIVE-PRUEFUNG: Monitor\n" + kopf + 'assert.ok(j.rows.some((r) => r.ticker === "NVDA"));\n'));
+  assert.equal(c.liveCheck, true);
+  const d = scanFile(root, put("d.test.mjs", kopf + 'const t = "NVDA"; // Hilfsvariable ausserhalb einer Erwartung\n'));
+  assert.equal(d.harte, 0);
+});
