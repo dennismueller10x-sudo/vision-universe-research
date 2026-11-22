@@ -59,25 +59,6 @@ export function readState() {
 const link = (href) => RESEARCH + href;
 const img = (R, name, alt = "", extra = "") => name ? `<img src="${R}web/img/news/${name}" alt="${esc(alt)}"${extra}>` : "";
 
-function heftCard(R, h, id = "") {
-  const pages = h.pages.map((p, i) => `<span class="pg p${i + 1}">${img(R, p)}</span>`).join("");
-  return `<a class="magf"${id ? ` id="${id}"` : ""} href="${R}magazin/"><div class="mtext"><span class="k">Aktienmagazin · Nr. ${esc(h.nr)} · KW ${esc(h.kw)}</span>`
-    + `<h3>${esc(h.titel)}</h3><p>Das Wochenheft: ${esc(h.seiten)} Seiten, jede Woche neu. Bald in der App.</p>`
-    + `<span class="btn"><span>Vorschau ansehen</span><span class="dot">${ARROW}</span></span></div>`
-    + `<div class="m3" aria-hidden="true">${pages}<span class="cv">${img(R, h.cover)}<i class="shine"></i></span></div></a>`;
-}
-function reportCard(R, r, id = "") {
-  if (!r) return "";
-  const toc = r.inhalt.map(([p, , t]) => `<li><b>S. ${esc(p)}</b>${esc(t)}</li>`).join("");
-  const pages = r.pages.map((p, i) => `<span class="pg p${i + 1}">${img(R, p)}</span>`).join("");
-  return `<a class="magf repv"${id ? ` id="${id}"` : ""} href="${R}report/"><div class="mtext"><span class="k">${esc(r.art)} · Nr. ${esc(r.nr)}${r.seiten ? ` · ${esc(r.seiten)} Seiten` : ""}</span>`
-    + `<h3>${esc(r.titel)}</h3>${toc ? `<ol class="toc">${toc}</ol>` : ""}`
-    + `<span class="btn"><span>Vorschau ansehen</span><span class="dot">${ARROW}</span></span></div>`
-    + `<div class="m3" aria-hidden="true">${pages}<span class="cv">${img(R, r.cover)}<i class="shine"></i></span></div></a>`;
-}
-const lead = (R, a) => `<a class="lead-n" href="${link(a.href)}">${img(R, a.img)}<span class="nmeta"><span class="pill up">${esc(a.rubrik)}</span><span>${dmy(a.datum)}</span></span><h3>${esc(a.titel)}</h3><p>${esc(a.teaser)}</p></a>`;
-const box = (R, a, teaser = false) => `<a class="box" href="${link(a.href)}">${a.img ? `<img class="pic" src="${R}web/img/news/${a.img}" alt="" loading="lazy">` : ""}<span class="k">${esc(a.rubrik)} · ${dmy(a.datum)}</span><h3>${esc(a.titel)}</h3>${teaser ? `<p class="mute">${esc(a.teaser)}</p>` : ""}</a>`;
-const stand = (a) => `<p class="nstand"><span class="live"><i aria-hidden="true"></i>Stand ${dmy(a.datum)}</span></p>`;
 
 const ICON_APPLE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M16.4 12.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.5.9s-1.8-.8-3-.8C7 7.4 5.6 8.3 4.8 9.7c-1.6 2.8-.4 6.9 1.2 9.1.8 1.1 1.7 2.3 2.8 2.3 1.1 0 1.6-.7 2.9-.7s1.7.7 2.9.7c1.2 0 2-1.1 2.7-2.2.9-1.3 1.2-2.5 1.2-2.6 0 0-2.3-.9-2.1-3.7zM14.2 5.8c.6-.7 1-1.7.9-2.7-.9 0-1.9.6-2.6 1.3-.6.6-1.1 1.6-.9 2.6 1 .1 2-.5 2.6-1.2z"/></svg>';
 const ICON_ANDROID = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M17.6 9.5l1.7-2.9a.4.4 0 0 0-.7-.4l-1.7 3a10.6 10.6 0 0 0-9.8 0l-1.7-3a.4.4 0 0 0-.7.4l1.7 2.9A9.6 9.6 0 0 0 2 17.2h20a9.6 9.6 0 0 0-4.4-7.7zM7.4 14.4a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm9.2 0a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/></svg>';
@@ -118,14 +99,41 @@ export function regions(state) {
     + `<div class="vw-bbtn"><a class="p" href="${link(a0.href)}">▶ Jetzt lesen</a><a class="s" href="${all}">Alle News</a></div></div></div>`
     + `<div class="vw-rows"><div class="vw-row"><div class="vw-rh w"><h3>Neu bei Vision Universe</h3><span class="vw-rh-r"><a href="${all}">Alle News</a><span class="vw-arr"><button type="button" aria-label="Zurück">‹</button><button type="button" aria-label="Weiter">›</button></span></span></div>`
     + `<div class="vw-track">${artikel.slice(1, 15).map((x) => vwCard(R, x)).join("")}</div></div></div>`;
-  // News-Seite (Owner 18.11.2026): eine Kachel je Zeile, nach Tagen gruppiert, das Neueste oben.
-  const DAYS = ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"];
-  const MONTHS = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"];
-  const dayName = (iso) => { const d = new Date(iso + "T12:00:00Z"); return `${DAYS[d.getUTCDay()]}, ${d.getUTCDate()}. ${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}`; };
-  const row = (R, x) => `<a class="nrow" href="${link(x.href)}">${x.img ? `<img src="${R}web/img/news/${x.img}" alt="" loading="lazy">` : "<span class=\"noimg\"></span>"}<span class="nr-t"><small>${esc(x.rubrik)}</small><b>${esc(x.titel)}</b><span class="nr-p">${esc(x.teaser)}</span></span></a>`;
-  const byDay = (R) => { const days = []; for (const x of artikel) { const last = days[days.length - 1]; if (last && last.d === x.datum) last.a.push(x); else days.push({ d: x.datum, a: [x] }); }
-    return days.map((g) => `<div class="nday"><h2>${dayName(g.d)}</h2><div class="nrows">${g.a.map((x) => row(R, x)).join("")}</div></div>`).join(""); };
-  const grid = (R, n, ids) => `<div class="newsgrid">${lead(R, a0)}${heftCard(R, heft, ids ? "magazin" : "")}${reportCard(R, report, ids ? "report" : "")}<div class="n3">${artikel.slice(1, 1 + n).map((x) => box(R, x)).join("")}</div></div>`;
+  // News-Seite „Top Shelf“ (Owner 22.11.2026, nach Apple TV): oben die fünf neuesten Artikel zum Wischen, darunter alle
+  // weiteren nach Datum, dann „Nach Aktien“ und „Nach Themen“ (Felder firma/themen der Artikel) und Magazin/Report.
+  // Bilder füllen ihren Rahmen im Format 16:9; Artikelbilder sind 16:9 mit mindestens 1600 px (products/insights/tests).
+  const topShelf = (R) => {
+    const pic = (x, lazy = true) => x.img ? `<img src="${R}web/img/news/${x.img}" alt=""${lazy ? ' loading="lazy"' : ""}>` : '<span class="ts-noimg"></span>';
+    const meta = (x) => `${dmy(x.datum)} · ${esc(x.rubrik)}`;
+    const card = (x) => `<a class="ts-c" data-tk="${esc(x.firma?.ticker || "")}" data-th="${esc((x.themen || []).join("|"))}" href="${link(x.href)}"><span class="ts-im">${pic(x)}</span><small>${meta(x)}</small><b>${esc(x.titel)}</b></a>`;
+    const arrows = '<span class="ts-arr"><button type="button" aria-label="Zurück">‹</button><button type="button" aria-label="Weiter">›</button></span>';
+    const shelf = (id, h, inner, cls = "") => `<section class="ts-shelf${cls}"${id ? ` id="${id}"` : ""}><div class="w ts-sh"><h2>${h} <span aria-hidden="true">›</span></h2>${arrows}</div><div class="ts-track">${inner}</div></section>`;
+    const hero = artikel.slice(0, 5), rest = artikel.slice(5);
+    const slides = hero.map((x, i) => `<div class="ts-sl${i ? "" : " on"}"${i ? ' aria-hidden="true"' : ""}><div class="ts-art">${pic(x, i > 0)}</div><div class="ts-tx"><div class="w"><div>`
+      + `<p class="ts-k">${esc(x.rubrik)} · ${dmy(x.datum)}</p><h2>${esc(x.titel)}</h2><p class="ts-p">${esc(x.teaser)}</p>`
+      + `<div class="ts-btns"><a class="ts-b1" href="${link(x.href)}"${i ? ' tabindex="-1"' : ""}>▶ Jetzt lesen</a><a class="ts-b2" href="#neueste"${i ? ' tabindex="-1"' : ""}>Alle Artikel</a></div></div></div></div></div>`).join("");
+    const dots = hero.map((x, i) => `<button type="button" aria-label="Artikel ${i + 1} von ${hero.length}"><i></i></button>`).join("");
+    const count = (keyOf) => { const m = new Map(); for (const x of artikel) for (const k of keyOf(x)) m.set(k, (m.get(k) || 0) + 1); return m; };
+    const fc = count((x) => (x.firma ? [x.firma.ticker] : [])), names = new Map(artikel.filter((x) => x.firma).map((x) => [x.firma.ticker, x.firma.name]));
+    const firms = [...fc.keys()].sort((a, b) => fc.get(b) - fc.get(a) || names.get(a).localeCompare(names.get(b), "de"));
+    const tc = count((x) => x.themen || []), themes = [...tc.keys()].filter((t) => tc.get(t) >= 2).sort((a, b) => tc.get(b) - tc.get(a) || a.localeCompare(b, "de"));
+    const n = (k) => `${k} Artikel`;
+    const longest = (s) => Math.max(...s.split(/\s+/).map((w) => w.length));
+    const fsize = (s) => Math.min(14, Math.floor(130 / Math.max(6, longest(s))));
+    const firmItems = firms.map((t) => `<button class="ts-f" type="button" data-k="${esc(t)}"><span style="font-size:${fsize(names.get(t))}px">${esc(names.get(t))}</span><small>${n(fc.get(t))}</small></button>`).join("");
+    const themeItems = themes.map((t) => `<button class="ts-t" type="button" data-k="${esc(t)}"><b>${esc(t)}</b><small>${n(tc.get(t))}</small></button>`).join("");
+    const all = artikel.map(card).join("");
+    const pick = (kind, h, items, label) => `<section class="ts-shelf ts-pick" data-kind="${kind}"><div class="w ts-sh"><h2>${h} <span aria-hidden="true">›</span></h2></div>`
+      + `<div class="ts-track ts-chips">${items}</div><div class="w ts-sh ts-ph"><h3>${label}</h3>${arrows}</div><div class="ts-track ts-res">${all}</div></section>`;
+    const pub = (href, cover, k, t) => cover ? `<a class="ts-p2" href="${R}${href}"><span class="ts-im">${img(R, cover, "", ' loading="lazy"')}</span><small>${k}</small><b>${esc(t)}</b></a>` : "";
+    const pubs = pub("magazin/", heft.cover, `Aktienmagazin · KW ${esc(heft.kw)}`, heft.titel) + (report ? pub("report/", report.cover, "Aktienreport", report.titel) : "");
+    return `<section class="ts-hero" aria-roledescription="Karussell" aria-label="Die neuesten Artikel">${slides}<div class="ts-dots"><div class="w">${dots}</div></div></section>`
+      + shelf("neueste", "Neueste Artikel", rest.map(card).join(""))
+      + (firms.length ? pick("tk", "Nach Aktien", firmItems, "Artikel zur Aktie") : "")
+      + (themes.length ? pick("th", "Nach Themen", themeItems, "Artikel zum Thema") : "")
+      + shelf("", "Zum Durchblättern", pubs, " ts-pubs")
+      + `<p class="w ts-stand">Stand ${dmy(a0.datum)} · ${artikel.length} Artikel</p>`;
+  };
   return {
     "index.html": { pubs: pubs("./"), tv: tv("./") },
     "magazin/index.html": { page: preview("../", { kicker: `Aktienmagazin · Nr. ${heft.nr} · KW ${heft.kw}`, h1: "Das <mark>Aktienmagazin.</mark>",
@@ -140,7 +148,7 @@ export function regions(state) {
       titel: report.titel, unterzeile: report.unterzeile, cover: report.cover, coverAlt: "den ganzen Report", pages: report.preview, inhalt: report.alles }) } } : {}),
     // News-Seite (Owner 17.11.2026): nur Artikel; Magazin und Aktienreports haben eigene Seiten im Menü.
     // Großer gestalteter Kopf steht fest in news/index.html (kein Tagesbild oben); hier nur die Artikel als kleine Kacheln.
-    "news/index.html": { tv: tv("../", "#archiv"), page: `<section class="full nfirst" id="archiv" data-ch>${stand(a0)}${byDay("../")}</section>` }
+    "news/index.html": { page: topShelf("../") }
   };
 }
 

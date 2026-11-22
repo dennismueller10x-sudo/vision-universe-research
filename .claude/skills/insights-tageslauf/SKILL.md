@@ -73,6 +73,12 @@ den Stand nennen („Schlusskurs vom …“) und die nächsten Termine. Grundlag
    Standort oder Rechenzentrum. Zuschnitt 16:9 auf 1600 × 900 nach `insights/img/<slug>-<motiv>.jpg`, freigestellte
    Produktbilder auf Weiß, mit `"quelle"` (Firmenname). Jedes Bild vor dem Einbau ansehen: Es muss zum Artikel passen,
    nicht nur zur Branche.
+   Der Aufmacher muss 16:9 mit mindestens 1600 px Breite sein (Test IN-20): Er füllt auf www die News-Bühne; hochkante
+   oder kleine Bilder wirken dort abgeschnitten oder unscharf.
+   **Themen und Firma (www-News, „Nach Aktien“ / „Nach Themen“).** `"themen"`: ein bis zwei Themenwelten aus Discover
+   (`themes[].title` in `discover/data/stocks/US_REAL/<TICKER>.json`, in normaler Schreibweise, z. B. „Halbleiter & Chips“),
+   die zum Artikel passen, nicht alle der Aktie. `"firma"` nur, wenn die Hauptfirma nicht der erste Ticker ist
+   (z. B. Anthropic: `{"ticker": "ANT", "name": "Anthropic"}`); sonst nimmt der Bau den Namen der ersten Aktie.
 7. **Bauen und prüfen.** `node products/insights/build.mjs`, dann
    `node --test "products/insights/tests/*.test.mjs" "core/tests/*.test.mjs"`. Jede Quellenadresse einmal abrufen; tote
    Adressen ersetzen. Die Artikelseite im Browser ansehen (Desktop und 390 px): keine leeren Bilder, kein Überlauf.

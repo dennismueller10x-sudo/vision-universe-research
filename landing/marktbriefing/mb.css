@@ -33,7 +33,8 @@ html:has(.mb){scroll-snap-type:y proximity;scroll-padding-top:var(--mb-head)}
 .mb-claim{margin:0;font-size:clamp(34px,5.2vw,72px);font-weight:900;letter-spacing:-.05em;line-height:.98;text-wrap:balance;max-width:17ch}
 .mb-claim.mb-h1{font-size:clamp(46px,7.6vw,112px);max-width:12ch}
 .mb-claim.mb-m{font-size:clamp(28px,3.6vw,52px)}
-.mb-huge{font-size:clamp(96px,16vw,210px);font-weight:900;letter-spacing:-.07em;line-height:.84;font-variant-numeric:tabular-nums;white-space:nowrap}
+.mb-huge{font-size:clamp(96px,16vw,210px);font-weight:900;letter-spacing:-.07em;line-height:.84;font-variant-numeric:tabular-nums;white-space:nowrap;padding-bottom:.22em}
+/* Komma und Unterlängen der großen Zahl ragen sonst in die Zeile darunter (Owner 22.11.2026) */
 .mb-duo .mb-huge{font-size:clamp(72px,8vw,128px)}
 .mb-arrow{opacity:.35}
 .mb-num{font-size:clamp(64px,10vw,140px)}
@@ -152,8 +153,6 @@ html:has(.mb){scroll-snap-type:y proximity;scroll-padding-top:var(--mb-head)}
 .mb-back:hover{color:#000}
 /* Produktseite /marktbriefing/ (Bausteine aus site.css wie Magazin und Aktienreport) */
 .mbcov{display:block;text-decoration:none;width:100%}
-.mbpdf{margin:14px 0 0;font-size:15px;font-weight:700;color:var(--mb-mute)}
-.mbpdf a{color:#000;text-decoration:underline;text-decoration-color:var(--mb-lime);text-decoration-thickness:3px}
 .pvp.mbp img{width:100%;height:auto;aspect-ratio:4/5;object-fit:cover;display:block;filter:none;transform:none;pointer-events:auto}
 .pvp.mbp::after{display:none}
 .pvp.mbp figcaption{position:static;padding:10px 0 0;text-align:left;color:#000;background:#fff}
@@ -271,3 +270,32 @@ html:has(.mb){scroll-snap-type:y proximity;scroll-padding-top:var(--mb-head)}
 .mbpdf .mbpdfbtn{background:#000;color:#fff;text-decoration:none}.mbpdf .mbpdfbtn b{background:var(--mb-lime);color:#000}
 @media(max-width:820px){.mbpdf{grid-template-columns:1fr}.m3.pvm.mbfan{height:360px}.m3.pvm.mbfan .pg,.m3.pvm.mbfan .cv{width:210px;margin:-148px 0 0 -105px}}
 @media(max-width:820px){.m3.pvm.mbfan{transform:translateX(-26px)}}
+
+/* Kopf: echte Bildschirme der Ausgabe als Fächer (Owner 22.11.2026: kein dunkles Handy-Mockup) */
+.mbstack{position:relative;width:100%;max-width:520px;height:560px;margin:0 auto}
+.mbstack img{position:absolute;left:50%;top:50%;width:240px;height:auto;aspect-ratio:390/844;margin:-260px 0 0 -120px;border-radius:30px;object-fit:cover;
+  box-shadow:0 34px 60px -26px rgba(0,0,0,.5),0 0 0 1px rgba(0,0,0,.1);transition:transform .6s cubic-bezier(.2,.8,.2,1)}
+.mbstack .f{z-index:3;animation:mbff 7s ease-in-out infinite}
+.mbstack .b1{z-index:1;transform:translateX(-118px) translateY(18px) rotate(-7deg) scale(.88);animation:mbfl 7s ease-in-out infinite}
+.mbstack .b2{z-index:2;transform:translateX(118px) translateY(18px) rotate(7deg) scale(.88);animation:mbfr 7s ease-in-out infinite}
+@keyframes mbff{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes mbfl{0%,100%{transform:translateX(-96px) translateY(22px) rotate(-5deg) scale(.88)}50%{transform:translateX(-128px) translateY(14px) rotate(-8deg) scale(.88)}}
+@keyframes mbfr{0%,100%{transform:translateX(96px) translateY(22px) rotate(5deg) scale(.88)}50%{transform:translateX(128px) translateY(14px) rotate(8deg) scale(.88)}}
+.mbcov:hover .mbstack img{animation-play-state:paused}
+@media(prefers-reduced-motion:reduce){.mbstack img{animation:none}}
+@media(max-width:600px){.mbstack{height:400px}.mbstack img{width:168px;margin:-182px 0 0 -84px;border-radius:22px}
+  @keyframes mbfl{0%,100%{transform:translateX(-62px) translateY(16px) rotate(-5deg) scale(.88)}50%{transform:translateX(-80px) translateY(12px) rotate(-8deg) scale(.88)}}
+  @keyframes mbfr{0%,100%{transform:translateX(62px) translateY(16px) rotate(5deg) scale(.88)}50%{transform:translateX(80px) translateY(12px) rotate(8deg) scale(.88)}}}
+.mbstage{min-height:0;padding:8px 0}
+/* Story-Block wie der PDF-Block: Text links, ein Bildschirm mit durchlaufenden Szenen rechts */
+.mbstory{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.mbstory .btn{margin-top:4px}
+.mbstory-art a{display:grid;justify-items:center;gap:16px;text-decoration:none}
+.mbscr{position:relative;width:min(270px,68vw);aspect-ratio:390/844;border-radius:34px;overflow:hidden;background:#fff;box-shadow:0 34px 60px -26px rgba(0,0,0,.5),0 0 0 6px #000}
+.mbscr .mbshot{top:0;height:100%;object-fit:cover;transform:none}
+.mbstory .mbbars{position:static;width:min(200px,50vw);gap:6px}
+.mbstory .mbbars i{height:4px;background:rgba(0,0,0,.14)}
+.mbstory .mbbars i::after{background:#000}
+@media(max-width:820px){.mbstory{grid-template-columns:1fr}}
+.mbpdf .btn,.mbpdf a.mbpdfbtn,.mbpdf-art a{color:#fff;text-decoration:none}
+.mbpdf+.mbpdf{margin-top:18px}

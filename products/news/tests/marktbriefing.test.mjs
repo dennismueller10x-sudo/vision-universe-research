@@ -236,19 +236,21 @@ test('MB-12 Produktseite /marktbriefing/: wie Magazin und Report, führt zur Aus
   const b = Engine.buildBriefing(inputs());
   const parts = { dot: '<span class="dot"><svg></svg></span>', soon: '<p class="soon">Bald in der App verfügbar</p>', stores: '<div class="stores"><p class="cap">x</p></div>' };
   const html = Www.productPage(b, { chrome: Www.chromeFrom(CHROME), parts, archive: [SESSION, '2026-11-19'], pdf: 'marktbriefing-2026-11-20.pdf',
-    img: { story0: 'vorschau.png', cover: 'titel.png', pages: ['seite-02.png', 'seite-03.png', 'seite-04.png'], cards: [{ file: 'karte-03.png', anchor: 'einordnung', title: 'T', kicker: 'Einordnung' }] } });
+    img: { story0: 'vorschau.png', cover: 'titel.png', pages: ['seite-02.png', 'seite-03.png', 'seite-04.png'], screens: ['bildschirm-01.jpg', 'bildschirm-02.jpg', 'bildschirm-03.jpg', 'bildschirm-04.jpg'], cards: [{ file: 'karte-03.png', anchor: 'einordnung', title: 'T', kicker: 'Einordnung' }] } });
   assert.match(html, /<h1>Das <mark>Marktbriefing\.<\/mark><\/h1>/);
   assert.match(html, /<a class="btn" href="2026-11-20\/"><span>Neueste Ausgabe ansehen<\/span>/);
   assert.match(html, /<a class="mbpdfbtn" href="2026-11-20\/marktbriefing-2026-11-20\.pdf" download>/);
   // App zuerst und PDF bleibt: Bühne mit PDF-Titelblatt und Handy mit durchlaufenden Story-Karten.
   // Handy und PDF als eigene Blöcke (Owner 22.11.2026): Bühne nur mit dem Handy, PDF als aufklappendes Heft wie beim Magazin.
-  assert.match(html, /<div class="mbstage"><div class="mbphone"/);
+  // Owner 22.11.2026: kein dunkles Handy-Mockup; echte Bildschirme der Ausgabe als Fächer im Kopf und im Story-Block.
+  assert.match(html, /<div class="mbstage"><div class="mbstack"[^>]*><img class="b1" src="2026-11-20\/bildschirm-02\.jpg"[^>]*><img class="b2" src="2026-11-20\/bildschirm-04\.jpg"[^>]*><img class="f" src="2026-11-20\/bildschirm-01\.jpg"/);
+  assert.ok(!/mbphone/.test(html), 'mit Bildschirmen kein Handy-Mockup');
+  assert.match(html, /<section class="full mbpdf mbstory">[\s\S]*Der Börsentag als <mark>Story\.<\/mark>[\s\S]*<div class="mbscr"[^>]*><img class="mbshot s0" src="2026-11-20\/bildschirm-02\.jpg"/);
   assert.match(html, /<section class="full mbpdf">[\s\S]*<div class="m3 pvm mbfan"[^>]*><span class="pg p1"><img src="2026-11-20\/seite-04\.png"[\s\S]*<span class="cv"><img src="2026-11-20\/titel\.png"/);
-  assert.match(html, /<div class="mbphone"[^>]*><div class="mbscreen">/);
   // Zahlenband zu Datenmenge und Quellen, Kartenleiste aus der neuesten Ausgabe.
   assert.match(html, /<section class="mbband">[\s\S]*Aus Millionen Datenpunkten/);
   assert.match(html, /<a class="mbcard" href="2026-11-20\/#einordnung">/);
-  assert.equal((html.match(/<img class="mbshot s\d"/g) || []).length, 2);
+  assert.equal((html.match(/<img class="mbshot s\d"/g) || []).length, 4);
   // Allgemein: die Ausgabe erscheint nur im Link „Neueste Ausgabe“, nicht in Überschriften oder im Inhalt.
   assert.equal((html.match(new RegExp(b.cards[0].title, 'g')) || []).length, 1);
   assert.match(html, /<link rel="canonical" href="https:\/\/www\.visionuniverse\.de\/marktbriefing\/">/);
@@ -259,6 +261,7 @@ test('MB-12 Produktseite /marktbriefing/: wie Magazin und Report, führt zur Aus
   for (const m of html.matchAll(/<script(?![^>]*\bsrc=)([^>]*)>/g)) assert.match(m[1], /type="application\/(ld\+)?json"/);
   assert.ok(!/<style[\s>]/.test(html));
   assert.ok(!/jeden Börsentag|täglich/i.test(html), 'kein Versprechen eines täglichen Erscheinens');
+  assert.ok(!/class="soon"|Bald in der App verfügbar/.test(html), 'läuft schon im Browser, kein „Bald in der App verfügbar“');
 });
 
 test('MB-13 Ausblick: nur kommende Handelstage mit Quelle, Karte, Szene und Kurzfassung', () => {
