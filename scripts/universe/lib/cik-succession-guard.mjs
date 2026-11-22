@@ -56,7 +56,18 @@ export function guardNewIssuerAttachments({ byTicker, previous, productTickers, 
     if (!row || !row.cik || row.status !== "RESOLVED") continue;
     if (prevCik(t) === row.cik) continue;
     const others = Array.from(holders.get(row.cik) || []).filter((o) => o !== t).sort();
-    if (!others.length) continue;
+    if (!others.length) {
+      /* CIK-Wechsel eines Produktkuerzels (z. B. Holding-Umgruendung, BIP, NAVI 22.11.2026): ohne Registereintrag
+         bleibt die bisherige CIK und damit die issuerId (Profil, News, Finanzdaten haengen daran). */
+      const kept0 = prevCik(t);
+      if (!kept0) continue;
+      const reg0 = (successions || []).find((e) => String(e.toTicker || "").toUpperCase() === t &&
+        String(e.cik || "").padStart(10, "0") === row.cik);
+      if (reg0) { registered.push({ ticker: t, cik: row.cik, predecessor: String(reg0.fromTicker).toUpperCase(), effective: reg0.effective || null }); continue; }
+      pending.push({ ticker: t, cik: row.cik, heldBy: [], keptCik: kept0, cikChange: true });
+      byTicker.set(t, Object.assign({}, row, { cik: kept0, status: PENDING, candidates: [row.cik], heldBy: [] }));
+      continue;
+    }
     const entry = (successions || []).find((e) =>
       String(e.toTicker || "").toUpperCase() === t &&
       others.includes(String(e.fromTicker || "").toUpperCase()) &&
@@ -74,6 +85,17 @@ export function guardNewIssuerAttachments({ byTicker, previous, productTickers, 
     byTicker.set(t, Object.assign({}, row, {
       cik: kept, status: PENDING, candidates: [row.cik], heldBy: others
     }));
+  }
+  /* CIK-Wechsel ausserhalb des Produkts (z. B. Vorzug JSM neben NAVI): dieselbe Regel, sonst wechselt die
+     issuerId der Klasse, waehrend die Stammaktie die alte behaelt. */
+  for (const [t, row] of byTicker) {
+    if (product.has(t) || !row || !row.cik || row.status !== "RESOLVED") continue;
+    const kept = prevCik(t);
+    if (!kept || kept === row.cik) continue;
+    if ((successions || []).some((e) => String(e.toTicker || "").toUpperCase() === t &&
+        String(e.cik || "").padStart(10, "0") === row.cik)) continue;
+    pending.push({ ticker: t, cik: row.cik, heldBy: [], keptCik: kept, cikChange: true });
+    byTicker.set(t, Object.assign({}, row, { cik: kept, status: PENDING, candidates: [row.cik], heldBy: [] }));
   }
   return { checked: true, pending, registered };
 }

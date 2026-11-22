@@ -10,7 +10,7 @@
 //   node products/news/briefing/build.mjs --www <landing-ordner>  schreibt zusätzlich die Seite für www.visionuniverse.de:
 //        <landing>/marktbriefing/index.html (Produktseite) und <landing>/marktbriefing/<sitzung>/index.html (Ausgabe);
 //        Kopf, Menü und Fuß aus <landing>/news/index.html. Mit --pdf zusätzlich PDF, Titelbild und Karten als Bilder im
-//        Ordner der Ausgabe (Playwright nötig).
+//        Ordner der Ausgabe, dazu echte Handy-Bildschirme der Ausgabe (bildschirm-NN.jpg, screens.mjs; Playwright nötig).
 //
 // Ist das Briefing nicht frisch (engine: fresh.ok = false), wird nichts geschrieben; Exit-Code 3 mit Begründung.
 import fs from 'node:fs';
@@ -100,12 +100,18 @@ export async function writeWww(briefing, landingDir, { pdf = false } = {}) {
   const archive = fs.readdirSync(dir).filter((f) => /^\d{4}-\d{2}-\d{2}$/.test(f) && fs.existsSync(path.join(dir, f, 'index.html')) || f === briefing.session).sort().reverse();
   put(briefing.session + '/index.html', Www.page(briefing, { chrome, archive, depth: 2, pdf: havePdf ? pdfName : null,
     image: has('vorschau.png') ? '/marktbriefing/' + briefing.session + '/vorschau.png' : null }));
+  // Echte Handy-Bildschirme der Ausgabe für die Produktseite (nur mit Playwright, wie PDF).
+  if (pdf) {
+    try { const { writeScreens } = await import('./screens.mjs'); files.push(...await writeScreens(path.join(ed, 'index.html'), ed)); }
+    catch (e) { console.error('Bildschirme übersprungen: ' + e.message); }
+  }
   if (briefing.session === archive[0]) {
     const cards = peekIdx.map((i) => ({ file: 'karte-' + String(i + 1).padStart(2, '0') + '.png', anchor: ANCHOR[briefing.cards[i].id] || 'start',
       title: briefing.cards[i].title, kicker: briefing.cards[i].kicker })).filter((c) => has(c.file));
     put('index.html', Www.productPage(briefing, { chrome, parts, archive, pdf: havePdf ? pdfName : null,
       img: { story0: has('vorschau.png') ? 'vorschau.png' : null, cover: has('titel.png') ? 'titel.png' : null, cards,
-        pages: ['seite-02.png', 'seite-03.png', 'seite-04.png'].filter(has) } }));
+        pages: ['seite-02.png', 'seite-03.png', 'seite-04.png'].filter(has),
+        screens: ['bildschirm-01.jpg', 'bildschirm-02.jpg', 'bildschirm-03.jpg', 'bildschirm-04.jpg'].filter(has) } }));
     const home = path.join(landingDir, 'index.html');
     if (fs.existsSync(home)) { const before = fs.readFileSync(home, 'utf8'), after = Www.withTeaser(before, briefing); if (after !== before) { fs.writeFileSync(home, after); files.push(home); } }
   }
