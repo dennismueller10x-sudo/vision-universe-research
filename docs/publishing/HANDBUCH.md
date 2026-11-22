@@ -346,9 +346,10 @@ Wirtschaftskalender (FMP-Endpunkte geprüft in `scripts/market/probe-free-source
 - Die Investitionskarte erscheint nur, wenn ein Hyperscaler in den letzten 3 Tagen neue Zahlen bei der SEC gemeldet hat.
 
 **Website www.visionuniverse.de/marktbriefing/ (Owner 22.11.2026)**
-- `/marktbriefing/` ist die Produktseite wie Magazin und Aktienreport (Bausteine aus `landing/report/index.html`): Titelblatt
-  des PDF und zwei Karten als Stapel, „Was ist das?“, „Ein Blick hinein“ (drei Karten, scharf), „Das steht drin“, frühere
-  Ausgaben, „Bald auch in der App“. Knopf „Aktuelle Ausgabe ansehen“ führt zur Ausgabe.
+- `/marktbriefing/` ist die Produktseite wie Magazin und Aktienreport, allgemein gehalten (Owner 22.11.2026: App zuerst,
+  nicht auf eine Ausgabe zugeschnitten): Handy mit durchlaufenden Story-Karten (reines CSS), „Was ist das?“, „So funktioniert
+  es“, „Ein Blick hinein“, feste Kapitel des Formats, alle Ausgaben, „Bald auch in der App“. Von der Ausgabe kommen nur die
+  Bilder und der Link „Neueste Ausgabe“ samt PDF; beides wechselt mit jeder Veröffentlichung.
 - Jede Ausgabe steht unter `/marktbriefing/<sitzung>/` im Szenen-Format (eine Aussage je Bildschirm, Kapitelliste am
   Desktop, Karten als Story) mit eigenem PDF (`marktbriefing-<sitzung>.pdf`), Titelbild, Vorschaubild und Karten-Bildern.
   Erzeugt von `products/news/briefing/www.js` (`page`, `productPage`); Verhalten `landing/marktbriefing/mb.js`, Stil `mb.css`

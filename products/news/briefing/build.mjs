@@ -103,7 +103,7 @@ export async function writeWww(briefing, landingDir, { pdf = false } = {}) {
     const cards = peekIdx.map((i) => ({ file: 'karte-' + String(i + 1).padStart(2, '0') + '.png', anchor: briefing.cards[i].id === 'context' ? 'einordnung' : briefing.cards[i].id === 'breadth' ? 'marktbreite' : 'bewertung',
       title: briefing.cards[i].title, kicker: briefing.cards[i].kicker })).filter((c) => has(c.file));
     put('index.html', Www.productPage(briefing, { chrome, parts, archive, pdf: havePdf ? pdfName : null,
-      img: { cover: has('titel.png') ? 'titel.png' : null, p1: cards[0] ? cards[0].file : null, p2: cards[1] ? cards[1].file : null, cards } }));
+      img: { story0: has('vorschau.png') ? 'vorschau.png' : null, cards } }));
     const home = path.join(landingDir, 'index.html');
     if (fs.existsSync(home)) { const before = fs.readFileSync(home, 'utf8'), after = Www.withTeaser(before, briefing); if (after !== before) { fs.writeFileSync(home, after); files.push(home); } }
   }

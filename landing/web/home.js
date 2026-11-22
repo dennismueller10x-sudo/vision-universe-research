@@ -33,7 +33,7 @@
     pan = document.createElement("div"); pan.className = "vw-pan";
     pan.innerHTML = '<div class="pi"><button class="px" type="button" aria-label="Schließen">×</button><div class="slot"></div>' +
       (shot ? '<div class="side" aria-hidden="true"><div class="fh-ph"><img src="' + shot.getAttribute("src") + '" alt=""></div></div>' : "") + "</div>";
-    $(".slot", pan).appendChild(sec); moved = sec;
+    $(".slot", pan).appendChild(sec); moved = sec; sec.classList.add("play");
     var bottom = t.offsetTop + t.offsetHeight - 4, last = t, n = t.nextElementSibling;
     while (n && n.classList.contains("vw-tile") && n.offsetTop < bottom) { last = n; n = n.nextElementSibling; }
     last.after(pan);
