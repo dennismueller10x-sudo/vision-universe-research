@@ -146,3 +146,18 @@ html:has(.mb){scroll-snap-type:y proximity;scroll-padding-top:var(--mb-head)}
 @media(max-width:1000px){:root{--mb-nav:0px}.mb{display:block}.mb-nav{display:none}.mb-bars{left:16px}.mb-duo{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:600px){.mb-st{grid-template-columns:7.4em minmax(0,1fr) auto}.mb-ep{grid-template-columns:5.6em minmax(0,1fr) 4em}.mb-hint span{display:none}.mb-rings{grid-template-columns:repeat(3,minmax(0,1fr))}.mb-rg small{display:none}.mb-ctl{justify-items:start}}
 @media(prefers-reduced-motion:reduce){html:has(.mb){scroll-behavior:auto}.mb *{transition:none!important;animation:none!important}.mb-dots i{transform:none!important}.mb-pts i{opacity:1!important}.mb-draw{stroke-dashoffset:0}}
+/* Ausgabe: zurück zur Produktseite */
+.mb-back{font-size:14px;font-weight:700;color:var(--mb-mute);text-decoration:none}
+.mb-back:hover{color:#000}
+/* Produktseite /marktbriefing/ (Bausteine aus site.css wie Magazin und Aktienreport) */
+.mbcov{display:block;text-decoration:none;width:100%}
+.mbpdf{margin:14px 0 0;font-size:15px;font-weight:700;color:var(--mb-mute)}
+.mbpdf a{color:#000;text-decoration:underline;text-decoration-color:var(--mb-lime);text-decoration-thickness:3px}
+.pvp.mbp img{width:100%;height:auto;aspect-ratio:4/5;object-fit:cover;display:block;filter:none;transform:none;pointer-events:auto}
+.pvp.mbp::after{display:none}
+.pvp.mbp figcaption{position:static;padding:10px 0 0;text-align:left;color:#000;background:#fff}
+.pvp.mbp{aspect-ratio:auto;background:none;box-shadow:none;overflow:visible}
+.pvp.mbp a{display:block;border-radius:10px;overflow:hidden;box-shadow:0 18px 30px -16px rgba(0,0,0,.45)}
+.mbmore{display:inline-block;margin-top:6px;color:var(--mb-lime);font-weight:800;text-decoration:none}
+.mbarch{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.mbarch a{border-radius:999px;padding:8px 14px;background:var(--mb-grey);font-weight:700;text-decoration:none;color:#000}
