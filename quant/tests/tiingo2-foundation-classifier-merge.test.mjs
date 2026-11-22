@@ -10,7 +10,12 @@ test('current main debt exclusions all survive accepted classification guards',(
  /* Namensbeleg je Ausschluss: die Wertpapierbezeichnung der Boerse (apply-exchange-directory.mjs, steht im Abgleich), sonst der Firmenname (#366, 22 Titel). */
  const recon=JSON.parse(readFileSync(new URL('../data/market/security-master/eligibility-reconciliation.json',import.meta.url)));
  const directory=new Map((recon.changes||[]).filter(c=>c.source==='NASDAQ_TRADER_SYMBOL_DIRECTORY'&&c.securityName).map(c=>[c.securityId,c.securityName]));
- const fixtures=decisions.filter(row=>row.instrument_type==='DEBT'&&row.product_eligibility==='EXCLUDED').map(row=>({...row,name:directory.get(row.securityId)||names.find(n=>n.securityId===row.securityId)?.companyName}));
+ /* Ausschluesse ueber das Register belegter Nicht-Aktien (quant/config/confirmed-non-equity.json, Beleg je Titel, z. B. TVA-Anleihen
+    mit dem Namen "Tennessee Valley Authority") tragen keinen Namensbeleg; sie werden gegen das Register geprueft, nicht gegen den Namen. */
+ const register=new Map(JSON.parse(readFileSync(new URL('../config/confirmed-non-equity.json',import.meta.url))).records.map(r=>[r.securityId,r]));
+ const viaRegister=decisions.filter(row=>row.instrument_type==='DEBT'&&row.product_eligibility==='EXCLUDED'&&String(row.evidence_source||'').includes('CONFIRMED_NON_EQUITY_REGISTER'));
+ assert.ok(viaRegister.every(row=>register.get(row.securityId)?.instrumentType==='DEBT'),'DEBT ueber das Register nur mit Registereintrag');
+ const fixtures=decisions.filter(row=>row.instrument_type==='DEBT'&&row.product_eligibility==='EXCLUDED'&&!viaRegister.includes(row)).map(row=>({...row,name:directory.get(row.securityId)||names.find(n=>n.securityId===row.securityId)?.companyName}));
  assert.ok(fixtures.every(row=>!!row.name));
  assert.equal(fixtures.filter(row=>!directory.has(row.securityId)).length,22);
  assert.equal(fixtures.length,22+[...directory.keys()].filter(id=>decisions.some(d=>d.securityId===id&&d.instrument_type==='DEBT')).length);
