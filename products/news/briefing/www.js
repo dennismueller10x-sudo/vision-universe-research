@@ -237,7 +237,7 @@
   }
 
   /* Produktseite /marktbriefing/ wie Magazin und Aktienreport (Bausteine pvhero, m3, pvabout, pvpeek, pvtoc, pvend aus
-     landing/web/site.css). o: { chrome, parts: {dot, soon, stores} aus landing/report/index.html, archive, pdf, img } */
+     landing/web/site.css). o: { chrome, parts: {dot, stores} (ohne „Bald in der App verfügbar“: das Marktbriefing läuft schon im Browser, Owner 22.11.2026) aus landing/report/index.html, archive, pdf, img } */
   function productPage(b, o) {
     var C = {}; b.cards.forEach(function (c) { C[c.id] = c; });
     var chrome = o.chrome || { top: "", bottom: "" }, P = o.parts || {}, ed = b.session + "/", img = o.img || {};
@@ -275,7 +275,7 @@
     var SRC = ["Notenbanken", "Börsenaufsicht SEC", "Nachrichtenagenturen", "Research großer Banken", "Hedgefonds-Meldungen", "Statistikämter", "Eigene Modelle"];
     var rail = cardsAll.length ? '<section class="full mbrailsec"><div class="mbhead"><h2>Ein Blick hinein</h2><span>Neueste Ausgabe · ' + dmy(b.session) + b.session.slice(0, 4) + '</span></div><div class="mbrail">' +
       [{ file: img.story0, anchor: "start", kicker: "Überblick" }].concat(cardsAll).filter(function (c) { return c.file; }).map(function (c) { return '<a class="mbcard" href="' + ed + "#" + c.anchor + '"><img src="' + ed + c.file + '" alt="' + esc(c.kicker) + '" loading="lazy"><span>' + esc(c.kicker) + "</span></a>"; }).join("") + "</div></section>" : "";
-    var main = '<main id="inhalt" class="w"><section class="ahero pvhero mbhero" data-hero><div>' + (P.soon || "") +
+    var main = '<main id="inhalt" class="w"><section class="ahero pvhero mbhero" data-hero><div>' +
       "<h1>Das <mark>Marktbriefing.</mark></h1>" +
       '<p class="t mblead">Der Börsentag als Story. Zum Durchwischen in App und Browser, als PDF zum Mitnehmen.</p>' +
       '<div class="pvcta mbctas">' + cta(ed, "Neueste Ausgabe ansehen") + (o.pdf ? '<a class="mbpdfbtn" href="' + ed + esc(o.pdf) + '" download><b>PDF</b> laden</a>' : "") + "</div>" +
@@ -288,7 +288,7 @@
       '<section class="full"><div class="mbsteps"><div class="l"><b>Wischen</b><span>Eine Szene je Bildschirm.</span></div><div class="k"><b>Antippen</b><span>Kurven und Punkte zum Erkunden.</span></div><div class="g"><b>Mitnehmen</b><span>Als Karte teilen oder als PDF.</span></div></div></section>' +
       '<section class="full"><div class="mbhead"><h2>Das steht drin</h2></div><div class="mbchap">' + CH.map(function (c) { return "<div>" + I(c[1]) + "<span>" + esc(c[0]) + "</span></div>"; }).join("") + "</div></section>" +
       '<section class="full"><div class="mbhead"><h2>Alle Ausgaben</h2></div><p class="mbarch">' + (o.archive || [b.session]).slice(0, 30).map(function (d) { return '<a href="' + d + '/">' + dmy(d) + d.slice(0, 4) + "</a>"; }).join("") + "</p></section>" +
-      '<section class="full pvend"><div class="pvbox">' + (P.soon || "") + "<h2>Bald auch in der App.</h2><p class=\"t\">Trag dich ein, dann sagen wir dir Bescheid, sobald die App da ist.</p>" +
+      '<section class="full pvend"><div class="pvbox"><h2>Bald auch in der App.</h2><p class="t">Trag dich ein, dann sagen wir dir Bescheid, sobald die App da ist.</p>' +
       '<div class="pvcta">' + cta("../#newsletter", "Zum Start benachrichtigen") + "</div>" + (P.stores || "") + "</div></section></main>";
     return "<!doctype html>\n<html lang=\"de\">\n<head>\n<meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n<title>" + esc(title) + "</title>\n<meta name=\"description\" content=\"" + esc(desc) + "\">\n" +
       '<meta name="robots" content="noindex, nofollow">\n<link rel="canonical" href="' + SITE + '/marktbriefing/">\n<meta property="og:type" content="website">\n<meta property="og:site_name" content="Vision Universe">\n<meta property="og:locale" content="de_DE">\n' +

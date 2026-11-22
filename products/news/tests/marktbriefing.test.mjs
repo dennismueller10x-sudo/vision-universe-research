@@ -259,6 +259,7 @@ test('MB-12 Produktseite /marktbriefing/: wie Magazin und Report, führt zur Aus
   for (const m of html.matchAll(/<script(?![^>]*\bsrc=)([^>]*)>/g)) assert.match(m[1], /type="application\/(ld\+)?json"/);
   assert.ok(!/<style[\s>]/.test(html));
   assert.ok(!/jeden Börsentag|täglich/i.test(html), 'kein Versprechen eines täglichen Erscheinens');
+  assert.ok(!/class="soon"|Bald in der App verfügbar/.test(html), 'läuft schon im Browser, kein „Bald in der App verfügbar“');
 });
 
 test('MB-13 Ausblick: nur kommende Handelstage mit Quelle, Karte, Szene und Kurzfassung', () => {
