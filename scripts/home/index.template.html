@@ -26,6 +26,9 @@
 <meta name="twitter:description" content="Aktien, ETFs und Vorsorge mit echten Daten – jede Zahl erklärt.">
 <meta name="twitter:image" content="https://research.visionuniverse.de/assets/home/og-image.jpg">
 <link rel="preload" href="/assets/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
+<!-- Kopf-Grundstil vorab (23.11.2026): Hinter der Zugangsmaske schreibt die Maske die Seite per document.write; das Stylesheet kommt erst danach,
+     der Kopf sprang von im Fluss nach fixiert (CLS 0,27, HEADER.hd). Diese Regeln sind wortgleich aus assets/home/home.css (Test: home-render-budget). -->
+<style>body{margin:0;padding-top:56px!important;--vu-gutter:16px}.shell{width:min(1120px,100% - 2*var(--vu-gutter));margin-inline:auto}.hd{position:fixed;inset:0 0 auto;z-index:50;height:56px}.hd-row{height:100%;display:flex;align-items:center;gap:8px}.hd-logo{margin-right:auto;display:flex;align-items:center;min-height:44px}.hd-logo img{width:132px;height:auto}.hd-btn{width:44px;height:44px;flex:none;display:grid;place-items:center;border-radius:50%;text-decoration:none}.hd-login{display:inline-flex;align-items:center;min-height:44px;padding:0 16px;font-weight:800;font-size:14px;text-decoration:none}@media(max-width:339px){body{--vu-gutter:12px}.hd-row{gap:6px}.hd-logo img{width:104px}.hd-login{padding:0 12px}}@media(min-width:760px){body{padding-top:64px!important;--vu-gutter:32px}.hd{height:64px}.hd-logo img{width:170px}}</style>
 <link rel="stylesheet" href="/assets/site-navigation.css">
 <link rel="stylesheet" href="/assets/vu-ui.css">
 <link rel="stylesheet" href="/assets/home/home.css">
