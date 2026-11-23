@@ -272,6 +272,28 @@ nicht abbildbar; sie bleiben offen.
   Vorwärtstest als M25, §4e). Die Ein- und Ausstiegsregeln der Methoden bleiben ungeprüft, bis Kurse innerhalb des Tages
   vorliegen.
 
+## 4h. Stufe 6: Ereignis-Methoden mit Faktoren (23.11.2026, vor dem ersten Lauf festgelegt)
+
+Anlass (Owner 23.11.2026): Kullamägi und die übrigen Methoden fehlen noch. Berichtigung zu §4g: Die Auswahl dieser Methoden lässt
+sich auf Tagesbalken mit Umsatz abbilden (das Marktmodell führt dafür jetzt den Stückumsatz `v`); nur ihr Einstieg im
+Tagesverlauf nicht. `scripts/research/backtest2/trader-ereignis.mjs`, Modus `merkmale-ereignis-smoke` / `merkmale-ereignis`.
+Ein Muster gilt, wenn das Ereignis in den letzten 21 Sitzungen eintrat und noch hält:
+- **Kullamägi (Ausbruchs-Setup):** mindestens +30 % in 63 Sitzungen, Schluss höchstens 10 % unter dem 63-Tage-Hoch, Spanne der
+  letzten 10 Sitzungen höchstens 15 % des Schlusses, Schluss über dem 20-Tage-Durchschnitt.
+- **Pocket Pivot:** Aufwärtstag, dessen Umsatz über dem höchsten Umsatz aller Abwärtstage der 10 Sitzungen davor liegt, Schluss
+  über der 50-Tage-Linie; Schluss heute nicht unter dem Tief dieses Tages.
+- **Buyable Gap-Up:** Tief über dem Vortageshoch, Eröffnung mindestens 4 % über dem Vortagesschluss, Umsatz mindestens das
+  1,5-Fache des 50-Tage-Durchschnitts; Schluss heute nicht unter dem Tief dieses Tages.
+- **Holy Grail:** ADX(14) über 30 mit +DI über −DI, in den letzten 5 Sitzungen ein Tief am oder unter dem 20-Tage-EMA, Schluss
+  heute am oder über dem EMA.
+- **Darvas-Kasten (zweiter Versuch, nach Einsicht in Stufe 5):** Schluss höchstens 10 % unter dem höchsten Hoch der gesamten
+  verfügbaren Historie (mindestens 756 Balken), in den letzten 5 Sitzungen ein Schluss über dem höchsten Hoch der 15 Sitzungen
+  davor mit Umsatz mindestens das 1,5-Fache des 50-Tage-Durchschnitts. Weil nach Einsicht festgelegt, gilt ein positives
+  Ergebnis hier nur als Hinweis auf einen Hinweis.
+
+Elf feste Depots mit je 25 Titeln (je Muster „+ Faktoren“ und „nur Muster“, dazu „nur Faktoren“); Urteil je Muster wie §4g,
+Holm über die fünf Hypothesen. Episodic Pivot und Parabolic Short bleiben offen (Tagesverlauf bzw. Leerverkauf).
+
 ## 5. Ausführung und Veröffentlichung
 
 - Umsetzung: `scripts/research/backtest2/` (Markt, Signale, Depotführung, Suche, Lauf mit Workern). Workflow `research.yml`, Teil

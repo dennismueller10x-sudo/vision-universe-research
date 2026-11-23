@@ -5,6 +5,7 @@
  * Felder je Titel s und Tag t (Index s*T+t), fehlender Balken = NaN:
  *   o,h,l,c   Gesamtrendite-bereinigte Kurse (Dividenden und Splits eingerechnet), Grundlage für Rendite und Stopps
  *   rc        Rohschluss (Preisgrenze), adv Ø Dollarumsatz 20 Sitzungen roh (Universum, Spread)
+ *   v         Stückumsatz des Tages (roh; nur für Umsatzvergleiche innerhalb eines Titels, Stufe 6)
  *   sma50, sma200, atr20   aus o/h/l/c
  *   rank      Rang nach adv unter allen Titeln mit Balken am Tag (1 = höchster Umsatz), 65535 = kein Rang
  * Titelweise: terminal (Tagindex des letzten Handelstags eines delisteten Titels, sonst -1) und recovery (Anteil des Schlusses).
@@ -20,14 +21,14 @@ export function allocate(dates, ids) {
   const T = dates.length, S = ids.length, n = S * T;
   const m = {
     dates, ids, T, S,
-    o: F32(n), h: F32(n), l: F32(n), c: F32(n), rc: F32(n), adv: F32(n), sma50: F32(n), sma200: F32(n), atr20: F32(n),
+    o: F32(n), h: F32(n), l: F32(n), c: F32(n), rc: F32(n), adv: F32(n), sma50: F32(n), sma200: F32(n), atr20: F32(n), v: F32(n),
     rank: new Uint16Array(new SharedArrayBuffer(n * 2)),
     terminal: new Int32Array(new SharedArrayBuffer(S * 4)).fill(-1),
     recovery: new Float32Array(new SharedArrayBuffer(S * 4)).fill(1),
     spyOn200: new Uint8Array(new SharedArrayBuffer(T)), spyOn50: new Uint8Array(new SharedArrayBuffer(T)),
     spyClose: new Float64Array(new SharedArrayBuffer(T * 8)),
   };
-  for (const k of ['o', 'h', 'l', 'c', 'rc', 'adv', 'sma50', 'sma200', 'atr20']) m[k].fill(NaN);
+  for (const k of ['o', 'h', 'l', 'c', 'rc', 'adv', 'sma50', 'sma200', 'atr20', 'v']) m[k].fill(NaN);
   m.rank.fill(65535);
   return m;
 }
@@ -41,6 +42,7 @@ export function setSecurity(m, s, cols) {
     const o = cols.o[t] > 0 ? cols.o[t] : c, h = cols.h[t] > 0 ? cols.h[t] : Math.max(o, c), l = cols.l[t] > 0 ? cols.l[t] : Math.min(o, c);
     m.o[base + t] = o; m.h[base + t] = Math.max(h, o, c); m.l[base + t] = Math.min(l, o, c); m.c[base + t] = c;
     m.rc[base + t] = cols.rc[t] > 0 ? cols.rc[t] : c;
+    m.v[base + t] = cols.v[t] > 0 ? cols.v[t] : 0;
   }
   // Ø Dollarumsatz 20 Sitzungen (roh), SMA 50/200 und ATR 20 über die vorhandenen Balken dieses Titels
   const dv = [], c50 = [], c200 = [], tr20 = [];

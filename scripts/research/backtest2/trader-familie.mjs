@@ -119,22 +119,22 @@ export function holm(ps) {
   return out;
 }
 
-export function evaluate(xs, flags, bench, { rules = RULES, draws = 4999 } = {}) {
+export function evaluate(xs, flags, bench, { rules = RULES, draws = 4999, portfolios = PORTFOLIOS, newPatterns = NEW_PATTERNS, labels = LABEL } = {}) {
   const months = xs.map((x) => x.date), yr = (i) => +months[i].slice(0, 4), idx = months.map((_, i) => i).filter((i) => yr(i) >= rules.fromYear), spy = bench.SPY;
-  const rows = PORTFOLIOS.map((pf) => {
+  const rows = portfolios.map((pf) => {
     const s = portfolioSeries(xs, flags, pf, rules), st = windowStats(s.net, spy, months, idx), ex = idx.map((i) => s.net[i] - spy[i]);
     return { id: pf.id, label: pf.label, pattern: pf.pattern, ...st, pBootstrap: bootstrapP(ex, draws),
       avgNames: mean(idx.map((i) => s.names[i])), avgCandidates: mean(idx.map((i) => s.candidates[i])), avgTurnover: mean(idx.map((i) => s.turnover[i])), cashMonths: idx.filter((i) => s.names[i] === 0).length,
       periods: PERIODS.map(([a, b]) => { const k = idx.filter((i) => yr(i) >= a && yr(i) <= b); return k.length ? { years: [a, Math.min(b, yr(k.at(-1)))], excess: ann(k.map((i) => s.net[i])) - ann(k.map((i) => spy[i])) } : null; }).filter(Boolean) };
   });
-  const by = Object.fromEntries(rows.map((r) => [r.id, r])), adj = holm(NEW_PATTERNS.map((p) => by[p + '+F'].pBootstrap ?? 1));
-  const verdicts = NEW_PATTERNS.map((p, k) => {
+  const by = Object.fromEntries(rows.map((r) => [r.id, r])), adj = holm(newPatterns.map((p) => by[p + '+F'].pBootstrap ?? 1));
+  const verdicts = newPatterns.map((p, k) => {
     const h = by[p + '+F'], c = by[p], f = by.FAKTOREN;
     const hint = !!(h.excess > 0 && adj[k] < rules.pHint && h.cagr > c.cagr && h.cagr > f.cagr);
-    return { pattern: p, hint, pHolm: adj[k], vsPattern: h.cagr - c.cagr, vsFactors: h.cagr - f.cagr, text: hint ? 'Hinweis' : 'nicht belegt' };
+    return { pattern: p, label: labels[p] || p, hint, pHolm: adj[k], vsPattern: h.cagr - c.cagr, vsFactors: h.cagr - f.cagr, text: hint ? 'Hinweis' : 'nicht belegt' };
   });
   return { window: [months[idx[0]], months[idx.at(-1)]], months: idx.length, benchmarks: Object.fromEntries(Object.entries(bench).map(([k, v]) => [k, { cagr: ann(idx.map((i) => v[i])) }])),
-    portfolios: rows, verdicts, rule: '„+ Faktoren“ vor SPY nach Kosten, Bootstrap-p nach Holm über drei Hypothesen < 0,10, Rendite über „nur Muster“ und „nur Faktoren“' };
+    portfolios: rows, verdicts, rule: '„+ Faktoren“ vor SPY nach Kosten, Bootstrap-p nach Holm über ' + newPatterns.length + ' Hypothesen < 0,10, Rendite über „nur Muster“ und „nur Faktoren“' };
 }
 
 const pct = (x) => (x == null || !Number.isFinite(x) ? '–' : (x * 100).toFixed(1).replace('.', ',') + ' %');
@@ -147,7 +147,7 @@ export function report(res) {
     `**Forschung, nicht zertifiziert.** Nur für den Owner. ${e.window[0]} bis ${e.window[1]} (${e.months} Monate); neun vorab feste Depots mit je 25 Titeln; Kosten abgezogen; delistete Titel enthalten (${res.data.loaded} Titel geladen). Datenstand-Fingerabdruck \`${res.dataFingerprint}\`.`, '',
     `Vergleich auf denselben Monaten: SPY ${pct(b.SPY.cagr)} p. a., QQQ ${pct(b.QQQ.cagr)}, RSP ${pct(b.RSP.cagr)}.`, '',
     '## Urteil je neuem Muster', '', `Regel: ${e.rule}.`, '', '| Muster | Urteil | p nach Holm | gegen nur Muster | gegen nur Faktoren |', '|---|---|---|---|---|'];
-  for (const v of e.verdicts) L.push(`| ${LABEL[v.pattern]} | **${v.text}** | ${p3(v.pHolm)} | ${pp(v.vsPattern)} | ${pp(v.vsFactors)} |`);
+  for (const v of e.verdicts) L.push(`| ${v.label} | **${v.text}** | ${p3(v.pHolm)} | ${pp(v.vsPattern)} | ${pp(v.vsFactors)} |`);
   L.push('', '## Depots', '', '| Depot | Rendite p. a. | vs. SPY | max. Verlust | Jahre vor SPY | p | Kandidaten | Umschlag/Monat | Monate in Kasse |', '|---|---|---|---|---|---|---|---|---|');
   for (const r of e.portfolios) L.push(`| ${r.label} | ${pct(r.cagr)} | ${pp(r.excess)} | ${pct(r.maxDrawdown)} | ${r.yearsAhead}/${r.years} | ${p3(r.pBootstrap)} | ${r.avgCandidates?.toFixed(0)} | ${pct(r.avgTurnover)} | ${r.cashMonths} |`);
   L.push('', '## Teilzeiträume (Abstand zu SPY p. a.)', '', '| Depot | ' + e.portfolios[0].periods.map((p) => p.years.join('–')).join(' | ') + ' |', '|---|' + e.portfolios[0].periods.map(() => '---').join('|') + '|');
