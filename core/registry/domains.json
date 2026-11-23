@@ -669,6 +669,30 @@
       ]
     },
     {
+      "id": "worldStatus",
+      "label": "Welten je Aktie (Schnittmenge)",
+      "layer": "PRODUCT",
+      "group": "Products",
+      "critical": false,
+      "artifact": "/core/data/world-status-v1.json",
+      "releaseOnly": true,
+      "timestamp": [
+        "generatedAt"
+      ],
+      "asOf": [
+        "sources.technical.asOf"
+      ],
+      "records": "counts.total",
+      "role": "Je Aktie des Discover-Aktienkreises ein Zustand je Produktwelt (Fundamental, Quant, Technical, Hedgefonds, Supertrader): stark, mittel, schwach oder keine Aussage, dazu die Zaehlung. Keine eigene Rechnung: jede Welt wird mit der Regel ihrer eigenen Seite und der Aktienseite gelesen (core/world-status.js ruft assets/vu-stock-sheet.js#model auf); Quant ueber den Platz im Gesamtwert (bestes und schwaechstes Fuenftel). Beschreibend, kein Gesamturteil und keine Empfehlung. Faellt eine Quelle aus, sagt diese Welt nichts (sources.<welt>.state). Erzeugt im Release-Bau, nur in der Auslieferung, nie im Repository. Noch von keiner Seite gelesen (Stand 23.11.2026).",
+      "producer": "scripts/core/build-world-status.mjs --out <Datei>",
+      "workflow": "pages-release.yml (Schritt des Release-Baus, scripts/vu2/build-release.mjs)",
+      "schedule": "mit jeder Auslieferung der Seite",
+      "freshness": {
+        "kind": "none"
+      },
+      "consumers": []
+    },
+    {
       "id": "dataQualityReport",
       "label": "Datenqualitaetsbericht (/status/)",
       "layer": "CORE",

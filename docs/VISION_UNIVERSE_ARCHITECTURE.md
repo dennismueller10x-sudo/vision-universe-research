@@ -110,6 +110,9 @@ Bei Abweichung gilt die Registry; ein Test prüft, dass jedes eingetragene Artef
 | Quant-Produktdaten | `quant/data/product/**` | Materialisierung (aus dem Refresh) | Quant 2.0 |
 | Supertrader | `supertrader/data/*.json` | `scripts/supertrader/build.mjs` · supertrader-signals · Di–Sa 06:17 | /supertrader/, Ask |
 | News | `dashboard/data/news_feed.json` | `update_news.mjs` · update-news · **nur manuell** | /news/ |
+| Welten je Aktie (Schnittmenge) | `core/data/world-status-v1.json` (nur in der Auslieferung) | `scripts/core/build-world-status.mjs` · Release-Bau · mit jeder Auslieferung | noch keine Seite (Stand 23.11.2026) |
+
+**Welten je Aktie (23.11.2026, nur Daten).** `core/world-status.js` fasst je Aktie zusammen, was Fundamental, Quant, Technical, Hedgefonds und Supertrader nach ihrer eigenen Regel ausweisen: stark, mittel, schwach oder keine Aussage. Es gibt keinen zweiten Maßstab: Fundamental, Technical und Hedgefonds werden mit den Regeln der Aktienseite gelesen (`assets/vu-stock-sheet.js#model`), Supertrader über die höchste Stufe aller Methoden. Entscheidung für Quant: stark ist das beste Fünftel im Gesamtwert (Durchschnitt der Eigenschaften), schwach das schwächste Fünftel, weil die Faktor-Forschung genau diese Fünftel vergleicht. Entscheidung für Supertrader: „Regel erfüllt“ und „Plan fertig“ zählen als stark, „Muster erkannt“ als mittel; schwach gibt es dort nicht. Das Artefakt zählt nur, es gewichtet nicht und bildet kein Gesamturteil. Probelauf 20.11.2026: 5.509 Aktien, bei 38 sagen mindestens vier Welten „stark“, bei 2 alle fünf. Die Oberfläche liest die Datei noch nicht.
 
 Die vollständige Kette **Quelle → Ingestion → Normalisierung → Speicher → abgeleitete Daten → API → Produkt → UI** steht je Datenart in [docs/archiv/data/DATA_FLOWS.md](archiv/data/DATA_FLOWS.md).
 
