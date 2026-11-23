@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import {readFile, rm} from 'node:fs/promises';
 import {existsSync} from 'node:fs';
 import {resolve} from 'node:path';
-import {laden, ratgeberSeiten, zulage, sparplan, root} from '../scripts/ratgeber.mjs';
+import {laden, ratgeberSeiten, zulage, sparplan, root, indexWerte} from '../scripts/ratgeber.mjs';
 import {build, SITE_PAGES} from '../scripts/build.mjs';
 
 const {welten, daten, artikel} = laden();
@@ -115,4 +115,23 @@ test('RG-6 · Bau: Ratgeber in Sitemap (mit Änderungsdatum), Startseiten-Balken
 
 test('RG-7 · App-Bilder der Artikel existieren', () => {
   for (const a of Object.values(artikel)) if (a.app) assert.ok(existsSync(resolve(root, `web/img/app/${a.app.bild}.jpg`)), `${a.slug}: ${a.app.bild}.jpg`);
+});
+
+test('RG-8 · Indexverlauf: 10.000 $ Start, Endwert und Jahresrendite passen zur Reihe', () => {
+  const I = daten.indizes;
+  assert.equal(I.daten.length, I.reihen.SPY.length);
+  for (const t of ['SPY', 'URTH', 'ACWI']) {
+    assert.equal(I.reihen[t].length, I.daten.length, t);
+    const w = indexWerte(I, 10)[t];
+    assert.ok(Math.abs(w.v[0] - 10000) < 1e-6, t);
+    assert.ok(Math.abs(w.ende - I.reihen[t].at(-1) / I.reihen[t][0] * 10000) < 1e-6, t);
+    assert.ok(Math.abs((1 + w.jahr) ** 10 - (1 + w.gesamt)) < 1e-9, t);
+    const f = indexWerte(I, 5)[t];
+    assert.ok(f.v.length > 60 && f.v.length < 70, `${t}: fünf Jahre ≈ 65 Vierwochenpunkte`);
+  }
+  // Keine Liste „Quellen“ mehr auf der Seite; der Hinweis „keine Anlageberatung“ bleibt.
+  const html = ratgeberSeiten().seiten.find((s) => s.pfad === 'ratgeber/msci-world/index.html')?.html || '';
+  assert.match(html, /data-g="ichart"/);
+  assert.doesNotMatch(html, /<h2>Quellen<\/h2>/);
+  assert.match(html, /keine Anlage-, Steuer- oder Rechtsberatung/);
 });

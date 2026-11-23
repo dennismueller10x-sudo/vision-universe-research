@@ -158,6 +158,27 @@
   function fonds(f) { chipWahl(f, function (b) { $$(f, '.rg-13f-p').forEach(function (p) { p.hidden = p.getAttribute('data-p') !== b.getAttribute('data-f'); }); }); }
   function idx(f) { chipWahl(f, function (b) { $$(f, '.rg-kacheln').forEach(function (p) { p.hidden = p.getAttribute('data-x') !== b.getAttribute('data-x'); }); }); }
 
+  function ichart(f) {
+    var d = f.getAttribute('data-d').split(','), T = ['SPY', 'URTH', 'ACWI'], R = {};
+    T.forEach(function (t) { R[t] = f.getAttribute('data-' + t.toLowerCase()).split(',').map(Number); });
+    function zeig(j) {
+      var bis = d[d.length - 1], grenze = (+bis.slice(0, 4) - j) + bis.slice(4), ab = 0;
+      while (ab < d.length - 1 && d[ab] < grenze) ab++;
+      var W = {}, max = 0, lo = Infinity;
+      T.forEach(function (t) { var r = R[t].slice(ab); W[t] = r.map(function (x) { return x / r[0] * 10000; }); max = Math.max(max, Math.max.apply(null, W[t])); lo = Math.min(lo, Math.min.apply(null, W[t])); });
+      lo *= 0.95; var yv = function (x) { return (220 - (x - lo) / (max - lo) * 205).toFixed(1); };
+      T.forEach(function (t) {
+        var v = W[t], ende = v[v.length - 1];
+        $(f, '[data-o="l-' + t + '"]').setAttribute('points', v.map(function (x, i) { return (i / (v.length - 1) * 600).toFixed(1) + ',' + yv(x); }).join(' '));
+        out(f, 'e-' + t, de(ende) + ' $'); out(f, 'g-' + t, '+' + de((ende / 10000 - 1) * 100) + ' %');
+        out(f, 'j-' + t, (Math.pow(ende / 10000, 1 / j) * 100 - 100).toLocaleString('de-DE', {minimumFractionDigits: 1, maximumFractionDigits: 1}) + ' %');
+      });
+      var y = yv(10000), b = $(f, '.basis'); b.setAttribute('y1', y); b.setAttribute('y2', y);
+      var p = d[ab].split('-'); out(f, 'von', p[2] + '.' + p[1] + '.' + p[0]);
+    }
+    chipWahl(f, function (b) { zeig(+b.getAttribute('data-j')); });
+  }
+
   function rente(f) {
     var n = $(f, '[data-i="n"]'), a = $(f, '[data-i="a"]'), r = $(f, '[data-i="r"]'), j = $(f, '[data-i="j"]');
     function run() {
@@ -168,7 +189,7 @@
     [n, a, r, j].forEach(function (e) { e.addEventListener('input', run); });
   }
 
-  var init = {'kgv-rechner': kgv, anteil: anteil, zulage: zulage, sparplan: sparplan, bruch: bruch, streuung: streuung, marge: marge, eps: eps, split: split, order: order, cashflow: cashflow, kosten: kosten, thes: thes, chart: chart, elliott: elliott, fonds: fonds, idx: idx, rente: rente};
+  var init = {'kgv-rechner': kgv, anteil: anteil, zulage: zulage, sparplan: sparplan, bruch: bruch, streuung: streuung, marge: marge, eps: eps, split: split, order: order, cashflow: cashflow, kosten: kosten, thes: thes, chart: chart, elliott: elliott, fonds: fonds, idx: idx, ichart: ichart, rente: rente};
   $$(document, '[data-g]').forEach(function (f) { var fn = init[f.getAttribute('data-g')]; if (fn) try { fn(f); } catch (e) { /* Grafik bleibt statisch */ } });
 
   // Balken erst animieren, wenn sie ins Bild kommen.

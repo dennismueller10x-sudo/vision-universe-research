@@ -268,7 +268,10 @@ prüft Pflichtbausteine, Wortwahl, Beispielwerte (KGV = Kurs ÷ Gewinn je Aktie)
 Links und Einbindung. Neuer Artikel: Datei unter `artikel/` anlegen, Eintrag im Themenplan steht schon (sonst ergänzen).
 Stand 23.11.2026: alle 31 Artikel stehen. Bausteine neben den Grafiken (für lesbare Seiten statt Textwüste): `fakten`,
 `check`, `icons`, `vergleich`, `zeitstrahl`, `schrittkarten`, `merke`. Überschriften ohne Silbentrennung; sehr lange
-Einzelwörter bekommen in Kacheln eine kleinere Schrift. Die Kacheln folgen dem Startseiten-Layout (ganzes iPhone neben dem Text).
+Einzelwörter bekommen in Kacheln eine kleinere Schrift. Die Kacheln folgen dem Startseiten-Layout (ganzes iPhone neben dem Text). Keine sichtbare Quellenliste mehr
+(Owner 23.11.2026): Datum und Datenherkunft stehen in der kleinen Zeile unter jeder Grafik, `quellen` im Artikel bleibt
+als interner Beleg. Indexverlauf (`index-chart`): Gesamtrendite der ETFs SPY, URTH, ACWI aus `vorsorge/data/series`,
+eingefroren in `daten.json` (`indizes`).
 
 Stand 11.11.2026: nur `/insights/` ist öffentlich und indexierbar (Sitemap, Search Console, IndexNow). Die Freischaltung
 weiterer Bereiche entscheidet der Owner; dieser Plan sagt, was dafür technisch vorbereitet wird.

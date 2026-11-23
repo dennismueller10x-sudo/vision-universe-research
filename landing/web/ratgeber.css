@@ -489,3 +489,33 @@
 .rg-bento .vw-tile:has(.rg-tile-n){padding-bottom:52px}
 .rg-bento .vw-tile .rg-tile-n{position:absolute;left:22px;bottom:20px;margin:0}
 @media(max-width:699px){.rg-bento .vw-tile .rg-tile-n{left:18px;bottom:18px}}
+/* Runde 3 (Owner 23.11.): Zeitleiste ohne verschobene Punkte, versteckte Felder bleiben versteckt */
+.rg-g [hidden]{display:none!important}
+.rg-zeit:not(.wagerecht){border:0!important;padding:0!important;margin-left:0!important}
+.rg-zeit:not(.wagerecht) li{padding:0 0 4px 38px!important;margin:0!important;min-height:52px}
+.rg-zeit:not(.wagerecht) li+li{margin-top:14px!important}
+.rg-zeit:not(.wagerecht) li:before{left:0;top:2px;width:20px;height:20px;box-sizing:border-box;box-shadow:none;border:3px solid #000;background:#fff}
+.rg-zeit:not(.wagerecht) li.on:before{background:var(--rg-lime,#c8f531)}
+.rg-zeit:not(.wagerecht) li:after{content:"";position:absolute;left:8.5px;top:26px;bottom:-14px;width:3px;border-radius:2px;background:#e4e4e4}
+.rg-zeit:not(.wagerecht) li:last-child:after{display:none}
+.rg-ichart-s{display:block;width:100%;height:auto;margin-top:16px}
+.rg-ichart-s polyline{fill:none;stroke-linejoin:round;stroke-linecap:round;transition:all .4s}
+.rg-ichart-s .basis{stroke:#cfcfcf;stroke-width:1.5;stroke-dasharray:4 5}
+.rg-ichart-s .sp{stroke:#000;stroke-width:2.5}
+.rg-ichart-s .mw{stroke:var(--rg-lime,#c8f531);stroke-width:5}
+.rg-ichart-s .ac{stroke:#9a9a9a;stroke-width:2.5;stroke-dasharray:7 5}
+.rg-ichart-l{list-style:none!important;margin:16px 0 0!important;padding:0!important;display:grid;gap:10px}
+@media(min-width:700px){.rg-ichart-l{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.rg-ichart-l li{margin:0!important;list-style:none;background:#f3f3f1;border-radius:16px;padding:14px 16px;display:grid;grid-template-columns:auto 1fr;column-gap:10px;align-items:center}
+.rg-ichart-l li.mw{background:var(--rg-lime,#c8f531)}
+.rg-ichart-l li i{width:18px;height:4px;border-radius:2px;background:#000}
+.rg-ichart-l li.mw i{height:6px;background:#000}
+.rg-ichart-l li.ac i{background:repeating-linear-gradient(90deg,#8a8a8a 0 6px,transparent 6px 9px)}
+.rg-ichart-l li span{font-weight:800;font-size:14.5px}
+.rg-ichart-l li b{grid-column:1/-1;font-size:26px;font-weight:900;letter-spacing:-.02em;margin-top:6px;white-space:nowrap}
+.rg-ichart-l li small{grid-column:1/-1;font-size:13.5px;font-weight:650;color:#444}
+.rg-ichart-l li small span{font-size:inherit;font-weight:800}
+.rg-app>div{min-width:0}
+@media(max-width:420px){.rg-app{gap:14px;padding:18px}.rg-app-ph{width:80px;height:146px;border-radius:16px;border-width:3px}.rg-app b{font-size:17px}.rg-app p{font-size:14px}}
+.rg-fakten{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(max-width:479px){.rg-fakten{grid-template-columns:minmax(0,1fr)}.rg-fakten>div{display:grid;grid-template-columns:auto 1fr;column-gap:14px;align-items:center}.rg-fakten>div>*:not(.rg-fi){grid-column:2}.rg-fakten .rg-fi{grid-row:1/span 3}}

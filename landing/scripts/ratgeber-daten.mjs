@@ -27,6 +27,29 @@ export function auszug(d) {
   };
 }
 
+// Indexverläufe (Gesamtrendite mit wieder angelegten Ausschüttungen) über die ETFs, die den Index abbilden:
+// SPY (S&P 500), URTH (MSCI World), ACWI (MSCI ACWI). Zehn Jahre, alle vier Wochen ein Punkt, Start = 10.000 $.
+export function indexReihen(repo) {
+  const reihe = (t) => {
+    const d = JSON.parse(readFileSync(resolve(repo, `vorsorge/data/series/${t}.json`), 'utf8'));
+    const w = d.total.weekly; let tag = new Date(w.t0 + 'T00:00:00Z').getTime();
+    return w.v.map((v, i) => { tag += w.dt[i] * 864e5; return [new Date(tag).toISOString().slice(0, 10), v]; });
+  };
+  const roh = {SPY: reihe('SPY'), URTH: reihe('URTH'), ACWI: reihe('ACWI')};
+  const bis = roh.URTH.at(-1)[0];
+  const von = new Date(new Date(bis + 'T00:00:00Z').getTime() - 3652 * 864e5).toISOString().slice(0, 10);
+  const reihen = {};
+  let daten = null;
+  for (const [t, r] of Object.entries(roh)) {
+    const ab = r.filter(([d]) => d >= von && d <= bis);
+    const punkte = ab.filter((_, i) => i % 4 === 0 || i === ab.length - 1);
+    if (punkte.at(-1)[0] !== ab.at(-1)[0]) punkte.push(ab.at(-1));
+    reihen[t] = punkte.map(([, v]) => Math.round(v / punkte[0][1] * 10000));
+    daten = daten || punkte.map(([d]) => d);
+  }
+  return {von: daten[0], bis: daten.at(-1), daten, reihen};
+}
+
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const out = process.argv.includes('--out') ? resolve(process.argv[process.argv.indexOf('--out') + 1]) : resolve(landing, 'ratgeber-inhalt/daten.json');
   const aktien = {}; let markt = null, stand = null;
@@ -47,7 +70,7 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
     fonds[slug] = {name: f.name, manager: f.manager, stichtag: f.reportDate, gemeldet: f.filedDate, positionen: h.length,
       top: h.slice(0, 5).map((x) => ({name: x.displayName, ticker: x.ticker, anteil: x.weightPct, status: x.status, art: x.putCall || null}))};
   }
-  const daten = {schema: 'vu-ratgeber-daten-1', stand, serie: {ticker: 'MSFT', name: ms.companyName, punkte: serie}, fonds, quelle: 'Vision Universe Datenbank: Schlusskurse; Geschäftszahlen aus den SEC-Berichten der Unternehmen (letzte vier Quartale)', markt, aktien};
+  const daten = {schema: 'vu-ratgeber-daten-1', stand, indizes: indexReihen(repo), serie: {ticker: 'MSFT', name: ms.companyName, punkte: serie}, fonds, quelle: 'Vision Universe Datenbank: Schlusskurse; Geschäftszahlen aus den SEC-Berichten der Unternehmen (letzte vier Quartale)', markt, aktien};
   writeFileSync(out, JSON.stringify(daten, null, 1) + '\n');
   console.log(`Ratgeber-Daten: ${Object.keys(aktien).length} Aktien, Stand ${stand}, KGV-Median ${markt?.kgvMedian} (${markt?.anzahl} Aktien) → ${out}`);
 }

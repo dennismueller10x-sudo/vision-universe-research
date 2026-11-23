@@ -327,6 +327,27 @@ ${I.map(([n, f, l, s], i) => `<div class="rg-kacheln" data-x="${i}"${i === 1 ? '
 <p class="rg-src">Gerundete Angaben nach den Indexbeschreibungen von S&amp;P Dow Jones Indices und MSCI; die genaue Zahl der Firmen ändert sich bei jeder Überprüfung.</p></figure>`;
 };
 
+// Indexverlauf: was aus 10.000 $ geworden wäre (Gesamtrendite über die Index-ETFs), umschaltbar 10 und 5 Jahre.
+const INDEX_REIHEN = [['SPY', 'S&P 500', 'sp'], ['URTH', 'MSCI World', 'mw'], ['ACWI', 'MSCI ACWI', 'ac']];
+export function indexWerte(I, jahre) {
+  const bis = I.daten.at(-1), grenze = `${Number(bis.slice(0, 4)) - jahre}${bis.slice(4)}`;
+  const ab = Math.max(0, I.daten.findIndex((d) => d >= grenze));
+  return Object.fromEntries(INDEX_REIHEN.map(([t]) => {
+    const r = I.reihen[t].slice(ab), v = r.map((x) => x / r[0] * 10000), ende = v.at(-1);
+    return [t, {v, ende, gesamt: ende / 10000 - 1, jahr: (ende / 10000) ** (1 / jahre) - 1}];
+  }));
+}
+G['index-chart'] = (g, D) => {
+  const I = D.indizes, W = indexWerte(I, 10), max = Math.max(...INDEX_REIHEN.map(([t]) => Math.max(...W[t].v))), lo = Math.min(...INDEX_REIHEN.map(([t]) => Math.min(...W[t].v))) * 0.95;
+  const yv = (x) => (220 - (x - lo) / (max - lo) * 205).toFixed(1);
+  const linie = (v) => v.map((x, i) => `${(i / (v.length - 1) * 600).toFixed(1)},${yv(x)}`).join(' ');
+  return `<figure class="rg-g rg-ichart" data-g="ichart" data-d="${I.daten.join(',')}"${INDEX_REIHEN.map(([t]) => ` data-${t.toLowerCase()}="${I.reihen[t].join(',')}"`).join('')}><figcaption class="rg-gk">Zum Ausprobieren · was aus 10.000 $ geworden wäre</figcaption><div class="rg-chips" role="group" aria-label="Zeitraum"><button type="button" class="rg-chip on" data-j="10">10 Jahre</button><button type="button" class="rg-chip" data-j="5">5 Jahre</button></div>
+<svg viewBox="0 0 600 230" class="rg-ichart-s" role="img" aria-label="Wertentwicklung S&amp;P 500, MSCI World und MSCI ACWI"><line class="basis" x1="0" x2="600" y1="${yv(10000)}" y2="${yv(10000)}"/>${INDEX_REIHEN.map(([t, , k]) => `<polyline class="${k}" data-o="l-${t}" points="${linie(W[t].v)}"/>`).join('')}</svg>
+<div class="rg-chart-x"><span data-o="von">${datum(I.daten.find((d) => d >= `${Number(I.bis.slice(0, 4)) - 10}${I.bis.slice(4)}`))}</span><span>${datum(I.bis)}</span></div>
+<ul class="rg-ichart-l">${INDEX_REIHEN.map(([t, n, k]) => `<li class="${k}"><i aria-hidden="true"></i><span>${esc(n)}</span><b data-o="e-${t}">${zahl(W[t].ende)} $</b><small><span data-o="g-${t}">+${zahl(W[t].gesamt * 100)} %</span> · <span data-o="j-${t}">${zahl(W[t].jahr * 100, 1)} %</span> pro Jahr</small></li>`).join('')}</ul>
+<p class="rg-src">Gesamtrendite in US-Dollar mit wieder angelegten Ausschüttungen, gemessen an den ETFs SPY, URTH und ACWI; vor Steuern, ohne Wechselkurseffekt in Euro. Stand ${datum(I.bis)}. Vergangene Entwicklung sagt nichts über die Zukunft.</p></figure>`;
+};
+
 // Insider: vom Kauf bis zur Meldung.
 G['insider-weg'] = () => `<figure class="rg-g"><figcaption class="rg-gk">Vom Kauf bis zur Meldung</figcaption><ol class="rg-zeit wagerecht"><li class="on"><b>Tag 0</b><p>Ein Vorstand kauft Aktien der eigenen Firma an der Börse.</p></li><li><b>bis 2 Werktage</b><p>Meldung an die SEC auf Formular 4, Code „P“ für einen Kauf am Markt.</p></li><li><b>sofort öffentlich</b><p>Die Meldung steht für alle sichtbar in der SEC-Datenbank EDGAR.</p></li></ol><p class="rg-src">Section 16 Securities Exchange Act; Formular 4 innerhalb von zwei Geschäftstagen.</p></figure>`;
 
@@ -410,7 +431,6 @@ function artikelSeite(a, ctx) {
   const app = a.app ? `<aside class="rg-app"><div class="rg-app-ph"><img src="${pre}web/img/app/${a.app.bild}.jpg" alt="${esc(a.app.alt || 'Vision Universe App')}" loading="lazy" width="390" height="844"></div><div><span class="rg-gk">So zeigt es Vision Universe</span><b>${esc(a.app.titel)}</b><p>${esc(a.app.text)}</p><a class="rg-btn lime" href="${pre}#newsletter">Zum Start benachrichtigen <span aria-hidden="true">→</span></a></div></aside>` : '';
   const faq = (a.faq || []).length ? `<section class="rg-sec" id="fragen"><h2>Häufige Fragen</h2><div class="rg-faq">${a.faq.map((f) => `<details><summary>${esc(f.f)}<i aria-hidden="true">+</i></summary><p>${f.a}</p></details>`).join('')}</div></section>` : '';
   const weiter = (a.weiter || []).map((s) => artikel[s]).filter(Boolean).map((x) => karte(x, welten.welten.find((y) => y.id === x.welt), pre)).join('');
-  const quellen = (a.quellen || []).map((q) => `<li>${q.url ? `<a href="${esc(q.url)}" rel="noopener">${esc(q.titel)}</a>` : esc(q.titel)}</li>`).join('');
   const heldBild = a.app ? `<div class="fh-phone"><div class="fh-wrap"><div class="fh-ph"><img src="${pre}web/img/app/${a.app.bild}.jpg" alt="${esc(a.app.alt || 'Vision Universe App')}" width="390" height="844"></div></div></div>` : '';
   const body = `<article class="rg-art">
 <section class="fh ps-hero rg-art-hero"><div class="w fh-g"><div class="fh-copy">${krumen(pre, [['Ratgeber', `${pre}ratgeber/`], [w.name, `${pre}ratgeber/thema/${w.id}/`], [a.kurztitel || a.titel, null]])}
@@ -423,7 +443,7 @@ function artikelSeite(a, ctx) {
 ${abschnitte}
 ${app}
 ${faq}
-<section class="rg-quellen"><h2>Quellen</h2><ul>${quellen}</ul><p>Allgemeine Information, keine Anlage-, Steuer- oder Rechtsberatung. Vision Universe erklärt und vergleicht, empfiehlt aber keine Wertpapiere.</p></section>
+<section class="rg-quellen"><p>Allgemeine Information, keine Anlage-, Steuer- oder Rechtsberatung. Vision Universe erklärt und vergleicht, empfiehlt aber keine Wertpapiere.</p></section>
 </div><aside class="rg-side"><div class="rg-side-in"><span class="rg-gk">In diesem Artikel</span><ol>${toc}</ol><div class="rg-side-app"><b>Für jede Aktie in der App</b><p>Kennzahlen in einfachen Sätzen, mit Datum und Quelle.</p><a class="rg-btn lime" href="${pre}#newsletter">Benachrichtigen <span aria-hidden="true">→</span></a></div></div></aside></div>
 ${weiter ? `<section class="rg-weiter w"><h2>Weiterlesen</h2><div class="rg-grid">${weiter}</div></section>` : ''}
 </article>`;
