@@ -35,7 +35,8 @@ export function readState() {
   const hefteMeta = JSON.parse(fs.readFileSync(path.join(ROOT, "products/insights/magazin.json"), "utf8")).ausgaben || [];
   const files = new Map();
   const add = (name, from) => { if (fs.existsSync(path.join(ROOT, from))) { files.set(name, from); return name; } return null; };
-  const artikel = list.artikel.map((a) => ({ ...a, img: a.bild ? add(`art-${a.slug}${ext(a.bild)}`, a.bild.replace(/^\//, "")) : null }));
+  // Nur Bilder im Querformat 16:9 (bildQuer, products/insights/build.mjs); sonst kein Bild statt eines verzerrten Ausschnitts.
+  const artikel = list.artikel.map((a) => ({ ...a, img: a.bildQuer ? add(`art-${a.slug}${ext(a.bildQuer)}`, a.bildQuer.replace(/^\//, "")) : null }));
   if (!artikel.length) throw new Error("insights/artikel.json enthält keinen Artikel.");
   const h = list.magazin && list.magazin[0];
   if (!h) throw new Error("insights/artikel.json enthält kein Heft.");
