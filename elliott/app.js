@@ -323,7 +323,7 @@
   function asOfOf(home) { var a = M.applicableOf(home); return (a && a.asOf) || (home && home.dataAsOf) || null; }
   /* Suche (#/?suche=1): Frage als Titel, das Suchfeld. */
   function hero(s) {
-    var out = [head("Wo lassen sich Wellen zählen?", "Elliott ist ein experimentelles Strukturmodell. Es passt nur, wenn der Chart sauber in Wellen verläuft. Das ist selten.", el("p", { class: "el-tag" }, [el("span", { class: "vu-ltag", text: "Elliott" })])), buildSearch(s.q, s.suche)];
+    var out = [head("Wo lassen sich Wellen zählen?", "Elliott ist ein experimentelles Strukturmodell. Jede Aktie bekommt die beste regelkonforme Wellen-Lesart mit Klarheit A bis D; klar zählbar ist nur ein kleiner Teil.", el("p", { class: "el-tag" }, [el("span", { class: "vu-ltag", text: "Elliott" })])), buildSearch(s.q, s.suche)];
     out.push(el("p", { class: "el-suche-hint" }, ["Name oder Kürzel eingeben – jede abgedeckte US-Aktie öffnet ihr Elliott-Bild. ", el("a", { href: "#/", text: "Zur Übersicht" })]));
     return out;
   }
@@ -379,21 +379,23 @@
   /* Kopfkachel (Prototyp #technical): Frage als Dachzeile (h1), zählbare Aktien als große Zahl, Anteil daneben, Richtung als geteilter Balken. */
   function kopf() {
     var home = state.home, a = M.applicableOf(home), asOf = asOfOf(home);
-    var tile = el("section", { class: "ek-tile ek-kopf", "aria-label": "Heute anwendbar" }, [el("div", { class: "ek-kopf-h" }, [el("h1", { class: "el-title ek-eb" }, ["Wo lassen sich Wellen zählen?", a ? " · " + a.n.toLocaleString("de-DE") + " Aktien" : ""]), el("span", { class: "ek-pill ek-pill--ol", text: "Experimentell" })])]);
-    if (!a) tile.append(el("p", { class: "ek-sm ek-sec ek-lead", text: "Elliott ist ein experimentelles Strukturmodell. Es passt nur, wenn der Chart sauber in Wellen verläuft. Das ist selten." }), state.status === "ready" ? noCountBox(a) : null);
+    var tile = el("section", { class: "ek-tile ek-kopf", "aria-label": "Heute anwendbar" }, [el("div", { class: "ek-kopf-h" }, [el("h1", { class: "el-title ek-eb" }, ["Elliott-Wellen", a ? " · " + a.n.toLocaleString("de-DE") + " Aktien" : ""]), el("span", { class: "ek-pill ek-pill--ol", text: "Experimentell" })])]);
+    if (!a) tile.append(el("p", { class: "ek-sm ek-sec ek-lead", text: "Elliott ist ein experimentelles Strukturmodell. Jede Aktie bekommt die beste regelkonforme Wellen-Lesart mit Klarheit A bis D; klar zählbar ist nur ein kleiner Teil." }), state.status === "ready" ? noCountBox(a) : null);
     var up = 0, dn = 0;
     if (a) {
       up = a.rows.filter(function (r) { return M.dirOf(r) === "up"; }).length; dn = a.rows.filter(function (r) { return M.dirOf(r) === "down"; }).length;
       var open = a.rows.length === a.count ? a.count - up - dn : null, w = function (x) { return (x / a.count * 100).toFixed(1) + "%"; };
-      tile.append(el("div", { class: "ek-kopf-n" }, [el("div", { class: "ek-f1" }, [el("span", { class: "ek-num ek-lc ek-big", text: a.count.toLocaleString("de-DE") }), el("b", { text: "zählbar heute" })]),
-        el("div", { class: "ek-f1" }, [el("span", { class: "ek-num ek-big", text: a.n ? pct1(a.count / a.n * 100) : "–" }), el("b", { class: "ek-mut", text: "aller Aktien" })])]));
+      /* Elliott-Neustart (Owner 22.11.2026): jede Aktie mit Lesart zählt; die Klarheit A–C ist die Auswahl darunter, kein Anteil „aller Aktien“. */
+      var counted = typeof a.counted === "number" ? a.counted : null;
+      tile.append(el("div", { class: "ek-kopf-n" }, [el("div", { class: "ek-f1" }, [el("span", { class: "ek-num ek-lc ek-big", text: (counted !== null ? counted : a.count).toLocaleString("de-DE") }), el("b", { text: counted !== null ? "Aktien mit Wellen-Lesart" : "zählbar heute" })]),
+        counted !== null ? el("div", { class: "ek-f1" }, [el("span", { class: "ek-num ek-big", text: a.count.toLocaleString("de-DE") }), el("b", { class: "ek-mut", text: "mit klarer Struktur (A–C)" })]) : null]));
       if (open !== null && a.count) tile.append(el("div", { class: "ek-seg2", "aria-hidden": "true" }, [el("i", { class: "is-up", style: "width:" + w(up) }), open ? el("i", { class: "is-mid", style: "width:" + w(open) }) : null, el("i", { class: "is-dn", style: "width:" + w(dn) })]),
         el("p", { class: "ek-kopf-l ek-xs ek-b7" }, [el("span", { text: "▲ " + up + " nach oben" }), open ? el("span", { class: "ek-mut", text: "◆ " + open + " offen" }) : null, el("span", { text: "▼ " + dn + " nach unten" })]));
     }
     tile.append(el("button", { type: "button", class: "ek-cover", "aria-haspopup": "dialog", "aria-label": (a ? a.count + " von " + a.n + " Aktien zählbar, " + up + " nach oben, " + dn + " nach unten. " : "") + "Erklärung öffnen", onclick: function () {
       pop("ek-kopf-pop", "Wo lassen sich Wellen zählen?", [el("p", { class: "el-tag" }, [el("span", { class: "vu-ltag", text: "Elliott" }), frag(U.pro()), asOf ? el("span", { class: "vu-ltag", text: "Wochencharts " + weekday(asOf) }) : null]),
-        el("p", { class: "el-sheet-p", text: "Elliott ist ein experimentelles Strukturmodell. Es passt nur, wenn der Chart sauber in Wellen verläuft. Das ist selten." }),
-        a ? el("p", { class: "el-sheet-p", text: "Heute anwendbar: " + a.count.toLocaleString("de-DE") + " von " + a.n.toLocaleString("de-DE") + " Aktien. Gut anwendbar: " + a.high + ". Bei allen anderen zeigt die Aktie die Marktstruktur aus Technical." }) : null,
+        el("p", { class: "el-sheet-p", text: "Elliott ist ein experimentelles Strukturmodell. Jede Aktie bekommt die beste regelkonforme Wellen-Lesart mit Klarheit A bis D; klar zählbar ist nur ein kleiner Teil." }),
+        a ? el("p", { class: "el-sheet-p", text: (typeof a.counted === "number" ? "Eine Wellen-Lesart haben " + a.counted.toLocaleString("de-DE") + " von " + a.n.toLocaleString("de-DE") + " Aktien. " : "") + "Klare Struktur (Klarheit A–C, Stammaktien ab 5 $): " + a.count.toLocaleString("de-DE") + ", davon sehr klar: " + a.high + ". Alle anderen Lesarten tragen Klarheit D: der Chart lässt mehrere Zählungen zu." }) : null,
         frag(U.help(INV_HELP)), el("p", { class: "vu-mu vu-xs el-exp", text: EXP_LINE }),
         el("button", { class: "vu-btn vu-btn--line vu-btn--block ek-ok", type: "button", text: "Wellen in 3 Minuten", onclick: function () { var p = document.getElementById("ek-kopf-pop"); if (p) U.closeSheet(p); openAbout(); } })]);
     } }));
@@ -461,8 +463,8 @@
         return el("a", { class: "ek-tile ek-tap ek-stat", role: "listitem", href: "#/?neu=1&art=" + KIND[k][2] }, [el("span", { class: "ek-num ek-lc", text: String(by[k].length) }), el("b", { class: "ek-xs", text: KIND[k][0] }), el("span", { class: "ek-xs ek-mut", text: KIND[k][1] })]); })));
     var lg = lagen();
     if (lg.length) host.append(sh("Wellenlagen", null, null, "ek-lagen"), el("p", { class: "ek-sub ek-sm ek-mut", text: "Bilder: Schema je Lage, keine echten Kurse." }), el("div", { class: "ek-rail", role: "list", "aria-label": "Wellenlagen" }, lg));
-    host.append(sh("Zählbar heute", a && a.count ? M.ZAEHLBAR_HASH : null, a ? "Alle " + a.count : null), el("p", { class: "ek-sub ek-sm ek-mut", text: "Ungültig: Schließt die Woche jenseits der Marke, gilt die Zählung nicht mehr." }),
-      !a || !a.rows.length ? noCountBox(a) : el("div", { class: "ek-rail", role: "list", "aria-label": "Zählbar heute" }, a.rows.slice(0, 8).map(countTile)));
+    host.append(sh("Klar zählbar", a && a.count ? M.ZAEHLBAR_HASH : null, a ? "Alle " + a.count : null), el("p", { class: "ek-sub ek-sm ek-mut", text: "Ungültig: Schließt die Woche jenseits der Marke, gilt die Zählung nicht mehr." }),
+      !a || !a.rows.length ? noCountBox(a) : el("div", { class: "ek-rail", role: "list", "aria-label": "Klar zählbar" }, a.rows.slice(0, 8).map(countTile)));
     host.append(el("div", { class: "ek-find" }, [buildSearch("", false)]), sh("Lernen"),
       el("button", { class: "ek-tile ek-tap ek-row1 el-about", type: "button", "aria-haspopup": "dialog", onclick: openAbout }, [el("span", { class: "vu-hud", style: "--vu-hud:40px" }, [frag(U.glyph("book", 20))]),
         el("span", { class: "ek-f1" }, [el("b", { class: "ek-b8", text: "Wellen in 3 Minuten" }), el("span", { class: "ek-xs ek-mut", text: "Impuls, Korrektur, warum Zählungen oft wechseln" })]), frag(U.glyph("next", 18))]),
@@ -476,7 +478,7 @@
   }
   function zaehlbarView(host) {
     var a = M.applicableOf(state.home);
-    host.append(head("Zählbar heute", a ? a.count + " von " + a.n.toLocaleString("de-DE") + " Aktien, bei denen sich die Wellen laut Engine sauber zählen lassen. Wochencharts, Stand " + M.dateDe(a.asOf) + "." : null));
+    host.append(head("Klar zählbar", a ? a.count + " Stammaktien ab 5 $ mit Klarheit A–C, bei denen sich die Wellen laut Engine sauber zählen lassen. Wochencharts, Stand " + M.dateDe(a.asOf) + "." : null));
     if (!a || !a.rows.length) { host.append(noCountBox(a)); return; }
     var shown = Math.min(a.rows.length, state.shown);
     host.append(countList(a.rows.slice(0, shown)));

@@ -38,6 +38,9 @@ export const WAVE_OF_TYPE = { WAVE_3: "3", WAVE_5: "5", WAVE_C: "C" };
 export const MIN_ROW = 3;      // kleinere Gruppen bilden keine Reihe, bleiben aber ueber den Filter erreichbar
 export const ROW_CAP = 24;     // Karten je Reihe auf der Startseite; der Rest ueber "Alle ansehen"
 export const RECENT_DAYS = 2;
+/* Elliott-Neustart (Owner 22.11.2026): die Liste „klar zählbar“ zeigt nur Stammaktien ohne Identitaetskonflikt ab MIN_PRICE (wie die
+   Discover-Reihen, discoverRows: ab 5 $). Vorzugsaktien und Pennystocks bleiben ueber die Suche erreichbar. counted = Titel mit Lesart. */
+export const MIN_PRICE = 5;
 const RECENT_EVENTS = { CREATED: "NEW", CONFIRMED: "CONFIRMED", ROLE_CHANGED: "ROLE", REVISED: "REVISED", BASE_PROJECTION_REACHED: "ZONE", EXTENDED_PROJECTION_REACHED: "ZONE", EXTREME_PROJECTION_REACHED: "ZONE" };
 const RECENT_PRIORITY = { CONFIRMED: 0, ROLE: 1, NEW: 2, ZONE: 3, REVISED: 4 };
 
@@ -172,6 +175,9 @@ export function cardsOfDocument(symbol, doc, names) {
   /* Wertpapierart und Identitaet aus der Universumsliste: nur Stammaktien (keine Vorzugsaktien, ETFs, Anleihen); Titel mit
      Identitaetskonflikt (Kennzeichen ic) zeigt die Aktienseite mit Hinweis, die Startseite zeigt sie nicht. */
   if (!entry || entry.t !== "COMMON_STOCK" || entry.ic) return [];
+  /* Elliott-Neustart (Owner 22.11.2026): keine Pennystocks auf der Startseite (Schluss der Analyse unter MIN_PRICE). */
+  const px = doc.price && num(doc.price.close);
+  if (px !== null && px < MIN_PRICE) return [];
   const out = [], seen = new Set();
   let ordinal = 0;
   for (const proj of [doc.projectionWeekly, doc.projection]) {
@@ -192,12 +198,18 @@ export function cardsOfDocument(symbol, doc, names) {
 export const APPLICABLE = new Set(["HIGH", "MODERATE"]);
 const LEVEL = { HIGH: 0, MODERATE: 1, MEDIUM: 1, LOW: 2 };
 const lvl = (x) => (x in LEVEL ? LEVEL[x] : 3);
+function listable(r, names) {
+  const e = names && names.size ? names.get(r.t) : null;
+  if (names && names.size && (!e || e.t !== "COMMON_STOCK" || e.ic)) return false;
+  return num(r.close) !== null && r.close >= MIN_PRICE;
+}
 export function applicableOf(rows, names) {
-  const pick = (rows || []).filter((r) => r && APPLICABLE.has(r.elliottApplicable));
+  const pick = (rows || []).filter((r) => r && APPLICABLE.has(r.elliottApplicable) && listable(r, names));
   pick.sort((a, b) => lvl(a.elliottApplicable) - lvl(b.elliottApplicable) || lvl(a.elliottClarity) - lvl(b.elliottClarity)
     || lvl(a.relabelRisk) - lvl(b.relabelRisk) || (a.t < b.t ? -1 : a.t > b.t ? 1 : 0));
   return {
     n: (rows || []).length,
+    counted: (rows || []).filter((r) => r && r.elliott).length,
     count: pick.length,
     high: pick.filter((r) => r.elliottApplicable === "HIGH").length,
     asOf: pick.reduce((m, r) => (r.asOf && (!m || r.asOf > m) ? r.asOf : m), null),
