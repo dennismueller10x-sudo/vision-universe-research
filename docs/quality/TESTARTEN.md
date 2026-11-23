@@ -24,7 +24,7 @@ Die Liste stammt aus zwei Quellen: Text-Scan (`scripts/quality/test-inputs.mjs`,
 | Kategorie | Anzahl |
 |---|---|
 | datenzustand-offen (Ziel: Datenqualitaet) | 9 |
-| fixture-offen (Ziel: eingefrorene Kopie) | 35 |
+| fixture-offen (Ziel: eingefrorene Kopie) | 37 |
 | schema-vertrag (darf lesen) | 186 |
 | scan-fehlalarm (Scan meldet, Test liest nicht) | 30 |
 
@@ -177,9 +177,12 @@ Bereits umgestellt: `discover/tests/market-detail.test.mjs` und `core/tests/char
 | `quant/tests/product-identity-release.test.mjs` | 13 | fixture-offen | HOCH | quant/data |
 | `quant/tests/published-close.test.mjs` | 82 | fixture-offen | HOCH | quant/data |
 | `quant/tests/real-backtest-read.test.mjs` | 17 | fixture-offen | HOCH | quant/data |
+| `quant/tests/real-weekly-backtest.test.mjs` | 21 | fixture-offen | HOCH | quant/data |
+| `quant/tests/survivorship-control.test.mjs` | 42 | fixture-offen | HOCH | quant/data |
 | `quant/tests/technical-unavailability.test.mjs` | 56 | fixture-offen | HOCH | quant/data |
 | `quant/tests/total-return-contract.test.mjs` | 132 | fixture-offen | HOCH | quant/data |
 | `quant/tests/v13b-largecap-strict.test.mjs` | 20 | fixture-offen | HOCH | quant/data |
+| `quant/tests/weekly-benchmark-batch.test.mjs` | 42 | fixture-offen | HOCH | quant/data |
 | `quant/tests/market-scale.test.mjs` | – | schema-vertrag (dyn.) | unbekannt | quant/data |
 | `quant/tests/market-signal-contract.test.mjs` | – | schema-vertrag (dyn.) | unbekannt | quant/data |
 | `quant/tests/market-store.test.mjs` | 175 | scan-fehlalarm | HOCH | – |
@@ -199,7 +202,6 @@ Bereits umgestellt: `discover/tests/market-detail.test.mjs` und `core/tests/char
 | `quant/tests/security-master-weekly.test.mjs` | 15 | fixture-offen | HOCH | quant/data |
 | `quant/tests/security-type-safety.test.mjs` | 52 | fixture-offen | MITTEL | discover/data, quant/data |
 | `quant/tests/stock-page-shards.test.mjs` | 24 | fixture-offen | MITTEL | discover/data, quant/data |
-| `quant/tests/survivorship-control.test.mjs` | 42 | fixture-offen | HOCH | quant/data |
 | `quant/tests/quant-app-view-model.test.mjs` | – | schema-vertrag (dyn.) | unbekannt | discover/data, quant/data |
 | `quant/tests/quant-home-golden-five.test.mjs` | 7 | schema-vertrag | NIEDRIG | quant/data |
 | `quant/tests/radar-event-quarantine.test.mjs` | – | schema-vertrag (dyn.) | unbekannt | quant/data |
@@ -260,23 +262,14 @@ Bereits umgestellt: `discover/tests/market-detail.test.mjs` und `core/tests/char
 | `quant/tests/tiingo2-publication.test.mjs` | 37 | schema-vertrag | NIEDRIG | – |
 | `quant/tests/tiingo2-refresh.test.mjs` | 30 | scan-fehlalarm | HOCH | – |
 | `quant/tests/total-return-verification.test.mjs` | 121 | scan-fehlalarm | HOCH | quant/data |
-| `quant/tests/universe-source.test.mjs` | 17 | schema-vertrag | NIEDRIG | quant/data |
-| `quant/tests/us-security-master-artefacts.test.mjs` | 44 | schema-vertrag | NIEDRIG | quant/data |
-| `quant/tests/v10-corporate-actions.test.mjs` | – | schema-vertrag (dyn.) | unbekannt | quant/data |
-| `quant/tests/v10-population.test.mjs` | 17 | schema-vertrag | NIEDRIG | quant/data |
-| `quant/tests/v12-largecap.test.mjs` | 20 | schema-vertrag | NIEDRIG | quant/data |
-| `quant/tests/valuation-consistency.test.mjs` | 133 | schema-vertrag | NIEDRIG | discover/data, quant/data |
-| `quant/tests/vercel-preview-boundary.test.mjs` | 44 | schema-vertrag | NIEDRIG | – |
+| `scripts/supertrader/tests/sf-sf9-e2e.test.mjs` | 35 | datenzustand-offen | MITTEL | supertrader/data |
+| `scripts/vu2/browser-qa.mjs` | 37 | datenzustand-offen | MITTEL | – |
+| `scripts/supertrader/tests/sf-sf8-candidates.test.mjs` | 250 | fixture-offen | HOCH | supertrader/data |
 | `screener/tests/europe-close-metrics.test.mjs` | 64 | schema-vertrag | NIEDRIG | discover/data |
 | `scripts/supertrader/tests/artifacts.test.mjs` | 9 | schema-vertrag | NIEDRIG | supertrader/data |
 | `scripts/supertrader/tests/discover-availability.test.mjs` | 18 | scan-fehlalarm | MITTEL | – |
-| `scripts/supertrader/tests/sf-sf9-e2e.test.mjs` | 35 | datenzustand-offen | MITTEL | supertrader/data |
-| `scripts/vu2/browser-qa.mjs` | 37 | datenzustand-offen | MITTEL | – |
-| `technical/tests/technical-world-context.test.mjs` | 25 | fixture-offen | HOCH | quant/data, supertrader/data |
 | `scripts/supertrader/tests/payload-slices.test.mjs` | 13 | schema-vertrag | NIEDRIG | supertrader/data |
 | `scripts/supertrader/tests/prune-dead-refs.test.mjs` | 19 | scan-fehlalarm | HOCH | – |
-| `scripts/supertrader/tests/sf-sf8-candidates.test.mjs` | 250 | fixture-offen | HOCH | supertrader/data |
-| `technical/tests/technical-world.test.mjs` | 123 | fixture-offen | HOCH | technical/data |
 | `scripts/supertrader/tests/r5.test.mjs` | 9 | schema-vertrag | NIEDRIG | supertrader/data |
 | `scripts/supertrader/tests/r6.test.mjs` | 13 | schema-vertrag | NIEDRIG | supertrader/data |
 | `scripts/supertrader/tests/seitenhuellen-drift.test.mjs` | 16 | schema-vertrag | NIEDRIG | supertrader/data, supertrader/stock |
@@ -284,6 +277,14 @@ Bereits umgestellt: `discover/tests/market-detail.test.mjs` und `core/tests/char
 | `scripts/supertrader/tests/sf-mc3-evidence-matrix.test.mjs` | – | schema-vertrag (dyn.) | unbekannt | quant/data, supertrader/data |
 | `scripts/supertrader/tests/sf-mc3-product-wording.test.mjs` | 58 | schema-vertrag | NIEDRIG | quant/data, supertrader/data |
 | `scripts/supertrader/tests/sf-product-contract.test.mjs` | 154 | scan-fehlalarm | HOCH | – |
+| `technical/tests/technical-world-context.test.mjs` | 25 | fixture-offen | HOCH | quant/data, supertrader/data |
+| `quant/tests/universe-source.test.mjs` | 17 | schema-vertrag | NIEDRIG | quant/data |
+| `quant/tests/us-security-master-artefacts.test.mjs` | 44 | schema-vertrag | NIEDRIG | quant/data |
+| `quant/tests/v10-corporate-actions.test.mjs` | – | schema-vertrag (dyn.) | unbekannt | quant/data |
+| `quant/tests/v10-population.test.mjs` | 17 | schema-vertrag | NIEDRIG | quant/data |
+| `quant/tests/v12-largecap.test.mjs` | 20 | schema-vertrag | NIEDRIG | quant/data |
+| `quant/tests/valuation-consistency.test.mjs` | 133 | schema-vertrag | NIEDRIG | discover/data, quant/data |
+| `quant/tests/vercel-preview-boundary.test.mjs` | 44 | schema-vertrag | NIEDRIG | – |
 | `scripts/supertrader/tests/sf-screener-export.test.mjs` | 7 | schema-vertrag | NIEDRIG | supertrader/data |
 | `scripts/supertrader/tests/sf-sf8-daily.test.mjs` | – | schema-vertrag (dyn.) | unbekannt | discover/data, quant/data |
 | `scripts/supertrader/tests/sf-sf8-data-adapter.test.mjs` | 39 | scan-fehlalarm | HOCH | – |
@@ -292,6 +293,7 @@ Bereits umgestellt: `discover/tests/market-detail.test.mjs` und `core/tests/char
 | `scripts/supertrader/tests/snapshot.test.mjs` | 39 | scan-fehlalarm | HOCH | – |
 | `scripts/supertrader/tests/st-recipe-names.test.mjs` | 28 | schema-vertrag | NIEDRIG | supertrader/data |
 | `scripts/supertrader/tests/validation.test.mjs` | 161 | scan-fehlalarm | HOCH | – |
+| `technical/tests/technical-world.test.mjs` | 123 | fixture-offen | HOCH | technical/data |
 | `technical/tests/technical-assistant.test.mjs` | 18 | schema-vertrag | NIEDRIG | technical/data |
 | `technical/tests/technical-data-contract.test.mjs` | 15 | schema-vertrag | NIEDRIG | technical/data |
 | `technical/tests/technical-e2e-consistency.test.mjs` | 24 | schema-vertrag | NIEDRIG | quant/data, technical/data |

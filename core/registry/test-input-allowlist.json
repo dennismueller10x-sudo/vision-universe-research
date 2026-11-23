@@ -1432,6 +1432,16 @@
       "harteWerte": 0
     },
     {
+      "file": "quant/tests/real-weekly-backtest.test.mjs",
+      "kategorie": "fixture-offen",
+      "liest": [
+        "quant/data"
+      ],
+      "grund": "23.11.2026: Einfrieren nicht möglich, Test liest Live-Artefakte mit festen Erwartungen; Ziel bleibt eine eingefrorene Kopie.",
+      "einfrierenVersucht": "23.11.2026: startet Python-Gegenrechner (verify-real-weekly-backtest.py), der live liest: Node auf Bündel und Python live laufen auseinander",
+      "harteWerte": 4
+    },
+    {
       "file": "quant/tests/realtime-integration.test.mjs",
       "kategorie": "schema-vertrag",
       "dynamisch": true,
@@ -2064,6 +2074,16 @@
       "kategorie": "schema-vertrag",
       "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
       "harteWerte": 0
+    },
+    {
+      "file": "quant/tests/weekly-benchmark-batch.test.mjs",
+      "kategorie": "fixture-offen",
+      "liest": [
+        "quant/data"
+      ],
+      "grund": "23.11.2026: Einfrieren nicht möglich, Test liest Live-Artefakte mit festen Erwartungen; Ziel bleibt eine eingefrorene Kopie.",
+      "einfrierenVersucht": "23.11.2026: startet Python-Gegenrechner (verify-real-weekly-backtest.py), der live liest: Node auf Bündel und Python live laufen auseinander (CI-Rot in #2299, 23.11.2026)",
+      "harteWerte": 3
     },
     {
       "file": "screener/tests/europe-close-metrics.test.mjs",
