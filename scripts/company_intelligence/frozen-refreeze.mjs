@@ -15,6 +15,8 @@ import {universeConfig} from './universe-approval.mjs';
 import {approval} from './production-approval.mjs';
 import {objectPool} from './bounded-objects.mjs';
 import {projectUniverseCohort} from './universe-projection.mjs';
+import {freezeStatus,FREEZE_LIFETIME_MS,FREEZE_WARNING_MS} from './freeze-expiry.mjs';
+import {universeApproved} from './universe-approval.mjs';
 /* The frozen rollback may trail the live legacy GOOD by at most this much when
    activation accepts a certified re-freeze; the legacy GOOD moves on between the
    two separate dispatches (and during the long activation audit). */
@@ -138,21 +140,34 @@ export async function refreezeRollback(driver,{temporary,fetchDelivery,expectGen
    Dieselben Sicherungen wie `refreezeRollback`: Schutzzustand vorher/nachher, Archiv des alten Zeigers,
    Kandidat im inaktiven Slot, Compare-and-Swap, Readback aus leerem Verzeichnis, sonst Wiederherstellung.
    Schreibt nur im Rollback-Namensraum; Legacy-GOOD, Universe-GOOD, Aktivierung und Gate bleiben byte-gleich. */
-export async function refreezeFromUniverse(driver,{temporary,fetchDelivery,expectGeneration=null,now=Date.now,codeSha='local'}){
+export async function refreezeFromUniverse(driver,{temporary,fetchDelivery,expectGeneration=null,now=Date.now,codeSha='local',recoverExpired=false}){
  const namespace=universeConfig.rollbackNamespace,source=universeConfig.consumerNamespace;
  const before=await snapshot(driver);
  // 1. Nur bei aktivem Universum (sonst gilt der Legacy-Weg `refreezeRollback`).
+ //    recoverExpired (Entscheidung Steuerung 23.11.2026): Sackgasse "Freeze abgelaufen UND Gate zu". Nur dann ist
+ //    die Welt ROLLBACK_46 mit geschlossenem Gate (DISABLED); der Freeze muss EXPIRED sein.
  const activation=await bytesOf(driver,activationKey());
- assert(activation,'PROJECTION_REQUIRES_ACTIVE_UNIVERSE');
- {const p=JSON.parse(activation);assert(p.schema===1&&p.approvalId===universeConfig.approvalId&&p.state==='AVAILABLE','PROJECTION_REQUIRES_ACTIVE_UNIVERSE');}
+ assert(activation,recoverExpired?'RECOVER_EXPIRED_REQUIRES_ROLLBACK_46':'PROJECTION_REQUIRES_ACTIVE_UNIVERSE');
+ {const p=JSON.parse(activation);assert(p.schema===1&&p.approvalId===universeConfig.approvalId&&p.state===(recoverExpired?'ROLLBACK_46':'AVAILABLE'),recoverExpired?'RECOVER_EXPIRED_REQUIRES_ROLLBACK_46':'PROJECTION_REQUIRES_ACTIVE_UNIVERSE');}
+ if(recoverExpired){
+  const gateRaw=await bytesOf(driver,prefixFor(approval.namespace)+'gate.json'),gate=gateRaw&&JSON.parse(gateRaw);
+  assert(gate?.schema===1&&gate.approvalId===approval.approvalId&&gate.state==='DISABLED','RECOVER_EXPIRED_REQUIRES_CLOSED_GATE');
+ }
  // 2. Aktuelles Universe-GOOD.
  const universeBytes=await bytesOf(driver,goodKey(source));
  const universe=await goodState(driver,source);
  assert(universe&&universe.manifest.scope==='PER_ISSUER_ELIGIBILITY','PROJECTION_UNIVERSE_GOOD_REQUIRED');
  if(expectGeneration)assert.equal(universe.generation,expectGeneration,'REFREEZE_EXPECTED_GENERATION_MISMATCH');
+ if(recoverExpired){
+  // 3'. Kein ausgeliefertes GOOD vorhanden (Gate zu): stattdessen muss das Universe-GOOD freigegeben, voll und
+  //     fuer die naechsten 48 h gueltig sein; seine Projektion erbt generatedAt und damit dessen Restlaufzeit.
+  assert(universeApproved(universe.manifest)&&Object.keys(universe.manifest.eligibility).length>45,'RECOVER_EXPIRED_UNIVERSE_GOOD_NOT_APPROVED');
+  assert(Date.parse(universe.manifest.generatedAt)+FREEZE_LIFETIME_MS-now()>=FREEZE_WARNING_MS,'RECOVER_EXPIRED_UNIVERSE_GOOD_TOO_OLD');
+ }else{
  // 3. Produktion liefert genau dieses GOOD aus (live abgenommener Stand).
  const live=await fetchDelivery();
  assert(live?.status==='PASS'&&live.generation===universe.generation&&live.issuers===Object.keys(universe.manifest.eligibility).length&&live.cohortStocks===universe.manifest.tickers.length,'PROJECTION_LIVE_NOT_UNIVERSE_GOOD');
+ }
  // 4. Bestehender Freeze: nur er darf ersetzt werden, nur per CAS.
  const oldBytes=await bytesOf(driver,goodKey(namespace));
  const old=await goodState(driver,namespace);
@@ -163,6 +178,8 @@ export async function refreezeFromUniverse(driver,{temporary,fetchDelivery,expec
   await verifyRollbackReadback(driver,{expected:old,directory:join(temporary,'refreeze-readback')});
   return {status:'ALREADY_CURRENT',generation:old.generation,previousGeneration:null,projectedFrom:{namespace:source,generation:universe.generation},stockCount:46,issuerCount:45,...flags};
  }
+ // (Nach ALREADY_CURRENT: Wiederholung bleibt ungefaehrlich.) Nur ein ABGELAUFENER Freeze darf so ersetzt werden; ein gueltiger wird ueber den normalen Weg erneuert.
+ if(recoverExpired)assert.equal(freezeStatus({manifest:old.manifest,generation:old.generation},now()).state,'EXPIRED','RECOVER_EXPIRED_FREEZE_NOT_EXPIRED');
  assert(Date.parse(universe.manifest.generatedAt)>Date.parse(old.manifest.generatedAt),'REFREEZE_NOT_NEWER_THAN_EXISTING_FREEZE');
  // 5. Projektion in ein leeres Verzeichnis (jede uebernommene Datei hash-geprueft).
  const directory=join(temporary,'refreeze-projection');

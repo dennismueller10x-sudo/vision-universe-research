@@ -58,6 +58,11 @@ jobs:
             rc=0
             node scripts/company_intelligence/backlog-slo.mjs --verdict "$out" || rc=$?
           fi
+          # Frischealarm Rollback-Freeze (freeze-slo.mjs): WARNING ab 5 Tagen, CRITICAL ab 6 Tagen oder abgelaufen. Hebt nur an.
+          if [ "$rc" -le 1 ] && [ -s "$out" ]; then
+            rc=0
+            node scripts/company_intelligence/freeze-slo.mjs --verdict "$out" || rc=$?
+          fi
           case "$rc" in
             0) ;;
             1) echo "::error::Company Intelligence SLO CRITICAL (verdict in artifact company-intelligence-refresh-slo-${GITHUB_RUN_ID})" ;;

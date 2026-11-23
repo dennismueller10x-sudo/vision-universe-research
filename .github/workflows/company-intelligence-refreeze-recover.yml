@@ -1,0 +1,69 @@
+name: Company Intelligence Refreeze Recover Expired
+# Notfall-Pfad gegen die Sackgasse "Rollback-Freeze abgelaufen UND Gate zu" (Steuerung 23.11.2026).
+# Nur von Hand (workflow_dispatch, kein Zeitplan), nur mit confirm=recover-expired.
+# Einzige schreibende Aktion: `universe-release.mjs refreeze --from-universe --recover-expired`.
+# Der neue Freeze ist die 46er-Projektion des frischen, freigegebenen Universe-GOOD (Readback-, Archiv- und
+# CAS-Pruefungen wie beim Auto-Re-Freeze). Gate, Aktivierung, Universe-GOOD, Pages und Produktion bleiben unberuehrt.
+# Danach laeuft die normale Wiederherstellung (company-intelligence-profile-source.yml, recover_full_scope).
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Zur Bestaetigung genau: recover-expired'
+        type: string
+        required: true
+      expect_generation:
+        description: 'Optional: genaue Generation (24 Hex) des Universe-GOOD, aus dem eingefroren wird'
+        type: string
+        required: false
+permissions:
+  contents: read
+# Gleiche Gruppe wie Refresh, Universe-Release und Auto-Re-Freeze: nie parallel zu einem schreibenden Lauf.
+concurrency:
+  group: company-intelligence-continuous-production
+  cancel-in-progress: false
+jobs:
+  recover:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+      VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+      VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+      VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+      VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Require confirmation and optional generation (fail closed)
+        env:
+          CONFIRM: ${{ inputs.confirm }}
+          EXPECT_GENERATION: ${{ inputs.expect_generation }}
+        run: |
+          set -euo pipefail
+          [ "$CONFIRM" = "recover-expired" ] || { echo "::error::confirm must be exactly recover-expired"; exit 1; }
+          if [ -n "$EXPECT_GENERATION" ] && ! [[ "$EXPECT_GENERATION" =~ ^[0-9a-f]{24}$ ]]; then
+            echo "::error::expect_generation must be 24 lowercase hex characters"; exit 1
+          fi
+      - name: Re-freeze the 46 rollback from the fresh approved universe GOOD (closed gate, expired freeze)
+        env:
+          CONFIRM: ${{ inputs.confirm }}
+          EXPECT_GENERATION: ${{ inputs.expect_generation }}
+        run: |
+          set -euo pipefail
+          args=()
+          if [ -n "$EXPECT_GENERATION" ]; then args+=(--expect-generation "$EXPECT_GENERATION"); fi
+          node scripts/company_intelligence/universe-release.mjs refreeze --from-universe --recover-expired --confirm "$CONFIRM" --temporary "$RUNNER_TEMP/universe-release" "${args[@]}"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: refreeze-recover-${{ github.run_id }}
+          path: ${{ runner.temp }}/universe-release/evidence/release.json
+          if-no-files-found: ignore
+          retention-days: 30

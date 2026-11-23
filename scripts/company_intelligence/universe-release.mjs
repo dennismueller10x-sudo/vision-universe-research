@@ -67,7 +67,11 @@ try{
   // --from-universe: bei aktivem Universum die 46er-Projektion des live ausgelieferten Universe-GOOD einfrieren
   // (frozen-refreeze.mjs#refreezeFromUniverse); --expect-generation nennt dann die Universe-Generation.
   const options={temporary,fetchDelivery:()=>fetchLiveDelivery(),expectGeneration:args.includes('--expect-generation')?arg('--expect-generation'):null};
-  const result=args.includes('--from-universe')?await refreezeFromUniverse(driver,{...options,codeSha:process.env.GITHUB_SHA||'local'}):await refreezeRollback(driver,options);
+  // --recover-expired (Steuerung 23.11.2026): Sackgasse abgelaufener Freeze + geschlossenes Gate. Nur von Hand, nur mit
+  // --confirm recover-expired, nur aus dem frischen Universe-GOOD; Gate, Aktivierung und Pages bleiben unberuehrt.
+  const recoverExpired=args.includes('--recover-expired');
+  if(recoverExpired)assert(args.includes('--from-universe')&&arg('--confirm')==='recover-expired','RECOVER_EXPIRED_CONFIRMATION_REQUIRED');
+  const result=args.includes('--from-universe')?await refreezeFromUniverse(driver,{...options,codeSha:process.env.GITHUB_SHA||'local',recoverExpired}):await refreezeRollback(driver,options);
   save(result);console.log(JSON.stringify({status:result.status,generation:result.generation,previousGeneration:result.previousGeneration,...(result.projectedFrom?{projectedFrom:result.projectedFrom}:{})}));
  }else if(args[0]==='restore-legacy'){
   // Setzt den Legacy-good.json-Zeiger (LEGACY_FALLBACK/fehlt) aus dem verifizierten eingefrorenen Rollback neu; oeffnet das Gate nie, fasst Aktivierung, Universe-GOOD und privaten Stand nicht an.
