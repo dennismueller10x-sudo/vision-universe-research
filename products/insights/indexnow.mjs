@@ -3,6 +3,7 @@
 //
 //   node products/insights/indexnow.mjs vergleichen --neu <site>/insights/sitemap.xml --out <datei>
 //   node products/insights/indexnow.mjs melden --liste <datei> [--trocken]
+//   node products/insights/indexnow.mjs www --vorher <alter bericht> --bericht <neuer bericht>   (www.visionuniverse.de)
 //
 // Ablauf in pages-release.yml: Der Paket-Job holt VOR dem Ausrollen die noch ausgelieferte Sitemap und die Schlüsseldatei
 // und vergleicht sie mit der frisch gebauten Sitemap (`vergleichen`). Neu sind Adressen, die es vorher nicht gab oder
@@ -12,6 +13,7 @@
 //
 // Der Schlüssel ist öffentlich (so verlangt es IndexNow) und liegt als <schlüssel>.txt im Wurzelverzeichnis der Seite.
 import fs from 'node:fs';
+import crypto from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -110,10 +112,57 @@ async function melden() {
   else warn(`HTTP ${r.status} ${text}`);
 }
 
+// www.visionuniverse.de (Cloudflare Pages, ohne eigenen Release-Lauf): täglich im Teil search-console von content.yml.
+// Gemeldet werden Seiten der www-Sitemap, deren Text sich seit dem letzten Bericht geändert hat (Fingerabdruck des
+// sichtbaren Texts, ohne Skripte, Stile und Cloudflare-E-Mail-Schutz). Die Fingerabdrücke stehen im Search-Console-Bericht
+// (Feld indexnowWww), der im Datenzweig liegt; ohne Vorstand werden alle Seiten gemeldet.
+export const WWW = 'https://www.visionuniverse.de';
+export function fingerabdruck(html) {
+  const t = String(html || '').replace(/<(script|style)\b[\s\S]*?<\/\1>/gi, ' ').replace(/<[^>]+>/g, ' ')
+    .replace(/\[email(?:&#160;|\s)protected\]/g, ' ').replace(/\s+/g, ' ').trim();
+  return crypto.createHash('sha256').update(t).digest('hex').slice(0, 20);
+}
+export function wwwGeaendert(neu, vorher = {}) {
+  return Object.keys(neu).filter((u) => vorher[u] !== neu[u]);
+}
+export const wwwGesperrt = (robots) => /^\s*Disallow:\s*\/\s*$/mi.test(String(robots || ''));
+
+async function www() {
+  const vorherPfad = arg('--vorher'), berichtPfad = arg('--bericht');
+  if (!berichtPfad) throw new Error('www braucht --bericht');
+  const bericht = fs.existsSync(berichtPfad) ? JSON.parse(fs.readFileSync(berichtPfad, 'utf8')) : {};
+  let vorher = {};
+  try { vorher = JSON.parse(fs.readFileSync(vorherPfad, 'utf8')).indexnowWww?.hashes || {}; } catch { /* erster Lauf */ }
+  const ergebnis = { stand: new Date().toISOString(), hashes: vorher, gemeldet: [], status: null };
+  const schreiben = () => { bericht.indexnowWww = ergebnis; fs.writeFileSync(berichtPfad, JSON.stringify(bericht, null, 1) + '\n'); };
+  const robots = await holen(`${WWW}/robots.txt`).catch(() => ({ status: 0, text: '' }));
+  if (robots.status !== 200 || wwwGesperrt(robots.text)) { ergebnis.status = 'gesperrt (robots.txt)'; schreiben(); console.log('IndexNow www: robots.txt sperrt Suchmaschinen, keine Meldung'); return; }
+  const karte = await holen(`${WWW}/sitemap.xml`).catch(() => ({ status: 0, text: '' }));
+  const urls = [...sitemapEintraege(karte.text).keys()].filter((u) => u.startsWith(WWW + '/'));
+  if (!urls.length) { ergebnis.status = `keine Sitemap (HTTP ${karte.status})`; schreiben(); warn(`www: ${ergebnis.status}`); return; }
+  const hashes = {};
+  for (const u of urls) { try { const r = await holen(u); if (r.status === 200) hashes[u] = fingerabdruck(r.text); } catch { /* beim nächsten Lauf */ } }
+  const liste = wwwGeaendert(hashes, vorher);
+  ergebnis.hashes = { ...vorher, ...hashes };
+  if (!liste.length) { ergebnis.status = 'nichts geändert'; schreiben(); console.log(`IndexNow www: ${urls.length} Seiten, nichts geändert`); return; }
+  const key = schluessel();
+  const k = await holen(`${WWW}/${key}.txt`).catch(() => ({ status: 0, text: '' }));
+  if (k.status !== 200 || k.text.trim() !== key) { ergebnis.hashes = vorher; ergebnis.status = 'Schlüssel auf www nicht erreichbar'; schreiben(); warn('www: Schlüsseldatei nicht erreichbar, keine Meldung'); return; }
+  const body = { host: new URL(WWW).host, key, keyLocation: `${WWW}/${key}.txt`, urlList: liste.slice(0, MAX_ADRESSEN) };
+  try {
+    const r = await fetch(ENDPUNKT, { method: 'POST', headers: { 'content-type': 'application/json; charset=utf-8' }, body: JSON.stringify(body), signal: AbortSignal.timeout(30000) });
+    ergebnis.status = `HTTP ${r.status}`;
+    if (r.status === 200 || r.status === 202) { ergebnis.gemeldet = body.urlList; console.log(`IndexNow www: ${liste.length} Adresse(n) gemeldet (HTTP ${r.status})`); }
+    else { ergebnis.hashes = vorher; warn(`www: HTTP ${r.status} ${(await r.text()).slice(0, 200)}`); }
+  } catch (e) { ergebnis.hashes = vorher; ergebnis.status = 'Meldung gescheitert'; warn(`www: ${e.message}`); }
+  for (const u of ergebnis.gemeldet) console.log('  ' + u);
+  schreiben();
+}
+
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const befehl = process.argv[2];
-  const lauf = befehl === 'vergleichen' ? vergleichen : befehl === 'melden' ? melden : null;
-  if (!lauf) { console.error('Aufruf: indexnow.mjs vergleichen|melden …'); process.exit(2); }
+  const lauf = befehl === 'vergleichen' ? vergleichen : befehl === 'melden' ? melden : befehl === 'www' ? www : null;
+  if (!lauf) { console.error('Aufruf: indexnow.mjs vergleichen|melden|www …'); process.exit(2); }
   // Kein Abbruch des Ausrollens wegen IndexNow: Fehler werden Warnungen.
   lauf().catch((e) => { warn(e.message); });
 }

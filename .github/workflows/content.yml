@@ -332,6 +332,14 @@ jobs:
           set -euo pipefail
           node products/insights/search-console.mjs --out seo/search-console/latest.json | tee "$RUNNER_TEMP/gsc.txt"
           { echo '### Search Console (Insights)'; echo '```'; cat "$RUNNER_TEMP/gsc.txt"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+      # IndexNow fuer www.visionuniverse.de (products/insights/indexnow.mjs www): Seiten mit geaendertem Text seit dem letzten
+      # Bericht an Bing und alle IndexNow-Suchen melden. Vorstand = Bericht im Datenzweig (nur lesend). Fehler sind Warnungen.
+      - name: IndexNow www (geaenderte Seiten)
+        run: |
+          set -uo pipefail
+          git fetch --no-tags --depth=1 origin data/live || true
+          git show origin/data/live:seo/search-console/latest.json > "$RUNNER_TEMP/gsc-vorher.json" 2>/dev/null || echo '{}' > "$RUNNER_TEMP/gsc-vorher.json"
+          node products/insights/indexnow.mjs www --vorher "$RUNNER_TEMP/gsc-vorher.json" --bericht seo/search-console/latest.json
       - name: In den Datenzweig (nur main)
         if: github.ref == 'refs/heads/main'
         run: scripts/ci/push-data-branch.sh data/live seo/search-console/latest.json
