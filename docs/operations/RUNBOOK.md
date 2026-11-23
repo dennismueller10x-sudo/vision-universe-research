@@ -179,3 +179,4 @@ Offen, braucht eine UI-Schutz-Revision mit Owner-Freigabe (`scripts/vu2/browser-
 **Nebenbefund:** Die Universums-Bereinigung (#2054) löste `UNEXPLAINED_PUBLIC_IDENTITY_REMAPPING` aus und wurde mit #2055 zurückgenommen; der Schutz in `universe-regression.mjs` bleibt unverändert.
 
 **Live belegen:** `company-intelligence/data/index.json` mit `state:AVAILABLE`, `company-intelligence/config/rollout.js` mit `stage:1` und ohne `productionOff`.
+
