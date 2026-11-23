@@ -294,6 +294,18 @@ Ein Muster gilt, wenn das Ereignis in den letzten 21 Sitzungen eintrat und noch 
 Elf feste Depots mit je 25 Titeln (je Muster „+ Faktoren“ und „nur Muster“, dazu „nur Faktoren“); Urteil je Muster wie §4g,
 Holm über die fünf Hypothesen. Episodic Pivot und Parabolic Short bleiben offen (Tagesverlauf bzw. Leerverkauf).
 
+**Ergebnis Stufe 6** (Lauf 45211526160, 01/2014 bis 09/2026, 153 Monate, nach Kosten; SPY 14,1 % p. a.):
+- **Alle fünf Muster: nicht belegt** (p nach Holm jeweils 1,0).
+- Pocket Pivot: + Faktoren 16,0 % (+2,0 Pp, max. Verlust −32,7 %, 7 von 13 Jahren vorn), nur Muster 12,2 % (−1,8 Pp, −50,4 %);
+  praktisch gleichauf mit „nur Faktoren“ (16,3 %). Im Mittel 278 Kandidaten: das Muster ist häufig und schränkt kaum ein.
+- Kullamägi 3,5 % / 5,5 %, Gap-Up 3,8 % / 3,5 %, Holy Grail 4,3 % / 2,5 %, Darvas-Kasten 10,0 % / 7,7 % (+ Faktoren / nur Muster).
+- **Einschränkung, die das Ergebnis dieser vier Muster erklärt:** Sie sind selten. Im Mittel gibt es 17 bis 46 Kandidaten unter
+  den 1.000 liquidesten Titeln, und das Depot „+ Faktoren“ stand bei Kullamägi 43, bei Holy Grail und Darvas-Kasten je 40 von
+  153 Monaten in Kasse (0 %). Die Form „monatliches Depot mit 25 Titeln“ misst bei seltenen Ereignissen vor allem die Zeit ohne
+  Kandidaten, nicht die Güte des Ereignisses. Gap-Up war fast immer investiert und liegt trotzdem in allen Teilzeiträumen hinten.
+- Folgerung: Für seltene Ereignisse ist die richtige Messung eine Ereignisstudie (Verlauf nach dem Ereignis gegen die
+  Vergleichsgruppe desselben Tages, wie die Technical-Evidenz), kein Monatsdepot. Eigener Schritt, vorab festzulegen.
+
 ## 5. Ausführung und Veröffentlichung
 
 - Umsetzung: `scripts/research/backtest2/` (Markt, Signale, Depotführung, Suche, Lauf mit Workern). Workflow `research.yml`, Teil
