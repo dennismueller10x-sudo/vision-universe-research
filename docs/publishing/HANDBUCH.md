@@ -231,6 +231,18 @@ Adressen, Kopfangaben, Feed, Sitemap und `artikel.json` bleiben unverändert, de
 
 ## 9. Suche: Plan für die Freischaltung der ganzen Website
 
+**Stand 23.11.2026: www.visionuniverse.de ist für Suchmaschinen freigegeben** (Owner-Entscheidung). Der Schalter ist
+`landing/publication.json` (`"main": "production"`; zurück auf noindex mit `"preview"`): der Cloudflare-Bau des Zweigs `main`
+liefert damit `index, follow`, eine erlaubende `robots.txt` (alle Such- und KI-Crawler), `/sitemap.xml` und kein
+`X-Robots-Tag`; Vorschau-Zweige bleiben gesperrt, der Datenschutz-Gate bleibt. Der Bau ergänzt je Seite strukturierte
+Daten aus den eigenen Angaben der Seite (`landing/scripts/seo.mjs`: Startseite `Organization`, `WebSite`, `FAQPage` aus
+dem Fragenblock; `/app/` `WebApplication`; übrige Seiten `WebPage` mit `BreadcrumbList`) und `/llms.txt`. Produkt-Titel
+tragen den Satz aus dem Menü („Quant: Das Zeugnis jeder Aktie“). Täglich 02:23 UTC (`content.yml`, Teil `search-console`)
+reicht die Search Console beide Sitemaps ein, prüft die Indexierung der www-Seiten und wertet Klicks und Suchbegriffe
+für www getrennt aus (`www` im Bericht); danach meldet IndexNow jede www-Seite, deren Text sich geändert hat
+(`indexnow.mjs www`, Fingerabdrücke im Bericht unter `indexnowWww`). `research.visionuniverse.de` bleibt bis auf
+`/insights/` hinter der Passwortmaske.
+
 Stand 11.11.2026: nur `/insights/` ist öffentlich und indexierbar (Sitemap, Search Console, IndexNow). Die Freischaltung
 weiterer Bereiche entscheidet der Owner; dieser Plan sagt, was dafür technisch vorbereitet wird.
 

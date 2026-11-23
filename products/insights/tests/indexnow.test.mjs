@@ -52,3 +52,22 @@ test('IN-5 · pages-release meldet nach dem Ausrollen, nur lesend, ohne eigenen 
   // Der Vergleich steht vor dem Hochladen der Auslieferung, also vor dem Ausrollen.
   assert.ok(wf.indexOf('indexnow.mjs vergleichen') < wf.indexOf('actions/upload-pages-artifact'));
 });
+
+test('IN-6 · www: Fingerabdruck nur über sichtbaren Text, Änderungen und Sperre erkennen', async () => {
+  const { fingerabdruck, wwwGeaendert, wwwGesperrt } = await import('../indexnow.mjs');
+  const a = '<html><head><script src="/x.js?v=1"></script><style>b{}</style></head><body><p>Hallo <a href="/cdn-cgi/l/email-protection#ab">[email&#160;protected]</a> Welt</p></body></html>';
+  const b = a.replace('?v=1', '?v=2').replace('#ab', '#cd').replace('b{}', 'i{}');
+  assert.equal(fingerabdruck(a), fingerabdruck(b), 'Asset-Versionen, Stile und E-Mail-Schutz ändern nichts');
+  assert.notEqual(fingerabdruck(a), fingerabdruck(a.replace('Welt', 'Börse')));
+  assert.deepEqual(wwwGeaendert({ u1: 'x', u2: 'y', u3: 'z' }, { u1: 'x', u2: 'alt' }), ['u2', 'u3']);
+  assert.ok(wwwGesperrt('User-agent: *\nDisallow: /\n'));
+  assert.ok(!wwwGesperrt('User-agent: *\nAllow: /\nSitemap: https://www.visionuniverse.de/sitemap.xml\n'));
+  assert.ok(!wwwGesperrt('User-agent: *\nDisallow: /konto/\n'));
+});
+
+test('IN-7 · content.yml meldet www im Teil search-console, nur lesend aus dem Datenzweig', () => {
+  const wf = fs.readFileSync(path.join(root, '.github/workflows/content.yml'), 'utf8');
+  const teil = wf.slice(wf.indexOf('\n  search-console:'));
+  assert.match(teil, /indexnow\.mjs www --vorher "\$RUNNER_TEMP\/gsc-vorher\.json" --bericht seo\/search-console\/latest\.json/);
+  assert.ok(teil.indexOf('indexnow.mjs www') < teil.indexOf('push-data-branch.sh'), 'vor dem Schreiben in den Datenzweig');
+});

@@ -1,7 +1,9 @@
 import {readFile, writeFile, mkdir, cp, rm, readdir} from 'node:fs/promises';
+import {readFileSync} from 'node:fs';
 import {resolve, dirname, relative, isAbsolute} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {createHash} from 'node:crypto';
+import {mitStrukturiertenDaten, llmsTxt} from './seo.mjs';
 
 export const root = fileURLToPath(new URL('../', import.meta.url));
 // Story-Website (Owner 17.11.2026): Unterseiten neben index.html; Bilder, Stil und Skript unter web/.
@@ -105,7 +107,9 @@ export async function build({output = resolve(root,'dist'), config = {}, product
   for(const asset of ['marktbriefing/mb.css','marktbriefing/mb.js']){try{stamp[asset]=createHash('sha256').update(await readFile(resolve(output,asset))).digest('hex').slice(0,16);}catch{/* noch nicht vorhanden */}}
   const stampPage=(page,prefix)=>{for(const asset of Object.keys(stamp))page=page.replaceAll(`"${prefix}${asset}"`,`"${prefix}${asset}?v=${stamp[asset]}"`);return page;};
   html=stampPage(html,'./').replace('<meta name="vu-ga" content="">',`<meta name="vu-ga" content="${ga}">`);
+  html=mitStrukturiertenDaten('index.html',html);
   await writeFile(resolve(output,'index.html'),html);
+  const llmsSeiten=[{pfad:'index.html',html}];
   for(const path of [...SITE_PAGES,...mbPages]){
     let page=await readFile(resolve(output,path),'utf8');
     if(path==='start/index.html')page=formState(page);
@@ -114,6 +118,8 @@ export async function build({output = resolve(root,'dist'), config = {}, product
     page=page.replace('<link rel="stylesheet" href="/assets/site-navigation.css">','').replace('<vu-navigation></vu-navigation>','').replace('<script src="/assets/site-navigation.js"></script>','');
     page=page.replace('<head>','<head>\n  <meta http-equiv="Content-Security-Policy" content="'+esc(csp)+'">\n  <meta name="referrer" content="no-referrer">');
     if (production) page = page.replace('content="noindex, nofollow"','content="index, follow"');
+    if (SITE_PAGES.includes(path)) { page = mitStrukturiertenDaten(path, page); llmsSeiten.push({pfad:path,html:page}); }
+    else if (path === 'marktbriefing/index.html') llmsSeiten.push({pfad:path,html:page});
     await writeFile(resolve(output,path),stampPage(page,'../'.repeat(path.split('/').length-1)).replace('<meta name="vu-ga" content="">',`<meta name="vu-ga" content="${ga}">`));
   }
   // The partner presentation is shared by direct link only and stays out of search.
@@ -147,6 +153,10 @@ export async function build({output = resolve(root,'dist'), config = {}, product
     await writeFile(resolve(output,'policies',alias,'index.html'),legal.replaceAll('href="../','href="../../'));
   }
   await writeFile(resolve(output,'.nojekyll'),'');
+  // Suche (docs/publishing/HANDBUCH.md §9): llms.txt für KI-Suchen, IndexNow-Schlüssel (derselbe wie auf research, IndexNow
+  // prüft ihn je Host unter /<schlüssel>.txt).
+  await writeFile(resolve(output,'llms.txt'),llmsTxt(llmsSeiten));
+  for (const f of (await readdir(root)).filter(f=>/^[0-9a-f]{32}\.txt$/.test(f))) await cp(resolve(root,f),resolve(output,f));
   await writeFile(resolve(output,'robots.txt'),production?'User-agent: *\nAllow: /\nSitemap: https://www.visionuniverse.de/sitemap.xml\n':'User-agent: *\nDisallow: /\n');
   if (production) await writeFile(resolve(output,'sitemap.xml'),'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://www.visionuniverse.de/</loc></url>'+[...SITE_PAGES,...mbPages].map(p=>'<url><loc>https://www.visionuniverse.de/'+p.replace('index.html','')+'</loc></url>').join('')+'</urlset>');
   // Advanced-mode source contains binding names, never credential values.
@@ -155,12 +165,20 @@ export async function build({output = resolve(root,'dist'), config = {}, product
   const files = await readdir(output);
   return {newsletter:ready?'Eigene Formularoberfläche; geschützte Brevo-DOI-API':'BLOCKIERT: Newsletter-Anmeldung geschlossen',mode:production?'production':'preview',output,entries:files.length};
 }
+// Veröffentlichungsmodus: Für den Produktionszweig (Cloudflare: CF_PAGES_BRANCH=main) entscheidet landing/publication.json im
+// Repository (Owner 23.11.2026: www öffentlich und für Suchmaschinen freigegeben). Vorschau-Zweige bleiben immer preview/noindex.
+// Der Datenschutz-Gate bleibt: production ohne LANDING_PRIVACY_REVIEWED=true bricht den Bau ab.
+export function publicationModeFor(env = {}, file = JSON.parse(readFileSync(resolve(root,'publication.json'),'utf8'))) {
+  if (env.CF_PAGES_BRANCH === 'main' && ['preview','production'].includes(file.main)) return file.main;
+  if (env.CF_PAGES_BRANCH && env.CF_PAGES_BRANCH !== 'main') return 'preview';
+  return env.LANDING_PUBLICATION_MODE || 'preview';
+}
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const args = process.argv.slice(2);
   const configArg = args.find(a=>a.startsWith('--config='))?.slice(9);
   const outputArg = args.find(a=>a.startsWith('--out='))?.slice(6);
   try {
-    const publicationMode=process.env.LANDING_PUBLICATION_MODE||'preview';
+    const publicationMode=publicationModeFor(process.env);
     if(!['preview','production'].includes(publicationMode))throw new Error('Ungültiger Veröffentlichungsmodus.');
     const hasEnv=['NEWSLETTER_FORM_MODE','LANDING_PRIVACY_REVIEWED','LANDING_PRIVACY_HTML_PATH'].some(k=>process.env[k]);
     const config=configArg?JSON.parse(await readFile(resolve(configArg),'utf8')):hasEnv?{

@@ -54,6 +54,8 @@ www ergänzt Cloudflares E-Mail-Obfuskation (`/cdn-cgi/scripts/.../email-decode.
 
 ## Datenschutz und tatsächlicher Veröffentlichungsmodus
 
+**Seit 23.11.2026 (Owner): Produktionsbau für `main` über `landing/publication.json`** (`publicationModeFor` in `scripts/build.mjs`; Vorrang vor `LANDING_PUBLICATION_MODE`, nur für `CF_PAGES_BRANCH=main`). Der Datenschutz-Gate bleibt: ohne `LANDING_PRIVACY_REVIEWED=true` bricht der Bau ab. Der folgende Abschnitt beschreibt den Stand davor.
+
 **Öffentlich erreichbar, aber als Vorschau gebaut:** Meta-Robots und `X-Robots-Tag` sind `noindex, nofollow`; `robots.txt` enthält `Disallow: /`. `/sitemap.xml` liefert HTML-Fallback statt XML. HTTP 200 und erfolgreiche Builds sind keine finale Inhalts-/Datenschutzfreigabe.
 
 Live unter `/datenschutz/`: **„Datenschutzhinweise zur Vorschau – Vision Universe“**, `data-policy-status="draft"`. Der [Cloudflare-spezifische Entwurf](privacy-cloudflare.draft.html) ist vorbereitet, aber **nicht** die live ausgelieferte Erklärung und nicht freigegeben.

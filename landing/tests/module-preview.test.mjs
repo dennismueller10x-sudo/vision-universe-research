@@ -25,7 +25,8 @@ test('Story-Website: alle Produkte, Originalsymbole, Datenstand, keine fremden Q
   assert.match(index,/<!--NEWS:pubs-->[\s\S]+<!--\/NEWS:pubs-->/);assert.match(index,/<!--NEWS:tv-->[\s\S]+<!--\/NEWS:tv-->/);
   for(const path of ['index.html',...SITE_PAGES]){
     const html=await readFile(resolve(output,path),'utf8');
-    assert.doesNotMatch(html,/<style\b|<script(?![^>]*\bsrc=)[^>]*>/,`${path}: kein Inline-Stil oder -Skript (CSP)`);
+    // Strukturierte Daten (application/ld+json) sind ein Datenblock, kein ausführbares Skript; CSP betrifft sie nicht.
+    assert.doesNotMatch(html,/<style\b|<script(?![^>]*\b(?:src=|type="application\/ld\+json"))[^>]*>/,`${path}: kein Inline-Stil oder -Skript (CSP)`);
     assert.doesNotMatch(html,/(?:src|poster)="https?:/,`${path}: keine fremden Bilder oder Filme`);
     assert.doesNotMatch(html,/href="#"/,`${path}: keine Platzhalter-Links`);
     assert.doesNotMatch(html.replace(/keine (?:Anlage)?[Ee]mpfehlung/g,''),/Empfehlung|Kaufsignal|Kursziel|\bSignal/,`${path}: Wortwahl`);

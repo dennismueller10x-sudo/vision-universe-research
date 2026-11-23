@@ -1,4 +1,4 @@
-// Insights: Google-Search-Console-Bericht für den Tageslauf (intern, nicht ausgeliefert).
+// Insights und www: Google-Search-Console-Bericht für den Tageslauf (intern, nicht ausgeliefert).
 //   GSC_SERVICE_ACCOUNT_JSON='<json>' node products/insights/search-console.mjs --out <datei> [--ohne-sitemap] [--ohne-pruefung]
 // Meldet sich mit dem Dienstkonto an (JWT, RS256, ohne Abhängigkeiten), reicht die Insights-Sitemap ein, prüft für die
 // neuesten Artikel den Indexierungsstand (URL-Prüfung) und holt Klicks, Impressionen, Klickrate und Position der letzten
@@ -13,6 +13,9 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 export const PROPERTY = 'sc-domain:visionuniverse.de';
 export const BASIS = 'https://research.visionuniverse.de';
 export const SITEMAP = BASIS + '/insights/sitemap.xml';
+export const WWW = 'https://www.visionuniverse.de';
+// Alle eingereichten Sitemaps der Domain-Property (www seit 23.11.2026 öffentlich).
+export const SITEMAPS = [SITEMAP, WWW + '/sitemap.xml'];
 const SCOPE = 'https://www.googleapis.com/auth/webmasters';
 const MAX_PRUEFUNGEN = 30;
 
@@ -72,8 +75,12 @@ async function main() {
   const bericht = { schema: 'vu-search-console-1', erzeugt: new Date().toISOString(), property: PROPERTY, konto: konto.client_email, hinweise: [] };
 
   if (!process.argv.includes('--ohne-sitemap')) {
-    try { await call('PUT', wm + '/sitemaps/' + encodeURIComponent(SITEMAP)); bericht.sitemapEingereicht = SITEMAP; }
-    catch (e) { bericht.hinweise.push('Sitemap: ' + e.message); }
+    bericht.sitemapsEingereicht = [];
+    for (const sm of SITEMAPS) {
+      try { await call('PUT', wm + '/sitemaps/' + encodeURIComponent(sm)); bericht.sitemapsEingereicht.push(sm); }
+      catch (e) { bericht.hinweise.push('Sitemap ' + sm + ': ' + e.message); }
+    }
+    bericht.sitemapEingereicht = bericht.sitemapsEingereicht.includes(SITEMAP) ? SITEMAP : undefined;
   }
   try {
     const s = await call('GET', wm + '/sitemaps');
@@ -90,16 +97,26 @@ async function main() {
     Object.assign(bericht, auswerten({ gesamt, seiten, begriffe, tage }));
     const dom = await call('POST', wm + '/searchAnalytics/query', { startDate: tag(von), endDate: tag(bis), dimensions: [], rowLimit: 1, dataState: 'all' });
     bericht.domainGesamt = dom.rows?.[0] ? zeile(dom.rows[0]) : null;
+    // www.visionuniverse.de: dieselbe Auswertung je Seite und Suchbegriff (Adressen ohne Host).
+    const wf = [{ filters: [{ dimension: 'page', operator: 'contains', expression: WWW + '/' }] }];
+    const qw = (dimensions, rowLimit) => call('POST', wm + '/searchAnalytics/query', { startDate: tag(von), endDate: tag(bis), dimensions, dimensionFilterGroups: wf, rowLimit, dataState: 'all' }).then((r) => r.rows || []);
+    const [wg, ws, wb] = await Promise.all([qw([], 1), qw(['page'], 200), qw(['query', 'page'], 200)]);
+    const w = auswerten({ gesamt: wg, seiten: ws, begriffe: wb });
+    const ohneHost = (u) => u.replace(WWW, '');
+    bericht.www = { gesamt: w.insights, seiten: w.seiten.map((x) => ({ ...x, url: ohneHost(x.url) })), begriffe: w.begriffe.map((x) => ({ ...x, url: ohneHost(x.url) })) };
   } catch (e) { bericht.hinweise.push('Suchanalyse: ' + e.message); }
 
   // URL-Prüfung (Kontingent 2.000 je Tag): Übersicht und die neuesten Artikel.
   if (!process.argv.includes('--ohne-pruefung')) {
     const liste = JSON.parse(fs.readFileSync(path.join(root, 'insights/artikel.json'), 'utf8')).artikel;
-    const urls = ['/insights/', ...[...liste].sort((a, b) => b.datum.localeCompare(a.datum)).map((a) => a.href)].slice(0, MAX_PRUEFUNGEN);
+    let wwwUrls = [];
+    try { const r = await fetch(WWW + '/sitemap.xml'); if (r.ok) wwwUrls = [...(await r.text()).matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]).filter((u) => u.startsWith(WWW + '/')); } catch { /* ohne www-Prüfung */ }
+    const urls = ['/insights/', ...[...liste].sort((a, b) => b.datum.localeCompare(a.datum)).map((a) => a.href)].slice(0, MAX_PRUEFUNGEN)
+      .concat(wwwUrls.slice(0, MAX_PRUEFUNGEN));
     bericht.indexierung = [];
     for (const u of urls) {
       try {
-        const r = await call('POST', 'https://searchconsole.googleapis.com/v1/urlInspection/index:inspect', { inspectionUrl: BASIS + u, siteUrl: PROPERTY, languageCode: 'de-DE' });
+        const r = await call('POST', 'https://searchconsole.googleapis.com/v1/urlInspection/index:inspect', { inspectionUrl: u.startsWith('http') ? u : BASIS + u, siteUrl: PROPERTY, languageCode: 'de-DE' });
         const x = r.inspectionResult?.indexStatusResult || {};
         bericht.indexierung.push({ url: u, urteil: x.verdict || null, stand: x.coverageState || null, zuletztGecrawlt: x.lastCrawlTime || null, robots: x.robotsTxtState || null, indexierbar: x.indexingState || null, kanonisch: x.googleCanonical || null });
       } catch (e) { bericht.indexierung.push({ url: u, fehler: e.message }); }
@@ -109,7 +126,7 @@ async function main() {
   fs.mkdirSync(path.dirname(out), { recursive: true });
   fs.writeFileSync(out, JSON.stringify(bericht, null, 1) + '\n');
   const ix = bericht.indexierung || [];
-  console.log(`Search Console ${bericht.zeitraum.von} bis ${bericht.zeitraum.bis}: Insights ${bericht.insights?.klicks ?? '?'} Klicks, ${bericht.insights?.impressionen ?? '?'} Impressionen; indexiert ${ix.filter((x) => x.urteil === 'PASS').length}/${ix.length}`);
+  console.log(`Search Console ${bericht.zeitraum.von} bis ${bericht.zeitraum.bis}: Insights ${bericht.insights?.klicks ?? '?'} Klicks, ${bericht.insights?.impressionen ?? '?'} Impressionen; www ${bericht.www?.gesamt?.klicks ?? '?'} Klicks, ${bericht.www?.gesamt?.impressionen ?? '?'} Impressionen; indexiert ${ix.filter((x) => x.urteil === 'PASS').length}/${ix.length}`);
   for (const x of ix) console.log(`  ${x.url}: ${x.fehler ? 'Fehler ' + x.fehler : (x.urteil || '?') + ' · ' + (x.stand || '?') + (x.zuletztGecrawlt ? ' · gecrawlt ' + x.zuletztGecrawlt.slice(0, 10) : '')}`);
   for (const s of bericht.sitemaps || []) console.log(`  Sitemap ${s.pfad}: gelesen ${s.gelesen || 'noch nicht'}, ${s.eingereicht} Adressen, ${s.fehler} Fehler`);
   for (const h of bericht.hinweise) console.log('Hinweis: ' + h);
