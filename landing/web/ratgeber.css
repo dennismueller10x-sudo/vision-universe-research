@@ -1,9 +1,8 @@
 /* Ratgeber (landing/scripts/ratgeber.mjs): Übersicht, Themenwelten, Artikel, Grafiken, Startseiten-Balken.
    Farben wie die Website: Schwarz, Weiß, Grau, Neongrün (--lime). */
 .rg{--rg-hair:#e9e9e9;--rg-soft:#f5f5f4;--rg-ink:#0a0a0a;--rg-mute:#6e6e6e;--rg-lime:var(--lime,#c8f531);--rg-red:#ff5a4e;padding-bottom:40px}
-.rg .w{max-width:1176px;margin:0 auto;padding:0 20px}
-@media(min-width:1000px){.rg .w{padding:0 52px}}
-.rg mark{background:var(--rg-lime);color:#000;padding:0 .1em;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.rg .w{max-width:1176px;margin-left:auto;margin-right:auto;padding-left:20px;padding-right:20px}
+@media(min-width:1000px){.rg .w{padding-left:52px;padding-right:52px}}
 .rg-ic{flex:none}
 .rg-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 .rg-gk{display:block;font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--rg-mute)}
@@ -66,7 +65,7 @@
 .rg-cta{margin-top:56px;display:flex;flex-wrap:wrap;gap:18px;align-items:center;justify-content:space-between;background:var(--rg-ink);color:#fff;border-radius:28px;padding:28px}
 .rg-cta b{font-size:clamp(22px,2.6vw,30px);font-weight:900;letter-spacing:-.02em;display:block}
 .rg-cta p{color:#bbb;margin-top:6px}
-@media(min-width:1000px){.rg-cta{margin-left:52px;margin-right:52px;padding:30px 36px}}
+@media(min-width:1000px){.rg-cta{padding:30px 36px}}
 .rg-zur{margin-top:28px;font-weight:800}
 .rg-leer{margin-top:24px;font-weight:700;color:var(--rg-mute)}
 
@@ -79,7 +78,6 @@
 @media(min-width:1100px){.rg-body{grid-template-columns:minmax(0,720px) 290px;justify-content:space-between}}
 .rg-text{min-width:0}
 .rg-kurz{background:var(--rg-ink);color:#fff;border-radius:24px;padding:24px;position:relative;overflow:hidden}
-.rg-kurz:after{content:"";position:absolute;right:-70px;top:-70px;width:140px;height:140px;border-radius:50%;background:var(--rg-lime);opacity:.16;pointer-events:none}
 .rg-kurz span{font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--rg-lime)}
 .rg-kurz p{margin-top:10px;font-size:17px;line-height:1.6}
 .rg-toc{margin-top:20px;border:1.5px solid var(--rg-hair);border-radius:20px;padding:18px 20px}
@@ -110,12 +108,12 @@
 @media(min-width:1100px){.rg-side{display:block}.rg-side-in{position:sticky;top:96px;border:1.5px solid var(--rg-hair);border-radius:22px;padding:20px}
 .rg-side ol{margin:10px 0 0 18px;padding:0}.rg-side li{margin-top:8px;font-weight:700;font-size:14px;color:#777}.rg-side li a.on,.rg-side li a:hover{color:#000}
 .rg-side-app{margin-top:20px;background:var(--rg-ink);color:#fff;border-radius:18px;padding:18px}.rg-side-app b{font-size:19px;font-weight:900;line-height:1.15;display:block}.rg-side-app p{color:#bbb;font-size:14px;margin:6px 0 14px}.rg-side-app .rg-btn{padding:10px 14px;font-size:14px}}
-.rg-app{display:flex;gap:20px;align-items:center;margin-top:44px;background:#f3f8e1;border-radius:26px;padding:22px}
-.rg-app-ph{width:110px;height:200px;border-radius:20px;border:4px solid #000;overflow:hidden;flex:none;background:#000}
+.rg-app{display:flex;gap:20px;align-items:center;margin-top:44px;background:#0b0b0b;color:#fff;border-radius:28px;padding:22px}
+.rg-app-ph{width:110px;height:200px;border-radius:20px;border:4px solid #262626;overflow:hidden;flex:none;background:#000}
 .rg-app-ph img{width:100%;height:auto;display:block}
 .rg-app b{display:block;font-size:20px;font-weight:900;line-height:1.2;margin-top:6px;letter-spacing:-.01em}
-.rg-app p{font-size:15px;color:#444;margin:6px 0 14px}
-.rg-app .rg-gk{color:#4d6a00}
+.rg-app p{font-size:15px;color:#bdbdbd;margin:6px 0 14px}
+.rg-app .rg-gk{color:var(--rg-lime)}
 @media(min-width:700px){.rg-app-ph{width:140px;height:250px}}
 .rg-faq details{border-top:1.5px solid var(--rg-hair)}
 .rg-faq details:last-child{border-bottom:1.5px solid var(--rg-hair)}
@@ -267,3 +265,74 @@
 @media(prefers-reduced-motion:reduce){.rg *{animation:none!important;transition:none!important}}
 .rg-bar .rg-btn.lime{background:var(--lime,#c8f531);color:#000}
 @media(max-width:699px){.rg-formel{font-size:17px;gap:6px}.rg-formel span{padding:8px 10px}}
+
+/* Überarbeitung 23.11.2026: Landingpage-Stil der Website, keine Überschneidungen, nur Schwarz/Weiß/Grau/Neongrün */
+.rg .fh-copy h1{font-size:clamp(40px,6.6vw,80px);line-height:1.04;letter-spacing:-.05em;hyphens:manual;overflow-wrap:normal}
+@media(max-width:520px){.rg .fh-copy h1{overflow-wrap:anywhere;hyphens:auto}}
+.rg .rg-tag{margin-top:14px}
+.rg-ctas{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:26px}
+@media(max-width:999px){.rg-ctas{justify-content:center}}
+.rg-btn.ghost{background:#fff;color:#000;border:2px solid #000;padding:12px 18px}
+.rg-btn.ghost:hover{background:#000;color:#fff}
+.fh-btn.lime{background:var(--rg-lime,#c8f531);color:#000}
+.fh-btn.lime i{background:#000;color:var(--rg-lime,#c8f531)}
+/* Schaukarten im Kopf */
+.rg-hv{position:relative;width:min(100%,460px);height:430px;flex:none}
+.rg-hc{position:absolute;width:270px;background:#fff;border-radius:24px;padding:18px 20px;box-shadow:0 30px 60px -28px rgba(0,0,0,.45),0 0 0 1px rgba(0,0,0,.06);animation:rg-float 6s ease-in-out infinite}
+.rg-hc b{display:block;font-size:34px;font-weight:900;letter-spacing:-.04em;margin-top:6px;line-height:1}
+.rg-hc b small{font-size:14px;font-weight:700;letter-spacing:0;color:#666}
+.rg-hc.dark{background:#0b0b0b;color:#fff}.rg-hc.dark b small{color:#aaa}.rg-hc.dark .rg-gk{color:var(--rg-lime,#c8f531)}
+.rg-hc .rg-stack{height:16px;margin-top:14px;background:#262626}
+.rg-hc.c1{left:0;top:0}
+.rg-hc.c2{right:0;top:150px;animation-delay:-2s;transform:rotate(2deg)}
+.rg-hc.c3{left:30px;top:300px;animation-delay:-4s}
+.rg-muenzen.mini{grid-template-columns:repeat(15,1fr);gap:4px;margin-top:14px}
+.rg-mbars{display:flex;align-items:flex-end;gap:8px;height:44px;margin-top:12px}
+.rg-mbars i{flex:1;height:calc(var(--h) * 1%);background:var(--rg-lime,#c8f531);border-radius:6px 6px 0 0;box-shadow:inset 0 0 0 1.5px #000}
+@keyframes rg-float{0%,100%{translate:0 0}50%{translate:0 -8px}}
+@media(max-width:999px){.rg-hv{height:400px;width:min(100%,380px);margin:8px auto 0}.rg-hc{width:240px}.rg-hc.c2{top:140px}.rg-hc.c3{top:280px;left:10px}}
+/* Kacheln: Zähler unten */
+.rg-bento{padding-top:90px}
+.rg-tile-n{margin-top:auto;font-size:12.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#777;position:relative;z-index:1}
+.vw-tile.dark .rg-tile-n{color:#9a9a9a}
+.rg-facts{padding-top:90px}
+/* Band Altersvorsorgedepot */
+.rg-band{background:#0b0b0b;color:#fff;margin-top:100px;padding:80px 0}
+.rg-band .vw-h2 em{background:none;color:var(--rg-lime,#c8f531);padding:0}
+.rg-band-g{display:grid;gap:40px;align-items:center}
+@media(min-width:1000px){.rg-band-g{grid-template-columns:1.1fr 1fr}}
+.rg-band-s{margin:18px 0 26px;font-size:clamp(17px,1.6vw,20px);font-weight:600;color:#bdbdbd;max-width:40ch}
+.rg-zahlen{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.rg-zahlen li{background:#161616;border:1px solid #262626;border-radius:24px;padding:22px}
+.rg-zahlen li:first-child{background:var(--rg-lime,#c8f531);color:#000;border-color:transparent}
+.rg-zahlen b{display:block;font-size:clamp(28px,3vw,42px);font-weight:900;letter-spacing:-.04em;line-height:1;white-space:nowrap}
+.rg-zahlen span{display:block;margin-top:8px;font-weight:700;font-size:14.5px;color:#aaa}
+.rg-zahlen li:first-child span{color:#333}
+/* Start hier */
+.rg-start-s{padding-top:100px}
+.rg-path{display:grid;gap:14px;margin-top:36px;grid-template-columns:1fr}
+@media(min-width:700px){.rg-path{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1100px){.rg-path{grid-template-columns:repeat(5,1fr)}}
+.rg-step{display:flex;flex-direction:column;gap:12px;min-height:190px;padding:22px;border-radius:28px;background:#f3f3f1;transition:transform .4s var(--ease),box-shadow .4s}
+.rg-step:hover{transform:translateY(-5px);box-shadow:0 26px 50px -30px rgba(0,0,0,.4)}
+.rg-step i{display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:#000;color:var(--rg-lime,#c8f531);font-style:normal;font-weight:900;font-size:18px}
+.rg-step b{font-size:20px;font-weight:900;letter-spacing:-.02em;line-height:1.15}
+.rg-step .rg-more{margin-top:auto}
+.rg-step.bald{opacity:.6}
+/* Alle Ratgeber */
+.rg-alle{padding-top:100px}
+.rg-alle .rg-such{margin-top:28px}
+.rg-alle .rg-welt:first-of-type{margin-top:40px}
+.rg-bald-l{margin-top:12px;font-size:14px;font-weight:600;color:#888;line-height:1.6}
+.rg-cta{margin-top:90px}
+/* Artikel- und Themenkopf im Stil der Produktseiten, aber nicht bildschirmhoch */
+.rg-art-hero .fh-g{min-height:0!important;height:auto!important;padding-top:34px;padding-bottom:20px}
+.rg-art-hero .fh-ph{max-height:440px}
+.rg-art-hero .rg-meta{justify-content:inherit}
+@media(max-width:999px){.rg-art-hero .fh-phone{display:none}.rg-art-hero .fh-copy{text-align:left}.rg-art-hero .rg-crumb{justify-content:flex-start}}
+@media(min-width:1000px){.rg-art-hero .fh-copy{max-width:720px}}
+.rg-ov-hero .rg-crumb,.rg-art-hero .rg-crumb{margin-bottom:6px}
+@media(max-width:999px){.rg-ov-hero .rg-crumb{justify-content:center}}
+@media(min-width:1000px){.rg-art-hero .fh-phone{height:440px}.rg-art-hero .fh-ph{height:420px}}
+@media(max-width:999px){.rg-hv{height:auto;display:grid;gap:14px;justify-items:center}.rg-hc{position:static;width:min(100%,300px);transform:none!important;animation:none}.rg-hc.c2{justify-self:end}.rg-hc.c3{justify-self:start}}
+.rg-bento .vw-tile b,.rg-bento .vw-tile small{max-width:52%!important}

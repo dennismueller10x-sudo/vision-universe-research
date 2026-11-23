@@ -237,11 +237,12 @@ function artikelSeite(a, ctx) {
   const faq = (a.faq || []).length ? `<section class="rg-sec" id="fragen"><h2>Häufige Fragen</h2><div class="rg-faq">${a.faq.map((f) => `<details><summary>${esc(f.f)}<i aria-hidden="true">+</i></summary><p>${f.a}</p></details>`).join('')}</div></section>` : '';
   const weiter = (a.weiter || []).map((s) => artikel[s]).filter(Boolean).map((x) => karte(x, welten.welten.find((y) => y.id === x.welt), pre)).join('');
   const quellen = (a.quellen || []).map((q) => `<li>${q.url ? `<a href="${esc(q.url)}" rel="noopener">${esc(q.titel)}</a>` : esc(q.titel)}</li>`).join('');
+  const heldBild = a.app ? `<div class="fh-phone"><div class="fh-wrap"><div class="fh-ph"><img src="${pre}web/img/app/${a.app.bild}.jpg" alt="${esc(a.app.alt || 'Vision Universe App')}" width="390" height="844"></div></div></div>` : '';
   const body = `<article class="rg-art">
-<header class="rg-head w">${krumen(pre, [['Ratgeber', `${pre}ratgeber/`], [w.name, `${pre}ratgeber/thema/${w.id}/`], [a.kurztitel || a.titel, null]])}
+<section class="fh ps-hero rg-art-hero"><div class="w fh-g"><div class="fh-copy">${krumen(pre, [['Ratgeber', `${pre}ratgeber/`], [w.name, `${pre}ratgeber/thema/${w.id}/`], [a.kurztitel || a.titel, null]])}
 <span class="rg-tag"><span class="ic">${ic(w.icon, 16)}</span>${esc(w.name)}</span>
-<h1>${a.h1}</h1><p class="rg-sub">${esc(a.untertitel)}</p>
-<p class="rg-meta"><span class="rg-av" aria-hidden="true">VU</span>Redaktion Vision Universe · Stand ${datum(a.stand)} · ${lesezeit(a)} Min. Lesezeit</p></header>
+<h1>${a.h1}</h1><p class="fh-sub">${esc(a.untertitel)}</p>
+<p class="rg-meta"><span class="rg-av" aria-hidden="true">VU</span>Redaktion Vision Universe · Stand ${datum(a.stand)} · ${lesezeit(a)} Min. Lesezeit</p></div>${heldBild}</div></section>
 <div class="rg-body w"><div class="rg-text">
 <aside class="rg-kurz"><span>Kurz gesagt</span><p>${a.kurz}</p></aside>
 <nav class="rg-toc" aria-label="Inhalt"><span>Inhalt</span><ol>${toc}</ol></nav>
@@ -261,20 +262,47 @@ ${weiter ? `<section class="rg-weiter w"><h2>Weiterlesen</h2><div class="rg-grid
   return {pfad, stand: a.stand, html: seite({pfad, titel: a.seitentitel || `${a.titel} · Vision Universe Ratgeber`, beschreibung: a.beschreibung, ld, body, newsHtml})};
 }
 
+const WELT_BILD = {altersvorsorge: 'vorsorge', einstieg: 'discover', 'aktien-verstehen': 'apple', kennzahlen: 'fundamental', 'etf-sparplan': 'portfolios', investoren: 'hedgefonds'};
+const anzahlFertig = (w, artikel) => w.artikel.filter(([s]) => artikel[s]).length;
+
+// Kleine Schaukarten für den Kopf der Übersicht: zeigen, was die Grafiken in den Artikeln können.
+function schaukarten(D) {
+  const ko = D.aktien.KO, pep = D.aktien.PEP, k = ko.kurs / ko.gewinnJeAktie;
+  const muenzen = Array.from({length: 30}, (_, i) => `<i class="${i < Math.floor(k) ? 'f' : i < k ? 'h' : ''}"></i>`).join('');
+  return `<div class="rg-hv" aria-hidden="true">
+<div class="rg-hc c1"><span class="rg-gk">KGV · ${esc(ko.name)}</span><b>${zahl(k, 1)} <small>Jahresgewinne</small></b><div class="rg-muenzen mini">${muenzen}</div></div>
+<div class="rg-hc c2 dark"><span class="rg-gk">Altersvorsorgedepot 2027</span><b>+540 € <small>Zulage im Jahr</small></b><div class="rg-stack"><i class="du" style="--w:77"></i><i class="st" style="--w:23"></i></div></div>
+<div class="rg-hc c3"><span class="rg-gk">Dividende · ${esc(pep.name)}</span><b>${pct(pep.dividendenRendite)} <small>im Jahr</small></b><div class="rg-mbars"><i style="--h:100"></i><i style="--h:66"></i><i style="--h:53"></i><i style="--h:18"></i><i style="--h:8"></i></div></div>
+</div>`;
+}
+
 function uebersicht(ctx) {
-  const {welten, artikel, newsHtml} = ctx, pre = '../', W = welten.welten;
+  const {welten, artikel, daten, newsHtml} = ctx, pre = '../', W = welten.welten;
   const auf = artikel[welten.aufmacher];
-  const anzahl = W.reduce((n, w) => n + w.artikel.length, 0);
-  const start = welten.startHier.map((s, i) => { const a = artikel[s]; const t = a ? a.titel : W.flatMap((w) => w.artikel).find((x) => x[0] === s)?.[1]; return a ? `<li><a href="${pre}ratgeber/${s}/"><span class="rg-n">${i + 1}</span>${esc(t)}</a></li>` : `<li><span class="rg-n">${i + 1}</span>${esc(t)} <span class="rg-bald">Bald</span></li>`; }).join('');
-  const weltenHtml = W.map((w) => `<section class="rg-welt" id="${w.id}"><div class="rg-welt-h"><a href="${pre}ratgeber/thema/${w.id}/"><span class="rg-welt-ic">${ic(w.icon, 26)}</span><span><b>${esc(w.name)}</b><small>${esc(w.satz)}</small></span></a><span class="rg-gk">${w.artikel.length} Artikel</span></div><div class="rg-grid">${w.artikel.map(([s, t]) => (artikel[s] ? karte(artikel[s], w, pre) : bald(t, w))).join('')}</div></section>`).join('');
-  const body = `<header class="rg-hero w">${krumen(pre, [['Ratgeber', null]])}
-<h1>Geld und Börse,<br><mark>einfach erklärt.</mark></h1>
-<p class="rg-sub">${anzahl} Antworten auf die Fragen, die sich jeder stellt: von der ersten Aktie bis zum Altersvorsorgedepot. Mit Grafiken zum Ausprobieren und echten Beispielen.</p>
-<label class="rg-such"><span class="rg-sr">Ratgeber durchsuchen</span>${ic('<circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/>', 20)}<input type="search" placeholder="Wonach suchst du? z. B. KGV oder Sparplan" data-rg-such autocomplete="off"></label></header>
-<div class="rg-top w">${auf ? `<a class="rg-auf" href="${pre}ratgeber/${auf.slug}/"><div><span class="rg-tag lime">Neu · Gesetz ab 1. Januar 2027</span><b>${esc(auf.titel)}</b><p>${esc(auf.teaser)}</p><span class="rg-more">Lesen <span aria-hidden="true">→</span></span></div>${auf.app ? `<div class="rg-auf-ph"><img src="${pre}web/img/app/${auf.app.bild}.jpg" alt="" width="390" height="844"></div>` : ''}</a>` : ''}
-<div class="rg-start"><span class="rg-gk">Start hier</span><b>In 5 Schritten zur ersten Aktie</b><ol>${start}</ol></div></div>
-<div class="w rg-welten"><h2 class="rg-h2">Themenwelten</h2><nav class="rg-wnav" aria-label="Themenwelten">${W.map((w) => `<a href="#${w.id}">${ic(w.icon, 16)}${esc(w.name)}</a>`).join('')}</nav>${weltenHtml}<p class="rg-leer" hidden data-rg-leer>Dazu gibt es noch keinen Ratgeber. Schreib uns, was dich interessiert.</p></div>
-<section class="w rg-cta"><div><b>Was du hier liest, zeigt die App für jede Aktie.</b><p>KGV, Dividende, Schulden, große Fonds: in einfachen Sätzen, mit Datum und Quelle.</p></div><a class="rg-btn lime" href="${pre}#newsletter">Zum Start benachrichtigen <span aria-hidden="true">→</span></a></section>`;
+  const anzahl = W.reduce((n, w) => n + w.artikel.length, 0), fertig = Object.keys(artikel).length;
+  const tiles = W.map((w, i) => `<a class="vw-tile${['', ' dark', '', ' dark', '', ' dark'][i]}" href="${pre}ratgeber/thema/${w.id}/"><span class="vw-ti">${ic(w.icon, 22)}</span><b>${esc(w.name)}</b><small>${esc(w.satz)}</small><span class="rg-tile-n">${anzahlFertig(w, artikel) ? `${anzahlFertig(w, artikel)} von ${w.artikel.length} Artikeln` : 'Bald'}</span><span class="vw-shot"><img src="${pre}web/img/app/${WELT_BILD[w.id]}.jpg" alt="" loading="lazy"></span></a>`).join('');
+  const start = welten.startHier.map((s, i) => { const a = artikel[s]; const t = a ? a.titel : W.flatMap((w) => w.artikel).find((x) => x[0] === s)?.[1];
+    return a ? `<a class="rg-step" href="${pre}ratgeber/${s}/"><i>${i + 1}</i><b>${esc(t)}</b><span class="rg-more">Lesen <span aria-hidden="true">→</span></span></a>` : `<div class="rg-step bald"><i>${i + 1}</i><b>${esc(t)}</b><span class="rg-bald">Bald</span></div>`; }).join('');
+  const liste = W.map((w) => `<section class="rg-welt" id="${w.id}"><div class="rg-welt-h"><a href="${pre}ratgeber/thema/${w.id}/"><span class="rg-welt-ic">${ic(w.icon, 24)}</span><span><b>${esc(w.name)}</b><small>${esc(w.satz)}</small></span></a></div><div class="rg-grid">${w.artikel.filter(([s]) => artikel[s]).map(([s]) => karte(artikel[s], w, pre)).join('')}</div>${w.artikel.some(([s]) => !artikel[s]) ? `<p class="rg-bald-l"><span class="rg-bald">Bald</span> ${w.artikel.filter(([s]) => !artikel[s]).map(([, t]) => esc(t)).join(' · ')}</p>` : ''}</section>`).join('');
+  const body = `<section class="fh ps-hero rg-ov-hero"><div class="w fh-g"><div class="fh-copy">${krumen(pre, [['Ratgeber', null]])}
+<span class="rg-tag"><span class="ic">${ic(W[3].icon, 16)}</span>Ratgeber · ${fertig} Artikel</span>
+<h1>Geld und Börse, <mark>einfach erklärt.</mark></h1>
+<p class="fh-sub">Mit Grafiken zum Ausprobieren und echten Zahlen von echten Firmen.</p>
+<div class="rg-ctas"><a class="fh-btn" href="#start-hier">Jetzt starten <i aria-hidden="true">→</i></a>${auf ? `<a class="rg-btn ghost" href="${pre}ratgeber/${auf.slug}/">Neu: ${esc(auf.kurztitel || auf.titel)} 2027</a>` : ''}</div></div>
+${schaukarten(daten)}</div></section>
+<section class="vw-facts w rg-facts"><p class="vw-k">Was diesen Ratgeber besonders macht</p><h2 class="vw-h2">Lesen, ausprobieren, <em>verstehen.</em></h2><div class="vw-fgrid">
+<div class="vw-fact"><i aria-hidden="true">1</i><b>Zum Anfassen.</b><p>Schieberegler und Rechner statt Formelwüste.</p></div>
+<div class="vw-fact"><i aria-hidden="true">2</i><b>Echte Beispiele.</b><p>Coca-Cola, Nvidia, Microsoft: mit Datum und Quelle.</p></div>
+<div class="vw-fact"><i aria-hidden="true">3</i><b>Kurz gesagt.</b><p>Jede Antwort in wenigen Sätzen vorneweg.</p></div>
+<div class="vw-fact"><i aria-hidden="true">4</i><b>Ohne Verkauf.</b><p>Keine Provision, keine Empfehlung. Nur Erklärung.</p></div></div></section>
+<section class="vw-bento w rg-bento"><p class="vw-k">Themenwelten</p><h2 class="vw-h2">Wo willst du <em>anfangen?</em></h2><div class="vw-tiles">${tiles}</div></section>
+${auf ? `<section class="rg-band" data-dark><div class="w rg-band-g"><div><p class="vw-k">Neu · Gesetz ab 1. Januar 2027</p><h2 class="vw-h2">Das Altersvorsorgedepot <em>kommt.</em></h2><p class="rg-band-s">${esc(auf.teaser)}</p><a class="fh-btn lime" href="${pre}ratgeber/${auf.slug}/">Was sich ändert <i aria-hidden="true">→</i></a></div>
+<ul class="rg-zahlen"><li><b>540 €</b><span>Zulage im Jahr</span></li><li><b>300 €</b><span>extra je Kind</span></li><li><b>200 €</b><span>Startbonus unter 25</span></li><li><b>1,0 %</b><span>Kostendeckel Standarddepot</span></li></ul></div></section>` : ''}
+<section class="w rg-start-s" id="start-hier"><p class="vw-k">Start hier</p><h2 class="vw-h2">In 5 Schritten <em>zur ersten Aktie.</em></h2><div class="rg-path">${start}</div></section>
+<section class="w rg-alle" id="alle"><p class="vw-k">Alle Ratgeber</p><h2 class="vw-h2">${anzahl} Fragen, <em>${fertig} Antworten schon da.</em></h2>
+<label class="rg-such"><span class="rg-sr">Ratgeber durchsuchen</span>${ic('<circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/>', 20)}<input type="search" placeholder="Wonach suchst du? z. B. KGV oder Sparplan" data-rg-such autocomplete="off"></label>
+${liste}<p class="rg-leer" hidden data-rg-leer>Dazu gibt es noch keinen Ratgeber.</p></section>
+<section class="w"><div class="rg-cta"><div><b>Was du hier liest, zeigt die App für jede Aktie.</b><p>KGV, Dividende, Schulden, große Fonds: in einfachen Sätzen.</p></div><a class="fh-btn lime" href="${pre}#newsletter">Zum Start benachrichtigen <i aria-hidden="true">→</i></a></div></section>`;
   const url = `${SITE}/ratgeber/`;
   const ld = [{'@type': 'CollectionPage', '@id': url + '#ratgeber', name: 'Ratgeber: Geld und Börse, einfach erklärt', url, inLanguage: 'de-DE', publisher: ORG,
     hasPart: Object.values(artikel).map((a) => ({'@type': 'Article', headline: a.titel, url: `${SITE}/ratgeber/${a.slug}/`}))}, ldKrumen([['Vision Universe', `${SITE}/`], ['Ratgeber', url]])];
@@ -284,11 +312,15 @@ function uebersicht(ctx) {
 
 function weltSeite(w, ctx) {
   const {artikel, newsHtml} = ctx, pre = '../../../', pfad = `ratgeber/thema/${w.id}/index.html`, url = `${SITE}/ratgeber/thema/${w.id}/`;
-  const body = `<header class="rg-hero w">${krumen(pre, [['Ratgeber', `${pre}ratgeber/`], [w.name, null]])}
-<span class="rg-tag"><span class="ic">${ic(w.icon, 16)}</span>Themenwelt</span><h1>${esc(w.name)}: <mark>${esc(w.satz)}</mark></h1><p class="rg-sub">${esc(w.beschreibung)}</p></header>
-<div class="w rg-welten"><div class="rg-grid">${w.artikel.map(([s, t]) => (artikel[s] ? karte(artikel[s], w, pre, true) : bald(t, w))).join('')}</div>
-<p class="rg-zur"><a href="${pre}ratgeber/">← Alle Themenwelten</a></p></div>`;
   const da = w.artikel.map(([s]) => artikel[s]).filter(Boolean);
+  const tiles = da.map((a, i) => `<a class="vw-tile${i % 3 === 1 ? ' dark' : ''}${i === 0 ? ' t-w' : ''}" href="${pre}ratgeber/${a.slug}/"><span class="vw-ti">${ic(w.icon, 22)}</span><b>${esc(a.titel)}</b><small>${esc(a.teaser)}</small>${a.app ? `<span class="vw-shot"><img src="${pre}web/img/app/${a.app.bild}.jpg" alt="" loading="lazy"></span>` : ''}</a>`).join('');
+  const bald = w.artikel.filter(([s]) => !artikel[s]);
+  const body = `<section class="fh ps-hero rg-art-hero"><div class="w fh-g"><div class="fh-copy">${krumen(pre, [['Ratgeber', `${pre}ratgeber/`], [w.name, null]])}
+<span class="rg-tag"><span class="ic">${ic(w.icon, 16)}</span>Themenwelt</span><h1>${esc(w.name)}: <mark>${esc(w.satz)}</mark></h1><p class="fh-sub">${esc(w.beschreibung)}</p></div>
+<div class="fh-phone"><div class="fh-wrap"><div class="fh-ph"><img src="${pre}web/img/app/${WELT_BILD[w.id]}.jpg" alt="" width="390" height="844"></div></div></div></div></section>
+<section class="vw-bento w rg-bento"><p class="vw-k">${da.length} ${da.length === 1 ? 'Artikel' : 'Artikel'}</p><div class="vw-tiles">${tiles}</div>
+${bald.length ? `<p class="rg-bald-l"><span class="rg-bald">Bald</span> ${bald.map(([, t]) => esc(t)).join(' · ')}</p>` : ''}
+<p class="rg-zur"><a href="${pre}ratgeber/">← Alle Themenwelten</a></p></section>`;
   const ld = [{'@type': 'CollectionPage', '@id': url, name: `${w.name}: ${w.satz}`, description: w.beschreibung, url, inLanguage: 'de-DE', publisher: ORG, isPartOf: {'@id': `${SITE}/ratgeber/#ratgeber`},
     hasPart: da.map((a) => ({'@type': 'Article', headline: a.titel, url: `${SITE}/ratgeber/${a.slug}/`}))}, ldKrumen([['Vision Universe', `${SITE}/`], ['Ratgeber', `${SITE}/ratgeber/`], [w.name, url]])];
   return {pfad, stand: da.map((a) => a.stand).sort().at(-1) || null, html: seite({pfad, titel: `${w.name}: ${w.satz} · Vision Universe Ratgeber`, beschreibung: w.beschreibung, ld, body, newsHtml})};
