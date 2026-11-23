@@ -2,7 +2,7 @@
  "schemaVersion": "vu-market-pulse-1.1.0",
  "methodVersion": "market-pulse-1.0.0",
  "configVersion": "vu-market-pulse-config-1.0.0",
- "generatedAt": "2026-11-23T00:28:18.990Z",
+ "generatedAt": "2026-11-23T03:23:24.289Z",
  "kind": "DESCRIPTIVE_MARKET_PULSE",
  "notes": {
   "quantMarketRegime": "FAIL_CLOSED - nicht verwendet, nicht imitiert",
@@ -105,7 +105,7 @@
   "disclaimer": "Einordnung des Marktumfelds aus festen Regeln – keine Anlageberatung, keine Kauf- oder Verkaufsempfehlung, keine Prognose."
  },
  "evaluation": {
-  "generatedAt": "2026-11-23T00:28:18.991Z",
+  "generatedAt": "2026-11-23T03:23:24.289Z",
   "dataAsOf": "2026-11-20",
   "previousDataAsOf": "2026-11-19",
   "schedule": {
@@ -705,8 +705,8 @@
     {
      "key": "BTC",
      "label": "Bitcoin",
-     "text": "−24,6 % · 1,0-fach typisch (deutlich)",
-     "change": -24.57,
+     "text": "−24,5 % · 1,0-fach typisch (deutlich)",
+     "change": -24.547,
      "ratio": -1.01,
      "notable": true,
      "asOf": "2026-11-22",
@@ -1128,12 +1128,12 @@
   "BTCUSD": {
    "kind": "PRICE",
    "asOf": "2026-11-22",
-   "last": 61161.135389,
+   "last": 61180.219646,
    "observations": 5541,
    "changes": {
-    "1M": -24.57,
-    "3M": -21.31,
-    "1Y": -27.78
+    "1M": -24.55,
+    "3M": -21.29,
+    "1Y": -27.76
    },
    "high52w": {
     "date": "2026-01-14",
@@ -1143,12 +1143,12 @@
     "date": "2026-06-30",
     "value": 58532.412697
    },
-   "rangePosition": 6.8,
-   "dist50": -20.23,
-   "dist200": -15.44,
+   "rangePosition": 6.9,
+   "dist50": -20.21,
+   "dist200": -15.42,
    "trend": "NEGATIVE",
-   "drawdown52w": -36.91,
-   "vol20": 53.75,
+   "drawdown52w": -36.89,
+   "vol20": 53.79,
    "volContext": {
     "median": 44.7,
     "p25": 33.8,
@@ -1162,18 +1162,18 @@
      "dimension": "CROSS_ASSET",
      "state": "OBSERVED",
      "stateLabel": "Auffällige Bewegungen",
-     "text": "Teil des Cross-Asset-Kontexts. Über einen Monat: −24,6 % – das 1,0-Fache einer typischen Monatsbewegung, also deutlich."
+     "text": "Teil des Cross-Asset-Kontexts. Über einen Monat: −24,5 % – das 1,0-Fache einer typischen Monatsbewegung, also deutlich."
     }
    ]
   },
   "ETHUSD": {
    "kind": "PRICE",
    "asOf": "2026-11-22",
-   "last": 1721.453422,
+   "last": 1721.507858,
    "observations": 4105,
    "changes": {
     "1M": -27.81,
-    "3M": -30.12,
+    "3M": -30.11,
     "1Y": -37.82
    },
    "high52w": {
@@ -1189,7 +1189,7 @@
    "dist200": -18.89,
    "trend": "NEGATIVE",
    "drawdown52w": -48.68,
-   "vol20": 78.17,
+   "vol20": 78.18,
    "volContext": {
     "median": 60.3,
     "p25": 46.2,
@@ -1203,12 +1203,12 @@
   "SOLUSD": {
    "kind": "PRICE",
    "asOf": "2026-11-22",
-   "last": 70.667814,
+   "last": 70.620133,
    "observations": 2244,
    "changes": {
-    "1M": -31.21,
-    "3M": -25.95,
-    "1Y": -44.59
+    "1M": -31.26,
+    "3M": -26,
+    "1Y": -44.63
    },
    "high52w": {
     "date": "2026-01-14",
@@ -1218,12 +1218,12 @@
     "date": "2026-06-06",
     "value": 62.169687
    },
-   "rangePosition": 10.1,
-   "dist50": -25.78,
-   "dist200": -19.99,
+   "rangePosition": 10,
+   "dist50": -25.83,
+   "dist200": -20.05,
    "trend": "NEGATIVE",
-   "drawdown52w": -51.82,
-   "vol20": 72.51,
+   "drawdown52w": -51.86,
+   "vol20": 72.47,
    "volContext": {
     "median": 78.1,
     "p25": 61.7,
@@ -1237,10 +1237,10 @@
   "XRPUSD": {
    "kind": "PRICE",
    "asOf": "2026-11-22",
-   "last": 0.92744,
+   "last": 0.927386,
    "observations": 4100,
    "changes": {
-    "1M": -28.29,
+    "1M": -28.3,
     "3M": -39,
     "1Y": -52.43
    },
