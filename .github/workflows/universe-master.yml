@@ -201,6 +201,15 @@ jobs:
       - name: Discover-Payloads neu bauen
         run: node scripts/discover/build-discover-data.mjs
 
+      # Folgen am Emittenten (23.11.2026): Aendert der Sync CIK oder issuerId, stimmen Emittenten-Master und
+      # SEC-Aggregate (coverage-report, Abgleich) nicht mehr zum Master - test_daily ScherbenUndAggregateTests wurde
+      # nach den Syncs vom 22.11. rot (5370 != 5334). Derselbe Weg wie im Eignungslauf: ohne Abruf, aus den Scherben.
+      - name: Emittenten-Master und SEC-Aggregate nachziehen (ohne Abruf)
+        run: |
+          set -euo pipefail
+          node scripts/universe/build-issuer-master.mjs
+          python3 scripts/quant/cli.py universe-follow
+
       - name: Pruefung des Masters
         run: node scripts/universe/verify-company-master.mjs
 
@@ -222,7 +231,7 @@ jobs:
         run: |
           git config user.name "vision-universe-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add quant/data/universe quant/data/market/universe discover/data
+          git add quant/data/universe quant/data/market/universe discover/data quant/data/fundamentals
           if git diff --cached --quiet; then
             echo "Nichts geaendert - der Sync war idempotent."
           else
