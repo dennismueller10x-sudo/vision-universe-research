@@ -160,6 +160,21 @@ test("CG-14 ci-gate-neu.yml: workflow_run nennt JEDEN Workflow mit pull_request 
   assert.match(gate, /permissions:\n  contents: read\n  actions: read\n  checks: write\n/);
   assert.match(gate, /group: ci-gate-neu-\$\{\{ github\.event\.pull_request\.head\.sha \|\| github\.event\.workflow_run\.head_sha \}\}/);
   assert.match(gate, /cancel-in-progress: false/);
-  assert.match(gate, /GATE_NAME: ci-gate-neu/);
+  assert.match(gate, /GATE_NAME: \$\{\{ github\.head_ref == 'claude\/ci-gate-tausch' && 'ci-gate-neu' \|\| 'ci-gate' \}\}/, "Namenstausch: ci-gate, nur der Tausch-PR im Schatten");
   assert.match(gate, /node scripts\/ci\/ci-gate-sync\.mjs/);
+});
+
+/* ---------- Pfadfilter: Pruefungen, die ein PR gar nicht ausloest, duerfen den Gate nie haengen lassen (Steuerung 23.11.) ---------- */
+test("CG-15 Pfadfilter: nur die Laeufe, die es gibt, zaehlen; fehlende (nie gestartete) Pruefungen blockieren nicht", () => {
+  // Nur ein Produkt-CI und ein Core-Lauf entstehen (Pfadfilter der anderen Workflows greifen nicht), alles abgeschlossen: gruen.
+  const nur = [lauf("CI", "completed", "success"), lauf("Core", "completed", "success")];
+  const gruen = entscheide({ runs: nur, nowMs: T0 + GRACE_MS + 1000, mode: "event" });
+  assert.equal(gruen.aktion, "gruen");
+  // Kein einziger Workflow (reiner Doku-PR): beim Start gruen, im Ereignismodus nie (ohne Lauf kein Ereignis, fail-closed).
+  assert.equal(entscheide({ runs: [], nowMs: T0, mode: "start" }).aktion, "gruen");
+  assert.equal(entscheide({ runs: [], nowMs: T0, mode: "event" }).aktion, "offen");
+  // Ein ausgeloester, aber noch laufender Workflow haelt den Check offen, auch wenn alle anderen fertig sind.
+  assert.equal(entscheide({ runs: [...nur, lauf("Quant CI", "in_progress", null)], nowMs: T0 + GRACE_MS + 1000, mode: "event" }).aktion, "offen");
+  // Ein Lauf, der wegen des Pfadfilters als "skipped" endet, gilt als bestanden.
+  assert.equal(entscheide({ runs: [...nur, lauf("Quant CI", "completed", "skipped")], nowMs: T0 + GRACE_MS + 1000, mode: "event" }).aktion, "gruen");
 });
