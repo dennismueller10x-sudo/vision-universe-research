@@ -122,7 +122,11 @@ export function researchSeriesRoot({ root = REPO, fixture = join(root, RESEARCH_
     }
   };
   link("");
-  for (const [d, n] of fehlend) symlinkSync(join(fixture, d, n), join(dest, d, n));
+  /* Unter frozen-data (lib/frozen-data.mjs) meldet existsSync eine Live-Reihe als fehlend, die die Verzeichnis-Verlinkung
+     oben schon gelegt hat (ANSS, 23.11.2026: EEXIST). Ein vorhandener Eintrag bleibt; er traegt dieselben Bytes. */
+  /* readdirSync der Spiegelwurzel (Temp, nicht umgelenkt); lstat/exists folgen dem Symlink ins Repo und waeren umgelenkt. */
+  const gelegt = new Map(OVERLAY_DIRS.map((d) => [d, new Set(readdirSync(join(dest, d)))]));
+  for (const [d, n] of fehlend) if (!gelegt.get(d).has(n)) symlinkSync(join(fixture, d, n), join(dest, d, n));
   process.on("exit", () => rmSync(dest, { recursive: true, force: true }));
   return dest;
 }

@@ -64,7 +64,7 @@ test("Bezugssitzung ist die haeufigste letzte Bar des Datenbestands, nicht die U
 
 test("Das committete Register ist gueltig und belegt jeden Eintrag", () => {
   const ev = indexEvidence(JSON.parse(readFileSync(join(ROOT, "quant/config/listing-ended-evidence.json"), "utf8")));
-  assert.deepEqual([...ev.keys()].sort(), ["ref_BWMN", "ref_CBZ", "ref_ITGR", "ref_KVUE", "ref_LXFR", "ref_LXP", "ref_RAMP", "ref_ROKU"]);
+  assert.deepEqual([...ev.keys()].sort(), ["ref_BWMN", "ref_CBZ", "ref_ITGR", "ref_JAB", "ref_KVUE", "ref_LXFR", "ref_LXP", "ref_RAMP", "ref_ROKU"]);
 });
 
 test("Regel C · Fortschreibung: nach der Bereinigung (Reihe entfernt) bleibt eine beendete Notierung ausgeschlossen", () => {
@@ -108,4 +108,20 @@ test("Regel D · TCBI geht wie die anderen Vorgaenger (Steuerung 22.11.2026: ret
   const tcbi = doc.successions.find((e) => e.from === "ref_TCBI");
   assert.equal(tcbi.retirePredecessor, true);
   assert.ok(tcbi.retireNote);
+});
+
+test("Regel E · ohne Reihe: Stamm INACTIVE + Registereintrag (TICKER_CHANGE/DELISTED, sec.gov) -> EXCLUDED; sonst nichts", async () => {
+  const { judgeEndedNoSeries } = await import("../../scripts/market/apply-ended-listings.mjs");
+  const d = { securityId: "ref_X", ticker: "X", product_eligibility: "SEPARATE_CLASS", product_eligibility_reason: "CONFIRMED_SEPARATE_CLASS:SPAC", active_status: "INACTIVE" };
+  const ev = { securityId: "ref_X", event: "TICKER_CHANGE", effectiveDate: "2026-11-09", noSeries: true, sources: ["https://www.sec.gov/x"] };
+  const inactive = { active: false, status: "INACTIVE" };
+  const j = judgeEndedNoSeries(d, null, inactive, ev);
+  assert.equal(j.next.product_eligibility, "EXCLUDED");
+  assert.equal(j.next.product_eligibility_reason, "CONFIRMED_LISTING_ENDED:TICKER_CHANGE");
+  assert.equal(judgeEndedNoSeries(d, { points: [["2026-11-01", 1]] }, inactive, ev), null, "mit Reihe: Regel A/B");
+  assert.equal(judgeEndedNoSeries({ ...d, active_status: "ACTIVE" }, null, inactive, ev), null, "Eignung ACTIVE");
+  assert.equal(judgeEndedNoSeries(d, null, { active: true, status: "ACTIVE" }, ev), null, "Stamm ACTIVE");
+  assert.equal(judgeEndedNoSeries(d, null, inactive, { ...ev, event: "ACQUISITION" }), null, "Uebernahme bleibt Regel B");
+  assert.throws(() => indexEvidence({ schemaVersion: "listing-ended-evidence-1.0.0", records: [{ ...ev, ticker: "X", counterparty: "Y", noSeries: false }] }), /Regel E/);
+  assert.throws(() => indexEvidence({ schemaVersion: "listing-ended-evidence-1.0.0", records: [{ ...ev, ticker: "X", counterparty: "Y", sources: ["https://example.com/x"] }] }), /Regel E/);
 });

@@ -1,21 +1,22 @@
 {
  "status": "FREIGEGEBEN",
- "statusNote": "Steuerung 23.11.2026 (Eignungspaket nach CI-Wiederherstellung): ITGR verlaesst das Produkt nach abgeschlossener Uebernahme (Regel B, listing-ended-evidence, 8-K 2.01 + Form 25-NSE); GLMD und BNRG als Kuerzelwechsel-Vorgaenger (Regel D, Register #2280, 6-K). LXFR folgt, sobald seine Reihe mehr als 2 Sitzungen zurueckliegt.",
- "decidedBy": "Steuerung 23.11.2026 08:13 UTC",
+ "statusNote": "Steuerung 23.11.2026 (Eignungspaket nach CI-Wiederherstellung): ITGR nach abgeschlossener Uebernahme (Regel B, 8-K 2.01 + Form 25-NSE); GLMD und BNRG als Kuerzelwechsel-Vorgaenger (Regel D, Register #2280, 6-K); JAB ohne eigene Reihe (Regel E, 8-K 5.03, Stamm INACTIVE). Die Erzeugerkette nimmt zusaetzlich ANSS heraus (Uebernahme durch Synopsys 2025, Beleg im Stamm-Register security-master-delisting-evidence.json), vom Gate zugelassen; seine Forschungsreihen sind eingefroren. LXFR folgt, sobald seine Reihe mehr als 2 Sitzungen zurueckliegt.",
+ "decidedBy": "Steuerung 23.11.2026 08:13 UTC und 08:17 UTC (Regel E)",
  "schema": "vu-eligibility-catchup-1",
  "id": "eligibility-ended-2026-11-23",
  "prevSha256": "9284ba47bdc131453a21d5d68c22b25456c13dc86ec9680e60090df12fbe8d2d",
- "sourceRun": "lokal 23.11.2026 gegen main 0dc2e3b4fcc (apply-ended-listings: Regel B ITGR, Regel D GLMD/BNRG aus #2280)",
+ "sourceRun": "lokal 23.11.2026 gegen main eb6bebbb8dc (apply-ended-listings: Regel B ITGR, Regel D GLMD/BNRG aus #2280, Regel E JAB)",
  "productUniverseBefore": 6009,
- "productUniverseAfter": 6006,
+ "productUniverseAfter": 6005,
  "counts": {
-  "changes": 3,
-  "leaveProduct": 3,
+  "changes": 4,
+  "leaveProduct": 4,
   "enterProduct": 0
  },
  "leaveReasons": {
   "CONFIRMED_LISTING_ENDED:ACQUISITION": 1,
-  "CONFIRMED_LISTING_ENDED:SUCCEEDED": 2
+  "CONFIRMED_LISTING_ENDED:SUCCEEDED": 2,
+  "CONFIRMED_LISTING_ENDED:TICKER_CHANGE": 1
  },
  "enterReasons": {},
  "impact": {
@@ -41,7 +42,7 @@
   },
   "quant": {
    "before": 6007,
-   "removed": 2,
+   "removed": 3,
    "addedWithPage": 0
   },
   "supertrader": {
@@ -50,7 +51,7 @@
    "addedWithPage": 0
   },
   "technical": {
-   "before": 5676,
+   "before": 5446,
    "removed": 1,
    "addedWithPage": 0
   },
@@ -84,6 +85,14 @@
    "to": "EXCLUDED",
    "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
    "reasonAfter": "CONFIRMED_LISTING_ENDED:SUCCEEDED"
+  },
+  {
+   "securityId": "ref_JAB",
+   "ticker": "JAB",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:SPAC",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:TICKER_CHANGE"
   }
  ],
  "leave": [
@@ -114,6 +123,14 @@
    "securityId": "ref_BNRG",
    "reason": "CONFIRMED_LISTING_ENDED:SUCCEEDED",
    "products": []
+  },
+  {
+   "ticker": "JAB",
+   "securityId": "ref_JAB",
+   "reason": "CONFIRMED_LISTING_ENDED:TICKER_CHANGE",
+   "products": [
+    "quant"
+   ]
   }
  ],
  "enter": []
