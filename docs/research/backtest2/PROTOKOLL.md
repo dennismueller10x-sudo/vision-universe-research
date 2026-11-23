@@ -306,6 +306,21 @@ Holm über die fünf Hypothesen. Episodic Pivot und Parabolic Short bleiben offe
 - Folgerung: Für seltene Ereignisse ist die richtige Messung eine Ereignisstudie (Verlauf nach dem Ereignis gegen die
   Vergleichsgruppe desselben Tages, wie die Technical-Evidenz), kein Monatsdepot. Eigener Schritt, vorab festzulegen.
 
+## 4i. Stufe 7: Walk-forward über Trader-Muster und Faktoren (23.11.2026, vor dem ersten Lauf festgelegt)
+
+Anlass (Owner 23.11.2026): weiterrechnen, bis eine Methode den Markt belegbar schlägt. Stufe 4 bis 6 haben feste Depots geprüft,
+deren beste im Rückblick bekannt sind; wer danach wählt, behauptet einen Zufallstreffer. Der saubere Weg ist derselbe wie in
+Stufe 3 (Fassung A): eine Auswahl, die je Runde nur die Lernjahre kennt, tritt auf den folgenden ungesehenen Jahren an.
+`scripts/research/backtest2/trader-wf.mjs`, Modus `merkmale-traderwf-smoke` / `merkmale-traderwf`.
+- **Raster, 240 Depots:** Muster (keines, die vier aus Stufe 5, die fünf aus Stufe 6) × Rang (Momentum; Momentum +
+  Bruttogewinn/Bilanz; dazu Rückkäufe; relative Stärke) × 15/25/50 Titel × ohne/mit Haltepuffer (ein gehaltener Titel bleibt,
+  solange er das Muster erfüllt und unter den besten 2N liegt). Übrige Depotführung wie Stufe 4.
+- **Runden und Auswahl** wie Stufe 3: Lernen 2010–2013/2016/2019/2022, Bestätigen 2014–2016, 2017–2019, 2020–2022, 2023–Ende;
+  zugelassen in beiden Lernhälften und in ≥ 60 % der Lernjahre vor SPY, höchstens 50 % Verlust; gewählt der höchste Median der
+  Lern-Überrendite aus Depot und Nachbarn (gleiches Muster, eine Einstellung anders). Ohne Kandidat hält die Runde SPY.
+- **Urteil „schlägt SPY“** nur, wenn die verketteten Bestätigungsjahre nach Kosten vor SPY liegen und der Block-Bootstrap
+  p < 0,10 ergibt. Die Rangliste aller 240 Depots auf den Bestätigungsjahren wird als Rückschau berichtet und ist kein Beleg.
+
 ## 5. Ausführung und Veröffentlichung
 
 - Umsetzung: `scripts/research/backtest2/` (Markt, Signale, Depotführung, Suche, Lauf mit Workern). Workflow `research.yml`, Teil

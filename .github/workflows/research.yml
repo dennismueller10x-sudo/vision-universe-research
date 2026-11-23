@@ -63,7 +63,7 @@ on:
         required: false
         default: portfolios
         type: choice
-        options: [portfolios, holdout-quant, ema-cluster-dev, ema-cluster-archive, ema-cluster-complete, backtest2-smoke, backtest2, backtest2-survivors, merkmale-smoke, merkmale, merkmale-wf-smoke, merkmale-wf, quant-varianten, merkmale-trader-smoke, merkmale-trader, merkmale-familie-smoke, merkmale-familie, merkmale-ereignis-smoke, merkmale-ereignis]
+        options: [portfolios, holdout-quant, ema-cluster-dev, ema-cluster-archive, ema-cluster-complete, backtest2-smoke, backtest2, backtest2-survivors, merkmale-smoke, merkmale, merkmale-wf-smoke, merkmale-wf, quant-varianten, merkmale-trader-smoke, merkmale-trader, merkmale-familie-smoke, merkmale-familie, merkmale-ereignis-smoke, merkmale-ereignis, merkmale-traderwf-smoke, merkmale-traderwf]
       ema_archive_metadata: {description: 'EMA-Archiv/Vervollstaendigung: Pruefsummen und verschluesselte Dateischluessel, keine Klartextschluessel', required: false, default: '', type: string}
       reviewer_public_key_b64: {description: 'portfolio: Nur holdout-quant: oeffentlicher RSA-Schluessel (PEM, base64 in einer Zeile) der Steuerung', required: false, default: '', type: string}
       phase: {description: 'labor: dev, test oder holdout', required: false, default: dev}
@@ -268,7 +268,7 @@ jobs:
             printf '%s' "$REVIEWER_B64" | base64 -d > "$RUNNER_TEMP/holdout/reviewer.pem"
             openssl pkey -pubin -in "$RUNNER_TEMP/holdout/reviewer.pem" -noout || { echo "REVIEWER_KEY_NOT_A_PUBLIC_KEY"; exit 2; }
           fi
-          case "${IN_MODE:-}" in ema-cluster-dev|ema-cluster-archive|ema-cluster-complete|backtest2-smoke|backtest2|backtest2-survivors|merkmale-smoke|merkmale|merkmale-wf-smoke|merkmale-wf|merkmale-trader-smoke|merkmale-trader|merkmale-familie-smoke|merkmale-familie|merkmale-ereignis-smoke|merkmale-ereignis) m="$IN_MODE";; esac
+          case "${IN_MODE:-}" in ema-cluster-dev|ema-cluster-archive|ema-cluster-complete|backtest2-smoke|backtest2|backtest2-survivors|merkmale-smoke|merkmale|merkmale-wf-smoke|merkmale-wf|merkmale-trader-smoke|merkmale-trader|merkmale-familie-smoke|merkmale-familie|merkmale-ereignis-smoke|merkmale-ereignis|merkmale-traderwf-smoke|merkmale-traderwf) m="$IN_MODE";; esac
           echo "mode=${m:-portfolios}" >> "$GITHUB_OUTPUT"
           echo "Modus: ${m:-portfolios}"
 
@@ -445,11 +445,11 @@ jobs:
           MODE: ${{ steps.m.outputs.mode }}
         run: |
           set -euo pipefail
-          node --test scripts/research/backtest2/merkmale.test.mjs scripts/research/backtest2/faktor-wf.test.mjs scripts/research/backtest2/trader-faktor.test.mjs scripts/research/backtest2/trader-familie.test.mjs scripts/research/backtest2/trader-ereignis.test.mjs
+          node --test scripts/research/backtest2/merkmale.test.mjs scripts/research/backtest2/faktor-wf.test.mjs scripts/research/backtest2/trader-faktor.test.mjs scripts/research/backtest2/trader-familie.test.mjs scripts/research/backtest2/trader-ereignis.test.mjs scripts/research/backtest2/trader-wf.test.mjs
           mkdir -p "$RUNNER_TEMP/backtest2/upload"
           smoke=""; case "$MODE" in *-smoke) smoke="--smoke";; esac
           # Stufe 3 (merkmale-wf*): Faktor-Depots im Walk-forward; Stufe 4 (merkmale-trader*): Trader-Muster mit Faktoren; sonst Stufe 2
-          script=merkmale.mjs; case "$MODE" in merkmale-wf*) script=faktor-wf.mjs;; merkmale-trader*) script=trader-faktor.mjs;; merkmale-familie*) script=trader-familie.mjs;; merkmale-ereignis*) script=trader-ereignis.mjs;; esac
+          script=merkmale.mjs; case "$MODE" in merkmale-wf*) script=faktor-wf.mjs;; merkmale-traderwf*) script=trader-wf.mjs;; merkmale-trader*) script=trader-faktor.mjs;; merkmale-familie*) script=trader-familie.mjs;; merkmale-ereignis*) script=trader-ereignis.mjs;; esac
           node --max-old-space-size=12288 "scripts/research/backtest2/$script" \
             --work-dir "$RUNNER_TEMP/canonical-history" --delisted-dir "$DELISTED_DIR" --delisted-raw-dir "$DELISTED_RAW_DIR" \
             --fundamentals "$RUNNER_TEMP/pit-fundamentals" --out "$RUNNER_TEMP/backtest2/upload" $smoke
