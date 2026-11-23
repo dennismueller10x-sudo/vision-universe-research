@@ -97,9 +97,16 @@ function verdict(id, m) {
 function comparison(kind, e, factor) {
   const m = e.metrics || {};
   if (kind === 'FACTOR_RANKING_BACKTEST') {
-    if (!factor || typeof factor.meanTopMinusBottom !== 'number' || typeof factor.topBeatsBottomShare !== 'number') return null;
-    const d = factor.meanTopMinusBottom, sh = factor.topBeatsBottomShare;
-    return { state: d > 0 && sh >= 2 / 3 ? 'BEATS' : d > 0 || sh > 0.5 ? 'MIXED' : 'LOSES', value: d, share: sh, basis: 'oberstes gegen unterstes Fünftel' };
+    if (!factor) return null;
+    // Median und Trefferquote auf Medianbasis tragen die Ampel (Steuerung 22.11.2026: das Kursrenditen-Mittel des untersten Fuenftels wird von
+    // der rechten Flanke getragen). Das Mittel bleibt als Zusatzwert (meanValue/meanShare). Alte Laeufe ohne Median: wie bisher auf dem Mittel.
+    const hasMedian = typeof factor.medianTopMinusBottom === 'number' && typeof factor.medianTopBeatsBottomShare === 'number';
+    const hasMean = typeof factor.meanTopMinusBottom === 'number' && typeof factor.topBeatsBottomShare === 'number';
+    if (!hasMedian && !hasMean) return null;
+    const d = hasMedian ? factor.medianTopMinusBottom : factor.meanTopMinusBottom, sh = hasMedian ? factor.medianTopBeatsBottomShare : factor.topBeatsBottomShare;
+    const out = { state: d > 0 && sh >= 2 / 3 ? 'BEATS' : d > 0 || sh > 0.5 ? 'MIXED' : 'LOSES', value: d, share: sh, basis: hasMedian ? 'oberstes gegen unterstes Fünftel (Median je Rangtag)' : 'oberstes gegen unterstes Fünftel' };
+    if (hasMedian && hasMean) { out.meanValue = factor.meanTopMinusBottom; out.meanShare = factor.topBeatsBottomShare; }
+    return out;
   }
   if (m.basis === 'PORTFOLIO') {
     const b = m.benchmark || {}, id = b.id || '';
@@ -142,7 +149,7 @@ function factorRow(e) {
   const f = e.metrics && e.metrics.perEvent && e.metrics.perEvent.factor;
   if (!f) return null;
   return { factorId: f.factorId, buckets: f.buckets, rankDates: num(f.rankDates), meanTopMinusBottom: num(f.meanTopMinusBottomCompleteCohort),
-    topBeatsBottomShare: num(f.topBeatsBottomShare), bucketMeans: Array.isArray(f.bucketMeansCompleteCohort) ? f.bucketMeansCompleteCohort.map(num) : null, meanSpearman: num(f.meanSpearmanObservedOnly) };
+    topBeatsBottomShare: num(f.topBeatsBottomShare), ...(num(f.medianTopMinusBottomCompleteCohort) !== null ? { medianTopMinusBottom: num(f.medianTopMinusBottomCompleteCohort), medianTopBeatsBottomShare: num(f.medianTopBeatsBottomShare) } : {}), bucketMeans: Array.isArray(f.bucketMeansCompleteCohort) ? f.bucketMeansCompleteCohort.map(num) : null, meanSpearman: num(f.meanSpearmanObservedOnly) };
 }
 function caseRow(c, r) {
   const e = r.envelope;

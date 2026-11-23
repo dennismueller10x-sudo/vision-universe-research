@@ -78,6 +78,21 @@ const shaBytes = b => crypto.createHash('sha256').update(b).digest('hex');
 const shaFile = f => shaBytes(fs.readFileSync(f));
 const isDate = x => typeof x === 'string' && DATE.test(x) && new Date(x + 'T00:00:00Z').toISOString().slice(0, 10) === x;
 const mean = a => a.length ? a.reduce((s, x) => s + x, 0) / a.length : null;
+
+/** Median-Spread je Rangtag aus den abgeschlossenen Ereignissen (Bucket 0 = unterstes, buckets-1 = oberstes Fuenftel). */
+function medianOf(a) { if (!a.length) return null; const t = a.slice().sort((x, y) => x - y), m = Math.floor(t.length / 2); return t.length % 2 ? t[m] : (t[m - 1] + t[m]) / 2; }
+function medianSpread(events, dates, buckets) {
+  const byDate = new Map();
+  for (const e of events) {
+    if (!e || !e.completed || !Number.isFinite(e.grossReturn) || !Number.isInteger(e.bucket)) continue;
+    if (!byDate.has(e.signalDate)) byDate.set(e.signalDate, { top: [], bottom: [] });
+    const g = byDate.get(e.signalDate);
+    if (e.bucket === buckets - 1) g.top.push(e.grossReturn); else if (e.bucket === 0) g.bottom.push(e.grossReturn);
+  }
+  const d = [];
+  for (const date of dates) { const g = byDate.get(date); if (g && g.top.length && g.bottom.length) d.push(medianOf(g.top) - medianOf(g.bottom)); }
+  return { medianTopMinusBottomCompleteCohort: mean(d), medianTopMinusBottomDates: d.length, medianTopBeatsBottomShare: d.length ? d.filter(x => x > 0).length / d.length : null };
+}
 const clone = x => JSON.parse(JSON.stringify(x));
 const uniq = list => [...new Set(list.filter(x => typeof x === 'string' && x))];
 const plain = x => !!x && typeof x === 'object' && !Array.isArray(x);
@@ -747,7 +762,11 @@ function runBacktest(spec, options = {}) {
     common.metricsExtra = { perEvent: { factor: { factorId: spec.engine.factorId, rankDates: periods.length, meanSpearmanObservedOnly: mean(sp), spearmanDates: sp.length, meanTopMinusBottomCompleteCohort: mean(tmb), topMinusBottomDates: tmb.length, buckets: spec.engine.buckets || 5,
       // Fuenftel-Vergleich (13.11.2026): Mittel je Bucket ueber die Rangtage (nur vollstaendige Kohorten), Anteil der Rangtage mit oben > unten.
       bucketMeansCompleteCohort: Array.from({ length: spec.engine.buckets || 5 }, (_, k) => mean(periods.map(p => p.buckets && p.buckets[k] ? p.buckets[k].completeCohortMean : null).filter(Number.isFinite))),
-      topBeatsBottomShare: tmb.length ? tmb.filter(x => x > 0).length / tmb.length : null } } };
+      topBeatsBottomShare: tmb.length ? tmb.filter(x => x > 0).length / tmb.length : null,
+      // Median-Fuenftel-Vergleich (22.11.2026, Steuerung): je Rangtag Median des obersten minus Median des untersten Fuenftels (abgeschlossene
+      // Ereignisse), Mittel darueber und Anteil der Rangtage mit oben > unten. Das Mittel oben bleibt als Zusatzwert; ein Kursrenditen-Mittel
+      // des untersten Fuenftels wird von der rechten Flanke getragen (Forschung 22.11.2026), der Median nicht.
+      ...medianSpread(res.events || [], periods.map(p => p.date), spec.engine.buckets || 5) } } };
   }
   if (spec.kind === 'SAME_STOCK_REPLAY') limitations.push('SINGLE_LISTING_RULE_NOT_MARKET_EVIDENCE');
   if (methodsCfg.WALK_FORWARD || methodsCfg.OUT_OF_SAMPLE) {
@@ -827,4 +846,4 @@ function kindEvents(spec, options = {}, override = {}) {
   return windowed(runPerEventKind(spec, pop, ctx, E, override).raw, spec.window, E.S);
 }
 
-module.exports = { profileMean, PROFILE_MEAN_MIN, kindEvents, VERSION, SPEC_SCHEMA, RESULT_SCHEMA, METHOD_FIT, ENGINE_KEYS, validateSpec, specHash, runBacktest, windowed, canonical, hash: sha, CERTIFICATION_PATH };
+module.exports = { medianSpread, profileMean, PROFILE_MEAN_MIN, kindEvents, VERSION, SPEC_SCHEMA, RESULT_SCHEMA, METHOD_FIT, ENGINE_KEYS, validateSpec, specHash, runBacktest, windowed, canonical, hash: sha, CERTIFICATION_PATH };
