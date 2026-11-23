@@ -14,7 +14,14 @@ for i,w in enumerate(W):
     if i==0: gap_start=0.0
     gap=s-prev_end
     if i>0 and gap>0.26:
-        segs.append((cursor,prev_end+0.065)); cursor=s-0.065
+        # Ausklang des Worts behalten: bis die Energie abfaellt (sonst fehlen Endsilben wie "-ssig")
+        tail=prev_end; fr=int(0.01*sr); quiet=0; thr=0.02*float(np.abs(x).max() or 1)
+        while tail<s-0.1:
+            seg_=x[int(tail*sr):int(tail*sr)+fr]
+            quiet=quiet+1 if (seg_.size==0 or float(np.sqrt((seg_**2).mean()))<thr) else 0
+            if quiet>=6: break
+            tail+=0.01
+        segs.append((cursor,min(max(prev_end+0.065,tail),s-0.065))); cursor=s-0.065
     prev_end=e
 segs.append((cursor,len(x)/sr))
 # Neubau
