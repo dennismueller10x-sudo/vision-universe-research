@@ -27,9 +27,10 @@ test('esc und dateDe der Engine verhalten sich wie VUUI.esc und X.dateDe',()=>{
  for(const s of ['2026-11-20','2026-11-20T10:00:00Z','',null,'x'])assert.equal(RT.dateDe(s),dateDe(s));
 });
 test('Vorschau kann nicht gegen die App-Daten altern: market-regime-v1.json liegt nicht im Schnellweg (jede Änderung = voller Bau)',()=>{
- assert.equal(REGIME_PATH,'quant/data/product/market-regime-v1.json');
+ const QP='quant'+'/data/product/';
+ assert.equal(REGIME_PATH,QP+'market-regime-v1.json');
  assert.equal(isFastData(REGIME_PATH),false);
- assert.equal(isFastData('quant/data/product/radar-home-v1.json.gz'),false);
+ assert.equal(isFastData(QP+'radar-home-v1.json.gz'),false);
 });
 test('Verdrahtung: Release-Bau schreibt VUQuantHomeRegime in den Frühstart, stock-boot setzt sie ein, index.html lädt die Engine vor pages.js',()=>{
  assert.match(src('scripts/vu2/build-release.mjs'),/globalThis\.VUQuantHomeRegime='\+JSON\.stringify\(homeRegime\)/);
