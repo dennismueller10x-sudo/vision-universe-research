@@ -9,8 +9,13 @@
   function num(v) { return typeof v === "number" && isFinite(v) ? v.toLocaleString("de-DE", { minimumFractionDigits: v < 100 ? 2 : 0, maximumFractionDigits: v < 100 ? 2 : 0 }) : "–"; }
   function pct(v) { var p = Math.round(v * 100); return (p > 0 ? "+" : p < 0 ? "−" : "±") + Math.abs(p) + " %"; }
   function words() { var B = global.VUElliottBig; return B && B.WORDS ? B.WORDS[B.mode ? B.mode() : "zonen"] || B.WORDS.zonen : { target: "Zielzone der Methode", entry: "Zone laut Methode" }; }
+  /* Eigener Behälter: lädt die Wortwahl-Einstellung erst nach dem ersten Bild, wird der Abschnitt mit den richtigen Worten neu gebaut. */
   function radar(host, o) {
-    var M = o.M, el = o.el, sh = o.sh, h = o.home || {}, R = h.radar, E = h.events, W = words();
+    var box = o.el("div", { class: "ek-radar" }); host.append(box); fill(box, o);
+    var B = global.VUElliottBig; if (B && B.load) B.load().then(function () { if (box.isConnected) { box.replaceChildren(); fill(box, o); } });
+  }
+  function fill(host, o) {
+    var M = o.M, el = o.el, sh = o.sh, h = o.home || {}, R = h.radar, E = h.events, W = words(), T = W.target.length <= 10 ? W.target : "Ziel";   // kurzes Wort der Einstellung, sonst „Ziel“
     if (E && E.length) {
       host.append(sh("Elliott-Alarme"), el("p", { class: "ek-sub ek-sm ek-mut", text: "Was seit dem letzten Lauf passiert ist: Zone erreicht, Ziel erreicht, Zählung ungültig." }),
         el("div", { class: "ek-rail", role: "list", "aria-label": "Elliott-Alarme" }, E.slice(0, 12).map(function (e) {
@@ -28,7 +33,7 @@
           return el("a", { class: "el-cr ek-tile ek-tap ek-nc", role: "listitem", href: M.detailHref(r.t), dataset: { symbol: r.t }, "aria-label": [r.n, "Welle " + r.ew, W.entry + " " + num(r.e[0]) + " bis " + num(r.e[1]), W.target + " " + num(r.t1[0]) + " bis " + num(r.t1[1]), r.rw ? RW[r.rw] : ""].filter(Boolean).join(", ") }, [
             el("span", { class: "ek-nc-h" }, [el("span", { class: "ek-f1" }, [el("b", { class: "ek-b8", text: r.n }), el("span", { class: "ek-xs ek-mut", text: "Welle " + r.ew + " in der Zone " + num(r.e[0]) + "–" + num(r.e[1]) + " $" })]),
               r.rw ? el("span", { class: "ek-pill ek-pill--sm" + (r.rwOk ? "" : " ek-pill--wh"), text: r.rwOk ? "Rückenwind" : "Gegenwind" }) : null]),
-            el("span", { class: "ek-nc-f" }, [el("span", { class: "ek-xs ek-b7", text: (up ? "▲ " : "▼ ") + W.target + " " + r.tw + " " + num(r.t1[0]) + "–" + num(r.t1[1]) + " $ (" + pct(r.dist) + ")" })])]);
+            el("span", { class: "ek-nc-f" }, [el("span", { class: "ek-xs ek-b7", text: (up ? "▲ " : "▼ ") + T + " " + r.tw + " " + num(r.t1[0]) + "–" + num(r.t1[1]) + " $ (" + pct(r.dist) + ")" })])]);
         })));
     }
   }
