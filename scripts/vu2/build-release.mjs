@@ -8,6 +8,7 @@ import {fileURLToPath} from 'node:url';
 import {gzipSync,gunzipSync} from 'node:zlib';
 import {writeStockHeadViews} from './stock-head-view.mjs';
 import {writeManifest} from './release-manifest.mjs';
+import {readQuantHomeRegime} from './quant-home-preview.mjs';
 import {createRequire} from 'node:module';
 const require=createRequire(import.meta.url),Master=require('../../quant/engines/company-master.js'),History=require('../../quant/api/fundamentals-contract.js'),FactorProjection=require('../../quant/engines/factor-product-projection.js');
 /* Kopf der Quant-Startseite fuer den Fruehstart (quant/app/stock-boot.js). Quelle ist pages.js#home (geschuetzt, nur gelesen).
@@ -179,6 +180,8 @@ export async function writeQuantCode({root,output,paths,stockPreload=true}){
    headChunks.unshift('globalThis.VUQuantHeadDeliveryEnabled=true;');
    const homeSource=await readFile(resolve(root,'quant/app/pages.js'),'utf8').catch(()=>''),intro=quantHomeIntro(homeSource);
    if(intro)headChunks.unshift('globalThis.VUQuantHomeIntro='+JSON.stringify(intro)+';');
+   const homeRegime=intro?await readQuantHomeRegime(root):null;
+   if(homeRegime)headChunks.unshift('globalThis.VUQuantHomeRegime='+JSON.stringify(homeRegime)+';');
    const text=headChunks.join('\n;\n');headSrc='/quant/head-bundle.js';await writeFile(resolve(output,headSrc.slice(1)),text);chunks.push('/* early-head '+createHash('sha256').update(text).digest('hex')+' */');}
   const packed={};
   for(const [name,list] of Object.entries(packChunks)){
