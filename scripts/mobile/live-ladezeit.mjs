@@ -20,7 +20,7 @@ import {fileURLToPath} from 'node:url';
 
 export const SITES = Object.freeze({
  app: {base: 'https://research.visionuniverse.de', gate: true,
-  routes: ['/', '/discover/', '/quant/', '/technical/', '/mein-dashboard/', '/quant/#/aktie/NVDA']},
+  routes: ['/', '/discover/', '/quant/', '/technical/', '/technical/#/screener', '/technical/#/chart/NVDA', '/mein-dashboard/', '/quant/#/aktie/NVDA']},
  www: {base: 'https://www.visionuniverse.de', gate: false, routes: ['/', '/magazin/', '/news/']}
 });
 export const CPUS = Object.freeze([4, 2]);

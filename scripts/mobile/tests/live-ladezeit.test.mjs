@@ -46,7 +46,7 @@ test('Bericht nennt Routen und Alarme; ein Geheimnis in der Ausgabe bricht ab',(
 });
 test('Seiten, Routen und Profile: App hinter der Maske, www offen, CPU 4x und 2x',()=>{
  assert.equal(SITES.app.gate,true);assert.equal(SITES.www.gate,false);assert.deepEqual(CPUS,[4,2]);
- assert.deepEqual(SITES.app.routes,['/','/discover/','/quant/','/technical/','/mein-dashboard/','/quant/#/aktie/NVDA']);assert.deepEqual(SITES.www.routes,['/','/magazin/','/news/']);
+ assert.deepEqual(SITES.app.routes,['/','/discover/','/quant/','/technical/','/technical/#/screener','/technical/#/chart/NVDA','/mein-dashboard/','/quant/#/aktie/NVDA']);assert.deepEqual(SITES.www.routes,['/','/magazin/','/news/']);
  for(const s of Object.values(SITES))assert.match(s.base,/^https:\/\//);
 });
 test('measure.mjs: Zugangsmaske nur mit --gate und Umgebung, nur im Ursprung der Seite, kein Trace, Screenshot oder HAR; Standard unverändert',()=>{
@@ -100,4 +100,11 @@ test('Verschiebung mit Lage: von/nach (y) und Höhe je Knoten im Bericht, nur Za
  const t=topShiftOf(ss);assert.deepEqual(t.moves,[{from:{y:900,h:300},to:{y:1021,h:300}}]);
  const md=reportMarkdown({measuredAt:'t',commit:'c',runs:3,historyRuns:0,alarms:[],rows:[{key:'app/',cpu:4,lcp:1,cls:0.18,requests:1,bytes:1024,runs:3,invalidRuns:0,lcpRuns:[1],topShift:t}]});
  assert.match(md,/SECTION#\.hm-blick \(y 900→1021, h 300→300\)/);
+});
+
+test('Technical-Unterseiten (Screener, Chart NVDA) mit Inhaltsmerkmal, ohne Ziel (Anfrage Technical K3)',()=>{
+ for(const k of ['app/technical/#/screener','app/technical/#/chart/NVDA']){
+  assert.ok(SITES.app.routes.includes(k.replace('app','')),k+' wird gemessen');
+  assert.ok(targets.routes[k].marker,k+' hat ein Inhaltsmerkmal');assert.equal(targets.routes[k].lcpMs,undefined,'kein Ziel vor dem ersten gültigen Lauf');
+ }
 });
