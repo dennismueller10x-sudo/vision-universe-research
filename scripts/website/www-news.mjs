@@ -13,12 +13,16 @@
 // products/insights/build.mjs ruft syncWww() nach jedem Bau auf: ein neuer Artikel, ein neues Heft oder
 // ein neuer Report erscheint damit im selben Commit auf www (Cloudflare Pages baut landing/ dann neu).
 import fs from "node:fs";
+import crypto from "node:crypto";
+import { execFileSync } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { artikelSeite, artikelDateien, leseShell } from "./www-artikel.mjs";
 
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const LANDING = path.join(ROOT, "landing");
+// Bühnenbild: ab 900 px Breite 66 % der Seite (web/sub.css .ts-art), sonst die volle Breite.
+const HERO_SIZES = "(min-width: 900px) 66vw, 100vw";
 const IMG = path.join(LANDING, "web/img/news");
 const NEWS = path.join(LANDING, "news");
 const ARTIKEL = path.join(ROOT, "products/insights/artikel");
@@ -40,6 +44,16 @@ export function readState() {
   // Nur Bilder im Querformat 16:9 (bildQuer, products/insights/build.mjs); sonst kein Bild statt eines verzerrten Ausschnitts.
   const artikel = list.artikel.map((a) => ({ ...a, img: a.bildQuer ? add(`art-${a.slug}${ext(a.bildQuer)}`, a.bildQuer.replace(/^\//, "")) : null }));
   if (!artikel.length) throw new Error("insights/artikel.json enthält keinen Artikel.");
+  // Ladezeit (Owner-Auftrag 23.11.2026): Die fünf Bühnenbilder der News-Seite gibt es zusätzlich in 800 px Breite
+  // (Handy: 390 px x 2 = 780 px statt 1600 px, etwa ein Drittel der Bytes). Name trägt den Hash des Originals,
+  // damit ein neues Bild unter gleichem Namen nie eine alte Verkleinerung behält. Erzeugt mit ImageMagick (convert).
+  const variants = new Map();
+  for (const a of artikel.slice(0, 5)) {
+    if (!a.img) continue;
+    const from = files.get(a.img), hash = crypto.createHash("sha1").update(fs.readFileSync(path.join(ROOT, from))).digest("hex").slice(0, 8);
+    a.img800 = a.img.replace(/\.[a-z]+$/i, "") + `-${hash}-800.jpg`;
+    variants.set(a.img800, from);
+  }
   // Volltext je Artikel für die eigenen Seiten unter /news/<slug>/ (Owner 23.11.2026) samt ihrer Bilder.
   const voll = artikel.map((a) => {
     const datei = path.join(ARTIKEL, `${a.datum}-${a.slug}.json`);
@@ -66,7 +80,7 @@ export function readState() {
       preview: [2, 3].map((n) => add(`rep-${id}-s${nn(n)}.jpg`, `${rq}seiten/s${nn(n)}.jpg`)).filter(Boolean),
       cover: add(`rep-${id}-cover.jpg`, `${rq}cover.jpg`), pages: [3, 2, 2].map((n) => add(`rep-${id}-s${nn(n)}.jpg`, `${rq}seiten/s${nn(n)}.jpg`)).filter(Boolean) };
   }
-  return { artikel, voll, heft, report, files };
+  return { artikel, voll, heft, report, files, variants };
 }
 
 // Artikel öffnen auf www selbst (Owner 23.11.2026): /news/<slug>/ ist ohne App und ohne Konto lesbar.
@@ -117,14 +131,18 @@ export function regions(state) {
   // News-Seite „Top Shelf“ (Owner 22.11.2026, nach Apple TV): oben die fünf neuesten Artikel zum Wischen, darunter alle
   // weiteren nach Datum, dann „Nach Aktien“ und „Nach Themen“ (Felder firma/themen der Artikel) und Magazin/Report.
   // Bilder füllen ihren Rahmen im Format 16:9; Artikelbilder sind 16:9 mit mindestens 1600 px (products/insights/tests).
+  // Erstes Bühnenbild im Kopf vorladen (vor dem Schriften-Preload in news/index.html), damit es nicht erst nach HTML und CSS beginnt.
+  const lcpPreload = (R) => a0.img && a0.img800 ? `<link rel="preload" as="image" href="${R}web/img/news/${a0.img}" imagesrcset="${R}web/img/news/${a0.img800} 800w, ${R}web/img/news/${a0.img} 1600w" imagesizes="${HERO_SIZES}" fetchpriority="high">` : "";
   const topShelf = (R) => {
-    const pic = (x, lazy = true) => x.img ? `<img src="${R}web/img/news/${x.img}" alt=""${lazy ? ' loading="lazy"' : ""}>` : '<span class="ts-noimg"></span>';
+    const pic = (x, lazy = true, hero = false) => !x.img ? '<span class="ts-noimg"></span>'
+      : hero && x.img800 ? `<img src="${R}web/img/news/${x.img}" srcset="${R}web/img/news/${x.img800} 800w, ${R}web/img/news/${x.img} 1600w" sizes="${HERO_SIZES}" width="1600" height="900" alt=""${lazy ? ' loading="lazy"' : ' fetchpriority="high"'}>`
+      : `<img src="${R}web/img/news/${x.img}" alt=""${lazy ? ' loading="lazy"' : ""}>`;
     const meta = (x) => `${dmy(x.datum)} · ${esc(x.rubrik)}`;
     const card = (x) => `<a class="ts-c" data-tk="${esc(x.firma?.ticker || "")}" data-th="${esc((x.themen || []).join("|"))}" href="${link(x.href)}"><span class="ts-im">${pic(x)}</span><small>${meta(x)}</small><b>${esc(x.titel)}</b></a>`;
     const arrows = '<span class="ts-arr"><button type="button" aria-label="Zurück">‹</button><button type="button" aria-label="Weiter">›</button></span>';
     const shelf = (id, h, inner, cls = "") => `<section class="ts-shelf${cls}"${id ? ` id="${id}"` : ""}><div class="w ts-sh"><h2>${h} <span aria-hidden="true">›</span></h2>${arrows}</div><div class="ts-track">${inner}</div></section>`;
     const hero = artikel.slice(0, 5), rest = artikel.slice(5);
-    const slides = hero.map((x, i) => `<div class="ts-sl${i ? "" : " on"}"${i ? ' aria-hidden="true"' : ""}><div class="ts-art">${pic(x, i > 0)}</div><div class="ts-tx"><div class="w"><div>`
+    const slides = hero.map((x, i) => `<div class="ts-sl${i ? "" : " on"}"${i ? ' aria-hidden="true"' : ""}><div class="ts-art">${pic(x, i > 0, true)}</div><div class="ts-tx"><div class="w"><div>`
       + `<p class="ts-k">${esc(x.rubrik)} · ${dmy(x.datum)}</p><h2>${esc(x.titel)}</h2><p class="ts-p">${esc(x.teaser)}</p>`
       + `<div class="ts-btns"><a class="ts-b1" href="${link(x.href)}"${i ? ' tabindex="-1"' : ""}>▶ Jetzt lesen</a><a class="ts-b2" href="#neueste"${i ? ' tabindex="-1"' : ""}>Alle Artikel</a></div></div></div></div></div>`).join("");
     const dots = hero.map((x, i) => `<button type="button" aria-label="Artikel ${i + 1} von ${hero.length}"><i></i></button>`).join("");
@@ -163,7 +181,7 @@ export function regions(state) {
       titel: report.titel, unterzeile: report.unterzeile, cover: report.cover, coverAlt: "den ganzen Report", pages: report.preview, inhalt: report.alles }) } } : {}),
     // News-Seite (Owner 17.11.2026): nur Artikel; Magazin und Aktienreports haben eigene Seiten im Menü.
     // Großer gestalteter Kopf steht fest in news/index.html (kein Tagesbild oben); hier nur die Artikel als kleine Kacheln.
-    "news/index.html": { page: topShelf("../") }
+    "news/index.html": { page: topShelf("../"), lcp: lcpPreload("../") }
   };
 }
 
@@ -196,11 +214,17 @@ export function syncWww({ check = false } = {}) {
     stale.push(`landing/news/${d.name}/`); if (!check) fs.rmSync(path.join(NEWS, d.name), { recursive: true, force: true });
   }
   fs.mkdirSync(IMG, { recursive: true });
-  for (const f of fs.readdirSync(IMG)) if (!state.files.has(f)) { stale.push(`landing/web/img/news/${f}`); if (!check) fs.rmSync(path.join(IMG, f)); }
+  for (const f of fs.readdirSync(IMG)) if (!state.files.has(f) && !state.variants.has(f)) { stale.push(`landing/web/img/news/${f}`); if (!check) fs.rmSync(path.join(IMG, f)); }
   for (const [to, from] of state.files) {
     const dest = path.join(IMG, to), src = fs.readFileSync(path.join(ROOT, from));
     if (fs.existsSync(dest) && fs.readFileSync(dest).equals(src)) continue;
     stale.push(`landing/web/img/news/${to}`); if (!check) fs.writeFileSync(dest, src);
+  }
+  for (const [to, from] of state.variants) {
+    const dest = path.join(IMG, to);
+    if (fs.existsSync(dest)) continue;
+    stale.push(`landing/web/img/news/${to}`);
+    if (!check) try { execFileSync("convert", [path.join(ROOT, from), "-resize", "800x", "-strip", "-sampling-factor", "4:2:0", "-quality", "72", dest]); } catch (e) { throw new Error(`Verkleinerung ${to} nicht möglich (ImageMagick convert nötig): ${e.message}`); }
   }
   return stale;
 }
