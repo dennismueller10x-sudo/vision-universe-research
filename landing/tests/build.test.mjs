@@ -76,3 +76,13 @@ test('Instagram-Seiten: keine App-Links, nur eigene Quellen, Listen verlinkt',as
   const second=await readFile(resolve(output,'instagram/robotaxi-nebenwerte/index.html'),'utf8');assert.equal((second.match(/class="il-it"/g)||[]).length,10);assert.match(second,/keine Kauf- oder Verkaufsempfehlung/);assert.doesNotMatch(second,/<span class="tk">(TSLA|GOOGL|NVDA|AMZN|AAPL|MSFT)</);
   const ki=await readFile(resolve(output,'instagram/ki-unterstuetzung/index.html'),'utf8');assert.equal((ki.match(/class="il-it"/g)||[]).length,10);assert.match(ki,/keine Kauf- oder Verkaufsempfehlung/);assert.match(ki,/Schlusskurse 16\.11\.2026/);
 });
+test('Jedes Stylesheet und Skript unter web/ hat auf jeder Seite einen Versionsstempel (Owner 23.11.2026)',async()=>{
+  // Ohne Stempel behält Safari eine alte Fassung bis zu 4 h im Speicher; so blieb ein Aufmacher auf dem iPhone verzerrt.
+  const {build,newsArtikelPages,marktbriefingPages,SITE_PAGES}=await import('../scripts/build.mjs');
+  const output=resolve(root,'tests/output/stempel');await build({output});
+  const seiten=['index.html',...SITE_PAGES,...await marktbriefingPages(),...await newsArtikelPages()];
+  for(const page of seiten){
+    const html=await readFile(resolve(output,page),'utf8');
+    for(const m of html.matchAll(/(?:src|href)="((?:\.\.\/|\.\/)*web\/[^"]+\.(?:css|js))(\?v=[0-9a-f]{16})?"/g))assert.ok(m[2],`${page}: ${m[1]} ohne Versionsstempel (Liste stamp in landing/scripts/build.mjs)`);
+  }
+});
