@@ -172,6 +172,19 @@ Alles frei lesbar und für Google und KI-Suchen gebaut (statisches HTML, `NewsAr
 6. Owner sieht es sich live an; Korrekturen kommen als eigener kleiner PR. Kein KI-Hinweis am Text (Owner 10.11.2026):
    der Owner liest jeden Artikel und trägt die redaktionelle Verantwortung; KI-Bilder behalten „KI-Bild“.
 
+**Zwei Adressen, ein Text (Owner 23.11.2026).** Die Artikel stehen zusätzlich als eigene Seite auf der Website:
+`www.visionuniverse.de/news/<slug>/`, lesbar ohne App, ohne Konto und ohne Abo. Grund: `research.visionuniverse.de` ist der
+Bereich der App; wer sie nicht nutzt, soll die News trotzdem im Browser lesen können. Erzeuger ist
+`scripts/website/www-artikel.mjs`, aufgerufen von `scripts/website/www-news.mjs` (und damit von jedem
+`node products/insights/build.mjs`): aus derselben Artikeldatei entsteht eine Seite im Website-Design, mit Kopf und Fuß aus
+`landing/news/index.html`, Diagrammen, Kurskasten (dieselben eingefrorenen Zahlen), Quellen und Pflichthinweis. Jedes Bild
+wird nach `landing/web/img/news/` kopiert; www lädt nichts von anderen Adressen. Die Übersicht auf www und die Startseite
+verlinken auf diese Seiten, nicht mehr in die App; in der Seite führen zwei Schaltflächen zur App. `landing/scripts/build.mjs`
+nimmt die Seiten in den Cloudflare-Bau und in die Sitemap auf (`newsArtikelPages()`). Geprüft in IN-21.
+Offener Punkt: Artikeltext steht damit unter zwei Adressen. Beide Seiten zeigen derzeit auf sich selbst (`canonical`);
+soll www die führende Adresse für die Suche werden, bekommt die Research-Seite ein `canonical` auf
+`www.visionuniverse.de/news/<slug>/` (eine Zeile in `products/insights/build.mjs#artikelSeite`).
+
 **Tageslauf ohne Owner (ab 11.11.2026):** Zwei geplante Aufgaben wecken an jedem Werktag die dauerhafte Sitzung
 „Insights-Tageslauf (dauerhaft)“: um 4:47 Uhr (Frühlauf, Artikel gegen 6 Uhr: Tagesthema aus der US-Sitzung des Vortags)
 und um 10:47 Uhr (Mittagslauf, Artikel gegen 12 Uhr, vor der US-Eröffnung: Nebenwert oder Zukunftsthema). Die Sitzung
