@@ -85,6 +85,10 @@ den Stand nennen („Schlusskurs vom …“) und die nächsten Termine. Grundlag
    (`themes[].title` in `discover/data/stocks/US_REAL/<TICKER>.json`, in normaler Schreibweise, z. B. „Halbleiter & Chips“),
    die zum Artikel passen, nicht alle der Aktie. `"firma"` nur, wenn die Hauptfirma nicht der erste Ticker ist
    (z. B. Anthropic: `{"ticker": "ANT", "name": "Anthropic"}`); sonst nimmt der Bau den Namen der ersten Aktie.
+6b. **Die Seite auf www.** `build.mjs` schreibt zusätzlich `landing/news/<slug>/index.html`
+   (`scripts/website/www-news.mjs` → `www-artikel.mjs`): dieselbe Geschichte, lesbar ohne App und ohne Konto. Nichts
+   extra zu tun, aber die Seite gehört in denselben Commit (`landing/` nicht vergessen) und wird nach dem Merge unter
+   `https://www.visionuniverse.de/news/<slug>/` mitgeprüft.
 7. **Bauen und prüfen.** `node products/insights/build.mjs`, dann
    `node --test "products/insights/tests/*.test.mjs" "core/tests/*.test.mjs"`. Jede Quellenadresse einmal abrufen; tote
    Adressen ersetzen. Die Artikelseite im Browser ansehen (Desktop und 390 px): keine leeren Bilder, kein Überlauf.

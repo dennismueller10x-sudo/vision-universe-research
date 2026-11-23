@@ -175,3 +175,26 @@ test('IN-20 · Aufmacher ab 23.11.2026: 16:9, mindestens 1600 px breit, Themen u
     assert.ok(istQuer(s, 1600), `${a.slug}: Aufmacher ${s.w}×${s.h}, verlangt 16:9 mit mindestens 1600 px Breite`);
   }
 });
+
+test('IN-21 · jeder Artikel ist auch ohne App lesbar: eigene Seite unter www.visionuniverse.de/news/<slug>/', () => {
+  // Owner 23.11.2026: Die News standen nur unter research.visionuniverse.de, dem Bereich der App. Wer die App nicht
+  // nutzt, soll den Artikel trotzdem im Browser lesen können (scripts/website/www-artikel.mjs).
+  for (const a of artikel) {
+    const seite = `landing/news/${a.slug}/index.html`;
+    assert.ok(fs.existsSync(seite), `${a.slug}: ${seite} fehlt (node scripts/website/www-news.mjs)`);
+    const html = read(seite);
+    assert.ok(html.includes(`<h1>${a.titel.replace(/&/g, '&amp;').replace(/</g, '&lt;')}</h1>`), `${seite}: Titel fehlt`);
+    assert.match(html, /<section class="na-quellen">/, `${seite}: Quellen fehlen`);
+    assert.match(html, /name="robots"/, `${seite}: robots-Angabe fehlt`);
+    assert.ok(html.includes(`<link rel="canonical" href="https://www.visionuniverse.de/news/${a.slug}/">`), `${seite}: canonical fehlt`);
+    // Kein Bild von einer anderen Adresse: www lädt nur eigene Kopien (landing/web/img/news/).
+    for (const m of html.matchAll(/<img[^>]+src="([^"]+)"/g)) {
+      assert.ok(m[1].startsWith('../../'), `${seite}: Bild ${m[1]} kommt nicht von www`);
+      assert.ok(fs.existsSync('landing/' + m[1].replace(/^(\.\.\/)+/, '')), `${seite}: Bild ${m[1]} fehlt`);
+    }
+  }
+  // Die News-Übersicht verweist auf die eigenen Seiten, nicht mehr in die App.
+  const index = read('landing/news/index.html');
+  assert.doesNotMatch(index, /href="https:\/\/research\.visionuniverse\.de\/insights\//, 'landing/news/index.html verlinkt noch in die App');
+  for (const a of artikel.slice(0, 5)) assert.ok(index.includes(`href="/news/${a.slug}/"`) || index.includes(`href="../news/${a.slug}/"`), `landing/news/index.html verlinkt ${a.slug} nicht`);
+});

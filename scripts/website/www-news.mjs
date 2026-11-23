@@ -15,11 +15,13 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { artikelSeite, artikelDateien, leseShell } from "./www-artikel.mjs";
 
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const LANDING = path.join(ROOT, "landing");
 const IMG = path.join(LANDING, "web/img/news");
-const RESEARCH = "https://research.visionuniverse.de";
+const NEWS = path.join(LANDING, "news");
+const ARTIKEL = path.join(ROOT, "products/insights/artikel");
 
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 const dmy = (iso) => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || ""); return m ? `${m[3]}.${m[2]}.${m[1]}` : ""; };
@@ -38,6 +40,16 @@ export function readState() {
   // Nur Bilder im Querformat 16:9 (bildQuer, products/insights/build.mjs); sonst kein Bild statt eines verzerrten Ausschnitts.
   const artikel = list.artikel.map((a) => ({ ...a, img: a.bildQuer ? add(`art-${a.slug}${ext(a.bildQuer)}`, a.bildQuer.replace(/^\//, "")) : null }));
   if (!artikel.length) throw new Error("insights/artikel.json enthält keinen Artikel.");
+  // Volltext je Artikel für die eigenen Seiten unter /news/<slug>/ (Owner 23.11.2026) samt ihrer Bilder.
+  const voll = artikel.map((a) => {
+    const datei = path.join(ARTIKEL, `${a.datum}-${a.slug}.json`);
+    if (!fs.existsSync(datei)) throw new Error(`Artikeldatei fehlt: products/insights/artikel/${a.datum}-${a.slug}.json`);
+    const d = JSON.parse(fs.readFileSync(datei, "utf8"));
+    // Der Aufmacher liegt für die Übersicht schon als art-<slug>.jpg bereit, wenn es dasselbe Bild ist.
+    const auf = a.img && a.bildQuer === d.bild?.src ? a.img : null;
+    for (const [name, from] of artikelDateien(d, auf)) files.set(name, from);
+    return Object.assign(d, { _auf: auf });
+  });
   const h = list.magazin && list.magazin[0];
   if (!h) throw new Error("insights/artikel.json enthält kein Heft.");
   const hq = h.href.replace(/^\//, "");
@@ -54,10 +66,12 @@ export function readState() {
       preview: [2, 3].map((n) => add(`rep-${id}-s${nn(n)}.jpg`, `${rq}seiten/s${nn(n)}.jpg`)).filter(Boolean),
       cover: add(`rep-${id}-cover.jpg`, `${rq}cover.jpg`), pages: [3, 2, 2].map((n) => add(`rep-${id}-s${nn(n)}.jpg`, `${rq}seiten/s${nn(n)}.jpg`)).filter(Boolean) };
   }
-  return { artikel, heft, report, files };
+  return { artikel, voll, heft, report, files };
 }
 
-const link = (href) => RESEARCH + href;
+// Artikel öffnen auf www selbst (Owner 23.11.2026): /news/<slug>/ ist ohne App und ohne Konto lesbar.
+// Der Weg in die App steht in der Seite selbst (scripts/website/www-artikel.mjs), nicht mehr in jedem Link.
+const link = (href) => `/news/${slug(href)}/`;
 const img = (R, name, alt = "", extra = "") => name ? `<img src="${R}web/img/news/${name}" alt="${esc(alt)}"${extra}>` : "";
 
 
@@ -168,6 +182,18 @@ export function syncWww({ check = false } = {}) {
   for (const [page, parts] of Object.entries(regions(state))) {
     const file = path.join(LANDING, page), now = fs.readFileSync(file, "utf8"), next = fill(now, page, parts, `landing/${page}`);
     if (now !== next) { stale.push(`landing/${page}`); if (!check) fs.writeFileSync(file, next); }
+  }
+  // Eine eigenständige Seite je Artikel unter landing/news/<slug>/: lesbar ohne App und ohne Konto.
+  const shell = leseShell(), slugs = new Set(state.voll.map((a) => a.slug));
+  for (const a of state.voll) {
+    const ordner = path.join(NEWS, a.slug), datei = path.join(ordner, "index.html");
+    const next = artikelSeite(a, { alle: state.artikel, shell, aufName: a._auf });
+    const now = fs.existsSync(datei) ? fs.readFileSync(datei, "utf8") : null;
+    if (now !== next) { stale.push(`landing/news/${a.slug}/index.html`); if (!check) { fs.mkdirSync(ordner, { recursive: true }); fs.writeFileSync(datei, next); } }
+  }
+  for (const d of fs.readdirSync(NEWS, { withFileTypes: true })) {
+    if (!d.isDirectory() || slugs.has(d.name)) continue;
+    stale.push(`landing/news/${d.name}/`); if (!check) fs.rmSync(path.join(NEWS, d.name), { recursive: true, force: true });
   }
   fs.mkdirSync(IMG, { recursive: true });
   for (const f of fs.readdirSync(IMG)) if (!state.files.has(f)) { stale.push(`landing/web/img/news/${f}`); if (!check) fs.rmSync(path.join(IMG, f)); }
