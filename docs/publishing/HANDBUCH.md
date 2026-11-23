@@ -260,6 +260,23 @@ für www getrennt aus (`www` im Bericht); danach meldet IndexNow jede www-Seite,
 (`indexnow.mjs www`, Fingerabdrücke im Bericht unter `indexnowWww`). `research.visionuniverse.de` bleibt bis auf
 `/insights/` hinter der Passwortmaske.
 
+**Ratgeber** (Konzept und Freigabe Owner 23.11.2026): `www.visionuniverse.de/ratgeber/` mit sechs Themenwelten
+(`/ratgeber/thema/<welt>/`) und Artikeln unter `/ratgeber/<slug>/`. Quelle: `landing/ratgeber-inhalt/` (`welten.json` mit dem
+Themenplan von 31 Artikeln, `artikel/<slug>.json`, `daten.json` mit eingefrorenen Beispielwerten aus `discover/data`, neu
+einfrieren mit `node landing/scripts/ratgeber-daten.mjs`). Der Cloudflare-Bau erzeugt die Seiten (`landing/scripts/ratgeber.mjs`,
+Kopf und Fuß aus `landing/news/index.html`), den Startseiten-Balken (`<!--RATGEBER:balken-->` in `landing/index.html`),
+Sitemap-Einträge mit Änderungsdatum und den Abschnitt in `llms.txt`. Jeder Artikel: Frage-Titel, „Kurz gesagt“-Absatz mit
+Zahlen und Datum, Inhaltsverzeichnis, mindestens eine bedienbare Grafik (`web/ratgeber.js`, ohne JavaScript lesbar), App-Teil,
+Häufige Fragen, Quellen, „Weiterlesen“; JSON-LD `Article`, `FAQPage`, `BreadcrumbList`. `landing/tests/ratgeber.test.mjs`
+prüft Pflichtbausteine, Wortwahl, Beispielwerte (KGV = Kurs ÷ Gewinn je Aktie), Rechenregeln (Zulage §§ 84–86 EStG n. F.),
+Links und Einbindung. Neuer Artikel: Datei unter `artikel/` anlegen, Eintrag im Themenplan steht schon (sonst ergänzen).
+Stand 23.11.2026: alle 31 Artikel stehen. Bausteine neben den Grafiken (für lesbare Seiten statt Textwüste): `fakten`,
+`check`, `icons`, `vergleich`, `zeitstrahl`, `schrittkarten`, `merke`. Überschriften ohne Silbentrennung; sehr lange
+Einzelwörter bekommen in Kacheln eine kleinere Schrift. Die Kacheln folgen dem Startseiten-Layout (ganzes iPhone neben dem Text). Keine sichtbare Quellenliste mehr
+(Owner 23.11.2026): Datum und Datenherkunft stehen in der kleinen Zeile unter jeder Grafik, `quellen` im Artikel bleibt
+als interner Beleg. Indexverlauf (`index-chart`): Gesamtrendite der ETFs SPY, URTH, ACWI aus `vorsorge/data/series`,
+eingefroren in `daten.json` (`indizes`).
+
 Stand 11.11.2026: nur `/insights/` ist öffentlich und indexierbar (Sitemap, Search Console, IndexNow). Die Freischaltung
 weiterer Bereiche entscheidet der Owner; dieser Plan sagt, was dafür technisch vorbereitet wird.
 

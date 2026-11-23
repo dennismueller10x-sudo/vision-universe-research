@@ -4,6 +4,7 @@ import {resolve, dirname, relative, isAbsolute} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {createHash} from 'node:crypto';
 import {mitStrukturiertenDaten, llmsTxt} from './seo.mjs';
+import {ratgeberSeiten} from './ratgeber.mjs';
 
 export const root = fileURLToPath(new URL('../', import.meta.url));
 // Story-Website (Owner 17.11.2026): Unterseiten neben index.html; Bilder, Stil und Skript unter web/.
@@ -117,10 +118,13 @@ export async function build({output = resolve(root,'dist'), config = {}, product
     html=html.replace(`${attribute}="./${asset}"`,`${attribute}="./${asset}?v=${version}"`);
   }
   // Story-Website: Stil und Skript mit inhaltsabhängigen Adressen auf allen Seiten.
-  const stamp={};for(const asset of ['web/site.css','web/site.js','web/home.css','web/home.js','web/sub.css','web/sub.js','web/consent.js','web/liste.css','web/news-artikel.css','newsletter.js'])stamp[asset]=createHash('sha256').update(await readFile(resolve(output,asset))).digest('hex').slice(0,16);
+  const stamp={};for(const asset of ['web/site.css','web/site.js','web/home.css','web/home.js','web/sub.css','web/sub.js','web/consent.js','web/liste.css','web/news-artikel.css','web/ratgeber.css','web/ratgeber.js','newsletter.js'])stamp[asset]=createHash('sha256').update(await readFile(resolve(output,asset))).digest('hex').slice(0,16);
   for(const asset of ['marktbriefing/mb.css','marktbriefing/mb.js']){try{stamp[asset]=createHash('sha256').update(await readFile(resolve(output,asset))).digest('hex').slice(0,16);}catch{/* noch nicht vorhanden */}}
   const stampPage=(page,prefix)=>{for(const asset of Object.keys(stamp))page=page.replaceAll(`"${prefix}${asset}"`,`"${prefix}${asset}?v=${stamp[asset]}"`);return page;};
   html=stampPage(html,'./').replace('<meta name="vu-ga" content="">',`<meta name="vu-ga" content="${ga}">`);
+  // Ratgeber (scripts/ratgeber.mjs): Seiten und Startseiten-Balken aus landing/ratgeber-inhalt/.
+  const ratgeber=ratgeberSeiten();
+  html=html.replace(/<!--RATGEBER:balken-->[\s\S]*?<!--\/RATGEBER:balken-->/,'<!--RATGEBER:balken-->'+ratgeber.balken+'<!--/RATGEBER:balken-->');
   html=mitStrukturiertenDaten('index.html',html);
   await writeFile(resolve(output,'index.html'),html);
   const llmsSeiten=[{pfad:'index.html',html}];
@@ -135,6 +139,14 @@ export async function build({output = resolve(root,'dist'), config = {}, product
     if (SITE_PAGES.includes(path)) { page = mitStrukturiertenDaten(path, page); llmsSeiten.push({pfad:path,html:page}); }
     else if (path === 'marktbriefing/index.html') llmsSeiten.push({pfad:path,html:page});
     await writeFile(resolve(output,path),stampPage(page,'../'.repeat(path.split('/').length-1)).replace('<meta name="vu-ga" content="">',`<meta name="vu-ga" content="${ga}">`));
+  }
+  for(const r of ratgeber.seiten){
+    let page=r.html.replace('<head>','<head>\n  <meta http-equiv="Content-Security-Policy" content="'+esc(csp)+'">\n  <meta name="referrer" content="no-referrer">');
+    if (production) page = page.replace('content="noindex, nofollow"','content="index, follow"');
+    page=stampPage(page,'../'.repeat(r.pfad.split('/').length-1)).replace('<meta name="vu-ga" content="">',`<meta name="vu-ga" content="${ga}">`);
+    await mkdir(dirname(resolve(output,r.pfad)),{recursive:true});
+    await writeFile(resolve(output,r.pfad),page);
+    llmsSeiten.push({pfad:r.pfad,html:page});
   }
   // The partner presentation is shared by direct link only and stays out of search.
   let partner=await readFile(resolve(output,'partner/index.html'),'utf8');
@@ -172,7 +184,7 @@ export async function build({output = resolve(root,'dist'), config = {}, product
   await writeFile(resolve(output,'llms.txt'),llmsTxt(llmsSeiten));
   for (const f of (await readdir(root)).filter(f=>/^[0-9a-f]{32}\.txt$/.test(f))) await cp(resolve(root,f),resolve(output,f));
   await writeFile(resolve(output,'robots.txt'),production?'User-agent: *\nAllow: /\nSitemap: https://www.visionuniverse.de/sitemap.xml\n':'User-agent: *\nDisallow: /\n');
-  if (production) await writeFile(resolve(output,'sitemap.xml'),'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://www.visionuniverse.de/</loc></url>'+[...SITE_PAGES,...mbPages,...newsPages].map(p=>'<url><loc>https://www.visionuniverse.de/'+p.replace('index.html','')+'</loc></url>').join('')+'</urlset>');
+  if (production) await writeFile(resolve(output,'sitemap.xml'),'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://www.visionuniverse.de/</loc></url>'+[...SITE_PAGES,...mbPages,...newsPages].map(p=>'<url><loc>https://www.visionuniverse.de/'+p.replace('index.html','')+'</loc></url>').join('')+ratgeber.seiten.map(r=>'<url><loc>https://www.visionuniverse.de/'+r.pfad.replace('index.html','')+'</loc>'+(r.stand?'<lastmod>'+r.stand+'</lastmod>':'')+'</url>').join('')+'</urlset>');
   // Advanced-mode source contains binding names, never credential values.
   await cp(resolve(root,'server/newsletter.mjs'),resolve(output,'_worker.js'));
   await writeFile(resolve(output,'_routes.json'),JSON.stringify({version:1,include:['/api/*','/.newsletter-internal/*','/_worker*','/server/*'],exclude:[]}));

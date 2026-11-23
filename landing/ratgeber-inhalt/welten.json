@@ -1,0 +1,93 @@
+{
+ "schema": "vu-ratgeber-welten-1",
+ "hinweis": "Themenwelten und Themenplan des Ratgebers (Konzept vom 23.11.2026). Ein Eintrag ohne Datei unter artikel/ erscheint als „Bald“ ohne Link.",
+ "welten": [
+  {
+   "id": "altersvorsorge",
+   "name": "Altersvorsorge",
+   "satz": "Rente, Depot, Förderung",
+   "beschreibung": "Was das neue Altersvorsorgedepot bringt, was aus Riester wird und wie du deine Rentenlücke ausrechnest.",
+   "icon": "<path d=\"M3 11.5a9 9 0 0 1 18 0z\"/><path d=\"M12 11.5v7a2.2 2.2 0 0 0 4.4 0\"/>",
+   "artikel": [
+    ["altersvorsorgedepot", "Altersvorsorgedepot 2027"],
+    ["riester-was-tun", "Riester: behalten, wechseln oder kündigen?"],
+    ["rentenluecke", "Rentenlücke berechnen"],
+    ["altersvorsorge-etf", "Altersvorsorge mit ETFs"]
+   ]
+  },
+  {
+   "id": "einstieg",
+   "name": "Einstieg",
+   "satz": "Erste Schritte an der Börse",
+   "beschreibung": "Von der ersten Frage bis zur ersten Aktie: was du wissen solltest, bevor du anfängst.",
+   "icon": "<path d=\"M4 20h16\"/><path d=\"M6 20v-5M11 20V9M16 20v-8\"/><path d=\"m5 8 5-4 4 3 6-5\"/>",
+   "artikel": [
+    ["aktien-kaufen-anfaenger", "Aktien kaufen für Anfänger"],
+    ["wie-viel-geld", "Mit wie viel Geld anfangen?"],
+    ["depot", "Was ist ein Depot?"],
+    ["boerse-erklaert", "Die Börse einfach erklärt"],
+    ["risiken", "Welche Risiken haben Aktien?"]
+   ]
+  },
+  {
+   "id": "aktien-verstehen",
+   "name": "Aktien verstehen",
+   "satz": "Was hinter dem Kurs steckt",
+   "beschreibung": "Was eine Aktie ist, wie ihr Preis entsteht und wie du ein Unternehmen Schritt für Schritt prüfst.",
+   "icon": "<rect x=\"3.5\" y=\"4\" width=\"17\" height=\"16\" rx=\"2.5\"/><path d=\"M7 15l3-3 3 2 4-5\"/>",
+   "artikel": [
+    ["was-ist-eine-aktie", "Was ist eine Aktie?"],
+    ["aktienanalyse", "Aktienanalyse in 5 Schritten"],
+    ["dividende", "Dividende einfach erklärt"],
+    ["aktienkurs", "Wie entsteht der Aktienkurs?"],
+    ["aktiensplit", "Aktiensplit"]
+   ]
+  },
+  {
+   "id": "kennzahlen",
+   "name": "Kennzahlen",
+   "satz": "Jede Zahl in einem Satz",
+   "beschreibung": "KGV, Marge, Cashflow, Schulden: die wichtigsten Kennzahlen mit echten Beispielen erklärt.",
+   "icon": "<circle cx=\"12\" cy=\"12\" r=\"8.5\"/><path d=\"M12 12V3.5M12 12l6 6\"/>",
+   "artikel": [
+    ["kgv", "KGV einfach erklärt"],
+    ["marge", "Umsatz, Gewinn, Marge"],
+    ["free-cashflow", "Free Cashflow"],
+    ["verschuldung", "Verschuldung"],
+    ["marktkapitalisierung", "Marktkapitalisierung"],
+    ["eps", "Gewinn je Aktie"]
+   ]
+  },
+  {
+   "id": "etf-sparplan",
+   "name": "ETFs & Sparpläne",
+   "satz": "Breit anlegen, regelmäßig sparen",
+   "beschreibung": "Was ein ETF ist, wie ein Sparplan wächst und wann eine Einzelaktie, wann ein ETF passt.",
+   "icon": "<circle cx=\"7\" cy=\"8\" r=\"2.2\"/><circle cx=\"17\" cy=\"8\" r=\"2.2\"/><circle cx=\"12\" cy=\"15.5\" r=\"2.2\"/><path d=\"M3 20h18\"/>",
+   "artikel": [
+    ["aktie-oder-etf", "Aktie oder ETF?"],
+    ["etf-sparplan", "ETF-Sparplan einfach erklärt"],
+    ["etf", "Was ist ein ETF?"],
+    ["msci-world", "MSCI World erklärt"],
+    ["thesaurierend", "Thesaurierend oder ausschüttend?"]
+   ]
+  },
+  {
+   "id": "investoren",
+   "name": "Investoren & Methoden",
+   "satz": "Wie die Großen vorgehen",
+   "beschreibung": "Was große Fonds melden, was Insider-Käufe bedeuten und wie bekannte Methoden funktionieren.",
+   "icon": "<circle cx=\"12\" cy=\"7\" r=\"2.6\"/><path d=\"M7 20v-4.5a5 5 0 0 1 10 0V20\"/><circle cx=\"4.5\" cy=\"10\" r=\"1.6\"/><circle cx=\"19.5\" cy=\"10\" r=\"1.6\"/>",
+   "artikel": [
+    ["13f", "13F: Was große Fonds melden"],
+    ["insider", "Insider-Käufe"],
+    ["charttechnik", "Charttechnik-Grundlagen"],
+    ["momentum", "Momentum"],
+    ["elliott-wellen", "Elliott-Wellen"],
+    ["warren-buffett", "Die Methode Warren Buffett"]
+   ]
+  }
+ ],
+ "startHier": ["was-ist-eine-aktie", "wie-viel-geld", "aktien-kaufen-anfaenger", "aktie-oder-etf", "aktienanalyse"],
+ "aufmacher": "altersvorsorgedepot"
+}
