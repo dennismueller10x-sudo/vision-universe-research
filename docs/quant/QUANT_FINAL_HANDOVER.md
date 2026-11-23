@@ -535,6 +535,10 @@ Nur Darstellung, keine Zahl wird neu gerechnet. Start: Suche, „Markt heute“ 
 
 Die eigenständigen Seiten folgen demselben Aussehen (nur Darstellung): `/quant/musterdepots/` mit dunkler Kopfkachel, den fünf Depots als Schiene, „Alle N“ im Fenster und der „Weiter“-Karte zu den Portfolios, der Abschnitt „Wertentwicklung ab Live-Start“ unverändert; `/quant/markt/` und `/quant/data-inspector/` mit Kopfkachel und Zuständen in Grau und Neongrün (`quant/ui/pages-k2.css`, `quant/ui/pages-k2.js`); `/quant/methodology/` als Kacheln je Vertrag, Zweck und Datei im Fenster. Die Methodik-Seite bleibt erzeugt: Die Vorlage steht in `scripts/quant/build-methodology-index.mjs`, sie lädt jetzt `vu-ui` und läuft bei 320 px nicht mehr über.
 
+## Ladezeit der Startseite: Vorschau der Marktlage-Kachel (23.11.2026)
+
+Entscheidung (Option C, Steuerung): Das Startbündel der Quant-Startseite ist auf Dateiebene nicht zu verkleinern (alle 72 Dateien laufen auf der Startseite teilweise, 37 % des Codes insgesamt); stattdessen steht die Marktlage-Kachel, das LCP-Element, als fertiger Text im Frühstart (`quant/engines/regime-tile.js#hostHtml`, beim Release aus `market-regime-v1.json` gebaut, `scripts/vu2/quant-home-preview.mjs`) und das Bündel übernimmt danach; LCP lokal 4,75 s auf 1,46 s (1,6 Mbit, CPU 4x), CLS unverändert. Die Datei liegt nicht im Schnellweg, jede Änderung löst einen vollen Bau aus.
+
 ## Fachbelege und weiterführende Dokumentation
 
 Die folgenden Quellen werden verlinkt, nicht zusammenkopiert. Bei datierten Berichten bezeichnet „gültig“ ihren Referenzwert; daraus folgt keine neue Freigabe.

@@ -12,8 +12,9 @@
       var root=doc.getElementById('qx-app');if(!root)return false;
       var main=root.querySelector('main')||el('main','qx-main'),page=el('div','q-home vu-ui qv3 qk qk2 qp');
       main.id='qx-main';main.tabIndex=-1;page.innerHTML=w.VUQuantHomeIntro;var intro=page.firstElementChild;
+      var regime=null;if(w.VUQuantHomeRegime){regime=el('div','qp-px');regime.id='qp-heute';regime.innerHTML=w.VUQuantHomeRegime;page.appendChild(regime);}
       var pending=el('div','vu-skeleton');pending.setAttribute('aria-hidden','true');pending.style.height='180px';pending.append(el('i'),el('i'),el('i'));page.appendChild(pending);
-      main.replaceChildren(page);if(!main.parentNode)root.appendChild(main);home={main:main,page:page,intro:intro};return true;
+      main.replaceChildren(page);if(!main.parentNode)root.appendChild(main);home={main:main,page:page,intro:intro,regime:regime};return true;
     }
     if(!mountHome()){var homeObserver=new MutationObserver(function(){if(mountHome())homeObserver.disconnect();});homeObserver.observe(doc.documentElement,{childList:true,subtree:true});}
     w.addEventListener('hashchange',function(){if(w.location.hash&&!/^#\/?$/.test(w.location.hash))active=false;});return;
