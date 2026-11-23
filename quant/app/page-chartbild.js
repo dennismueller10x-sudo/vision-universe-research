@@ -598,7 +598,11 @@
     var grade = ewGrade(E), CLV = EW_GRADE[grade], nCand = E.trace && E.trace.candidates, over = !!(plan && plan.overtaken);
     /* Ueberholt: alle Elliott-Projektionszonen dieser Zaehlung sind durchlaufen – die Bewegung passt nicht mehr zur Zaehlung. */
     var overNote = over ? el("p", { class: "vu-alert cb-ew-over", role: "status" }, [el("b", { text: "Zählung überholt. " }), el("span", { text: "Der Kurs ist über alle Zonen dieser Zählung hinausgelaufen; die Bewegung ist größer, als sie annimmt. Neuzählung steht an." })]) : null;
-    host.append(el("div", { class: "cb-ew-say" }, [el("div", {}, [el("p", { class: "vu-ltag", text: "Wellen · " + o.tfLabel }), el("h2", { class: "vu-mt", text: title })]), over ? ewVerdict("weak", "Zählung überholt") : ewVerdict(CLV[0], CLV[1])]), overNote, o.chartCard);
+    /* Großes Bild (Owner 23.11.2026): Zaehlung von oben seit Handelsbeginn mit Pfad der Methode (elliott/bigpicture.js), vor der
+       kurzfristigen Zaehlung der Engine 3 */
+    var big = global.VUElliottBig ? global.VUElliottBig.section(a) : null;
+    if (big) host.append(big);
+    host.append(el("div", { class: "cb-ew-say" }, [el("div", {}, [el("p", { class: "vu-ltag", text: (big ? "Kurzfristige Zählung · " : "Wellen · ") + o.tfLabel }), el("h2", { class: "vu-mt", text: title })]), over ? ewVerdict("weak", "Zählung überholt") : ewVerdict(CLV[0], CLV[1])]), overNote, o.chartCard);
     var rows = [
       ["wave", "Struktur", ewStructSentence(c, a.outlook && a.outlook.structure), up ? ewVerdict("strong", c.complete ? "danach nach oben" : "Welle nach oben") : down ? ewVerdict("weak", c.complete ? "danach nach unten" : "Welle nach unten") : ewVerdict("none", "Richtung offen")],
       ["target", "Grenze", inv ? "Die Zählung gilt, solange " + (weekly ? "die Woche" : "der Tag") + " " + (inv.direction === "below" ? "über " : "unter ") + ewPrice(inv.price) + " schließt (Regel der Methode)." : "Für diese Zählung nennt die Methode keine feste Ungültig-Marke.", ewVerdict("mid", "Ungültig-Marke")],

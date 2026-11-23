@@ -334,3 +334,43 @@ main[data-market] .vu-sothers{display:none}
 #el-detail .cb .is-ew-weak .ti-waves{opacity:.6}
 #el-detail .cb .ti-zone-label,#el-detail .cb .ti-invalid-label{paint-order:stroke;stroke-width:4px;stroke-linejoin:round}
 #el-detail .cb-ew-over{margin:10px 0 12px}
+/* Großes Bild (Owner 23.11.2026): Zählung von oben seit Handelsbeginn, Pfad der Methode. Neongrün = Bewegung in die große Richtung
+   (Zone des Ziels), Grau = Korrektur, Pfeile schwarz (aufwärts) und grau gestrichelt (abwärts), Ungültig-Marke schwarz gestrichelt. */
+#el-detail .bp{margin:0 0 18px;padding:16px;border-radius:20px;background:var(--vu-card,#f4f4f4)}
+#el-detail .bp-title{margin:2px 0 10px}
+#el-detail .bp-chart{margin:0 -6px}
+#el-detail .bp-svg{display:block;overflow:visible}
+#el-detail .bp-grid{stroke:var(--vu-hair,#e3e3e3);stroke-width:1}
+#el-detail .bp-axis{fill:var(--vu-mute,#6e6e6e);font-size:11px}
+#el-detail .bp-future{fill:#c8f531;fill-opacity:.07}
+#el-detail .bp-line{fill:none;stroke:var(--vu-ink,#000);stroke-width:1.8;stroke-linejoin:round}
+#el-detail .bp-inv{stroke:var(--vu-ink,#000);stroke-width:1.4;stroke-dasharray:6 5}
+#el-detail .bp-inv-t{fill:var(--vu-ink,#000);font-size:11px;font-weight:700;paint-order:stroke;stroke:var(--vu-card,#f4f4f4);stroke-width:4px}
+#el-detail .bp-wave circle{fill:var(--vu-ink,#000)}
+#el-detail .bp-wave text{fill:var(--vu-inv,#fff);font-size:10px;font-weight:800}
+#el-detail .bp-wave.is-big circle{fill:#c8f531}
+#el-detail .bp-wave.is-big text{fill:#000;font-size:11px}
+#el-detail .bp-wave.is-dev circle{fill:var(--vu-card,#f4f4f4);stroke:var(--vu-ink,#000);stroke-width:1.6;stroke-dasharray:3 2}
+#el-detail .bp-wave.is-dev text{fill:var(--vu-ink,#000)}
+#el-detail .bp-zone{stroke-width:1.2}
+#el-detail .bp-zone-target{fill:#c8f531;fill-opacity:.55;stroke:#c8f531}
+#el-detail .bp-zone-entry,#el-detail .bp-zone-step{fill:rgba(155,155,155,.28);stroke:#9b9b9b}
+#el-detail .bp-arrow{stroke-width:2.4;stroke-linecap:round}
+#el-detail .bp-arrow.is-up{stroke:var(--vu-ink,#000)}
+#el-detail .bp-arrow.is-down{stroke:#9b9b9b;stroke-dasharray:6 4}
+#el-detail .bp-head-up{fill:var(--vu-ink,#000)}
+#el-detail .bp-head-down{fill:#9b9b9b}
+#el-detail .bp-step{fill:var(--vu-ink,#000);font-size:11px;font-weight:800;paint-order:stroke;stroke:var(--vu-card,#f4f4f4);stroke-width:4px}
+#el-detail .bp-now{fill:var(--vu-ink,#000)}
+#el-detail .bp-plan{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:8px}
+#el-detail .bp-row{display:grid;grid-template-columns:1fr auto;gap:2px 12px;padding:10px 12px;border-radius:14px;background:var(--vu-white,#fff)}
+#el-detail .bp-row-target{box-shadow:inset 4px 0 0 #c8f531}
+#el-detail .bp-row-entry{box-shadow:inset 4px 0 0 #9b9b9b}
+#el-detail .bp-row-inv{box-shadow:inset 4px 0 0 var(--vu-ink,#000)}
+#el-detail .bp-k{font-weight:700}
+#el-detail .bp-v{font-weight:800;text-align:right}
+#el-detail .bp-d{grid-column:2;text-align:right;color:var(--vu-mute,#6e6e6e);font-size:13px}
+#el-detail .bp-sub{grid-column:1;color:var(--vu-mute,#6e6e6e);font-size:13px}
+#el-detail .bp-alt,#el-detail .bp-note{margin:10px 0 0;color:var(--vu-mute,#6e6e6e);font-size:13px}
+:root[data-theme=dark] #el-detail .bp-row{background:#000}
+:root[data-theme=dark] #el-detail .bp-wave.is-dev circle{fill:#000;stroke:#fff}

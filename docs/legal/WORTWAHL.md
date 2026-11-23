@@ -23,6 +23,13 @@ Maschinenlesbar mit denselben Regeln: `assets/legal-notices.json`, Feld `wording
 6. **Keine Versprechen.** Nicht verwenden: garantiert, sicher, risikolos, todsicher. Erlaubt ist „sicher“ nur im
    technischen Sinn (z. B. „sichere Verbindung“).
 
+**Ausnahme Elliott „Großes Bild“ (Owner-Entscheidung 23.11.2026):** Im Abschnitt „Großes Bild“ des Elliott-Aktienbilds
+(`elliott/bigpicture.js`) stehen „Kursziel 1/2“, „Einstiegszone laut Methode“ und „Absicherung laut Methode“ mit Prozentabstand,
+jeweils als Zone der Elliott-Methode ohne Zeitangabe und mit „keine Anlageberatung“. Die Worte stehen nur in der Tabelle zwischen
+`KURSMARKEN-BEGIN` und `KURSMARKEN-END`; `elliott/config/kursmarken.json` schaltet mit `"modus": "zonen"` sofort auf die neutralen
+Worte dieser Seite zurück. Restrisiko (Anlageempfehlung nach Art. 3 Abs. 1 Nr. 34/35 MAR, Anzeige nach § 86 WpHG):
+[EINORDNUNG.md](EINORDNUNG.md) §0. Sonst gilt die Tabelle unverändert, auch für die Elliott-Wochenkarten.
+
 ## Tabelle: nicht verwenden → stattdessen
 
 | Nicht verwenden | Stattdessen | Warum |

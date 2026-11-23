@@ -41,6 +41,7 @@ import { Worker, isMainThread, parentPort, workerData } from "node:worker_thread
 import { projectFor, motiveCandidateFor, candidatePool, exploreCandidatesFor, exploreLegacyPick, wave3PoolAudit, projectionInput, splitResolutionFor, dataIntegrity, rsInput, rsRanks, advanceStore, attachLifecycle, PROJECTION_VERSION, STORE_SCHEMA } from "./lib/ti-projection.mjs";
 import { pruneStaleShards } from "./lib/ti-shards.mjs";
 import { MARKETS, MARKETS_VERSION, marketSeries } from "./lib/ti-markets.mjs";
+import { topDownFor } from "./lib/ti-topdown.mjs";
 import { Freshness, loadMaster, freshnessOf, withholdPayload, shardBlock, withheldIndexRow, newStats, addStats, systemicCheck, validReference } from "./lib/ti-freshness.mjs";
 import { cpus } from "node:os";
 import { loadIdentityQuarantine } from "./lib/identity-quarantine.mjs";
@@ -136,6 +137,8 @@ export function payload(series, out, currency, withReplay) {
   s.overlays = overlaysOf(res);
   s.pro.elliottTransparency = elliottTransparency(res, out.replay);
   s.chart = chartOf(series, 260);
+  /* Elliott von oben (Owner 23.11.2026): grosser Grad auf der vollen Wochenreihe seit Handelsbeginn, Unterteilung, Pfad der Methode */
+  if (series.timeframe === "1W") s.elliottTopDown = topDownFor(series);
   /* Projection Engine 1.2.0 (Produkt-Sichtbarkeit): ein ausgabeneutraler Engine-Lauf je Titel (Kandidatenpool), daraus
      die verborgene Motiv-Lesart (1.1.0) und Explore Elliott (1.2.0); Split-Verdacht gegen den Kapitalmassnahmen-Beleg. */
   const splitRes = splitResolutionFor(series, out);
@@ -440,6 +443,7 @@ function projectAll(got) {
   const freshOf = (t) => { const f = got.get(t).f; return Object.assign(Freshness.compact(f), { withheld: f.withheld }); };
   for (const [t, g] of got) {
     g.p.projection = projectFor(g.p, rs.get(t) || null);
+    if (g.pW && g.pW.elliottTopDown && !g.p.elliottTopDown) g.p.elliottTopDown = g.pW.elliottTopDown;   // Tagesanalyse: grosser Grad aus der Wochenreihe
     items.push({ symbol: t, tf: g.p.timeframe, proj: g.p.projection, bars: { t: g.p.chart.timestamps, c: g.p.chart.close }, asOf: g.p.asOf, freshness: freshOf(t) });
     if (g.pW) {
       g.p.projectionWeekly = projectFor(g.pW, rs.get(t) || null); stats.weeklyForDaily++;
