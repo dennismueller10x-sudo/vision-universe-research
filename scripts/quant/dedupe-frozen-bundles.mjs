@@ -28,7 +28,7 @@ export function duplicates(root = REPO) {
   const seen = new Map();
   for (const f of bundleFiles(root)) {
     const b = JSON.parse(gunzipSync(readFileSync(join(root, f))).toString("utf8"));
-    for (const [p, v] of Object.entries(b.files)) { if (v.ref || v.data === undefined) continue; const h = sha(v.data); const e = seen.get(h) || []; e.push(`${f}:${p}`); seen.set(h, e); }
+    for (const [p, v] of Object.entries(b.files)) { if (v.ref || v.data === undefined || v.data === "") continue; const h = sha(v.data); const e = seen.get(h) || []; e.push(`${f}:${p}`); seen.set(h, e); }
   }
   /* Ein Inhalt, der schon als geteilter Blob liegt, zaehlt auch dann, wenn er nur in EINEM Buendel noch inline steht
      (23.11.2026: v13b-largecap-strict fuehrte den Stamm inline, obwohl sieben Buendel ihn als ref teilen). */
@@ -51,7 +51,7 @@ if (process.argv[1] && import.meta.url === new URL("file://" + process.argv[1]).
   for (const f of bundleFiles()) {
     const b = JSON.parse(gunzipSync(readFileSync(join(REPO, f))).toString("utf8")); let changed = false;
     for (const [p, v] of Object.entries(b.files)) {
-      if (v.ref || v.data === undefined) continue;
+      if (v.ref || v.data === undefined || v.data === "") continue;
       const h = sha(v.data); if (!shared.has(h)) continue;
       const blob = join(REPO, FROZEN_SHARED_DIR, h + ".gz");
       if (!existsSync(blob)) writeFileSync(blob, gzipSync(v.data, { level: 9 }));

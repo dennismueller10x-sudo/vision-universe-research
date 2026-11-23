@@ -6,6 +6,7 @@
    Momentaufnahme) und eine aktiv verifizierte PIT-Regel (availableAt <=
    decisionTime), nicht nur eine Behauptung.
    ========================================================================= */
+import "../../scripts/quant/lib/frozen-data.mjs"; /* eingefrorener Datenstand (scripts/quant/lib/frozen-data.mjs, 22.11.2026) */
 import test from "node:test";
 import assert from "node:assert/strict";
 import { existsSync, readFileSync } from "node:fs";

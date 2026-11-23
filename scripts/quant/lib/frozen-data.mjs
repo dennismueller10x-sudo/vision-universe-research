@@ -21,6 +21,7 @@ import { REPO, mountFixture, dataDirOf, readFixture } from "./data-fixture.mjs";
 
 export const frozenBundleFor = (testFile) => join(dirname(testFile), "fixtures", "frozen", basename(testFile).replace(/\.test\.(mjs|js)$/, "").replace(/\.mjs$/, "") + ".json.gz");
 
+const LIST_FNS = ["readdirSync"];
 const MAP_FIRST = {
   sync: ["readFileSync", "readdirSync", "statSync", "lstatSync", "existsSync", "accessSync", "openSync", "opendirSync", "realpathSync", "readlinkSync"],
   cb: ["readFile", "readdir", "stat", "lstat", "access", "open", "createReadStream"],
@@ -37,7 +38,10 @@ export function installFrozenData(bundle, { repo = REPO } = {}) {
     for (const d of dirs) if (abs === d || abs.startsWith(d + sep)) return join(mirror, abs.slice(repo.length + 1));
     return p;
   };
-  const wrap = (obj, name) => { const orig = obj[name]; if (typeof orig !== "function") return; obj[name] = function (p, ...a) { return orig.call(this, map(p), ...a); }; };
+  /* Verzeichnislisten: wurde beim Einfrieren ein Datenverzeichnis aufgelistet, liefert readdirSync dieselbe Liste (Namen), auch wenn nicht jede Datei im Buendel steht. */
+  const listings = readFixture(bundle).meta.listings || {};
+  const listOf = (p) => { if (typeof p !== "string" && !(p instanceof URL)) return null; const abs = resolve(typeof p === "string" ? p : fileURLToPath(p)); if (!abs.startsWith(repo + sep)) return null; return listings[abs.slice(repo.length + 1).split(sep).join("/")] || null; };
+  const wrap = (obj, name) => { const orig = obj[name]; if (typeof orig !== "function") return; obj[name] = function (p, ...a) { if (name === "readdirSync") { const l = listOf(p); const o = a[0]; if (l && !(o && typeof o === "object" && (o.withFileTypes || o.recursive))) return [...l]; } return orig.call(this, map(p), ...a); }; };
   for (const n of MAP_FIRST.sync) wrap(fs, n);
   for (const n of MAP_FIRST.cb) wrap(fs, n);
   for (const n of MAP_FIRST.promises) wrap(fs.promises, n);

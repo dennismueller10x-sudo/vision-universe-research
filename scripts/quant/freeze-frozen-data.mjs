@@ -4,7 +4,7 @@
 // Ablauf: Test live unter dem Lese-Mitschnitt (muss gruen sein) -> Buendel neben dem Test -> Test auf dem Buendel (muss gruen sein);
 // sonst wird das Buendel wieder geloescht und der Exit-Code ist 1. Eine Ausgabe je Test als JSON-Zeile.
 import { spawnSync, execFileSync } from "node:child_process";
-import { readFileSync, writeFileSync, mkdirSync, mkdtempSync, rmSync, readdirSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, mkdtempSync, rmSync, readdirSync, existsSync, statSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { tmpdir } from "node:os";
 import { REPO, packFixture } from "./lib/data-fixture.mjs";
@@ -59,11 +59,15 @@ if (missingFiles.length) fail("datei-fehlt (Lesen endete mit ENOENT)", { missing
 const paths = [...new Set(readdirSync(traceDir).filter((f) => f.endsWith(".json")).flatMap((f) => JSON.parse(readFileSync(join(traceDir, f), "utf8"))))].sort();
 if (!paths.length) fail("liest-keine-datei-ueber-readFile");
 let sourceCommit = arg("--source", "HEAD"); try { sourceCommit = execFileSync("git", ["rev-parse", sourceCommit], { cwd: REPO, encoding: "utf8" }).trim(); } catch {}
-const buf = packFixture(paths, { test: testFile, sourceCommit, frozenAt: new Date().toISOString(), files: paths.length, checks: { fullCheckout: true, skipped: 0, missing: 0, pass: liveTap.pass } });
+/* Existenz-Zugriffe ohne Lesen (existsSync/statSync) kommen als leere Platzhalter ins Buendel; Verzeichnislisten (readdirSync) als meta.listings. */
+const readAll = (ext) => readdirSync(traceDir).filter((f) => f.endsWith(ext));
+const existsOnly = [...new Set(readAll(".exists").flatMap((f) => JSON.parse(readFileSync(join(traceDir, f), "utf8"))))].filter((p) => !paths.includes(p) && existsSync(join(REPO, p)) && statSync(join(REPO, p)).isFile()).sort();
+const listings = {}; for (const f of readAll(".lists")) Object.assign(listings, JSON.parse(readFileSync(join(traceDir, f), "utf8")));
+const buf = packFixture(paths, { test: testFile, sourceCommit, frozenAt: new Date().toISOString(), files: paths.length, checks: { fullCheckout: true, skipped: 0, missing: 0, pass: liveTap.pass }, listings, stubs: existsOnly.length }, undefined, existsOnly);
 if (buf.length > maxMb * 1048576) fail("zu-gross", { bytes: buf.length });
 mkdirSync(dirname(bundle), { recursive: true });
 writeFileSync(bundle, buf);
 const frozen = spawnSync(process.execPath, ["--test", testFile], { cwd: REPO, env: { ...process.env, ...extraEnv, DATA_FIXTURE_LIVE: "" }, encoding: "utf8", maxBuffer: 1 << 28, timeout: 1500000 });
-if (frozen.status !== 0 || tap(frozen.stdout).pass === 0) { rmSync(bundle, { force: true }); fail("auf-bundle-rot", { tail: frozen.stdout.split("\n").filter((l) => /^not ok/.test(l)).slice(0, 3) }); }
+if (frozen.status !== 0 || tap(frozen.stdout).pass === 0) { if (!process.env.VU_FREEZE_KEEP) rmSync(bundle, { force: true }); fail("auf-bundle-rot", { tail: frozen.stdout.split("\n").filter((l) => /^not ok/.test(l)).slice(0, 3) }); }
 console.log(JSON.stringify({ test: testFile, ok: true, files: paths.length, bytes: buf.length, bundle: bundle.slice(REPO.length + 1) }));
 }
