@@ -30,7 +30,10 @@ export function duplicates(root = REPO) {
     const b = JSON.parse(gunzipSync(readFileSync(join(root, f))).toString("utf8"));
     for (const [p, v] of Object.entries(b.files)) { if (v.ref || v.data === undefined) continue; const h = sha(v.data); const e = seen.get(h) || []; e.push(`${f}:${p}`); seen.set(h, e); }
   }
-  return [...seen.entries()].filter(([, e]) => e.length > 1);
+  /* Ein Inhalt, der schon als geteilter Blob liegt, zaehlt auch dann, wenn er nur in EINEM Buendel noch inline steht
+     (23.11.2026: v13b-largecap-strict fuehrte den Stamm inline, obwohl sieben Buendel ihn als ref teilen). */
+  const blobs = existsSync(join(root, FROZEN_SHARED_DIR)) ? new Set(readdirSync(join(root, FROZEN_SHARED_DIR)).map((n) => n.replace(/\.gz$/, ""))) : new Set();
+  return [...seen.entries()].filter(([h, e]) => e.length > 1 || blobs.has(h));
 }
 if (process.argv[1] && import.meta.url === new URL("file://" + process.argv[1]).href) {
   const dups = duplicates();
