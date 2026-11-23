@@ -321,6 +321,25 @@ Stufe 3 (Fassung A): eine Auswahl, die je Runde nur die Lernjahre kennt, tritt a
 - **Urteil „schlägt SPY“** nur, wenn die verketteten Bestätigungsjahre nach Kosten vor SPY liegen und der Block-Bootstrap
   p < 0,10 ergibt. Die Rangliste aller 240 Depots auf den Bestätigungsjahren wird als Rückschau berichtet und ist kein Beleg.
 
+**Ergebnis Stufe 7** (Lauf 45218341763, Bestätigung 01/2014 bis 09/2026 verkettet, nach Kosten; SPY 14,1 % p. a., max. Verlust −23,9 %):
+- **Auswahl nur aus den Lernjahren: 13,1 % p. a. (−1,0 Pp gegen SPY, max. Verlust −32,1 %, 7 von 13 Jahren vorn, p 0,394):
+  nicht belegt.** Gewählt wurden Turtle · Momentum · 25 (2014–2016: 6,2 % gegen 11,0 %), Turtle · relative Stärke · 15 mit Puffer
+  (2017–2019: 5,8 % gegen 14,1 %), kein Muster · Momentum + Bruttogewinn/Bilanz · 50 (2020–2022: 19,7 % gegen 9,8 %) und kein
+  Muster · Momentum + Bruttogewinn/Bilanz + Rückkäufe · 15 (2023–Ende: 19,8 % gegen 20,1 %). Wie in Stufe 3 findet die Auswahl
+  aus vier bis sieben Lernjahren keine stabile Regel; ab 2020 liegt sie richtig.
+- **Rückschau (kein Beleg, 240 Depots, 35 % vor SPY):** Median gegen SPY je Muster: Trendvorlage +2,9 Pp (21 von 24 vor SPY),
+  kein Muster +2,5 Pp (18 von 24), Turtle +1,6 Pp, Weinstein und Pocket Pivot +0,8 Pp; Darvas, Darvas-Kasten, Kullamägi,
+  Gap-Up und Holy Grail in allen 24 Einstellungen hinter SPY (seltene Muster, viel Kasse, siehe §4h).
+- **Auffällig und über alle Muster gleich:** 13 der 15 besten Depots rangieren nach Momentum + Bruttogewinn/Bilanz +
+  Rückkäufe. Ohne Muster, 15 Titel, mit Haltepuffer: 25,4 % p. a. (+11,4 Pp, max. Verlust −23,6 %, 10 von 13 Jahren vorn,
+  p 0,080, Umschlag 30 % je Monat); 25 Titel mit Puffer 22,1 % (+8,1 Pp, p 0,084, Umschlag 26 %); mit Trendvorlage, 15 Titel,
+  Puffer 23,0 % (+9,0 Pp, max. Verlust −17,7 %, p 0,096). Die p-Werte sind nicht für 240 Versuche korrigiert.
+- Haltepuffer: Median +0,1 Pp Rendite, besser in 68 von 120 Paaren; er halbiert etwa den Umschlag, ohne Rendite zu kosten.
+- Folgerungen (eigene PRs, vorab festzulegen): (1) Das Signal Momentum + Bruttogewinn/Bilanz + Rückkäufe war schon in Stufe 2
+  festgelegt und dort phasenfest; neu ist die Konzentration auf 15 bis 25 Titel. Als feste Hypothese mit Haltepuffer in den
+  Vorwärtstest aufnehmen; dafür braucht das Produkt die Veränderung der Aktienzahl als Baustein. (2) Keine Renditeaussage nach
+  außen aus der Rückschau. (3) Seltene Muster über eine Ereignisstudie messen.
+
 ## 5. Ausführung und Veröffentlichung
 
 - Umsetzung: `scripts/research/backtest2/` (Markt, Signale, Depotführung, Suche, Lauf mit Workern). Workflow `research.yml`, Teil
