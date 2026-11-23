@@ -124,14 +124,14 @@ export function reportMarkdown(report) {
  L.push('', report.alarms.length ? '## Alarme (' + report.alarms.length + ')' : '## Keine Alarme', '');
  for (const a of report.alarms) L.push('- ' + a.key + ' (' + a.cpu + 'x): ' + a.text);
  L.push('');
- const detail = report.rows.filter((r) => r.cpu === Math.max(...report.rows.map((x) => x.cpu)));
+ const detail = report.rows;
  const d = [];
  for (const r of detail) {
-  if (r.lcpElement) d.push('- ' + r.key + ' LCP-Element: ' + r.lcpElement.tag + (r.lcpElement.id ? '#' + r.lcpElement.id : '') + (r.lcpElement.url ? ' ' + r.lcpElement.url : ''));
-  if (r.topShift) d.push('- ' + r.key + ' groesste Verschiebung: ' + r.topShift.value + ' bei ' + r.topShift.atMs + ' ms, Knoten ' + r.topShift.nodes.map((n, i) => { const m = (r.topShift.moves || [])[i]; return m && m.from && m.to ? n + ' (y ' + m.from.y + '→' + m.to.y + ', h ' + m.from.h + '→' + m.to.h + ')' : n; }).join(' | '));
-  if (r.gate) d.push('- ' + r.key + ' Zugangshuelle: Huelle bis ' + r.gate.shellMs + ' ms, Inhalt bis ' + r.gate.contentMs + ' ms (+' + r.gate.extraMs + ' ms)');
+  if (r.lcpElement) d.push('- ' + r.key + ' (' + r.cpu + 'x)' + ' LCP-Element: ' + r.lcpElement.tag + (r.lcpElement.id ? '#' + r.lcpElement.id : '') + (r.lcpElement.url ? ' ' + r.lcpElement.url : ''));
+  if (r.topShift) d.push('- ' + r.key + ' (' + r.cpu + 'x)' + ' groesste Verschiebung: ' + r.topShift.value + ' bei ' + r.topShift.atMs + ' ms, Knoten ' + r.topShift.nodes.map((n, i) => { const m = (r.topShift.moves || [])[i]; return m && m.from && m.to ? n + ' (y ' + m.from.y + '→' + m.to.y + ', h ' + m.from.h + '→' + m.to.h + ')' : n; }).join(' | '));
+  if (r.gate) d.push('- ' + r.key + ' (' + r.cpu + 'x)' + ' Zugangshuelle: Huelle bis ' + r.gate.shellMs + ' ms, Inhalt bis ' + r.gate.contentMs + ' ms (+' + r.gate.extraMs + ' ms)');
  }
- if (d.length) L.push('## Details (CPU ' + Math.max(...report.rows.map((x) => x.cpu)) + 'x)', '', ...d, '');
+ if (d.length) L.push('## Details (je CPU-Stufe)', '', ...d, '');
  return L.join('\n') + '\n';
 }
 

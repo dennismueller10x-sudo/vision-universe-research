@@ -108,3 +108,10 @@ test('Technical-Unterseiten (Screener, Chart NVDA) mit Inhaltsmerkmal, ohne Ziel
   assert.ok(targets.routes[k].marker,k+' hat ein Inhaltsmerkmal');assert.equal(targets.routes[k].lcpMs,undefined,'kein Ziel vor dem ersten gültigen Lauf');
  }
 });
+
+test('Details im Bericht für beide CPU-Stufen, je Zeile mit Stufe',()=>{
+ const mk=(cpu,v)=>({key:'app/',cpu,lcp:1,cls:v,requests:1,bytes:1024,runs:3,invalidRuns:0,lcpRuns:[1],topShift:{value:v,atMs:1300,nodes:['SECTION#.hm-blick'],moves:[{from:{y:10,h:5},to:{y:20,h:5}}]}});
+ const md=reportMarkdown({measuredAt:'t',commit:'c',runs:3,historyRuns:0,alarms:[],rows:[mk(4,0.001),mk(2,0.182)]});
+ assert.match(md,/## Details \(je CPU-Stufe\)/);
+ assert.match(md,/- app\/ \(4x\) groesste Verschiebung: 0.001/);assert.match(md,/- app\/ \(2x\) groesste Verschiebung: 0.182 bei 1300 ms, Knoten SECTION#.hm-blick \(y 10→20/);
+});
