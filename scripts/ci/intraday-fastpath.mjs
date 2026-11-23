@@ -79,13 +79,16 @@ export function isIntraday(path) {
 export function isIgnored(path) {
   return IGNORED_PREFIXES.some((p) => path.startsWith(p)) || IGNORED_PATTERNS.some((r) => r.test(path));
 }
-/* BOERSENFENSTER (Steuerung 19.11.2026): Mo-Fr 14:00 bis 21:00 UTC (Boerse 14:30; die letzte halbe Stunde davor ist der Vorlauf, weil ein Voll-Release bis 22 Minuten dauert). In dieser Zeit blockierte ein Voll-Release (~15-30 Minuten) die
+/* BOERSENFENSTER (Steuerung 19.11.2026, seit 23.11.2026 ab 13:30): Mo-Fr 13:30 bis 21:00 UTC (Boerse 14:30; die letzte halbe Stunde davor ist der Vorlauf, weil ein Voll-Release bis 22 Minuten dauert). In dieser Zeit blockierte ein Voll-Release (~15-30 Minuten) die
    gemeinsame Gruppe pages-production; der Intraday-Stand lag 25-31 Minuten hinter der Boerse. Im Fenster liefert der Schnellweg
    deshalb auch dann nur die Intraday-Dateien aus, wenn andere Dateien warten; der Voll-Release dafuer kommt nach 21:00 UTC (der
    Wecker stoesst bis 21:55 an) oder sofort mit workflow_dispatch notfall=true. Zeitumstellung: die Grenzen sind UTC, im Sommer
    (US-Handel ab 13:30 UTC) ist das Fenster anzupassen. Befund 19.11.: ein Voll-Release (Technical-Screener per workflow_run) startete 14:23 und
-   lief bis 14:45; die erste Live-Lieferung kam erst 14:47 (Watchdog auslieferungVerspaetet). Deshalb beginnt das Fenster um 14:00. */
-export const FENSTER = {von: 14 * 60, bis: 21 * 60};
+   lief bis 14:45; die erste Live-Lieferung kam erst 14:47 (Watchdog auslieferungVerspaetet). Deshalb begann das Fenster um 14:00, seit 23.11.2026 um 13:30. */
+/* 23.11.2026 (Steuerung): das Fenster beginnt um 13:30 UTC, ein Fenster fuer alles (Takte, Datenlaeufe, push auf main) und gleich wie
+   pages-frei.sh. Anlass: 14:24 (#2333) und 15:11/15:16 (#2346, #2347) UTC liefen push-Voll-Releases von 16-26 Minuten im Fenster, die
+   Takte fielen 14:25-14:43 und 15:13-15:40 aus (Waechter 15:30/15:45 rot). push-Laeufe gehen jetzt durch denselben Schnellweg-Job. */
+export const FENSTER = {von: 13 * 60 + 30, bis: 21 * 60};
 export function imFenster(jetzt = new Date()) {
   const wt = jetzt.getUTCDay();
   if (wt < 1 || wt > 5) return false;

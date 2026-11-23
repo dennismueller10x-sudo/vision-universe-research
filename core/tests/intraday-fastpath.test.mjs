@@ -183,9 +183,11 @@ test('FP-6d overlay/smoke: Datendateien (neu, geaendert, geloescht) byte-gleich,
   assert.ok((await pruefe(repo, site, liste)).fehler.some((f) => /Pruefsumme/.test(f)));
 });
 
-test('FP-7 Boersenfenster: Mo-Fr 14:00 bis 21:00 UTC, Grenzen und Wochenende', () => {
+test('FP-7 Boersenfenster: Mo-Fr 13:30 bis 21:00 UTC, Grenzen und Wochenende', () => {
   const t = (iso) => imFenster(new Date(iso));
-  assert.equal(t('2026-11-18T13:59:59Z'), false);
+  assert.equal(t('2026-11-18T13:29:59Z'), false);
+  assert.equal(t('2026-11-18T13:30:00Z'), true, 'seit 23.11.2026 ab 13:30');
+  assert.equal(t('2026-11-18T13:59:59Z'), true);
   assert.equal(t('2026-11-18T14:00:00Z'), true);
   assert.equal(t('2026-11-18T14:23:00Z'), true, 'Befund 19.11.: Voll-Release 14:23 haette aufgeschoben werden muessen');
   assert.equal(t('2026-11-18T14:30:00Z'), true);
@@ -219,4 +221,27 @@ test('FP-7c Workflow: AUFSCHUB hebt den Voll-Release auf, notfall und Veroeffent
   assert.match(pkg, /needs\.intraday-schnell\.outputs\.aufschub != 'true'/);
   assert.match(wf, /notfall:\n\s+description:/);
   assert.ok(job.indexOf('Veroeffentlicher seit dem Basis-Paket') < job.indexOf('--fenster=auto'), 'Veroeffentlicher-Pruefung kommt vor der Weiche');
+});
+
+test('FP-9 push auf main geht durch den Schnellweg-Job: Im Fenster kein Voll-Release fuer Nicht-Intraday-Dateien (23.11.2026), package wartet auf die Weiche', () => {
+  const wf = readFileSync(new URL('../../.github/workflows/pages-release.yml', import.meta.url), 'utf8');
+  const job = wf.slice(wf.indexOf('\n  intraday-schnell:'), wf.indexOf('\n  deploy-schnell:'));
+  assert.doesNotMatch(job, /github\.event_name != 'push'/, 'push darf den Schnellweg-Job nicht mehr ausschliessen');
+  assert.match(job, /github\.event_name != 'pull_request'/, 'PR-Laeufe bleiben ohne Schnellweg');
+  assert.match(job, /ref: \$\{\{ github\.event_name == 'workflow_run' && 'main' \|\| github\.ref \}\}/, 'push prueft den eigenen Kopf (github.ref = main)');
+  assert.match(job, /--fenster=auto/, 'die Weiche entscheidet nach Uhrzeit');
+  const pkg = wf.slice(wf.indexOf('\n  package:'), wf.indexOf('\n  package:') + 2500);
+  assert.match(pkg, /needs\.intraday-schnell\.outputs\.aufschub != 'true'/, 'bei AUFSCHUB baut package nicht');
+  assert.match(pkg, /needs: intraday-schnell/);
+});
+test('FP-9b Verhalten: Nicht-Intraday-Aenderung im Fenster = AUFSCHUB, um 21:00 UTC = FULL, mit Intraday-Datei = FAST, Aufschub nur im Fenster', () => {
+  const nurAndere = ['landing/scripts/ratgeber.mjs', 'web/ratgeber.css'];
+  assert.equal(klassifiziere(nurAndere, {fenster: imFenster(new Date('2026-11-23T14:24:55Z'))}).mode, 'AUFSCHUB', '14:24 (Ratgeber)');
+  assert.equal(klassifiziere(nurAndere, {fenster: imFenster(new Date('2026-11-23T13:40:00Z'))}).mode, 'AUFSCHUB', '13:40 ab 13:30');
+  assert.equal(klassifiziere(nurAndere, {fenster: imFenster(new Date('2026-11-23T20:59:30Z'))}).mode, 'AUFSCHUB', '20:59');
+  assert.equal(klassifiziere(nurAndere, {fenster: imFenster(new Date('2026-11-23T21:00:30Z'))}).mode, 'FULL', 'ab 21:00 liefert der naechste Lauf alles');
+  assert.equal(klassifiziere(nurAndere, {fenster: imFenster(new Date('2026-11-23T13:29:00Z'))}).mode, 'FULL', 'vor 13:30 Voll-Release wie bisher');
+  assert.equal(klassifiziere(nurAndere, {fenster: imFenster(new Date('2026-11-28T15:00:00Z'))}).mode, 'FULL', 'Samstag');
+  const mix = [I + '/index.json', ...nurAndere];
+  assert.equal(klassifiziere(mix, {fenster: true}).mode, 'FAST', 'Intraday + Rest: Schnellweg wie heute, Rest wartet');
 });
