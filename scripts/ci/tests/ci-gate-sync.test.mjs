@@ -5,7 +5,7 @@ import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { entscheide, setzeCheck, sync, EIGENE, GRACE_MS, ROT_GRACE_MS } from "../ci-gate-sync.mjs";
+import { entscheide, setzeCheck, sync, EIGENE, GRACE_MS, ROT_GRACE_MS, eigenerLauf, apiClient } from "../ci-gate-sync.mjs";
 
 const SHA = "a".repeat(40);
 const T0 = Date.parse("2026-11-22T22:00:00Z");
@@ -197,4 +197,40 @@ test("CG-17 403/404/422 beim Aendern: neuer Check-Run (latest gilt), andere Fehl
   const a403 = mk(403); await setzeCheck({ api: a403, repo: "o/r", sha: SHA, name: "ci-gate", entscheidung: gruen });
   assert.equal(a403.log.filter((l) => l.method === "POST").length, 1);
   await assert.rejects(() => setzeCheck({ api: mk(500), repo: "o/r", sha: SHA, name: "ci-gate", entscheidung: gruen }), /500/);
+});
+
+/* ---------- Eigener Lauf (run-name) zaehlt nie als offene Pruefung (23.11.2026, #2321) ---------- */
+test("CG-18 eigener Lauf: run-name 'ci-gate PR n', 'ci-gate nach X', alter Name 'ci-gate-neu PR n' und der Pfad der Datei zaehlen nicht mit; fremde Namen mit ci-gate im Namen schon", () => {
+  for (const n of ["ci-gate PR 2321", "ci-gate nach CI (Pruefungen je Produkt)", "ci-gate-neu PR 7", "ci-gate-neu nach Quant CI", "ci-gate", "ci-gate-neu"]) assert.equal(eigenerLauf({ name: n }), true, n);
+  assert.equal(eigenerLauf({ name: "Irgendwas", path: ".github/workflows/ci-gate.yml@refs/pull/9/merge" }), true);
+  assert.equal(eigenerLauf({ name: "Irgendwas", path: ".github/workflows/ci-gate.yml" }), true);
+  for (const n of ["CI (Pruefungen je Produkt)", "ci-gates sammeln", "Core - Tests", "Quant 2.0 Production Pages"]) assert.equal(eigenerLauf({ name: n, path: ".github/workflows/ci.yml" }), false, n);
+});
+test("CG-19 Start-Job nach einem Rerun: alle anderen Laeufe fertig, nur der eigene Lauf 'ci-gate PR n' ist in_progress -> gruen (kein Warten auf sich selbst); mit offenem fremdem Lauf bleibt es offen", () => {
+  const fertig = [lauf("CI (Pruefungen je Produkt)", "completed", "success"), lauf("Core - Tests", "completed", "success")];
+  const eigen = lauf("ci-gate PR 2321", "in_progress", null);
+  assert.equal(entscheide({ runs: [...fertig, eigen], nowMs: T0, mode: "start" }).aktion, "gruen");
+  assert.equal(entscheide({ runs: [eigen], nowMs: T0, mode: "start" }).aktion, "gruen", "reiner Doku-PR: nur der eigene Lauf");
+  assert.equal(entscheide({ runs: [...fertig, lauf("Quant CI", "in_progress", null), eigen], nowMs: T0, mode: "start" }).aktion, "offen");
+  assert.equal(entscheide({ runs: [...fertig, lauf("Quant CI", "completed", "failure"), eigen], nowMs: T0 + ROT_GRACE_MS + 1, mode: "start", rotFrist: false }).aktion, "rot");
+  assert.equal(entscheide({ runs: [eigen], nowMs: T0, mode: "event" }).aktion, "offen", "Ereignismodus ohne fremden Lauf: nie gruen");
+});
+test("CG-20 apiClient: 5xx und Netzfehler werden mit Backoff wiederholt (2 s, 6 s), 4xx nie, nach dem Ende bleibt der Fehler (nie stilles Gruen)", async () => {
+  const antwort = (status, body = {}) => ({ status, ok: status < 300, url: "https://api.github.com/x?y=1", headers: new Map(), json: async () => body });
+  const lauf_ = async (folge) => {
+    const calls = []; const pausen = [];
+    const fetchFn = async () => { calls.push(1); const r = folge[Math.min(calls.length - 1, folge.length - 1)]; if (r instanceof Error) throw r; return r; };
+    const api = apiClient("t", { fetchFn, schlafen: async (ms) => { pausen.push(ms); } });
+    return { api, calls, pausen };
+  };
+  let x = await lauf_([antwort(500), antwort(200, { ok: 1 })]);
+  assert.deepEqual(await x.api.send("POST", "/x", {}), { ok: 1 }); assert.deepEqual(x.pausen, [2000]); assert.equal(x.calls.length, 2);
+  x = await lauf_([antwort(502), antwort(503), antwort(200, { ok: 2 })]);
+  assert.deepEqual(await x.api.get("/x"), { ok: 2 }); assert.deepEqual(x.pausen, [2000, 6000]);
+  x = await lauf_([antwort(500)]);
+  await assert.rejects(() => x.api.send("PATCH", "/x", {}), /^Error: 500 /); assert.equal(x.calls.length, 3, "1 Versuch + 2 Wiederholungen");
+  x = await lauf_([antwort(403)]);
+  await assert.rejects(() => x.api.send("PATCH", "/x", {}), /^Error: 403 /); assert.equal(x.calls.length, 1, "4xx wird nicht wiederholt");
+  x = await lauf_([new TypeError("fetch failed"), antwort(200, { ok: 3 })]);
+  assert.deepEqual(await x.api.get("/x"), { ok: 3 });
 });
