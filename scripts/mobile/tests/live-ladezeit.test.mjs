@@ -78,3 +78,10 @@ test('Bericht nennt LCP-Element, größte Verschiebung und Zugangshülle (nur St
  const md=reportMarkdown({measuredAt:'t',commit:'c',runs:3,historyRuns:0,alarms:[],rows:[{key:'app/',cpu:4,lcp:1,cls:0.3,requests:1,bytes:1024,runs:3,lcpRuns:[1],lcpElement:lcpElementOf(ss),topShift:topShiftOf(ss),gate:gateOf(ss)}]});
  assert.match(md,/groesste Verschiebung: 0.2 bei 1500 ms/);assert.match(md,/Zugangshuelle: Huelle bis 400 ms, Inhalt bis 900 ms \(\+500 ms\)/);
 });
+
+test('Inhaltsmerkmal: irgendein sichtbares Element des Selektors genügt (nicht nur das erste)',()=>{
+ const m=readFileSync(new URL('../measure.mjs',import.meta.url),'utf8');
+ assert.match(m,/\[\.\.\.document\.querySelectorAll\(sel\)\]\.some\(/);
+ assert.doesNotMatch(m,/document\.querySelector\(sel\)/);
+ assert.equal(targets.routes['www/news/'].lcpMs,1550);
+});
