@@ -218,6 +218,39 @@ Bruttogewinn/Bilanz dort vorn lag, war bekannt. Ein positives Ergebnis ist ein H
 aus dem Rückblick behauptet. (2) Geprüft wird die Auswahl der Aktien in monatlichen Depots, nicht die Ein- und Ausstiegsregeln
 der Methoden. (3) Folgen für Supertrader oder den Quant-Score nur in einem eigenen PR mit Vorher/Nachher.
 
+**Ergebnis Stufe 4** (Lauf 45150388492, 2014 bis Ende, nach Kosten, delistete Titel enthalten; Bericht als Artefakt beim Owner):
+- **H1 18,4 % p. a. (+4,3 Pp gegen SPY, max. Verlust −24,1 %, 7 von 13 Jahren vorn, p 0,157): nicht belegt.** H1 liegt vor SPY und
+  vor beiden Kontrollen, verfehlt aber die vorab gesetzte Schranke p < 0,10. Das Urteil bleibt stehen.
+- Kontrollen: nur Muster (K1) 18,1 % (+4,0 Pp, max. Verlust −40,9 %, p 0,149); nur Faktoren (K2) 16,3 % (+2,3 Pp, −34,6 %, p 0,215).
+  Die Kombination bringt gegenüber dem Muster allein kaum mehr Rendite, aber rund den halben Maximalverlust.
+- Mit 50 Titeln: H1 16,3 % (+2,3 Pp), K1 16,8 % (+2,8 Pp), K2 17,9 % (+3,8 Pp, p 0,102). Die Reihenfolge der drei hängt an der
+  Titelzahl; alle sechs Depots aus Muster und/oder Momentum + Bruttogewinn/Bilanz liegen vor SPY.
+- H2 (Umsatzwachstum und Eigenkapitalrendite): 13,7 % (−0,3 Pp) und 12,4 % (−1,7 Pp). Diese Geschäftskriterien tragen nicht.
+- Teilzeiträume H1 gegen SPY: 2014–2016 −5,1 Pp, 2017–2019 +5,1 Pp, 2020–2022 +21,0 Pp, 2023–Ende −1,3 Pp. Der Vorsprung
+  stammt überwiegend aus 2020–2022.
+- Umschlag: H1 und K1 rund 100 % bis 120 % je Monat (das Depot wechselt fast vollständig), K2 rund 55 % bis 62 %.
+
+## 4g. Stufe 5: die übrigen Trader-Muster mit Faktoren (23.11.2026, vor dem ersten Lauf festgelegt)
+
+Anlass (Owner 23.11.2026): auch Darvas, Turtle und die übrigen Methoden so prüfen wie die Trendvorlage in Stufe 4.
+`scripts/research/backtest2/trader-familie.mjs`, Modus `merkmale-familie-smoke` / `merkmale-familie`, Daten und Depotführung wie
+Stufe 4. Muster als Tageszustand am Monatsultimo (einfache veröffentlichte Lesarten, nicht die zertifizierten SF-Module):
+- **Turtle:** in den letzten 21 Sitzungen ein Schluss über dem höchsten Hoch der 55 Sitzungen davor.
+- **Darvas:** in den letzten 21 Sitzungen ein Schluss über dem höchsten Hoch der 504 Sitzungen davor (neues Zweijahreshoch), und
+  der Schluss heute höchstens 5 % unter dem höchsten Hoch seit dem Ausbruch.
+- **Weinstein:** Stufe 2: Schluss über der 150-Tage-Linie, diese mindestens 0,5 % höher als vor 21 Sitzungen.
+- **Minervini:** Trendvorlage wie Stufe 4, zum Vergleich neu gerechnet.
+
+Neun feste Depots mit je 25 Titeln: je Muster „+ Faktoren“ (Rang nach Momentum 12-1 + Bruttogewinn je Bilanzsumme) und „nur
+Muster“ (Rang nach relativer Stärke 6 Monate), dazu „nur Faktoren“. **Urteil je neuem Muster** (Turtle, Darvas, Weinstein):
+„Hinweis“ nur, wenn „+ Faktoren“ nach Kosten vor SPY liegt, der Bootstrap-p nach Holm über die drei Hypothesen unter 0,10 bleibt
+und das Depot über „nur Muster“ und „nur Faktoren“ liegt; sonst „nicht belegt“.
+
+Grenzen, vorab benannt: (1) Geprüft wird die Auswahl in monatlichen Depots, nicht Stopps, Kästen oder Einheiten der Methoden;
+dafür braucht es bei den Kauf-Stopp-Methoden Kurse innerhalb des Tages. (2) Festgelegt nach Einsicht in Stufe 2 bis 4. (3) Pocket
+Pivot, Gap-Up, Episodic Pivot und Holy Grail sind Ereignis-Methoden mit Volumen- oder Tagesverlaufsregeln und in dieser Form
+nicht abbildbar; sie bleiben offen.
+
 ## 5. Ausführung und Veröffentlichung
 
 - Umsetzung: `scripts/research/backtest2/` (Markt, Signale, Depotführung, Suche, Lauf mit Workern). Workflow `research.yml`, Teil
