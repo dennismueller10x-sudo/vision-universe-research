@@ -23,6 +23,7 @@
 
   var isNode = typeof module !== "undefined" && module.exports;
   var PC = isNode ? require("../../../quant/engines/published-close.js") : global.VUPublishedClose;
+  var Topics = isNode ? require("./topics.js") : global.VUMarketBriefingTopics;
 
   var SCHEMA = "vu-market-briefing-1.0.0";
   var METHOD = "market-briefing-1.0.0";
@@ -126,6 +127,8 @@
     if (C.breadth) { var p = C.breadth.pairs[0], q = C.breadth.pairs[1], t = p.total || (p.a + p.b);
       out.push(Math.round(p.b / t * 100) + " % von " + thousands(t) + " US-Aktien schlossen im Minus; " + q.b + " neuen 52-Wochen-Tiefs standen " + q.a + " Hochs gegenüber."); }
     if (C.context) out.push(C.context.title + ".");
+    var th = b.cards.filter(function (c) { return c.topic; })[0];
+    if (th) out.push(th.title + ".");
     if (C.rates) { var r10 = C.rates.bars.rows.filter(function (r) { return r.label === "US 10 Jahre"; })[0];
       if (r10 && r10.value) out.push("Die Rendite zehnjähriger US-Staatsanleihen " + (r10.value < 0 ? "fiel" : "stieg") + " um " + Math.abs(r10.value) + " Basispunkte auf " + r10.sub + "."); }
     if (C.agenda) {
@@ -457,6 +460,8 @@
     INDICES.forEach(function (x) { var s = inp.series[x[0]]; var m = s && move(s.points, session); if (m) ix[x[0]] = m; });
     if (!ix.SPY || !ix.QQQ) { out.fresh = { ok: false, session: session, problems: ["SPY/QQQ ohne Bewegung"] }; return out; }
     var third = thirdCards(inp.radar, session, inp.now);
+    // Wechselnde Themen (topics.js): Auswahl nach Auffälligkeit, Rotation über die letzten Ausgaben.
+    var topics = Topics.select(inp, session, inp.recentTopics || []);
     var cards = [
       cardOverview(inp, ix, session, inp.editorial),
       cardIndices(ix),
@@ -467,9 +472,12 @@
       cardCapex(inp, session),
       third.kept[1] || null,
       cardBreadth(inp, session),
+      topics.cards[0] || null,
       third.kept[2] || null,
+      topics.cards[1] || null,
       cardRates(inp, session),
       cardMovers(inp),
+      topics.cards[2] || null,
       third.kept[3] || null,
       cardPicture(inp)
     ].filter(Boolean);
@@ -478,6 +486,7 @@
     if (agenda.card) cards.push(agenda.card);
     out.cards = cards;
     out.dropped = third.dropped.concat(agenda.dropped);
+    out.topics = { shown: topics.cards.map(function (c) { return c.topic; }), considered: topics.considered };
     out.counts = { MARKET: 0, OWN: 0, THIRD: 0, AGENDA: 0 };
     cards.forEach(function (c) { out.counts[c.type]++; });
     out.summary = summary(out);

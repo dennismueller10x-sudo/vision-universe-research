@@ -360,6 +360,13 @@ Wirtschaftskalender (FMP-Endpunkte geprüft in `scripts/market/probe-free-source
   Handelstag, höchstens 4 Tage und 12 Termine; Verworfenes steht mit Grund in `dropped`. Daraus entstehen die letzte Karte
   „Die nächsten Tage“, die Szene `#ausblick` und der Satz „Als Nächstes: …“ in der Kurzfassung. Ohne `agenda` keine Karte.
   Termine sind Angaben der Unternehmen und Behörden, keine Erwartung von Vision Universe.
+- Wechselnde Themen (Owner 23.11.2026: „nicht immer gleich aussehen“): `products/news/briefing/topics.js` wählt je Ausgabe
+  bis zu drei Themen aus einem Vorrat (RSI unter 30, RSI über 70, Momentum mit neuen Hochs, neue Jahrestiefs, Golden/Death
+  Cross, Wechsel über/unter die 200-Tage-Linie, ungewöhnliches Volumen), Rahmen S&P 500, Daten aus
+  `technical/data/screener-v1.json` (nur vom Handelstag). Jedes Thema rechnet, wie auffällig es heute ist; Themen der letzten
+  zwei Ausgaben bekommen einen Abschlag (Rotation, gelesen aus dem Archiv im Datenzweig), je Familie (schwach, stark, Trend,
+  Volumen) höchstens ein Thema. Gezeigtes und Verworfenes steht in `topics` der Ausgabe. Wortwahl beschreibend, jedes Thema
+  erklärt seinen Fachbegriff und sagt, dass es keine Empfehlung ist. Weitere Themen kommen als Eintrag in `POOL` dazu.
 - Karussell und Video: `node products/news/briefing/export-png.mjs <briefing.json> <ordner>` schreibt die Karten als PNG.
 - Die Investitionskarte erscheint nur, wenn ein Hyperscaler in den letzten 3 Tagen neue Zahlen bei der SEC gemeldet hat.
 
