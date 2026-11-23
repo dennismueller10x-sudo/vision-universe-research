@@ -177,6 +177,11 @@ lesend, beliebig wiederholbar). Festgelegt:
 - **Handel:** wie §4d: Einstieg und Ausstieg zum Schluss des ersten Handelstags nach dem Stichtag (`discover-series`,
   Kursrendite), 6 bp je Seite auf den Umschlag, Vergleich SPY aus derselben Reihe. Kein Marktfilter (§4b: mit Filter liegen alle
   Einstellungen hinter SPY).
+- **M25 „Marktführer“ (ergänzt am 23.11.2026 nach dem Ergebnis der Stufe 4, vor dem ersten gezählten Monat):** unter den 1.000
+  größten Titeln nur solche, die die Trendvorlage erfüllen (Spalten des Technical-Tagesbestands `technical/data/screener-v1.json`
+  desselben Commits: Kurs über SMA 50, SMA 50 über SMA 150, SMA 150 über SMA 200, SMA 200 steigend, mindestens 30 % über dem
+  52-Wochen-Tief, höchstens 25 % unter dem 52-Wochen-Hoch, frische Reihe), davon die 25 mit dem höchsten Signal; unter 10
+  Kandidaten Kasse. Das ist die Entsprechung zu H1 der Stufe 4 auf Produktdaten.
 - **Zählt ab Dezember 2026.** Urteil frühestens nach 12 Monaten; öffentlich nur mit Owner-Freigabe (Renditeaussage).
 
 Abweichungen von der Studie, vorab benannt: (1) Die Baustein-Scores des Produkts sind zu 70 % Branchen- und zu 30 %
@@ -184,7 +189,8 @@ Universumsvergleich, die Studie rangierte im Universum. (2) Das Universum wird n
 durchschnittlichem Dollarumsatz. (3) Kursrendite statt Gesamtrendite, auf beiden Seiten gleich.
 
 Stand der Daten am 20.11.2026 (kein Ergebnis, nur Abdeckung): 3.923 von 5.934 Titeln tragen einen Börsenwert; unter den 1.000
-größten haben 514 beide Bausteine, unter den 500 größten 262. Daraus folgen 102 Titel (B1000) und 26 Titel (B500).
+größten haben 514 beide Bausteine, unter den 500 größten 262. Daraus folgen 102 Titel (B1000) und 26 Titel (B500). Die Trendvorlage
+erfüllen 74 der wählbaren Titel unter den 1.000 größten; M25 wählt daraus 25.
 **Befund zur Datenqualität, eigener PR:** Der Börsenwert fehlt bei 2.011 Titeln (784 ohne Aktienzahl zum Stichtag, 360
 Berichtswährung ungleich Handelswährung, 248 Aktienzahl nicht dem Listing zuordenbar), darunter sehr große Werte; einzelne Werte
 sind offensichtlich falsch (AKTX mit über 1 Billion $). Der Bruttogewinn fehlt bei 238 der 500 größten Titel, auch bei
