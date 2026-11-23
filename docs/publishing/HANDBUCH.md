@@ -408,6 +408,7 @@ Wirtschaftskalender (FMP-Endpunkte geprüft in `scripts/market/probe-free-source
   Desktop, Karten als Story) mit eigenem PDF (`marktbriefing-<sitzung>.pdf`), Titelbild, Vorschaubild und Karten-Bildern.
   Erzeugt von `products/news/briefing/www.js` (`page`, `productPage`); Verhalten `landing/marktbriefing/mb.js`, Stil `mb.css`
   (CSP der Website: kein Inline-Skript). Kopf, Menü und Fuß kommen aus `landing/news/index.html`.
+- Archiv (Owner 23.11.2026): `/marktbriefing/#archiv` zeigt jede Ausgabe als Kachel (Teilen-Bild, Datum, Schlagzeile, nach Monat); je Ausgabe schreibt der Generator `ausgabe.json`. Jede Ausgabe bleibt unter `/marktbriefing/<sitzung>/` erreichbar; „← Alle Ausgaben“ führt ins Archiv. Produktseite, Teilen-Bild, Startseiten-Leiste und App-Story wechseln mit jeder Veröffentlichung von selbst.
 - Teilen-Vorschau (Owner 23.11.2026, WhatsApp): je Ausgabe `teilen.png` 1200×630 (`screens.mjs#writeShare`: Titel, Datum, Index-Chips, drei echte Bildschirme) als `og:image` und `twitter:image` von Ausgabe und Produktseite.
 - Für Suche und KI-Suche steht alles im HTML: Kurzfassung „Das Wichtigste in Kürze“ (`engine.js#summary`), JSON-LD
   (`NewsArticle` und `BreadcrumbList` je Ausgabe, `CollectionPage` auf der Produktseite), Sitemap über

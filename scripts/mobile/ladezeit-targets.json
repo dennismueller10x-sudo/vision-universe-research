@@ -1,6 +1,6 @@
 {
  "schema": "vu-ladezeit-targets-1",
- "note": "Ziele und Schwellen der taeglichen Live-Ladezeitmessung (scripts/mobile/live-ladezeit.mjs, Monitor-Auswahl ladezeit). Schluessel: <seite><route>. Ein Ziel (lcpMs) steht nur dort, wo die Seite bewusst darauf optimiert ist; sonst gilt nur der Vergleich mit dem Median der letzten Laeufe. Ziele werden gesenkt, nie angehoben. Ein Alarm blockiert keinen Code-PR.",
+ "note": "Ziele und Schwellen der taeglichen Live-Ladezeitmessung (scripts/mobile/live-ladezeit.mjs, Monitor-Auswahl ladezeit). Schluessel: <seite><route>. Ein Ziel (lcpMs) steht nur dort, wo die Seite bewusst darauf optimiert ist; sonst gilt nur der Vergleich mit dem Median der letzten Laeufe. Ziele werden gesenkt, nie angehoben. Erste Ziele 23.11.2026: 1,3 x Erstmessung (CPU 4x), aufgerundet; Discover und Quant 2500 ms; technical und mein-dashboard erst nach einem gueltigen Lauf mit Inhaltsmerkmal. Ein Alarm blockiert keinen Code-PR.",
  "default": {
   "clsMax": 0.1,
   "lcpRelativeFactor": 1.3,
@@ -12,6 +12,13 @@
  },
  "routes": {
   "app/discover/": {"lcpMs": 2500},
-  "app/quant/": {"lcpMs": 2500}
+  "app/quant/": {"lcpMs": 2500},
+  "app/": {"lcpMs": 1750},
+  "app/quant/#/aktie/NVDA": {"lcpMs": 9650},
+  "www/": {"lcpMs": 1900},
+  "www/magazin/": {"lcpMs": 1950},
+  "www/news/": {"lcpMs": 3300},
+  "app/technical/": {"marker": "#tc-main > *"},
+  "app/mein-dashboard/": {"marker": "#md-app"}
  }
 }

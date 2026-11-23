@@ -25,10 +25,10 @@ test('Alarm: Verschlechterung gegen den Median der letzten Läufe (mehr als 30 %
  assert.deepEqual(evaluate([row('app/technical/',2,{lcp:5000})],targets,h(5)),[],'Profile werden getrennt verglichen (kein CPU-2x-Verlauf)');
 });
 test('Alarm: CLS, fehlende oder unvollständige Messung',()=>{
- assert.equal(evaluate([row('www/',4,{cls:0.2})],targets,[])[0].art,'cls');
- assert.equal(evaluate([row('www/',4,{lcp:null})],targets,[])[0].art,'keine-messung');
- assert.equal(evaluate([row('www/',4,{lcpRuns:[null,null,2000]})],targets,[])[0].art,'keine-messung');
- assert.deepEqual(evaluate([row('www/',4,{incompleteRuns:3})],targets,[]),[],'offene Verbindungen nach dem Fenster sind keine fehlende Messung');
+ assert.equal(evaluate([row('www/zz/',4,{cls:0.2})],targets,[])[0].art,'cls');
+ assert.equal(evaluate([row('www/zz/',4,{lcp:null})],targets,[])[0].art,'keine-messung');
+ assert.equal(evaluate([row('www/zz/',4,{lcpRuns:[null,null,2000]})],targets,[])[0].art,'keine-messung');
+ assert.deepEqual(evaluate([row('www/zz/',4,{incompleteRuns:3})],targets,[]),[],'offene Verbindungen nach dem Fenster sind keine fehlende Messung');
 });
 test('Verlauf: Berichte der Vortage, neueste zuerst, Fremdes und Defektes wird ignoriert',()=>{
  const d=mkdtempSync(join(tmpdir(),'ladezeit-'));
@@ -56,4 +56,25 @@ test('measure.mjs: Zugangsmaske nur mit --gate und Umgebung, nur im Ursprung der
  assert.match(m,/const defaultRoutes = \['\/', '\/quant\/'/);
  const w=readFileSync(new URL('../live-ladezeit.mjs',import.meta.url),'utf8');assert.doesNotMatch(w,/screenshot|recordHar|tracing/i);
  assert.doesNotMatch(w,/args\.push\([^)]*PASSWORD/);
+});
+
+test('Ungültige Läufe (Zugangsmaske oder Inhaltsmerkmal fehlt) sind ein Alarm, kein Messwert',()=>{
+ const row={key:'app/technical/',site:'app',route:'/technical/',cpu:4,lcp:236,cls:0.06,requests:46,bytes:1,runs:3,invalidRuns:3,incompleteRuns:0,failedRuns:0,lcpRuns:[236,232,244],errors:[]};
+ const a=evaluate([row],targets,[]);
+ assert.deepEqual(a.map(x=>x.art),['ungueltig']);
+ assert.match(a[0].text,/#tc-main/);
+ assert.match(reportMarkdown({measuredAt:'2026-11-23',commit:'x',runs:3,historyRuns:0,rows:[row],alarms:a}),/\| ungueltig \|/);
+ assert.deepEqual(evaluate([{...row,invalidRuns:1}],targets,[]),[]);
+ assert.ok(targets.routes['app/technical/'].marker&&targets.routes['app/mein-dashboard/'].marker);
+});
+
+test('Bericht nennt LCP-Element, größte Verschiebung und Zugangshülle (nur Struktur, keine Inhalte)',async()=>{
+ const {topShiftOf,lcpElementOf,gateOf}=await import('../live-ladezeit.mjs');
+ const ss=[{lcp:1300,lcpElement:{tag:'H1',id:'hero',url:'https://x.example/img/a.jpg?v=1'},shifts:[{value:0.1,at:900,sources:[{node:'DIV#a.x'}]},{value:0.2,at:1500,sources:[{node:'SECTION#b.y'},{node:'P#.z'}]}],navigation:{responseEnd:400},resourceTimings:[{name:'https://h/__research/content/index.html?v=1',end:900}]}];
+ assert.deepEqual(topShiftOf(ss),{value:0.2,atMs:1500,nodes:['SECTION#b.y','P#.z']});
+ assert.deepEqual(lcpElementOf(ss),{tag:'H1',id:'hero',url:'/img/a.jpg'});
+ assert.deepEqual(gateOf(ss),{shellMs:400,contentMs:900,extraMs:500});
+ assert.equal(gateOf([{navigation:{responseEnd:1},resourceTimings:[]}]),null);
+ const md=reportMarkdown({measuredAt:'t',commit:'c',runs:3,historyRuns:0,alarms:[],rows:[{key:'app/',cpu:4,lcp:1,cls:0.3,requests:1,bytes:1024,runs:3,lcpRuns:[1],lcpElement:lcpElementOf(ss),topShift:topShiftOf(ss),gate:gateOf(ss)}]});
+ assert.match(md,/groesste Verschiebung: 0.2 bei 1500 ms/);assert.match(md,/Zugangshuelle: Huelle bis 400 ms, Inhalt bis 900 ms \(\+500 ms\)/);
 });

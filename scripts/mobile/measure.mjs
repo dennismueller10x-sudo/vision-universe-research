@@ -21,6 +21,8 @@ const {chromium} = createRequire(import.meta.url)('playwright');
 const defaultRoutes = ['/', '/quant/', '/quant/#/aktie/NVDA', '/technical/#/chart/NVDA', '/fundamental/#/NVDA', '/supertrader/', '/supertrader/stock/NVDA/', '/discover/', '/quant/musterdepots/', '/analysten/', '/mein-dashboard/'];
 /* --routes a,b,c: eigene Liste (Live-Ladezeit); nur Pfade mit fuehrendem Schraegstrich, kein Schema und keine Adresse. */
 const routes = arg('--routes') ? arg('--routes').split(',').map(r => { if (!/^\/[A-Za-z0-9_\-./#?=&]*$/.test(r)) throw Error('Invalid --routes entry'); return r; }) : defaultRoutes;
+/* --expect <datei.json>: {"<route>": "<css-selektor>"}; ein Lauf ist nur gueltig, wenn die Zugangsmaske nicht steht und der Selektor (falls genannt) sichtbaren Inhalt trifft. */
+const expectMap = arg('--expect') ? JSON.parse(await readFile(resolve(arg('--expect')), 'utf8')) : {};
 let gateState = null;
 if (process.argv.includes('--gate')) {
  if (!process.env.RESEARCH_ACCESS_PASSWORD) throw Error('GATE_PASSWORD_MISSING');
@@ -74,18 +76,25 @@ try {
   if(cpuProfile){await cdp.send('Profiler.enable');await cdp.send('Profiler.start');}
   await page.goto(base+route, {waitUntil:'commit',timeout:60000});
   await page.waitForTimeout(windowMs);
+  const marker = typeof expectMap[route] === 'string' ? expectMap[route] : null;
+  const content=await page.evaluate(sel => {
+   const gate=!!document.getElementById('research-access-gate');
+   let found=null;
+   if(sel){try{const el=document.querySelector(sel);if(el){const r=el.getBoundingClientRect(),st=getComputedStyle(el);found=!el.closest('[hidden]')&&st.visibility!=='hidden'&&st.display!=='none'&&r.width>0&&r.height>0;}else found=false;}catch(e){found=false;}}
+   return {gate,found};
+  },marker);
   const metrics=await page.evaluate(() => {
    const m=window.__e5, fcp=performance.getEntriesByName('first-contentful-paint')[0]?.startTime ?? null;
    return {...m,observedUntil:performance.now(),cls:fcp===null?null:m.cls,tasks:undefined,longTasks:m.tasks,resourceTimings:performance.getEntriesByType('resource').map(r=>({name:r.name,start:r.startTime,end:r.responseEnd,duration:r.duration,decodedBytes:r.decodedBodySize})),navigation:performance.getEntriesByType('navigation')[0]?.toJSON(),fcp,tbt:fcp===null?null:m.tasks.reduce((s,t)=>s+(fcp===null?0:Math.max(0,t.start+t.duration-Math.max(t.start+50,fcp))),0)};
   });
   if(cpuProfile){const {profile}=await cdp.send('Profiler.stop');await writeFile(resolve(cpuProfile),JSON.stringify(profile));}
-  const sample={route,run,...metrics,requests:requests.length,bytes:requests.reduce((s,r)=>s+r.bytes,0),unfinished:requests.filter(r=>!r.finished&&!r.error).length,failures:requests.filter(r=>r.status>=400||r.error),errors,resources:requests};
+  const sample={route,run,...metrics,gateShown:content.gate,contentFound:content.found,valid:!content.gate&&content.found!==false,requests:requests.length,bytes:requests.reduce((s,r)=>s+r.bytes,0),unfinished:requests.filter(r=>!r.finished&&!r.error).length,failures:requests.filter(r=>r.status>=400||r.error),errors,resources:requests};
   samples.push(sample);
   console.log(JSON.stringify({...sample,resources:undefined}));
   await context.close();
  }
  const median = a => {a=a.map(x=>x===null?Infinity:x).sort((a,b)=>a-b);const value=a[Math.floor(a.length/2)];return Number.isFinite(value)?value:null;};
- const rows=[...new Set(samples.map(s=>s.route))].map(route=> {const ss=samples.filter(s=>s.route===route);return {route,...Object.fromEntries(['lcp','cls','tbt','bytes','requests','firstNumber'].map(k=>[k,median(ss.map(s=>s[k]))])),incompleteRuns:ss.filter(s=>s.unfinished>0||s.lcp===null).length,failedRuns:ss.filter(s=>s.failures.length||s.errors.length).length};});
+ const rows=[...new Set(samples.map(s=>s.route))].map(route=> {const ss=samples.filter(s=>s.route===route);return {route,...Object.fromEntries(['lcp','cls','tbt','bytes','requests','firstNumber'].map(k=>[k,median(ss.map(s=>s[k]))])),incompleteRuns:ss.filter(s=>s.unfinished>0||s.lcp===null).length,invalidRuns:ss.filter(s=>s.valid===false).length,failedRuns:ss.filter(s=>s.failures.length||s.errors.length).length};});
  const result={schema:1,cpuProfile:!!cpuProfile,deliveryOverlay:overlay,sourceCommit:delivery?.sourceCommit ?? null,commit:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),browser:browser.version(),measuredAt:new Date().toISOString(),profile:{viewport:'390x844',downloadBps:1600000,uploadBps:750000,latencyMs:150,cpu:cpuRate,cpuAffinity,fixedTime:fixedTime||null,windowMs,runs,cache:'cold, SW blocked',root,base},note:'TBT lab proxy: long-task blocking after FCP until fixed observation end; not INP or Lighthouse TBT. Null firstNumber = no visible stock-head price within window. Bytes = CDP wire including headers; unfinished responses counted partially.',rows,samples};
  await writeFile(resolve(arg('--out','/tmp/e5-measurement.json')),JSON.stringify(result,null,2)+'\n');
  console.table(rows);
