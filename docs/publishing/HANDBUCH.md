@@ -351,7 +351,7 @@ Wirtschaftskalender (FMP-Endpunkte geprüft in `scripts/market/probe-free-source
   `products/news/tests/marktbriefing.test.mjs`.
 - Lauf: `content.yml` Teil `marktbriefing`, Mo–Fr 23:50 UTC über den Wecker (`core/registry/schedule.json`), intern im
   Datenzweig (`news/marktbriefing/`, Datenart `marktbriefing`; Research-Seite `/news/marktbriefing/` bleibt `noindex`).
-- Themen Dritter liest der Build aus `news/marktbriefing/radar/<sitzung>.json` (`items[]` mit title, publisher, source,
+- Themen Dritter und Termine liest der Build aus `products/news/radar/<sitzung>.json` (im Code-Zweig, weil `news/marktbriefing/` dem Datenzweig gehört) (`items[]` mit title, publisher, source,
   published, url, optional sub, quote, columns, bars, stats; optional `editorial` mit eigenem Titel der Titelkarte).
   Die Engine verwirft, was nicht vom Handelstag ist, nicht aus der Quellenliste kommt oder keine URL hat.
 - Ausblick (Owner 22.11.2026): `agenda[]` in derselben Radar-Datei, je Termin `date`, `kind` (`zahlen`, `daten`, `notenbank`,
@@ -377,6 +377,7 @@ Wirtschaftskalender (FMP-Endpunkte geprüft in `scripts/market/probe-free-source
   Desktop, Karten als Story) mit eigenem PDF (`marktbriefing-<sitzung>.pdf`), Titelbild, Vorschaubild und Karten-Bildern.
   Erzeugt von `products/news/briefing/www.js` (`page`, `productPage`); Verhalten `landing/marktbriefing/mb.js`, Stil `mb.css`
   (CSP der Website: kein Inline-Skript). Kopf, Menü und Fuß kommen aus `landing/news/index.html`.
+- Teilen-Vorschau (Owner 23.11.2026, WhatsApp): je Ausgabe `teilen.png` 1200×630 (`screens.mjs#writeShare`: Titel, Datum, Index-Chips, drei echte Bildschirme) als `og:image` und `twitter:image` von Ausgabe und Produktseite.
 - Für Suche und KI-Suche steht alles im HTML: Kurzfassung „Das Wichtigste in Kürze“ (`engine.js#summary`), JSON-LD
   (`NewsArticle` und `BreadcrumbList` je Ausgabe, `CollectionPage` auf der Produktseite), Sitemap über
   `landing/scripts/build.mjs` (`marktbriefingPages`).

@@ -323,3 +323,22 @@ test('MB-15 kein Bezug auf Vorbilder: weder Personenname noch „Closing Bell“
     if (fs.existsSync(p)) assert.doesNotMatch(fs.readFileSync(p, 'utf8'), rx, d);
   }
 });
+
+test('MB-16 Teilen-Bild 1200×630 als og:image; Termine liegen im Code-Zweig unter products/news/radar/', () => {
+  const b = Engine.buildBriefing(inputs());
+  const html = Www.page(b, { chrome: Www.chromeFrom(CHROME), archive: [SESSION], depth: 2, image: '/marktbriefing/2026-11-20/teilen.png', imageSize: [1200, 630] });
+  assert.match(html, /<meta property="og:image" content="https:\/\/www\.visionuniverse\.de\/marktbriefing\/2026-11-20\/teilen\.png">\n<meta property="og:image:width" content="1200">\n<meta property="og:image:height" content="630">/);
+  assert.match(html, /<meta name="twitter:image" content="https:\/\/www\.visionuniverse\.de\/marktbriefing\/2026-11-20\/teilen\.png">/);
+  assert.deepEqual(Www.shareChips(b).map((c) => c[0]), ['Nasdaq 100', 'S&P 500', 'Dow Jones']);
+  const p = Www.productPage(b, { chrome: Www.chromeFrom(CHROME), archive: [SESSION], img: { share: 'teilen.png', story0: 'vorschau.png' } });
+  assert.match(p, /<meta property="og:image" content="https:\/\/www\.visionuniverse\.de\/marktbriefing\/2026-11-20\/teilen\.png">/);
+  assert.match(fs.readFileSync(new URL('../briefing/build.mjs', import.meta.url), 'utf8'), /'products\/news\/radar', session \+ '\.json'/);
+  // jede Termin-Datei besteht die Prüfregeln der Engine vollständig
+  const dir = new URL('../radar/', import.meta.url);
+  for (const f of fs.readdirSync(dir).filter((x) => /^\d{4}-\d{2}-\d{2}\.json$/.test(x))) {
+    const r = JSON.parse(fs.readFileSync(new URL(f, dir), 'utf8'));
+    const a = Engine.cardAgenda(r, f.slice(0, 10));
+    assert.equal(a.dropped.length, 0, f + ': ' + a.dropped.map((d) => d.reason).join('; '));
+    assert.ok(a.card, f);
+  }
+});

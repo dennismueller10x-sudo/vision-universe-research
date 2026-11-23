@@ -5,7 +5,7 @@
 //   node products/news/briefing/build.mjs                        liest Daten aus dem Repo, schreibt ins Repo
 //   node products/news/briefing/build.mjs --data <ordner>        liest Daten aus <ordner> (z. B. Checkout von data/live)
 //   node products/news/briefing/build.mjs --out <ordner>         schreibt in <ordner> (Tests)
-//   node products/news/briefing/build.mjs --radar <datei>        Themen Dritter (Radar), sonst news/marktbriefing/radar/<sitzung>.json
+//   node products/news/briefing/build.mjs --radar <datei>        Themen Dritter und Termine (Radar), sonst products/news/radar/<sitzung>.json
 //   node products/news/briefing/build.mjs --now <ISO>            fester Zeitpunkt (Tests)
 //   node products/news/briefing/build.mjs --www <landing-ordner>  schreibt zusätzlich die Seite für www.visionuniverse.de:
 //        <landing>/marktbriefing/index.html (Produktseite) und <landing>/marktbriefing/<sitzung>/index.html (Ausgabe);
@@ -52,7 +52,7 @@ export function loadInputs(dataRoot, { radarFile, now } = {}) {
   const pulse = readJson(path.join(dataRoot, 'quant/data/market/intelligence/market-pulse.json'));
   const pulseHistory = readJson(path.join(dataRoot, 'quant/data/market/intelligence/market-pulse-history.json'));
   const session = pulse && pulse.movers && pulse.movers.session;
-  const radarPath = radarFile || (session && path.join(root, 'news/marktbriefing/radar', session + '.json'));
+  const radarPath = radarFile || (session && path.join(root, 'products/news/radar', session + '.json'));
   const radar = radarPath ? readJson(radarPath) : null;
   return { pulse, pulseHistory, series, intraday, stocks, sec, radar, editorial: radar && radar.editorial || null, now };
 }
@@ -99,10 +99,19 @@ export async function writeWww(briefing, landingDir, { pdf = false } = {}) {
   if (has(pdfName)) havePdf = true;
   const archive = fs.readdirSync(dir).filter((f) => /^\d{4}-\d{2}-\d{2}$/.test(f) && fs.existsSync(path.join(dir, f, 'index.html')) || f === briefing.session).sort().reverse();
   put(briefing.session + '/index.html', Www.page(briefing, { chrome, archive, depth: 2, pdf: havePdf ? pdfName : null,
-    image: has('vorschau.png') ? '/marktbriefing/' + briefing.session + '/vorschau.png' : null }));
+    image: has('teilen.png') ? '/marktbriefing/' + briefing.session + '/teilen.png' : has('vorschau.png') ? '/marktbriefing/' + briefing.session + '/vorschau.png' : null,
+    imageSize: has('teilen.png') ? [1200, 630] : null }));
   // Echte Handy-Bildschirme der Ausgabe für die Produktseite (nur mit Playwright, wie PDF).
   if (pdf) {
-    try { const { writeScreens } = await import('./screens.mjs'); files.push(...await writeScreens(path.join(ed, 'index.html'), ed)); }
+    try {
+      const { writeScreens, writeShare } = await import('./screens.mjs');
+      files.push(...await writeScreens(path.join(ed, 'index.html'), ed));
+      const list = (readJson(path.join(ed, 'bildschirme.json')) || { screens: [] }).screens;
+      const by = (id) => (list.find((x) => x.id === id) || {}).file;
+      files.push(await writeShare(ed, { title: Www.shareTitle(briefing), date: Www.shareDate(briefing), chips: Www.shareChips(briefing), shots: [by('start'), by('indizes'), by('marktbreite') || by('ausblick')].filter(Boolean) }));
+      // Seiten mit dem Teilen-Bild neu schreiben (og:image)
+      put(briefing.session + '/index.html', Www.page(briefing, { chrome, archive, depth: 2, pdf: havePdf ? pdfName : null, image: '/marktbriefing/' + briefing.session + '/teilen.png', imageSize: [1200, 630] }));
+    }
     catch (e) { console.error('Bildschirme übersprungen: ' + e.message); }
   }
   // Bildschirme der Ausgabe (bildschirme.json aus screens.mjs): Auswahl nach Szene für Produktseite und Startseite.
@@ -112,7 +121,7 @@ export async function writeWww(briefing, landingDir, { pdf = false } = {}) {
     const cards = peekIdx.map((i) => ({ file: 'karte-' + String(i + 1).padStart(2, '0') + '.png', anchor: ANCHOR[briefing.cards[i].id] || 'start',
       title: briefing.cards[i].title, kicker: briefing.cards[i].kicker })).filter((c) => has(c.file));
     put('index.html', Www.productPage(briefing, { chrome, parts, archive, pdf: havePdf ? pdfName : null,
-      img: { story0: has('vorschau.png') ? 'vorschau.png' : null, cover: has('titel.png') ? 'titel.png' : null, cards,
+      img: { share: has('teilen.png') ? 'teilen.png' : null, story0: has('vorschau.png') ? 'vorschau.png' : null, cover: has('titel.png') ? 'titel.png' : null, cards,
         pages: ['seite-02.png', 'seite-03.png', 'seite-04.png'].filter(has),
         screens: pick(['start', 'indizes', 'marktbreite', 'ausblick']) } }));
     const home = path.join(landingDir, 'index.html');
