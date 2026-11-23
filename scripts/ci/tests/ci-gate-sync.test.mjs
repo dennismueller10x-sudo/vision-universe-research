@@ -163,3 +163,4 @@ test("CG-14 ci-gate-neu.yml: workflow_run nennt JEDEN Workflow mit pull_request 
   assert.match(gate, /GATE_NAME: ci-gate-neu/);
   assert.match(gate, /node scripts\/ci\/ci-gate-sync\.mjs/);
 });
+// Probe (Schattenphase ci-gate-neu): bewusst folgenlos, wird nicht gemergt.
