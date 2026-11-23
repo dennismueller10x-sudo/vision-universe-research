@@ -1,6 +1,5 @@
 // Wöchentliche Aktualisierung von US-Wertpapierstamm und Firmennamen (vorbereitet, Zeitplan aus):
 // Workflow-Abschaltung und ADR-005, Übernahme-Gate (fail closed), Erzeuger fail closed und idempotent.
-import "../../scripts/quant/lib/frozen-data.mjs"; /* eingefrorener Datenstand (scripts/quant/lib/frozen-data.mjs, 22.11.2026) */
 import test from "node:test";
 import { takteVon } from "../../scripts/core/schedule-registry.mjs";
 import assert from "node:assert/strict";

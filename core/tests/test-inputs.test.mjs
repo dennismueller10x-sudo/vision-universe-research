@@ -7,9 +7,10 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync, readdirSync, statSync } from "node:fs";
 import { tmpdir } from "node:os";
+import { gunzipSync } from "node:zlib";
 import { join } from "node:path";
 import { ROOT, scanAll, scanFile, loadRegistry } from "../../scripts/quality/test-inputs.mjs";
-import { bundleFiles, duplicates } from "../../scripts/quant/dedupe-frozen-bundles.mjs";
+import { bundleFiles, duplicates, orphanBlobs } from "../../scripts/quant/dedupe-frozen-bundles.mjs";
 import { FROZEN_SHARED_DIR } from "../../scripts/quant/lib/data-fixture.mjs";
 
 const reg = loadRegistry();
@@ -131,4 +132,22 @@ test("TI-10 · Fixture-Buendel haben eine Obergrenze (Repo-Groesse): alle eingef
 
 test("TI-11 · gleiche Dateien liegen nur einmal: kein Inhalt in mehreren Buendeln (node scripts/quant/dedupe-frozen-bundles.mjs)", () => {
   assert.deepEqual(duplicates().map(([, e]) => e), [], "Dieselbe Datei steht in mehreren Fixture-Buendeln. Teilen: node scripts/quant/dedupe-frozen-bundles.mjs");
+});
+
+test("TI-12 · jedes Bündel in fixtures/frozen stammt aus einem vollen Checkout ohne übersprungene Tests und ohne fehlende Dateien", () => {
+  /* 23.11.2026: Das Bündel zu quant/tests/v13b-largecap-strict (#2281) wurde in einem flachen Checkout erzeugt: us-security-master.json
+     fehlte, ein Test wurde übersprungen, in der CI kam ENOENT und main war rot. scripts/quant/freeze-frozen-data.mjs bricht darum ab,
+     wenn der Checkout nicht voll ist (scripts/ci/seed-data-branch.sh alle), ein Test übersprungen wird oder ein Lesen mit ENOENT endet,
+     und schreibt das Ergebnis als meta.checks ins Bündel. Dieser Test verlangt es. */
+  const schlecht = [];
+  for (const rel of bundleFiles().filter((f) => /\/fixtures\/frozen\/[^/]+\.json\.gz$/.test(f))) {
+    const b = JSON.parse(gunzipSync(readFileSync(join(ROOT, rel))).toString("utf8"));
+    const c = b.meta && b.meta.checks;
+    if (!c || c.fullCheckout !== true || c.skipped !== 0 || c.missing !== 0 || !(c.pass > 0)) schlecht.push(`${rel}: ${JSON.stringify(c || null)}`);
+  }
+  assert.deepEqual(schlecht, [], "Neu einfrieren im vollen Checkout: scripts/ci/seed-data-branch.sh alle && node scripts/quant/freeze-frozen-data.mjs --test <datei>");
+});
+
+test("TI-13 · keine verwaisten geteilten Blobs", () => {
+  assert.deepEqual(orphanBlobs(), [], "Blob ohne Verweis: node scripts/quant/dedupe-frozen-bundles.mjs räumt auf");
 });
