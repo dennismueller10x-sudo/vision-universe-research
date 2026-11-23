@@ -93,7 +93,7 @@ for (const vp of VIEWPORTS) {
     check(await page.locator('.ek-form').count() === 0 || (/Schema[^.]*keine echten Kurse/.test(await page.locator('#el-main').innerText()) && await page.locator('.ek-form[aria-label*="Schema, keine echten Kurse"]').count() === await page.locator('.ek-form').count()), 'Wellenlagen: als Schema beschriftet');
     await page.locator('.ek-cover').click();
     await page.waitForSelector('#ek-kopf-pop:not([hidden])', { timeout: 5000 });
-    check(/Gut anwendbar/.test(await page.locator('#ek-kopf-pop').innerText()), 'Kopfkachel öffnet das Erklärfenster');
+    check(/Klarheit A–C/.test(await page.locator('#ek-kopf-pop').innerText()), 'Kopfkachel öffnet das Erklärfenster');
     await page.keyboard.press('Escape');
     await page.waitForSelector('#ek-kopf-pop', { state: 'hidden' });
     await page.locator('.el-about').click();
@@ -146,11 +146,8 @@ for (const vp of VIEWPORTS) {
         await sheet.waitFor({ state: 'detached', timeout: 5000 }).catch(() => {});
       }
       check(await page.locator('#el-detail .cb-eps > details.cb-ep > .cb-ep-body').count() === 3 && !(await page.evaluate(() => document.documentElement.classList.contains('vu-sheet-open'))), 'Aktie: nach dem Schließen liegt jeder Kapitelinhalt wieder im Kapitel, die Seite rollt wieder');
-      await page.locator('#el-detail .ew-end .ew-dm > details.cb-foot > summary').click();
-      await sheet.waitFor({ timeout: 5000 }).catch(() => {});
-      check(/keine Vorhersage, keine Empfehlung, keine Order/.test(await sheet.count() ? await sheet.innerText() : '') && await sheet.locator('a[href="/quant/#/methodik/chartbild"]').count() === 1, 'Aktie: Daten & Methodik als Fenster, Hinweis und Methodik-Link (nach /quant/) erhalten');
-      await page.keyboard.press('Escape');
-      await sheet.waitFor({ state: 'detached', timeout: 5000 }).catch(() => {});
+      /* Owner 22.11.2026: „Daten & Methodik“ steht nicht mehr am Seitenende (Hinweise im Menü); der Text bleibt im Dokument. */
+      check(await page.evaluate(() => { const d = document.querySelector('#el-detail .ew-dm'); return !!d && getComputedStyle(d).display === 'none' && /keine Vorhersage, keine Empfehlung, keine Order/.test(d.textContent); }), 'Aktie: Daten & Methodik ausgeblendet, Hinweis im Dokument');
       check(await page.locator('#el-detail .ew-end a.vu-next[href="/technical/#/chart/' + encodeURIComponent(symbol) + '"]').count() === 1 && await page.locator('#el-detail .ew-end .cb-crumbs a.ew-ask').count() === 1 && await page.locator('#el-detail .ew-end .ew-dm a.ew-home[href="/elliott/#/"]').count() === 1 && /Folgeschritte/.test(await page.locator('#el-detail .ew-end').innerText()), 'Aktie: Folgeschritte mit „Weiter“-Karte zur Chart-Lage in Technical und Frag VU, Daten & Methodik mit Rückweg zur Übersicht');
       check(/Ungültig/.test(await page.locator('#el-detail .cb').innerText()), 'Aktie: Ungültig-Marke steht auf der Seite');
       // Balken „Kurs gegen Ungültig-Marke“ nach „Die Lesart in drei Sätzen“: derselbe Abstand wie auf der Karte, genau eine h1, Kontrast ≥ 4,5 : 1
@@ -223,7 +220,8 @@ for (const vp of VIEWPORTS) {
     // Weg 5: Aktie ohne Lesart: ehrliche Aussage, Aktie bleibt sichtbar
     // Konzept EHV (PR 2): die Aktie ohne Zählung zeigt die Karte .cb-ew-none unter dem Kopf .cb-head (früher .cb-nothesis unter .cb-hero)
     const nothesis = await page.locator('.cb-nothesis, .cb-ew-none').count(), hero = await page.locator('.cb-hero, .cb-head').count();
-    check(hero === 1 && (nothesis === 1 || await page.locator('.cb-pj-hl, .cb-ewp').count() > 0), 'NVDA: Lesart oder ehrliche "Keine belastbare Elliott-Lesart"');
+    // Elliott-Neustart (Owner 22.11.2026): jede Hauptlesart steht mit Klarheit A–D (.cb-ew-say) und Wellenmarken im Chart
+    check(hero === 1 && (nothesis === 1 || await page.locator('.cb-pj-hl, .cb-ewp, .cb-ew-say').count() > 0), 'NVDA: Lesart oder ehrliche "Keine belastbare Elliott-Lesart"');
 
     // Weg 3: Aktienseite -> Elliott
     await page.goto(BASE + '/quant/#/aktie/NVDA', { waitUntil: 'networkidle' });

@@ -1,6 +1,7 @@
 /* Core · Datenqualitaet der Supertrader-8.0-Research-Kandidaten (DQ-SF8-1..8, core/data-quality.js).
    Golden Case: ein in sich stimmiger Stand; je Regel adversariale Gegenproben. Fail closed: vorbereitet ohne Daten
    ist der einzige Pass ohne Pruefung; Daten ohne Freigabe, Freigabe ohne Daten und Unlesbares sind Fehler. */
+import "../../scripts/quant/lib/frozen-data.mjs"; /* eingefrorener Datenstand (scripts/quant/lib/frozen-data.mjs, 22.11.2026) */
 import test from "node:test";
 import assert from "node:assert/strict";
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync, readFileSync, existsSync, readdirSync } from "node:fs";

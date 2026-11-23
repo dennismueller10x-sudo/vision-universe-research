@@ -10,6 +10,17 @@ import {writeStockHeadViews} from './stock-head-view.mjs';
 import {writeManifest} from './release-manifest.mjs';
 import {createRequire} from 'node:module';
 const require=createRequire(import.meta.url),Master=require('../../quant/engines/company-master.js'),History=require('../../quant/api/fundamentals-contract.js'),FactorProjection=require('../../quant/engines/factor-product-projection.js');
+/* Kopf der Quant-Startseite fuer den Fruehstart (quant/app/stock-boot.js). Quelle ist pages.js#home (geschuetzt, nur gelesen).
+   Der Kopf darf mit nWordHtml() zusammengesetzt sein (Zahlwort der Eigenschaften, 21.11.2026 repariert: die alte Suche nach einem
+   reinen String fand ihn nicht mehr, der Fruehstart lief im Release nicht). Das Zahlwort steht vorlaeufig als Standard im Platzhalter
+   <span data-nword>; refreshProfileWords() in pages.js setzt den Wert, sobald die Daten da sind. Unbekannte Bausteine: kein Kopf (null). */
+export const QUANT_INTRO_NWORD_DEFAULT='sieben';
+export function quantHomeIntro(pagesSource){
+ const m=String(pagesSource||'').match(/page\.append\(frag\('(<header class="qv3-intro">[\s\S]*?<\/header>)'\)\);/);
+ if(!m)return null;
+ const html=m[1].replace(/' \+ nWordHtml\(\) \+ '/g,'<span data-nword>'+QUANT_INTRO_NWORD_DEFAULT+'</span>');
+ return /'|\+|\(\)/.test(html.replace(/<[^>]*>/g,''))?null:html;
+}
 export const SEC_BUDGET=8*1024*1024;
 const fields=(x,keys)=>Object.fromEntries(keys.filter(k=>Object.hasOwn(x||{},k)).map(k=>[k,x[k]]));
 export function projectInspector(source){
@@ -126,6 +137,8 @@ export function permitted(path){
  if(path.split('/').some(p=>p.startsWith('.'))&&path!=='.nojekyll')return false;
  if(/^brand-media\//.test(path))return false; // unveroeffentlichte Markenmedien: nie ausliefern
  if(/^workers\/[^/]+\/data\//.test(path))return false; // Daten eines Workers (z. B. interne Backtest-Vorschau): nur der Worker liefert sie, geschuetzt
+ // Server-/Worker-Quellen, Datenbank-Migrationen (RLS), Agentenregeln: kein Browser braucht sie, die Seite muss sie nicht veroeffentlichen (Sicherheitspruefung 22.11.2026).
+ if(/^(workers|worker|worker-waker|supabase|server)\//.test(path)||/^(CLAUDE|AGENTS)\.md$/.test(path))return false;
  if(/^app\//.test(path))return false; // native App-Huelle (ADR-007): eigenes Projekt, nicht Teil der Web-Auslieferung
  if(/^(scripts|docs|providers)\//.test(path)||/\/(tests|fixtures)\//.test(path)||/\.test\.(m?js|py)$/.test(path))return false;
  if(/^quant\/data\/(sec|fundamentals)\//.test(path))return false;
@@ -164,8 +177,8 @@ export async function writeQuantCode({root,output,paths,stockPreload=true}){
   let headSrc=null;
   if(headEnabled){
    headChunks.unshift('globalThis.VUQuantHeadDeliveryEnabled=true;');
-   const homeSource=await readFile(resolve(root,'quant/app/pages.js'),'utf8').catch(()=>''),intro=homeSource.match(/page\.append\(frag\('(<header class="qv3-intro">[^']+<\/header>)'\)\);/);
-   if(intro)headChunks.unshift('globalThis.VUQuantHomeIntro='+JSON.stringify(intro[1])+';');
+   const homeSource=await readFile(resolve(root,'quant/app/pages.js'),'utf8').catch(()=>''),intro=quantHomeIntro(homeSource);
+   if(intro)headChunks.unshift('globalThis.VUQuantHomeIntro='+JSON.stringify(intro)+';');
    const text=headChunks.join('\n;\n');headSrc='/quant/head-bundle.js';await writeFile(resolve(output,headSrc.slice(1)),text);chunks.push('/* early-head '+createHash('sha256').update(text).digest('hex')+' */');}
   const packed={};
   for(const [name,list] of Object.entries(packChunks)){

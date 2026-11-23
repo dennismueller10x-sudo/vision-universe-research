@@ -9,6 +9,8 @@ import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync, readdi
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { ROOT, scanAll, scanFile, loadRegistry } from "../../scripts/quality/test-inputs.mjs";
+import { bundleFiles, duplicates } from "../../scripts/quant/dedupe-frozen-bundles.mjs";
+import { FROZEN_SHARED_DIR } from "../../scripts/quant/lib/data-fixture.mjs";
 
 const reg = loadRegistry();
 const rows = scanAll();
@@ -117,19 +119,16 @@ test("TI-10 · Fixture-Buendel haben eine Obergrenze (Repo-Groesse): alle eingef
      verzichtet. Je Buendel hoechstens 2 MiB (freeze-frozen-data.mjs), ausser den drei benannten Altbestaenden. */
   
   const gross = new Set(["quant/tests/fixtures/product-services/data.json.gz", "quant/tests/fixtures/canonical-product-search/data.json.gz"]);
-  const dateien = [];
-  const gehe = (dir) => {
-    for (const n of readdirSync(join(ROOT, dir))) {
-      if (n === "node_modules" || n === ".git" || n === "data") continue;
-      const rel = dir ? dir + "/" + n : n;
-      const st = statSync(join(ROOT, rel));
-      if (st.isDirectory()) { if (/(^|\/)tests$|^(core|quant|discover|technical|screener|scripts|products)(\/.*)?$/.test(rel)) gehe(rel); continue; }
-      if (/\/fixtures\/frozen\/[^/]+\.json\.gz$/.test(rel) || /\/fixtures\/[^/]+\/data\.json\.gz$/.test(rel)) dateien.push({ rel, bytes: st.size });
-    }
-  };
-  for (const d of ["core/tests", "quant/tests", "discover/tests", "technical/tests", "screener/tests", "scripts/supertrader/tests", "products"]) gehe(d);
+  const dateien = bundleFiles().map((rel) => ({ rel, bytes: statSync(join(ROOT, rel)).size }));
+  /* geteilte Blobs (core/tests/fixtures/frozen-shared) zaehlen mit */
+  const geteilt = existsSync(join(ROOT, FROZEN_SHARED_DIR)) ? readdirSync(join(ROOT, FROZEN_SHARED_DIR)).map((n) => ({ rel: FROZEN_SHARED_DIR + "/" + n, bytes: statSync(join(ROOT, FROZEN_SHARED_DIR, n)).size })) : [];
+  dateien.push(...geteilt);
   const summe = dateien.reduce((s, f) => s + f.bytes, 0);
   const zuGross = dateien.filter((f) => f.bytes > 2 * 1048576 && !gross.has(f.rel)).map((f) => f.rel);
   assert.deepEqual(zuGross, [], "Buendel ueber 2 MiB");
   assert.ok(summe <= 21 * 1048576, `Fixture-Buendel zusammen ${(summe / 1048576).toFixed(1)} MiB (${dateien.length} Dateien), Grenze 21 MiB`);
+});
+
+test("TI-11 · gleiche Dateien liegen nur einmal: kein Inhalt in mehreren Buendeln (node scripts/quant/dedupe-frozen-bundles.mjs)", () => {
+  assert.deepEqual(duplicates().map(([, e]) => e), [], "Dieselbe Datei steht in mehreren Fixture-Buendeln. Teilen: node scripts/quant/dedupe-frozen-bundles.mjs");
 });

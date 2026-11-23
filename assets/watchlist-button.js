@@ -237,12 +237,12 @@
   var CSS = ".vu-shead-watch{position:relative;display:inline-flex}" +
     ".vu-watch{width:44px;height:44px;display:grid;place-items:center;border-radius:999px;border:1px solid var(--vu-line-strong,#d4d4d4);background:transparent;color:var(--vu-text,#0d0f12);cursor:pointer}" +
     ".vu-watch svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linejoin:round}" +
-    ".vu-watch[aria-pressed=true]{border-color:transparent;background:var(--vu-accent-soft,#eef9cc);color:var(--vu-accent-text,#4f6b00)}" +
-    ".vu-watch[aria-pressed=true] svg{fill:currentColor}.vu-watch:focus-visible{outline:2px solid var(--vu-focus,#4f6b00);outline-offset:2px}" +
+    ".vu-watch[aria-pressed=true]{border-color:transparent;background:var(--vu-accent-soft,#eef9cc);color:var(--vu-accent-text,#101318)}" +
+    ".vu-watch[aria-pressed=true] svg{fill:currentColor}.vu-watch:focus-visible{outline:2px solid var(--vu-focus,#101318);outline-offset:2px}" +
     ".vu-watch[disabled]{opacity:.6;cursor:wait}" +
     ".vu-watch-hint{position:absolute;z-index:20;top:calc(100% + 6px);right:0;width:max-content;max-width:min(280px,80vw);padding:8px 12px;border-radius:12px;font-size:13px;line-height:1.4;" +
     "background:var(--vu-elevated,#fff);color:var(--vu-text,#0d0f12);border:1px solid var(--vu-line-strong,#d4d4d4);box-shadow:0 8px 24px rgba(0,0,0,.14)}" +
-    ".vu-watch-hint a{color:var(--vu-accent-text,#4f6b00);font-weight:600}";
+    ".vu-watch-hint a{color:var(--vu-accent-text,#101318);font-weight:600}";
 
   function script(doc, src) {
     return new Promise(function (done) {

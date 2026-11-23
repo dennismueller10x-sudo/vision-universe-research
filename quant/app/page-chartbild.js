@@ -530,7 +530,23 @@
      Zaehlbar heisst: die Engine stuft die Wellenzaehlung als anwendbar ein (applicability HIGH oder MODERATE, keine Enthaltung) –
      dieselbe Einstufung wie „Heute anwendbar“ auf der Elliott-Startseite (elliottApplicable im Wellen-Index). */
   var EW_RR = { LOW: "gering", MEDIUM: "mittel", HIGH: "hoch" };
-  function ewCountable(E) { var ap = E && E.applicability; return !!(E && E.primary && ap && !ap.abstain && (ap.level === "HIGH" || ap.level === "MODERATE")); }
+  /* Klarheit A–D (Elliott-Neustart, Owner 22.11.2026): statt „keine Zählung“ zeigt das Produkt die beste regelkonforme Lesart und
+     stuft sie ein. Grundlage sind nur die Einstufungen der Engine (Anwendbarkeit, Strukturklarheit); keine neue Rechnung.
+     A: Anwendbarkeit hoch und Struktur klar · B: Anwendbarkeit hoch oder mittel bei klarer Struktur · C: Anwendbarkeit mittel · D: sonst. */
+  var EW_GRADE = { A: ["strong", "Klarheit A", "sehr klare Struktur"], B: ["strong", "Klarheit B", "klare Struktur"], C: ["mid", "Klarheit C", "mittlere Klarheit"], D: ["weak", "Klarheit D", "unruhiger Chart, Neuzählung wahrscheinlich"] };
+  function ewGrade(E) {
+    var ap = E && E.applicability, lv = ap && !ap.abstain ? ap.level : "LOW", cl = E && E.clarityLevel;
+    return lv === "HIGH" && cl === "HIGH" ? "A" : lv === "HIGH" || (lv === "MODERATE" && cl === "HIGH") ? "B" : lv === "MODERATE" ? "C" : "D";
+  }
+  /* Zeitraum des Aktienbilds: der kleinste, in dem die erste Welle der Hauptlesart beginnt (mit etwas Vorlauf). */
+  function ewRange(a, E) {
+    var weekly = a.timeframe === "1W", opts = weekly ? [["1J", 52], ["3J", 156], ["5J", 260]] : [["3M", 63], ["6M", 126], ["1J", 252]];
+    var ts = (a.chart && a.chart.timestamps) || [], w = E && E.primary && E.primary.waves && E.primary.waves[0], from = w && w.fromTime;
+    if (!from || !ts.length) return opts[0][0];
+    var i = ts.findIndex(function (t) { return t >= String(from).slice(0, 10); }), need = i < 0 ? ts.length : Math.ceil((ts.length - i) * 1.15) + 2;
+    for (var k = 0; k < opts.length; k++) if (opts[k][1] >= need) return opts[k][0];
+    return opts[opts.length - 1][0];
+  }
   function ewModel() { return global.VUElliottHome || null; }
   function ewPattern(code, fallback) { var M = ewModel(); return M ? M.patternDe(code) : fallback || code; }
   function ewName(ctx, ticker) { var n = (ctx && ctx.names && ctx.names[ticker]) || ticker, M = ewModel(); return M && M.shortName ? M.shortName(n, ticker) : n; }
@@ -562,7 +578,7 @@
   function ewVerdict(kind, text) { var U = global.VUUI; if (U) { var t = document.createElement("template"); t.innerHTML = U.verdict(kind, text); return t.content.firstChild; } return el("span", { class: "vu-verdict vu-verdict--" + kind, text: text }); }
   function wavesPage(o) {
     var a = o.a, E = o.E, host = o.host, ticker = o.ticker, name = ewName(o.ctx, o.ticker), share = ewShare();
-    if (!ewCountable(E)) {
+    if (!(E && E.primary)) {
       var noneP, listSub, shareText = function (sh) { return "Der Chart verläuft zu unruhig für eine belastbare Lesart. Das ist der Normalfall: " + (sh ? "nur " + sh.count.toLocaleString("de-DE") + " von " + sh.n.toLocaleString("de-DE") + " Aktien sind heute zählbar." : "nur wenige Aktien sind heute zählbar."); };
       if (!share) ewShareLoad().then(function (sh) { if (sh && noneP) { noneP.textContent = shareText(sh); listSub.textContent = sh.count.toLocaleString("de-DE") + " heute"; } });
       host.append(el("section", { class: "cb-ew-none", "aria-label": "Elliott " + name }, [
@@ -578,14 +594,14 @@
     var up = prim && prim.direction === "BULLISH", down = prim && prim.direction === "BEARISH";
     var weekly = a.timeframe === "1W", cl = E.clarityLevel || "MODERATE", ap = E.applicability.level, rr = o.T && o.T.relabeling ? o.T.relabeling.risk : null;
     var title = ewPattern(c.pattern, c.patternName) + (c.complete ? " abgeschlossen" : " · Welle " + ((c.currentWave && c.currentWave.label) || "–"));
-    var CLV = { HIGH: ["strong", "Zählung klar"], MODERATE: ["mid", "Zählung mittel"] }[cl] || ["weak", "Zählung unklar"];
+    var grade = ewGrade(E), CLV = EW_GRADE[grade], nCand = E.trace && E.trace.candidates;
     host.append(el("div", { class: "cb-ew-say" }, [el("div", {}, [el("p", { class: "vu-ltag", text: "Wellen · " + o.tfLabel }), el("h2", { class: "vu-mt", text: title })]), ewVerdict(CLV[0], CLV[1])]), o.chartCard);
     var rows = [
       ["wave", "Struktur", ewStructSentence(c, a.outlook && a.outlook.structure), up ? ewVerdict("strong", "nach oben") : down ? ewVerdict("weak", "nach unten") : ewVerdict("none", "Richtung offen")],
       ["target", "Grenze", inv ? "Die Lesart gilt, solange " + (weekly ? "die Woche" : "der Tag") + " " + (inv.direction === "below" ? "über " : "unter ") + ewPrice(inv.price) + " schließt." : "Für diese Lesart gibt es keine Ungültig-Marke.", ewVerdict("mid", "Ungültig-Marke")],
-      ["book", "Sicherheit", "Zählung " + ({ HIGH: "klar", MODERATE: "mittel" }[cl] || "unklar") + (rr && EW_RR[rr] ? ", Gefahr einer Neuzählung " + EW_RR[rr] : "") + ". Anwendbarkeit: " + (ap === "HIGH" ? "gut" : "mittel") + ".", ewVerdict(ap === "HIGH" ? "strong" : "mid", ap === "HIGH" ? "Gut" : "Mittel")]
+      ["book", "Klarheit", CLV[1] + ": " + CLV[2] + "." + (grade === "D" ? " Diese Lesart ist die derzeit beste" + (nCand > 1 ? " von " + nCand.toLocaleString("de-DE") + " regelkonformen" : "") + "; der Chart lässt mehrere Zählungen zu." : "") + (rr && EW_RR[rr] ? " Gefahr einer Neuzählung " + EW_RR[rr] + "." : ""), ewVerdict(CLV[0], CLV[1])]
     ];
-    host.append(el("section", { class: "cb-story", "aria-label": "Die Lesart in drei Sätzen" }, [el("p", { class: "vu-ltag", text: "Die Lesart in drei Sätzen" })].concat(rows.map(function (r) {
+    host.append(el("section", { class: "cb-story", "aria-label": "Die Lesart in drei Sätzen", tabindex: "0" }, [el("p", { class: "vu-ltag", text: "Die Lesart in drei Sätzen" })].concat(rows.map(function (r) {
       return el("div", { class: "cb-story-r" }, [el("span", { class: "vu-hud", style: "--vu-hud:34px", "aria-hidden": "true" }, [ewIcon(EW_IC[r[0]])]), el("div", {}, [el("span", { class: "vu-ltag", text: r[1] }), el("p", { text: r[2] })]), r[3]]);
     }))));
     var ov = a.overlays && a.overlays.waves, waves = (ov && ov.primary) || [];
@@ -721,7 +737,9 @@
 
     // ---------------------------------------------- Chart
     var chartHost = el("div", { class: "cb-chart", tabindex: "0", role: "region", "aria-label": "Chart mit Zonen und Szenario" });
-    var range = a.timeframe === "1W" ? (inElliott ? "1J" : "3J") : "6M", mode = "line", wavesOn = view === "pro" || (!abstain && E && E.primary);
+    /* Elliott-Neustart (Owner 22.11.2026): im Elliott-Produkt stehen die Wellen der Hauptlesart immer im Chart, auch bei niedriger
+       Klarheit (dann als Klarheit D gekennzeichnet), und der Zeitraum beginnt vor der ersten Welle der Lesart. */
+    var range = a.timeframe === "1W" ? (inElliott ? ewRange(a, E) : "3J") : (inElliott ? ewRange(a, E) : "6M"), mode = "line", wavesOn = view === "pro" || (inElliott ? !!(E && E.primary) : (!abstain && E && E.primary));
     var ranges = a.timeframe === "1W" ? [["1J", "1 J", 52], ["3J", "3 J", 156], ["5J", "5 J", 260]] : [["3M", "3 M", 63], ["6M", "6 M", 126], ["1J", "1 J", 252]];
     var replayStep = null, waveSet = "primary";
     /* Elliott-Projektion als eigene Chart-Ebene (Szenario | Projektion), Preisachse logarithmisch bei großer Spanne */
@@ -740,7 +758,7 @@
       var pt = lens === "projection" ? pjThesis() : null;
       if (pt && (pt.degree === "HIGHER" || altSource(pt)) && pt.anchorWaves) return pt.anchorWaves.map(function (w) { return { label: w.label, display: pt.degree === "HIGHER" ? "(" + w.label + ")" : w.label, time: w.toTime, price: w.toPrice, fromPrice: w.fromPrice, status: w.status }; });
       var ov = a.overlays && a.overlays.waves;
-      if (!ov || !ov.primary.length || (!ov.consumerVisible && view !== "pro")) return [];
+      if (!ov || !ov.primary.length || (!ov.consumerVisible && view !== "pro" && !inElliott)) return [];
       var list = waveSet === "alt" && ov.alternative && ov.alternative.length ? ov.alternative : ov.primary;
       return list.map(function (w) { return { label: w.label, display: view === "pro" ? w.notation : w.label, time: w.time, price: w.price, fromPrice: w.fromPrice, status: w.status }; });
     }
@@ -759,12 +777,13 @@
       chartHost.dataset.direction = direction(); chartHost.dataset.mode = mode;
       /* W05: in Elliott ohne belastbare Lesart zeigt der Chart die Marktstruktur (Unterstützung neongrün, Widerstand grau) statt Szenario-Zonen. */
       var ms = inElliott ? null : structureOnly() ? structureOverlay() : null;
-      /* Konzept EHV: im Elliott-Produkt zeigt der Chart nur die Ungueltig-Marke der Hauptlesart, keine Ziele. */
-      var io = inElliott && !replayStep && !pjOnChart && a.overlays ? { zones: [], invalidations: (a.overlays.invalidations || []).filter(function (x) { return x.scenario === "PRIMARY"; }), projectedPaths: [] } : null;
-      if (scLeg0) scLeg0.hidden = !!ms || inElliott; if (msLeg) msLeg.hidden = !ms;
+      /* Elliott-Neustart (Owner 22.11.2026, ersetzt Konzept EHV „nur Ungültig-Marke“): der Chart zeigt den Plan der Hauptlesart –
+         Zone, Ziele, erwarteten Pfad und Ungültig-Marke –, dieselben Werte wie die Kacheln, keine neue Rechnung. */
+      var io = inElliott && !replayStep && !pjOnChart && a.overlays ? { zones: (a.overlays.zones || []).filter(function (x) { return x.scenario === "PRIMARY"; }), invalidations: (a.overlays.invalidations || []).filter(function (x) { return x.scenario === "PRIMARY"; }), projectedPaths: (a.overlays.projectedPaths || []).filter(function (x) { return x.scenario === "PRIMARY"; }) } : null;
+      if (scLeg0) scLeg0.hidden = !!ms; if (msLeg) msLeg.hidden = !ms;
       chartHost.replaceChildren(Chart.render({ chart: a.chart, overlays: ms ? ms : io ? io : replayStep ? overlaysFromStep(replayStep) : a.overlays, scenarioKind: ms ? "STRUCTURE" : replayStep ? "PRIMARY" : kind, scenario: ms ? null : scenarioOf(kind),
         projection: pjOnChart ? pjChart(pjT, pjT.source === "ALTERNATIVE" || altSource(pjT) ? "alt" : null) : null, logScale: pjOnChart ? (pjLog === null ? pjAutoLog(pjT) : pjLog) : false,
-        cutoff: replayStep ? replayStep.d : null, showPath: !replayStep && !ms && !io, uncertain: replayStep ? replayStep.cl === "AMBIGUOUS" : uncertain,
+        cutoff: replayStep ? replayStep.d : null, showPath: !replayStep && !ms, uncertain: replayStep ? replayStep.cl === "AMBIGUOUS" : uncertain,
         waves: wavesOn ? waveMarks() : null, waveTone: !replayStep && (waveSet === "alt" || (pjOnChart && altSource(pjT))) ? "alt" : null, onWave: replayStep || waveSet === "alt" || (pjOnChart && (pjT.degree === "HIGHER" || altSource(pjT))) ? null : function (w) { waveInspector(a, w, rules, methodEv); },
         width: width, height: width < 520 ? 380 : 460, bars: barsFor(), mode: mode, title: ticker + " · Chartbild · " + tfLabel, labels: true }));
       if (replayStep) chartHost.prepend(el("p", { class: "cb-replay-flag", role: "status", text: "Zeitreise · Stand " + X.dateDe(replayStep.d) + " · nur damals verfügbare Daten" }));
@@ -805,7 +824,7 @@
       pjLegend, motiveNote, exploreNote, candidateNote,
       msLeg = el("p", { class: "cb-legend cb-legend-ms", hidden: true }, [el("span", { class: "cb-key cb-key-support", text: "Unterstützung" }), el("span", { class: "cb-key cb-key-resistance", text: "Widerstand" }), el("span", { class: "cb-dim", text: "Preisbereiche, an denen der Kurs früher gedreht hat" })]),
       scLeg0 = el("p", { class: "cb-legend cb-legend-sc" }, [el("span", { class: "cb-key cb-key-entry", text: "Zone laut Methode" }), el("span", { class: "cb-key cb-key-invalid", text: "Ungültig (Schlusskurs)" }), el("span", { class: "cb-key cb-key-path", text: "Szenario-Korridor – keine Zeitangabe" })]),
-      wavesOn && !abstain && E && E.primary ? el("p", { class: "cb-small cb-dim", text: "Tipp: Eine Wellenmarke antippen erklärt die Welle." }) : null]);
+      wavesOn && (inElliott || !abstain) && E && E.primary ? el("p", { class: "cb-small cb-dim", text: "Tipp: Eine Wellenmarke antippen erklärt die Welle." }) : null]);
 
     // ---------------------------------------------- Elliott-Bereich (Mission III §41–§47, §57, §98–§100)
     /* Ohne gezeigte Lesart bleibt die Aktie sichtbar, mit ehrlicher, kurzer Aussage an der Stelle der Elliott-Aussage (Enthaltung, Datenlage). */

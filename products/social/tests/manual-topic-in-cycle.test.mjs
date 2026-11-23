@@ -22,6 +22,7 @@
    liegen (das NVDA-Bundle) oder ein realer Lauf baut (die Platte) -
    keine Nachbildung, die nur sich selbst beweist.
    ========================================================================= */
+import "../../../scripts/quant/lib/frozen-data.mjs"; /* eingefrorener Datenstand (scripts/quant/lib/frozen-data.mjs, 22.11.2026) */
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";

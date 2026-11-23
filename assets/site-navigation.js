@@ -497,11 +497,11 @@
   /* Die Plattformnavigation ist auf allen Produkten dieselbe Komponente.
      Discover synchronisiert ihr Farbschema mit seiner eigenen Theme-Wahl. */
   const THEMES = {
-    light: {bg: 'rgba(255,255,255,.86)', border: '#e9e9e9', ink: '#000', inv: '#fff', card: '#f1f1f1', glass: 'rgba(238,238,238,.82)', mute: '#5d636b', ring: '#c8f531', me: 'rgba(238,238,238,.82)', meInk: '#000', on: '#000', onInk: '#fff', outline: '#4f6b00',
+    light: {bg: 'rgba(255,255,255,.86)', border: '#e9e9e9', ink: '#000', inv: '#fff', card: '#f1f1f1', glass: 'rgba(238,238,238,.82)', mute: '#5d636b', ring: '#c8f531', me: 'rgba(238,238,238,.82)', meInk: '#000', on: '#000', onInk: '#fff', outline: '#101318',
       /* Hell vollstaendig hell (Owner 16.11.2026): Dock, Menue „Dein Universe“ und Modul-Symbol hell; dunkel = Prototyp, unveraendert */
-      page: '#fff', accent: '#4f6b00', dockBg: 'rgba(255,255,255,.92)', dockLine: 'rgba(0,0,0,.1)', dockInk: '#000', dockMute: '#5d636b', dockOn: '#000',
+      page: '#fff', accent: '#101318', dockBg: 'rgba(255,255,255,.92)', dockLine: 'rgba(0,0,0,.1)', dockInk: '#000', dockMute: '#5d636b', dockOn: '#000',
       panel: '#fff', panelInk: '#000', panelMute: '#5d636b', field: '#f1f1f1', fieldHover: '#e9e9e9', grabBar: '#c9c9cc', hair: 'rgba(0,0,0,.1)', closeInk: '#000', fieldInk: '#000',
-      icoBg: '#c8f531', icoLine: 'rgba(0,0,0,.08)', icoLineHead: 'rgba(0,0,0,.08)', icoInk: '#101318', current: '0 0 0 1.5px #000', accentLine: 'rgba(79,107,0,.5)', pressed: '#000', pressedInk: '#fff'},
+      icoBg: '#c8f531', icoLine: 'rgba(0,0,0,.08)', icoLineHead: 'rgba(0,0,0,.08)', icoInk: '#101318', current: '0 0 0 1.5px #000', accentLine: 'rgba(16,19,24,.5)', pressed: '#000', pressedInk: '#fff'},
     dark: {bg: 'rgba(0,0,0,.82)', border: '#262626', ink: '#f4f5f1', inv: '#000', card: '#151516', glass: 'rgba(20,20,22,.7)', mute: '#a1a7af', ring: '#c8f531', me: 'rgba(20,20,22,.7)', meInk: '#f4f5f1', on: '#fff', onInk: '#000', outline: '#c8f531',
       page: '#000', accent: '#c8f531', dockBg: 'rgba(12,12,13,.92)', dockLine: 'rgba(255,255,255,.14)', dockInk: '#fff', dockMute: '#a1a7af', dockOn: '#c8f531',
       panel: '#151516', panelInk: '#f4f5f1', panelMute: '#a1a7af', field: '#202022', fieldHover: '#262628', grabBar: '#3a3a3d', hair: 'rgba(255,255,255,.09)', closeInk: '#fff', fieldInk: '#fff',

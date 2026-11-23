@@ -101,7 +101,7 @@ test("Darstellung App-Konzept 2: Schiene und Kacheln am Start, neongrüne Übers
   assert.doesNotMatch(src, /\/discover\/#\/s\/US_REAL\/' \+ encodeURIComponent\((row|s)\.symbol\) \+ '"/, "Trefferzeilen nicht mehr nach Discover");
   assert.match(src, /Close\.lastPoint\(series, today\)/);
   assert.ok(html.indexOf('/quant/engines/published-close.js') > 0 && html.indexOf('/quant/engines/published-close.js') < html.indexOf('/ask/app.js'));
-  /* Pflicht-Hinweis bleibt sichtbar und steht zusätzlich im Fenster „Daten & Hinweise“ */
-  assert.match(src, /if \(U\.legal && U\.legal\('ai'\)\) main\.appendChild\(markup\(U\.legal\('ai'\)\)\);/);
+  /* Owner 22.11.2026: der Pflicht-Hinweis „ai“ steht im Fenster „Daten & Hinweise“ (Menü), nicht mehr am Seitenende */
+  assert.doesNotMatch(src, /main\.appendChild\(markup\(U\.legal\('ai'\)\)\)|class: 'ak-end'/);
   assert.match(src, /Nav\.hinweis\('ai'\)/);
 });
