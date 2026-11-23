@@ -191,6 +191,33 @@ sind offensichtlich falsch (AKTX mit über 1 Billion $). Der Bruttogewinn fehlt 
 Nicht-Banken (z. B. XOM, ORCL, UNH, DIS, MCD, VZ). Beides begrenzt jede Aussage über „die größten Werte“ und gehört vor einer
 Produktnutzung behoben.
 
+## 4f. Stufe 4: Trader-Muster mit Faktoren (23.11.2026, vor dem ersten Lauf festgelegt)
+
+Anlass (Owner 23.11.2026): Die Trader-Regeln allein lagen in jedem Test hinter SPY (Stufe 1, SF6-Referenzen, Holdout). Die Bücher
+kaufen aber nicht jedes Muster, sondern wenige Marktführer mit starkem Geschäft. Stufe 3 nennt die Prüfung der Muster zusammen
+mit dem Profitabilitätsfilter als offene Folgerung. `scripts/research/backtest2/trader-faktor.mjs`, Modus
+`merkmale-trader-smoke` / `merkmale-trader`, gleiche Daten wie Stufe 2 und 3.
+
+Frage: Liegt ein konzentriertes Depot aus Aktien, die das Muster UND die tragenden Faktoren erfüllen, nach Kosten vor SPY, und
+trägt die Kombination mehr als jeder Teil allein? Kein Raster, keine Auswahl, acht feste Depots:
+- **H1 (die Hypothese):** Trendvorlage (veröffentlichte Lesart nach Minervini, wie `signals.mjs#TREND_TEMPLATE`) als Schranke,
+  darin die 25 Titel mit dem höchsten Mittel aus Momentum 12-1 und Bruttogewinn je Bilanzsumme.
+- **H2:** Trendvorlage, darin die 25 Titel nach Momentum, Umsatzwachstum (1 Jahr) und Eigenkapitalrendite (Minervinis
+  Geschäftskriterien, soweit mit unseren Daten abbildbar).
+- **K1 (Kontrolle Muster):** nur Trendvorlage, 25 Titel nach relativer Stärke 6 Monate.
+- **K2 (Kontrolle Faktoren):** ohne Trendvorlage, 25 Titel nach Momentum + Bruttogewinn je Bilanzsumme.
+- Jedes Depot zusätzlich mit 50 Titeln.
+- Monatsultimo, die 1.000 liquidesten Titel ≥ 5 $, gleich gewichtet, Kosten = Umschlag × Kosten je Seite, kein Marktfilter,
+  Kasse ohne Zins; unter 10 Kandidaten Kasse. Ausgewertet 2014 bis Ende gegen SPY (Gesamtrendite), dazu die vier Teilzeiträume
+  der Stufe 3.
+- **Urteil „Hinweis“** nur, wenn H1 nach Kosten vor SPY liegt, der Block-Bootstrap p < 0,10 ergibt und H1 über K1 und K2 liegt;
+  sonst „nicht belegt“. Berichtet werden alle acht Depots, auch die schlechten.
+
+Grenzen, vorab benannt: (1) Die Regeln stehen vor dem ersten Lauf fest, aber nach Einsicht in Stufe 2 und 3; dass Momentum +
+Bruttogewinn/Bilanz dort vorn lag, war bekannt. Ein positives Ergebnis ist ein Hinweis und wird im Vorwärtstest bestätigt, nicht
+aus dem Rückblick behauptet. (2) Geprüft wird die Auswahl der Aktien in monatlichen Depots, nicht die Ein- und Ausstiegsregeln
+der Methoden. (3) Folgen für Supertrader oder den Quant-Score nur in einem eigenen PR mit Vorher/Nachher.
+
 ## 5. Ausführung und Veröffentlichung
 
 - Umsetzung: `scripts/research/backtest2/` (Markt, Signale, Depotführung, Suche, Lauf mit Workern). Workflow `research.yml`, Teil
