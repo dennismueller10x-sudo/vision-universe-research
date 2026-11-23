@@ -1,6 +1,6 @@
 {
  "schema": "vu-ladezeit-targets-1",
- "note": "Ziele und Schwellen der taeglichen Live-Ladezeitmessung (scripts/mobile/live-ladezeit.mjs, Monitor-Auswahl ladezeit). Schluessel: <seite><route>. Ein Ziel (lcpMs) steht nur dort, wo die Seite bewusst darauf optimiert ist; sonst gilt nur der Vergleich mit dem Median der letzten Laeufe. Ziele werden gesenkt, nie angehoben. Erste Ziele 23.11.2026: 1,3 x Erstmessung (CPU 4x), aufgerundet; Discover und Quant 2500 ms; technical und mein-dashboard erst nach einem gueltigen Lauf mit Inhaltsmerkmal. Ein Alarm blockiert keinen Code-PR.",
+ "note": "Ziele und Schwellen der taeglichen Live-Ladezeitmessung (scripts/mobile/live-ladezeit.mjs, Monitor-Auswahl ladezeit). Schluessel: <seite><route>. Ein Ziel (lcpMs) steht nur dort, wo die Seite bewusst darauf optimiert ist; sonst gilt nur der Vergleich mit dem Median der letzten Laeufe. Ziele werden gesenkt, nie angehoben. Erste Ziele 23.11.2026: 1,3 x Erstmessung (CPU 4x), aufgerundet; Discover und Quant 2500 ms; technical erst nach einem gueltigen Lauf mit Inhaltsmerkmal; mein-dashboard wird abgemeldet gemessen (Anmeldemaske, was jeder neue Nutzer zuerst sieht), Ziel nach dem ersten gueltigen Lauf. Ein Alarm blockiert keinen Code-PR.",
  "default": {
   "clsMax": 0.1,
   "lcpRelativeFactor": 1.3,
@@ -19,6 +19,6 @@
   "www/magazin/": {"lcpMs": 1950},
   "www/news/": {"lcpMs": 1550},
   "app/technical/": {"marker": "#tc-main h1, #tc-main h2, #tc-main p"},
-  "app/mein-dashboard/": {"marker": "#md-app"}
+  "app/mein-dashboard/": {"marker": "#password", "label": "abgemeldet"}
  }
 }

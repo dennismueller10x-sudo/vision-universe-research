@@ -119,7 +119,7 @@ export function reportMarkdown(report) {
  const L = ['# Ladezeit live (' + report.measuredAt + ', Commit ' + (report.commit || '?').slice(0, 9) + ')', '',
   'Profil: 390x844, 1,6 Mbit/s, 150 ms, kalter Cache; je Route ' + report.runs + ' Laeufe, Median. Verlauf: ' + report.historyRuns + ' Berichte.', '',
   '| Seite/Route | CPU | LCP ms | CLS | Requests | Wire KB | LCP je Lauf |', '|---|---|---|---|---|---|---|'];
- for (const r of report.rows) L.push('| ' + r.key + ' | ' + r.cpu + 'x | ' + ((r.invalidRuns || 0) > r.runs / 2 ? 'ungueltig' : r.lcp == null ? '-' : Math.round(r.lcp)) + ' | ' + (r.cls == null ? '-' : r.cls.toFixed(3)) + ' | ' + (r.requests ?? '-') + ' | ' + (r.bytes == null ? '-' : Math.round(r.bytes / 1024)) + ' | ' + r.lcpRuns.join(', ') + ' |');
+ for (const r of report.rows) L.push('| ' + r.key + (r.label ? ' (' + r.label + ')' : '') + ' | ' + r.cpu + 'x | ' + ((r.invalidRuns || 0) > r.runs / 2 ? 'ungueltig' : r.lcp == null ? '-' : Math.round(r.lcp)) + ' | ' + (r.cls == null ? '-' : r.cls.toFixed(3)) + ' | ' + (r.requests ?? '-') + ' | ' + (r.bytes == null ? '-' : Math.round(r.bytes / 1024)) + ' | ' + r.lcpRuns.join(', ') + ' |');
  L.push('', report.alarms.length ? '## Alarme (' + report.alarms.length + ')' : '## Keine Alarme', '');
  for (const a of report.alarms) L.push('- ' + a.key + ' (' + a.cpu + 'x): ' + a.text);
  L.push('');
@@ -165,7 +165,7 @@ async function main() {
    const r = spawnSync(process.execPath, args, {cwd: root, env: process.env, encoding: 'utf8', maxBuffer: 1 << 26});
    assertNoSecret((r.stdout || '') + (r.stderr || ''), secrets);
    if (r.status !== 0) { console.error(site + ' CPU ' + cpu + 'x: Messung fehlgeschlagen (Exit ' + r.status + ')'); continue; }
-   rows.push(...rowsFromRaw(JSON.parse(readFileSync(rawPath, 'utf8')), site, cpu));
+   rows.push(...rowsFromRaw(JSON.parse(readFileSync(rawPath, 'utf8')), site, cpu).map((r) => { const l = (targets.routes[r.key] || {}).label; return l ? {...r, label: l} : r; }));
   }
  }
  const alarms = evaluate(rows, targets, history);

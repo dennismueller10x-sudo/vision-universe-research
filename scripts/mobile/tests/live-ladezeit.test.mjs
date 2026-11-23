@@ -85,3 +85,11 @@ test('Inhaltsmerkmal: irgendein sichtbares Element des Selektors genügt (nicht 
  assert.doesNotMatch(m,/document\.querySelector\(sel\)/);
  assert.equal(targets.routes['www/news/'].lcpMs,1550);
 });
+
+test('Dashboard wird abgemeldet gemessen: Merkmal Anmeldemaske, im Bericht beschriftet',()=>{
+ const r=targets.routes['app/mein-dashboard/'];
+ assert.equal(r.marker,'#password');assert.equal(r.label,'abgemeldet');
+ const md=reportMarkdown({measuredAt:'t',commit:'c',runs:3,historyRuns:0,alarms:[],rows:[{key:'app/mein-dashboard/',label:'abgemeldet',cpu:4,lcp:200,cls:0,requests:1,bytes:1024,runs:3,invalidRuns:0,lcpRuns:[200]}]});
+ assert.match(md,/\| app\/mein-dashboard\/ \(abgemeldet\) \| 4x \| 200 /);
+ assert.match(readFileSync(new URL('../../../konto/anmelden/index.html',import.meta.url),'utf8'),/id="password"/,'Merkmal steht auf der Anmeldeseite');
+});
