@@ -24,7 +24,7 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { createRequire } from "node:module";
-import { ohneVorubergehende5xx } from "./transient-5xx.mjs";
+import { ohneVorubergehende5xx, szeneMitWiederholung } from "./transient-5xx.mjs";
 const require = createRequire(import.meta.url);
 const { chromium } = require(process.env.PLAYWRIGHT_PATH || "playwright");
 
@@ -78,7 +78,10 @@ if (!gated || gate) {
   }
   const step = async (label, fn) => {
     const e0 = errs.length, f0 = failed.length;
-    try { await fn(); } catch (e) { problems.push(label + ": " + String(e.message).split("\n")[0].slice(0, 200)); }
+    /* Szene genau einmal neu laden, nur nach einem 5xx in derselben Szene; ohne 5xx bleibt ein Timeout rot (transient-5xx.mjs). */
+    const lauf = await szeneMitWiederholung({ lauf: fn, fuenfxx: () => failed.slice(f0), neuLaden: async () => { await page.reload({ waitUntil: "domcontentloaded" }).catch(() => null); } });
+    if (lauf.wiederholt) lines.push(label + ": wiederholt nach " + lauf.code + " (erster Versuch: " + String(lauf.erster && lauf.erster.message).split("\n")[0].slice(0, 120) + ")" + (lauf.fehler ? ", auch der zweite Versuch scheiterte" : ", zweiter Versuch ok"));
+    if (lauf.fehler) problems.push(label + ": " + String(lauf.fehler.message).split("\n")[0].slice(0, 200));
     /* Ein einzelner 5xx waehrend einer Auslieferung wird nachgeladen (transient-5xx.mjs); 4xx und anhaltende 5xx bleiben Befund. */
     const rest = await ohneVorubergehende5xx({ failed: failed.slice(f0), errs: errs.slice(e0), holen: async (p) => (await ctx.request.get(SITE + p)).status() });
     if (rest.erholt.length) lines.push(label + ": vorübergehend 5xx, beim Nachladen ok: " + rest.erholt.join(", "));
