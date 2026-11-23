@@ -38,6 +38,7 @@ TestFlight-Lauf 6 vom 07.11.2026 auf Commit `d871426`. Alles bleibt auf `main` g
 
 | PR | Änderung |
 |---|---|
+| Marktbriefing 22.11.2026 | Home: erster Story-Kreis „Briefing“ mit allen Szenen der neuesten Ausgabe; Menü Insights → Marktbriefing öffnet die Story (`willkommen/app.js`, `willkommen/config/marktbriefing.json`) |
 | #1602 (K4) | Druck-Feedback, kein Doppeltipp-Warten, kein Markieren beim Wischen (`assets/vu-gestures.css/js`) |
 | #1604 (K5) | zwischen Untertabs wischen (`assets/vu-gestures.js`) |
 | #1605 | Menü „Rechtliches & Infos“ statt Seitenfuß in der App |

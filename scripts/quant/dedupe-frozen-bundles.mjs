@@ -3,7 +3,7 @@
 // und ersetzt sie im Buendel durch { enc, ref }. Idempotent. Aufruf: node scripts/quant/dedupe-frozen-bundles.mjs [--check]
 //   --check: schreibt nichts, Exit 1, wenn noch ein Inhalt in mehreren Buendeln liegt (Vertragstest TI-11 nutzt dieselbe Logik).
 import { execFileSync } from "node:child_process";
-import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, statSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, statSync, rmSync } from "node:fs";
 import { gzipSync, gunzipSync } from "node:zlib";
 import { createHash } from "node:crypto";
 import { join } from "node:path";
@@ -30,11 +30,21 @@ export function duplicates(root = REPO) {
     const b = JSON.parse(gunzipSync(readFileSync(join(root, f))).toString("utf8"));
     for (const [p, v] of Object.entries(b.files)) { if (v.ref || v.data === undefined) continue; const h = sha(v.data); const e = seen.get(h) || []; e.push(`${f}:${p}`); seen.set(h, e); }
   }
-  return [...seen.entries()].filter(([, e]) => e.length > 1);
+  /* Ein Inhalt, der schon als geteilter Blob liegt, zaehlt auch dann, wenn er nur in EINEM Buendel noch inline steht
+     (23.11.2026: v13b-largecap-strict fuehrte den Stamm inline, obwohl sieben Buendel ihn als ref teilen). */
+  const blobs = existsSync(join(root, FROZEN_SHARED_DIR)) ? new Set(readdirSync(join(root, FROZEN_SHARED_DIR)).map((n) => n.replace(/\.gz$/, ""))) : new Set();
+  return [...seen.entries()].filter(([h, e]) => e.length > 1 || blobs.has(h));
+}
+/** Blobs ohne Verweis (nach dem Neu-Einfrieren eines Buendels). */
+export function orphanBlobs(root = REPO) {
+  const dir = join(root, FROZEN_SHARED_DIR); if (!existsSync(dir)) return [];
+  const used = new Set();
+  for (const f of bundleFiles(root)) for (const v of Object.values(JSON.parse(gunzipSync(readFileSync(join(root, f))).toString("utf8")).files)) if (v.ref) used.add(v.ref);
+  return readdirSync(dir).filter((n) => !used.has(n.replace(/\.gz$/, "")));
 }
 if (process.argv[1] && import.meta.url === new URL("file://" + process.argv[1]).href) {
   const dups = duplicates();
-  if (process.argv.includes("--check")) { console.log(JSON.stringify({ doppelt: dups.length })); process.exit(dups.length ? 1 : 0); }
+  if (process.argv.includes("--check")) { const o = orphanBlobs().length; console.log(JSON.stringify({ doppelt: dups.length, verwaist: o })); process.exit(dups.length || o ? 1 : 0); }
   const shared = new Set(dups.map(([h]) => h));
   mkdirSync(join(REPO, FROZEN_SHARED_DIR), { recursive: true });
   let moved = 0;
@@ -49,5 +59,6 @@ if (process.argv[1] && import.meta.url === new URL("file://" + process.argv[1]).
     }
     if (changed) writeFileSync(join(REPO, f), gzipSync(JSON.stringify(b), { level: 9 }));
   }
-  console.log(JSON.stringify({ geteilteInhalte: shared.size, ersetzt: moved }));
+  const orphans = orphanBlobs(); for (const n of orphans) rmSync(join(REPO, FROZEN_SHARED_DIR, n));
+  console.log(JSON.stringify({ geteilteInhalte: shared.size, ersetzt: moved, verwaisteBlobsEntfernt: orphans.length }));
 }

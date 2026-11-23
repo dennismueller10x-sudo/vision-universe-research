@@ -53,7 +53,7 @@ jobs:
         if: github.ref == 'refs/heads/main'
         run: scripts/ci/push-data-branch.sh data/live dashboard/data/news_feed.json
 
-  # Marktbriefing (Closing Bell, docs/publishing/HANDBUCH.md §10): nach US-Schluss aus Market Pulse, Tagesschluessen und
+  # Marktbriefing (docs/publishing/HANDBUCH.md §10): nach US-Schluss aus Market Pulse, Tagesschluessen und
   # SEC-Daten; Ergebnis nur im Datenzweig (BRANCH_ONLY). Nicht frisch -> Exit 3, nichts geschrieben (Alarm statt alter Zahlen).
   marktbriefing:
     if: ((github.event_name == 'schedule' || inputs.zeitplan != '') && (github.event.schedule || inputs.zeitplan) == '50 23 * * 1-5') || ((github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && (inputs.teil == 'alle' || inputs.teil == 'marktbriefing'))
@@ -92,11 +92,12 @@ jobs:
         if: github.ref == 'refs/heads/main'
         run: scripts/ci/push-data-branch.sh data/live news/marktbriefing
       # www.visionuniverse.de baut Cloudflare Pages aus main (landing/): Produktseite, Ausgabe mit PDF und Bildern, Startseiten-Teaser.
+      # Dazu die App-Story auf Home (willkommen/config/marktbriefing.json, research.visionuniverse.de).
       - name: Marktbriefing auf die Website (nur main, nur website=ja)
         if: github.ref == 'refs/heads/main' && inputs.website == 'ja'
         shell: bash
         run: |
-          git add landing/marktbriefing landing/index.html
+          git add landing/marktbriefing landing/index.html willkommen/config/marktbriefing.json
           if git diff --cached --quiet; then
             echo "Marktbriefing: keine neue Ausgabe fuer die Website."
             exit 0

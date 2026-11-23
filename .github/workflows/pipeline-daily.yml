@@ -745,6 +745,11 @@ jobs:
             echo "noop=false" >> "$GITHUB_OUTPUT"
           fi
 
+      # Leitmaerkte fuer Elliott (Elliott-Neustart Schritt 2): aktuelle Multi-Asset-Reihen aus dem Datenzweig (marketPulse)
+      - name: Datenzweig in den Arbeitsbaum (Multi-Asset)
+        if: steps.inputs.outputs.noop != 'true'
+        run: scripts/ci/seed-data-branch.sh marketPulse
+
       - name: Chartbild-Daten bauen
         if: steps.inputs.outputs.noop != 'true'
         run: node --max-old-space-size=6144 scripts/technical/build-technical-intelligence.mjs --workers "$(nproc)"

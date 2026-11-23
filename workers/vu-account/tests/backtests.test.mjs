@@ -269,6 +269,9 @@ test('Paket wird nicht von GitHub Pages ausgeliefert, nur vom Worker (geschuetzt
   const {permitted} = await import('../../../scripts/vu2/build-release.mjs');
   assert.equal(permitted('workers/vu-account/data/backtest-review-bundle.json'), false);
   assert.equal(permitted('docs/quant/backtest-catalog/catalog.json'), false);
+  for (const f of ['workers/vu-account/src/index.mjs', 'worker/src/vu-live.mjs', 'worker-waker/wrangler.toml', 'supabase/migrations/x.sql', 'server/http.js', 'CLAUDE.md', 'AGENTS.md']) {
+    assert.equal(permitted(f), false, f + ' darf nicht ausgeliefert werden');
+  }
   assert.equal(permitted('konto/konto.js'), true, 'Kontoseiten bleiben ausgeliefert');
 });
 

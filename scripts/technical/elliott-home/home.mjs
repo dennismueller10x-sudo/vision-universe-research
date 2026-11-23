@@ -38,6 +38,9 @@ export const WAVE_OF_TYPE = { WAVE_3: "3", WAVE_5: "5", WAVE_C: "C" };
 export const MIN_ROW = 3;      // kleinere Gruppen bilden keine Reihe, bleiben aber ueber den Filter erreichbar
 export const ROW_CAP = 24;     // Karten je Reihe auf der Startseite; der Rest ueber "Alle ansehen"
 export const RECENT_DAYS = 2;
+/* Elliott-Neustart (Owner 22.11.2026): die Liste „klar zählbar“ zeigt nur Stammaktien ohne Identitaetskonflikt ab MIN_PRICE (wie die
+   Discover-Reihen, discoverRows: ab 5 $). Vorzugsaktien und Pennystocks bleiben ueber die Suche erreichbar. counted = Titel mit Lesart. */
+export const MIN_PRICE = 5;
 const RECENT_EVENTS = { CREATED: "NEW", CONFIRMED: "CONFIRMED", ROLE_CHANGED: "ROLE", REVISED: "REVISED", BASE_PROJECTION_REACHED: "ZONE", EXTENDED_PROJECTION_REACHED: "ZONE", EXTREME_PROJECTION_REACHED: "ZONE" };
 const RECENT_PRIORITY = { CONFIRMED: 0, ROLE: 1, NEW: 2, ZONE: 3, REVISED: 4 };
 
@@ -172,6 +175,9 @@ export function cardsOfDocument(symbol, doc, names) {
   /* Wertpapierart und Identitaet aus der Universumsliste: nur Stammaktien (keine Vorzugsaktien, ETFs, Anleihen); Titel mit
      Identitaetskonflikt (Kennzeichen ic) zeigt die Aktienseite mit Hinweis, die Startseite zeigt sie nicht. */
   if (!entry || entry.t !== "COMMON_STOCK" || entry.ic) return [];
+  /* Elliott-Neustart (Owner 22.11.2026): keine Pennystocks auf der Startseite (Schluss der Analyse unter MIN_PRICE). */
+  const px = doc.price && num(doc.price.close);
+  if (px !== null && px < MIN_PRICE) return [];
   const out = [], seen = new Set();
   let ordinal = 0;
   for (const proj of [doc.projectionWeekly, doc.projection]) {
@@ -192,12 +198,18 @@ export function cardsOfDocument(symbol, doc, names) {
 export const APPLICABLE = new Set(["HIGH", "MODERATE"]);
 const LEVEL = { HIGH: 0, MODERATE: 1, MEDIUM: 1, LOW: 2 };
 const lvl = (x) => (x in LEVEL ? LEVEL[x] : 3);
+function listable(r, names) {
+  const e = names && names.size ? names.get(r.t) : null;
+  if (names && names.size && (!e || e.t !== "COMMON_STOCK" || e.ic)) return false;
+  return num(r.close) !== null && r.close >= MIN_PRICE;
+}
 export function applicableOf(rows, names) {
-  const pick = (rows || []).filter((r) => r && APPLICABLE.has(r.elliottApplicable));
+  const pick = (rows || []).filter((r) => r && APPLICABLE.has(r.elliottApplicable) && listable(r, names));
   pick.sort((a, b) => lvl(a.elliottApplicable) - lvl(b.elliottApplicable) || lvl(a.elliottClarity) - lvl(b.elliottClarity)
     || lvl(a.relabelRisk) - lvl(b.relabelRisk) || (a.t < b.t ? -1 : a.t > b.t ? 1 : 0));
   return {
     n: (rows || []).length,
+    counted: (rows || []).filter((r) => r && r.elliott).length,
     count: pick.length,
     high: pick.filter((r) => r.elliottApplicable === "HIGH").length,
     asOf: pick.reduce((m, r) => (r.asOf && (!m || r.asOf > m) ? r.asOf : m), null),
@@ -210,8 +222,41 @@ export function applicableOf(rows, names) {
   };
 }
 
+/** Klarheit A–D aus den Einstufungen der Engine (gleiche Regel wie quant/app/page-chartbild.js#ewGrade). */
+export function gradeOf(applicable, clarity) {
+  const lv = applicable || "LOW";
+  return lv === "HIGH" && clarity === "HIGH" ? "A" : lv === "HIGH" || (lv === "MODERATE" && clarity === "HIGH") ? "B" : lv === "MODERATE" ? "C" : "D";
+}
+/** Leitmaerkte (Elliott-Neustart Schritt 2): Zeilen aus v3/markets/index.json, Reihenfolge der Ablage (ti-markets.mjs#MARKETS).
+    Zurueckgehaltene Maerkte (veraltete Reihe) stehen nicht auf der Startseite. */
+export function marketsOf(doc) {
+  if (!doc || !Array.isArray(doc.rows)) return null;
+  const rows = doc.rows.filter((r) => r && !r.withheld && r.elliott).map((r) => ({ t: r.t, n: r.n || r.t, via: r.via || null, group: r.group || null, tf: r.tf || null, asOf: r.asOf || null,
+    close: num(r.close), el: r.elliott, st: r.structure || null, dir: r.direction || null, inv: num(r.invalidation), app: r.elliottApplicable || null, cl: r.elliottClarity || null,
+    grade: gradeOf(r.elliottApplicable, r.elliottClarity), fr: r.fr ? r.fr.st : null }));
+  return { version: doc.version || null, rows };
+}
+
+/** Prognose-Tagebuch (Elliott-Neustart Schritt 4): Bestand der Elliott-Registry (eingefrorene Lesarten, Hash-Kette) und Abrechnungstermine je
+    Horizont. Ergebniszahlen nur mit Owner-Freigabe (elliott/config/bilanz.json, ergebnisseOeffentlich) – sie sind eine Aussage ueber Performance. */
+const H_ORDER = ["3M", "6M", "12M", "24M", "36M"];
+export function bilanzOf({ report, head, since, config }) {
+  if (!report || !head) return null;
+  const by = {};
+  for (const [k, v] of Object.entries(report.pending || {})) {
+    const h = k.split("|").pop(); if (!H_ORDER.includes(h)) continue;
+    const x = by[h] || (by[h] = { h, pending: 0, firstEvaluableWeek: null });
+    x.pending += v.events || 0;
+    if (v.firstEvaluableWeek && (!x.firstEvaluableWeek || v.firstEvaluableWeek < x.firstEvaluableWeek)) x.firstEvaluableWeek = v.firstEvaluableWeek;
+  }
+  const evaluated = Object.keys(report.horizons || {}).length, open = !!(config && config.ergebnisseOeffentlich === true);
+  return { since: since || null, asOfCompletedWeek: report.asOfCompletedWeek || null, events: report.events || 0, revisions: report.revisions || 0,
+    head: { seq: head.seq, hash: head.hash }, horizons: H_ORDER.filter((h) => by[h]).map((h) => by[h]), evaluatedGroups: evaluated,
+    resultsPublic: open, results: open ? report.horizons || {} : null };
+}
+
 /** Index aus Karten + Metadaten. Deterministisch: gleiche Eingabe, gleiche Bytes. */
-export function assembleHome({ cards, meta, indexGeneratedAt, dataAsOf, applicable }) {
+export function assembleHome({ cards, meta, indexGeneratedAt, dataAsOf, applicable, markets, bilanz }) {
   const sorted = cards.slice().sort(compareCards);
   const rows = [];
   const filters = { wave: {}, dir: {}, st: {}, role: {} };
@@ -244,6 +289,8 @@ export function assembleHome({ cards, meta, indexGeneratedAt, dataAsOf, applicab
       delayed: sorted.filter((c) => c.fr === "DELAYED").length, recent: sorted.filter((c) => c.chg).length
     },
     applicable: applicable || null,
+    markets: markets || null,
+    bilanz: bilanz || null,
     filters,
     rows,
     cards: sorted
@@ -278,5 +325,11 @@ export function buildHomeFromDir(root, dir = join(root, "quant/data/technical-in
       cards.push(...cardsOfDocument(symbol, doc, names));
     }
   }
-  return assembleHome({ cards, meta, indexGeneratedAt: index.generatedAt, dataAsOf, applicable: applicableOf(index.rows, names) });
+  const mf = join(dir, "markets", "index.json");
+  const reg = join(root, "quant/data/technical-intelligence/elliott-registry"), rf = join(reg, "reports", "latest.json"), hf = join(reg, "HEAD.json"), lf = join(reg, "ledger.jsonl");
+  let since = null;
+  if (existsSync(lf)) { const first = readFileSync(lf, "utf8").split("\n", 1)[0]; try { since = JSON.parse(first).week || null; } catch { since = null; } }
+  const cf = join(root, "elliott/config/bilanz.json");
+  const bilanz = existsSync(rf) && existsSync(hf) ? bilanzOf({ report: readJson(rf), head: readJson(hf), since, config: existsSync(cf) ? readJson(cf) : null }) : null;
+  return assembleHome({ cards, meta, indexGeneratedAt: index.generatedAt, dataAsOf, applicable: applicableOf(index.rows, names), markets: existsSync(mf) ? marketsOf(readJson(mf)) : null, bilanz });
 }

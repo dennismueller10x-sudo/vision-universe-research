@@ -162,7 +162,7 @@ export async function waitForDelivery({expected,gh,generation,now=()=>Date.now()
     vorige Deploy; ausgeliefert blieb e1d74267. Der Fail-closed-Schritt rollte zurueck, setzte ROLLBACK_46 und schaltete den
     gesunden Vollumfang ab. */
  const productionUnchanged=async(verdict)=>{
-  if(requireOwnSuccess||verdict!=='SUCCESS'||!baseline||baseline===expected)return false;
+  if(requireOwnSuccess||(verdict!=='SUCCESS'&&verdict!=='PENDING_ONLY')||!baseline||baseline===expected)return false;
   return (await current())===baseline;
  };
  await dispatch();
@@ -180,6 +180,11 @@ export async function waitForDelivery({expected,gh,generation,now=()=>Date.now()
    if((j.verdict==='ACTIVE'||settling)&&t<deadlines.hardDeadlineMs){if(!graceNoted){graceNoted=true;note('grace-active-run');}await sleep(limits.pollMs);continue;}
    if(j.verdict==='PENDING_ONLY'||j.verdict==='ACTIVE'){
     for(const r of j.active.filter(r=>PENDING.has(r.status)))await cancelIfStillPending(r.databaseId);
+    /* Eigener Pages-Lauf nur wartend (nie gestartet: Pages-Gruppe ueberfuellt, Refresh 45065568049, 22.11.2026 22:37Z: Marker-Lauf
+       MARKER_RUN_TIMEOUT, Pages-Lauf 30 min pending) und live steht unveraendert die bisherige, geprueft ausgelieferte Generation:
+       keine Regression, nur nicht uebernommen. Wie bei erfolgreichem, aber nicht sichtbarem Lauf (10.11.2026): kein Rollback, kein
+       Abschalten (Exit 4, Gate offen, Lauf rot); der naechste Pages-Release liefert die Generation aus. Unklarer Zustand bleibt Fehler. */
+    if(j.verdict==='PENDING_ONLY'&&await productionUnchanged('PENDING_ONLY'))return finish(result(false,'NOT_DELIVERED_PRODUCTION_UNCHANGED',{ownRun:j.verdict,unchanged:true,capped,lastReason}));
     return finish(result(false,j.verdict==='ACTIVE'?'RUN_STILL_ACTIVE_AT_HARD_DEADLINE':'PRODUCTION_PUBLICATION_SLO_FAILED',{ownRun:j.verdict,capped,lastReason}));
    }
    if(await productionUnchanged(j.verdict))return finish(result(false,'NOT_DELIVERED_PRODUCTION_UNCHANGED',{ownRun:j.verdict,unchanged:true,capped,lastReason}));

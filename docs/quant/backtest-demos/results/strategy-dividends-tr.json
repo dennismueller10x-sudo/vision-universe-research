@@ -47,7 +47,7 @@
  },
  "inputHashes": {
   "code": {
-   "scripts/quant/research/backtest-runner.cjs": "b536fc8d6ed48e2b7d9e534a0642de22b2034d1fd6253e539610f4072cba93ec",
+   "scripts/quant/research/backtest-runner.cjs": "c4b675f7670b704429db5e72f4cda1433763e2ab28315e9103cf3d10fde59119",
    "scripts/quant/research/research-population.cjs": "699173804bddf7e3aae88523cff22f471dbb0f96276ce62fe9e949879a109a82",
    "quant/engines/research-studies.cjs": "474422373eeac509b043d2a5e95c17dcfecfcb8ff0f651020696bbaf027be418",
    "quant/engines/research-portfolio.cjs": "0cc42852cefca4d484935feb430f6f1b8199a7263f07b87bb0a615c1fd3f4e5e",
@@ -72,15 +72,15 @@
    "scripts/quant/v10/setup/run-setup-reconstruction.cjs": "df6ec66d87b97c2b8a18c6815a8b91f45e9d04b81d5f5f8f824723f1eb4ca30c",
    "scripts/quant/v10/factor/panel.cjs": "10f82897a00a294f35ac12262d1aca76e39f718047f8f0514ee589a70398b1d7"
   },
-  "certification": "4a4f5759965d14326c14f045c53c124af90c9535dd57e96d12d819bbd7897f88",
-  "benchmark": "58d44b907a091c501f1d3aeb78fd37e82a9afb512cecbec784ba3a1f4a07dd5e",
+  "certification": "9ad5a131d51c741904011f0e3c5d2ad7af131ae00e73176080e9cfb7d8d3ac1e",
+  "benchmark": "0683b7cf38715c85a328a59a654185db9c1a37d5de2e9afe98e978c5de5a14b7",
   "population": {
    "profile": "V10_PRIMARY",
    "profileSpecHash": "f622075f2ae6d2589d5cca45378c2e56e4c6832eaef0a0df31c354f1601dc476",
-   "populationHash": "ea3949077a7eef02f8f4c9777ed1fa55e29306c2658fe7f8b21f954f30a43509",
-   "calendarHash": "b10f4b40c258bd5956829097711e344d68ba325a9146ac5c613f1b2822e4dbbf",
-   "calendarLength": 1924,
-   "sourceManifestHash": "d9bdac5bfd1e29e1245644dae0fed8ae43ff1f063f055884c7bc326ba42788b3",
+   "populationHash": "9706c45c4f12989061536cb911773b210ca31ec5b82d67d566588501f8a7579d",
+   "calendarHash": "851e02bd084ecca43cb1a2a846dbbe5dc73c34cde135058c5a498cc66f0921e0",
+   "calendarLength": 1925,
+   "sourceManifestHash": "c4e32f9750c260bec21481939e3119a1d8e5056a5f506b3ff77562e0a32b70f4",
    "masterHash": "26c82617913ab0dcbd08d24c80eb818134ccced74cc01e9eac819b4635498332",
    "registers": {
     "identityEvidence": {
@@ -98,12 +98,12 @@
     "pitMarketCap": "d45efd4d4f08aa63a776f87c790ce85492a5670232308bc7850b702680ea23a6",
     "indexPopulation": "413663e6632617c5270f2c4257973b06d3cdd8e95f210fb46f846aa5b3b8c4ac"
    },
-   "pointsHashRoot": "0541a6e1f2b37e35423343b9f543e4c20c4950426c55b15946a5cbc632a00737"
+   "pointsHashRoot": "9d1111bbdb3934333d069e0b95c82465acb229f0b7e488a0f004dd3c1ca63a1a"
   },
   "listings": {
    "ref_MSFT": {
     "listingId": "tiingo:NASDAQ:MSFT:1986-03-13",
-    "sourceBytesHash": "70ed88f471bb5c143ab479afda407811e6f9eacc14a29eb9af55880ce219ecc4",
+    "sourceBytesHash": "50fdf78fb658a8a4ade3dde0669e8604d846f5f996011b9e3c4baf33f8e7443d",
     "registerPointsSha256": null,
     "first": "1990-01-05",
     "last": "2025-12-26",
@@ -111,7 +111,7 @@
    },
    "ref_WMT": {
     "listingId": "tiingo:NASDAQ:WMT:1972-08-25",
-    "sourceBytesHash": "b4b8db4952653a38afec9f634dd84432bdd2854d64116c53d10729bf910b0cf2",
+    "sourceBytesHash": "9427d58ce02c11d1305850bb06aa906c8b9f86133995771e93f36a6a637e6f8e",
     "registerPointsSha256": null,
     "first": "1990-01-05",
     "last": "2025-12-26",
@@ -119,7 +119,7 @@
    },
    "ref_IBM": {
     "listingId": "tiingo:NYSE:IBM:1962-01-02",
-    "sourceBytesHash": "522031ac6ca75d113f50b10555bcd01a37011adb82d24a644004d05a3b04f148",
+    "sourceBytesHash": "b37915a5e68883eb09d2ca4c988e044efc066d05a82ece1fa5e638db1ccb9b14",
     "registerPointsSha256": null,
     "first": "1990-01-05",
     "last": "2025-12-26",
@@ -130,7 +130,7 @@
    "trRegister": "ddd1678fd212c6bf8012dc65f5145edb3d675ab692b40eb1292f862a351297c8"
   }
  },
- "inputHash": "65b53792b5a39d0307df50d148fea8c0cb4525ce8b0e1371c7fa69469c56dec7",
+ "inputHash": "1fd5b960bd3a032a71b27970465ad0c2512be40f6a99fb3961778a6c04a67a55",
  "kindPath": {
   "kind": "STRATEGY_BACKTEST",
   "engine": "research-portfolio.runPortfolio + buildSchedule(sessions,10000)",
@@ -145,13 +145,13 @@
    "listingId": null,
    "listingHash": null,
    "populationId": "runner:V10_PRIMARY:2beba93e3127b426",
-   "populationHash": "b3d11bb26240ea3a39cb14e2fb6de4ff8f967773e203b607efd0f4cf8cc91f78",
+   "populationHash": "30341159244bb5dc0f4956190f468b7461a364ca62e1240187620d17290a7f9c",
    "source": {
     "adapter": "backtest-result-adapters-1.0.0#fromPortfolio",
     "schemaVersion": "research-portfolio-1.2.0",
     "engineVersion": null,
     "artifact": null,
-    "resultHash": "02c69ffbb4c49740dd8d4005aa0549888a2f21401952a093ccf11e134dc833b8"
+    "resultHash": "fc1424c8d099f543c68a5c6f730940e78fa6c4458a69ba7f8bdd307849be1ed6"
    }
   },
   "period": {
@@ -211,7 +211,7 @@
     "runnerSpecHash": "2beba93e3127b4265d58dd34a10bd6de97f77437183896245799b4aa8fe60159",
     "inputHashes": {
      "code": {
-      "scripts/quant/research/backtest-runner.cjs": "b536fc8d6ed48e2b7d9e534a0642de22b2034d1fd6253e539610f4072cba93ec",
+      "scripts/quant/research/backtest-runner.cjs": "c4b675f7670b704429db5e72f4cda1433763e2ab28315e9103cf3d10fde59119",
       "scripts/quant/research/research-population.cjs": "699173804bddf7e3aae88523cff22f471dbb0f96276ce62fe9e949879a109a82",
       "quant/engines/research-studies.cjs": "474422373eeac509b043d2a5e95c17dcfecfcb8ff0f651020696bbaf027be418",
       "quant/engines/research-portfolio.cjs": "0cc42852cefca4d484935feb430f6f1b8199a7263f07b87bb0a615c1fd3f4e5e",
@@ -236,15 +236,15 @@
       "scripts/quant/v10/setup/run-setup-reconstruction.cjs": "df6ec66d87b97c2b8a18c6815a8b91f45e9d04b81d5f5f8f824723f1eb4ca30c",
       "scripts/quant/v10/factor/panel.cjs": "10f82897a00a294f35ac12262d1aca76e39f718047f8f0514ee589a70398b1d7"
      },
-     "certification": "4a4f5759965d14326c14f045c53c124af90c9535dd57e96d12d819bbd7897f88",
-     "benchmark": "58d44b907a091c501f1d3aeb78fd37e82a9afb512cecbec784ba3a1f4a07dd5e",
+     "certification": "9ad5a131d51c741904011f0e3c5d2ad7af131ae00e73176080e9cfb7d8d3ac1e",
+     "benchmark": "0683b7cf38715c85a328a59a654185db9c1a37d5de2e9afe98e978c5de5a14b7",
      "population": {
       "profile": "V10_PRIMARY",
       "profileSpecHash": "f622075f2ae6d2589d5cca45378c2e56e4c6832eaef0a0df31c354f1601dc476",
-      "populationHash": "ea3949077a7eef02f8f4c9777ed1fa55e29306c2658fe7f8b21f954f30a43509",
-      "calendarHash": "b10f4b40c258bd5956829097711e344d68ba325a9146ac5c613f1b2822e4dbbf",
-      "calendarLength": 1924,
-      "sourceManifestHash": "d9bdac5bfd1e29e1245644dae0fed8ae43ff1f063f055884c7bc326ba42788b3",
+      "populationHash": "9706c45c4f12989061536cb911773b210ca31ec5b82d67d566588501f8a7579d",
+      "calendarHash": "851e02bd084ecca43cb1a2a846dbbe5dc73c34cde135058c5a498cc66f0921e0",
+      "calendarLength": 1925,
+      "sourceManifestHash": "c4e32f9750c260bec21481939e3119a1d8e5056a5f506b3ff77562e0a32b70f4",
       "masterHash": "26c82617913ab0dcbd08d24c80eb818134ccced74cc01e9eac819b4635498332",
       "registers": {
        "identityEvidence": {
@@ -262,12 +262,12 @@
        "pitMarketCap": "d45efd4d4f08aa63a776f87c790ce85492a5670232308bc7850b702680ea23a6",
        "indexPopulation": "413663e6632617c5270f2c4257973b06d3cdd8e95f210fb46f846aa5b3b8c4ac"
       },
-      "pointsHashRoot": "0541a6e1f2b37e35423343b9f543e4c20c4950426c55b15946a5cbc632a00737"
+      "pointsHashRoot": "9d1111bbdb3934333d069e0b95c82465acb229f0b7e488a0f004dd3c1ca63a1a"
      },
      "listings": {
       "ref_MSFT": {
        "listingId": "tiingo:NASDAQ:MSFT:1986-03-13",
-       "sourceBytesHash": "70ed88f471bb5c143ab479afda407811e6f9eacc14a29eb9af55880ce219ecc4",
+       "sourceBytesHash": "50fdf78fb658a8a4ade3dde0669e8604d846f5f996011b9e3c4baf33f8e7443d",
        "registerPointsSha256": null,
        "first": "1990-01-05",
        "last": "2025-12-26",
@@ -275,7 +275,7 @@
       },
       "ref_WMT": {
        "listingId": "tiingo:NASDAQ:WMT:1972-08-25",
-       "sourceBytesHash": "b4b8db4952653a38afec9f634dd84432bdd2854d64116c53d10729bf910b0cf2",
+       "sourceBytesHash": "9427d58ce02c11d1305850bb06aa906c8b9f86133995771e93f36a6a637e6f8e",
        "registerPointsSha256": null,
        "first": "1990-01-05",
        "last": "2025-12-26",
@@ -283,7 +283,7 @@
       },
       "ref_IBM": {
        "listingId": "tiingo:NYSE:IBM:1962-01-02",
-       "sourceBytesHash": "522031ac6ca75d113f50b10555bcd01a37011adb82d24a644004d05a3b04f148",
+       "sourceBytesHash": "b37915a5e68883eb09d2ca4c988e044efc066d05a82ece1fa5e638db1ccb9b14",
        "registerPointsSha256": null,
        "first": "1990-01-05",
        "last": "2025-12-26",
@@ -294,7 +294,7 @@
       "trRegister": "ddd1678fd212c6bf8012dc65f5145edb3d675ab692b40eb1292f862a351297c8"
      }
     },
-    "inputHash": "172fc4388640a01cb7abc05ae2b353f6d0807a035e9219032d5d5d6507688df1",
+    "inputHash": "b6444b3b1d338c805f2719706efad02fa37ea717b4c5c896e74c8b2273d2f2fd",
     "kindPath": {
      "kind": "STRATEGY_BACKTEST",
      "engine": "research-portfolio.runPortfolio + buildSchedule(sessions,10000)",
@@ -306,16 +306,16 @@
      "version": null,
      "description": "research-portfolio runPortfolio ledger",
      "parameters": {
-      "inputHash": "f9c68f8ec3ee3519cc14c8518f62a1739eac97ce0757e6f48faa9399cf6330ea",
+      "inputHash": "07fe35e7cb15a431e68054554093401f72fec2da671f82dc71ce69ebf4ef5f22",
       "mode": "HISTORICAL_OBSERVED",
       "returnBasis": "TOTAL_RETURN",
       "currency": "USD",
       "conditionalPriceSimulation": false
      },
-     "specHash": "a02d59f825f0564559ed7450ede20a44459b47b03e7423e042b615ee0447fd23"
+     "specHash": "814448a72d7af7a575c8c6e90776d22054ec556d0e96a786f61cc029db4a1624"
     }
    },
-   "specHash": "73d4f55a1864257f1d43132121f1a77e2d43079476863c56ae7f1d73832f9e6f"
+   "specHash": "471acbbc106444c84290990d7113fed53897849d66196bcc97563d51d9d274b0"
   },
   "events": {
    "form": "TRADES",
@@ -1203,7 +1203,7 @@
      "dividendContribution": 0.19156865796347855,
      "cagrWithDividends": 0.22471434938735446,
      "priceOnlyCagr": 0.20704756618204123,
-     "priceOnlyResultHash": "a77d4a2c1332a5e9de6d33799618173771159ea4a7e2b975db5d79797569ad77",
+     "priceOnlyResultHash": "4d25aaa1bfb35afac7611013a063177f1cb7e1a4f4ae6ee00abb0b2b9159a716",
      "dividendEventsApplied": 60,
      "openReceivables": 1
     }
@@ -1240,7 +1240,7 @@
    "totalReturnBasis": "TOTAL_RETURN",
    "survivorship": {
     "state": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
-    "control": "population profile V10_PRIMARY (ea3949077a7eef02)"
+    "control": "population profile V10_PRIMARY (9706c45c4f129890)"
    },
    "warnings": [
     "SURVIVOR_COHORT_ONLY_NO_LIFECYCLE_EVIDENCE",
@@ -1306,7 +1306,7 @@
       0.04966289514032945
      ],
      "meanBenchmarkExcess": -0.0013826372596904613,
-     "resultHash": "c4fd31a43166657f01276b872d4b3a619493cd7292d51753fff27623acf69f6e",
+     "resultHash": "d18696635c48669111838536406a43f5cfa0737cd71ee08e5dcbe1d3797ec66b",
      "scope": "EVENT_STUDY_DESCRIPTIVE_NOT_A_TRADING_RULE"
     }
    },
@@ -1347,17 +1347,17 @@
    "certificationStatus": "COLLECTING_HISTORY",
    "certificationScope": "KIND",
    "certificationRuleId": null,
-   "certificationSource": "quant/data/product/backtest-certification-v1.json#STRATEGY_BACKTEST@2026-11-13",
+   "certificationSource": "quant/data/product/backtest-certification-v1.json#STRATEGY_BACKTEST@2026-11-22",
    "productionApproved": false,
    "evidenceKind": "SIMULATED_LEDGER"
   },
-  "envelopeHash": "5deeb7cb571e00fe5dc363590d99a83f0dcbd9334898b96150a04b0ce64e9707"
+  "envelopeHash": "52ad79df7f20c784218161fc614ca671a511a209ae69270133d8a8bf6ff21f67"
  },
- "envelopeHash": "5deeb7cb571e00fe5dc363590d99a83f0dcbd9334898b96150a04b0ce64e9707",
+ "envelopeHash": "52ad79df7f20c784218161fc614ca671a511a209ae69270133d8a8bf6ff21f67",
  "population": {
   "profile": "V10_PRIMARY",
-  "populationHash": "ea3949077a7eef02f8f4c9777ed1fa55e29306c2658fe7f8b21f954f30a43509",
-  "frameSize": 4236,
+  "populationHash": "9706c45c4f12989061536cb911773b210ca31ec5b82d67d566588501f8a7579d",
+  "frameSize": 4168,
   "calendar": {
    "first": "1990-01-05",
    "last": "2025-12-26",
@@ -1604,5 +1604,5 @@
   "inputsAfterAsOf": 0
  },
  "qa": null,
- "resultHash": "d3d5bb121dc4ba08df5ff65759f3130361c4c9fb2b0972e2c9a5d2640bdf018d"
+ "resultHash": "ed019eba4469de18bdb1fc43df503d97ce42884f6539342374e32165abc81863"
 }

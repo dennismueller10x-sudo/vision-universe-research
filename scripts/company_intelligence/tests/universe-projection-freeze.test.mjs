@@ -5,7 +5,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {mkdtempSync,mkdirSync,writeFileSync,readFileSync,rmSync,readdirSync,existsSync} from 'node:fs';
 import {tmpdir} from 'node:os';
-import {join} from 'node:path';
+import {join,dirname} from 'node:path';
+import {fileURLToPath,pathToFileURL} from 'node:url';
 import {createHash} from 'node:crypto';
 import {refreshConfig,frozenInventory,frozenTickers,refreshApproved} from '../refresh-approval.mjs';
 import {prepareCandidate,commitGood,goodState,goodKey,activationKey,downloadGood} from '../refresh-storage.mjs';
@@ -237,4 +238,78 @@ test('freeze-expiry: Warnung ab 48 h vor Verfall, abgelaufen und fehlend ebenfal
  // 14.11.: der heutige Freeze vom 07.11. 15:00 UTC warnt ab 12.11. 15:00 UTC.
  const today=freezeStatus({generation:'c39a8135aeeb3a9286f321ef',manifest:{generatedAt:'2026-11-07T15:00:00Z'}},Date.parse('2026-11-12T15:30:00Z'));
  assert.equal(today.state,'EXPIRING');assert.equal(today.expiresAt,'2026-11-14T15:00:00.000Z');
+});
+
+/* ---- recoverExpired (Steuerung 23.11.2026): Sackgasse abgelaufener Freeze + geschlossenes Gate ---- */
+const CLOSED=()=>Buffer.from(JSON.stringify({schema:1,state:'DISABLED',generation:approval.consumerGeneration,approvalId:approval.approvalId}));
+const ROLLBACK_46=()=>Buffer.from(JSON.stringify({schema:1,state:'ROLLBACK_46',approvalId:universeConfig.approvalId}));
+async function deadlock(opts={}){
+ const w=await world({freezeAge:8*24*H,...opts});
+ w.d.objects.set(activationKey(),ROLLBACK_46());w.d.objects.set(gateKey,CLOSED());
+ const noLive=async()=>{throw Error('LIVE_DELIVERY_MUST_NOT_BE_REQUIRED');};
+ w.recover=(extra={},fn=refreezeFromUniverse)=>fn(w.d,{temporary:w.temp(),fetchDelivery:noLive,codeSha:'c'.repeat(40),recoverExpired:true,...extra});
+ return w;
+}
+test('recoverExpired: abgelaufener Freeze + Gate DISABLED + ROLLBACK_46 -> Projektion des frischen Universe-GOOD, ohne Live-Abruf, Schutzzustand byte-gleich',async()=>{
+ const w=await deadlock();try{
+  const old=await goodState(w.d,ROLLBACK),universe=await goodState(w.d,UNIVERSE);
+  assert.equal(freezeStatus(old).state,'EXPIRED','Ausgangslage: Freeze abgelaufen');
+  await assert.rejects(downloadGood(w.d,{namespace:ROLLBACK,output:join(w.temp(),'dl0')}),/CONSUMER_EXPIRED/,'die Sackgasse: der abgelaufene Freeze ist nicht ladbar');
+  const before=guarded(w.d);w.d.puts.length=0;
+  const r=await w.recover({expectGeneration:universe.generation});
+  assert.equal(r.status,'REFROZEN');assert.equal(r.previousGeneration,old.generation);assert.deepEqual(r.projectedFrom,{namespace:UNIVERSE,generation:universe.generation});
+  for(const k of ['privateStateModified','activationModified','gateModified','universeGoodModified'])assert.equal(r[k],false,k);
+  const frozen=await goodState(w.d,ROLLBACK);assertLegacyScope(frozen,'SCOPE');
+  assert.equal(freezeStatus(frozen).state,'VALID');assert.equal(frozen.refreeze.lineage.at(-1),old.generation);assert.equal(frozen.refreeze.sourceGeneration,frozen.generation);assert.equal(frozen.previous,null);
+  assert.deepEqual(guarded(w.d),before,'Aktivierung, Gate, Universe-GOOD und Legacy-GOOD byte-gleich');
+  assert.deepEqual([bytesOf(w.d,activationKey()),bytesOf(w.d,gateKey)].map(String),[ROLLBACK_46(),CLOSED()].map(String));
+  const prefix=prefixFor(ROLLBACK).slice(0,-1);assert.ok(w.d.puts.length&&w.d.puts.every(k=>k.startsWith(prefix)),'nur Rollback-Namensraum');
+  assert.equal(JSON.parse(w.d.objects.get(refreezeArchiveKey(old.generation))).generation,old.generation,'alter Zeiger archiviert');
+  const dl=await downloadGood(w.d,{namespace:ROLLBACK,output:join(w.temp(),'dl1')});assert.equal(dl.generation,r.generation,'neuer Freeze ist ladbar');
+  const again=await w.recover();assert.equal(again.status,'ALREADY_CURRENT');
+ }finally{w.done();}
+});
+
+/* Jede Bedingung einzeln; liefert fuer ein Modul, welche Verweigerungen greifen. */
+async function refusals(fn){
+ const out={};
+ const attempt=async(name,make,code)=>{const w=await make();try{await w.recover({},fn);out[name]=false;}catch(e){out[name]=String(e?.message).includes(code);}finally{w.done();}};
+ await attempt('gueltigerFreeze',()=>deadlock({freezeAge:120*H}),'RECOVER_EXPIRED_FREEZE_NOT_EXPIRED');
+ await attempt('gateOffen',async()=>{const w=await deadlock();w.d.objects.set(gateKey,Buffer.from(JSON.stringify({schema:1,state:'AVAILABLE',generation:approval.consumerGeneration,approvalId:approval.approvalId})));return w;},'RECOVER_EXPIRED_REQUIRES_CLOSED_GATE');
+ await attempt('universumAktiv',async()=>{const w=await deadlock();w.d.objects.set(activationKey(),Buffer.from(JSON.stringify({schema:1,state:'AVAILABLE',approvalId:universeConfig.approvalId})));return w;},'RECOVER_EXPIRED_REQUIRES_ROLLBACK_46');
+ await attempt('universeGoodZuAlt',()=>deadlock({universeAge:5.5*24*H}),'RECOVER_EXPIRED_UNIVERSE_GOOD_TOO_OLD');
+ return out;
+}
+test('recoverExpired verweigert: gueltiger Freeze, offenes Gate, aktives Universum, zu altes Universe-GOOD',async()=>{
+ const r=await refusals(refreezeFromUniverse);
+ assert.deepEqual(r,{gueltigerFreeze:true,gateOffen:true,universumAktiv:true,universeGoodZuAlt:true});
+});
+test('recoverExpired ohne Schalter bleibt der strenge Live-Weg: Gate zu + ROLLBACK_46 verweigert',async()=>{
+ const w=await deadlock();try{await assert.rejects(w.recover({recoverExpired:false}),/PROJECTION_REQUIRES_ACTIVE_UNIVERSE/);}finally{w.done();}
+});
+test('recoverExpired-Mutanten: jede entfernte Bedingung wird vom Test erkannt',async()=>{
+ const dir=dirname(fileURLToPath(new URL('../frozen-refreeze.mjs',import.meta.url)));
+ const src=readFileSync(join(dir,'frozen-refreeze.mjs'),'utf8');
+ const mutants={
+  gueltigerFreeze:t=>t.replace("assert.equal(freezeStatus({manifest:old.manifest,generation:old.generation},now()).state,'EXPIRED','RECOVER_EXPIRED_FREEZE_NOT_EXPIRED');",";"),
+  gateOffen:t=>t.replace("gate.state==='DISABLED','RECOVER_EXPIRED_REQUIRES_CLOSED_GATE'","true,'RECOVER_EXPIRED_REQUIRES_CLOSED_GATE'"),
+  universumAktiv:t=>t.replace("p.state===(recoverExpired?'ROLLBACK_46':'AVAILABLE')","true"),
+  universeGoodZuAlt:t=>t.replace("-now()>=FREEZE_WARNING_MS,'RECOVER_EXPIRED_UNIVERSE_GOOD_TOO_OLD'","-now()>=-1e15,'RECOVER_EXPIRED_UNIVERSE_GOOD_TOO_OLD'")
+ };
+ for(const [name,mutate] of Object.entries(mutants)){
+  const text=mutate(src);assert.notEqual(text,src,'Mutant '+name+' muss den Quelltext aendern');
+  const file=join(dir,`frozen-refreeze.mutant-${process.pid}-${name}.mjs`);writeFileSync(file,text);
+  try{const mod=await import(pathToFileURL(file).href);const r=await refusals(mod.refreezeFromUniverse);assert.equal(r[name],false,'Mutant '+name+' wurde nicht erkannt');}
+  finally{rmSync(file,{force:true});}
+ }
+});
+test('recoverExpired: CLI verlangt --from-universe und --confirm recover-expired; der Workflow ist nur von Hand erreichbar und gibt Eingaben nur ueber env weiter',()=>{
+ const cli=readFileSync(new URL('../universe-release.mjs',import.meta.url),'utf8');
+ assert.match(cli,/if\(recoverExpired\)assert\(args\.includes\('--from-universe'\)&&arg\('--confirm'\)==='recover-expired','RECOVER_EXPIRED_CONFIRMATION_REQUIRED'\)/);
+ const wf=readFileSync(new URL('../../../.github/workflows/company-intelligence-refreeze-recover.yml',import.meta.url),'utf8');
+ const code=wf.replace(/^\s*#.*$/gm,'');
+ assert.doesNotMatch(code,/^\s*schedule:|cron:/m,'kein Zeitplan');assert.match(code,/^on:\n  workflow_dispatch:/m);
+ assert.match(code,/CONFIRM" = "recover-expired"/);for(const line of code.split('\n').filter(l=>/\$\{\{\s*inputs\./.test(l)))assert.match(line,/^\s+[A-Z_]+: \$\{\{ inputs\.\w+ \}\}$/,'Eingaben nur ueber env: '+line);
+ assert.match(code,/group: company-intelligence-continuous-production/);assert.match(code,/permissions:\n  contents: read/);
+ assert.doesNotMatch(code,/gh workflow run|pages-release|recover_full_scope|actions:\s*write|contents:\s*write/);
 });

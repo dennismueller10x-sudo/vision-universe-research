@@ -237,7 +237,7 @@
     if (eps) eps.before(make("h2", "ew-sh", "Kapitel"));
     if (none) ohneZaehlung(main, cb, none, t);
     end.appendChild(make("h2", "ew-sh", "Folgeschritte"));
-    if (say && U.next && t) end.appendChild(node(U.next({ title: "Chart-Lage in Technical ansehen", sub: "Trend, Zonen, Befunde", href: "/technical/#/chart/" + encodeURIComponent(t) })));
+    if (say && U.next && t && !main.dataset.market) end.appendChild(node(U.next({ title: "Chart-Lage in Technical ansehen", sub: "Trend, Zonen, Befunde", href: "/technical/#/chart/" + encodeURIComponent(t) })));
     Array.prototype.forEach.call(cb.querySelectorAll(":scope > a.cb-ew-link"), function (a) { end.appendChild(a); });
     var home = crumbs && crumbs.querySelector(".cb-crumb-home"), ask = crumbs && crumbs.querySelector(".cb-crumb-link");
     if (ask) {

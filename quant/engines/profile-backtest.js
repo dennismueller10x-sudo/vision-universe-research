@@ -139,6 +139,7 @@
   /* Faktor-Quintile: je Snapshot (PIT, Termin = erster Handelstag nach dem
      Stand) Mitglieder nach Faktorwert in Quintile, Gesamtrendite ueber den
      Horizont. */
+  function medianOf(a) { if (!a.length) return null; var t = a.slice().sort(function (x, y) { return x - y; }), m = Math.floor(t.length / 2); return t.length % 2 ? t[m] : (t[m - 1] + t[m]) / 2; }
   function quintiles(options) {
     var c = options.contract, B = c.factorRanking.buckets, h = c.factorRanking.horizonTradingDays;
     var membership = sorted(options.membership), snapshots = sorted(options.snapshots);
@@ -155,15 +156,18 @@
         return typeof v === "number" && isFinite(v) && a > 0 && b > 0 ? { t: t, v: v, r: b / a - 1 } : null; }).filter(Boolean);
       if (rows.length < B * 5) return;
       rows.sort(function (a, b) { return a.v - b.v || (a.t < b.t ? -1 : 1); });
-      var q = [];
-      for (var k = 0; k < B; k++) { var part = rows.slice(Math.floor(k * rows.length / B), Math.floor((k + 1) * rows.length / B)); q.push(part.reduce(function (s2, x) { return s2 + x.r; }, 0) / part.length); }
+      var q = [], med = [];
+      for (var k = 0; k < B; k++) { var part = rows.slice(Math.floor(k * rows.length / B), Math.floor((k + 1) * rows.length / B)); q.push(part.reduce(function (s2, x) { return s2 + x.r; }, 0) / part.length); med.push(medianOf(part.map(function (x) { return x.r; }))); }
       var top = rows.slice(Math.floor((B - 1) * rows.length / B)).map(function (x) { return x.t; });
       if (prevTop) { var keep = top.filter(function (t) { return prevTop.indexOf(t) >= 0; }).length; topTurnover.push(1 - keep / top.length); }
       prevTop = top;
       var br = bench.tr[bench.index[d1]] / bench.tr[bench.index[d0]] - 1;
-      periods.push({ asOf: s.asOf, entry: d0, exit: d1, n: rows.length, buckets: q, topMinusBottom: q[B - 1] - q[0], benchmark: br });
+      periods.push({ asOf: s.asOf, entry: d0, exit: d1, n: rows.length, buckets: q, medians: med, topMinusBottom: q[B - 1] - q[0], medianTopMinusBottom: med[B - 1] - med[0], benchmark: br });
     });
     return { engineVersion: VERSION, factorId: options.factorId, periods: periods,
+      /* Median-Spread (22.11.2026, Steuerung): Mittel der Rangtage-Mediane und Anteil der Rangtage mit oben > unten; das Mittel bleibt Zusatzwert. */
+      medianTopMinusBottom: periods.length ? periods.reduce(function (s, p) { return s + p.medianTopMinusBottom; }, 0) / periods.length : null,
+      topBeatsBottomMedianShare: periods.length ? periods.filter(function (p) { return p.medianTopMinusBottom > 0; }).length / periods.length : null,
       meanTopMinusBottom: periods.length ? periods.reduce(function (s, p) { return s + p.topMinusBottom; }, 0) / periods.length : null,
       topTurnover: topTurnover.length ? topTurnover.reduce(function (a, b) { return a + b; }, 0) / topTurnover.length : null };
   }

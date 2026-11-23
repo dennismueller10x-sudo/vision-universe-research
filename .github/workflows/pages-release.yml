@@ -11,8 +11,51 @@ on:
       - 'company-intelligence/config/rollout.js'
       - 'scripts/company_intelligence/**'
       - '.github/workflows/pages-release.yml'
+      # Tests, Doku und QA-Skripte aendern den Bau nicht (22.11.2026): kein PR-Lauf (je ein Voll-Bau) nur dafuer.
+      - '!**/*.md'
+      - '!**/tests/**'
+      - '!**/*-qa.mjs'
+  # Push auf main: nur, was den Bau oder die Auslieferung beruehren kann. Jeder Lauf dieses Ereignisses belegt den EINEN
+  # Wartesteckplatz der Gruppe pages-production und verdraengt dort einen wartenden Lauf (22.11.2026 22:48:53 UTC: ein
+  # Doku-Commit verdraengte den wartenden Re-Dispatch des Company-Intelligence-Refresh, Lauf 45078809807); 41 von 134
+  # Push-Laeufen seit dem 20.11. betrafen nur solche Pfade (17 davon bauten und lieferten einen Voll-Release ohne neuen Inhalt).
+  # Die Ausnahmen sind dieselben wie in scripts/ci/intraday-fastpath.mjs (IGNORED_PREFIXES, IGNORED_PATTERNS: gemessen am
+  # gebauten Release, nichts davon kommt darin vor); Test FP-8 haelt beide Listen gleich. Reihenfolge zaehlt: ein spaeterer
+  # positiver Eintrag nimmt den Pfad wieder auf (pages-release.yml selbst).
   push:
     branches: [main]
+    paths:
+      - '**'
+      - '!docs/**'
+      - '!.claude/**'
+      - '!app/**'
+      - '!brand-media/**'
+      - '!providers/**'
+      - '!worker/**'
+      - '!worker-waker/**'
+      - '!scripts/quality/**'
+      - '!scripts/ci/**'
+      - '!scripts/quant/**'
+      - '!scripts/supertrader/**'
+      - '!scripts/research/**'
+      - '!scripts/design/**'
+      - '!scripts/diagnose/**'
+      - '!scripts/brevo/**'
+      - '!scripts/legal/**'
+      - '!scripts/insider/**'
+      - '!scripts/marketstack/**'
+      - '!scripts/official-filings/**'
+      - '!scripts/dashboard/**'
+      - '!scripts/home/**'
+      - '!scripts/discover/**'
+      - '!**/*.md'
+      - '!**/tests/**'
+      - '!**/*-qa.mjs'
+      - '!.gitignore'
+      - '!.vercelignore'
+      - '!.env.example'
+      - '!.github/**'
+      - '.github/workflows/pages-release.yml'
   # DIE LUECKE, DIE DIE SEITE EINFRIEREN LIESS
   #
   # Ein Push mit dem GITHUB_TOKEN loest keinen neuen Workflow-Lauf aus -

@@ -211,7 +211,7 @@ test("EH-11 · labels and price are correct", () => {
 /* ---------------------------------------------------------------- 3 Filter, Adresse, Suche */
 test("EH-12 · URL state round-trips, unknown values are dropped, a ticker is an alias to the detail", () => {
   const s = M.parseHash("#/?welle=3&richtung=ab&status=bestaetigt&rolle=highlight&neu=1");
-  assert.deepEqual(JSON.parse(JSON.stringify(s)), { welle: "3", richtung: "ab", status: "bestaetigt", rolle: "highlight", neu: true, reihe: null, suche: false, zaehlbar: false, q: "", ticker: null, detailQuery: "" });
+  assert.deepEqual(JSON.parse(JSON.stringify(s)), { welle: "3", richtung: "ab", status: "bestaetigt", rolle: "highlight", neu: true, reihe: null, suche: false, zaehlbar: false, bilanz: false, q: "", ticker: null, detailQuery: "" });
   assert.equal(M.buildHash(s), "#/?welle=3&richtung=ab&status=bestaetigt&rolle=highlight&neu=1");
   assert.equal(M.buildHash(M.parseHash("#/")), "#/");
   assert.equal(M.parseHash("#/?welle=9&richtung=x&rolle=nix").welle, null, "Tippfehler ergeben keine leere Liste");
@@ -295,7 +295,8 @@ test("EH-15 · the page never scans shards, never defaults to a stock, loads one
   const bytes = ["elliott/app.js", "elliott/engine/home-model.js", "elliott/elliott.css"].reduce((n, p) => n + readFileSync(join(ROOT, p)).length, 0);
   /* App-Konzept 2 (Owner 16.11.2026): der Start besteht aus den Prototyp-Bausteinen (Reiter, Kopfkachel, drei Schienen, Wellenlagen
      mit Schema, „Weiter“-Karte); dafür ist das Bündel von 64 auf 88 KB gewachsen. Es bleibt eine Datei je Art, ohne Quant-Bündel. */
-  assert.ok(bytes < 88 * 1024, "kleines Produktbuendel: " + bytes + " B");
+  /* Elliott-Neustart (Owner 22.11.2026): Kopfkachel mit Lesarten und Klarheit A–C, Grenze 92 KB. */
+  assert.ok(bytes < 92 * 1024, "kleines Produktbuendel: " + bytes + " B");
 });
 
 test("EH-16 · accessibility basics of the page", () => {
@@ -469,12 +470,18 @@ test("EHV-1 · Heute anwendbar: Anteil und genau diese Aktien aus elliottApplica
     { t: "BBB", asOf: "2026-11-06", elliott: "FLAT:done", structure: "UPTREND_ADVANCING", direction: "BULLISH", invalidation: 160.5, elliottApplicable: "MODERATE", elliottClarity: "HIGH", relabelRisk: "LOW" },
     { t: "AAA", asOf: "2026-11-06", elliott: "ZIGZAG:done", structure: "RALLY_IN_DOWNTREND", direction: "BEARISH", invalidation: 13.3, elliottApplicable: "HIGH", elliottClarity: "MODERATE", relabelRisk: "LOW" },
     { t: "CCC", asOf: "2026-11-05", elliott: "WXY:Y", elliottApplicable: "LOW" },
-    { t: "DDD", elliottApplicable: null }
+    { t: "DDD", elliottApplicable: null },
+    /* Elliott-Neustart (Owner 22.11.2026): Vorzugsaktie und Pennystock stehen nicht in „klar zählbar“, zählen aber als Lesart */
+    { t: "EEE-P", close: 18.6, elliott: "ZIGZAG:done", elliottApplicable: "HIGH" },
+    { t: "FFF", close: 0.51, elliott: "FLAT:done", elliottApplicable: "MODERATE" }
   ];
-  const names = new Map([["AAA", { n: "MINISO Group Holding Limited", u: "USD" }]]);
+  rows[0].close = 212.64; rows[1].close = 10.22;
+  const names = new Map([["AAA", { n: "MINISO Group Holding Limited", u: "USD", t: "COMMON_STOCK" }], ["BBB", { n: "SharkNinja", u: "USD", t: "COMMON_STOCK" }],
+    ["EEE-P", { n: "Aspen Insurance Pref", u: "USD", t: "PREFERRED_STOCK" }], ["FFF", { n: "GoPro", u: "USD", t: "COMMON_STOCK" }]]);
   const a = H.applicableOf(rows, names);
-  assert.equal(a.n, 4);
-  assert.equal(a.count, 2);
+  assert.equal(a.n, 6);
+  assert.equal(a.counted, 5, "jede Zeile mit Lesart");
+  assert.equal(a.count, 2, "nur Stammaktien ab " + H.MIN_PRICE + " $");
   assert.equal(a.high, 1);
   assert.equal(a.asOf, "2026-11-06");
   assert.deepEqual(a.rows.map((r) => r.t), ["AAA", "BBB"], "gut anwendbar zuerst");
@@ -497,8 +504,12 @@ test("EHV-1 · echte Daten: Anteil passt zum Wellen-Index", { skip: !HAVE_DATA &
   const a = H.buildHomeFromDir(ROOT).applicable;
   const ix = JSON.parse(gunzipSync(readFileSync(join(V3, "index.json.gz"))).toString("utf8")).rows;
   assert.equal(a.n, ix.length);
-  assert.equal(a.count, ix.filter((r) => r.elliottApplicable === "HIGH" || r.elliottApplicable === "MODERATE").length);
+  const names = H.loadNames(ROOT);
+  assert.equal(a.count, ix.filter((r) => (r.elliottApplicable === "HIGH" || r.elliottApplicable === "MODERATE") && r.close >= H.MIN_PRICE
+    && (!names.size || (names.get(r.t) && names.get(r.t).t === "COMMON_STOCK" && !names.get(r.t).ic))).length);
+  assert.equal(a.counted, ix.filter((r) => r.elliott).length);
   assert.equal(a.rows.length, a.count);
+  assert.ok(a.rows.every((r) => r.close >= H.MIN_PRICE), "kein Pennystock in „klar zählbar“");
 });
 
 test("EHV-2 · Leiste „Zählbar“ statt „Welle 3“, alte Adresse leitet weiter", () => {
@@ -532,15 +543,18 @@ test("EHV-3 · Aktie, zwei Fälle: zählbar mit drei Sätzen und Kapiteln, nicht
   const cb = read("quant/app/page-chartbild.js");
   const seg = cb.slice(cb.indexOf("function wavesPage(o) {"), cb.indexOf("async function chartbild("));
   assert.ok(seg.length > 1000, "wavesPage gefunden");
-  assert.match(cb, /function ewCountable\(E\) \{ var ap = E && E\.applicability; return !!\(E && E\.primary && ap && !ap\.abstain && \(ap\.level === "HIGH" \|\| ap\.level === "MODERATE"\)\); \}/, "dieselbe Einstufung wie die Startseite");
-  for (const t of ["Die Lesart in drei Sätzen", "Struktur", "Grenze", "Sicherheit", "Die Wellen im Chart", "Andere Lesarten", "Was früher in ähnlichen Lagen geschah", "Forschung, nicht zertifiziert",
+  /* Elliott-Neustart (Owner 22.11.2026): jede Hauptlesart erscheint, eingestuft als Klarheit A–D; „Keine Zählung“ nur ohne Lesart. */
+  assert.match(cb, /function ewGrade\(E\) \{/, "Klarheit A–D aus den Einstufungen der Engine");
+  assert.match(seg, /if \(!\(E && E\.primary\)\) \{/, "Karte „Keine Zählung“ nur ohne Hauptlesart");
+  for (const t of ["Die Lesart in drei Sätzen", "Struktur", "Grenze", "Klarheit", "Die Wellen im Chart", "Andere Lesarten", "Was früher in ähnlichen Lagen geschah", "Forschung, nicht zertifiziert",
     "Keine Zählung", "lassen sich gerade keine Wellen sauber zählen.", "Chart-Lage in Technical ansehen", "Aktien mit sauberer Zählung", "/technical/#/chart/", "/elliott/#/?zaehlbar=1"]) assert.ok(seg.includes(t), t);
   assert.doesNotMatch(seg, /Zielbereich|Ziel\s*[12]|Zone\s*1|abwarten|Technischer Ausblick/, "keine Ziele, kein zweiter Ausblick");
   const asm = cb.slice(cb.indexOf("    if (inElliott) {\n      /* Konzept EHV"), cb.indexOf("    } else {\n      order.forEach"));
   assert.match(asm, /wavesPage\(/);
   assert.doesNotMatch(asm.replace(/\/\*[\s\S]*?\*\//g, ""), /Technischer Ausblick|hero|levels/, "Elliott hängt keinen Ausblick, keine Kennzahlen mit Zielbereich an");
   assert.doesNotMatch(cb, /Rücklauf abwarten/);
-  assert.match(cb, /var io = inElliott && !replayStep && !pjOnChart && a\.overlays \? \{ zones: \[\], invalidations:/, "Chart im Elliott-Produkt: nur die Ungültig-Marke");
+  assert.match(cb, /var io = inElliott && !replayStep && !pjOnChart && a\.overlays \? \{ zones: \(a\.overlays\.zones \|\| \[\]\)\.filter[^]*?projectedPaths: \(a\.overlays\.projectedPaths/, "Chart im Elliott-Produkt: Plan der Hauptlesart (Zone, Pfad, Ungültig-Marke)");
+  assert.match(cb, /wavesOn = view === "pro" \|\| \(inElliott \? !!\(E && E\.primary\)/, "Wellen im Elliott-Produkt immer sichtbar");
 });
 
 /* App-Konzept 2 (Owner 14.11.2026): das Aktienbild /elliott/#/<T>. Das Markup baut weiter quant/app/page-chartbild.js;
@@ -681,7 +695,7 @@ test("EHV-8 · Anzeige: Balken im Elliott-Bild nach den drei Sätzen, auf den Ka
   assert.match(js, /var g = r && r\.state === "AVAILABLE" \? M\.gapOfAnalysis\(r\.analysis\) : null;\s*if \(g && story\.isConnected && !cb\.querySelector\("\.ew-gap"\)\) story\.after\(gapCard\(g\)\);/, "ohne Abstand kein Balken");
   assert.match(js, /bar\.setAttribute\("role", "img"\); bar\.setAttribute\("aria-label", g\.aria\);/);
   assert.doesNotMatch(js, /\.price\.close|invalidation/, "keine eigene Rechnung in aktie.js");
-  assert.match(read("quant/app/page-chartbild.js"), /el\("section", \{ class: "cb-story", "aria-label": "Die Lesart in drei Sätzen" \}/, "Anker stammt aus page-chartbild.js");
+  assert.match(read("quant/app/page-chartbild.js"), /el\("section", \{ class: "cb-story", "aria-label": "Die Lesart in drei Sätzen", tabindex: "0" \}/, "Anker stammt aus page-chartbild.js");
   /* Karten „Zählbar heute“: aus der Zeile des Wellen-Index, kein Abruf */
   assert.match(app, /g = inv \? M\.gapOfRow\(r\) : null;/);
   assert.match(app, /g \? gapBar\(g\) : null, g \? el\("span", \{ class: "ek-xs ek-mut ek-nc-i ek-gap-t", text: g\.short \}\) : null\]/);
