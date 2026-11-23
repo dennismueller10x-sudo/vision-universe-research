@@ -339,6 +339,13 @@ export async function buildRelease({root,output}){
    }catch(e){console.warn('WATCHLIST_EVENTS_SKIPPED',String(e&&e.message||e).slice(0,200));}
   }
  }catch(e){console.warn('WATCHLIST_SUMMARY_SKIPPED',String(e&&e.message||e).slice(0,200));}
+ /* Welten je Aktie (Datenart worldStatus, scripts/core/build-world-status.mjs): liest nur veroeffentlichte Artefakte dieser
+    Auslieferung; ein Fehler haelt die Auslieferung nicht an, die Datei fehlt dann. */
+ try{
+  const {run:buildWorldStatus,ARTIFACT:WORLD_STATUS}=await import('../core/build-world-status.mjs');
+  const r=buildWorldStatus({root,out:resolve(output,WORLD_STATUS)});
+  console.log('WORLD_STATUS',JSON.stringify({total:r.counts.total,byStrong:r.counts.byStrong}));
+ }catch(e){console.warn('WORLD_STATUS_SKIPPED',String(e&&e.message||e).slice(0,200));}
  if(paths.includes('quant/data/product/universe-list-v1.json.gz')){
   const views=universeListViews(JSON.parse(gunzipSync(await readFile(resolve(root,'quant/data/product/universe-list-v1.json.gz')))));
   await mkdir(resolve(output,UNIVERSE_SHARD_DIR),{recursive:true});

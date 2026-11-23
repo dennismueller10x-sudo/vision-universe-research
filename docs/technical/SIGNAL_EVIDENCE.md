@@ -83,3 +83,43 @@ Auch die belastbaren Zeilen sind historische Mittelwerte über rund ein Marktjah
 - Nur Zeilen ab der Mindeststichprobe; „belastbar“ nur außerhalb des 95-%-Bands.
 - Kein Satz enthält Signal- oder Empfehlungssprache.
 - `technical/data` enthält genau die 5 Dateien.
+
+## 6. Vergleichsgruppe und Marktbreite (signal-evidence 1.1.0, formation-evidence 1.1.0; 23.11.2026)
+
+Fachmodell-PR, nur Daten: Die Oberfläche bleibt unverändert, bis sie die neuen Felder liest. Bestehende Felder, `reading`, `significant` und `stableSign` rechnen wie zuvor.
+
+**Warum.** Die Anzeige vergleicht die Trefferquote eines Musters mit 50 %. Das ist die falsche Hürde: Gemessen wird gegen das Querschnitts*mittel*, und weil der Median der Renditen unter ihrem Mittel liegt, schlägt ein zufällig gewählter Titel das Mittel seltener als jeder zweite. Die richtige Hürde ist die Quote aller Titel an denselben Tagen.
+
+**Neue Felder** (Regeln in `scripts/technical/evidence-phases.mjs`):
+
+| Feld | Bedeutung |
+|---|---|
+| `baseHitRate` | Vergleichsquote: Anteil aller Titel desselben Datums über dem Querschnittsmittel (bei bärischer Lesart: darunter), gemittelt über die Ereignisdaten mit Vielfachheit. Nur Daten mit mindestens 50 Titeln. |
+| `breadth.BROAD` / `breadth.NARROW` | dieselben Kennzahlen (n, Mittel, 95-%-Band, Trefferquote, Vergleichsquote) getrennt nach Marktbreite am Ereignistag: Anteil der Titel mit Schluss über dem eigenen SMA 200 (Vollhistorie, je Bar kausal); `BROAD` ab 50 %, sonst `NARROW`. |
+| `breadthDates` | Zahl der Handelstage je Marktbreite im Fenster |
+| `method.base`, `method.breadth` | die beiden Regeln als Text |
+
+Formationen tragen `baseHitRate` und `breadth` je Typ (`excess20Mean`, `excess20Ci95`, `hitRate`, `baseHitRate`, `n`). Die Marktphase nach SPY/SMA 50 (`phases`, Grundlage von `stableSign`) bleibt daneben bestehen.
+
+**Vorher/Nachher** (Probelauf mit `--out`, Materialisierung Stand 20.11.2026, 5.451 Titel; alter und neuer Code auf demselben Bestand):
+
+| | vorher | nachher |
+|---|---|---|
+| bestehende Felder, 95 Zeilen Indikatoren und Kerzen | – | 0 Abweichungen |
+| bestehende Felder, 24 Formationstypen | – | 0 Abweichungen |
+| `signal-evidence.json` | 22 kB | 44 kB |
+| `formation-evidence.json` | 9,5 kB | 15,5 kB |
+| Laufzeit | 82 s + 178 s | 91 s + 168 s |
+
+Ergebnis des Probelaufs (Fenster: 101 Tage breiter Markt, 174 Tage schmaler Markt):
+
+- Vergleichsquote bei üblicher Lesart „steigend“ (44 Zeilen): 43,3 % bis 46,2 %, Median 45,5 %. Bei „fallend“ (46 Zeilen): 53,6 % bis 55,1 %, Median 54,6 %.
+- Von 90 gerichteten Zeilen liegen 45 über 50 %, aber nur 29 über ihrer Vergleichsquote. 29 Zeilen liegen über 50 % und trotzdem nicht über der Vergleichsgruppe; 13 liegen unter 50 % und trotzdem darüber.
+- Beispiel: „PSAR dreht abwärts“ zeigt 53,3 % Treffer, die Vergleichsgruppe an denselben Tagen 54,6 %. Das Muster lag also unter dem Zufall, obwohl die Zahl über 50 % steht.
+- Die fünf Muster ohne Richtung liegen mit 44,6 % bis 45,5 % praktisch auf ihrer Vergleichsquote von 45,3 %: Die Vergleichsgruppe misst, was sie messen soll.
+- Bei 27 von 88 Zeilen mit mindestens 100 Fällen in beiden Marktbreiten wechselt das Vorzeichen des Mittels zwischen breitem und schmalem Markt.
+- Formationen: 16 von 23 veröffentlichten Typen liegen über 50 %, 14 über ihrer Vergleichsquote. Am deutlichsten „Ausbruch aus Range“: 58,4 % gegen 51,4 %, in beiden Marktbreiten (56,0 % gegen 50,8 % und 58,8 % gegen 51,5 %).
+
+Die Zahlen sind beschreibend, über rund ein Marktjahr, ohne Kosten. Sie sind keine Prognose und kein Nachweis eines Handelsvorteils. Die veröffentlichten Artefakte schreibt weiterhin nur `build-screener.mjs` im regulären Lauf; bis dahin fehlen die Felder, und jeder Leser muss damit umgehen.
+
+**Tests:** `quant/tests/technical-evidence-phases.test.mjs` (Marktbreite, Vergleichsgruppe, Durchreichen ohne Einfluss auf `reading`), `technical/tests/technical-world.test.mjs` (Quoten und Teilmengen am Artefakt, sobald vorhanden).

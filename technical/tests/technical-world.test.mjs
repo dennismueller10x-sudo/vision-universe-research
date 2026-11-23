@@ -209,6 +209,13 @@ test("Formations-Evidenz: Vertrag, keine Aussage ohne Stichprobe, Signifikanz nu
     assert.ok(Q.FORMATION_TYPES[t.type], t.type);
     assert.equal(t.published, t.n >= e.method.minN, t.type);
     if (t.significant) assert.ok(t.published && Math.abs(t.excess20Mean) > t.excess20Ci95, t.type + ": signifikant nur ausserhalb des 95-%-Bands");
+    /* Vergleichsgruppe und Marktbreite (formation-evidence 1.1.0): Quoten zwischen 0 und 1, Teilmengen nie groesser als die Gesamtmenge */
+    if (t.baseHitRate !== undefined && t.baseHitRate !== null) assert.ok(t.baseHitRate >= 0 && t.baseHitRate <= 1, t.type + " Vergleichsquote");
+    if (t.breadth) {
+      const parts = Object.values(t.breadth).filter(Boolean);
+      assert.ok(parts.reduce((a, b) => a + b.n, 0) <= t.n, t.type + ": Marktbreite-Teilmengen");
+      for (const b of parts) assert.ok(b.hitRate >= 0 && b.hitRate <= 1 && (b.baseHitRate === null || (b.baseHitRate >= 0 && b.baseHitRate <= 1)), t.type);
+    }
     /* Exklusiv sind: invalidiert, entfallen, offen (und "nur bestaetigt"). Ein Fehlausbruch zaehlt bestaetigt UND invalidiert,
        daher liegt die Gesamtsumme zwischen 1 und 2; die drei exklusiven Anteile zusammen hoechstens 1. */
     if (t.published) {
@@ -313,6 +320,13 @@ test("Signal-Evidenz: Vertrag, Einordnung nachrechenbar, keine Signal-Sprache, T
     assert.equal(r.reading, SE.readingOf({ direction: r.direction, h20: { mean: r.mean, significant: r.significant }, stableSign: r.stableSign }), r.id);
     assert.ok(r.n >= e.method.minN, r.id + ": nur ab Mindeststichprobe");
     if (r.significant) assert.ok(Math.abs(r.mean) > r.ci95, r.id + ": belastbar nur ausserhalb des 95-%-Bands");
+    /* Vergleichsgruppe und Marktbreite (signal-evidence 1.1.0): beschreibend, Teilmengen nie groesser als die Gesamtmenge */
+    if (r.baseHitRate !== undefined && r.baseHitRate !== null) assert.ok(r.baseHitRate >= 0 && r.baseHitRate <= 1, r.id + " Vergleichsquote");
+    if (r.breadth) {
+      const parts = Object.values(r.breadth).filter(Boolean);
+      assert.ok(parts.reduce((a, b) => a + b.n, 0) <= r.n, r.id + ": Marktbreite-Teilmengen");
+      for (const b of parts) assert.deepEqual(Object.keys(b).sort(), ["baseHitRate", "ci95", "dates", "hitRate", "mean", "n"], r.id);
+    }
     const text = M.signalEvidenceText(r);
     assert.doesNotMatch(text, /Kaufsignal|Verkaufssignal|empfehl|Chance/i, r.id);
   }

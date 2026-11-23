@@ -36,7 +36,7 @@
   /* Veroeffentlichte Schlusskurse nur ueber published-close.js (ADR-002): ab 1 $ Cent, darunter 4 signifikante Stellen, nie 0. */
   var Close = isNode ? require("../published-close.js") : global.VUPublishedClose;
 
-  var ROW_VERSION = "technical-screen-row-1.15.0";
+  var ROW_VERSION = "technical-screen-row-1.16.0";
   /* Mindestzahl abgeschlossener Wochen fuer Wochenformationen: ein halbes Jahr (Pivots brauchen Vor- und Nachlauf). */
   var WEEKLY_MIN_BARS = 26;
 
@@ -192,6 +192,21 @@
    *   universeAsOf
    * }
    */
+  /** Vier-Phasen-Modell an der 150-Tage-Linie; Schwellen wie ti/dow-trend.js#weinsteinStage (Tagesprofil: 21 und 126 Bars, flach unter 0,5 % je Monat). */
+  var PHASE_MONTH = 21, PHASE_HALF_YEAR = 126, PHASE_FLAT = 0.005;
+  function phaseOf(close, ma, past, far) {
+    if (!isNum(close) || !isNum(ma) || !isNum(past) || !(past > 0)) return null;
+    var slope = (ma - past) / past, flat = Math.abs(slope) < PHASE_FLAT;
+    var above = close > ma, priorUp = isNum(far) ? ma > far : null;
+    return !flat && slope > 0 && above ? 2 : !flat && slope < 0 && !above ? 4 : flat ? (priorUp === false ? 1 : priorUp === true ? 3 : null) : (above ? 1 : 3);
+  }
+  function trendPhase(close, chartSeries, n) {
+    var line = chartSeries && chartSeries.sma150;
+    if (!Array.isArray(line) || line.length !== n) return null;
+    var t = n - 1;
+    return phaseOf(close, line[t], t - PHASE_MONTH >= 0 ? line[t - PHASE_MONTH] : null, t - PHASE_HALF_YEAR >= 0 ? line[t - PHASE_HALF_YEAR] : null);
+  }
+
   function computeRow(input) {
     var b = input.bars, n = b.close.length, t = n - 1, f = input.features || {};
     var c = b.close[t], prev = b.close[t - 1];
@@ -229,6 +244,12 @@
     var s200t = s200 ? lastAt(s200, t) : null, s200m = s200 ? lastAt(s200, t - 21) : null;
     row.sma200Rising = isNum(s200t) && isNum(s200m) ? s200t > s200m : null;
     row.sma200Slope21 = r(pct(s200t, s200m));
+    /* Seit 1.16.0: Vier-Phasen-Einstufung an der 150-Tage-Linie (1 Boden, 2 Anstieg, 3 Dach, 4 Abstieg), dieselbe
+       Regel wie ti/dow-trend.js#weinsteinStage (Chart erklaeren), aber auf der SMA 150 der Vollhistorie
+       (chartSeries.sma150, je Bar kausal). Auf den 270 Bars allein fehlt der Vergleichswert von vor einem halben
+       Jahr, die flachen Phasen 1 und 3 blieben dort leer. Datenfeld ausserhalb des Abfragekatalogs
+       (screener-contract.js#EXTRA); leer, wenn die Linie heute oder vor einem Monat fehlt. */
+    row.trendPhase = trendPhase(c, input.chartSeries, n);
     var st = I.compute(b, "supertrend").values;
     row.supertrendUp = st && st.direction ? bool(isNum(st.direction[t]) ? st.direction[t] > 0 : null) : null;
     row.structure = input.structure && input.structure.regime || null;
@@ -453,7 +474,7 @@
   }
   function r1(v) { return Math.round(v * 10) / 10; }
 
-  var api = { ROW_VERSION: ROW_VERSION, SCREEN_CANDLES: SCREEN_CANDLES, computeRow: computeRow, markStale: markStale, markFrozen: markFrozen, rankRs: rankRs,
+  var api = { ROW_VERSION: ROW_VERSION, SCREEN_CANDLES: SCREEN_CANDLES, computeRow: computeRow, markStale: markStale, markFrozen: markFrozen, rankRs: rankRs, phaseOf: phaseOf,
               STALE_EVENT_FIELDS: STALE_EVENT_FIELDS, STALE_DAY_FIELDS: STALE_DAY_FIELDS, STALE_TF_FIELDS: STALE_TF_FIELDS, monthlyFromWeekly: monthlyFromWeekly, closeOnlyBlock: closeOnlyBlock };
   if (isNode) module.exports = api;
   else { global.VUTechnical = global.VUTechnical || {}; global.VUTechnical.ScreenRow = api; }
