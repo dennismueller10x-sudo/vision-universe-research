@@ -1,0 +1,339 @@
+{
+  "generatedAt": "2026-11-23T16:00:07.346Z",
+  "gate": "CANARY",
+  "provider": "tiingo",
+  "plan": "commercial",
+  "verdict": "PASS",
+  "verdictReason": "allChecksPassed",
+  "resumable": {
+    "status": "COMPLETE",
+    "pending": 0,
+    "completed": 5
+  },
+  "qualityOfResolved": {
+    "of": 5,
+    "successRate": 1,
+    "failRate": 0
+  },
+  "nextGate": "GATE_100",
+  "nextGateNote": "Freigegeben. Erst jetzt darf die naechste Stufe laufen (§37).",
+  "run": {
+    "source": "github-actions",
+    "runId": "45210845142",
+    "commit": "78565db592b04949c5cb9449bb146c73a3a50211",
+    "ref": "main",
+    "startedAt": "2026-11-23T16:00:05.711Z",
+    "runtimeMs": 1549,
+    "runtimeSecondsPerSymbol": 0.31
+  },
+  "universe": {
+    "file": "quant/data/market/scale/universe-CANARY.json",
+    "method": "CANARY_SET",
+    "targetSize": 5,
+    "bySector": {
+      "UNKNOWN": 5
+    },
+    "byExchange": {
+      "NASDAQ": 3,
+      "NYSE": 2
+    }
+  },
+  "accounting": {
+    "requested": 5,
+    "resolved": 5,
+    "success": 3,
+    "warning": 2,
+    "fail": 0,
+    "unavailable": 0,
+    "providerErrors": {},
+    "qualityReasons": {
+      "large_move_matching_split_ratio": 1,
+      "clean": 3,
+      "large_move": 1
+    },
+    "requests": 11,
+    "cacheHits": 0,
+    "retries": 0,
+    "bytesReceived": 13480917,
+    "bytesReceivedMB": 12.9,
+    "storageBytes": 15864662,
+    "storageMB": 15.1,
+    "storageMBPer1000Symbols": 3025.9,
+    "quota": {
+      "minuteUsed": 11,
+      "minuteLimit": 100,
+      "hourUsed": 11,
+      "hourLimit": 5000,
+      "dayUsed": 11,
+      "dayLimit": 50000,
+      "minuteRemaining": 89,
+      "hourRemaining": 4989,
+      "dayRemaining": 49989,
+      "bytesUsed": 13480917,
+      "bytesLimit": null,
+      "bytesRemaining": null
+    },
+    "requestBudget": {
+      "requestsPerHour": 5000,
+      "requestsPerMinute": 100,
+      "provenance": "SAFETY_CEILING",
+      "owner": "vision-universe",
+      "note": "Unser Budget, nicht Tiingos Limit."
+    },
+    "providerObserved": {
+      "http429Seen": false,
+      "http429Count": 0,
+      "rateLimitHeaders": null,
+      "retryAfterSeconds": null,
+      "symbolsRefusedByProvider": 0,
+      "symbolsBlockedByOwnBudget": 0,
+      "highestRequestsInThisRun": 11,
+      "status": "NO_PROVIDER_STATEMENT",
+      "note": "Der Anbieter hat in diesem Lauf nichts abgelehnt und keine Kontingentkoepfe gesendet. Ueber sein tatsaechliches Limit sagt der Lauf damit nichts - ausser, dass es mindestens so hoch ist wie die hier gestellten Anfragen."
+    },
+    "peakHeapMB": 40,
+    "rssMB": 176
+  },
+  "historyCoverage": {
+    "minBars": 250,
+    "covered": 5,
+    "rate": 1,
+    "factorReady": 5,
+    "factorReadyRate": 1,
+    "totalBars": 44166,
+    "averageBars": 8833,
+    "oldestFirstDate": "1990-01-02",
+    "newestLastDate": "2026-11-20"
+  },
+  "dataQuality": {
+    "PASS": 3,
+    "WARNING": 2,
+    "FAIL": 0,
+    "UNAVAILABLE": 0,
+    "reasons": {
+      "large_move_matching_split_ratio": 1,
+      "clean": 3,
+      "large_move": 1
+    }
+  },
+  "canary": {
+    "symbols": [
+      "AAPL",
+      "MSFT",
+      "NVDA",
+      "JPM",
+      "XOM"
+    ],
+    "passed": 5,
+    "of": 5,
+    "passRate": 1,
+    "regression": false,
+    "details": [
+      {
+        "ticker": "AAPL",
+        "ok": true,
+        "failures": [],
+        "status": "WARNING",
+        "bars": 9291,
+        "first": "1990-01-02",
+        "last": "2026-11-20",
+        "splits": 4,
+        "dividends": 82,
+        "adjustmentClaimed": "adjusted",
+        "adjustmentInferred": "TOTAL_RETURN",
+        "providerError": null
+      },
+      {
+        "ticker": "MSFT",
+        "ok": true,
+        "failures": [],
+        "status": "PASS",
+        "bars": 9291,
+        "first": "1990-01-02",
+        "last": "2026-11-20",
+        "splits": 8,
+        "dividends": 92,
+        "adjustmentClaimed": "adjusted",
+        "adjustmentInferred": "TOTAL_RETURN",
+        "providerError": null
+      },
+      {
+        "ticker": "NVDA",
+        "ok": true,
+        "failures": [],
+        "status": "WARNING",
+        "bars": 7002,
+        "first": "1999-01-22",
+        "last": "2026-11-20",
+        "splits": 6,
+        "dividends": 56,
+        "adjustmentClaimed": "adjusted",
+        "adjustmentInferred": "TOTAL_RETURN",
+        "providerError": null
+      },
+      {
+        "ticker": "JPM",
+        "ok": true,
+        "failures": [],
+        "status": "PASS",
+        "bars": 9291,
+        "first": "1990-01-02",
+        "last": "2026-11-20",
+        "splits": 2,
+        "dividends": 154,
+        "adjustmentClaimed": "adjusted",
+        "adjustmentInferred": "TOTAL_RETURN",
+        "providerError": null
+      },
+      {
+        "ticker": "XOM",
+        "ok": true,
+        "failures": [],
+        "status": "PASS",
+        "bars": 9291,
+        "first": "1990-01-02",
+        "last": "2026-11-20",
+        "splits": 2,
+        "dividends": 149,
+        "adjustmentClaimed": "adjusted",
+        "adjustmentInferred": "TOTAL_RETURN",
+        "providerError": null
+      }
+    ]
+  },
+  "benchmark": {
+    "symbol": "SPY",
+    "securityId": "ref_SPY",
+    "status": "PASS",
+    "bars": 8512,
+    "first": "1993-01-29",
+    "last": "2026-11-20",
+    "providerError": null,
+    "note": "Vergleichsgroesse fuer relative Staerke. Nicht Teil des Gate-Universums und nicht in der Bilanz - sie wird gebraucht, nicht bewertet."
+  },
+  "checks": [
+    {
+      "id": "resolvedRate",
+      "value": 1,
+      "min": 0.95,
+      "ok": true
+    },
+    {
+      "id": "successRate",
+      "value": 1,
+      "min": 0.9,
+      "ok": true
+    },
+    {
+      "id": "failRate",
+      "value": 0,
+      "max": 0.05,
+      "ok": true
+    },
+    {
+      "id": "historyCoverageRate",
+      "value": 1,
+      "min": 0.9,
+      "ok": true
+    },
+    {
+      "id": "canaryPassRate",
+      "value": 1,
+      "min": 1,
+      "ok": true,
+      "note": null
+    }
+  ],
+  "perSymbol": {
+    "AAPL": {
+      "status": "WARNING",
+      "reason": "large_move_matching_split_ratio",
+      "bars": 9291,
+      "usable": 9291,
+      "first": "1990-01-02",
+      "last": "2026-11-20",
+      "historyYears": 36.9,
+      "staleTradingDays": 1,
+      "splits": 4,
+      "dividends": 82,
+      "adjustmentClaimed": "adjusted",
+      "adjustmentInferred": "TOTAL_RETURN",
+      "factorReady": true,
+      "errors": 0,
+      "warnings": 1
+    },
+    "MSFT": {
+      "status": "PASS",
+      "reason": "clean",
+      "bars": 9291,
+      "usable": 9291,
+      "first": "1990-01-02",
+      "last": "2026-11-20",
+      "historyYears": 36.9,
+      "staleTradingDays": 1,
+      "splits": 8,
+      "dividends": 92,
+      "adjustmentClaimed": "adjusted",
+      "adjustmentInferred": "TOTAL_RETURN",
+      "factorReady": true,
+      "errors": 0,
+      "warnings": 0
+    },
+    "NVDA": {
+      "status": "WARNING",
+      "reason": "large_move",
+      "bars": 7002,
+      "usable": 7002,
+      "first": "1999-01-22",
+      "last": "2026-11-20",
+      "historyYears": 27.8,
+      "staleTradingDays": 1,
+      "splits": 6,
+      "dividends": 56,
+      "adjustmentClaimed": "adjusted",
+      "adjustmentInferred": "TOTAL_RETURN",
+      "factorReady": true,
+      "errors": 0,
+      "warnings": 2
+    },
+    "JPM": {
+      "status": "PASS",
+      "reason": "clean",
+      "bars": 9291,
+      "usable": 9291,
+      "first": "1990-01-02",
+      "last": "2026-11-20",
+      "historyYears": 36.9,
+      "staleTradingDays": 1,
+      "splits": 2,
+      "dividends": 154,
+      "adjustmentClaimed": "adjusted",
+      "adjustmentInferred": "TOTAL_RETURN",
+      "factorReady": true,
+      "errors": 0,
+      "warnings": 0
+    },
+    "XOM": {
+      "status": "PASS",
+      "reason": "clean",
+      "bars": 9291,
+      "usable": 9291,
+      "first": "1990-01-02",
+      "last": "2026-11-20",
+      "historyYears": 36.9,
+      "staleTradingDays": 1,
+      "splits": 2,
+      "dividends": 149,
+      "adjustmentClaimed": "adjusted",
+      "adjustmentInferred": "TOTAL_RETURN",
+      "factorReady": true,
+      "errors": 0,
+      "warnings": 0
+    }
+  },
+  "note": "Kein Feld dieses Berichts ist geschaetzt. Fehlende Werte stehen als null mit Grund; Kurse selbst enthaelt der Bericht nicht (§34).",
+  "perSymbolDetail": {
+    "location": "report",
+    "symbolsTotal": 5
+  }
+}

@@ -1,0 +1,166 @@
+{
+  "generatedAt": "2026-11-23T16:00:08.996Z",
+  "gate": "CANARY",
+  "provider": "tiingo",
+  "methodologyVersions": {
+    "technical": "technical-v1.0.0",
+    "elliott": "elliott-v1.0.0-beta"
+  },
+  "note": "Deckungsbericht, kein Datensatz. Die Analysebundles bleiben in der Arbeitsablage - rund ein halbes Megabyte je Titel waere weder speicherbar noch weitergabefaehig. Ausgewiesen sind Zustaende und Laufzeiten, keine Kurse.",
+  "run": {
+    "source": "github-actions",
+    "runId": "45210845142",
+    "commit": "78565db592b04949c5cb9449bb146c73a3a50211",
+    "elliottEnabled": true,
+    "minBars": 300,
+    "benchmark": "SPY",
+    "benchmarkStatus": "OK"
+  },
+  "requested": 5,
+  "evaluated": 5,
+  "coverage": {
+    "TECHNICAL_READY": 5,
+    "TECHNICAL_PARTIAL": 0,
+    "TECHNICAL_FAILED": 0,
+    "INSUFFICIENT_HISTORY": 0,
+    "SOURCE_MISSING": 0
+  },
+  "coverageRate": 1,
+  "elliott": {
+    "enabled": true,
+    "symbolsRun": 5,
+    "coverage": {
+      "HIGH_CONFIDENCE": 1,
+      "MEDIUM_CONFIDENCE": 0,
+      "LOW_CONFIDENCE": 2,
+      "AMBIGUOUS": 2,
+      "UNAVAILABLE": 0,
+      "NOT_RUN": 0
+    },
+    "reasons": {
+      "ambiguousCount": 2,
+      "FIRST_LEG_ONLY": 2
+    },
+    "confidenceThresholds": {
+      "highConfidenceFrom": 70,
+      "mediumConfidenceFrom": 50
+    },
+    "thresholdNote": "Die Schwellen ordnen den vorhandenen confidence-Wert der Engine in die Faecher aus §18 ein. Sie veraendern die Engine nicht und rechnen nichts nach.",
+    "precedenceNote": "Das eigene Urteil der Engine geht der Zahl vor. Meldet sie AMBIGUOUS oder LOW_CONFIDENCE, bleibt es dabei - auch bei hoher confidence. Der Wert bezieht sich dann auf die fuehrende von mehreren konkurrierenden Zaehlungen, und eine mehrdeutige Zaehlung wird nicht dadurch eindeutig, dass ein Zweig gut abschneidet. Die Schwellen greifen nur, wenn die Engine selbst keinen Vorbehalt gemeldet hat."
+  },
+  "performance": {
+    "totalRuntimeMs": 1185,
+    "analysisRuntimeMs": 879,
+    "msPerSymbol": 176,
+    "processed": 5,
+    "slowest": [
+      {
+        "ticker": "AAPL",
+        "ms": 261,
+        "bars": 9291
+      },
+      {
+        "ticker": "MSFT",
+        "ms": 172,
+        "bars": 9291
+      },
+      {
+        "ticker": "JPM",
+        "ms": 172,
+        "bars": 9291
+      },
+      {
+        "ticker": "XOM",
+        "ms": 150,
+        "bars": 9291
+      },
+      {
+        "ticker": "NVDA",
+        "ms": 124,
+        "bars": 7002
+      }
+    ],
+    "projected": {
+      "basis": "Linear aus 5 gemessenen Titeln. Die Analyse je Titel ist unabhaengig von den anderen; es gibt keinen Schritt ueber Titelpaare.",
+      "minutesFor500": 1.5,
+      "minutesFor2000": 5.9,
+      "minutesFor10000": 29.3
+    }
+  },
+  "perSymbol": {
+    "AAPL": {
+      "technical": "TECHNICAL_READY",
+      "missingParts": null,
+      "elliott": "AMBIGUOUS",
+      "elliottConfidence": 77,
+      "bars": 9291,
+      "runtimeMs": 261,
+      "trend": "BULLISH",
+      "momentumState": "POSITIVE",
+      "relativeStrengthStatus": null,
+      "opportunityScore": 57.1,
+      "primaryScenario": "BULLISH",
+      "hasTradeSetup": true
+    },
+    "MSFT": {
+      "technical": "TECHNICAL_READY",
+      "missingParts": null,
+      "elliott": "LOW_CONFIDENCE",
+      "elliottConfidence": 74,
+      "bars": 9291,
+      "runtimeMs": 172,
+      "trend": "BULLISH",
+      "momentumState": "NEUTRAL",
+      "relativeStrengthStatus": null,
+      "opportunityScore": 31.2,
+      "primaryScenario": "NEUTRAL",
+      "hasTradeSetup": true
+    },
+    "NVDA": {
+      "technical": "TECHNICAL_READY",
+      "missingParts": null,
+      "elliott": "LOW_CONFIDENCE",
+      "elliottConfidence": 73,
+      "bars": 7002,
+      "runtimeMs": 124,
+      "trend": "BEARISH",
+      "momentumState": "STRONG_NEGATIVE",
+      "relativeStrengthStatus": null,
+      "opportunityScore": 63.3,
+      "primaryScenario": "BEARISH",
+      "hasTradeSetup": true
+    },
+    "JPM": {
+      "technical": "TECHNICAL_READY",
+      "missingParts": null,
+      "elliott": "HIGH_CONFIDENCE",
+      "elliottConfidence": 85,
+      "bars": 9291,
+      "runtimeMs": 172,
+      "trend": "NEUTRAL",
+      "momentumState": "NEGATIVE",
+      "relativeStrengthStatus": null,
+      "opportunityScore": 51.7,
+      "primaryScenario": "BEARISH",
+      "hasTradeSetup": true
+    },
+    "XOM": {
+      "technical": "TECHNICAL_READY",
+      "missingParts": null,
+      "elliott": "AMBIGUOUS",
+      "elliottConfidence": 79,
+      "bars": 9291,
+      "runtimeMs": 150,
+      "trend": "NEUTRAL",
+      "momentumState": "NEUTRAL",
+      "relativeStrengthStatus": null,
+      "opportunityScore": 57.9,
+      "primaryScenario": "BULLISH",
+      "hasTradeSetup": true
+    }
+  },
+  "perSymbolDetail": {
+    "location": "report",
+    "symbolsTotal": 5
+  }
+}

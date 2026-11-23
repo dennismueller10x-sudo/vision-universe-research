@@ -1,0 +1,28 @@
+{
+  "generatedAt": "2026-11-23T16:00:09.052Z",
+  "note": "Pruefungen, die erst ueber viele Titel sichtbar werden. Je Titel prueft market-quality.js; beide zusammen ergeben das Urteil.",
+  "run": {
+    "source": "github-actions",
+    "runId": "45210845142",
+    "commit": "78565db592b04949c5cb9449bb146c73a3a50211"
+  },
+  "thresholds": {
+    "maxDateSpreadTradingDays": 5,
+    "nullExplosionRate": 0.5
+  },
+  "status": "PASSED",
+  "gate": "CANARY",
+  "checksRun": [
+    "duplicateSecurities",
+    "tickerCollisions",
+    "nonFiniteNumbers",
+    "nullExplosion",
+    "dateAlignment",
+    "technicalBundles",
+    "relativeStrengthAlignment",
+    "accountingConsistency"
+  ],
+  "errors": 0,
+  "warnings": 0,
+  "findings": []
+}
