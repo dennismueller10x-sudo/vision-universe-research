@@ -15,13 +15,12 @@ function playwright() {
   throw new Error('Playwright fehlt (PLAYWRIGHT_PREFIX oder NODE_PATH setzen).');
 }
 
-// Szenen für die Bildschirme, in dieser Reihenfolge, soweit vorhanden.
-export const SCREEN_SCENES = ['start', 'indizes', 'marktbreite', 'ausblick'];
-
-export async function writeScreens(editionHtml, outDir, { scenes = SCREEN_SCENES } = {}) {
+// Alle Szenen der Ausgabe als Bildschirme (Story in der App, Fächer auf der Produktseite). Lange Szenen werden ganz
+// aufgenommen (Höhe bis 1400 px); die Liste mit id, Titel und Datei steht in bildschirme.json.
+export async function writeScreens(editionHtml, outDir) {
   const { chromium } = playwright();
   const browser = await chromium.launch();
-  const files = [];
+  const list = [];
   try {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, reducedMotion: 'no-preference' });
     await ctx.addInitScript(() => { try { localStorage.setItem('vu-consent', JSON.stringify({ v: 1, stats: false, t: '2026-01-01' })); localStorage.setItem('vu-nl-popup', '1'); sessionStorage.setItem('vu-nl-popup', '1'); } catch (e) { /* ohne Speicher */ } });
@@ -29,20 +28,25 @@ export async function writeScreens(editionHtml, outDir, { scenes = SCREEN_SCENES
     await page.goto(pathToFileURL(editionHtml).href, { waitUntil: 'load' });
     await page.evaluate(() => document.fonts.ready);
     // Kopf, Fortschrittsbalken der Seite und Hinweise ausblenden: der Bildschirm zeigt nur die Szene.
-    await page.addStyleTag({ content: ':root{--mb-head:0px!important}body>header,.nav,.top,.sheet,.mb-bars,.mb-hint,[data-consent],.cookie,.mbt-float,.stickycta{display:none!important}html{scroll-snap-type:none!important}.mb-sc{min-height:844px!important}' });
-    const ids = scenes.filter(Boolean);
-    let n = 0;
-    for (const id of ids) {
-      const el = page.locator('#' + id);
-      if (!(await el.count())) continue;
-      await page.evaluate((x) => { const e = document.getElementById(x); window.scrollTo(0, e.getBoundingClientRect().top + window.scrollY); }, id);
-      await page.waitForTimeout(1600);
-      const f = path.join(outDir, 'bildschirm-' + String(++n).padStart(2, '0') + '.jpg');
-      await page.screenshot({ path: f, type: 'jpeg', quality: 84 });
-      files.push(f);
+    await page.addStyleTag({ content: ':root{--mb-head:0px!important}body>header,.nav,.top,.sheet,.mb-bars,.mb-hint,.mb-acts,[data-consent],.cookie,.stickycta{display:none!important}html{scroll-snap-type:none!important}.mb-sc{min-height:844px!important}' });
+    const scenes = await page.evaluate(() => [...document.querySelectorAll('.mb-sc')].map((e) => ({ id: e.id, toc: e.getAttribute('aria-label') || '' })));
+    for (const sc of scenes) {
+      if (sc.id === 'ende') continue; // Schluss mit Knöpfen und Quellen gehört auf die Seite, nicht in die Story
+      await page.evaluate((x) => { const e = document.getElementById(x); window.scrollTo(0, e.getBoundingClientRect().top + window.scrollY); }, sc.id);
+      await page.waitForTimeout(1500);
+      const box = await page.locator('#' + sc.id).boundingBox();
+      const file = 'bildschirm-' + String(list.length + 1).padStart(2, '0') + '.jpg';
+      const h = Math.min(1400, Math.max(844, Math.round(box.height)));
+      if (h > 844) await page.setViewportSize({ width: 390, height: h });
+      await page.evaluate((x) => { const e = document.getElementById(x); window.scrollTo(0, e.getBoundingClientRect().top + window.scrollY); }, sc.id);
+      await page.waitForTimeout(300);
+      await page.screenshot({ path: path.join(outDir, file), type: 'jpeg', quality: 82 });
+      if (h > 844) await page.setViewportSize({ width: 390, height: 844 });
+      list.push({ id: sc.id, toc: sc.toc, file, height: h });
     }
   } finally { await browser.close(); }
-  return files;
+  fs.writeFileSync(path.join(outDir, 'bildschirme.json'), JSON.stringify({ schema: 'vu-marktbriefing-screens-1', width: 390, screens: list }, null, 1) + '\n');
+  return list.map((x) => path.join(outDir, x.file)).concat([path.join(outDir, 'bildschirme.json')]);
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(new URL(import.meta.url).pathname)) {

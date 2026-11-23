@@ -10,6 +10,10 @@
    Bausteine aus assets/vu-ui.js (VUUI): popup, closeSheet, logo, chg, hud, themeIcon, legal, next. */
 (function (global) {
   'use strict';
+  /* Marktbriefing (Owner 22.11.2026): erster Story-Kreis „Briefing“ mit allen Szenen der neuesten Ausgabe als Bilder.
+     Die Datei schreibt der Generator (products/news/briefing/build.mjs) bei jeder Veröffentlichung; Bilder und die ganze
+     Ausgabe liegen auf www.visionuniverse.de/marktbriefing/. */
+  var BRIEFING = '/willkommen/config/marktbriefing.json', BRIEFING_BASE = 'https://www.visionuniverse.de/marktbriefing/';
   var STORIES = '/willkommen/config/stories.json', NEWS = '/willkommen/config/news.json', INSIGHTS = '/insights/artikel.json';
   var PULSE = '/quant/data/market/intelligence/market-pulse.json', SNAPSHOT = '/quant/data/market/multi-asset/snapshot.json';
   var RADAR = '/quant/data/product/radar-home-v1.json.gz', TECH_META = '/technical/data/meta.json', ST_SUMMARY = '/supertrader/data/sf-candidates/summary.json';
@@ -170,9 +174,21 @@
     var up = cards.filter(function (c) { return c.changePercent.value > 0; }).length;
     return { up: up, total: cards.length, text: up + ' von ' + cards.length + ' Aktien im Thema lagen am ' + formatShort(row.asOf).slice(0, 6) + ' im Plus.' };
   }
-  /* Story-Kreise in der Reihenfolge des Prototyps: Markt, Aktie, Magazin, Thema, Aktie, Aktie, Thema. */
-  function storyList(m, insights) {
+  function validBriefing(b) {
+    if (!b || b.schema !== 'vu-marktbriefing-app-1' || !/^\d{4}-\d{2}-\d{2}$/.test(b.session || '') || !b.title) return false;
+    var base = BRIEFING_BASE + b.session + '/';
+    if (b.url !== base || (b.pdf && b.pdf.indexOf(base) !== 0)) return false;
+    return Array.isArray(b.screens) && b.screens.length > 0 && b.screens.every(function (x) { return x && x.title && typeof x.image === 'string' && x.image.indexOf(base) === 0 && /\.(jpg|png)$/.test(x.image); });
+  }
+  function briefingStory(b) {
+    var day = b.session.slice(8, 10) + '.' + b.session.slice(5, 7) + '.';
+    return { id: 'marktbriefing', kind: 'briefing', label: b.label || 'Briefing', image: b.screens[0].image, stamp: b.session,
+      slides: b.screens.map(function (x) { return { pill: 'Marktbriefing · ' + day, title: x.title, text: '', image: x.image, cta: { label: 'Ganzes Briefing', href: b.url } }; }) };
+  }
+  /* Story-Kreise in der Reihenfolge des Prototyps: Markt, Aktie, Magazin, Thema, Aktie, Aktie, Thema; davor das Marktbriefing. */
+  function storyList(m, insights, briefing) {
     var out = [], arts = [], seenT = {};
+    if (validBriefing(briefing)) out.push(briefingStory(briefing));
     ((insights && insights.artikel) || []).filter(validInsight).forEach(function (a) {
       var t = a.ticker && a.ticker[0];
       if (!t || seenT[t] || arts.length >= 3 || !/^[A-Z][A-Z0-9.\-]{0,9}$/.test(t)) return;
@@ -197,7 +213,7 @@
   }
 
   var api = { PRODUCTS: PRODUCTS, GOALS: GOALS, goalFor: goalFor, goalCard: goalCard, dayLine: dayLine, validateStories: validateStories, validateNews: validateNews, sortNews: sortNews, storyDuration: storyDuration, greeting: greeting, formatDate: formatDate, MIN_S: MIN_S, MAX_S: MAX_S,
-    HOME_MODULES: HOME_MODULES, THEMES: THEMES, marketView: marketView, indexChips: indexChips, moduleFacts: moduleFacts, themeStats: themeStats, storyList: storyList, signed: signed, formatShort: formatShort };
+    HOME_MODULES: HOME_MODULES, THEMES: THEMES, marketView: marketView, indexChips: indexChips, moduleFacts: moduleFacts, themeStats: themeStats, storyList: storyList, validBriefing: validBriefing, signed: signed, formatShort: formatShort };
   if (typeof module === 'object' && module.exports) module.exports = api;
   global.VUWelcome = api;
   if (typeof document === 'undefined') return;
@@ -383,13 +399,14 @@
     if (s.kind === 'markt') return MARKT_ICON;
     if (s.kind === 'thema') return U().themeIcon(s.slug, big ? 84 : 28);
     if (s.kind === 'magazin') return '<img src="' + esc(s.image) + '" alt="" loading="lazy" decoding="async">';
+    if (s.kind === 'briefing') return '<img class="wk-story-top" src="' + esc(s.image) + '" alt="" loading="lazy" decoding="async">';
     return U().logo(s.ticker);
   }
   var homeStories = [];
-  function renderStories(pulse, insights) {
+  function renderStories(pulse, insights, briefing) {
     var host = doc.getElementById('wk-stories');
     if (!host || !U()) return;
-    homeStories = storyList(marketView(pulse), insights);
+    homeStories = storyList(marketView(pulse), insights, briefing);
     if (!homeStories.length) { host.hidden = true; return; }
     var seenMap = storySeen();
     host.innerHTML = homeStories.map(function (s) {
@@ -397,6 +414,8 @@
     }).join(''); /* nur maskierte Werte */
     host.hidden = false;
     host.onclick = function (e) { var b = e.target.closest && e.target.closest('[data-wk-story]'); if (b) openHomeStory(b.getAttribute('data-wk-story')); };
+    // Menü „Insights → Marktbriefing“ führt auf /willkommen/#marktbriefing und öffnet die Story direkt.
+    if (global.location.hash === '#marktbriefing' && homeStories[0] && homeStories[0].id === 'marktbriefing') openHomeStory('marktbriefing');
   }
   function themeSlides(s) {
     return fetchJson('/discover/data/rows/US_REAL/' + s.rowId + '.json').then(function (row) {
@@ -413,17 +432,25 @@
       slides(s).then(function (list) {
         if (!el || !el.isConnected) return;
         var sl = list[slide], last = slide === list.length - 1, body = el.querySelector('.vu-sheet-body');
+        var bars = '<div class="wk-s-bars" aria-hidden="true">' + list.map(function (_, i) { return '<i' + (i <= slide ? ' class="is-on"' : '') + '></i>'; }).join('') + '</div>';
+        if (sl.image) {
+          /* Marktbriefing: eine Szene je Bild; Antippen des Bildes führt weiter, „Ganzes Briefing“ öffnet die Ausgabe auf www. */
+          body.innerHTML = '<div class="wk-s wk-s--img">' + bars + '<img class="wk-s-shot" src="' + esc(sl.image) + '" alt="' + esc(sl.title) + '" decoding="async" data-wk-next>' +
+            '<div class="wk-s-ct"><div class="wk-s-act"><a class="wk-btn wk-tap" href="' + esc(sl.cta.href) + '" target="_blank" rel="noopener">' + esc(sl.cta.label) + '</a><button class="wk-btn wk-btn--ol wk-tap" type="button" data-wk-next>' +
+            (last && at === homeStories.length - 1 ? 'Fertig' : 'Weiter') + '</button></div></div></div>'; /* nur maskierte Werte */
+        } else
         body.innerHTML = '<div class="wk-s"><div class="wk-s-bars" aria-hidden="true">' + list.map(function (_, i) { return '<i' + (i <= slide ? ' class="is-on"' : '') + '></i>'; }).join('') + '</div>' +
           '<div class="wk-s-art" aria-hidden="true">' + storyArt(s, true) + '</div><div class="wk-s-ct"><span class="wk-pill wk-pill--sm">' + esc(sl.pill + (list.length > 1 ? ' · ' + (slide + 1) + ' von ' + list.length : '')) + '</span>' +
           '<h2 class="wk-s-h' + (sl.title.length > 28 ? ' is-long' : '') + '">' + esc(sl.title) + '</h2><p class="wk-s-p">' + esc(sl.text) + '</p><div class="wk-s-act">' +
           '<a class="wk-btn wk-tap" href="' + esc(sl.cta.href) + '">' + esc(sl.cta.label) + '</a><button class="wk-btn wk-btn--ol wk-tap" type="button" data-wk-next>' + (last && at === homeStories.length - 1 ? 'Fertig' : 'Weiter') + '</button></div></div></div>'; /* nur maskierte Werte */
         el.querySelector('.vu-sheet-ui').setAttribute('aria-label', s.label + ': ' + sl.title);
         if (last) storyMark(s);
-        body.querySelector('[data-wk-next]').onclick = function () {
+        var next = function () {
           if (!last) { slide++; paint(); return; }
           if (at < homeStories.length - 1) { at++; slide = 0; paint(); return; }
           U().closeSheet(el);
         };
+        Array.prototype.forEach.call(body.querySelectorAll('[data-wk-next]'), function (n) { n.onclick = next; });
       });
     }
     el = U().popup({ id: 'wk-story-pop', cls: 'wk-pop', title: '', body: '<div class="wk-s"></div>' });
@@ -738,7 +765,8 @@
     // Markt und Artikel speisen auch die Story-Kreise; fehlt eine Quelle, fehlen nur ihre Kreise.
     var pulse = fetchJson(PULSE).then(function (p) { renderMarket(p); return p; }, function () { return null; });
     var insights = getJSON(INSIGHTS).then(function (c) { renderRead(c); return c; }, function () { return null; });
-    Promise.all([pulse, insights]).then(function (r) { renderStories(r[0], r[1]); });
+    var briefing = fetchJson(BRIEFING).catch(function () { return null; });
+    Promise.all([pulse, insights, briefing]).then(function (r) { renderStories(r[0], r[1], r[2]); });
     getJSON(NEWS).then(function (c) { renderNews(news, c); })
       .catch(function () { news.replaceChildren(h('p', 'wk-empty', 'Neuigkeiten sind gerade nicht erreichbar.')); news.removeAttribute('aria-busy'); });
   }

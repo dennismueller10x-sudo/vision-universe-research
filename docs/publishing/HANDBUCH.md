@@ -10,7 +10,7 @@ Reports unter `/reports/` (Abschnitt 8).
 | Erstes Konzept (5 Seiten Magazin, 5 Seiten Aktienreport AMD), eingefroren | `docs/publishing/konzept-2026-11/` |
 | Insights: Artikel, Build, Tests | `products/insights/`, Seiten unter `insights/` und `reports/` |
 | Bildaufträge (Higgsfield) | `brand-media/publishing/` |
-| Marktbriefing (Closing Bell): Konzept, Quellen- und Frischeregeln | Abschnitt 10 |
+| Marktbriefing: Konzept, Quellen- und Frischeregeln | Abschnitt 10 |
 
 
 Heft: Stand 09.11.2026, nach dem Umbau gemäß Codex-Prüfung ([Prüfbericht](ausgaben/2026-11-09-nr01/PRUEFBERICHT_CODEX.md)).
@@ -281,7 +281,7 @@ Bereichsseite hat strukturierte Daten; `llms.txt` gibt es nicht.
 (`scripts/access-gate/build.mjs`), `robots`-Meta der freigegebenen Seiten auf `index`; IndexNow und Search Console melden
 die neuen Adressen beim nächsten Ausrollen von selbst.
 
-## 10. Marktbriefing (Closing Bell): Konzept
+## 10. Marktbriefing: Konzept
 
 Stand 21.11.2026, Konzept nach einem Muster vom 20.11.2026 (12 Karten 1080×1350, noch nicht im Repo).
 Ziel: nach jedem US-Handelstag ein Briefing aus Grafikkarten, das ohne Handarbeit entsteht und an drei Stellen
@@ -377,6 +377,12 @@ Wirtschaftskalender (FMP-Endpunkte geprüft in `scripts/market/probe-free-source
   Seiten und PDF versprechen kein tägliches Erscheinen.
 - Startseiten-Teaser in der Region `<!--MB:teaser-->` (eigene Zeile über den Insights-Kacheln), verlinkt die Produktseite;
   Menüpunkt „Marktbriefing“ auf allen Seiten.
+- App (Owner 22.11.2026): erster Story-Kreis „Briefing“ auf Home (`/willkommen/`) mit allen Szenen der neuesten Ausgabe als
+  Bilder (`bildschirm-NN.jpg` und `bildschirme.json` aus `screens.mjs`; ohne die Schluss-Szene). Der Generator schreibt
+  `willkommen/config/marktbriefing.json` (Schema `vu-marktbriefing-app-1`); `willkommen/app.js#validBriefing` zeigt nur Bilder
+  und Links unter `www.visionuniverse.de/marktbriefing/<sitzung>/`. „Ganzes Briefing“ öffnet die Ausgabe auf www. Im Menü
+  steht „Marktbriefing“ unter Insights (`products/insights/module.json`) und führt über `/insights/marktbriefing/` (Weiterleitung) auf `/willkommen/#marktbriefing`, das die
+  Story direkt öffnet. Wirkt ohne neuen App-Build.
 - Karten folgen der Hausregel: Plus neongrün, Minus in Schriftfarbe, kein Rot. Icons (Linien, `render.js#ICONS`, eine Quelle
   für Karten und Seite) stehen an Kurzfassung, Überschriften, Etiketten und Terminen, damit die Szenen weniger nach Text aussehen.
 
