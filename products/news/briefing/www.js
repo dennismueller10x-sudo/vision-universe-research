@@ -231,7 +231,7 @@
       '<script src="' + base + 'web/site.js" defer></script>\n<script src="' + base + 'web/consent.js" defer></script>\n<script src="' + base + 'marktbriefing/mb.js" defer></script>\n<meta name="vu-ga" content="">\n' +
       ldTag(ld) + "\n" + ldTag(crumbs) + "\n" + NAV_HEAD + "</head>\n<body>" + NAV_BODY + "\n" + shift(chrome.top) + "\n" +
       '<main id="inhalt" class="mb" data-session="' + b.session + '">\n<div class="mb-bars" aria-hidden="true">' + S.map(function () { return "<i></i>"; }).join("") + "</div>\n" +
-      '<aside class="mb-nav" aria-label="Kapitel"><a class="mb-back" href="../">← Alle Ausgaben</a><p class="mb-brand"><span class="mb-logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#c8f531" stroke-width="2.2" stroke-linejoin="round"><path d="M12 3 3 8l9 5 9-5-9-5Z"/><path d="m3 13 9 5 9-5"/></svg></span>Marktbriefing</p><p class="mb-stamp"><i></i>Börsenschluss ' + dmy(b.session) + '</p><ol class="mb-toc">' +
+      '<aside class="mb-nav" aria-label="Kapitel"><a class="mb-back" href="../#archiv">← Alle Ausgaben</a><p class="mb-brand"><span class="mb-logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#c8f531" stroke-width="2.2" stroke-linejoin="round"><path d="M12 3 3 8l9 5 9-5-9-5Z"/><path d="m3 13 9 5 9-5"/></svg></span>Marktbriefing</p><p class="mb-stamp"><i></i>Börsenschluss ' + dmy(b.session) + '</p><ol class="mb-toc">' +
       S.map(function (s, i) { return '<li><a href="#' + s.id + '" data-go="' + i + '"><b>' + (i < 9 ? "0" : "") + (i + 1) + "</b><span>" + esc(s.toc) + "</span></a></li>"; }).join("") + '</ol><div class="mb-navfoot"><button class="mb-btn" type="button" data-mb-play>▶ Als Karten ansehen</button>' + (o.pdf ? '<a class="mb-btn mb-soft" href="' + esc(o.pdf) + '" download>PDF herunterladen</a>' : "") + "</div></aside>\n" +
       '<div class="mb-scenes">' + S.map(function (s, i) { return '<section class="mb-sc ' + s.bg + '" id="' + s.id + '" data-i="' + i + '" aria-label="' + esc(s.toc) + '">' + s.html + "</section>"; }).join("\n") + "</div>\n" +
       '<div class="mb-story" role="dialog" aria-modal="true" aria-label="Karten ansehen" hidden><div class="mb-stage"><div class="mb-prog"></div><button class="mb-x" type="button" aria-label="Schließen">✕</button><div class="mb-slide"></div><button class="mb-hit l" type="button" aria-label="Zurück"></button><button class="mb-hit r" type="button" aria-label="Weiter"></button></div></div>\n' +
@@ -251,6 +251,20 @@
 
   /* Produktseite /marktbriefing/ wie Magazin und Aktienreport (Bausteine pvhero, m3, pvabout, pvpeek, pvtoc, pvend aus
      landing/web/site.css). o: { chrome, parts: {dot, stores} (ohne „Bald in der App verfügbar“: das Marktbriefing läuft schon im Browser, Owner 22.11.2026) aus landing/report/index.html, archive, pdf, img } */
+  /* Archiv: Kacheln mit Teilen-Bild, Datum und Schlagzeile, nach Monat gruppiert (Owner 23.11.2026). Ohne ausgabe.json
+     bleibt der Datums-Link. */
+  function archiveBlock(o, b) {
+    var list = (o.issues && o.issues.length ? o.issues : (o.archive || [b.session]).map(function (d) { return { session: d }; })).slice(0, 120), groups = [], cur = null;
+    list.forEach(function (x) { var m = MO[+x.session.slice(5, 7) - 1] + " " + x.session.slice(0, 4); if (!cur || cur.m !== m) { cur = { m: m, items: [] }; groups.push(cur); } cur.items.push(x); });
+    return '<section class="full mbarchiv" id="archiv"><div class="mbhead"><h2>Archiv</h2><span>' + list.length + (list.length === 1 ? " Ausgabe" : " Ausgaben") + "</span></div>" +
+      groups.map(function (g) {
+        return '<p class="mbarch-m">' + esc(g.m) + '</p><div class="mbarch-g">' + g.items.map(function (x) {
+          var d = new Date(x.session + "T12:00:00Z");
+          return '<a class="mbarch-c" href="' + x.session + '/">' + (x.thumb ? '<img src="' + x.session + "/" + x.thumb + '" alt="" loading="lazy" width="1200" height="630">' : '<span class="mbarch-ph"></span>') +
+            '<span class="mbarch-t"><small>' + WD[d.getUTCDay()].slice(0, 2) + ", " + dmy(x.session) + x.session.slice(0, 4) + "</small><b>" + esc(x.title || "Marktbriefing") + "</b></span></a>";
+        }).join("") + "</div>";
+      }).join("") + "</section>";
+  }
   function productPage(b, o) {
     var C = {}; b.cards.forEach(function (c) { C[c.id] = c; });
     var chrome = o.chrome || { top: "", bottom: "" }, P = o.parts || {}, ed = b.session + "/", img = o.img || {};
@@ -307,7 +321,7 @@
       STATS.map(function (x) { return "<div><b>" + x[0] + "</b><span>" + x[1] + "</span></div>"; }).join("") + '</div><ul class="mbsrc">' + SRC.map(function (x) { return "<li>" + x + "</li>"; }).join("") + "</ul></div></section>" +
       rail +
       '<section class="full"><div class="mbhead"><h2>Das steht drin</h2></div><div class="mbchap">' + CH.map(function (c) { return "<div>" + I(c[1]) + "<span>" + esc(c[0]) + "</span></div>"; }).join("") + "</div></section>" +
-      '<section class="full"><div class="mbhead"><h2>Alle Ausgaben</h2></div><p class="mbarch">' + (o.archive || [b.session]).slice(0, 30).map(function (d) { return '<a href="' + d + '/">' + dmy(d) + d.slice(0, 4) + "</a>"; }).join("") + "</p></section>" +
+      archiveBlock(o, b) +
       '<section class="full pvend"><div class="pvbox"><h2>Bald auch in der App.</h2><p class="t">Trag dich ein, dann sagen wir dir Bescheid, sobald die App da ist.</p>' +
       '<div class="pvcta">' + cta("../#newsletter", "Zum Start benachrichtigen") + "</div>" + (P.stores || "") + "</div></section></main>";
     return "<!doctype html>\n<html lang=\"de\">\n<head>\n<meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n<title>" + esc(title) + "</title>\n<meta name=\"description\" content=\"" + esc(desc) + "\">\n" +
