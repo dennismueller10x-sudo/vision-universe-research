@@ -124,6 +124,27 @@ const PRUEFVERMERK = {
 const aufmacher = (a) => (a.bild.typ === 'app'
   ? `<figure class="in-bild in-bild--app" aria-label="${esc(a.bild.alt)}">${(a.appScreens?.[a.ticker[0]] || []).map((s) => `<img src="${s.src}" alt="${esc(s.label)}-Ansicht in der Vision-Universe-App" width="390" height="844">`).join('')}<figcaption>Vision-Universe-App</figcaption></figure>`
   : `<figure class="in-bild"><img src="${a.bild.src}" alt="${esc(a.bild.alt)}" width="1600" height="900" fetchpriority="high"><figcaption>${nachweis(a.bild)}</figcaption></figure>`);
+// Bildgröße aus dem JPEG-Kopf (ohne Abhängigkeiten). Für www zählt nur ein Querformat 16:9 (News-Bühne, Kacheln):
+// ist der Aufmacher anders geschnitten, nimmt www das erste passende Bild aus dem Artikel, sonst keins (Owner 23.11.2026).
+export function bildGroesse(file) {
+  let b; try { b = fs.readFileSync(file); } catch { return null; }
+  if (b[0] !== 0xff || b[1] !== 0xd8) return null;
+  for (let i = 2; i < b.length - 9;) {
+    if (b[i] !== 0xff) { i++; continue; }
+    const m = b[i + 1], len = b.readUInt16BE(i + 2);
+    if (m >= 0xc0 && m <= 0xcf && ![0xc4, 0xc8, 0xcc].includes(m)) return { w: b.readUInt16BE(i + 7), h: b.readUInt16BE(i + 5) };
+    i += 2 + len;
+  }
+  return null;
+}
+// Neue Aufmacher: genau 16:9 ab 1600 px (Test IN-20). Für www genügt ein Querformat zwischen 3:2 und 2:1 ab 900 px;
+// hochkante oder quadratische Bilder würden auf der Bühne zu einem herangezoomten Ausschnitt.
+export const istQuer = (s, minW = 1600) => !!s && s.w >= minW && Math.abs(s.w / s.h / (16 / 9) - 1) < 0.02;
+const fuerWww = (s) => !!s && s.w >= 900 && s.w / s.h >= 1.45 && s.w / s.h <= 2.05;
+const bildQuer = (a) => {
+  const kandidaten = [a.bild.typ === 'app' ? null : a.bild.src, ...a.abschnitte.flatMap((x) => [].concat(x.bild || []).map((y) => y && y.src))].filter(Boolean);
+  return kandidaten.find((src) => fuerWww(bildGroesse(path.join(root, src)))) || null;
+};
 // Firma für www (News-Seite, „Nach Aktien“): aus dem Artikel ("firma"), sonst der Name der ersten Aktie ohne Zusätze.
 const kurzName = (daten, t) => String(daten?.aktien?.[t]?.name || t).replace(/\s*\(.*\)$/, '').replace(/\s+(Class [A-Z]|Inc\.?|Corp\.?|Corporation|Holdings|Ltd\.?|plc|N\.V\.)(\s.*)?$/i, '').trim();
 const bildSrc = (a) => (a.bild.typ === 'app' ? a.appScreens?.[a.ticker[0]]?.[0]?.src : a.bild.src);
@@ -411,7 +432,7 @@ export function build() {
     'insights/feed.xml': feed(artikel),
     'insights/sitemap.xml': sitemap(artikel, hefte, reports),
     'insights/magazin/index.html': magazinUebersicht(hefte),
-    'insights/artikel.json': JSON.stringify({ schema: 'vu-insights-1', note: 'Erzeugt von products/insights/build.mjs', artikel: artikel.map(({ slug, datum, rubrik, titel, teaser, ticker, firma, themen, bild, daten }) => ({ slug, datum, rubrik, titel, teaser, ticker, firma: firma || { ticker: ticker[0], name: kurzName(daten, ticker[0]) }, themen: themen || [], bild: bild.typ === 'app' ? null : bild.src, href: `/insights/${slug}/` })), magazin: hefte.map(({ nr, datum, kw, titel, seiten }) => ({ nr, datum, kw, titel, seiten, cover: `/insights/magazin/nr-${nr}/cover.jpg`, href: `/insights/magazin/nr-${nr}/` })), reports: reports.map(({ datum, art, titel, href }) => ({ datum, art, titel, href })) }, null, 1) + '\n',
+    'insights/artikel.json': JSON.stringify({ schema: 'vu-insights-1', note: 'Erzeugt von products/insights/build.mjs', artikel: artikel.map((a) => { const { slug, datum, rubrik, titel, teaser, ticker, firma, themen, bild, daten } = a; return ({ slug, datum, rubrik, titel, teaser, ticker, firma: firma || { ticker: ticker[0], name: kurzName(daten, ticker[0]) }, themen: themen || [], bild: bild.typ === 'app' ? null : bild.src, bildQuer: bildQuer(a), href: `/insights/${slug}/` }); }), magazin: hefte.map(({ nr, datum, kw, titel, seiten }) => ({ nr, datum, kw, titel, seiten, cover: `/insights/magazin/nr-${nr}/cover.jpg`, href: `/insights/magazin/nr-${nr}/` })), reports: reports.map(({ datum, art, titel, href }) => ({ datum, art, titel, href })) }, null, 1) + '\n',
   };
   for (const a of artikel) files[`insights/${a.slug}/index.html`] = artikelSeite(a);
   for (const h of hefte) files[`insights/magazin/nr-${h.nr}/index.html`] = heftSeite(h);
