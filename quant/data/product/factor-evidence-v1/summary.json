@@ -1,9 +1,9 @@
 {
  "schemaVersion": "factor-evidence-summary-1.0.0",
  "methodologyVersion": "vu-factor-evidence-2.0.0",
- "derivedFrom": "quant-v2.4.1",
+ "derivedFrom": "quant-v2.5.0",
  "changeMethodologyVersion": "vu-change-1.0.0",
- "generatedAt": "2026-11-22T15:33:39.000Z",
+ "generatedAt": "2026-11-22T22:58:12.000Z",
  "asOf": "2026-11-20",
  "publication": {
   "compositeAllowed": false,
@@ -21,13 +21,13 @@
   "risk"
  ],
  "factorWeights": {
-  "quality": 0.1,
-  "growth": 0.15,
-  "momentum": 0.25,
-  "value": 0.15,
-  "profitability": 0.15,
+  "quality": 0.085,
+  "growth": 0.0425,
+  "momentum": 0.3825,
+  "value": 0.0425,
+  "profitability": 0.255,
   "revisions": 0.15,
-  "risk": 0.05
+  "risk": 0.0425
  },
  "bandSemantics": {
   "version": "factor-band-2.0.0",
@@ -804,7 +804,7 @@
   "recomputationDrift": {
    "asOf": "2026-11-20",
    "publishedHash": "704ca7dc218d40ca",
-   "recomputedHash": "8c38ec556b214435",
+   "recomputedHash": "9ec94dc982acc374",
    "rowsDiffering": 5508,
    "rowsTotal": 5937,
    "note": "Die veroeffentlichte Beobachtung bleibt unveraendert. Sie wurde an diesem Stichtag veroeffentlicht und wird nicht durch eine heutige Neuberechnung ersetzt."
@@ -1046,6 +1046,6 @@
   "SHARE_COUNT_SCALE_SUSPECT": 4,
   "NOT_AN_EQUITY_LISTING:PREFERRED": 8
  },
- "runtimeMs": 27228,
- "contentHash": "f6bb62092dfd2e09"
+ "runtimeMs": 17452,
+ "contentHash": "96051042f39e55a3"
 }

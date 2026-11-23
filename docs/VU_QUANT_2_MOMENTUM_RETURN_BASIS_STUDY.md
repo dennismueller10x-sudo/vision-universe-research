@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| Stand der Messung | 2026-11-22T15:15:25.000Z |
+| Stand der Messung | 2026-11-22T22:47:02.000Z |
 | Bestand | `CANONICAL_HISTORY` |
 | Studienlogik | `1.0.0` · Reihen `vu-return-series-1.0.0` · Vergleich `vu-return-basis-comparison-1.0.0` |
 | Entscheidung | **PENDING_METHOD_DECISION** |
@@ -95,8 +95,8 @@ Diese Frage stand im Return-Semantics-Vertrag als `UNKNOWN_UNTIL_MEASURED`. Sie 
 | | |
 |---|---|
 | Artefakt | `quant/data/product/factor-evidence-v1` |
-| Einträge | 5.938 |
-| Preisbasis | `close` 5.938 |
+| Einträge | 5.937 |
+| Preisbasis | `close` 5.937 |
 | gemessene Quant-V2-Momentumbasis | **MIXED_OR_UNCONFIRMED** |
 
 **Befund: Methodiktext und Rechnung sagen nicht dasselbe.**
@@ -236,18 +236,18 @@ Die Momentumnote wird auf beiden Basen aus denselben sechs Komponenten und dense
 | Grundlage | `EVIDENCE_AT_OR_BEFORE_CUTOFF` |
 | veröffentlichtes Evidence vom | 2026-11-20 (0 Tage nach dem Stichtag) |
 | ausgeschlossen, weil Fundamentaldaten erst nach dem Stichtag öffentlich | 0 |
-| ρ Simulation (Gesamtrendite) zur veröffentlichten Note | 0,9328 |
-| ρ Simulation (Kursrendite) zur veröffentlichten Note | 0,9411 |
-| bewertete Titel: veröffentlicht / Kurs / gesamt | 5.435 / 5.516 / 5.516 |
+| ρ Simulation (Gesamtrendite) zur veröffentlichten Note | 0,9332 |
+| ρ Simulation (Kursrendite) zur veröffentlichten Note | 0,9401 |
+| bewertete Titel: veröffentlicht / Kurs / gesamt | 4.853 / 5.516 / 5.516 |
 
 **Die Momentumnote selbst, Kurs gegen gesamt:** ρ 0,9947 · Median 49 Ränge · P95 262,6 · Maximum 3.574 · 259 Titel bewegen sich um mindestens 5 Perzentilpunkte, 59 um mindestens 10.
 
 | Strategie | Treffer auf Kursrendite | auf Gesamtrendite | fallen heraus | kommen hinzu | Wechselanteil |
 |---|---:|---:|---:|---:|---:|
-| Momentum Leader (`momentum-leader`) | 362 | 352 | 18 | 8 | 7,2 % |
-| Quality Momentum (`quality-momentum`) | 49 | 47 | 3 | 1 | 8,2 % |
-| Future Leader (`future-leader`) | 19 | 17 | 2 | 0 | 10,5 % |
-| Value Momentum (`value-momentum`) | 222 | 220 | 7 | 5 | 5,4 % |
+| Momentum Leader (`momentum-leader`) | 363 | 353 | 18 | 8 | 7,2 % |
+| Quality Momentum (`quality-momentum`) | 44 | 42 | 3 | 1 | 9,1 % |
+| Future Leader (`future-leader`) | 18 | 17 | 1 | 0 | 5,6 % |
+| Value Momentum (`value-momentum`) | 222 | 219 | 8 | 5 | 5,9 % |
 
 Keine Produktionsstrategie wurde dabei überschrieben. Die Simulation läuft neben der Produktion.
 
