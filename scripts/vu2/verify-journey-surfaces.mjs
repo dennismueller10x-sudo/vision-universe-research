@@ -9,12 +9,15 @@
 
      NVDA   Bildunterschrift des Charts: splitbereinigt, nicht roh
      AAPL   was das Setup beenden wuerde, ist da (bis 21.11.2026 APGE; APGE ist seit B3 eine beendete Notierung)
-     AAON   der Musternenner nennt, wovon er zaehlt; ohne Wochenreihe
+     Musternenner  der Musternenner nennt, wovon er zaehlt; ohne Wochenreihe
             erscheint stattdessen der belegte Nichtverfuegbarkeitsgrund
-            (bis 05.11.2026 AAAP; AAAP ist laut Wertpapierstamm ein ETF)
-     AACB   Setup-Bedingungen zaehlen messbare
-     AAAC   ein belegter ETF: keine Aktienaussage - eine benannte Absage
+     Setup-Titel   Setup-Bedingungen zaehlen messbare
+     belegter ETF  keine Aktienaussage - eine benannte Absage
             mit Grund (#1443), kein Nichtpassen
+     Seit 23.11.2026 (Owner-Freigabe, Steuerung) waehlt die Pruefung diese drei Titel nach EIGENSCHAFT aus dem
+     ausgelieferten Verzeichnis (quant/data/universe/instruments/AA.json) und dem Musterartefakt, nicht mehr nach festem
+     Kuerzel: AAAP (ETF-Eignung), APGE (B3) und AAAC fielen je einmal aus dem Produkt, und die Pruefung wurde rot, ohne
+     dass die Seite falsch war.
      A      die Stil-Zuordnung nennt den Abstand zwischen zwei Staenden
 
    Seit dem 30.09.2026 ist das die Aktienseite der Hash-App
@@ -46,7 +49,16 @@ const root = resolve(argOf("site", process.cwd()));
    assertion for measured patterns, but accept the precise unavailable copy
    only when the shipped typed pattern payload confirms that state. */
 const aaPatterns = JSON.parse(gunzipSync(await readFile(resolve(root,"quant/data/product/pattern-match-v1/AA.json.gz"))));
-const PATTERN_TICKER = "AAON";
+/* Auswahl nach Eigenschaft (23.11.2026): Verzeichnis-Shard AA des ausgelieferten Standes. */
+const aaDirectory = JSON.parse(await readFile(resolve(root,"quant/data/universe/instruments/AA.json"),"utf8")).instruments || [];
+const eligible = aaDirectory.filter(i=>i.productEligibility==="ELIGIBLE").map(i=>i.symbol);
+const etfs = aaDirectory.filter(i=>i.productEligibility==="EXCLUDED"&&/^CONFIRMED_NON_EQUITY:ETF$/.test(String(i.productEligibilityReason||""))).map(i=>i.symbol);
+const measured = eligible.filter(t=>Object.hasOwn(aaPatterns.instruments||{},t));
+const noWeekly = eligible.filter(t=>aaPatterns.unavailable?.[t]?.reason==="NO_WEEKLY_SERIES"&&!Object.hasOwn(aaPatterns.instruments||{},t));
+const PATTERN_TICKER = measured[0] || noWeekly[0];
+const SETUP_TICKER = eligible.find(t=>t!==PATTERN_TICKER);
+const ETF_TICKER = etfs[0];
+if(!PATTERN_TICKER||!SETUP_TICKER||!ETF_TICKER){console.error("Auswahl nach Eigenschaft ohne Treffer: Musternenner "+PATTERN_TICKER+", Setup-Titel "+SETUP_TICKER+", ETF "+ETF_TICKER+" - Verzeichnis oder Musterartefakt pruefen");process.exit(2);}
 const aaapNoWeeklySeries = aaPatterns.unavailable?.[PATTERN_TICKER]?.reason === "NO_WEEKLY_SERIES"
   && !Object.hasOwn(aaPatterns.instruments || {}, PATTERN_TICKER);
 const mime = { ".html":"text/html", ".js":"text/javascript", ".css":"text/css", ".json":"application/json" };
@@ -68,10 +80,10 @@ const checks=[
  ["NVDA","section.qc-chart .qc-note",/(^|[^t] )splitbereinigt/,"1J"],
  ["AAPL","#setup",/Was würde das Setup ungültig machen\?/i],
  [PATTERN_TICKER,"#historie",/\d+ von \d+ Mustern|nicht prüfbar/],
- ["AACB","#setup","messbaren Bedingungen"],
- /* AAAC IST SEIT DER OWNER-ENTSCHEIDUNG 1 KEIN AKTIENFALL MEHR: die Seite
+ [SETUP_TICKER,"#setup","messbaren Bedingungen"],
+ /* EIN BELEGTER ETF IST SEIT DER OWNER-ENTSCHEIDUNG 1 KEIN AKTIENFALL MEHR: die Seite
     sagt mit Grund ab (Variante B, #1443) - keine Aktienaussage. */
- ["AAAC","#qx-main",/ist ein ETF, keine Aktie.*keine Aktienaussage/],
+ [ETF_TICKER,"#qx-main",/ist ein ETF, keine Aktie.*keine Aktienaussage/],
  /* Der Satz ueber die zwei veroeffentlichten Staende steht im Abschnitt
     der Anlagestile: "An der Zuordnung ... hat sich zwischen den
     veröffentlichten Ständen vom ... und ... nichts geändert." */

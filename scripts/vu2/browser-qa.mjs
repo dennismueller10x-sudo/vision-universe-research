@@ -38,6 +38,14 @@ const GESCHLOSSEN=Object.entries(JSON.parse(gunzipSync(await readFile(resolve(ro
 const STYLE_NEEDS={'earnings-revision-leader':['revisions']};
 const sichtbar=profiles.filter(p=>!(STYLE_NEEDS[p.profileId]||[]).some(f=>GESCHLOSSEN.includes(f)));
 const universeIndex=JSON.parse(gunzipSync(await readFile(resolve(root,'quant/data/product/universe-list-v1.json.gz'))).toString('utf8'));
+/* Pruefziele nach EIGENSCHAFT statt nach festem Kuerzel (Owner-Freigabe 23.11.2026, Steuerung): aus dem ausgelieferten Verzeichnis-Shard AA.
+   Der belegte ETF und der datenarme Titel fielen je einmal aus dem Produkt (AAAP, AAAC, APGE), die QA wurde rot, ohne dass die Seite falsch war.
+   ETF: belegte Nicht-Aktie (CONFIRMED_NON_EQUITY:ETF). Datenarm: Produkttitel, fuer den das Musterartefakt zu wenig Wochenhistorie meldet. */
+const aaDir=JSON.parse(await readFile(resolve(root,'quant/data/universe/instruments/AA.json'),'utf8')).instruments||[];
+const aaMuster=JSON.parse(gunzipSync(await readFile(resolve(root,'quant/data/product/pattern-match-v1/AA.json.gz'))).toString('utf8'));
+const ETF_TICKER=aaDir.find(i=>i.productEligibility==='EXCLUDED'&&i.productEligibilityReason==='CONFIRMED_NON_EQUITY:ETF')?.symbol;
+const DATENARM_TICKER=aaDir.find(i=>i.productEligibility==='ELIGIBLE'&&aaMuster.unavailable?.[i.symbol]?.reason==='INSUFFICIENT_WEEKLY_HISTORY')?.symbol;
+if(!ETF_TICKER||!DATENARM_TICKER)throw Error('Auswahl nach Eigenschaft ohne Treffer: ETF '+ETF_TICKER+', datenarmer Titel '+DATENARM_TICKER+' - Verzeichnis-Shard AA oder Musterartefakt pruefen');
 const nvdaName=(universeIndex.entries||[]).find(e=>e.s==='NVDA')?.n;
 if(!nvdaName)throw Error('das Verzeichnis nennt keinen Namen fuer NVDA');
 // Perspektive Chart: der Prueftitel kommt aus den ausgelieferten Chartbild-Daten. Die Historie gegen den Zufall
@@ -91,8 +99,8 @@ const ROUTES=[
  ['aktien','#/aktien'],
  ['aktie-nvda','#/aktie/NVDA','stock'],
  ['aktie-jpm','#/aktie/JPM'],
- ['aktie-edva','#/aktie/EDVA'],
- ['aktie-aaac','#/aktie/AAAC'],
+ ['aktie-edva','#/aktie/'+DATENARM_TICKER],
+ ['aktie-aaac','#/aktie/'+ETF_TICKER],
  ['aktie-all-p-b','#/aktie/ALL-P-B'],
  ['aktie-unbekannt','#/aktie/ZZZZZ'],
  /* Seit Technical Intelligence v3 zeigen die alten Technik-Routen das Chartbild (Lesezeichen bleiben gueltig). */
@@ -572,7 +580,7 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    if(await page.locator('.qx-verdict-card').count()||await page.locator('details.qx-factor').count())befund(view,width,'ETF traegt eine Aktienaussage');
    if(await page.locator('section.qc-chart').count())befund(view,width,'ETF zeigt einen Kursverlauf als Aktie');
    const kopf=(await page.locator('main h1').innerText()).trim(),text=await page.locator('#qx-main').innerText();
-   if(!kopf||kopf==='Aktie nicht gefunden'||kopf==='AAAC')befund(view,width,'ETF ohne Namen in der Absage');
+   if(!kopf||kopf==='Aktie nicht gefunden'||kopf===ETF_TICKER)befund(view,width,'ETF ohne Namen in der Absage');
    if(!(await page.locator('#qx-main [class*=tag]').allTextContents()).some(t=>t.trim()==='ETF'))befund(view,width,'Papierart ETF ungenannt');
    if(!/keine Aktie/.test(text))befund(view,width,'Absage ohne Grund');
   }
