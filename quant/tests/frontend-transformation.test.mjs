@@ -47,6 +47,7 @@ const sandbox = { QuantShell: { el() { return {}; } }, VUQuantViewModel: VM, URL
 sandbox.window = sandbox;
 vm.createContext(sandbox);
 vm.runInContext(uiSrc, sandbox);
+vm.runInContext(src("quant/engines/regime-tile.js"), sandbox);
 vm.runInContext(pagesSrc, sandbox);
 const QX = sandbox.QX, QXPages = sandbox.QXPages;
 /* Werte aus der Sandbox stammen aus einem anderen Realm; fuer deepEqual

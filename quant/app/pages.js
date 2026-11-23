@@ -84,7 +84,7 @@
       return by;
     }).catch(function () { return {}; });
   }
-  var REGIME = { BROAD_WEAKNESS: "Breite Schwäche", BROAD_STRENGTH: "Breite Stärke", NARROW_LEADERSHIP: "Schmale Führung", MIXED: "Gemischte Lage" };
+  var REGIME = global.QuantRegimeTile.REGIME;
   /* Bildwelt der Anlagestile: dieselben Fotografien wie Discovers Perspektiven, je nach Sinn zugeordnet. Steht hier, wo
      sie gebraucht wird (Strategien) - die Aktienseite liegt im Release in einem eigenen Paket (QUANT_PACKS). */
   var STRATEGY_ART = {
@@ -427,20 +427,6 @@
     return '<div class="qp-sh"><h2>' + qpEsc(title) + "</h2>" + (more ? (href ? '<a class="qp-more" href="' + qpEsc(href) + '"' + (attrs || "") + ">" : '<button type="button" class="qp-more"' + (attrs || "") + ">") + "<span>" + qpEsc(more) + " ›</span>" + (href ? "</a>" : "</button>") : "") + "</div>";
   }
   function qpStock(ctx, t) { return ' data-vu-stock="' + qpEsc(t) + '" data-vu-stock-name="' + qpEsc(qName(ctx, t)) + '"'; }
-  /* Bogen wie im Prototyp (gauge(pct, 260)): Halbkreis, Spur dunkel, Anteil neongrün. */
-  function qpGauge(pct, w) {
-    var r = w / 2 - 12, c = Math.PI * r, p = Math.max(0, Math.min(100, pct)), d = "M12 " + w / 2 + "A" + r + " " + r + " 0 0 1 " + (w - 12) + " " + w / 2;
-    return '<svg class="qp-gauge" width="' + w + '" height="' + (w / 2 + 8) + '" viewBox="0 0 ' + w + " " + (w / 2 + 8) + '" aria-hidden="true"><path class="qp-gauge-t" d="' + d + '" fill="none" stroke-width="14" stroke-linecap="round"/>' +
-      '<path class="qp-gauge-v" d="' + d + '" fill="none" stroke-width="14" stroke-linecap="round" stroke-dasharray="' + c.toFixed(1) + '" stroke-dashoffset="' + (c * (1 - p / 100)).toFixed(1) + '"/></svg>';
-  }
-  /* Verlaufsfläche wie im Prototyp (line(..., {fill:true, dot:false})): nur aus veröffentlichten Beobachtungen. */
-  function qpLine(vals, w, h) {
-    var mn = Math.min.apply(null, vals), mx = Math.max.apply(null, vals), n = vals.length;
-    var xy = vals.map(function (v, i) { return [(i / (n - 1)) * w, h - 4 - ((v - mn) / (mx - mn || 1)) * (h - 8)]; });
-    var d = xy.map(function (p, i) { return (i ? "L" : "M") + p[0].toFixed(1) + " " + p[1].toFixed(1); }).join("");
-    return '<svg class="qp-line" viewBox="0 0 ' + w + " " + h + '" preserveAspectRatio="none" width="100%" height="' + h + '" aria-hidden="true"><defs><linearGradient id="qp-lg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c8f531" stop-opacity=".38"/><stop offset="1" stop-color="#c8f531" stop-opacity="0"/></linearGradient></defs>' +
-      '<path d="' + d + "L" + w + " " + h + "L0 " + h + 'Z" fill="url(#qp-lg)"/><path class="qp-line-s" d="' + d + '" fill="none" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg>';
-  }
   /* Säulen wie im Prototyp (kit.js bars(vals.map(x => x / max * 30 + 4), 86, 34)): jüngster Stichtag neongrün, die früheren hell. */
   function qpBars(raw, w, h) {
     var mx0 = Math.max.apply(null, raw) || 1, vals = raw.map(function (x) { return x / mx0 * 30 + 4; }), mx = Math.max.apply(null, vals), bw = w / vals.length;
@@ -460,8 +446,6 @@
     };
     evs.forEach(function (n) { global.addEventListener(n, go, opt(n)); });
   }
-  function qpDays(a, b) { var x = Date.parse(a + "T12:00:00Z"), y = Date.parse(b + "T12:00:00Z"); return isFinite(x) && isFinite(y) ? Math.round((y - x) / 864e5) : null; }
-  function qpPct(share) { return Math.round(share * 100) + " %"; }
   /* Karte „Bei deinen Aktien“ (Prototyp msg()): Eigenschaft, Wert vorher, Balken, Wert nachher. Ohne zwei Werte steht das Urteil. */
   function qpWatchCard(ctx, c) {
     var e = c.events.filter(function (x) { return X.deltaOf(x.explanation); })[0] || c.events[0], d = X.deltaOf(e.explanation), name = qName(ctx, c.ticker);
@@ -520,10 +504,11 @@
     });
     page.append(tabs);
     U().bindPops(page);
-    var regimeHost = el("div", { class: "qp-px", id: "qp-heute" }), watchHost = el("div"), todayHost = el("div", { class: "qk-today-host" }), mapHost = el("div", { id: "qp-karte" }),
+    var regimeHost = early && early.regime ? early.regime : el("div", { class: "qp-px", id: "qp-heute" }), watchHost = el("div"), todayHost = el("div", { class: "qk-today-host" }), mapHost = el("div", { id: "qp-karte" }),
       stilHost = el("div", { id: "qp-stile" }), askHost = el("div", { id: "qp-scr" }), forHost = el("div", { id: "qp-for" }),
       tiAlertHost = el("div"), newHost = el("div"), setupHost = el("div"), howHost = el("div"), findHost = el("div", { class: "qp-px qp-find" });
-    regimeHost.innerHTML = '<div class="qp-tile qp-skel">' + U().skeleton("card") + "</div>"; todayHost.setAttribute("aria-busy", "true");
+    if (!(early && early.regime)) regimeHost.innerHTML = '<div class="qp-tile qp-skel">' + U().skeleton("card") + "</div>";
+    todayHost.setAttribute("aria-busy", "true");
     page.append(regimeHost, watchHost, todayHost, mapHost, stilHost, askHost, forHost, findHost, tiAlertHost, newHost, setupHost, howHost);
     /* Suche der bisherigen Startseite (Quant-eigene Aktiensuche): bleibt als Block unter den Prototyp-Bereichen. */
     var search = el("button", { type: "button", class: "vu-find qv3-search q-searchbar", "aria-label": "Aktie suchen, z. B. NVDA … und analysieren", onclick: ctx.openSearch });
@@ -572,28 +557,11 @@
     var asOfHost = page.querySelector(".qk-asof"); if (asOfHost && asOf) asOfHost.textContent = "Stand " + X.dateDe(asOf) + ".";
 
     /* Marktlage: Anteil über der 200-Tage-Linie als Bogen, Lagewort, Verlauf aus den veröffentlichten Beobachtungen
-       (market-regime-v1.json → history); antippen öffnet alle Maße im Fenster (Prototyp-Fenster „markt“). */
-    if (regime && regime.state === "AVAILABLE") {
-      var mm = {}; (regime.measures || []).forEach(function (x) { mm[x.id] = x; });
-      var above = mm.above200 && typeof mm.above200.share === "number" ? mm.above200.share : null;
-      var seen = mm.above200 && typeof mm.above200.observed === "number" ? mm.above200.observed : null, lage = REGIME[regime.regime] || "Marktlage";
-      var pts = regime.history && regime.history.measure === "above200" && Array.isArray(regime.history.points) ? regime.history.points.filter(function (p) { return p && typeof p.share === "number" && /^\d{4}-\d{2}-\d{2}$/.test(p.asOf || "") && p.asOf <= regime.asOf; }) : [];
-      if (above != null && pts.length && pts[pts.length - 1].asOf !== regime.asOf) pts = pts.concat([{ asOf: regime.asOf, share: above }]);
-      var first = pts.length >= 2 ? pts[0] : null, ago = first ? qpDays(first.asOf, regime.asOf) : null;
-      var since = first && ago > 0 ? " · vor " + ago + " Tagen " + (Math.round(first.share * 100) === Math.round(above * 100) ? "ebenfalls " : "noch ") + qpPct(first.share) : "";
-      var sheetBody = '<b class="qp-sh-lage">' + qpEsc(lage) + '</b><p class="qp-sm qp-mut" style="margin:2px 0 0">' + (regime.asOf ? "Stand " + qpEsc(X.dateDe(regime.asOf)) : "") + (seen != null ? " · " + seen.toLocaleString("de-DE") + " Aktien" : "") + "</p>" +
-        (above != null ? '<div class="qp-gwrap qp-gwrap--sheet">' + qpGauge(above * 100, 280) + '<span class="qp-num qp-gnum" style="font-size:50px">' + qpPct(above) + '</span></div><p class="qp-sm qp-sec" style="text-align:center;margin:4px 0 0">der US-Aktien liegen über ihrer 200-Tage-Linie</p>' : "") +
-        (regime.measures || []).filter(function (x) { return typeof x.share === "number" && x.id !== "above200"; }).map(function (x) {
-          return '<div class="qp-ms qk2-measure"><div class="qp-ms-h"><b>' + qpEsc(x.label) + "</b><b>" + qpPct(x.share) + '</b></div><div class="qp-bar" style="height:10px"><i style="width:' + Math.round(x.share * 100) + '%"></i></div></div>'; }).join("") +
-        (regime.matchedRule && regime.matchedRule.plain ? '<div class="qp-tile qp-ms-rule"><span class="qp-eb">Warum „' + qpEsc(lage) + "“</span><p class=\"qp-sm\" style=\"margin:8px 0 0\">" + qpEsc(regime.matchedRule.plain) + "</p></div>" : "") +
-        '<p class="qp-xs qp-mut" style="margin:12px 0 0">Zustand heute, keine Prognose.' + (pts.length >= 2 ? " Der Verlauf zeigt den Anteil, wie er an " + pts.length + " Stichtagen veröffentlicht wurde." : "") + '</p><a class="qp-btn" href="/quant/markt/">Marktdaten: Herkunft und Stand</a>';
-      regimeHost.innerHTML = '<button type="button" class="qp-tile qp-tap qp-markt qk2-regime" aria-haspopup="dialog" data-vu-pop="qk2-regime-tpl">' +
-        '<span class="qp-eb">Marktlage' + (seen != null ? " · " + seen.toLocaleString("de-DE") + " Aktien" : "") + "</span>" +
-        (above != null ? '<span class="qp-gwrap vu-gauge">' + qpGauge(above * 100, 260) + '<span class="qp-num qp-gnum">' + qpPct(above) + "</span></span>" : "") +
-        '<b class="qp-lage">' + qpEsc(lage) + "</b>" + (above != null ? '<span class="qp-sm qp-mut qp-b7">über der 200-Tage-Linie' + qpEsc(since) + "</span>" : "") +
-        (pts.length >= 2 ? '<span class="qp-mline">' + qpLine(pts.map(function (p) { return p.share; }), 402, 56) + "</span>" : "") + '<span class="vu-visually-hidden">. Alle Maße öffnen</span></button>' +
-        '<template id="qk2-regime-tpl"><div class="qp-sheet">' + sheetBody + "</div></template>";
-    } else regimeHost.replaceChildren();
+       (market-regime-v1.json → history); antippen öffnet alle Maße im Fenster (Prototyp-Fenster „markt“).
+       Der Text kommt aus der reinen Engine quant/engines/regime-tile.js (dieselbe Funktion baut im Release die Vorschau im Frühstart,
+       scripts/vu2/quant-home-preview.mjs); der Rahmen #qp-heute stammt bei früher Übernahme schon aus dem Frühstart. */
+    var regimeHtml = global.QuantRegimeTile.hostHtml(regime);
+    if (regimeHtml != null) regimeHost.innerHTML = regimeHtml; else regimeHost.replaceChildren();
 
     /* Bei deinen Aktien: je beobachteter Aktie mit Meldung eine Karte; nennt die Meldung zwei Werte, stehen sie mit Balken. */
     if (hits.length) watchHost.replaceChildren(frag(qpSh("Bei deinen Aktien", hits.length.toLocaleString("de-DE") + " neu", X.routes.radar("filter=beobachtet")) +

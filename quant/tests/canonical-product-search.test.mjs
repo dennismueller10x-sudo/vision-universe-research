@@ -47,7 +47,7 @@ function steuerbareSuche(){const pending=[];return {pending,searchInstruments:q=
 function suchUmgebung(api){
  const {win,document,lade,erzeugt}=seitenUmgebung();
  win.VUProductServices={create:()=>api};win.VUDisplayPolicy={};win.VUQuery={};
- lade('quant/ui/shell.js','quant/engines/plain-verdict.js','quant/app/view-model.js','quant/app/ui.js','quant/app/pages.js','quant/app/app.js');
+ lade('quant/ui/shell.js','quant/engines/plain-verdict.js','quant/app/view-model.js','quant/app/ui.js','quant/engines/regime-tile.js','quant/app/pages.js','quant/app/app.js');
  return {win,document,erzeugt};
 }
 async function pruefeSuche(name,input,status,hits,pending){

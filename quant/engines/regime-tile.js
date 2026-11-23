@@ -57,11 +57,11 @@
           return '<div class="qp-ms qk2-measure"><div class="qp-ms-h"><b>' + esc(x.label) + "</b><b>" + pct(x.share) + '</b></div><div class="qp-bar" style="height:10px"><i style="width:' + Math.round(x.share * 100) + '%"></i></div></div>'; }).join("") +
         (regime.matchedRule && regime.matchedRule.plain ? '<div class="qp-tile qp-ms-rule"><span class="qp-eb">Warum „' + esc(lage) + "“</span><p class=\"qp-sm\" style=\"margin:8px 0 0\">" + esc(regime.matchedRule.plain) + "</p></div>" : "") +
         '<p class="qp-xs qp-mut" style="margin:12px 0 0">Zustand heute, keine Prognose.' + (pts.length >= 2 ? " Der Verlauf zeigt den Anteil, wie er an " + pts.length + " Stichtagen veröffentlicht wurde." : "") + '</p><a class="qp-btn" href="/quant/markt/">Marktdaten: Herkunft und Stand</a>';
-      html = '<button type="button" class="qp-tile qp-tap qp-markt qk2-regime" aria-haspopup="dialog" data-vu-pop="qk2-regime-tpl" aria-label="' + esc("Marktlage: " + lage + (above != null ? ", " + pct(above) + " über der 200-Tage-Linie" : "") + since + ". Alle Maße öffnen") + '">' +
+      html = '<button type="button" class="qp-tile qp-tap qp-markt qk2-regime" aria-haspopup="dialog" data-vu-pop="qk2-regime-tpl">' +
         '<span class="qp-eb">Marktlage' + (seen != null ? " · " + seen.toLocaleString("de-DE") + " Aktien" : "") + "</span>" +
         (above != null ? '<span class="qp-gwrap vu-gauge">' + gauge(above * 100, 260) + '<span class="qp-num qp-gnum">' + pct(above) + "</span></span>" : "") +
         '<b class="qp-lage">' + esc(lage) + "</b>" + (above != null ? '<span class="qp-sm qp-mut qp-b7">über der 200-Tage-Linie' + esc(since) + "</span>" : "") +
-        (pts.length >= 2 ? '<span class="qp-mline">' + line(pts.map(function (p) { return p.share; }), 402, 56) + "</span>" : "") + "</button>" +
+        (pts.length >= 2 ? '<span class="qp-mline">' + line(pts.map(function (p) { return p.share; }), 402, 56) + "</span>" : "") + '<span class="vu-visually-hidden">. Alle Maße öffnen</span></button>' +
         '<template id="qk2-regime-tpl"><div class="qp-sheet">' + sheetBody + "</div></template>";
     }
     return html;
