@@ -19,10 +19,20 @@
     if(url.origin!=='https://vu.invalid'||!(url.pathname.startsWith(BASE)||url.pathname==='/core/rights/marketstack-display.json')||url.search||url.hash)throw Error('EUROPE_LOCAL_ARTIFACT_REQUIRED');
     return url.pathname;
   }
+  /* Gleiche Wiederholung wie QuantShell.loadJSON (quant/ui/shell.js): 5xx, Netzfehler, 408 und 429 bis zu dreimal (400 ms, 800 ms),
+     andere 4xx sofort. Hier als Antwort statt JSON, weil die Hash-Pruefung die Rohbytes braucht (Messung 20.11.2026: einzelne 503 neben Auslieferungen). */
+  async function fetchRetry(url,init){
+    for(let rest=3,delay=400;;rest--,delay*=2){
+      let response=null;
+      try{response=await root.fetch(url,init);}catch(error){if(rest<=1)throw error;}
+      if(response&&(response.ok||!(response.status>=500||response.status===408||response.status===429)||rest<=1))return response;
+      await new Promise(resolve=>setTimeout(resolve,delay));
+    }
+  }
   async function sha(bytes){return Array.from(new Uint8Array(await root.crypto.subtle.digest('SHA-256',bytes))).map(v=>v.toString(16).padStart(2,'0')).join('');}
   async function read(binding){
     if(!binding||!/^\w{64}$/.test(binding.sha256)||!/^[a-f0-9]{64}$/.test(binding.sha256))throw Error('EUROPE_ARTIFACT_HASH_REQUIRED');
-    const response=await root.fetch(localURL(binding.url),{cache:'no-cache',credentials:'same-origin'});
+    const response=await fetchRetry(localURL(binding.url),{cache:'no-cache',credentials:'same-origin'});
     if(!response.ok)throw Error('EUROPE_ARTIFACT_UNAVAILABLE');
     const bytes=await response.arrayBuffer();
     if(bytes.byteLength>30000000||await sha(bytes)!==binding.sha256)throw Error('EUROPE_ARTIFACT_HASH_MISMATCH');
@@ -69,7 +79,7 @@
         const usClient=root.VUDiscover.usMarketDataClient||root.VUCore.Client.create({load:path=>root.QuantShell.loadJSON(path),universeId:'US_REAL'});
         const client=Core.create({catalog,rights:manifest.rights,audience:'public',usClient,logoResolver:async key=>{
           const asset=manifest.logos&&manifest.logos[key];if(!asset||typeof asset.path!=='string'||!/^\/discover\/logos\/[A-Za-z0-9_./-]+$/.test(asset.path)||asset.path.includes('..')||!/^[a-f0-9]{64}$/.test(asset.sha256))return null;
-          if(!logoCache.has(key))logoCache.set(key,(async()=>{const response=await root.fetch(asset.path);if(!response.ok)throw Error('EUROPE_LOGO_UNAVAILABLE');const bytes=await response.arrayBuffer();if(await sha(bytes)!==asset.sha256||bytes.byteLength!==asset.bytes)throw Error('EUROPE_LOGO_HASH_MISMATCH');return asset;})().catch(()=>null));return logoCache.get(key);
+          if(!logoCache.has(key))logoCache.set(key,(async()=>{const response=await fetchRetry(asset.path);if(!response.ok)throw Error('EUROPE_LOGO_UNAVAILABLE');const bytes=await response.arrayBuffer();if(await sha(bytes)!==asset.sha256||bytes.byteLength!==asset.bytes)throw Error('EUROPE_LOGO_HASH_MISMATCH');return asset;})().catch(()=>null));return logoCache.get(key);
         },loadSeries:async request=>{
           const binding=request.range==='1Y'?manifest.series[request.securityId]:manifest.history&&manifest.history[request.securityId]&&manifest.history[request.securityId][request.range];
           if(!binding||request.basis!=='RAW_UNADJUSTED')throw Error('EUROPE_SERIES_NOT_PUBLISHED');
@@ -85,11 +95,11 @@
     return {connect,async authority(){const [registry,calendar]=await Promise.all([read(manifest.rightsEvidence),read(manifest.calendar)]);return {allowed:boundRights(registry,manifest.rights),catalogSha256:manifest.catalog.sha256,calendar};}};
   }
   async function start(){
-    const registryResponse=await root.fetch('/core/registry/domains.json',{cache:'no-cache',credentials:'same-origin'});
+    const registryResponse=await fetchRetry('/core/registry/domains.json',{cache:'no-cache',credentials:'same-origin'});
     if(!registryResponse.ok)return null;
     const registry=await registryResponse.json();
     if(!Array.isArray(registry.domains)||!registry.domains.some(domain=>domain&&domain.id==='europeDiscoverDisplay'&&domain.artifact===BASE+'manifest.json'&&domain.producer==='scripts/marketstack/europe-discover-publication.mjs'))return null;
-    const response=await root.fetch(BASE+'manifest.json',{cache:'no-cache',credentials:'same-origin'});
+    const response=await fetchRetry(BASE+'manifest.json',{cache:'no-cache',credentials:'same-origin'});
     if(!response.ok)return null;
     const manifest=await response.json(),loader=create(manifest);
     root.VUDiscover.europePublicLoader=loader;
