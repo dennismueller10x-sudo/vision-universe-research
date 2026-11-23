@@ -257,6 +257,21 @@ dafür braucht es bei den Kauf-Stopp-Methoden Kurse innerhalb des Tages. (2) Fes
 Pivot, Gap-Up, Episodic Pivot und Holy Grail sind Ereignis-Methoden mit Volumen- oder Tagesverlaufsregeln und in dieser Form
 nicht abbildbar; sie bleiben offen.
 
+**Ergebnis Stufe 5** (Lauf 45184443174, 01/2014 bis 09/2026, 153 Monate, nach Kosten, delistete Titel enthalten; SPY 14,1 % p. a.):
+- **Alle drei neuen Muster: nicht belegt** (p nach Holm: Turtle 0,572, Darvas 0,928, Weinstein 0,586).
+- Turtle: + Faktoren 16,6 % (+2,6 Pp, max. Verlust −29,5 %, 8 von 13 Jahren vorn), nur Muster 12,1 % (−2,0 Pp, −43,8 %).
+- Weinstein: + Faktoren 14,5 % (+0,4 Pp, −31,1 %), nur Muster 10,9 % (−3,2 Pp, −64,5 %).
+- Darvas (neues Zweijahreshoch): + Faktoren 10,1 % (−3,9 Pp, 5 Monate in Kasse), nur Muster 11,2 % (−2,8 Pp). Trägt in dieser
+  Lesart in keinem Teilzeitraum.
+- Minervini (Vergleich, wie Stufe 4): + Faktoren 18,4 % (+4,3 Pp, −24,1 %), nur Muster 18,1 % (+4,0 Pp, −40,9 %). Nur Faktoren
+  16,3 % (+2,3 Pp, −34,6 %).
+- Lesart: Die Muster allein liegen außer der Trendvorlage hinter SPY. Die Faktoren heben Turtle um 4,5 Pp und Weinstein um 3,6 Pp
+  und senken den Maximalverlust deutlich; über „nur Faktoren“ kommt aber nur die Trendvorlage klar hinaus (+2,1 Pp), Turtle
+  knapp (+0,3 Pp). Der Vorsprung aller Depots stammt überwiegend aus 2020–2022; 2014–2016 und seit 2023 liegen sie hinten.
+- Folgerung: Für eine Auswahl mit Renditeangabe kommt aus dieser Familie nur „Trendvorlage + Faktoren“ in Frage (im
+  Vorwärtstest als M25, §4e). Die Ein- und Ausstiegsregeln der Methoden bleiben ungeprüft, bis Kurse innerhalb des Tages
+  vorliegen.
+
 ## 5. Ausführung und Veröffentlichung
 
 - Umsetzung: `scripts/research/backtest2/` (Markt, Signale, Depotführung, Suche, Lauf mit Workern). Workflow `research.yml`, Teil
