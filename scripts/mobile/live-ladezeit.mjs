@@ -20,7 +20,7 @@ import {fileURLToPath} from 'node:url';
 
 export const SITES = Object.freeze({
  app: {base: 'https://research.visionuniverse.de', gate: true,
-  routes: ['/', '/discover/', '/quant/', '/technical/', '/mein-dashboard/', '/quant/#/aktie/NVDA']},
+  routes: ['/', '/discover/', '/quant/', '/technical/', '/technical/#/screener', '/technical/#/chart/NVDA', '/mein-dashboard/', '/quant/#/aktie/NVDA']},
  www: {base: 'https://www.visionuniverse.de', gate: false, routes: ['/', '/magazin/', '/news/']}
 });
 export const CPUS = Object.freeze([4, 2]);
@@ -45,8 +45,9 @@ export function lcpElementOf(ss) {
 /** Groesste einzelne Verschiebung aller Laeufe (Wert, Zeitpunkt, Knoten): benennt, WAS springt. */
 export function topShiftOf(ss) {
  let best = null;
- for (const s of ss) for (const sh of s.shifts || []) if (!best || sh.value > best.value) best = {value: sh.value, at: sh.at, nodes: (sh.sources || []).map((x) => nodeName(x.node)).slice(0, 3)};
- return best ? {value: Math.round(best.value * 1000) / 1000, atMs: Math.round(best.at), nodes: best.nodes} : null;
+ const box = (r) => (r && typeof r.y === 'number' ? {y: Math.round(r.y), h: Math.round(r.height || 0)} : null);
+ for (const s of ss) for (const sh of s.shifts || []) if (!best || sh.value > best.value) best = {value: sh.value, at: sh.at, nodes: (sh.sources || []).map((x) => nodeName(x.node)).slice(0, 3), moves: (sh.sources || []).slice(0, 3).map((x) => ({from: box(x.previous), to: box(x.current)}))};
+ return best ? {value: Math.round(best.value * 1000) / 1000, atMs: Math.round(best.at), nodes: best.nodes, moves: best.moves} : null;
 }
 /** Zugangshuelle (nur Host mit Maske): Ende der Huelle und Ende der Inhalts-Antwort, Median je Lauf in ms. */
 export function gateOf(ss) {
@@ -127,7 +128,7 @@ export function reportMarkdown(report) {
  const d = [];
  for (const r of detail) {
   if (r.lcpElement) d.push('- ' + r.key + ' LCP-Element: ' + r.lcpElement.tag + (r.lcpElement.id ? '#' + r.lcpElement.id : '') + (r.lcpElement.url ? ' ' + r.lcpElement.url : ''));
-  if (r.topShift) d.push('- ' + r.key + ' groesste Verschiebung: ' + r.topShift.value + ' bei ' + r.topShift.atMs + ' ms, Knoten ' + r.topShift.nodes.join(' | '));
+  if (r.topShift) d.push('- ' + r.key + ' groesste Verschiebung: ' + r.topShift.value + ' bei ' + r.topShift.atMs + ' ms, Knoten ' + r.topShift.nodes.map((n, i) => { const m = (r.topShift.moves || [])[i]; return m && m.from && m.to ? n + ' (y ' + m.from.y + '→' + m.to.y + ', h ' + m.from.h + '→' + m.to.h + ')' : n; }).join(' | '));
   if (r.gate) d.push('- ' + r.key + ' Zugangshuelle: Huelle bis ' + r.gate.shellMs + ' ms, Inhalt bis ' + r.gate.contentMs + ' ms (+' + r.gate.extraMs + ' ms)');
  }
  if (d.length) L.push('## Details (CPU ' + Math.max(...report.rows.map((x) => x.cpu)) + 'x)', '', ...d, '');
