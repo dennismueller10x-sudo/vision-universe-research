@@ -126,19 +126,27 @@ jobs:
         if: inputs.publish
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh workflow run pages-release.yml --ref main
+        # 23.11.2026 (Wiederherstellung 45110356958): Der Pages-Dispatch stand 30 min pending in der Gruppe pages-production (ein
+        # Wartesteckplatz, der neueste wartende Lauf verdraengt den aelteren). Jetzt wie Refresh und Universe-Release ueber
+        # refresh-dispatch-wait.mjs: erst hoechstens 20 min auf eine freie Gruppe warten, dann dispatchen, den EIGENEN Lauf verfolgen,
+        # bei Verdraengung (cancelled/skipped) oder Vor-Deploy-Fehler hoechstens 2 Mal neu dispatchen und bis zu 90 min auf die
+        # Auslieferung der erwarteten Generation warten. Exit 1 = nicht ausgeliefert (der Fehlerpfad unten entscheidet wie bisher).
+        run: |
+          set -euo pipefail
+          expected="$(node -p "JSON.parse(require('fs').readFileSync(process.env.RUNNER_TEMP+'/ci-profile-source/health.json','utf8')).consumerGeneration")"
+          [[ "$expected" =~ ^[0-9a-f]{24}$ ]] || { echo "::error::consumerGeneration unknown or malformed"; exit 1; }
+          node scripts/company_intelligence/refresh-dispatch-wait.mjs --expected "$expected" --wait-minutes 90 --wait-free-minutes 20 --out "$RUNNER_TEMP/ci-profile-source/dispatch-wait.json"
       - name: Wait until the new generation is served
         id: served
         if: inputs.publish
         env:
           NODE_PATH: /tmp/ci-profile-source/node_modules
+        # Die eigentliche Wartezeit liegt im Schritt davor; hier nur noch die Gegenprobe (kurz, damit der Fehlerpfad die Lage sofort sieht).
         run: |
           node --input-type=module <<'NODE'
           import {readFileSync} from 'node:fs';
           const expected=JSON.parse(readFileSync(process.env.RUNNER_TEMP+'/ci-profile-source/health.json')).consumerGeneration;
-          // 23.11.2026: 90 statt 30 min. Der Pages-Dispatch reiht sich in die Gruppe pages-production ein; bei Last (Pushes und workflow_run
-          // anderer Laeufe, einzelne bis 27 min) kam er in 30 min nicht dran (Lauf 45110356958). Fehlerpfad (CLOSE_GATE) bleibt unveraendert.
-          const deadline=Date.now()+90*60000;let served=false;
+          const deadline=Date.now()+3*60000;let served=false;
           while(Date.now()<deadline){
             try{const r=await fetch('https://research.visionuniverse.de/company-intelligence-delivery.json?profile='+Date.now(),{signal:AbortSignal.timeout(15000)});const d=await r.json();if(d.status==='PASS'&&d.generation===expected){served=true;break;}}catch{}
             await new Promise(r=>setTimeout(r,10000));

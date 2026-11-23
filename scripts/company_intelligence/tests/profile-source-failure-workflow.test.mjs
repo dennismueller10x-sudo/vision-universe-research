@@ -233,13 +233,17 @@ test('Mutation (Verhalten): wuerde der Schliess-Schritt wieder pauschal bei fail
  assert.equal(good.closeRan,false);
 });
 
-test('Wartebudget auf die eigene Pages-Auslieferung: 90 min, Job-Limit mit Reserve dahinter (23.11.2026, Lauf 45110356958)',()=>{
- const job=wf.jobs.upgrade,served=find(job.steps,'served');
- const minutes=Number(/Date\.now\(\)\+(\d+)\*60000/.exec(served.run)?.[1]);
- assert.equal(minutes,90,'bei Last in pages-production reichten 30 min nicht');
- // Wiederherstellung (rund 60 min) + Warten + Live-QA/Beobachtung/Fehlerpfad (rund 30 min): das Job-Limit muss tragen.
- assert.ok(job['timeout-minutes']>=60+minutes+30,'timeout-minutes '+job['timeout-minutes']);
- // Der Fehlerpfad bleibt: ein nicht ausgeliefertes Gate-Oeffnen schliesst weiter.
- assert.match(served.run,/PROFILE_SOURCE_GENERATION_NOT_SERVED/);
+test('Pages-Auslieferung der Wiederherstellung (23.11.2026, Lauf 45110356958): eigener Lauf, freie Gruppe, Re-Dispatch, 90 min Budget, Job-Limit mit Reserve',()=>{
+ const job=wf.jobs.upgrade,dispatch=find(job.steps,'dispatch'),served=find(job.steps,'served');
+ // Kein blinder Einmal-Dispatch mehr: das Wartescript dispatcht, verfolgt den eigenen Lauf und dispatcht bei Verdraengung neu.
+ assert.match(dispatch.run,/refresh-dispatch-wait\.mjs --expected "\$expected" --wait-minutes 90 --wait-free-minutes 20/);
+ assert.doesNotMatch(dispatch.run,/gh workflow run pages-release/);
+ assert.match(dispatch.run,/\^\[0-9a-f\]\{24\}\$/,'erwartete Generation wird vor dem Dispatch geprueft (fail-closed)');
+ const wait=Number(/--wait-minutes (\d+)/.exec(dispatch.run)[1]),free=Number(/--wait-free-minutes (\d+)/.exec(dispatch.run)[1]);
+ // Wiederherstellung (rund 60 min) + Warten auf freie Gruppe + Wartebudget + Live-QA/Beobachtung/Fehlerpfad (rund 30 min).
+ assert.ok(job['timeout-minutes']>=60+free+wait+30,'timeout-minutes '+job['timeout-minutes']);
+ // Gegenprobe kurz, Fehlerpfad bleibt: ein nicht ausgeliefertes, geoeffnetes Gate schliesst weiter.
+ assert.match(served.run,/PROFILE_SOURCE_GENERATION_NOT_SERVED/);assert.ok(Number(/Date\.now\(\)\+(\d+)\*60000/.exec(served.run)[1])<=5);
  assert.ok(closeStep(job.steps),'Fehlerpfad-Schritt bleibt');
+ assert.equal(dispatch.env.GH_TOKEN,'${{ secrets.GITHUB_TOKEN }}');
 });
