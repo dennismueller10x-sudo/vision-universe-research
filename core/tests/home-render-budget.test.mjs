@@ -116,3 +116,16 @@ test('reduzierte Bewegung und 44-px-Ziele im Kopf', () => {
   assert.match(css, /\.hd-btn\{width:44px;height:44px/);
   assert.match(css, /\.hd-login\{[^}]*min-height:44px/);
 });
+
+test('Kopf-Grundstil im Kopf der Seite: wortgleich aus home.css (kein Sprung des Kopfes hinter der Zugangsmaske, CLS 0,27)', () => {
+  const m = html.match(/<style>(body\{margin:0;padding-top:56px[\s\S]*?)<\/style>/);
+  assert.ok(m, 'Kopf-Grundstil steht vor den Stylesheets');
+  assert.ok(html.indexOf(m[0]) < html.indexOf('<link rel="stylesheet" href="/assets/site-navigation.css">'), 'vor dem ersten Stylesheet');
+  assert.ok(template.includes(m[0]), 'steht in der Vorlage (index.html entsteht aus build-home.mjs)');
+  const blocks = (text) => [...text.matchAll(/([^{}@]+)\{([^{}]*)\}/g)].map(x => [x[1].trim(), x[2].split(';').map(d => d.trim()).filter(Boolean)]);
+  const real = blocks(css.replace(/\/\*[\s\S]*?\*\//g, ''));
+  const declared = (sel, decl) => real.some(([s, ds]) => s === sel && ds.includes(decl));
+  const rules = blocks(m[1].replace(/@media\([^)]*\)\{/g, ''));
+  assert.ok(rules.length >= 12);
+  for (const [sel, decls] of rules) for (const d of decls) assert.ok(declared(sel, d), `home.css kennt ${sel}{${d}}`);
+});
