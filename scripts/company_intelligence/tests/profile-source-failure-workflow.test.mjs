@@ -71,7 +71,7 @@ test('Struktur: Fehlerpfad erfuellt den Vertrag',()=>assert.deepEqual(problems(w
 test('ADR-005: keine ${{ inputs.* }} im run-Text, Rechte minimal, Concurrency unveraendert',()=>{
  for(const [name,j] of Object.entries(wf.jobs))for(const s of j.steps||[])assert(!/\$\{\{\s*(github\.event\.)?inputs\./.test(s.run||''),`${name}/${s.name}`);
  assert.deepEqual(wf.permissions,{contents:'read',actions:'write'});
- assert.equal(wf.jobs.upgrade['timeout-minutes'],120);
+ assert.equal(wf.jobs.upgrade['timeout-minutes'],210,'90 min Warten auf Pages plus Wiederherstellung und Reserve (23.11.2026)');
 });
 test('Struktur: Entscheidungs- und Schliess-Schritt zeigen nirgends auf den entfernten Schritt "live"',()=>{
  assert(!JSON.stringify(wf).includes('steps.live.'));
@@ -231,4 +231,15 @@ test('Mutation (Verhalten): wuerde der Schliess-Schritt wieder pauschal bei fail
  assert.equal(r.closeRan,true,'der Mutant verhaelt sich wie der alte Fehlerschritt');
  const good=await simulate({fail:{run:'failure'},health:H({published:false}),baseline:B,probe:P()});
  assert.equal(good.closeRan,false);
+});
+
+test('Wartebudget auf die eigene Pages-Auslieferung: 90 min, Job-Limit mit Reserve dahinter (23.11.2026, Lauf 45110356958)',()=>{
+ const job=wf.jobs.upgrade,served=find(job.steps,'served');
+ const minutes=Number(/Date\.now\(\)\+(\d+)\*60000/.exec(served.run)?.[1]);
+ assert.equal(minutes,90,'bei Last in pages-production reichten 30 min nicht');
+ // Wiederherstellung (rund 60 min) + Warten + Live-QA/Beobachtung/Fehlerpfad (rund 30 min): das Job-Limit muss tragen.
+ assert.ok(job['timeout-minutes']>=60+minutes+30,'timeout-minutes '+job['timeout-minutes']);
+ // Der Fehlerpfad bleibt: ein nicht ausgeliefertes Gate-Oeffnen schliesst weiter.
+ assert.match(served.run,/PROFILE_SOURCE_GENERATION_NOT_SERVED/);
+ assert.ok(closeStep(job.steps),'Fehlerpfad-Schritt bleibt');
 });

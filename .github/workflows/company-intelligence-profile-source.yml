@@ -45,7 +45,7 @@ jobs:
   upgrade:
     if: ${{ !inputs.live_review_only && ((!(inputs.publish || github.event_name == 'schedule' || inputs.zeitplan)) || github.ref == 'refs/heads/main') }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 120
+    timeout-minutes: 210
     steps:
       - uses: actions/checkout@v4
       - uses: actions/checkout@v4
@@ -136,7 +136,9 @@ jobs:
           node --input-type=module <<'NODE'
           import {readFileSync} from 'node:fs';
           const expected=JSON.parse(readFileSync(process.env.RUNNER_TEMP+'/ci-profile-source/health.json')).consumerGeneration;
-          const deadline=Date.now()+30*60000;let served=false;
+          // 23.11.2026: 90 statt 30 min. Der Pages-Dispatch reiht sich in die Gruppe pages-production ein; bei Last (Pushes und workflow_run
+          // anderer Laeufe, einzelne bis 27 min) kam er in 30 min nicht dran (Lauf 45110356958). Fehlerpfad (CLOSE_GATE) bleibt unveraendert.
+          const deadline=Date.now()+90*60000;let served=false;
           while(Date.now()<deadline){
             try{const r=await fetch('https://research.visionuniverse.de/company-intelligence-delivery.json?profile='+Date.now(),{signal:AbortSignal.timeout(15000)});const d=await r.json();if(d.status==='PASS'&&d.generation===expected){served=true;break;}}catch{}
             await new Promise(r=>setTimeout(r,10000));
