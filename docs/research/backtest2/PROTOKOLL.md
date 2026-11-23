@@ -340,6 +340,19 @@ Stufe 3 (Fassung A): eine Auswahl, die je Runde nur die Lernjahre kennt, tritt a
   Vorwärtstest aufnehmen; dafür braucht das Produkt die Veränderung der Aktienzahl als Baustein. (2) Keine Renditeaussage nach
   außen aus der Rückschau. (3) Seltene Muster über eine Ereignisstudie messen.
 
+## 4j. Stufe 8: feste Hypothese Momentum + Bruttogewinn/Bilanz + Rückkäufe (23.11.2026, vor dem Lauf festgelegt)
+
+Herkunft, offen benannt: Das Signal steht seit Stufe 2 fest; die Depotform (25 Titel, Haltepuffer) wurde nach Einsicht in die
+Rückschau der Stufe 7 gewählt. Der Lauf beschreibt genau diese eine Regel und bestätigt sie nicht; bestätigen kann nur der
+Vorwärtstest. `scripts/research/backtest2/rueckkauf-hypothese.mjs`, Modus `merkmale-rueckkauf-smoke` / `merkmale-rueckkauf`.
+- **R25:** kein Muster, Rang nach Momentum 12-1 + Bruttogewinn je Bilanzsumme + Rückkäufe, 25 Titel, Haltepuffer (ein Titel
+  bleibt, solange er unter den besten 50 liegt), übrige Depotführung wie Stufe 7. Gewählt ist 25 statt der in der Rückschau
+  besten 15 Titel, weil 25 weniger an Einzelwerten hängt.
+- **Gegenproben**, je genau eine Einstellung anders: ohne den besten bzw. die zwei besten Titel jedes Monats (im Nachhinein
+  entfernt, Härtetest gegen „hängt an wenigen Gewinnern“), ohne Haltepuffer, 15 Titel, 50 Titel, nur mit Trendvorlage, ohne
+  Rückkäufe.
+- Berichtet: Rendite, Abstand zu SPY, max. Verlust, Jahre vorn, p, Umschlag; Kalenderjahre und Teilzeiträume für R25.
+
 ## 5. Ausführung und Veröffentlichung
 
 - Umsetzung: `scripts/research/backtest2/` (Markt, Signale, Depotführung, Suche, Lauf mit Workern). Workflow `research.yml`, Teil
