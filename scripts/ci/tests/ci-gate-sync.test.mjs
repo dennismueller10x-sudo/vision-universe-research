@@ -149,8 +149,8 @@ const hatPullRequest = (f) => {
   return false;
 };
 
-test("CG-14 ci-gate-neu.yml: workflow_run nennt JEDEN Workflow mit pull_request (ausser den Gates), Job-Filter, Rechte, Gruppe je Commit", () => {
-  const gate = text("ci-gate-neu.yml");
+test("CG-14 ci-gate.yml: workflow_run nennt JEDEN Workflow mit pull_request (ausser den Gates), Job-Filter, Rechte, Gruppe je Commit", () => {
+  const gate = text("ci-gate.yml");
   const liste = [...(gate.match(/workflow_run:\n    workflows:\n((?:      - [^\n]+\n)+)/) || [, ""])[1].matchAll(/- '?([^'\n]+)'?\n/g)].map((m) => m[1].trim());
   const erwartet = readdirSync(DIR).filter((f) => /\.ya?ml$/.test(f) && !/^ci-gate/.test(f) && hatPullRequest(f)).map(name);
   assert.ok(erwartet.length >= 8, "PR-Workflows gefunden");
@@ -158,9 +158,10 @@ test("CG-14 ci-gate-neu.yml: workflow_run nennt JEDEN Workflow mit pull_request 
   assert.deepEqual(liste.filter((n) => !erwartet.includes(n)), [], "Eintrag ohne PR-Workflow");
   assert.match(gate, /if: github\.event_name == 'pull_request' \|\| github\.event\.workflow_run\.event == 'pull_request'/, "Push-Laeufe derselben Workflows brauchen keinen Runner");
   assert.match(gate, /permissions:\n  contents: read\n  actions: read\n  checks: write\n/);
-  assert.match(gate, /group: ci-gate-neu-\$\{\{ github\.event\.pull_request\.head\.sha \|\| github\.event\.workflow_run\.head_sha \}\}/);
+  assert.match(gate, /group: ci-gate-\$\{\{ github\.event\.pull_request\.head\.sha \|\| github\.event\.workflow_run\.head_sha \}\}/);
   assert.match(gate, /cancel-in-progress: false/);
-  assert.match(gate, /GATE_NAME: \$\{\{ github\.head_ref == 'claude\/ci-gate-tausch' && 'ci-gate-neu' \|\| 'ci-gate' \}\}/, "Namenstausch: ci-gate, nur der Tausch-PR im Schatten");
+  assert.match(gate, /GATE_NAME: ci-gate\n/, "Check-Name ci-gate");
+  assert.doesNotMatch(gate, /GATE_SHADOW|head_ref/, "keine Schatten-Ausnahme mehr");
   assert.match(gate, /node scripts\/ci\/ci-gate-sync\.mjs/);
 });
 
