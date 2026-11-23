@@ -17,6 +17,8 @@
 .tc a:focus-visible,.tc button:focus-visible,.tc input:focus-visible,.tc select:focus-visible,.tc summary:focus-visible{outline:2px solid var(--vu-focus);outline-offset:3px;border-radius:10px}
 .tc-boot{padding-top:24px}
 .tc-skel{background:linear-gradient(90deg,var(--vu-line),var(--vu-surface),var(--vu-line));background-size:200% 100%;border-radius:14px;animation:tc-shim 1.4s linear infinite}
+/* Platzhalter fuer den Kopfbereich des Screeners (Rail, Filterzeile, Trefferkarte); 390 px: rund 420 px, damit der Ergebnisbereich beim Fuellen nicht springt. */
+.tc-skel--body{height:420px}
 @keyframes tc-shim{to{background-position:-200% 0}}
 @media(prefers-reduced-motion:reduce){.tc-skel{animation:none}}
 

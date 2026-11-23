@@ -797,7 +797,9 @@
     put(main, [head, persp, screenerTabs("build"), body, results]);
     function go(next) { location.hash = "#/screener" + (next ? "?" + next : ""); }
     function withParam(k, v) { var q = (location.hash.split("?")[1] || "").split("&").filter(function (x) { return x && x.split("=")[0] !== k; }); if (v) q.push(k + "=" + v); return "#/screener" + (q.length ? "?" + q.join("&") : ""); }
-    if (!dataset) put(results, el("div", { class: "tc-skel", style: "height:220px" }));
+    /* Platz vorab reservieren (Messung 23.11., CLS 0,215): Ohne Platzhalter im Kopfbereich schoebe der spaet gefuellte Inhalt den
+       Ergebnisbereich nach unten. Beide Platzhalter haben die Hoehe des fertigen Inhalts (CSS .tc-skel--body, .tc-results-sec). */
+    if (!dataset) { put(body, el("div", { class: "tc-skel tc-skel--body", "aria-hidden": "true" })); put(results, el("div", { class: "tc-skel", style: "height:220px" })); }
 
     Promise.all([loadScreener(), loadSpark()]).then(function (r) {
       var D = r[0], ds = D.ds, built = preset ? { query: Object.assign({ limit: 200 }, preset.query), dropped: [] }
