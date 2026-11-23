@@ -553,7 +553,10 @@ test("EHV-3 · Aktie, zwei Fälle: zählbar mit drei Sätzen und Kapiteln, nicht
   assert.match(asm, /wavesPage\(/);
   assert.doesNotMatch(asm.replace(/\/\*[\s\S]*?\*\//g, ""), /Technischer Ausblick|hero|levels/, "Elliott hängt keinen Ausblick, keine Kennzahlen mit Zielbereich an");
   assert.doesNotMatch(cb, /Rücklauf abwarten/);
-  assert.match(cb, /var io = inElliott && !replayStep && !pjOnChart && a\.overlays \? \{ zones: \(a\.overlays\.zones \|\| \[\]\)\.filter[^]*?projectedPaths: \(a\.overlays\.projectedPaths/, "Chart im Elliott-Produkt: Plan der Hauptlesart (Zone, Pfad, Ungültig-Marke)");
+  /* Owner 23.11.2026: im Elliott-Chart steht nur der Plan aus der Zaehlung (elliott/engine/plan.js), nie Zone oder Pfad des Szenario-Modells */
+  assert.match(cb, /var ewPlan = inElliott && global\.VUElliottPlan \? global\.VUElliottPlan\.planOf\(a\)/, "Elliott-Chart: Plan aus der Zählung");
+  assert.match(cb, /var io = inElliott && !replayStep && !pjOnChart \? \{ zones: ewPlan && ewPlan\.zone [^]*?projectedPaths: \[\] \}/, "Elliott-Chart: Zone der Elliott-Projektion und Ungültig-Marke der Zählung, kein Szenario-Pfad");
+  assert.doesNotMatch(cb, /a\.overlays\.projectedPaths \|\| \[\]\)\.filter\(function \(x\) \{ return x\.scenario === "PRIMARY"/, "kein Szenario-Pfad im Elliott-Chart");
   assert.match(cb, /wavesOn = view === "pro" \|\| \(inElliott \? !!\(E && E\.primary\)/, "Wellen im Elliott-Produkt immer sichtbar");
 });
 
