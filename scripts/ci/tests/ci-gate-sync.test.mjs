@@ -179,3 +179,22 @@ test("CG-15 Pfadfilter: nur die Laeufe, die es gibt, zaehlen; fehlende (nie gest
   // Ein Lauf, der wegen des Pfadfilters als "skipped" endet, gilt als bestanden.
   assert.equal(entscheide({ runs: [...nur, lauf("Quant CI", "completed", "skipped")], nowMs: T0 + GRACE_MS + 1000, mode: "event" }).aktion, "gruen");
 });
+
+/* ---------- 403 auf dem Check-Run eines Actions-Jobs (23.11.2026, #2312): nie aendern, neuer Check ---------- */
+const gruen = { status: "completed", conclusion: "success", title: "ok", summary: "ok" };
+test("CG-16 Der Check-Run eines Actions-Jobs (details_url .../job/<id>) wird nicht geaendert: neuer Check-Run, kein PATCH", async () => {
+  const api = fakeApi([[]], { checks: [{ id: 7, name: "ci-gate", status: "in_progress", details_url: "https://github.com/o/r/actions/runs/1/job/2", app: { slug: "github-actions" } }] });
+  await setzeCheck({ api, repo: "o/r", sha: SHA, name: "ci-gate", entscheidung: gruen });
+  assert.equal(api.log.filter((l) => l.method === "PATCH").length, 0);
+  assert.equal(api.log.filter((l) => l.method === "POST").length, 1);
+});
+test("CG-17 403/404/422 beim Aendern: neuer Check-Run (latest gilt), andere Fehler (500) brechen ab, nie stilles Gruen", async () => {
+  const mk = (status) => {
+    const api = fakeApi([[]], { checks: [{ id: 7, name: "ci-gate", status: "in_progress", details_url: "https://github.com/o/r/actions/runs/1", app: { slug: "github-actions" } }] });
+    const send = api.send; api.send = async (m, p, b) => { if (m === "PATCH") throw new Error(`${status} https://api.github.com${p}`); return send(m, p, b); };
+    return api;
+  };
+  const a403 = mk(403); await setzeCheck({ api: a403, repo: "o/r", sha: SHA, name: "ci-gate", entscheidung: gruen });
+  assert.equal(a403.log.filter((l) => l.method === "POST").length, 1);
+  await assert.rejects(() => setzeCheck({ api: mk(500), repo: "o/r", sha: SHA, name: "ci-gate", entscheidung: gruen }), /500/);
+});
