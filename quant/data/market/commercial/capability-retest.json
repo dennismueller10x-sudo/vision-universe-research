@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-09T16:07:01.776Z",
+  "generatedAt": "2026-11-23T15:58:10.641Z",
   "provider": "tiingo",
   "plan": "commercial",
   "scope": "commercialCapabilityRetest",
@@ -8,9 +8,9 @@
   "run": {
     "source": "github-actions",
     "repository": "dennismueller10x-sudo/vision-universe-research",
-    "runId": "34374652149",
-    "commit": "49fc460e745f1a902463c489da2df6048d45be2e",
-    "ref": "claude/tiingo-commercial-phase-1-4j0581",
+    "runId": "45210845142",
+    "commit": "78565db592b04949c5cb9449bb146c73a3a50211",
+    "ref": "main",
     "requests": 20
   },
   "symbols": [
@@ -22,8 +22,8 @@
   ],
   "sessionAtRun": {
     "phase": "REGULAR",
-    "localDate": "2026-09-09",
-    "localTime": "12:06:58",
+    "localDate": "2026-11-23",
+    "localTime": "10:58:07",
     "closedReason": null,
     "note": "Welche Befunde ueberhaupt moeglich waren, haengt an dieser Zeile - erweiterte Zeiten und Kursabstaende vor allem."
   },
@@ -119,49 +119,49 @@
       "result": "PASSED",
       "evidence": {
         "interpretation": "Der Schluessel wird vom Anbieter angenommen.",
-        "latencyMs": 908
+        "latencyMs": 352
       },
-      "checkedAt": "2026-09-09T16:06:59.305Z"
+      "checkedAt": "2026-11-23T15:58:08.176Z"
     },
     {
       "symbol": "AAPL",
       "capability": "eod",
       "result": "PASSED",
       "evidence": {
-        "bars": 9238,
+        "bars": 9291,
         "first": "1990-01-02",
-        "last": "2026-09-08",
-        "latencyMs": 908
+        "last": "2026-11-20",
+        "latencyMs": 352
       },
-      "checkedAt": "2026-09-09T16:06:59.305Z"
+      "checkedAt": "2026-11-23T15:58:08.176Z"
     },
     {
       "symbol": "AAPL",
       "capability": "historyDepth",
       "result": "PASSED",
       "evidence": {
-        "bars": 9238,
-        "years": 36.7,
+        "bars": 9291,
+        "years": 36.9,
         "requestedFrom": "1990-01-01",
-        "interpretation": "Der Anbieter liefert 36.7 Jahre ab 1990-01-02. Angefragt war ab 1990-01-01; frueher beginnt seine Historie fuer diesen Titel nicht."
+        "interpretation": "Der Anbieter liefert 36.9 Jahre ab 1990-01-02. Angefragt war ab 1990-01-01; frueher beginnt seine Historie fuer diesen Titel nicht."
       },
-      "checkedAt": "2026-09-09T16:06:59.305Z"
+      "checkedAt": "2026-11-23T15:58:08.176Z"
     },
     {
       "symbol": "AAPL",
       "capability": "adjustedEod",
       "result": "PASSED",
       "evidence": {
-        "barsWithAdjustedColumns": 9238,
-        "of": 9238,
+        "barsWithAdjustedColumns": 9291,
+        "of": 9291,
         "declaredStatus": "adjusted",
         "inferredStatus": "TOTAL_RETURN",
         "inferredFrom": "dividend",
         "splitEvents": 4,
-        "dividendEvents": 81,
+        "dividendEvents": 82,
         "interpretation": "Die Antwort traegt die bereinigten Spalten. Welche Stufe sie belegen, sagt inferredStatus - nicht die Anbieterdokumentation."
       },
-      "checkedAt": "2026-09-09T16:06:59.311Z"
+      "checkedAt": "2026-11-23T15:58:08.192Z"
     },
     {
       "symbol": "AAPL",
@@ -169,10 +169,10 @@
       "result": "PASSED",
       "evidence": {
         "splits": 4,
-        "dividends": 81,
+        "dividends": 82,
         "interpretation": "splitFactor und/oder divCash sind in der Kursreihe belegt."
       },
-      "checkedAt": "2026-09-09T16:06:59.312Z"
+      "checkedAt": "2026-11-23T15:58:08.193Z"
     },
     {
       "symbol": "AAPL",
@@ -181,12 +181,12 @@
       "evidence": {
         "hasLast": false,
         "hasTimestamp": true,
-        "lagSeconds": 1,
+        "lagSeconds": 4,
         "sessionPhase": "REGULAR",
         "sessionDependent": false,
         "interpretation": "Kein ausgefuehrter Kurs bei offener Boerse. Das ist ein Befund ueber den Zugang."
       },
-      "checkedAt": "2026-09-09T16:06:59.524Z"
+      "checkedAt": "2026-11-23T15:58:08.280Z"
     },
     {
       "symbol": "AAPL",
@@ -199,19 +199,19 @@
         "hasBidAsk": false,
         "interpretation": "Tiingo liefert seinen Referenzkurs (tngoLast) neben dem IEX-Kurs."
       },
-      "checkedAt": "2026-09-09T16:06:59.524Z"
+      "checkedAt": "2026-11-23T15:58:08.280Z"
     },
     {
       "symbol": "AAPL",
       "capability": "intraday",
       "result": "PASSED",
       "evidence": {
-        "bars": 157,
+        "bars": 89,
         "interval": "1min",
-        "first": "2026-09-09T13:30:00.000Z",
-        "last": "2026-09-09T16:06:00.000Z"
+        "first": "2026-11-23T14:30:00.000Z",
+        "last": "2026-11-23T15:58:00.000Z"
       },
-      "checkedAt": "2026-09-09T16:06:59.609Z"
+      "checkedAt": "2026-11-23T15:58:08.398Z"
     },
     {
       "symbol": "AAPL",
@@ -219,13 +219,13 @@
       "result": "PASSED",
       "evidence": {
         "requested": true,
-        "barsWithExtendedHoursTimestamp": 80,
-        "barsTotal": 237,
-        "barsWithoutExtended": 157,
-        "additionalBarsWithExtendedFlag": 80,
+        "barsWithExtendedHoursTimestamp": 87,
+        "barsTotal": 176,
+        "barsWithoutExtended": 89,
+        "additionalBarsWithExtendedFlag": 87,
         "barsByPhase": {
-          "PRE": 80,
-          "REGULAR": 157
+          "PRE": 87,
+          "REGULAR": 89
         },
         "extendedPhases": [
           "PRE",
@@ -233,7 +233,7 @@
         ],
         "interpretation": "Bars mit Zeitstempeln ausserhalb der regulaeren Sitzung sind belegt."
       },
-      "checkedAt": "2026-09-09T16:06:59.765Z"
+      "checkedAt": "2026-11-23T15:58:08.503Z"
     },
     {
       "symbol": "MSFT",
@@ -241,49 +241,49 @@
       "result": "PASSED",
       "evidence": {
         "interpretation": "Der Schluessel wird vom Anbieter angenommen.",
-        "latencyMs": 180
+        "latencyMs": 198
       },
-      "checkedAt": "2026-09-09T16:06:59.945Z"
+      "checkedAt": "2026-11-23T15:58:08.701Z"
     },
     {
       "symbol": "MSFT",
       "capability": "eod",
       "result": "PASSED",
       "evidence": {
-        "bars": 9238,
+        "bars": 9291,
         "first": "1990-01-02",
-        "last": "2026-09-08",
-        "latencyMs": 180
+        "last": "2026-11-20",
+        "latencyMs": 198
       },
-      "checkedAt": "2026-09-09T16:06:59.945Z"
+      "checkedAt": "2026-11-23T15:58:08.701Z"
     },
     {
       "symbol": "MSFT",
       "capability": "historyDepth",
       "result": "PASSED",
       "evidence": {
-        "bars": 9238,
-        "years": 36.7,
+        "bars": 9291,
+        "years": 36.9,
         "requestedFrom": "1990-01-01",
-        "interpretation": "Der Anbieter liefert 36.7 Jahre ab 1990-01-02. Angefragt war ab 1990-01-01; frueher beginnt seine Historie fuer diesen Titel nicht."
+        "interpretation": "Der Anbieter liefert 36.9 Jahre ab 1990-01-02. Angefragt war ab 1990-01-01; frueher beginnt seine Historie fuer diesen Titel nicht."
       },
-      "checkedAt": "2026-09-09T16:06:59.945Z"
+      "checkedAt": "2026-11-23T15:58:08.701Z"
     },
     {
       "symbol": "MSFT",
       "capability": "adjustedEod",
       "result": "PASSED",
       "evidence": {
-        "barsWithAdjustedColumns": 9238,
-        "of": 9238,
+        "barsWithAdjustedColumns": 9291,
+        "of": 9291,
         "declaredStatus": "adjusted",
         "inferredStatus": "TOTAL_RETURN",
         "inferredFrom": "dividend",
         "splitEvents": 8,
-        "dividendEvents": 91,
+        "dividendEvents": 92,
         "interpretation": "Die Antwort traegt die bereinigten Spalten. Welche Stufe sie belegen, sagt inferredStatus - nicht die Anbieterdokumentation."
       },
-      "checkedAt": "2026-09-09T16:06:59.949Z"
+      "checkedAt": "2026-11-23T15:58:08.705Z"
     },
     {
       "symbol": "MSFT",
@@ -291,10 +291,10 @@
       "result": "PASSED",
       "evidence": {
         "splits": 8,
-        "dividends": 91,
+        "dividends": 92,
         "interpretation": "splitFactor und/oder divCash sind in der Kursreihe belegt."
       },
-      "checkedAt": "2026-09-09T16:06:59.950Z"
+      "checkedAt": "2026-11-23T15:58:08.705Z"
     },
     {
       "symbol": "MSFT",
@@ -303,12 +303,12 @@
       "evidence": {
         "hasLast": false,
         "hasTimestamp": true,
-        "lagSeconds": 7,
+        "lagSeconds": 3,
         "sessionPhase": "REGULAR",
         "sessionDependent": false,
         "interpretation": "Kein ausgefuehrter Kurs bei offener Boerse. Das ist ein Befund ueber den Zugang."
       },
-      "checkedAt": "2026-09-09T16:07:00.026Z"
+      "checkedAt": "2026-11-23T15:58:08.796Z"
     },
     {
       "symbol": "MSFT",
@@ -321,19 +321,19 @@
         "hasBidAsk": false,
         "interpretation": "Tiingo liefert seinen Referenzkurs (tngoLast) neben dem IEX-Kurs."
       },
-      "checkedAt": "2026-09-09T16:07:00.026Z"
+      "checkedAt": "2026-11-23T15:58:08.796Z"
     },
     {
       "symbol": "MSFT",
       "capability": "intraday",
       "result": "PASSED",
       "evidence": {
-        "bars": 157,
+        "bars": 89,
         "interval": "1min",
-        "first": "2026-09-09T13:30:00.000Z",
-        "last": "2026-09-09T16:06:00.000Z"
+        "first": "2026-11-23T14:30:00.000Z",
+        "last": "2026-11-23T15:58:00.000Z"
       },
-      "checkedAt": "2026-09-09T16:07:00.133Z"
+      "checkedAt": "2026-11-23T15:58:08.898Z"
     },
     {
       "symbol": "MSFT",
@@ -341,13 +341,13 @@
       "result": "PASSED",
       "evidence": {
         "requested": true,
-        "barsWithExtendedHoursTimestamp": 64,
-        "barsTotal": 221,
-        "barsWithoutExtended": 157,
-        "additionalBarsWithExtendedFlag": 64,
+        "barsWithExtendedHoursTimestamp": 87,
+        "barsTotal": 176,
+        "barsWithoutExtended": 89,
+        "additionalBarsWithExtendedFlag": 87,
         "barsByPhase": {
-          "PRE": 64,
-          "REGULAR": 157
+          "PRE": 87,
+          "REGULAR": 89
         },
         "extendedPhases": [
           "PRE",
@@ -355,7 +355,7 @@
         ],
         "interpretation": "Bars mit Zeitstempeln ausserhalb der regulaeren Sitzung sind belegt."
       },
-      "checkedAt": "2026-09-09T16:07:00.243Z"
+      "checkedAt": "2026-11-23T15:58:09.001Z"
     },
     {
       "symbol": "NVDA",
@@ -363,49 +363,49 @@
       "result": "PASSED",
       "evidence": {
         "interpretation": "Der Schluessel wird vom Anbieter angenommen.",
-        "latencyMs": 137
+        "latencyMs": 231
       },
-      "checkedAt": "2026-09-09T16:07:00.380Z"
+      "checkedAt": "2026-11-23T15:58:09.233Z"
     },
     {
       "symbol": "NVDA",
       "capability": "eod",
       "result": "PASSED",
       "evidence": {
-        "bars": 6949,
+        "bars": 7002,
         "first": "1999-01-22",
-        "last": "2026-09-08",
-        "latencyMs": 137
+        "last": "2026-11-20",
+        "latencyMs": 231
       },
-      "checkedAt": "2026-09-09T16:07:00.380Z"
+      "checkedAt": "2026-11-23T15:58:09.233Z"
     },
     {
       "symbol": "NVDA",
       "capability": "historyDepth",
       "result": "PASSED",
       "evidence": {
-        "bars": 6949,
-        "years": 27.6,
+        "bars": 7002,
+        "years": 27.8,
         "requestedFrom": "1990-01-01",
-        "interpretation": "Der Anbieter liefert 27.6 Jahre ab 1999-01-22. Angefragt war ab 1990-01-01; frueher beginnt seine Historie fuer diesen Titel nicht."
+        "interpretation": "Der Anbieter liefert 27.8 Jahre ab 1999-01-22. Angefragt war ab 1990-01-01; frueher beginnt seine Historie fuer diesen Titel nicht."
       },
-      "checkedAt": "2026-09-09T16:07:00.380Z"
+      "checkedAt": "2026-11-23T15:58:09.233Z"
     },
     {
       "symbol": "NVDA",
       "capability": "adjustedEod",
       "result": "PASSED",
       "evidence": {
-        "barsWithAdjustedColumns": 6949,
-        "of": 6949,
+        "barsWithAdjustedColumns": 7002,
+        "of": 7002,
         "declaredStatus": "adjusted",
         "inferredStatus": "TOTAL_RETURN",
         "inferredFrom": "dividend",
         "splitEvents": 6,
-        "dividendEvents": 55,
+        "dividendEvents": 56,
         "interpretation": "Die Antwort traegt die bereinigten Spalten. Welche Stufe sie belegen, sagt inferredStatus - nicht die Anbieterdokumentation."
       },
-      "checkedAt": "2026-09-09T16:07:00.383Z"
+      "checkedAt": "2026-11-23T15:58:09.235Z"
     },
     {
       "symbol": "NVDA",
@@ -413,10 +413,10 @@
       "result": "PASSED",
       "evidence": {
         "splits": 6,
-        "dividends": 55,
+        "dividends": 56,
         "interpretation": "splitFactor und/oder divCash sind in der Kursreihe belegt."
       },
-      "checkedAt": "2026-09-09T16:07:00.383Z"
+      "checkedAt": "2026-11-23T15:58:09.235Z"
     },
     {
       "symbol": "NVDA",
@@ -425,12 +425,12 @@
       "evidence": {
         "hasLast": false,
         "hasTimestamp": true,
-        "lagSeconds": 1,
+        "lagSeconds": 4,
         "sessionPhase": "REGULAR",
         "sessionDependent": false,
         "interpretation": "Kein ausgefuehrter Kurs bei offener Boerse. Das ist ein Befund ueber den Zugang."
       },
-      "checkedAt": "2026-09-09T16:07:00.461Z"
+      "checkedAt": "2026-11-23T15:58:09.326Z"
     },
     {
       "symbol": "NVDA",
@@ -443,19 +443,19 @@
         "hasBidAsk": false,
         "interpretation": "Tiingo liefert seinen Referenzkurs (tngoLast) neben dem IEX-Kurs."
       },
-      "checkedAt": "2026-09-09T16:07:00.461Z"
+      "checkedAt": "2026-11-23T15:58:09.326Z"
     },
     {
       "symbol": "NVDA",
       "capability": "intraday",
       "result": "PASSED",
       "evidence": {
-        "bars": 157,
+        "bars": 89,
         "interval": "1min",
-        "first": "2026-09-09T13:30:00.000Z",
-        "last": "2026-09-09T16:06:00.000Z"
+        "first": "2026-11-23T14:30:00.000Z",
+        "last": "2026-11-23T15:58:00.000Z"
       },
-      "checkedAt": "2026-09-09T16:07:00.575Z"
+      "checkedAt": "2026-11-23T15:58:09.434Z"
     },
     {
       "symbol": "NVDA",
@@ -463,13 +463,13 @@
       "result": "PASSED",
       "evidence": {
         "requested": true,
-        "barsWithExtendedHoursTimestamp": 75,
-        "barsTotal": 232,
-        "barsWithoutExtended": 157,
-        "additionalBarsWithExtendedFlag": 75,
+        "barsWithExtendedHoursTimestamp": 90,
+        "barsTotal": 179,
+        "barsWithoutExtended": 89,
+        "additionalBarsWithExtendedFlag": 90,
         "barsByPhase": {
-          "PRE": 75,
-          "REGULAR": 157
+          "PRE": 90,
+          "REGULAR": 89
         },
         "extendedPhases": [
           "PRE",
@@ -477,7 +477,7 @@
         ],
         "interpretation": "Bars mit Zeitstempeln ausserhalb der regulaeren Sitzung sind belegt."
       },
-      "checkedAt": "2026-09-09T16:07:00.661Z"
+      "checkedAt": "2026-11-23T15:58:09.542Z"
     },
     {
       "symbol": "JPM",
@@ -485,49 +485,49 @@
       "result": "PASSED",
       "evidence": {
         "interpretation": "Der Schluessel wird vom Anbieter angenommen.",
-        "latencyMs": 143
+        "latencyMs": 238
       },
-      "checkedAt": "2026-09-09T16:07:00.804Z"
+      "checkedAt": "2026-11-23T15:58:09.780Z"
     },
     {
       "symbol": "JPM",
       "capability": "eod",
       "result": "PASSED",
       "evidence": {
-        "bars": 9238,
+        "bars": 9291,
         "first": "1990-01-02",
-        "last": "2026-09-08",
-        "latencyMs": 143
+        "last": "2026-11-20",
+        "latencyMs": 238
       },
-      "checkedAt": "2026-09-09T16:07:00.804Z"
+      "checkedAt": "2026-11-23T15:58:09.780Z"
     },
     {
       "symbol": "JPM",
       "capability": "historyDepth",
       "result": "PASSED",
       "evidence": {
-        "bars": 9238,
-        "years": 36.7,
+        "bars": 9291,
+        "years": 36.9,
         "requestedFrom": "1990-01-01",
-        "interpretation": "Der Anbieter liefert 36.7 Jahre ab 1990-01-02. Angefragt war ab 1990-01-01; frueher beginnt seine Historie fuer diesen Titel nicht."
+        "interpretation": "Der Anbieter liefert 36.9 Jahre ab 1990-01-02. Angefragt war ab 1990-01-01; frueher beginnt seine Historie fuer diesen Titel nicht."
       },
-      "checkedAt": "2026-09-09T16:07:00.804Z"
+      "checkedAt": "2026-11-23T15:58:09.780Z"
     },
     {
       "symbol": "JPM",
       "capability": "adjustedEod",
       "result": "PASSED",
       "evidence": {
-        "barsWithAdjustedColumns": 9238,
-        "of": 9238,
+        "barsWithAdjustedColumns": 9291,
+        "of": 9291,
         "declaredStatus": "adjusted",
         "inferredStatus": "TOTAL_RETURN",
         "inferredFrom": "dividend",
         "splitEvents": 2,
-        "dividendEvents": 153,
+        "dividendEvents": 154,
         "interpretation": "Die Antwort traegt die bereinigten Spalten. Welche Stufe sie belegen, sagt inferredStatus - nicht die Anbieterdokumentation."
       },
-      "checkedAt": "2026-09-09T16:07:00.805Z"
+      "checkedAt": "2026-11-23T15:58:09.780Z"
     },
     {
       "symbol": "JPM",
@@ -535,10 +535,10 @@
       "result": "PASSED",
       "evidence": {
         "splits": 2,
-        "dividends": 153,
+        "dividends": 154,
         "interpretation": "splitFactor und/oder divCash sind in der Kursreihe belegt."
       },
-      "checkedAt": "2026-09-09T16:07:00.805Z"
+      "checkedAt": "2026-11-23T15:58:09.780Z"
     },
     {
       "symbol": "JPM",
@@ -547,12 +547,12 @@
       "evidence": {
         "hasLast": false,
         "hasTimestamp": true,
-        "lagSeconds": 11,
+        "lagSeconds": 4,
         "sessionPhase": "REGULAR",
         "sessionDependent": false,
         "interpretation": "Kein ausgefuehrter Kurs bei offener Boerse. Das ist ein Befund ueber den Zugang."
       },
-      "checkedAt": "2026-09-09T16:07:00.878Z"
+      "checkedAt": "2026-11-23T15:58:09.869Z"
     },
     {
       "symbol": "JPM",
@@ -565,19 +565,19 @@
         "hasBidAsk": false,
         "interpretation": "Tiingo liefert seinen Referenzkurs (tngoLast) neben dem IEX-Kurs."
       },
-      "checkedAt": "2026-09-09T16:07:00.878Z"
+      "checkedAt": "2026-11-23T15:58:09.869Z"
     },
     {
       "symbol": "JPM",
       "capability": "intraday",
       "result": "PASSED",
       "evidence": {
-        "bars": 157,
+        "bars": 89,
         "interval": "1min",
-        "first": "2026-09-09T13:30:00.000Z",
-        "last": "2026-09-09T16:06:00.000Z"
+        "first": "2026-11-23T14:30:00.000Z",
+        "last": "2026-11-23T15:58:00.000Z"
       },
-      "checkedAt": "2026-09-09T16:07:01.260Z"
+      "checkedAt": "2026-11-23T15:58:09.996Z"
     },
     {
       "symbol": "JPM",
@@ -585,13 +585,13 @@
       "result": "PASSED",
       "evidence": {
         "requested": true,
-        "barsWithExtendedHoursTimestamp": 86,
-        "barsTotal": 243,
-        "barsWithoutExtended": 157,
-        "additionalBarsWithExtendedFlag": 86,
+        "barsWithExtendedHoursTimestamp": 74,
+        "barsTotal": 163,
+        "barsWithoutExtended": 89,
+        "additionalBarsWithExtendedFlag": 74,
         "barsByPhase": {
-          "PRE": 86,
-          "REGULAR": 157
+          "PRE": 74,
+          "REGULAR": 89
         },
         "extendedPhases": [
           "PRE",
@@ -599,7 +599,7 @@
         ],
         "interpretation": "Bars mit Zeitstempeln ausserhalb der regulaeren Sitzung sind belegt."
       },
-      "checkedAt": "2026-09-09T16:07:01.355Z"
+      "checkedAt": "2026-11-23T15:58:10.115Z"
     },
     {
       "symbol": "XOM",
@@ -607,49 +607,49 @@
       "result": "PASSED",
       "evidence": {
         "interpretation": "Der Schluessel wird vom Anbieter angenommen.",
-        "latencyMs": 124
+        "latencyMs": 228
       },
-      "checkedAt": "2026-09-09T16:07:01.479Z"
+      "checkedAt": "2026-11-23T15:58:10.344Z"
     },
     {
       "symbol": "XOM",
       "capability": "eod",
       "result": "PASSED",
       "evidence": {
-        "bars": 9238,
+        "bars": 9291,
         "first": "1990-01-02",
-        "last": "2026-09-08",
-        "latencyMs": 124
+        "last": "2026-11-20",
+        "latencyMs": 228
       },
-      "checkedAt": "2026-09-09T16:07:01.479Z"
+      "checkedAt": "2026-11-23T15:58:10.344Z"
     },
     {
       "symbol": "XOM",
       "capability": "historyDepth",
       "result": "PASSED",
       "evidence": {
-        "bars": 9238,
-        "years": 36.7,
+        "bars": 9291,
+        "years": 36.9,
         "requestedFrom": "1990-01-01",
-        "interpretation": "Der Anbieter liefert 36.7 Jahre ab 1990-01-02. Angefragt war ab 1990-01-01; frueher beginnt seine Historie fuer diesen Titel nicht."
+        "interpretation": "Der Anbieter liefert 36.9 Jahre ab 1990-01-02. Angefragt war ab 1990-01-01; frueher beginnt seine Historie fuer diesen Titel nicht."
       },
-      "checkedAt": "2026-09-09T16:07:01.479Z"
+      "checkedAt": "2026-11-23T15:58:10.344Z"
     },
     {
       "symbol": "XOM",
       "capability": "adjustedEod",
       "result": "PASSED",
       "evidence": {
-        "barsWithAdjustedColumns": 9238,
-        "of": 9238,
+        "barsWithAdjustedColumns": 9291,
+        "of": 9291,
         "declaredStatus": "adjusted",
         "inferredStatus": "TOTAL_RETURN",
         "inferredFrom": "dividend",
         "splitEvents": 2,
-        "dividendEvents": 148,
+        "dividendEvents": 149,
         "interpretation": "Die Antwort traegt die bereinigten Spalten. Welche Stufe sie belegen, sagt inferredStatus - nicht die Anbieterdokumentation."
       },
-      "checkedAt": "2026-09-09T16:07:01.479Z"
+      "checkedAt": "2026-11-23T15:58:10.344Z"
     },
     {
       "symbol": "XOM",
@@ -657,10 +657,10 @@
       "result": "PASSED",
       "evidence": {
         "splits": 2,
-        "dividends": 148,
+        "dividends": 149,
         "interpretation": "splitFactor und/oder divCash sind in der Kursreihe belegt."
       },
-      "checkedAt": "2026-09-09T16:07:01.480Z"
+      "checkedAt": "2026-11-23T15:58:10.344Z"
     },
     {
       "symbol": "XOM",
@@ -669,12 +669,12 @@
       "evidence": {
         "hasLast": false,
         "hasTimestamp": true,
-        "lagSeconds": 2,
+        "lagSeconds": 4,
         "sessionPhase": "REGULAR",
         "sessionDependent": false,
         "interpretation": "Kein ausgefuehrter Kurs bei offener Boerse. Das ist ein Befund ueber den Zugang."
       },
-      "checkedAt": "2026-09-09T16:07:01.552Z"
+      "checkedAt": "2026-11-23T15:58:10.435Z"
     },
     {
       "symbol": "XOM",
@@ -687,19 +687,19 @@
         "hasBidAsk": false,
         "interpretation": "Tiingo liefert seinen Referenzkurs (tngoLast) neben dem IEX-Kurs."
       },
-      "checkedAt": "2026-09-09T16:07:01.552Z"
+      "checkedAt": "2026-11-23T15:58:10.435Z"
     },
     {
       "symbol": "XOM",
       "capability": "intraday",
       "result": "PASSED",
       "evidence": {
-        "bars": 158,
+        "bars": 89,
         "interval": "1min",
-        "first": "2026-09-09T13:30:00.000Z",
-        "last": "2026-09-09T16:07:00.000Z"
+        "first": "2026-11-23T14:30:00.000Z",
+        "last": "2026-11-23T15:58:00.000Z"
       },
-      "checkedAt": "2026-09-09T16:07:01.664Z"
+      "checkedAt": "2026-11-23T15:58:10.534Z"
     },
     {
       "symbol": "XOM",
@@ -708,11 +708,11 @@
       "evidence": {
         "requested": true,
         "barsWithExtendedHoursTimestamp": 0,
-        "barsTotal": 158,
-        "barsWithoutExtended": 158,
+        "barsTotal": 89,
+        "barsWithoutExtended": 89,
         "additionalBarsWithExtendedFlag": 0,
         "barsByPhase": {
-          "REGULAR": 158
+          "REGULAR": 89
         },
         "extendedPhases": [
           "PRE",
@@ -720,7 +720,7 @@
         ],
         "interpretation": "Keine zusaetzliche Bar und keine ausserhalb der regulaeren Sitzung. Das kann am Zeitfenster des Laufs liegen und ist deshalb ABSENT, nicht FAILED."
       },
-      "checkedAt": "2026-09-09T16:07:01.775Z"
+      "checkedAt": "2026-11-23T15:58:10.640Z"
     }
   ]
 }
