@@ -4,7 +4,7 @@ import {execFileSync} from 'node:child_process';
 import {mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join, dirname} from 'node:path';
-import {klassifiziere, imFenster, overlay, pruefe, isIntraday, INTRADAY_DIR, INTRADAY_FILES} from '../../scripts/ci/intraday-fastpath.mjs';
+import {klassifiziere, imFenster, overlay, pruefe, isIntraday, isIgnored, IGNORED_PREFIXES, INTRADAY_DIR, INTRADAY_FILES} from '../../scripts/ci/intraday-fastpath.mjs';
 
 const I = INTRADAY_DIR, WD = INTRADAY_FILES[0];
 test('FP-1 nur Intraday-Dateien (und Nicht-Auslieferung wie docs) ergeben FAST', () => {
@@ -88,6 +88,27 @@ test('FP-5c Basis-Paket holen: Zeitlimit, zweiter Versuch je Netzaufruf, Datei j
   /* Der Redirect steht INNERHALB des Versuchs: ein abgebrochener Versuch darf kein halbes ZIP hinterlassen, an das der naechste anhaengt. */
   assert.match(job, /nett 200 'gh api "\$url" > "\$B\/artifact\.zip"'/);
   assert.ok(!/^\s*nett gh api "\$url" >/m.test(job), 'kein Redirect ausserhalb des Versuchs');
+});
+
+test('FP-8 push auf main: Pfadfilter von pages-release.yml spiegelt die Ausnahmen der Weiche (22.11.2026)', async () => {
+  const {readFileSync} = await import('node:fs');
+  const wf = readFileSync(new URL('../../.github/workflows/pages-release.yml', import.meta.url), 'utf8');
+  const m = wf.match(/\n  push:\n    branches: \[main\]\n    paths:\n((?:      - '[^\n]+'\n)+)/);
+  assert.ok(m, 'push-Ereignis hat einen paths-Filter');
+  const liste = [...m[1].matchAll(/- '([^']+)'/g)].map((x) => x[1]);
+  assert.equal(liste[0], '**', 'alles zuerst, dann Ausnahmen');
+  for (const pre of IGNORED_PREFIXES) assert.ok(liste.includes('!' + pre + '**'), 'Ausnahme fuer ' + pre + ' fehlt (IGNORED_PREFIXES)');
+  for (const g of ['!**/*.md', '!**/tests/**', '!**/*-qa.mjs', '!.gitignore', '!.vercelignore', '!.env.example']) assert.ok(liste.includes(g), g + ' fehlt (IGNORED_PATTERNS)');
+  const iGithub = liste.indexOf('!.github/**'), iSelbst = liste.indexOf('.github/workflows/pages-release.yml');
+  assert.ok(iGithub > 0 && iSelbst > iGithub, 'pages-release.yml selbst wird nach der .github-Ausnahme wieder aufgenommen (Reihenfolge zaehlt)');
+  /* Jede Ausnahme der Weiche ist auch dort ignoriert: Beispielpfade aus der Weiche muessen im Filter eine Ausnahme haben. */
+  for (const pfad of ['docs/a.md', 'quant/tests/x.test.mjs', 'scripts/discover/europe-public-live-qa.mjs', 'scripts/ci/intraday-fastpath.mjs', 'README.md']) assert.equal(isIgnored(pfad), true, pfad);
+  assert.equal(isIgnored('.github/workflows/pages-release.yml'), false);
+  /* Der Bau-relevante Rest bleibt im Filter: nichts davon steht unter den Ausnahmen. */
+  for (const pfad of ['discover/ui/detail.js', 'assets/site-navigation.js', 'scripts/vu2/build.mjs', 'scripts/core/build-modules.mjs']) assert.equal(isIgnored(pfad), false, pfad + ' muss einen Release ausloesen');
+  /* Pull-Request: Tests, Doku, QA loesen keinen Voll-Bau aus. */
+  const pr = wf.match(/\n  pull_request:\n    paths:\n((?:      - [^\n]+\n|      #[^\n]*\n)+)/);
+  assert.ok(pr && /- '!\*\*\/tests\/\*\*'/.test(pr[1]) && /- '!\*\*\/\*\.md'/.test(pr[1]), 'PR-Filter nimmt Tests und Doku aus');
 });
 
 /* FP-6 (13.11.2026, Entscheidung B): Allowlist nur fuer Verzeichnisse, die der Bau byte-gleich durchreicht.
