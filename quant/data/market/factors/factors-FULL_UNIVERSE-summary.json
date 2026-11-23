@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-20T23:38:11.385Z",
+  "generatedAt": "2026-11-23T23:33:31.833Z",
   "gate": "FULL_UNIVERSE",
   "universeSource": "SECURITY_MASTER",
   "universeFile": "quant/data/market/security-master/eligibility.json",
@@ -7,292 +7,292 @@
   "engine": "market-factors-1.0.0",
   "benchmark": {
     "id": "SPY",
-    "bars": 8512,
-    "last": "2026-11-20",
+    "bars": 8513,
+    "last": "2026-11-23",
     "returnBasis": "SPLIT_ADJUSTED_PRICE",
     "priceSource": "RECONSTRUCTED_FROM_SPLIT_FACTOR",
     "adjustmentStatus": "adjusted",
     "adjustmentClaim": null,
     "maxLagSessions": 1,
-    "newestSecurityDate": "2026-11-20",
+    "newestSecurityDate": "2026-11-23",
     "lagBehindNewestSessions": 0,
     "securitiesWithoutRelativeStrength": 0,
     "state": "CURRENT"
   },
   "run": {
     "source": "github-actions",
-    "runId": "44829463105",
-    "commit": "8f4fbad898c7bcfa7c0c1f95b418b4a61108c5a9",
-    "runtimeMs": 24443,
-    "msPerSymbol": 4
+    "runId": "45280279857",
+    "commit": "03ea15b8c04fbbbbea195a0e54724471c058f21b",
+    "runtimeMs": 16357,
+    "msPerSymbol": 3
   },
   "redistribution": {
     "priceLevels": "WITHHELD",
     "note": "Absolute Kursniveaus (SMA-Werte, 52-Wochen-Hoch/Tief, letzter Kurs) sind Anbieterkurse und bleiben in der Arbeitsablage. Ausgeliefert werden Zustaende, Abstaende und Renditen."
   },
   "coverage": {
-    "requested": 6340,
-    "computed": 5960,
-    "skipped": 380,
+    "requested": 6009,
+    "computed": 5956,
+    "skipped": 53,
     "skippedByReason": {
-      "FAIL": 374,
-      "SOURCE_MISSING": 6
+      "FAIL": 48,
+      "SOURCE_MISSING": 5
     },
     "fieldCoverage": {
       "sma20": {
-        "CALCULATED": 5960,
+        "CALCULATED": 5956,
         "INSUFFICIENT_HISTORY": 0,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "priceAboveSMA20": {
-        "CALCULATED": 5960,
+        "CALCULATED": 5956,
         "INSUFFICIENT_HISTORY": 0,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "distanceToSMA20": {
-        "CALCULATED": 5960,
+        "CALCULATED": 5956,
         "INSUFFICIENT_HISTORY": 0,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "sma50": {
-        "CALCULATED": 5956,
+        "CALCULATED": 5952,
         "INSUFFICIENT_HISTORY": 4,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "priceAboveSMA50": {
-        "CALCULATED": 5956,
+        "CALCULATED": 5952,
         "INSUFFICIENT_HISTORY": 4,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "distanceToSMA50": {
-        "CALCULATED": 5956,
+        "CALCULATED": 5952,
         "INSUFFICIENT_HISTORY": 4,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "sma100": {
         "CALCULATED": 5866,
-        "INSUFFICIENT_HISTORY": 94,
+        "INSUFFICIENT_HISTORY": 90,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "priceAboveSMA100": {
         "CALCULATED": 5866,
-        "INSUFFICIENT_HISTORY": 94,
+        "INSUFFICIENT_HISTORY": 90,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "distanceToSMA100": {
         "CALCULATED": 5866,
-        "INSUFFICIENT_HISTORY": 94,
+        "INSUFFICIENT_HISTORY": 90,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "sma200": {
         "CALCULATED": 5581,
-        "INSUFFICIENT_HISTORY": 379,
+        "INSUFFICIENT_HISTORY": 375,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "priceAboveSMA200": {
         "CALCULATED": 5581,
-        "INSUFFICIENT_HISTORY": 379,
+        "INSUFFICIENT_HISTORY": 375,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "distanceToSMA200": {
         "CALCULATED": 5581,
-        "INSUFFICIENT_HISTORY": 379,
+        "INSUFFICIENT_HISTORY": 375,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "aboveAllSMA": {
         "CALCULATED": 5581,
-        "INSUFFICIENT_HISTORY": 379,
+        "INSUFFICIENT_HISTORY": 375,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "aboveSMA20And50And200": {
         "CALCULATED": 5581,
-        "INSUFFICIENT_HISTORY": 379,
+        "INSUFFICIENT_HISTORY": 375,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "high52w": {
-        "CALCULATED": 5488,
+        "CALCULATED": 5484,
         "INSUFFICIENT_HISTORY": 472,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "low52w": {
-        "CALCULATED": 5488,
+        "CALCULATED": 5484,
         "INSUFFICIENT_HISTORY": 472,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "distanceTo52wHigh": {
-        "CALCULATED": 5488,
+        "CALCULATED": 5484,
         "INSUFFICIENT_HISTORY": 472,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "distanceTo52wLow": {
-        "CALCULATED": 5488,
+        "CALCULATED": 5484,
         "INSUFFICIENT_HISTORY": 472,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "newHigh52w": {
-        "CALCULATED": 5488,
+        "CALCULATED": 5484,
         "INSUFFICIENT_HISTORY": 472,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "closeAtHigh52w": {
-        "CALCULATED": 5488,
+        "CALCULATED": 5484,
         "INSUFFICIENT_HISTORY": 472,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "within5PctOf52wHigh": {
-        "CALCULATED": 5488,
+        "CALCULATED": 5484,
         "INSUFFICIENT_HISTORY": 472,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "returns.1M": {
-        "CALCULATED": 5960,
+        "CALCULATED": 5956,
         "INSUFFICIENT_HISTORY": 0,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "returns.3M": {
-        "CALCULATED": 5938,
+        "CALCULATED": 5934,
         "INSUFFICIENT_HISTORY": 22,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "returns.6M": {
-        "CALCULATED": 5768,
-        "INSUFFICIENT_HISTORY": 192,
+        "CALCULATED": 5769,
+        "INSUFFICIENT_HISTORY": 187,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "returns.12M": {
-        "CALCULATED": 5485,
-        "INSUFFICIENT_HISTORY": 475,
+        "CALCULATED": 5483,
+        "INSUFFICIENT_HISTORY": 473,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "return12M1M": {
-        "CALCULATED": 5485,
-        "INSUFFICIENT_HISTORY": 475,
+        "CALCULATED": 5483,
+        "INSUFFICIENT_HISTORY": 473,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "momentumAcceleration": {
-        "CALCULATED": 5938,
+        "CALCULATED": 5934,
         "INSUFFICIENT_HISTORY": 22,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "volatility20d": {
-        "CALCULATED": 5960,
+        "CALCULATED": 5956,
         "INSUFFICIENT_HISTORY": 0,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "volatility60d": {
-        "CALCULATED": 5942,
-        "INSUFFICIENT_HISTORY": 18,
+        "CALCULATED": 5940,
+        "INSUFFICIENT_HISTORY": 16,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "volatility252d": {
-        "CALCULATED": 5485,
-        "INSUFFICIENT_HISTORY": 475,
+        "CALCULATED": 5483,
+        "INSUFFICIENT_HISTORY": 473,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "downsideVolatility252d": {
-        "CALCULATED": 5485,
-        "INSUFFICIENT_HISTORY": 475,
+        "CALCULATED": 5483,
+        "INSUFFICIENT_HISTORY": 473,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "maxDrawdown252d": {
-        "CALCULATED": 5488,
+        "CALCULATED": 5484,
         "INSUFFICIENT_HISTORY": 472,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "avgVolume20d": {
-        "CALCULATED": 5960,
+        "CALCULATED": 5956,
         "INSUFFICIENT_HISTORY": 0,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "avgVolume60d": {
-        "CALCULATED": 5945,
+        "CALCULATED": 5941,
         "INSUFFICIENT_HISTORY": 15,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "volumeRatio20over60": {
-        "CALCULATED": 5793,
-        "INSUFFICIENT_HISTORY": 167,
+        "CALCULATED": 5790,
+        "INSUFFICIENT_HISTORY": 166,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "volumeSpikeRatio": {
-        "CALCULATED": 5788,
-        "INSUFFICIENT_HISTORY": 167,
+        "CALCULATED": 5785,
+        "INSUFFICIENT_HISTORY": 166,
         "SOURCE_MISSING": 5,
         "NOT_APPLICABLE": 0
       },
       "volumeBreakout": {
-        "CALCULATED": 5788,
-        "INSUFFICIENT_HISTORY": 172,
+        "CALCULATED": 5785,
+        "INSUFFICIENT_HISTORY": 171,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "relativeStrength.1M": {
-        "CALCULATED": 5960,
+        "CALCULATED": 5956,
         "INSUFFICIENT_HISTORY": 0,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "relativeStrength.3M": {
-        "CALCULATED": 5938,
+        "CALCULATED": 5934,
         "INSUFFICIENT_HISTORY": 22,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "relativeStrength.6M": {
-        "CALCULATED": 5768,
-        "INSUFFICIENT_HISTORY": 192,
+        "CALCULATED": 5769,
+        "INSUFFICIENT_HISTORY": 187,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "relativeStrength.12M": {
-        "CALCULATED": 5485,
-        "INSUFFICIENT_HISTORY": 475,
+        "CALCULATED": 5483,
+        "INSUFFICIENT_HISTORY": 473,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "relativeStrength12M1M": {
-        "CALCULATED": 5485,
-        "INSUFFICIENT_HISTORY": 475,
+        "CALCULATED": 5483,
+        "INSUFFICIENT_HISTORY": 473,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "beta252d": {
-        "CALCULATED": 5506,
+        "CALCULATED": 5502,
         "INSUFFICIENT_HISTORY": 454,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
@@ -300,42 +300,123 @@
     },
     "successorsJoined": [
       {
+        "ticker": "AZR",
+        "from": "ref_ADIL",
+        "effective": "2026-10-29",
+        "predecessorBars": 959,
+        "successorBars": 18
+      },
+      {
+        "ticker": "BRNX",
+        "from": "ref_BNRG",
+        "predecessorBars": 0
+      },
+      {
+        "ticker": "CASK",
+        "from": "ref_MGPI",
+        "effective": "2026-11-02",
+        "predecessorBars": 961,
+        "successorBars": 16
+      },
+      {
+        "ticker": "CRMN",
+        "from": "ref_KAZR",
+        "effective": "2026-11-12",
+        "predecessorBars": 454,
+        "successorBars": 8
+      },
+      {
+        "ticker": "DRK",
+        "from": "ref_ANY",
+        "effective": "2026-09-17",
+        "predecessorBars": 928,
+        "successorBars": 48
+      },
+      {
+        "ticker": "EOCN",
+        "from": "ref_GLMD",
+        "predecessorBars": 0
+      },
+      {
+        "ticker": "ESYN",
+        "from": "ref_HWH",
+        "predecessorBars": 0
+      },
+      {
+        "ticker": "FCDH",
+        "from": "ref_VSME",
+        "effective": "2026-10-26",
+        "predecessorBars": 772,
+        "successorBars": 21
+      },
+      {
+        "ticker": "FFR",
+        "from": "ref_AIXC",
+        "effective": "2026-09-30",
+        "predecessorBars": 938,
+        "successorBars": 39
+      },
+      {
+        "ticker": "HUCK",
+        "from": "ref_DOMO",
+        "effective": "2026-09-24",
+        "predecessorBars": 934,
+        "successorBars": 43
+      },
+      {
+        "ticker": "MTRI",
+        "from": "ref_INM",
+        "effective": "2026-11-09",
+        "predecessorBars": 966,
+        "successorBars": 11
+      },
+      {
+        "ticker": "OPNW",
+        "from": "ref_VRME",
+        "effective": "2026-10-01",
+        "predecessorBars": 939,
+        "successorBars": 38
+      },
+      {
+        "ticker": "PTIV",
+        "from": "ref_PAPL",
+        "effective": "2026-10-26",
+        "predecessorBars": 702,
+        "successorBars": 21
+      },
+      {
+        "ticker": "QUIT",
+        "from": "ref_ACHV",
+        "effective": "2026-11-10",
+        "predecessorBars": 967,
+        "successorBars": 10
+      },
+      {
+        "ticker": "SAEN",
+        "from": "ref_GNTA",
+        "effective": "2026-11-04",
+        "predecessorBars": 963,
+        "successorBars": 14
+      },
+      {
         "ticker": "TXCP",
         "from": "ref_TCBI",
         "effective": "2026-11-09",
         "predecessorBars": 966,
-        "successorBars": 8
+        "successorBars": 9
+      },
+      {
+        "ticker": "XGPU",
+        "from": "ref_EZRA",
+        "effective": "2026-11-10",
+        "predecessorBars": 201,
+        "successorBars": 10
       }
     ]
   },
   "skipped": [
     {
-      "ticker": "AACT",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
       "ticker": "ACA",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "ACHV",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "ACV-A",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "ACVA",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "ADIL",
       "reason": "FAIL",
       "message": "stale_last_bar"
     },
@@ -345,77 +426,7 @@
       "message": "unexplained_adjustment_step"
     },
     {
-      "ticker": "ADVM",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "AFAR",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "AFBI",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "AGR",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "AHI",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
       "ticker": "AIHS",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "AITR",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "AIXC",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "AKLI",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "AL",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "ALE",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "ALIM",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "ALOT",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "ALPN",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "ANSC",
       "reason": "FAIL",
       "message": "stale_last_bar"
     },
@@ -425,57 +436,7 @@
       "message": "insufficient_history"
     },
     {
-      "ticker": "ANY",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "APD",
-      "reason": "FAIL",
-      "message": "unexplained_adjustment_step"
-    },
-    {
-      "ticker": "APGE",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "APLT",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "ARAV",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "ARD",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "AREN",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
       "ticker": "ARI",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "ASLN",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "ASTR",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "ATAI",
       "reason": "FAIL",
       "message": "stale_last_bar"
     },
@@ -485,87 +446,7 @@
       "message": "stale_last_bar"
     },
     {
-      "ticker": "ATKR",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "AVB",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "AVGR",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "AVNS",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "AXLA",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "AXNX",
-      "reason": "FAIL",
-      "message": "insufficient_history"
-    },
-    {
-      "ticker": "BACA",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "BCAR",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "BCSA",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "BEST",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "BGFV",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "BHAT",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "BLEU",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "BLFS",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "BLFY",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "BMTX",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "BNOX",
+      "ticker": "BKH",
       "reason": "FAIL",
       "message": "stale_last_bar"
     },
@@ -580,122 +461,17 @@
       "message": "stale_last_bar"
     },
     {
-      "ticker": "BOCN",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "BOWN",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "BRAC",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
       "ticker": "BRN",
       "reason": "FAIL",
       "message": "unexplained_adjustment_step"
     },
     {
-      "ticker": "BRRWW",
+      "ticker": "CASK",
       "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "BSII",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "BTOG",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "BWMN",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "BYU",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "BZH",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "CALT",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "CASI",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "CBZ",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "CCIX",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "CCO",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
+      "message": "unexplained_adjustment_step"
     },
     {
       "ticker": "CCXI",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "CEO",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "CFFS",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "CGBDL",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "CHAA",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "CHL",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "CHU",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "CITE",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "CMII",
       "reason": "FAIL",
       "message": "stale_last_bar"
     },
@@ -705,67 +481,7 @@
       "message": "stale_last_bar"
     },
     {
-      "ticker": "CREV",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "CRNX",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
       "ticker": "CSAN",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "CSCI",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "CSLM",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "DBRG",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "DBRG-P-H",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "DBRG-P-I",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "DBRG-P-J",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "DOMO",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "DPCS",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "DVXE",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "EDR",
       "reason": "FAIL",
       "message": "stale_last_bar"
     },
@@ -780,64 +496,14 @@
       "message": "stale_last_bar"
     },
     {
-      "ticker": "ELSE",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "EMPG",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "ENFN",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "EPWK",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "EQC",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
       "ticker": "ESOA",
       "reason": "FAIL",
       "message": "unexplained_adjustment_step"
     },
     {
-      "ticker": "ETWO",
+      "ticker": "FCDH",
       "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "EVBG",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "EVE",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "EVGR",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "FBRX",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "FEXD",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
+      "message": "unexplained_adjustment_step"
     },
     {
       "ticker": "FFTT",
@@ -845,132 +511,7 @@
       "message": "Keine Kursreihe in der Arbeitsablage."
     },
     {
-      "ticker": "FGNX",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "FGNXP",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "FL",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "FLIC",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "FNA",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "FNVT",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "FREE",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "FRGE",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "FRLN",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "FSEA",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "FTAIO",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "GAINL",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "GAQ",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "GBBK",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "GBTG",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "GECCM",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "GECCO",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "GENE",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
       "ticker": "GETY",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "GHIX",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "GHLD",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "GHSI",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "GJO",
-      "reason": "FAIL",
-      "message": "unexplained_adjustment_step"
-    },
-    {
-      "ticker": "GJT",
-      "reason": "FAIL",
-      "message": "unexplained_adjustment_step"
-    },
-    {
-      "ticker": "GLADZ",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "GLDD",
       "reason": "FAIL",
       "message": "stale_last_bar"
     },
@@ -980,97 +521,7 @@
       "message": "Keine Kursreihe in der Arbeitsablage."
     },
     {
-      "ticker": "GLYC",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "GNTA",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "GOCOQ",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "GOEV",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "GORV",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "GREEL",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "GTAC",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
       "ticker": "GWH",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "HAIA",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "HBI",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "HCWC",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "HELS",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "HHGC",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "HLX",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "HMNF",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "HNNAZ",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "HOLI",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "HONDW",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "HONE",
       "reason": "FAIL",
       "message": "stale_last_bar"
     },
@@ -1080,117 +531,7 @@
       "message": "stale_last_bar"
     },
     {
-      "ticker": "HONIV",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "HOOZ",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "HRYU",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "HSII",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "HTBK",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "HTLF",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "HTLFP",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "HUDA",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "HVII",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "HWH",
-      "reason": "SOURCE_MISSING",
-      "message": "Keine Kursreihe in der Arbeitsablage."
-    },
-    {
-      "ticker": "IBTX",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "ICCH",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "IMGN",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
       "ticker": "INDV",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "INFA",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "INM",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "IPCX",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "IPEX",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "ISPO",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "IVCB",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "IVCBU",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "IWFL",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "IWML",
       "reason": "FAIL",
       "message": "stale_last_bar"
     },
@@ -1200,107 +541,7 @@
       "message": "Keine Kursreihe in der Arbeitsablage."
     },
     {
-      "ticker": "JUPGF",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "KACL",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "KAZR",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "KNL",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
       "ticker": "KPTI",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "KRNL",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "KRTX",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "KTN",
-      "reason": "FAIL",
-      "message": "unexplained_adjustment_step"
-    },
-    {
-      "ticker": "KVUE",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "KWM",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "LATG",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "LBRDA",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "LBRDK",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "LBRDP",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "LCW",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "LEG",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "LESL",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "LGV",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "LILM",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "LILMW",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "LN",
       "reason": "FAIL",
       "message": "stale_last_bar"
     },
@@ -1315,127 +556,7 @@
       "message": "unexplained_adjustment_step"
     },
     {
-      "ticker": "LPSN",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "LRHC",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "LSXMA",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "LSXMB",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "LSXMK",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "LXP",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
       "ticker": "LXP-P-C",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "MAA-P-I",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "MBINO",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "MBT",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "MCAA",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "MDV",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "MDV-P-A",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "MESA",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "METCL",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "MGIC",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "MGPI",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "MIMI",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "MINDP",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "MIXT",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "MMV",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "MODV",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "MOFG",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "MOR",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "MRTX",
       "reason": "FAIL",
       "message": "stale_last_bar"
     },
@@ -1445,37 +566,7 @@
       "message": "stale_last_bar"
     },
     {
-      "ticker": "MSSAU",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "MTUL",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "MURA",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "MYNA",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
       "ticker": "NATH",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "NCNC",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "NCSM",
       "reason": "FAIL",
       "message": "stale_last_bar"
     },
@@ -1485,92 +576,7 @@
       "message": "stale_last_bar"
     },
     {
-      "ticker": "NKLA",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "NLY-P-I",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "NNAG",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "NPAB",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "NSTS",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "NTZ",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "NURO",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "NVNI",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
       "ticker": "NVNIW",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "NWLI",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "NYMT",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "OAKU",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "OCFCP",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "OMGA",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "ONYX",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "ORGN",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "OXLCP",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "PAPL",
       "reason": "FAIL",
       "message": "stale_last_bar"
     },
@@ -1580,42 +586,12 @@
       "message": "stale_last_bar"
     },
     {
-      "ticker": "PET",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "PFTA",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
       "ticker": "PHGE",
       "reason": "SOURCE_MISSING",
       "message": "Keine Kursreihe in der Arbeitsablage."
     },
     {
-      "ticker": "PIXY",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "PLYA",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "PPHP",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "PRIF-P-L",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "PRLH",
+      "ticker": "PLCE",
       "reason": "FAIL",
       "message": "stale_last_bar"
     },
@@ -1630,152 +606,7 @@
       "message": "stale_last_bar"
     },
     {
-      "ticker": "PTNM",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "PVBC",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "PVG",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "PXSAP",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "QHUOY",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "QNCX",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "QOMO",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "QRVO",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "QULL",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "RAMP",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "RCFA",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "RDUS",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "REE",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "REVG",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "RGF",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "RILYK",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "RILYM",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "RILYN",
-      "reason": "FAIL",
-      "message": "unexplained_adjustment_step"
-    },
-    {
-      "ticker": "RITR",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
       "ticker": "RIVR",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "RMAX",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "ROKU",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "RWAYZ",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "RYZB",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "RZB",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "SACC",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "SASR",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "SAT",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "SBT",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "SBXD",
       "reason": "FAIL",
       "message": "stale_last_bar"
     },
@@ -1785,87 +616,7 @@
       "message": "stale_last_bar"
     },
     {
-      "ticker": "SCDL",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "SDIG",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "SDM",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "SEDA",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "SELX",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "SEPA",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "SEVCF",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "SGEN",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "SLP",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
       "ticker": "SMZ",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "SNBR",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "SNCR",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "SNYR",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "SOL",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "SOVO",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "SP",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "SPKL",
       "reason": "FAIL",
       "message": "stale_last_bar"
     },
@@ -1880,82 +631,7 @@
       "message": "stale_last_bar"
     },
     {
-      "ticker": "SPLK",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "STEC",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "STRM",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "SVMH",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
       "ticker": "SWKHL",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "TALK",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "TBMC",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "TBNK",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "TBPH",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "TCBI",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "TCBIO",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "TCGL",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "TECTP",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "TETEU",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "TFFP",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "THR",
       "reason": "FAIL",
       "message": "stale_last_bar"
     },
@@ -1965,67 +641,7 @@
       "message": "unexplained_adjustment_step"
     },
     {
-      "ticker": "TMTC",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "TRINL",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "TRML",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "TRUE",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "TSRI",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
       "ticker": "TTE",
-      "reason": "FAIL",
-      "message": "unexplained_adjustment_step"
-    },
-    {
-      "ticker": "TTM",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "TVE",
-      "reason": "FAIL",
-      "message": "unexplained_adjustment_step"
-    },
-    {
-      "ticker": "TWO",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "TWO-P-A",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "TWO-P-B",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "TWO-P-C",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "TWOD",
       "reason": "FAIL",
       "message": "unexplained_adjustment_step"
     },
@@ -2035,82 +651,7 @@
       "message": "stale_last_bar"
     },
     {
-      "ticker": "VACI",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "VBTX",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "VCIC",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "VEDL",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "VIASP",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "VIVKD",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "VRME",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "VSAC",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "VSME",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "VSTA",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "VTAK",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
       "ticker": "WALD",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "WBD",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "WBS",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "WBS-P-F",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "WBS-P-G",
       "reason": "FAIL",
       "message": "stale_last_bar"
     },
@@ -2125,37 +666,7 @@
       "message": "stale_last_bar"
     },
     {
-      "ticker": "WKEY",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "WKME",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
       "ticker": "WPRT",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "WRNT",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "WSBCP",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "WTFCM",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "WTFCP",
       "reason": "FAIL",
       "message": "stale_last_bar"
     },
@@ -2165,47 +676,7 @@
       "message": "stale_last_bar"
     },
     {
-      "ticker": "XOMAO",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "XOMAP",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
       "ticker": "YHNA",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "ZEUS",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "ZIMV",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "ZIONL",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "ZIONO",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "ZK",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "ZTEK",
       "reason": "FAIL",
       "message": "stale_last_bar"
     }
@@ -2213,7 +684,7 @@
   "detail": {
     "location": "repository",
     "file": "quant/data/market/factors/factors-FULL_UNIVERSE.json",
-    "symbols": 5960
+    "symbols": 5956
   },
   "canary": [
     {
@@ -2225,55 +696,55 @@
       "instrumentType": "EQUITY_COMMON",
       "dataQuality": "PASS",
       "dataQualityReason": "clean",
-      "bars": 2990,
-      "asOf": "2026-11-20",
+      "bars": 2991,
+      "asOf": "2026-11-23",
       "basis": "close",
       "adjustmentStatus": "adjusted",
       "providedBasis": "TOTAL_RETURN",
       "returnBasis": "SPLIT_ADJUSTED_PRICE",
       "priceSource": "RECONSTRUCTED_FROM_SPLIT_FACTOR",
       "values": {
-        "priceAboveSMA20": false,
-        "distanceToSMA20": -0.014151,
+        "priceAboveSMA20": true,
+        "distanceToSMA20": 0.003866,
         "priceAboveSMA50": true,
-        "distanceToSMA50": 0.002203,
+        "distanceToSMA50": 0.020323,
         "priceAboveSMA100": true,
-        "distanceToSMA100": 0.038405,
+        "distanceToSMA100": 0.056873,
         "priceAboveSMA200": true,
-        "distanceToSMA200": 0.129664,
-        "aboveAllSMA": false,
-        "aboveSMA20And50And200": false,
-        "distanceTo52wHigh": -0.050633,
-        "distanceTo52wLow": 0.40728,
+        "distanceToSMA200": 0.14982,
+        "aboveAllSMA": true,
+        "aboveSMA20And50And200": true,
+        "distanceTo52wHigh": -0.032564,
+        "distanceTo52wLow": 0.434065,
         "newHigh52w": false,
         "closeAtHigh52w": false,
-        "within5PctOf52wHigh": false,
+        "within5PctOf52wHigh": true,
         "returns": {
-          "1M": -0.016254,
-          "3M": 0.103822,
-          "6M": 0.109255,
-          "12M": 0.275544
+          "1M": 0.003897,
+          "3M": 0.126428,
+          "6M": 0.132164,
+          "12M": 0.311099
         },
-        "return12M1M": 0.296619,
-        "momentumAcceleration": -0.050861,
-        "volatility20d": 0.272724,
-        "volatility60d": 0.223545,
-        "volatility252d": 0.249536,
-        "downsideVolatility252d": 0.173595,
+        "return12M1M": 0.306009,
+        "momentumAcceleration": -0.038246,
+        "volatility20d": 0.278074,
+        "volatility60d": 0.224361,
+        "volatility252d": 0.249986,
+        "downsideVolatility252d": 0.173379,
         "maxDrawdown252d": -0.13823,
-        "avgVolume20d": 48695080,
-        "avgVolume60d": 43177240,
-        "volumeRatio20over60": 1.1278,
-        "volumeSpikeRatio": 1.6374,
+        "avgVolume20d": 49404621,
+        "avgVolume60d": 43481990,
+        "volumeRatio20over60": 1.1362,
+        "volumeSpikeRatio": 1.1524,
         "volumeBreakout": false,
         "relativeStrength": {
-          "1M": 0.085712,
-          "3M": 0.200236,
-          "6M": 0.181515,
-          "12M": 0.203173
+          "1M": 0.054741,
+          "3M": 0.177689,
+          "6M": 0.162563,
+          "12M": 0.169296
         },
-        "relativeStrength12M1M": 0.117461,
-        "beta252d": 0.602039
+        "relativeStrength12M1M": 0.114554,
+        "beta252d": 0.582144
       },
       "fieldStatus": {
         "sma20": "WITHHELD_REDISTRIBUTION",
@@ -2330,12 +801,12 @@
         "basis": "TOTAL_RETURN",
         "priceSource": "PROVIDER_COLUMN",
         "returns": {
-          "1M": -0.016254,
-          "3M": 0.103822,
-          "6M": 0.110226,
-          "12M": 0.279048
+          "1M": 0.003897,
+          "3M": 0.126428,
+          "6M": 0.133155,
+          "12M": 0.314701
         },
-        "return12M1M": 0.300182,
+        "return12M1M": 0.309598,
         "fieldStatus": {
           "returns.1M": "CALCULATED",
           "returns.3M": "CALCULATED",
@@ -2354,8 +825,8 @@
       "instrumentType": "EQUITY_COMMON",
       "dataQuality": "PASS",
       "dataQualityReason": "clean",
-      "bars": 2990,
-      "asOf": "2026-11-20",
+      "bars": 2991,
+      "asOf": "2026-11-23",
       "basis": "close",
       "adjustmentStatus": "adjusted",
       "providedBasis": "TOTAL_RETURN",
@@ -2363,46 +834,46 @@
       "priceSource": "RECONSTRUCTED_FROM_SPLIT_FACTOR",
       "values": {
         "priceAboveSMA20": false,
-        "distanceToSMA20": -0.077428,
+        "distanceToSMA20": -0.056781,
         "priceAboveSMA50": false,
-        "distanceToSMA50": -0.079503,
+        "distanceToSMA50": -0.059465,
         "priceAboveSMA100": false,
-        "distanceToSMA100": -0.098723,
+        "distanceToSMA100": -0.080456,
         "priceAboveSMA200": false,
-        "distanceToSMA200": -0.045095,
+        "distanceToSMA200": -0.026159,
         "aboveAllSMA": false,
         "aboveSMA20And50And200": false,
-        "distanceTo52wHigh": -0.152715,
-        "distanceTo52wLow": 0.112612,
+        "distanceTo52wHigh": -0.135989,
+        "distanceTo52wLow": 0.134575,
         "newHigh52w": false,
         "closeAtHigh52w": false,
         "within5PctOf52wHigh": false,
         "returns": {
-          "1M": -0.077287,
-          "3M": -0.128679,
-          "6M": 0.013545,
-          "12M": 0.023939
+          "1M": -0.044997,
+          "3M": -0.112226,
+          "6M": 0.03234,
+          "12M": 0.061264
         },
-        "return12M1M": 0.109704,
-        "momentumAcceleration": -0.034394,
-        "volatility20d": 0.306085,
-        "volatility60d": 0.222105,
-        "volatility252d": 0.230552,
-        "downsideVolatility252d": 0.170625,
+        "return12M1M": 0.111268,
+        "momentumAcceleration": -0.007588,
+        "volatility20d": 0.314207,
+        "volatility60d": 0.225232,
+        "volatility252d": 0.230782,
+        "downsideVolatility252d": 0.169846,
         "maxDrawdown252d": -0.154717,
-        "avgVolume20d": 6928771,
-        "avgVolume60d": 7285224,
-        "volumeRatio20over60": 0.9511,
-        "volumeSpikeRatio": 1.7556,
+        "avgVolume20d": 7046323,
+        "avgVolume60d": 7362942,
+        "volumeRatio20over60": 0.957,
+        "volumeSpikeRatio": 1.2176,
         "volumeBreakout": false,
         "relativeStrength": {
-          "1M": 0.021663,
-          "3M": -0.036287,
-          "6M": 0.091281,
-          "12M": -0.016542
+          "1M": 0.004812,
+          "3M": -0.0604,
+          "6M": 0.070261,
+          "12M": -0.042109
         },
-        "relativeStrength12M1M": -0.038205,
-        "beta252d": 0.795718
+        "relativeStrength12M1M": -0.046921,
+        "beta252d": 0.758359
       },
       "fieldStatus": {
         "sma20": "WITHHELD_REDISTRIBUTION",
@@ -2459,12 +930,12 @@
         "basis": "TOTAL_RETURN",
         "priceSource": "PROVIDER_COLUMN",
         "returns": {
-          "1M": -0.077287,
-          "3M": -0.124339,
-          "6M": 0.023118,
-          "12M": 0.043514
+          "1M": -0.044997,
+          "3M": -0.107805,
+          "6M": 0.04209,
+          "12M": 0.081553
         },
-        "return12M1M": 0.130919,
+        "return12M1M": 0.132512,
         "fieldStatus": {
           "returns.1M": "CALCULATED",
           "returns.3M": "CALCULATED",
@@ -2483,8 +954,8 @@
       "instrumentType": "EQUITY_COMMON",
       "dataQuality": "PASS",
       "dataQualityReason": "clean",
-      "bars": 2990,
-      "asOf": "2026-11-20",
+      "bars": 2991,
+      "asOf": "2026-11-23",
       "basis": "close",
       "adjustmentStatus": "adjusted",
       "providedBasis": "TOTAL_RETURN",
@@ -2492,46 +963,46 @@
       "priceSource": "RECONSTRUCTED_FROM_SPLIT_FACTOR",
       "values": {
         "priceAboveSMA20": false,
-        "distanceToSMA20": -0.073498,
+        "distanceToSMA20": -0.054614,
         "priceAboveSMA50": false,
-        "distanceToSMA50": -0.067938,
-        "priceAboveSMA100": false,
-        "distanceToSMA100": -0.004587,
+        "distanceToSMA50": -0.052116,
+        "priceAboveSMA100": true,
+        "distanceToSMA100": 0.009692,
         "priceAboveSMA200": true,
-        "distanceToSMA200": 0.092165,
+        "distanceToSMA200": 0.109011,
         "aboveAllSMA": false,
         "aboveSMA20And50And200": false,
-        "distanceTo52wHigh": -0.13347,
-        "distanceTo52wLow": 0.387514,
+        "distanceTo52wHigh": -0.119199,
+        "distanceTo52wLow": 0.410367,
         "newHigh52w": false,
         "closeAtHigh52w": false,
         "within5PctOf52wHigh": false,
         "returns": {
-          "1M": -0.070162,
-          "3M": -0.005725,
-          "6M": 0.15756,
-          "12M": -0.005337
+          "1M": -0.061028,
+          "3M": 0.001607,
+          "6M": 0.183809,
+          "12M": 0.029409
         },
-        "return12M1M": 0.069716,
-        "momentumAcceleration": -0.068254,
-        "volatility20d": 0.371526,
-        "volatility60d": 0.282117,
-        "volatility252d": 0.33583,
-        "downsideVolatility252d": 0.224071,
+        "return12M1M": 0.096315,
+        "momentumAcceleration": -0.061564,
+        "volatility20d": 0.372215,
+        "volatility60d": 0.282041,
+        "volatility252d": 0.33574,
+        "downsideVolatility252d": 0.223344,
         "maxDrawdown252d": -0.282895,
-        "avgVolume20d": 29536445,
-        "avgVolume60d": 23784163,
-        "volumeRatio20over60": 1.2419,
-        "volumeSpikeRatio": 1.5295,
+        "avgVolume20d": 30087876,
+        "avgVolume60d": 23798202,
+        "volumeRatio20over60": 1.2643,
+        "volumeSpikeRatio": 0.9987,
         "volumeBreakout": false,
         "relativeStrength": {
-          "1M": 0.029354,
-          "3M": 0.095716,
-          "6M": 0.224141,
-          "12M": -0.045551
+          "1M": -0.012118,
+          "3M": 0.060243,
+          "6M": 0.20717,
+          "12M": -0.072585
         },
-        "relativeStrength12M1M": -0.074906,
-        "beta252d": 0.980757
+        "relativeStrength12M1M": -0.060467,
+        "beta252d": 0.920771
       },
       "fieldStatus": {
         "sma20": "WITHHELD_REDISTRIBUTION",
@@ -2588,12 +1059,12 @@
         "basis": "TOTAL_RETURN",
         "priceSource": "PROVIDER_COLUMN",
         "returns": {
-          "1M": -0.068333,
-          "3M": -0.00377,
-          "6M": 0.16203,
-          "12M": 0.004865
+          "1M": -0.059182,
+          "3M": 0.003576,
+          "6M": 0.18838,
+          "12M": 0.037993
         },
-        "return12M1M": 0.078567,
+        "return12M1M": 0.103287,
         "fieldStatus": {
           "returns.1M": "CALCULATED",
           "returns.3M": "CALCULATED",
@@ -2612,8 +1083,8 @@
       "instrumentType": "EQUITY_COMMON",
       "dataQuality": "PASS",
       "dataQualityReason": "clean",
-      "bars": 2990,
-      "asOf": "2026-11-20",
+      "bars": 2991,
+      "asOf": "2026-11-23",
       "basis": "close",
       "adjustmentStatus": "adjusted",
       "providedBasis": "TOTAL_RETURN",
@@ -2621,46 +1092,46 @@
       "priceSource": "RECONSTRUCTED_FROM_SPLIT_FACTOR",
       "values": {
         "priceAboveSMA20": false,
-        "distanceToSMA20": -0.308211,
+        "distanceToSMA20": -0.077467,
         "priceAboveSMA50": false,
-        "distanceToSMA50": -0.393576,
+        "distanceToSMA50": -0.199106,
         "priceAboveSMA100": false,
-        "distanceToSMA100": -0.401646,
+        "distanceToSMA100": -0.212151,
         "priceAboveSMA200": false,
-        "distanceToSMA200": -0.382676,
+        "distanceToSMA200": -0.18792,
         "aboveAllSMA": false,
         "aboveSMA20And50And200": false,
-        "distanceTo52wHigh": -0.484201,
-        "distanceTo52wLow": 0.008273,
+        "distanceTo52wHigh": -0.321815,
+        "distanceTo52wLow": 0.325703,
         "newHigh52w": false,
         "closeAtHigh52w": false,
         "within5PctOf52wHigh": false,
         "returns": {
-          "1M": -0.408463,
-          "3M": -0.39788,
-          "6M": -0.417034,
-          "12M": -0.326989
+          "1M": -0.217624,
+          "3M": -0.225299,
+          "6M": -0.231825,
+          "12M": -0.086304
         },
-        "return12M1M": 0.137733,
-        "momentumAcceleration": -0.275836,
-        "volatility20d": 0.672937,
-        "volatility60d": 0.494601,
-        "volatility252d": 0.415339,
-        "downsideVolatility252d": 0.325536,
+        "return12M1M": 0.167848,
+        "momentumAcceleration": -0.142524,
+        "volatility20d": 1.230412,
+        "volatility60d": 0.754747,
+        "volatility252d": 0.496975,
+        "downsideVolatility252d": 0.32395,
         "maxDrawdown252d": -0.475297,
-        "avgVolume20d": 277905935,
-        "avgVolume60d": 166084500,
-        "volumeRatio20over60": 1.6733,
-        "volumeSpikeRatio": 2.2155,
+        "avgVolume20d": 312061486,
+        "avgVolume60d": 175731565,
+        "volumeRatio20over60": 1.7758,
+        "volumeSpikeRatio": 2.4801,
         "volumeBreakout": true,
         "relativeStrength": {
-          "1M": -0.422932,
-          "3M": -0.405841,
-          "6M": -0.4618,
-          "12M": -0.436193
+          "1M": -0.194568,
+          "3M": -0.19664,
+          "6M": -0.225305,
+          "12M": -0.191827
         },
-        "relativeStrength12M1M": -0.013261,
-        "beta252d": 1.91941
+        "relativeStrength12M1M": 0.002741,
+        "beta252d": 2.298891
       },
       "fieldStatus": {
         "sma20": "WITHHELD_REDISTRIBUTION",
@@ -2717,12 +1188,12 @@
         "basis": "TOTAL_RETURN",
         "priceSource": "PROVIDER_COLUMN",
         "returns": {
-          "1M": -0.408463,
-          "3M": -0.397191,
-          "6M": -0.4157,
-          "12M": -0.325375
+          "1M": -0.217624,
+          "3M": -0.224412,
+          "6M": -0.230067,
+          "12M": -0.084113
         },
-        "return12M1M": 0.140462,
+        "return12M1M": 0.170648,
         "fieldStatus": {
           "returns.1M": "CALCULATED",
           "returns.3M": "CALCULATED",
@@ -2741,8 +1212,8 @@
       "instrumentType": "EQUITY_COMMON",
       "dataQuality": "PASS",
       "dataQualityReason": "clean",
-      "bars": 2990,
-      "asOf": "2026-11-20",
+      "bars": 2991,
+      "asOf": "2026-11-23",
       "basis": "close",
       "adjustmentStatus": "adjusted",
       "providedBasis": "TOTAL_RETURN",
@@ -2750,46 +1221,46 @@
       "priceSource": "RECONSTRUCTED_FROM_SPLIT_FACTOR",
       "values": {
         "priceAboveSMA20": false,
-        "distanceToSMA20": -0.065599,
+        "distanceToSMA20": -0.076189,
         "priceAboveSMA50": false,
-        "distanceToSMA50": -0.055207,
+        "distanceToSMA50": -0.072558,
         "priceAboveSMA100": false,
-        "distanceToSMA100": -0.013957,
+        "distanceToSMA100": -0.03418,
         "priceAboveSMA200": true,
-        "distanceToSMA200": 0.020066,
+        "distanceToSMA200": 0.000114,
         "aboveAllSMA": false,
         "aboveSMA20And50And200": false,
-        "distanceTo52wHigh": -0.151247,
-        "distanceTo52wLow": 0.401086,
+        "distanceTo52wHigh": -0.167639,
+        "distanceTo52wLow": 0.374026,
         "newHigh52w": false,
         "closeAtHigh52w": false,
         "within5PctOf52wHigh": false,
         "returns": {
-          "1M": -0.10234,
-          "3M": -0.024749,
-          "6M": 0.032727,
-          "12M": 0.363357
+          "1M": -0.143606,
+          "3M": -0.023282,
+          "6M": 0.047327,
+          "12M": 0.340796
         },
-        "return12M1M": 0.51879,
-        "momentumAcceleration": -0.09409,
-        "volatility20d": 0.316615,
-        "volatility60d": 0.274044,
-        "volatility252d": 0.273538,
-        "downsideVolatility252d": 0.193581,
+        "return12M1M": 0.56563,
+        "momentumAcceleration": -0.135845,
+        "volatility20d": 0.315218,
+        "volatility60d": 0.276984,
+        "volatility252d": 0.274291,
+        "downsideVolatility252d": 0.194545,
         "maxDrawdown252d": -0.206508,
-        "avgVolume20d": 14658713,
-        "avgVolume60d": 13483653,
-        "volumeRatio20over60": 1.0871,
-        "volumeSpikeRatio": 1.2198,
+        "avgVolume20d": 14847017,
+        "avgVolume60d": 13538676,
+        "volumeRatio20over60": 1.0966,
+        "volumeSpikeRatio": 0.9876,
         "volumeBreakout": false,
         "relativeStrength": {
-          "1M": -0.005864,
-          "3M": 0.076398,
-          "6M": 0.110029,
-          "12M": 0.269751
+          "1M": -0.104172,
+          "3M": 0.035081,
+          "6M": 0.084674,
+          "12M": 0.191694
         },
-        "relativeStrength12M1M": 0.275615,
-        "beta252d": -0.498964
+        "relativeStrength12M1M": 0.295866,
+        "beta252d": -0.502878
       },
       "fieldStatus": {
         "sma20": "WITHHELD_REDISTRIBUTION",
@@ -2846,12 +1317,12 @@
         "basis": "TOTAL_RETURN",
         "priceSource": "PROVIDER_COLUMN",
         "returns": {
-          "1M": -0.096584,
-          "3M": -0.018495,
-          "6M": 0.045979,
-          "12M": 0.399407
+          "1M": -0.138114,
+          "3M": -0.017019,
+          "6M": 0.060766,
+          "12M": 0.376249
         },
-        "return12M1M": 0.549017,
+        "return12M1M": 0.596789,
         "fieldStatus": {
           "returns.1M": "CALCULATED",
           "returns.3M": "CALCULATED",
