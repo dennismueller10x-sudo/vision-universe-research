@@ -10,7 +10,7 @@
     "blockMaxMs": 20700000,
     "branch": "main"
   },
-  "updatedAt": "2026-11-23T16:59:33.091Z",
+  "updatedAt": "2026-11-23T17:03:38.937Z",
   "cycles": [
     {
       "cycle": 1,
@@ -756,10 +756,10 @@
       "written": 1279,
       "requests": 1428,
       "notPublishable": 73,
-      "addAt": "2026-11-23T16:55:27.024Z",
-      "commitAt": "2026-11-23T16:55:27.355Z",
-      "pushAt": "2026-11-23T16:55:30.398Z",
-      "sha": "c4f71cd2a8",
+      "addAt": "2026-11-23T16:59:33.091Z",
+      "commitAt": "2026-11-23T16:59:33.381Z",
+      "pushAt": "2026-11-23T16:59:35.649Z",
+      "sha": "aa07eb00e2",
       "changed": true,
       "ok": true,
       "reason": null,
@@ -795,11 +795,50 @@
           "fetchEndAt": "2026-11-23T16:59:33.090Z",
           "ok": true,
           "written": 433,
-          "requests": 476
+          "requests": 476,
+          "sha": "aa07eb00e2",
+          "pushAt": "2026-11-23T16:59:35.649Z",
+          "changed": true
         }
       ],
       "snapshotAt": "2026-11-23T16:59:33.079Z",
-      "pushed": true
+      "pushed": true,
+      "watchdog": {
+        "verdict": "PASS",
+        "codes": []
+      }
+    },
+    {
+      "cycle": 13,
+      "runId": "45179598915",
+      "triggerAt": "2026-11-23T16:59:36.143Z",
+      "marketStateAtTrigger": "OPEN",
+      "localTimeAtTrigger": "11:59:36",
+      "fetchStartAt": "2026-11-23T16:59:36.143Z",
+      "fetchEndAt": "2026-11-23T17:03:38.935Z",
+      "session": "2026-11-23",
+      "written": 428,
+      "requests": 476,
+      "notPublishable": 22,
+      "addAt": null,
+      "commitAt": null,
+      "pushAt": null,
+      "sha": null,
+      "changed": false,
+      "ok": true,
+      "reason": null,
+      "parts": [
+        {
+          "part": 1,
+          "of": 3,
+          "fetchStartAt": "2026-11-23T16:59:36.143Z",
+          "fetchEndAt": "2026-11-23T17:03:38.935Z",
+          "ok": true,
+          "written": 428,
+          "requests": 476
+        }
+      ],
+      "snapshotAt": "2026-11-23T17:03:38.917Z"
     }
   ]
 }
