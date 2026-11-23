@@ -374,3 +374,7 @@ main[data-market] .vu-sothers{display:none}
 #el-detail .bp-alt,#el-detail .bp-note{margin:10px 0 0;color:var(--vu-mute,#6e6e6e);font-size:13px}
 :root[data-theme=dark] #el-detail .bp-row{background:#000}
 :root[data-theme=dark] #el-detail .bp-wave.is-dev circle{fill:#000;stroke:#fff}
+#el-detail .bp-seg{display:inline-flex;gap:4px;margin:0 0 8px;padding:4px;border-radius:999px;background:var(--vu-white,#fff)}
+#el-detail .bp-seg button{border:0;border-radius:999px;padding:7px 14px;font:inherit;font-weight:700;background:transparent;color:var(--vu-ink,#000);cursor:pointer}
+#el-detail .bp-seg button[aria-pressed=true]{background:var(--vu-ink,#000);color:var(--vu-inv,#fff)}
+:root[data-theme=dark] #el-detail .bp-seg{background:#000}

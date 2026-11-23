@@ -54,6 +54,11 @@ function pullback(c, b, longT, nearPct, stopPct, tgtPct, acc2) {
   const R = Math.abs(tg - e) / Math.abs(e - st);
   if (win) { acc2.win++; acc2.rSum += R; acc2.cSum += Math.min(CAP, R); } else if (loss) { acc2.loss++; acc2.rSum -= 1; acc2.cSum -= 1; }
 }
+/* M3 faire Trefferquote: Richtung des nächsten Schritts, Schranken gleich weit (log) über und unter dem Kurs, Abstand = Abstand zur
+   nahen Zonenkante. Zufall = 50 %; „immer aufwärts“ zeigt die Marktdrift derselben Fälle. Filter: Haupt- und Alternativzählung einig
+   (erster Pfadschritt gleiche Richtung), klarer Abstand zur Alternative (≥ 0,1), Richtlinien gut erfüllt (≥ 0,8), Grad des Schritts. */
+const M3 = {};
+function m3(key, hit, upFirst) { const m = (M3[key] = M3[key] || { n: 0, hit: 0, up: 0 }); m.n++; if (hit) m.hit++; if (upFirst) m.up++; }
 const files = readdirSync(D).filter((f) => f.endsWith(".json"));
 let cuts = 0;
 for (let k = 0; k < files.length; k += EVERY) {
@@ -79,6 +84,19 @@ for (let k = 0; k < files.length; k += EVERY) {
     const mres = mo === 0 ? "open" : (up ? mo === -1 : mo === 1) ? "hit" : "miss";
     for (const key of ["all", step.degree, step.direction].concat(r.primary.anchor === 1 ? ["anchored"] : [])) {
       const m = M1[key]; m.n++; m[res]++; if (mres === "hit") m.mHit++; if (mres === "miss") m.mMiss++;
+    }
+    {
+      const dl = Math.abs(Math.log(near / now)), U = now * Math.exp(dl), Dn = now * Math.exp(-dl), o3 = firstHit(c, a, U, Dn);
+      if (o3 !== 0) {
+        const hit = up ? o3 === 1 : o3 === -1, upF = o3 === 1;
+        const altStep = (r.alternativePath || []).find((x) => !x.exhausted), agree = !!(altStep && altStep.direction === step.direction);
+        const gap = r.candidates && r.candidates.gap !== null ? r.candidates.gap : 1, fit = r.primary.guidelineFit;
+        m3("alle", hit, upF); m3("grad " + step.degree, hit, upF); m3(step.direction === "UP" ? "Richtung aufwärts" : "Richtung abwärts", hit, upF);
+        m3(agree ? "Haupt+Alternative einig" : "Haupt+Alternative uneinig", hit, upF);
+        if (gap >= 0.1) m3("klarer Abstand ≥ 0,1", hit, upF);
+        if (fit >= 0.8) m3("Richtlinien ≥ 0,8", hit, upF);
+        if (agree && gap >= 0.1 && fit >= 0.8) m3("alle drei Filter", hit, upF);
+      }
     }
     /* M2: Korrektur gegen die grosse Richtung, danach Folgeschritt */
     const bigUp = r.primary.direction === "UP" ? (r.primary.kind === "IMPULSE") : (r.primary.kind !== "IMPULSE");
@@ -114,6 +132,7 @@ const m2 = { kandidaten: M2.n, eingestiegen: M2.filled, ziel: M2.win, absicherun
   erwartungR: decided ? Math.round((M2.rSum / decided) * 100) / 100 : null, erwartungRGedeckelt: decided ? Math.round((M2.cSum / decided) * 100) / 100 : null, nachGrad: Object.fromEntries(Object.entries(M2.byDeg).map(([k, d]) => [k, { eingestiegen: d.filled, trefferQuote: pct(d.win, d.win + d.loss), erwartungR: d.win + d.loss ? Math.round((d.rSum / (d.win + d.loss)) * 100) / 100 : null }])),
   beliebigerRuecksetzer: { faelle: M2.pull.filled, trefferQuote: pct(M2.pull.win, M2.pull.win + M2.pull.loss), erwartungR: M2.pull.win + M2.pull.loss ? Math.round((M2.pull.rSum / (M2.pull.win + M2.pull.loss)) * 100) / 100 : null, erwartungRGedeckelt: M2.pull.win + M2.pull.loss ? Math.round((M2.pull.cSum / (M2.pull.win + M2.pull.loss)) * 100) / 100 : null } };
 mkdirSync(OUT, { recursive: true });
-const out = { schema: "vu-elliott-topdown-backtest-1", label: "Forschung, nicht zertifiziert", engine: TD.VERSION, generatedAt: new Date().toISOString(), params: { step: STEP, from: FROM, horizonWeeks: H, every: EVERY }, titel: Math.ceil(files.length / EVERY), stichtage: cuts, M1: m1, M2: m2 };
+const m3o = Object.fromEntries(Object.entries(M3).map(([k, m]) => [k, { faelle: m.n, trefferQuote: pct(m.hit, m.n), immerAufwaerts: pct(m.up, m.n) }]));
+const out = { schema: "vu-elliott-topdown-backtest-1", label: "Forschung, nicht zertifiziert", engine: TD.VERSION, generatedAt: new Date().toISOString(), params: { step: STEP, from: FROM, horizonWeeks: H, every: EVERY }, titel: Math.ceil(files.length / EVERY), stichtage: cuts, M1: m1, M2: m2, M3: m3o };
 writeFileSync(join(OUT, "backtest.json"), JSON.stringify(out, null, 1));
 console.log(JSON.stringify(out, null, 1));
