@@ -58,13 +58,13 @@
   function loadStack() {
     if (!stackPromise) {
       global.QX_HOST = "elliott";     // vor dem Buendel: app.js startet dann keinen eigenen Router
-      document.head.append(el("script", { src: "/elliott/aktie.js?v=ek-n4" }));   // Aktienbild, App-Konzept 2
+      document.head.append(el("script", { src: "/elliott/aktie.js?v=ek-n5" }));   // Aktienbild, App-Konzept 2
       stackPromise = fetchRes("/quant/index.html").then(function (r) { return r.text(); }).then(function (html) {
         var gate = new DOMParser().parseFromString(html, "text/html").querySelector("script[data-content]");
         return gate ? fetchRes(gate.getAttribute("data-content")).then(function (r) { return r.text(); }) : html;
       }).then(function (html) {
         var doc = new DOMParser().parseFromString(html, "text/html"), loads = [];
-        Array.prototype.slice.call(doc.querySelectorAll('link[rel="stylesheet"]')).concat([{ getAttribute: function () { return "/elliott/wellen.css?v=ek-n4"; } }]).forEach(function (l) {
+        Array.prototype.slice.call(doc.querySelectorAll('link[rel="stylesheet"]')).concat([{ getAttribute: function () { return "/elliott/wellen.css?v=ek-n5"; } }]).forEach(function (l) {
           var href = l.getAttribute("href");
           if (!href || /site-navigation\.css/.test(href)) return;
           var link = el("link", { rel: "stylesheet", href: href, media: "not all", dataset: { qxHost: "1" } });
@@ -464,6 +464,7 @@
   }
   function startBody(host) {
     var mk = M.marketsOf(state.home);
+    if (global.VUElliottRadar) global.VUElliottRadar(host, { M: M, el: el, sh: sh, home: state.home });
     if (mk) host.append(sh("Märkte"), el("p", { class: "ek-sub ek-sm ek-mut", text: "Indizes über ETFs, Krypto, Edelmetalle und Energie. Wochenschluss, gleiche Analyse wie bei Aktien." }), el("div", { class: "ek-rail", role: "list", "aria-label": "Märkte" }, mk.map(marketTile)));
     var a = M.applicableOf(state.home), neu = M.filterCards(state.home.cards, { neu: true }), by = {}, seen = {};
     neu.forEach(function (c) { (by[c.chg.k] = by[c.chg.k] || []).push(c); });
@@ -482,7 +483,6 @@
       M.bilanzOf(state.home) ? el("a", { class: "ek-tile ek-tap ek-row1", href: "#/?bilanz=1" }, [el("span", { class: "vu-hud", style: "--vu-hud:40px" }, [frag(U.glyph("book", 20))]),
         el("span", { class: "ek-f1" }, [el("b", { class: "ek-b8", text: "Prognose-Tagebuch" }), el("span", { class: "ek-xs ek-mut", text: M.bilanzOf(state.home).events.toLocaleString("de-DE") + " Lesarten eingefroren, Abrechnung ab " + M.dateDe((M.bilanzOf(state.home).horizons[0] || {}).firstEvaluableWeek) })]), frag(U.glyph("next", 18))]) : null,
       el("a", { class: "ek-tile ek-tap ek-gl ek-next", href: "/technical/#/" }, [el("span", { class: "ek-f1" }, [el("span", { class: "ek-eb ek-eb--l", text: "Weiter" }), el("b", { class: "ek-next-t", text: "Technical: Was zeigt der Chart?" })]), el("span", { class: "ek-rnd", "aria-hidden": "true" }, [frag(U.glyph("next", 18))])]),
-      /* Prototyp end(): „Daten & Hinweise“ öffnet das Fenster des Rahmens mit dem Listen-Hinweis und dem Elliott-Satz samt Stand. */
       el("div", { class: "ek-end" }, [el("button", { type: "button", class: "ek-lk", "aria-haspopup": "dialog", text: "Daten & Hinweise", onclick: function () {
         var N = global.VUNavigation, asOf = asOfOf(state.home);
         NOTE.text = EXP_LINE + " " + INV_HELP + (asOf ? " Wochencharts, Stand " + M.dateDe(asOf) + "." : "");

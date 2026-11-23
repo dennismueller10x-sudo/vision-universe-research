@@ -54,7 +54,23 @@ function pullback(c, b, longT, nearPct, stopPct, tgtPct, acc2) {
   const R = Math.abs(tg - e) / Math.abs(e - st);
   if (win) { acc2.win++; acc2.rSum += R; acc2.cSum += Math.min(CAP, R); } else if (loss) { acc2.loss++; acc2.rSum -= 1; acc2.cSum -= 1; }
 }
+/* M3 faire Trefferquote: Richtung des nächsten Schritts, Schranken gleich weit (log) über und unter dem Kurs, Abstand = Abstand zur
+   nahen Zonenkante. Zufall = 50 %; „immer aufwärts“ zeigt die Marktdrift derselben Fälle. Filter: Haupt- und Alternativzählung einig
+   (erster Pfadschritt gleiche Richtung), klarer Abstand zur Alternative (≥ 0,1), Richtlinien gut erfüllt (≥ 0,8), Grad des Schritts. */
+const M3 = {};
+function m3(key, hit, upFirst) { const m = (M3[key] = M3[key] || { n: 0, hit: 0, up: 0 }); m.n++; if (hit) m.hit++; if (upFirst) m.up++; }
 const files = readdirSync(D).filter((f) => f.endsWith(".json"));
+/* Filter für M3 (kausal am Stichtag): Trend = Schluss über dem 40-Wochen-Schnitt, Momentum = 26-Wochen-Rendite > 0,
+   Relative Stärke = Drittel der 52-Wochen-Rendite im Querschnitt aller Titel am selben Wochendatum. Jeder Filter wird auch allein
+   gemessen (Richtung des Filters, gleiche Fälle, gleiche Schranken): so zeigt sich, ob Elliott über den Filter hinaus etwas beiträgt. */
+const R52 = new Map();
+for (let k = 0; k < files.length; k += EVERY) {
+  let j; try { j = JSON.parse(readFileSync(join(D, files[k]), "utf8")); } catch { continue; }
+  const pts = j.points || [];
+  for (let i = 52; i < pts.length; i++) { const d = pts[i][0], v = pts[i][1] / pts[i - 52][1] - 1; if (!R52.has(d)) R52.set(d, []); R52.get(d).push(v); }
+}
+for (const [, a] of R52) a.sort((x, y) => x - y);
+function rsTercile(d, v) { const a = R52.get(d); if (!a || a.length < 50) return null; let lo = 0, hi = a.length; while (lo < hi) { const m = (lo + hi) >> 1; if (a[m] < v) lo = m + 1; else hi = m; } const q = lo / a.length; return q < 1 / 3 ? -1 : q > 2 / 3 ? 1 : 0; }
 let cuts = 0;
 for (let k = 0; k < files.length; k += EVERY) {
   let j; try { j = JSON.parse(readFileSync(join(D, files[k]), "utf8")); } catch { continue; }
@@ -79,6 +95,29 @@ for (let k = 0; k < files.length; k += EVERY) {
     const mres = mo === 0 ? "open" : (up ? mo === -1 : mo === 1) ? "hit" : "miss";
     for (const key of ["all", step.degree, step.direction].concat(r.primary.anchor === 1 ? ["anchored"] : [])) {
       const m = M1[key]; m.n++; m[res]++; if (mres === "hit") m.mHit++; if (mres === "miss") m.mMiss++;
+    }
+    {
+      const dl = Math.abs(Math.log(near / now)), U = now * Math.exp(dl), Dn = now * Math.exp(-dl), o3 = firstHit(c, a, U, Dn);
+      if (o3 !== 0) {
+        const hit = up ? o3 === 1 : o3 === -1, upF = o3 === 1;
+        const altStep = (r.alternativePath || []).find((x) => !x.exhausted), agree = !!(altStep && altStep.direction === step.direction);
+        const gap = r.candidates && r.candidates.gap !== null ? r.candidates.gap : 1, fit = r.primary.guidelineFit;
+        m3("alle", hit, upF); m3("grad " + step.degree, hit, upF); m3(step.direction === "UP" ? "Richtung aufwärts" : "Richtung abwärts", hit, upF);
+        m3(agree ? "Haupt+Alternative einig" : "Haupt+Alternative uneinig", hit, upF);
+        if (gap >= 0.1) m3("klarer Abstand ≥ 0,1", hit, upF);
+        if (fit >= 0.8) m3("Richtlinien ≥ 0,8", hit, upF);
+        if (agree && gap >= 0.1 && fit >= 0.8) m3("alle drei Filter", hit, upF);
+        /* Trend, Momentum, Relative Staerke: Elliott mit dem Filter einig, und der Filter allein */
+        let sma = 0; for (let q = a - 39; q <= a; q++) sma += c[q]; sma /= 40;
+        const trend = c[a] > sma ? 1 : -1, mom = a >= 26 ? (c[a] > c[a - 26] ? 1 : -1) : 0, rs = a >= 52 ? rsTercile(t[a], c[a] / c[a - 52] - 1) : null;
+        const ed = up ? 1 : -1, hitDir = (d) => (d > 0 ? o3 === 1 : o3 === -1);
+        m3("Filter allein: Trend", hitDir(trend), upF);
+        if (ed === trend) m3("Elliott + Trend einig", hit, upF); else m3("Elliott gegen Trend", hit, upF);
+        if (mom) { m3("Filter allein: Momentum", hitDir(mom), upF); if (ed === mom) m3("Elliott + Momentum einig", hit, upF); }
+        if (rs === 1 || rs === -1) { m3("Filter allein: RS oberes/unteres Drittel", hitDir(rs), upF); if (ed === rs) m3("Elliott + RS einig", hit, upF); }
+        if (ed === trend && ed === mom && rs === ed) { m3("Elliott + Trend + Momentum + RS", hit, upF); }
+        if (trend === mom && rs === trend) m3("Filter allein: Trend + Momentum + RS", hitDir(trend), upF);
+      }
     }
     /* M2: Korrektur gegen die grosse Richtung, danach Folgeschritt */
     const bigUp = r.primary.direction === "UP" ? (r.primary.kind === "IMPULSE") : (r.primary.kind !== "IMPULSE");
@@ -114,6 +153,7 @@ const m2 = { kandidaten: M2.n, eingestiegen: M2.filled, ziel: M2.win, absicherun
   erwartungR: decided ? Math.round((M2.rSum / decided) * 100) / 100 : null, erwartungRGedeckelt: decided ? Math.round((M2.cSum / decided) * 100) / 100 : null, nachGrad: Object.fromEntries(Object.entries(M2.byDeg).map(([k, d]) => [k, { eingestiegen: d.filled, trefferQuote: pct(d.win, d.win + d.loss), erwartungR: d.win + d.loss ? Math.round((d.rSum / (d.win + d.loss)) * 100) / 100 : null }])),
   beliebigerRuecksetzer: { faelle: M2.pull.filled, trefferQuote: pct(M2.pull.win, M2.pull.win + M2.pull.loss), erwartungR: M2.pull.win + M2.pull.loss ? Math.round((M2.pull.rSum / (M2.pull.win + M2.pull.loss)) * 100) / 100 : null, erwartungRGedeckelt: M2.pull.win + M2.pull.loss ? Math.round((M2.pull.cSum / (M2.pull.win + M2.pull.loss)) * 100) / 100 : null } };
 mkdirSync(OUT, { recursive: true });
-const out = { schema: "vu-elliott-topdown-backtest-1", label: "Forschung, nicht zertifiziert", engine: TD.VERSION, generatedAt: new Date().toISOString(), params: { step: STEP, from: FROM, horizonWeeks: H, every: EVERY }, titel: Math.ceil(files.length / EVERY), stichtage: cuts, M1: m1, M2: m2 };
+const m3o = Object.fromEntries(Object.entries(M3).map(([k, m]) => [k, { faelle: m.n, trefferQuote: pct(m.hit, m.n), immerAufwaerts: pct(m.up, m.n) }]));
+const out = { schema: "vu-elliott-topdown-backtest-1", label: "Forschung, nicht zertifiziert", engine: TD.VERSION, generatedAt: new Date().toISOString(), params: { step: STEP, from: FROM, horizonWeeks: H, every: EVERY }, titel: Math.ceil(files.length / EVERY), stichtage: cuts, M1: m1, M2: m2, M3: m3o };
 writeFileSync(join(OUT, "backtest.json"), JSON.stringify(out, null, 1));
 console.log(JSON.stringify(out, null, 1));

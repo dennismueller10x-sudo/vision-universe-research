@@ -5,6 +5,7 @@
 
    Nur gelesen, nichts gespeichert, kein eigenes Modell. Je Welt dieselbe Datei, die die Welt
    selbst ausliefert und liest:
+     Elliott      /quant/data/technical-intelligence/v3/elliott-events.json: Zone erreicht, Ziel erreicht, Zählung ungültig, neue Lesart
      Technical    /technical/data/stock/<shardKey>.json (nur Schalen aus meta.stock.shards):
                   ein Tages-Befund (tf 1D), erkannt am letzten oder vorletzten Handelstag
                   (Datum aus dem Satz „erkannt am TT.MM.JJJJ“, so wie die Welt ihn schreibt)
@@ -34,11 +35,12 @@
     quant: '/quant/data/product/strategy-index-v1.json.gz',
     stSummary: '/supertrader/data/sf-candidates/summary.json',
     st: function (k) { return '/supertrader/data/sf-candidates/ticker/' + k + '.json'; },
-    discover: '/discover/data/membership/US_REAL.json'
+    discover: '/discover/data/membership/US_REAL.json',
+    elliott: '/quant/data/technical-intelligence/v3/elliott-events.json'
   };
   /* Reihenfolge der Zeilen auf einer Karte (wie im Mockup). */
-  var WORLDS = ['technical', 'quant', 'supertrader', 'hedgefonds', 'discover'];
-  var LABEL = { technical: 'Technical', quant: 'Quant', supertrader: 'Supertrader', hedgefonds: 'Hedgefonds', discover: 'Discover' };
+  var WORLDS = ['technical', 'elliott', 'quant', 'supertrader', 'hedgefonds', 'discover'];
+  var LABEL = { technical: 'Technical', elliott: 'Elliott', quant: 'Quant', supertrader: 'Supertrader', hedgefonds: 'Hedgefonds', discover: 'Discover' };
   /* Stufen der quellentreuen Methoden, bei denen die Regel erfüllt ist (supertrader/assets/sf-research.js, VERDICT_OF). */
   var MET = ['CONFIRMED_RESEARCH_SETUP', 'MODELED_TRADE_PLAN'];
   var SHORT_ONLY = ['C10'];
@@ -113,6 +115,14 @@
     });
   }
   /** Hedgefonds: neue Positionen großer Fonds im jüngsten gemeldeten Quartal (13F, Angabe Dritter). funds = view.funds13f */
+  /** Elliott (Owner 23.11.2026): Alarme der Zählung von oben seit dem letzten Lauf (v3/elliott-events.json). Neutrale Worte. */
+  var EW = { ENTRY_REACHED: ['Zone der Zählung erreicht', 'mid', 'Zone'], TARGET_REACHED: ['Ziel der Zählung erreicht', 'strong', 'Ziel'], INVALIDATED: ['Zählung ungültig, Neuzählung', 'weak', 'ungültig'], RECOUNT: ['Neue Lesart der Wellen', 'mid', 'neu'] };
+  function elliott(doc, ticker) {
+    return ((doc && doc.events) || []).filter(function (e) { return e && e.t === ticker && EW[e.type]; }).map(function (e) {
+      var w = EW[e.type], z = Array.isArray(e.zone) ? ' (' + (e.wave || '') + ' ' + e.zone[0] + '–' + e.zone[1] + ')' : '';
+      return { world: 'elliott', text: w[0] + z, verdict: w[1], pill: w[2], date: isoOf(e.asOf) };
+    });
+  }
   function hedgefonds(funds, latestPeriod) {
     if (!funds || funds.state !== 'AVAILABLE' || !Array.isArray(funds.newPositions) || !funds.newPositions.length) return [];
     if (!isoOf(funds.period) || (latestPeriod && isoOf(funds.period) !== isoOf(latestPeriod))) return [];
@@ -146,6 +156,7 @@
       var tech = d.technical && d.technical[t];
       var rows = [].concat(
         technical(tech && tech.rec, tech && tech.labels, d.technicalAsOf),
+        elliott(d.elliott, t),
         quant(d.quant, t),
         supertrader(d.stSummary, d.stViews && d.stViews[t], t, d.stNames));
       if (!rows.length) return;
@@ -182,6 +193,7 @@
       });
     });
     var q = fetchGz ? safe(fetchGz(PATHS.quant)).then(function (x) { data.quant = x; }) : Promise.resolve();
+    var ew = safe(fetchJson(PATHS.elliott)).then(function (x) { data.elliott = x; });
     var st = safe(fetchJson(PATHS.stSummary)).then(function (sum) {
       if (!sum) return;
       data.stSummary = sum;
@@ -190,7 +202,7 @@
         parts.forEach(function (p) { (p && p.views || []).forEach(function (v) { if (tickers.indexOf(v.ticker) >= 0) (data.stViews[v.ticker] = data.stViews[v.ticker] || []).push(v); }); });
       });
     });
-    return Promise.all([tech, q, st]).then(function () {
+    return Promise.all([tech, q, st, ew]).then(function () {
       // Discover nur, wenn es überhaupt eine Karte gibt (die Reihen-Datei ist die größte Quelle).
       if (!compose(stocks, data).cards.length) return data;
       return safe(fetchJson(PATHS.discover)).then(function (m) { data.membership = m; return data; });
@@ -198,5 +210,5 @@
   }
 
   return Object.freeze({ PATHS: PATHS, WORLDS: WORLDS, ROW_TITLES: ROW_TITLES, weekdaysBetween: weekdaysBetween,
-    technical: technical, quant: quant, supertrader: supertrader, hedgefonds: hedgefonds, discover: discover, compose: compose, load: load });
+    technical: technical, elliott: elliott, quant: quant, supertrader: supertrader, hedgefonds: hedgefonds, discover: discover, compose: compose, load: load });
 });
