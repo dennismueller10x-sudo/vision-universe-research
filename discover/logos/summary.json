@@ -1,12 +1,12 @@
 {
- "generatedAt": "2026-11-21T05:00:44.799Z",
- "universe": 5499,
- "withLogo": 4149,
- "pct": 75.5,
+ "generatedAt": "2026-11-23T04:55:31.490Z",
+ "universe": 5497,
+ "withLogo": 4147,
+ "pct": 75.4,
  "withoutExpected": 241,
  "pctOfLogoCapable": 78.9,
- "downloaded": 401,
- "unchanged": 3789,
+ "downloaded": 399,
+ "unchanged": 3790,
  "pending": [
   "ALLO",
   "APUS",
@@ -49,6 +49,7 @@
   "KLAR",
   "KTOS",
   "LEGN",
+  "MCD",
   "MTNB",
   "MTRI",
   "NNOX",
@@ -79,17 +80,17 @@
   "XCUR"
  ],
  "bySource": {
-  "WIKIMEDIA_COMMONS": 983,
+  "WIKIMEDIA_COMMONS": 981,
   "WEBSITE": 2753,
   "SEC_FILING": 413
  },
  "byVia": {
-  "CIK": 715,
+  "CIK": 714,
   "TICKER": 243,
   "WIKIDATA_CIK": 634,
   "WIKIDATA_TICKER": 382,
   "SEC_10K": 1290,
-  "NAME": 25,
+  "NAME": 24,
   "KURATIERT": 9,
   "WIKIDATA_NAME": 129,
   "SEC_20F": 268,
@@ -103,11 +104,13 @@
  },
  "indexCoverage": {
   "SP500": {
-   "members": 495,
-   "withLogo": 491,
+   "members": 496,
+   "withLogo": 490,
    "missing": [
     "ESS:WEB_KEIN_ICON",
     "FDXF:WEB_KEIN_ICON",
+    "MCD:WARTET_AUF_SICHTPRUEFUNG",
+    "NRG:WARTET_AUF_SICHTPRUEFUNG",
     "SWKS:WARTET_AUF_SICHTPRUEFUNG",
     "WAT:WEB_KEIN_ICON"
    ]
@@ -119,8 +122,10 @@
   },
   "DJIA": {
    "members": 30,
-   "withLogo": 30,
-   "missing": []
+   "withLogo": 29,
+   "missing": [
+    "MCD:WARTET_AUF_SICHTPRUEFUNG"
+   ]
   },
   "MSCI_WORLD": {
    "members": 0,
@@ -128,8 +133,9 @@
    "missing": []
   }
  },
+ "newTitleAlarms": [],
  "byLicense": {
-  "pd": 904,
+  "pd": 902,
   "cc-by-sa-4.0": 51,
   "cc-by-sa-3.0": 9,
   "cc0": 10,
@@ -139,15 +145,15 @@
   "apache-2.0": 1
  },
  "excluded": {
-  "KEINE_WEBSITE_BEKANNT": 478,
+  "NAME_ODER_CIK_WIDERSPRICHT": 115,
+  "WARTET_AUF_SICHTPRUEFUNG": 70,
+  "KEINE_WEBSITE_BEKANNT": 477,
   "KEIN_LOGO_ERWARTET": 241,
   "KEIN_WIKIDATA_LOGO": 2239,
-  "WEB_KEIN_ICON": 251,
-  "NAME_ODER_CIK_WIDERSPRICHT": 115,
-  "WEB_ICON_ZU_KLEIN": 160,
+  "WEB_KEIN_ICON": 245,
+  "WEB_ICON_ZU_KLEIN": 168,
   "WEB_ICON_GENERISCH": 17,
-  "WEB_KEIN_BILD": 107,
-  "WARTET_AUF_SICHTPRUEFUNG": 69,
+  "WEB_KEIN_BILD": 105,
   "MEHRERE_ITEMS": 18,
   "WEB_ICON_FORMAT": 4,
   "EINSCHRAENKUNG": 1,
