@@ -160,7 +160,7 @@ const appBox = (a) => `<section class="in-app vu-box vu-box--lime" aria-label="Ã
 
 // Teilen-Bild der Ãœbersicht (Owner 12.11.2026): fest statt des Bilds des neuesten Artikels.
 const TEILBILD = '/insights/img/insights-teilen.jpg';
-const CSS_MARKE = 'app-konzept-2';
+const CSS_MARKE = 'app-konzept-3';
 // App-Konzept 2 (Prototyp #news, Owner 14./15.11.2026): jede Insights-Seite zeigt ihre Reiter im Inhalt (data-vu-tabs="inhalt");
 // Startseite und Artikel beginnen mit dem randlosen Titelbild unter dem durchsichtigen Kopf (data-vu-bleed).
 function head({ title, description, canonical, image, type = 'website', extra = '', bleed = false, css = `/insights/insights.css?v=${CSS_MARKE}` }) {
