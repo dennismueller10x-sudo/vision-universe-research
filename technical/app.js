@@ -801,11 +801,17 @@
        Ergebnisbereich nach unten. Beide Platzhalter haben die Hoehe des fertigen Inhalts (CSS .tc-skel--body, .tc-results-sec). */
     if (!dataset) { put(body, el("div", { class: "tc-skel tc-skel--body", "aria-hidden": "true" })); put(results, el("div", { class: "tc-skel", style: "height:220px" })); }
 
-    Promise.all([loadScreener(), loadSpark()]).then(function (r) {
-      var D = r[0], ds = D.ds, built = preset ? { query: Object.assign({ limit: 200 }, preset.query), dropped: [] }
+    /* K3 (Live-Messung 23.11.2026, Screener LCP 10 s): Der erste Bildschirm ohne Regel braucht den vollen Datensatz nicht.
+       Die Trefferzahlen der Schiene stehen im kleinen Index (index-v1.json, gleiche Zahlen wie die Rechnung auf dem Datensatz, Test),
+       der Datensatz kommt erst mit der ersten Regel, beim Oeffnen des Filters oder mit einer Adresse, die schon eine Regel traegt
+       (Vorlage, Assistent, Suche in Worten, fertige Suche, Muster/Trend/Volumen/RSI in der Adresse). */
+    var idle = !dataset && !preset && !parsed && !tplFrom && M.queryFromState(st).query.groups.length === 0;
+    (idle ? loadIndex().then(function (X) { return { light: true, D: { ds: null, artifact: null, meta: X.meta }, X: X }; })
+      : Promise.all([loadScreener(), loadSpark()]).then(function (r) { return { light: false, D: r[0] }; })).then(function (L) {
+      var D = L.D, ds = D.ds, light = L.light, built = preset ? { query: Object.assign({ limit: 200 }, preset.query), dropped: [] }
         : parsed ? { query: Object.assign({}, parsed.query, { limit: 200 }), dropped: [] }
         : tplFrom ? { query: Object.assign({}, tplFrom.query, { limit: 200 }), dropped: [] } : M.queryFromState(st);
-      var res = Q.evaluate(ds, built.query);
+      var res = light ? { count: 0, funnel: [], error: false } : Q.evaluate(ds, built.query);
       if (res.error) { put(body, stateBox("Ungültige Abfrage", res.errors.map(function (e) { return e.code; }).join(", "))); put(results, []); return; }
       var rules = built.query.groups.reduce(function (a, g) { return a + g.filters.length; }, 0);
       var origin = null;
@@ -819,20 +825,29 @@
       } else if (preset) {
         origin = el("div", { class: "vu-box tc-preset" }, [el("b", { text: M.plain(preset.title) }), el("p", { text: M.plain(Q.describe(preset.query)) }), el("a", { class: "tc-link", href: "#/screener", text: "Eigene Suche" })]);
       }
+      /* Filter: im leichten Zustand erst den Datensatz holen (sichtbarer Hinweis), dann das Sheet oeffnen. */
+      function openFilter() {
+        if (!light) { filterSheet(D, st); return; }
+        var note = el("p", { class: "tc-note", role: "status", text: "Der Filter lädt gerade den Screener-Datensatz für alle Aktien …" });
+        results.prepend(note);
+        loadScreener().then(function (full) { note.remove(); filterSheet(full, st); },
+          function () { note.textContent = "Der Screener-Datensatz konnte nicht geladen werden. Bitte später noch einmal versuchen."; });
+      }
       /* Zeile unter der Suche: Filter (Sheet) mit Anzahl, Zeitrahmen, Verknuepfung, Profi-Tabelle. */
       var tools = el("div", { class: "vu-chips tc-tools" }, [
-        el("button", { type: "button", class: "vu-chip vu-chip--on tc-filter-btn", onclick: function () { filterSheet(D, st); } }, [h(U.glyph("filter", 17)), "Filter · " + rules]),
-        el("button", { type: "button", class: "vu-chip", text: TF_LABEL[built.query.timeframe] || "Tag", onclick: function () { filterSheet(D, st); } }),
-        el("button", { type: "button", class: "vu-chip", text: st.logic === "OR" && !parsed && !tplFrom && !preset ? "Mindestens eine Regel" : "Alle Regeln", onclick: function () { filterSheet(D, st); } }),
+        el("button", { type: "button", class: "vu-chip vu-chip--on tc-filter-btn", onclick: openFilter }, [h(U.glyph("filter", 17)), "Filter · " + rules]),
+        el("button", { type: "button", class: "vu-chip", text: TF_LABEL[built.query.timeframe] || "Tag", onclick: openFilter }),
+        el("button", { type: "button", class: "vu-chip", text: st.logic === "OR" && !parsed && !tplFrom && !preset ? "Mindestens eine Regel" : "Alle Regeln", onclick: openFilter }),
         el("a", { class: "vu-chip" + (table ? " vu-chip--on" : ""), href: withParam("ansicht", table ? "" : "tabelle"), "aria-label": table ? "Liste zeigen" : "Profi-Tabelle zeigen", "aria-pressed": String(table) }, [h(U.glyph("list", 17)), table ? "Liste" : "Tabelle"])]);
       /* Trichter in einer Zeile: Zahl je Regel, Regelname gekuerzt (die volle Abfrage steht unter „Wie die Treffer entstehen“). */
       var funnelText = res.funnel.filter(function (f) { return !/universum/i.test(f.label); }).slice(0, 3).map(function (f) { var l = f.label.split(":")[0].split(" (")[0]; return f.count.toLocaleString("de-DE") + " " + (l.length > 30 ? l.slice(0, 29) + "…" : l); }).join(" · ");
       var countCard = el("a", { class: "vu-btn vu-btn--block tc-countcard tc-cta tc-cta-lime" + (rules ? "" : " is-empty"), href: "#tc-treffer", title: funnelText || null, onclick: function (ev) { ev.preventDefault(); results.scrollIntoView({ behavior: "smooth", block: "start" }); } },
         rules ? [el("b", { class: "num", text: res.count.toLocaleString("de-DE") }), " Treffer zeigen"] : [el("b", { text: "–" }), " Noch keine Regel gewählt"]);
       var rail = el("div", { class: "tc-rail" }, HOME_SEARCHES.slice(0, 4).filter(function (x) { return TPL.get(x[0]); }).map(function (x) {
-        var t = TPL.get(x[0]), q = TPL.toQuery(TPL.compose(x[0], [])), n = q ? Q.evaluate(ds, Object.assign({}, q.query, { limit: 1 })) : null;
+        var t = TPL.get(x[0]), q = TPL.toQuery(TPL.compose(x[0], [])), n = !light && q ? Q.evaluate(ds, Object.assign({}, q.query, { limit: 1 })) : null,
+          cnt = light ? (L.X.index.templates && L.X.index.templates[x[0]] ? L.X.index.templates[x[0]][0] : null) : (n && !n.error ? n.count : null);
         return el("a", { class: "tc-idc", href: "#/screener?vorlage=" + encodeURIComponent(x[0]) }, [hudGlyph(x[2], 34), el("b", { text: plainTitle(t) }), el("span", { text: x[1] }),
-          el("div", { class: "tc-idc-n" }, [el("b", { class: "num", text: n && !n.error ? de(n.count) : "–" }), el("small", { text: "Treffer" })])]);
+          el("div", { class: "tc-idc-n" }, [el("b", { class: "num", text: cnt != null ? de(cnt) : "–" }), el("small", { text: "Treffer" })])]);
       }));
       var mainLink = h(U.help("Dieselben Regeln, Vorlagen und die Suche in Worten gibt es auch im Hauptscreener, Perspektive „Chart“, zusammen mit Zahlen und Faktoren."));
       mainLink.querySelector("span").append(" ", el("a", { class: "tc-link", href: "/screener/?p=chart", text: "Im Hauptscreener öffnen" }));
