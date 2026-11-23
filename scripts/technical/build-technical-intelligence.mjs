@@ -42,6 +42,7 @@ import { projectFor, motiveCandidateFor, candidatePool, exploreCandidatesFor, ex
 import { pruneStaleShards } from "./lib/ti-shards.mjs";
 import { MARKETS, MARKETS_VERSION, marketSeries } from "./lib/ti-markets.mjs";
 import { topDownFor } from "./lib/ti-topdown.mjs";
+import { tailwind, tdRow, eventsFor } from "./lib/ti-elliott-events.mjs";
 import { Freshness, loadMaster, freshnessOf, withholdPayload, shardBlock, withheldIndexRow, newStats, addStats, systemicCheck, validReference } from "./lib/ti-freshness.mjs";
 import { cpus } from "node:os";
 import { loadIdentityQuarantine } from "./lib/identity-quarantine.mjs";
@@ -170,6 +171,7 @@ function indexRow(p) {
     patterns: p.pro.patterns.patterns.filter((x) => x.status !== "FAILED").map((x) => x.type + ":" + x.status), wyckoff: p.pro.wyckoff.phase ? p.pro.wyckoff.schematic + ":" + p.pro.wyckoff.phase : null,
     stage: p.regime.stage, vol: p.regime.volatility, alignment: p.timeframes.alignment, empirical: p.confidence.empirical && p.confidence.empirical.status === "OK" ? { n: p.confidence.empirical.n, hit: p.confidence.empirical.t1HitRate, base: p.confidence.empirical.baselineRate } : null,
     alerts: p.alerts,
+    td: tdRow(p.elliottTopDown),
     proj: (() => { const pr = projRow(p.projectionWeekly && p.projectionWeekly.consumerVisible ? p.projectionWeekly : p.projection);
                    /* Explore und Motiv-Alternative leben fuer Tagestitel in der Wochenanalyse */
                    if (pr && p.projectionWeekly) { if (!pr.ex && p.projectionWeekly.exploreHighlights && p.projectionWeekly.exploreHighlights.length) pr.ex = p.projectionWeekly.exploreHighlights.length; if (!pr.xc && p.projectionWeekly.exploreCandidates && p.projectionWeekly.exploreCandidates.length) pr.xc = p.projectionWeekly.exploreCandidates.length; }
@@ -372,6 +374,9 @@ async function main() {
   if (existsSync(idxPath)) { try { const j = JSON.parse(gunzipSync(readFileSync(idxPath)).toString()); prevIdx = { methodologyKey: j.methodologyKey || null, rows: j.rows }; } catch (e) { prevIdx = null; } }
   const run = Alerts.diffRun(prevIdx, { methodologyKey, rows });
   const alerts = run.events, prev = prevIdx ? prevIdx.rows : [];
+  /* Elliott-Alarme (Owner 23.11.2026): nur gegen den letzten Lauf derselben Methodik (sonst wuerde jeder Engine-Wechsel als Neuzaehlung gemeldet) */
+  const prevBy = new Map(prevIdx && prevIdx.methodologyKey === methodologyKey ? prevIdx.rows.map((x) => [x.t, x]) : []);
+  const elliottEvents = rows.flatMap((x) => eventsFor(prevBy.get(x.t), x));
   // ---- schreiben
   mkdirSync(join(OUT, "shards"), { recursive: true });
   Object.entries(shards).forEach(([k, inst]) => gz(join(OUT, "shards", k + ".json.gz"), { schemaVersion: API_VERSION, shard: k, instruments: inst }));
@@ -380,6 +385,7 @@ async function main() {
   gz(idxPath, { schemaVersion: API_VERSION, generatedAt: new Date().toISOString(), methodologyKey, rows });
   writeFileSync(join(OUT, "rules-catalog.json"), JSON.stringify({ schemaVersion: API_VERSION, ruleSet: Patterns.RULE_SET_VERSION, rules: RULES }, null, 1));
   writeFileSync(join(OUT, "discover-rows.json"), JSON.stringify(discoverRows(rows), null, 1));
+  writeFileSync(join(OUT, "elliott-events.json"), JSON.stringify({ schemaVersion: "vu-elliott-events-1", generatedAt: new Date().toISOString(), comparable: prevBy.size > 0, count: elliottEvents.length, events: elliottEvents.slice(0, 3000) }, null, 1));
   writeFileSync(join(OUT, "alerts.json"), JSON.stringify({ schemaVersion: API_VERSION, generatedAt: new Date().toISOString(), previousIndex: prev.length > 0, suppressed: run.suppressed, skippedUnchanged: run.skippedUnchanged, events: alerts.slice(0, 2000) }, null, 1));
   const meta = {
     schemaVersion: API_VERSION, resultSchema: TI.SCHEMA_VERSION, bundle: TI.BUNDLE_VERSION, generatedAt: new Date().toISOString(),
@@ -409,6 +415,7 @@ export function buildMarkets(C, out = OUT, reference = null) {
   const ref = reference || Freshness.lastCompletedSession(new Date().toISOString());
   const rows = [], skipped = [];
   mkdirSync(join(out, "markets"), { recursive: true });
+  let prevM = new Map(); try { prevM = new Map((readJson(join(out, "markets", "index.json")).rows || []).map((x) => [x.t, x])); } catch (e) { prevM = new Map(); }
   for (const m of MARKETS) {
     const ms = marketSeries(m);
     if (!ms || ms.series.length < 160) { skipped.push({ id: m.id, reason: ms ? "SHORT_HISTORY" : "NO_SERIES" }); continue; }
@@ -418,12 +425,14 @@ export function buildMarkets(C, out = OUT, reference = null) {
     p.projection = projectFor(p, null);
     if (f.withheld) p = withholdPayload(p, f);
     p.market = { id: m.id, name: m.name, via: m.via, group: m.group, source: ms.source };
+    if (p.elliottTopDown && p.elliottTopDown.status === "OK") p.elliottTopDown.rw = tailwind(p.chart.close, null);
     gz(join(out, "markets", m.id + ".json.gz"), { schemaVersion: API_VERSION, shard: "markets", instruments: { [m.id]: p } });
     const row = p.withheld ? withheldIndexRow(p, f) : indexRow(p);
     if (f.state !== Freshness.STATES.FRESH) row.fr = Freshness.compact(f);
     rows.push(Object.assign(row, { n: m.name, via: m.via, group: m.group }));
   }
-  const doc = { schemaVersion: API_VERSION, version: MARKETS_VERSION, generatedAt: new Date().toISOString(), reference: ref, rows, skipped,
+  const events = rows.flatMap((x) => eventsFor(prevM.get(x.t), x));
+  const doc = { schemaVersion: API_VERSION, version: MARKETS_VERSION, generatedAt: new Date().toISOString(), reference: ref, rows, skipped, events,
     note: "Indizes über ETFs (kein lizenzierter Indexkurs), Krypto, Edelmetalle und Energie aus den Multi-Asset-Reihen; Wochenschluss, gleiche Analyse wie bei Aktien." };
   writeFileSync(join(out, "markets", "index.json"), JSON.stringify(doc, null, 1));
   return { count: rows.length, skipped: skipped.length };
@@ -444,6 +453,8 @@ function projectAll(got) {
   for (const [t, g] of got) {
     g.p.projection = projectFor(g.p, rs.get(t) || null);
     if (g.pW && g.pW.elliottTopDown && !g.p.elliottTopDown) g.p.elliottTopDown = g.pW.elliottTopDown;   // Tagesanalyse: grosser Grad aus der Wochenreihe
+    /* Rückenwind neben der Zaehlung: Trend, Momentum, Relative Staerke (Wochenchart, RS-Perzentil aus demselben Querschnitt) */
+    if (g.p.elliottTopDown && g.p.elliottTopDown.status === "OK") { const wk = g.pW || g.p, rr = rs.get(t); g.p.elliottTopDown.rw = wk.timeframe === "1W" ? tailwind(wk.chart.close, rr ? rr.rank : null) : null; }
     items.push({ symbol: t, tf: g.p.timeframe, proj: g.p.projection, bars: { t: g.p.chart.timestamps, c: g.p.chart.close }, asOf: g.p.asOf, freshness: freshOf(t) });
     if (g.pW) {
       g.p.projectionWeekly = projectFor(g.pW, rs.get(t) || null); stats.weeklyForDaily++;
