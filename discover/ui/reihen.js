@@ -87,6 +87,12 @@
       (o.sub ? '<p>' + esc(o.sub) + '</p>' : '') + '</div>';
   }
   /** Aktien-Element: Ziel für die Vorschau, die der Rahmen einhängt (data-vu-stock). */
+  /** WCAG 2.5.3 (Beschriftung im Namen): der Link behält seinen Namen aus dem sichtbaren Inhalt (Name, Bewegung) und bekommt Zusätze
+   *  (Platz, Kürzel, Zeitraum) als verstecktes Wort dahinter, statt sie per aria-label an die Stelle des sichtbaren Textes zu setzen. */
+  function nameWithVisible(a, extra) {
+    a.removeAttribute('aria-label');
+    if (extra) { var s = document.createElement('span'); s.className = 'vu-visually-hidden'; s.textContent = ', ' + extra; a.appendChild(s); }
+  }
   function stockAttrs(c) { return ' data-vu-stock="' + esc(c.symbol) + '" data-vu-stock-name="' + esc(shortName(c)) + '"'; }
   /** Ziel eines Aktien-Elements: /aktie/#/<T> (v3.js#stockHref); nur die alte Discover-Aktienseite (#/s/…) trägt die Herkunft ?reihe=. */
   function stockLink(ctx, sym, row) { var x = K().stockHref(ctx, sym); return row && x.charAt(0) === '#' ? x + '?reihe=' + encodeURIComponent(row) : x; }
@@ -103,18 +109,20 @@
       if (isNum(r12) && r12 < 0) box.classList.add('dp-down');
       /* Die Pille trägt im Prototyp keine Beschriftung; der Zeitraum steht im Namen des Links. Nur „vom Hoch“ bleibt sichtbar, sonst läse man es als Kursänderung. */
       box.innerHTML = (o.badge ? '<span class="dr-badge">' + esc(o.badge) + '</span>' : '') +
-        '<a class="dr-poster__a" href="' + href + '"' + stockAttrs(c) + ' aria-label="' + esc(nm + ', ' + c.symbol + ' (Pille: ' + p[1] + ')') + '">' + U().logo(c.symbol) +
+        '<a class="dr-poster__a" href="' + href + '"' + stockAttrs(c) + '>' + U().logo(c.symbol) +
         '<b class="dr-poster__n">' + esc(nm) + '</b><span class="dr-poster__ch"></span>' +
         '<span class="dr-poster__v">' + p[0](c) + (o.pill === 'fromHigh' ? '<small>' + esc(p[1]) + '</small>' : '') + '</span>' + (o.extra || '') + '</a>';
       box.querySelector('.dr-poster__ch').appendChild(K().spark(c, { width: 104, height: 38 }));
+      nameWithVisible(box.querySelector('.dr-poster__a'), c.symbol + ' (Pille: ' + p[1] + ')');
       return box;
     }
     box.innerHTML = (o.badge ? '<span class="dr-badge">' + esc(o.badge) + '</span>' : '') +
-      '<a class="dr-poster__a" href="' + href + '"' + stockAttrs(c) + ' aria-label="' + esc(nm + ', ' + c.symbol) + '">' + U().logo(c.symbol) +
+      '<a class="dr-poster__a" href="' + href + '"' + stockAttrs(c) + '>' + U().logo(c.symbol) +
       '<b class="dr-poster__n">' + esc(nm) + '</b><span class="dr-poster__t">' + esc(c.symbol) + '</span><span class="dr-poster__ch"></span>' +
       '<span class="dr-poster__v">' + p[0](c) + '<small>' + esc(p[1]) + '</small></span></a>' +
       '<button type="button" class="dr-heart">' + U().glyph('heart', 15) + '</button>';
     box.querySelector('.dr-poster__ch').appendChild(K().spark(c, { width: o.chartW || 112, height: 40 }));
+    nameWithVisible(box.querySelector('.dr-poster__a'), c.symbol);
     K().heart(box.querySelector('.dr-heart'), ctx, c.symbol, nm);
     return box;
   }
@@ -123,7 +131,7 @@
     var box = h('div', 'dr-t10'); box.setAttribute('role', 'listitem');
     box.innerHTML = '<span class="dr-t10__n" aria-hidden="true">' + (i + 1) + '</span>';
     var p = poster(c, ctx, { proto: true, row: 'im-blick' }); p.removeAttribute('role');
-    p.querySelector('.dr-poster__a').setAttribute('aria-label', 'Platz ' + (i + 1) + ': ' + shortName(c) + ', ' + c.symbol + ' (Pille: 12 Mon.)');
+    nameWithVisible(p.querySelector('.dr-poster__a'), 'Platz ' + (i + 1) + ', ' + c.symbol + ' (Pille: 12 Mon.)');
     box.appendChild(p);
     return box;
   }
@@ -223,8 +231,8 @@
   function marketSection(ctx) {
     var sec = h('section', 'dr-sec dr-sec--markt'); sec.dataset.dpAnchor = 'maerkte';
     sec.innerHTML = protoHead({ title: 'Wie steht die Börse?' }) +
-      '<a class="dr-ms dp-tile dp-mk" href="#/maerkte" aria-label="Wie steht die Börse? Märkte ansehen"><span class="dp-mk__top"><span class="dr-ms__lvl"><b>…</b><small></small></span><span class="dp-mk__hist" hidden><b></b><small>von 100 Fällen<br>ein Jahr später im Plus</small></span></span>' +
-      '<span class="dr-ms__scale dp-mk__scale" aria-hidden="true"></span><span class="dp-mk__ends"><span></span><span></span></span></a>' +
+      '<a class="dr-ms dp-tile dp-mk" href="#/maerkte"><span class="dp-mk__top"><span class="dr-ms__lvl"><b>…</b><small></small></span><span class="dp-mk__hist" hidden><b></b><small>von 100 Fällen<br>ein Jahr später im Plus</small></span></span>' +
+      '<span class="dr-ms__scale dp-mk__scale" aria-hidden="true"></span><span class="dp-mk__ends"><span></span><span></span></span><span class="vu-visually-hidden">, Märkte ansehen</span></a>' +
       '<div class="dp-tile dp-idx" aria-label="Große US-Indizes heute">' + [['QQQ', 'Nasdaq'], ['SPY', 'S&P 500'], ['DIA', 'Dow Jones']].map(function (x) { return '<span class="dr-ms__i" data-s="' + x[0] + '"><span>' + esc(x[1]) + '</span>' + U().chg(null) + '</span>'; }).join('') + '</div>';
     var a = sec.querySelector('.dp-mk'), lvl = a.querySelector('.dr-ms__lvl');
     K().load('/quant/data/market/intelligence/market-pulse.json').then(function (p) {
@@ -291,7 +299,7 @@
     var sec = h('section', 'dr-sec dr-sec--top10'); sec.dataset.row = 'im-blick';
     var cards = R().showcaseCards(row.cards, 10);
     /* Ein Satz zur Regel bleibt sichtbar (Rangliste, docs/legal/WORTWAHL.md): die Reihenfolge folgt der Regel, nicht einer Einschätzung. */
-    sec.innerHTML = protoHead({ title: 'Top 10 heute', more: 'Alle ' + cards.length, href: rowHref('im-blick'), label: 'Alle Aktien: Heute im Blick', sub: 'Rang nach der Regel „Heute im Blick“: Ereignisse des letzten Handelstags und Stärke über 12 Monate.' });
+    sec.innerHTML = protoHead({ title: 'Top 10 heute', more: 'Alle ' + cards.length, href: rowHref('im-blick'), label: 'Alle ' + cards.length + ' Aktien: Heute im Blick', sub: 'Rang nach der Regel „Heute im Blick“: Ereignisse des letzten Handelstags und Stärke über 12 Monate.' });
     var track = rail('Top 10 heute'); sec.appendChild(track);
     cards.forEach(function (c, i) { track.appendChild(top10(c, i, ctx)); });
     if (!track.children.length) return null;
