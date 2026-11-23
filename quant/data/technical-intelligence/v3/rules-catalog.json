@@ -7,21 +7,6 @@
    "statement": "Wellen wechseln die Richtung",
    "source": "Frost & Prechter, Elliott Wave Principle (2005), Kap. 1 (Grundform)"
   },
-  "FLAT_B_AT_LEAST_90PCT": {
-   "class": "DEFINITION",
-   "statement": "Flat: B retraced mindestens 90 % von A",
-   "source": "Gorman & Kennedy (EWI), Visual Guide to Elliott Wave Trading (2013), Flat: B >= 90 % von A"
-  },
-  "FLAT_B_NOT_EXCESSIVE": {
-   "class": "VU_OPERATIONAL",
-   "statement": "B überschreitet A hoechstens um 100 %",
-   "source": "VU-Klassengrenze (EWP Kap. 1, Flats: expandierte B typ. 123,6–138,2 %)"
-  },
-  "TRIANGLE_BOUNDARIES": {
-   "class": "DEFINITION",
-   "statement": "kontrahierend: Extreme laufen zusammen",
-   "source": "Frost & Prechter, Elliott Wave Principle (2005), Kap. 1, Triangles"
-  },
   "X_NOT_BEYOND_W_ORIGIN": {
    "class": "DEFINITION",
    "statement": "X retraced nie mehr als 100 % von W",
@@ -32,15 +17,10 @@
    "statement": "W unterteilt sich sichtbar in drei Wellen",
    "source": "Frost & Prechter, Elliott Wave Principle (2005), Kap. 1, Combinations"
   },
-  "B_NOT_BEYOND_A_ORIGIN": {
-   "class": "HARD",
-   "statement": "Welle B retraced nie mehr als 100 % von Welle A",
-   "source": "Frost & Prechter, Elliott Wave Principle (2005), Kap. 1, Zigzags"
-  },
-  "ZIGZAG_B_BELOW_90PCT": {
+  "TRIANGLE_BOUNDARIES": {
    "class": "DEFINITION",
-   "statement": "Zigzag: B retraced weniger als 90 % von A",
-   "source": "Gorman & Kennedy (EWI), Visual Guide to Elliott Wave Trading (2013), Flat-Definition B >= 90 %"
+   "statement": "kontrahierend: Extreme laufen zusammen",
+   "source": "Frost & Prechter, Elliott Wave Principle (2005), Kap. 1, Triangles"
   },
   "W2_NOT_BEYOND_W1_ORIGIN": {
    "class": "HARD",
@@ -64,18 +44,43 @@
   },
   "DIAGONAL_W4_VS_W2": {
    "class": "DEFINITION",
-   "statement": "kontrahierend: W4 kürzer als W2",
+   "statement": "expandierend: W4 länger als W2",
    "source": "Frost & Prechter, Elliott Wave Principle (2005), Kap. 1, Diagonal Triangles (Keilform)"
   },
   "DIAGONAL_W5_VS_W3": {
    "class": "DEFINITION",
-   "statement": "kontrahierend: W5 kürzer als W3",
+   "statement": "expandierend: W5 länger als W3",
    "source": "Frost & Prechter, Elliott Wave Principle (2005), Kap. 1, Diagonal Triangles"
   },
   "W3_NOT_SHORTEST": {
    "class": "HARD",
-   "statement": "Welle 3 ist nie die kürzeste der Wellen 1, 3, 5",
+   "statement": "erst mit Welle 5 prüfbar",
    "source": "Frost & Prechter, Elliott Wave Principle (2005), Kap. 1, Impulse — Regel 2"
+  },
+  "FLAT_B_AT_LEAST_90PCT": {
+   "class": "DEFINITION",
+   "statement": "Flat: B retraced mindestens 90 % von A",
+   "source": "Gorman & Kennedy (EWI), Visual Guide to Elliott Wave Trading (2013), Flat: B >= 90 % von A"
+  },
+  "FLAT_B_NOT_EXCESSIVE": {
+   "class": "VU_OPERATIONAL",
+   "statement": "B überschreitet A hoechstens um 100 %",
+   "source": "VU-Klassengrenze (EWP Kap. 1, Flats: expandierte B typ. 123,6–138,2 %)"
+  },
+  "WXY_Y_IS_THREE": {
+   "class": "DEFINITION",
+   "statement": "Y unterteilt sich sichtbar in drei Wellen",
+   "source": "Frost & Prechter, Elliott Wave Principle (2005), Kap. 1, Combinations"
+  },
+  "B_NOT_BEYOND_A_ORIGIN": {
+   "class": "HARD",
+   "statement": "Welle B retraced nie mehr als 100 % von Welle A",
+   "source": "Frost & Prechter, Elliott Wave Principle (2005), Kap. 1, Zigzags"
+  },
+  "ZIGZAG_B_BELOW_90PCT": {
+   "class": "DEFINITION",
+   "statement": "Zigzag: B retraced weniger als 90 % von A",
+   "source": "Gorman & Kennedy (EWI), Visual Guide to Elliott Wave Trading (2013), Flat-Definition B >= 90 %"
   },
   "W_ALTERNATING_DIRECTION": {
    "class": "HARD",
@@ -112,10 +117,10 @@
    "statement": "Y läuft über das Ende von W hinaus",
    "source": "Frost & Prechter, Elliott Wave Principle (2005), Kap. 1, Double and Triple Zigzags"
   },
-  "WXY_Y_IS_THREE": {
-   "class": "DEFINITION",
-   "statement": "Y unterteilt sich sichtbar in drei Wellen",
-   "source": "Frost & Prechter, Elliott Wave Principle (2005), Kap. 1, Combinations"
+  "W4_NO_OVERLAP_W1": {
+   "class": "HARD",
+   "statement": "Welle 4 betritt nie das Preisgebiet von Welle 1",
+   "source": "Frost & Prechter, Elliott Wave Principle (2005), Kap. 1, Impulse — Regel 3"
   },
   "X2_NOT_BEYOND_Y_ORIGIN": {
    "class": "DEFINITION",
@@ -141,11 +146,6 @@
    "class": "DEFINITION",
    "statement": "Z unterteilt sich sichtbar als Zigzag",
    "source": "Frost & Prechter, Elliott Wave Principle (2005), Kap. 1, Double and Triple Zigzags"
-  },
-  "W4_NO_OVERLAP_W1": {
-   "class": "HARD",
-   "statement": "Welle 4 betritt nie das Preisgebiet von Welle 1",
-   "source": "Frost & Prechter, Elliott Wave Principle (2005), Kap. 1, Impulse — Regel 3"
   },
   "TRIANGLE_E_INSIDE": {
    "class": "HARD",

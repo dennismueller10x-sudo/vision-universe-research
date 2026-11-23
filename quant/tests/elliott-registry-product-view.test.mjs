@@ -169,7 +169,8 @@ test("M11-P4 Produkt-Kohorten, Nachholen fehlender Wochen, Abdeckungs-Sperre, Pr
 });
 
 test("M11-P5 Registry 1.3.0: angezeigte Motiv-Alternative (Welle 3) wird als eigene Kohorte eingefroren; Forschungskohorte meldet Sichtbarkeit wahrheitsgemäß", { skip: STALE_SKIP }, async () => {
-  const w = weeklyDir(["ref_SE", "ref_VTEX", "ref_BCE", "ref_COLM", "ref_CE", "ref_AA"], "2026-10-01"), reg = mkdtempSync(join(tmpdir(), "pv-m-"));
+  /* Elliott 3.4.0 (Ursprung hoechstens 3 Jahre): angezeigte Motiv-Alternativen am Stichtag bei GEG, WING, LEN (vorher VTEX, BCE, COLM, CE) */
+  const w = weeklyDir(["ref_SE", "ref_GEG", "ref_WING", "ref_LEN", "ref_AA"], "2026-10-01"), reg = mkdtempSync(join(tmpdir(), "pv-m-"));
   const identity = await Reg.checkProductIdentity({ ...inputsAtPublishedStand(["AA"]), identitySymbols: ["AA"], workers: 1 });
   await Reg.register({ highlightGate: false, weeklyDir: w, registry: reg, week: "2026-09-25", workers: 2, identity });
   const L = Led.readLedger(reg), run = L.find((e) => e.type === "RUN");
@@ -188,7 +189,8 @@ test("M11-P5 Registry 1.3.0: angezeigte Motiv-Alternative (Welle 3) wird als eig
 });
 
 test("M11-P6 Registry 1.5.0: kuratierte Explore Highlights als eigene Kohorte eingefroren (Rolle, Rang, Leitplanken, Zonen, Kuratierung, Versionen); Candidate Explorer nie registriert; Kette bleibt gültig", { skip: STALE_SKIP }, async () => {
-  const w = weeklyDir(["ref_AB", "ref_BUR", "ref_GBTG", "ref_AA"], "2026-10-01"), reg = mkdtempSync(join(tmpdir(), "pv-x-"));
+  /* Elliott 3.4.0: Explore Highlights am Stichtag GNLX (Welle 3) und IZEA (Welle C) (vorher AB, BUR, GBTG) */
+  const w = weeklyDir(["ref_GNLX", "ref_IZEA", "ref_AA"], "2026-10-01"), reg = mkdtempSync(join(tmpdir(), "pv-x-"));
   const identity = await Reg.checkProductIdentity({ ...inputsAtPublishedStand(["AA"]), identitySymbols: ["AA"], workers: 1 });
   await Reg.register({ highlightGate: false, weeklyDir: w, registry: reg, week: "2026-09-25", workers: 2, identity });
   const L = Led.readLedger(reg), run = L.find((e) => e.type === "RUN");
