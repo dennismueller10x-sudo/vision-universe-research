@@ -282,6 +282,15 @@
    }
   },
   {
+   "id": "monitor-ladezeit",
+   "workflow": "monitor.yml",
+   "cron": "17 4 * * *",
+   "timer": "waker",
+   "inputs": {
+    "pruefung": "ladezeit"
+   }
+  },
+  {
    "id": "monitor-2",
    "workflow": "monitor.yml",
    "cron": "40 14 * * *",
