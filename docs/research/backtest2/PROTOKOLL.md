@@ -161,6 +161,36 @@ werden nie überschrieben. Festgelegt:
   Registrierung). Urteil frühestens nach 12 Monaten; öffentlich nur mit Owner-Freigabe (Renditeaussage).
 - Erster Stand (Vorlauf, ein Monat Okt.–Nov.): live −1,5 %, tilt −2,5 %, mp −1,6 %, SPY −2,0 % – ein Monat sagt nichts.
 
+## 4e. Vorwärtstest Fassung B (registriert am 23.11.2026, vor dem ersten gezählten Monat)
+
+Anlass: Der einzige phasenfeste Hinweis der Stufen 2 und 3 ist Momentum + Bruttogewinn je Bilanzsumme (§4b: Fassung B +2,3 Pp p. a.
+vor SPY, p 0,15; bestes Zehntel der Top 500 p 0,07; ohne Marktfilter 7 von 8 Einstellungen vor SPY). Der Vorwärtstest §4d schreibt
+nur `live`, `tilt` und `mp` mit, den stärksten Kandidaten nicht. `scripts/research/vorwaerts/forward-b.mjs` holt das nach (nur
+lesend, beliebig wiederholbar). Festgelegt:
+- **Quelle:** die veröffentlichten Faktor-Scherben `quant/data/product/factor-evidence-v1/` (Börsenwert, Bausteine
+  `priceReturn12m1m` und `grossProfitabilityTtm`). Unveränderlich ist ihre Git-Historie: je Monat gilt der erste Commit des
+  Monats, der `summary.json` der Scherben geändert hat. Der Lauf braucht die vollständige Historie (`git fetch --unshallow`).
+- **Universum zuerst:** die 1.000 bzw. 500 größten Titel nach Börsenwert am Stichtag. Wählbar sind darin nur Titel mit beiden
+  Bausteinen (Banken und andere Titel ohne Bruttogewinn bleiben im Universum, sind aber nicht wählbar).
+- **Signal:** Mittel der beiden Baustein-Scores. **B1000** = bestes Fünftel der wählbaren Titel unter den 1.000 größten (die
+  Entsprechung zu Fassung B), **B500** = bestes Zehntel unter den 500 größten (die Einstellung mit p 0,07). Gleich gewichtet.
+- **Handel:** wie §4d: Einstieg und Ausstieg zum Schluss des ersten Handelstags nach dem Stichtag (`discover-series`,
+  Kursrendite), 6 bp je Seite auf den Umschlag, Vergleich SPY aus derselben Reihe. Kein Marktfilter (§4b: mit Filter liegen alle
+  Einstellungen hinter SPY).
+- **Zählt ab Dezember 2026.** Urteil frühestens nach 12 Monaten; öffentlich nur mit Owner-Freigabe (Renditeaussage).
+
+Abweichungen von der Studie, vorab benannt: (1) Die Baustein-Scores des Produkts sind zu 70 % Branchen- und zu 30 %
+Universumsvergleich, die Studie rangierte im Universum. (2) Das Universum wird nach Börsenwert gebildet, in der Studie nach
+durchschnittlichem Dollarumsatz. (3) Kursrendite statt Gesamtrendite, auf beiden Seiten gleich.
+
+Stand der Daten am 20.11.2026 (kein Ergebnis, nur Abdeckung): 3.923 von 5.934 Titeln tragen einen Börsenwert; unter den 1.000
+größten haben 514 beide Bausteine, unter den 500 größten 262. Daraus folgen 102 Titel (B1000) und 26 Titel (B500).
+**Befund zur Datenqualität, eigener PR:** Der Börsenwert fehlt bei 2.011 Titeln (784 ohne Aktienzahl zum Stichtag, 360
+Berichtswährung ungleich Handelswährung, 248 Aktienzahl nicht dem Listing zuordenbar), darunter sehr große Werte; einzelne Werte
+sind offensichtlich falsch (AKTX mit über 1 Billion $). Der Bruttogewinn fehlt bei 238 der 500 größten Titel, auch bei
+Nicht-Banken (z. B. XOM, ORCL, UNH, DIS, MCD, VZ). Beides begrenzt jede Aussage über „die größten Werte“ und gehört vor einer
+Produktnutzung behoben.
+
 ## 5. Ausführung und Veröffentlichung
 
 - Umsetzung: `scripts/research/backtest2/` (Markt, Signale, Depotführung, Suche, Lauf mit Workern). Workflow `research.yml`, Teil
