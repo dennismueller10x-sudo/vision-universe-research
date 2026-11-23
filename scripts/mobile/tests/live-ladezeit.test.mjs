@@ -71,7 +71,7 @@ test('Ungültige Läufe (Zugangsmaske oder Inhaltsmerkmal fehlt) sind ein Alarm,
 test('Bericht nennt LCP-Element, größte Verschiebung und Zugangshülle (nur Struktur, keine Inhalte)',async()=>{
  const {topShiftOf,lcpElementOf,gateOf}=await import('../live-ladezeit.mjs');
  const ss=[{lcp:1300,lcpElement:{tag:'H1',id:'hero',url:'https://x.example/img/a.jpg?v=1'},shifts:[{value:0.1,at:900,sources:[{node:'DIV#a.x'}]},{value:0.2,at:1500,sources:[{node:'SECTION#b.y'},{node:'P#.z'}]}],navigation:{responseEnd:400},resourceTimings:[{name:'https://h/__research/content/index.html?v=1',end:900}]}];
- assert.deepEqual(topShiftOf(ss),{value:0.2,atMs:1500,nodes:['SECTION#b.y','P#.z']});
+ assert.deepEqual(topShiftOf(ss),{value:0.2,atMs:1500,nodes:['SECTION#b.y','P#.z'],moves:[{from:null,to:null},{from:null,to:null}]});
  assert.deepEqual(lcpElementOf(ss),{tag:'H1',id:'hero',url:'/img/a.jpg'});
  assert.deepEqual(gateOf(ss),{shellMs:400,contentMs:900,extraMs:500});
  assert.equal(gateOf([{navigation:{responseEnd:1},resourceTimings:[]}]),null);
@@ -92,4 +92,12 @@ test('Dashboard wird abgemeldet gemessen: Merkmal Anmeldemaske, im Bericht besch
  const md=reportMarkdown({measuredAt:'t',commit:'c',runs:3,historyRuns:0,alarms:[],rows:[{key:'app/mein-dashboard/',label:'abgemeldet',cpu:4,lcp:200,cls:0,requests:1,bytes:1024,runs:3,invalidRuns:0,lcpRuns:[200]}]});
  assert.match(md,/\| app\/mein-dashboard\/ \(abgemeldet\) \| 4x \| 200 /);
  assert.match(readFileSync(new URL('../../../konto/anmelden/index.html',import.meta.url),'utf8'),/id="password"/,'Merkmal steht auf der Anmeldeseite');
+});
+
+test('Verschiebung mit Lage: von/nach (y) und Höhe je Knoten im Bericht, nur Zahlen',async()=>{
+ const {topShiftOf}=await import('../live-ladezeit.mjs');
+ const ss=[{shifts:[{value:0.18,at:1353,sources:[{node:'SECTION#.hm-blick',previous:{y:900.4,height:300},current:{y:1020.6,height:300}}]}]}];
+ const t=topShiftOf(ss);assert.deepEqual(t.moves,[{from:{y:900,h:300},to:{y:1021,h:300}}]);
+ const md=reportMarkdown({measuredAt:'t',commit:'c',runs:3,historyRuns:0,alarms:[],rows:[{key:'app/',cpu:4,lcp:1,cls:0.18,requests:1,bytes:1024,runs:3,invalidRuns:0,lcpRuns:[1],topShift:t}]});
+ assert.match(md,/SECTION#\.hm-blick \(y 900→1021, h 300→300\)/);
 });
