@@ -1,6 +1,6 @@
 name: ci-gate-neu
 
-# Ereignisgesteuerter Sammel-Check, SCHATTENBETRIEB (Steuerung 22.11.2026). Setzt den Check "ci-gate-neu" neben dem bisherigen ci-gate
+# Ereignisgesteuerter Sammel-Check (Steuerung 22.11.2026; ab dem Namenstausch 23.11. der Check "ci-gate"). Vorher Schattenbetrieb: setzte "ci-gate-neu" neben dem bisherigen ci-gate
 # (ci-gate.yml), damit beide auf denselben PRs verglichen werden koennen: Ergebnis (gruen/rot) und Runner-Minuten. Erst danach tauscht ein
 # eigener PR die Namen (Check "ci-gate" bleibt dabei exakt gleich fuer wait-gate.sh und Branch-Schutz).
 #
@@ -59,7 +59,10 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GATE_SHA: ${{ github.event.pull_request.head.sha || github.event.workflow_run.head_sha }}
           GATE_MODE: ${{ github.event_name == 'pull_request' && 'start' || 'event' }}
-          GATE_NAME: ci-gate-neu
-          GATE_SHADOW: '1'
+          # Namenstausch (Steuerung 23.11.2026): Der Check heisst "ci-gate" (wait-gate.sh, Merge bei Gruen, unveraendert). Nur der PR, der
+          # den Tausch bringt, bleibt im Schatten ("ci-gate-neu"): sein eigener Lauf nutzt diese Datei, waehrend seine Ereignislaeufe noch
+          # die Fassung auf main (Schatten) nutzen, und der alte ci-gate.yml-Job gated ihn. Der Folge-PR entfernt diese Ausnahme.
+          GATE_NAME: ${{ github.head_ref == 'claude/ci-gate-tausch' && 'ci-gate-neu' || 'ci-gate' }}
+          GATE_SHADOW: ${{ github.head_ref == 'claude/ci-gate-tausch' && '1' || '' }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: node scripts/ci/ci-gate-sync.mjs

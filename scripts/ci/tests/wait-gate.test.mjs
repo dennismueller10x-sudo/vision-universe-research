@@ -71,3 +71,15 @@ test("wait-gate: mit erwartetem Head-sha zaehlt der gruene Check eines anderen (
   assert.equal(ok.status, 0, ok.stderr);
   assert.match(ok.stdout, /\(neu\)/);
 });
+
+test("wait-gate: WAIT_GATE_CHECK waehlt den Check (Probe des ereignisgesteuerten Gates), Standard bleibt ci-gate", () => {
+  process.env.WAIT_GATE_CHECK = "ci-gate-neu";
+  try {
+    const r = lauf({ pr: [pr()], gate: [gate("success")] });
+    assert.equal(r.status, 0, r.stderr);
+    assert.match(r.stdout, /ci-gate-neu gruen \(abc\)/);
+    assert.ok(r.calls.some((c) => /check_name=ci-gate-neu&filter=latest&per_page=1/.test(c)), r.calls.join("\n"));
+    assert.equal(lauf({ pr: [pr()], gate: [gate("failure")] }).status, 1);
+  } finally { delete process.env.WAIT_GATE_CHECK; }
+  assert.ok(lauf({ pr: [pr()], gate: [gate("success")] }).calls.some((c) => /check_name=ci-gate&/.test(c)));
+});

@@ -10,10 +10,11 @@
 #   - nur der Check ci-gate (check_name=ci-gate, filter=latest, per_page=1), nicht alle Check-Runs;
 #   - Takt waechst von 30 s auf 120 s, solange sich nichts aendert; ein neuer Stand setzt ihn zurueck;
 #   - unter 300 verbleibenden Aufrufen oder bei 403/429 wartet sie bis zum Reset bzw. Retry-After (hoechstens 10 min je Pause).
-# Testhilfen: WAIT_GATE_SLEEP (Sleep-Programm), WAIT_GATE_MIN/WAIT_GATE_MAX (Takt in s).
+# Testhilfen: WAIT_GATE_SLEEP (Sleep-Programm), WAIT_GATE_MIN/WAIT_GATE_MAX (Takt in s). WAIT_GATE_CHECK (Standard ci-gate): Name des Checks, z. B. ci-gate-neu
+# fuer die Probe des ereignisgesteuerten Gates (Schattenphase, 23.11.2026).
 set -uo pipefail
 pr="${1:?PR-Nummer}"; max="${2:-90}"; want="${3:-}"
-SLEEP="${WAIT_GATE_SLEEP:-sleep}"; MIN="${WAIT_GATE_MIN:-30}"; MAXI="${WAIT_GATE_MAX:-120}"
+CHECK="${WAIT_GATE_CHECK:-ci-gate}"; SLEEP="${WAIT_GATE_SLEEP:-sleep}"; MIN="${WAIT_GATE_MIN:-30}"; MAXI="${WAIT_GATE_MAX:-120}"
 tmp="$(mktemp -d)"; trap 'rm -rf "$tmp"' EXIT
 end=$(( $(date +%s) + ${WAIT_GATE_MAX_S:-$(( max * 60 ))} ))
 
@@ -54,16 +55,16 @@ while [ "$(date +%s)" -lt "$end" ]; do
     fehler=$((fehler + 1)); [ "$fehler" -ge 8 ] && { echo "PR $pr nicht lesbar: $(head -c 200 "$tmp/pr.err")" >&2; exit 2; }
     "$SLEEP" "$interval"; continue
   fi
-  get gate "repos/{owner}/{repo}/commits/$sha/check-runs?check_name=ci-gate&filter=latest&per_page=1"; rc=$?
+  get gate "repos/{owner}/{repo}/commits/$sha/check-runs?check_name=$CHECK&filter=latest&per_page=1"; rc=$?
   if [ $rc -eq 4 ]; then pause_for_limit; continue; fi
-  [ $rc -ge 5 ] && { fehler=$((fehler + 1)); [ "$fehler" -ge 8 ] && { echo "ci-gate nicht lesbar: $(head -c 200 "$tmp/gate.err")" >&2; exit 2; }; "$SLEEP" "$interval"; continue; }
+  [ $rc -ge 5 ] && { fehler=$((fehler + 1)); [ "$fehler" -ge 8 ] && { echo "$CHECK nicht lesbar: $(head -c 200 "$tmp/gate.err")" >&2; exit 2; }; "$SLEEP" "$interval"; continue; }
   fehler=0
   if [ $rc -eq 0 ]; then
     res="$(jq -r '[.check_runs[]]|sort_by(.id)|last|(.conclusion // .status // "keiner")' "$tmp/gate.body" 2>/dev/null)"
     [ -z "$res" ] || [ "$res" = "null" ] && res="keiner"
     case "$res" in
-      success) echo "ci-gate gruen ($sha)"; exit 0 ;;
-      failure|cancelled|timed_out) echo "ci-gate $res ($sha)"; exit 1 ;;
+      success) echo "$CHECK gruen ($sha)"; exit 0 ;;
+      failure|cancelled|timed_out) echo "$CHECK $res ($sha)"; exit 1 ;;
     esac
     # Ein neuer Stand (anderer Commit oder anderer Zustand) setzt den Takt zurueck.
     [ "$sha:$res" != "$last" ] && interval="$MIN"; last="$sha:$res"
