@@ -21,6 +21,10 @@ import { evaluate, RateLimited } from "./ci-gate.mjs";
 
 /** Eigene Workflows des Gates: zaehlen nie als "andere Pruefung" (der alte wartet, der neue ist kurz). */
 export const EIGENE = new Set(["ci-gate", "ci-gate-neu"]);
+/** Die Actions-API liefert als `name` eines Laufs den run-name ("ci-gate PR 2321", "ci-gate nach CI ..."), nicht den Workflow-Namen: der eigene
+    Lauf des Gates muss ueber das Muster und den Pfad erkannt werden. Sonst zaehlt der Start-Job sich selbst als offene Pruefung und der Check
+    bleibt nach einem Rerun auf in_progress stehen, wenn kein weiteres Ereignis folgt (23.11.2026, #2321). */
+export const eigenerLauf = (r) => EIGENE.has(r.name) || /^ci-gate(-neu)?( (PR|nach)\b|$)/.test(r.name || "") || /(^|\/)\.github\/workflows\/ci-gate(-neu)?\.ya?ml(@|$)/.test(r.path || "");
 export const GRACE_MS = 90 * 1000; // frueheste Entscheidung nach dem ersten erschienenen Lauf
 export const ROT_GRACE_MS = 4 * 60 * 1000; // wie bisher: ci-retry startet rote Jobs binnen Sekunden neu
 
@@ -35,7 +39,7 @@ const ms = (iso) => { const t = Date.parse(iso); return Number.isFinite(t) ? t :
  *   aktion: "gruen" | "rot" | "offen" | "rotAbwarten"
  */
 export function entscheide({ runs, nowMs, mode, rotFrist = true }) {
-  const andere = (runs || []).filter((r) => !EIGENE.has(r.name));
+  const andere = (runs || []).filter((r) => !eigenerLauf(r));
   const res = evaluate(andere);
   const offen = (n) => ({ aktion: "offen", status: "in_progress", conclusion: null,
     title: `Wartet: ${n}`, summary: `Offen: ${res.offen.slice(0, 12).join(", ") || "-"}${res.rot.length ? `\nRot (Retry moeglich): ${res.rot.join(", ")}` : ""}` });
@@ -91,7 +95,7 @@ export async function holeLaeufe(api, repo, sha) {
   return out;
 }
 
-export function apiClient(token) {
+export function apiClient(token, { fetchFn = fetch, schlafen = (ms_) => new Promise((r) => setTimeout(r, ms_)), pausen = [2000, 6000] } = {}) {
   const h = { authorization: `Bearer ${token}`, accept: "application/vnd.github+json", "content-type": "application/json" };
   const pruefe = async (r) => {
     if (r.status === 429 || (r.status === 403 && (r.headers.get("retry-after") || r.headers.get("x-ratelimit-remaining") === "0"))) {
@@ -100,9 +104,20 @@ export function apiClient(token) {
     if (!r.ok) throw new Error(`${r.status} ${r.url.replace(/\?.*/, "")}`);
     return r.status === 204 ? {} : r.json();
   };
+  /** 5xx der GitHub-API (und Netzfehler) werden mit Backoff wiederholt (2 s, 6 s); 4xx nie. Kein Ergebnis = Fehler, der Check bleibt, wie er war. */
+  const mitWiederholung = async (f) => {
+    for (let i = 0; ; i++) {
+      try { return await pruefe(await f()); }
+      catch (e) {
+        const wiederholbar = (/^5\d\d /.test(String(e.message)) || e instanceof TypeError || /fetch failed|ECONN|ETIMEDOUT|ENOTFOUND/i.test(String(e.message))) && !(e instanceof RateLimited);
+        if (!wiederholbar || i >= pausen.length) throw e;
+        await schlafen(pausen[i]);
+      }
+    }
+  };
   return {
-    get: async (path) => pruefe(await fetch(`https://api.github.com${path}`, { headers: h })),
-    send: async (method, path, body) => pruefe(await fetch(`https://api.github.com${path}`, { method, headers: h, body: JSON.stringify(body) })),
+    get: (path) => mitWiederholung(() => fetchFn(`https://api.github.com${path}`, { headers: h })),
+    send: (method, path, body) => mitWiederholung(() => fetchFn(`https://api.github.com${path}`, { method, headers: h, body: JSON.stringify(body) })),
   };
 }
 
