@@ -1,0 +1,120 @@
+{
+ "status": "FREIGEGEBEN",
+ "statusNote": "Steuerung 23.11.2026 (Eignungspaket nach CI-Wiederherstellung): ITGR verlaesst das Produkt nach abgeschlossener Uebernahme (Regel B, listing-ended-evidence, 8-K 2.01 + Form 25-NSE); GLMD und BNRG als Kuerzelwechsel-Vorgaenger (Regel D, Register #2280, 6-K). LXFR folgt, sobald seine Reihe mehr als 2 Sitzungen zurueckliegt.",
+ "decidedBy": "Steuerung 23.11.2026 08:13 UTC",
+ "schema": "vu-eligibility-catchup-1",
+ "id": "eligibility-ended-2026-11-23",
+ "prevSha256": "9284ba47bdc131453a21d5d68c22b25456c13dc86ec9680e60090df12fbe8d2d",
+ "sourceRun": "lokal 23.11.2026 gegen main 0dc2e3b4fcc (apply-ended-listings: Regel B ITGR, Regel D GLMD/BNRG aus #2280)",
+ "productUniverseBefore": 6009,
+ "productUniverseAfter": 6006,
+ "counts": {
+  "changes": 3,
+  "leaveProduct": 3,
+  "enterProduct": 0
+ },
+ "leaveReasons": {
+  "CONFIRMED_LISTING_ENDED:ACQUISITION": 1,
+  "CONFIRMED_LISTING_ENDED:SUCCEEDED": 2
+ },
+ "enterReasons": {},
+ "impact": {
+  "discover": {
+   "before": 5509,
+   "removed": 1,
+   "addedWithPage": 0
+  },
+  "elliott": {
+   "before": 4884,
+   "removed": 1,
+   "addedWithPage": 0
+  },
+  "fundamental": {
+   "before": 5251,
+   "removed": 1,
+   "addedWithPage": 0
+  },
+  "hedgefonds": {
+   "before": 4503,
+   "removed": 1,
+   "addedWithPage": 0
+  },
+  "quant": {
+   "before": 6007,
+   "removed": 2,
+   "addedWithPage": 0
+  },
+  "supertrader": {
+   "before": 1587,
+   "removed": 0,
+   "addedWithPage": 0
+  },
+  "technical": {
+   "before": 5676,
+   "removed": 1,
+   "addedWithPage": 0
+  },
+  "technik": {
+   "before": 4884,
+   "removed": 1,
+   "addedWithPage": 0
+  }
+ },
+ "changes": [
+  {
+   "securityId": "ref_ITGR",
+   "ticker": "ITGR",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:ACQUISITION"
+  },
+  {
+   "securityId": "ref_GLMD",
+   "ticker": "GLMD",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:SUCCEEDED"
+  },
+  {
+   "securityId": "ref_BNRG",
+   "ticker": "BNRG",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:SUCCEEDED"
+  }
+ ],
+ "leave": [
+  {
+   "ticker": "ITGR",
+   "securityId": "ref_ITGR",
+   "reason": "CONFIRMED_LISTING_ENDED:ACQUISITION",
+   "products": [
+    "discover",
+    "elliott",
+    "fundamental",
+    "hedgefonds",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "GLMD",
+   "securityId": "ref_GLMD",
+   "reason": "CONFIRMED_LISTING_ENDED:SUCCEEDED",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "BNRG",
+   "securityId": "ref_BNRG",
+   "reason": "CONFIRMED_LISTING_ENDED:SUCCEEDED",
+   "products": []
+  }
+ ],
+ "enter": []
+}
