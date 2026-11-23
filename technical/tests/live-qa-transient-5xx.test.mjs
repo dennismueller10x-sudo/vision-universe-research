@@ -29,3 +29,4 @@ test('LQ-4 Netzfehler beim Nachladen zaehlt als nicht erholt; andere Konsolenfeh
   assert.deepEqual(r.failed, ['502 /b.png']);
   assert.deepEqual(r.errs, ['PAGEERROR x']);
 });
+// Probe Pfadfilter (ci-gate-neu), nicht mergen
