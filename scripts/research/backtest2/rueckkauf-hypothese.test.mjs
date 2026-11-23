@@ -14,10 +14,10 @@ function fakeXs(n, fill, start = 2014) {
   });
 }
 
-test('Vorab fest: eine Regel (R25) und sieben Gegenproben, jede ändert genau eine Einstellung', () => {
-  assert.deepEqual(HYPOTHESIS, { id: 'R25', label: 'Momentum + Bruttogewinn/Bilanz + Rückkäufe · 25 Titel · Haltepuffer', pattern: false, score: 'mom_gpa_buyback', n: 25, hold: true, dropTop: 0 });
-  assert.deepEqual(CHECKS.map((c) => c.id), ['R25-ohne-1', 'R25-ohne-2', 'R25-ohne-Puffer', 'R15', 'R50', 'R25-Trendvorlage', 'MG25']);
-  for (const c of CHECKS) assert.equal(['pattern', 'score', 'n', 'hold', 'dropTop'].filter((k) => c[k] !== HYPOTHESIS[k]).length, 1, c.id);
+test('Vorab fest: eine Regel (R25) und acht Gegenproben, jede ändert genau eine Einstellung', () => {
+  assert.deepEqual(HYPOTHESIS, { id: 'R25', label: 'Momentum + Bruttogewinn/Bilanz + Rückkäufe · 25 Titel · Haltepuffer', pattern: false, score: 'mom_gpa_buyback', n: 25, hold: true, dropTop: 0, cap: null });
+  assert.deepEqual(CHECKS.map((c) => c.id), ['R25-ohne-1', 'R25-ohne-2', 'R25-Kappe30', 'R25-ohne-Puffer', 'R15', 'R50', 'R25-Trendvorlage', 'MG25']);
+  for (const c of CHECKS) assert.equal(['pattern', 'score', 'n', 'hold', 'dropTop', 'cap'].filter((k) => c[k] !== HYPOTHESIS[k]).length, 1, c.id);
   assert.equal(FROM_YEAR, 2014);
 });
 
@@ -30,6 +30,11 @@ test('Härtetest: ohne den besten Titel sinkt die Monatsrendite um dessen Beitra
   assert.ok(Math.abs(full.net[1] - (0.5 + 24 * 0.01) / 25) < 1e-12, 'zweiter Monat ohne Umschlag');
   assert.ok(Math.abs(d1.net[1] - 0.01) < 1e-12 && Math.abs(d2.net[1] - 0.01) < 1e-12);
   assert.deepEqual(d1.turnover, full.turnover, 'Kosten und Umschlag bleiben die des echten Depots');
+  /* Kappung bei +30 %: der Ausreißer zählt nur mit 30 % */
+  assert.ok(Math.abs(series(xs, flags, { ...HYPOTHESIS, cap: 0.3 }).net[1] - (0.3 + 24 * 0.01) / 25) < 1e-12);
+  /* Median der gehaltenen Titel (1 %) gegen Median des Universums (1 %): kein Vorsprung trotz Ausreißer */
+  assert.ok(Math.abs(full.medianEdge[1]) < 1e-12);
+  assert.equal(full.held[1].length, 25);
   /* fehlt ein Baustein (Rückkäufe), ist der Titel nicht wählbar */
   const xs2 = fakeXs(1, (set, r, i) => { set('momentum12_1', i / 60); set('gpa', i / 60); if (i < 12) set('buyback', 0.5); r[i] = 0; });
   assert.equal(series(xs2, xs2.map(() => new Uint8Array(60)), HYPOTHESIS).names[0], 12);
@@ -44,9 +49,11 @@ test('Auswertung: Kalenderjahre, Teilzeiträume, Gegenproben und Bericht', () =>
   const ev = evaluate(xs, xs.map(() => new Uint8Array(60)), bench, { draws: 299 });
   assert.equal(ev.months, months); assert.equal(ev.years.length, 5); assert.equal(ev.years.at(-1).months, 6);
   assert.ok(ev.hypothesis.excess > 0 && ev.hypothesis.cashMonths === 0);
-  assert.equal(ev.checks.length, 7); assert.equal('net' in ev.hypothesis, false);
+  assert.equal(ev.checks.length, 8); assert.equal('net' in ev.hypothesis, false); assert.equal('held' in ev.hypothesis, false);
+  assert.equal(ev.topSingle.length, 15); assert.ok(ev.topSingle[0].ret >= ev.topSingle[14].ret); assert.equal(ev.singleOver100, 0);
+  assert.equal(ev.medianCheck.months, months); assert.ok(ev.medianCheck.monthsAhead === months, 'gehaltene Titel liegen im Median jeden Monat vor dem Universum');
   assert.ok(ev.checks.find((c) => c.id === 'R25-ohne-1').cagr <= ev.hypothesis.cagr + 1e-9);
   assert.ok(ev.worstYearVsSpy && ev.worstYearVsSpy.months === 12);
   const md = report({ result: ev, smoke: true, data: { loaded: 60 }, dataFingerprint: 'test' });
-  assert.match(md, /Stufe 8/); assert.match(md, /Kalenderjahre/); assert.match(md, /Härtetest/); assert.match(md, /\(6 Mon\.\)/); assert.doesNotMatch(md, /NaN|undefined/);
+  assert.match(md, /Stufe 8/); assert.match(md, /Kalenderjahre/); assert.match(md, /Härtetest/); assert.match(md, /Hängt es an Ausreißern/); assert.match(md, /\(6 Mon\.\)/); assert.doesNotMatch(md, /NaN|undefined/);
 });

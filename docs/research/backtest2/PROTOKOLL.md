@@ -358,6 +358,18 @@ Vorwärtstest. `scripts/research/backtest2/rueckkauf-hypothese.mjs`, Modus `merk
   Rückkäufe.
 - Berichtet: Rendite, Abstand zu SPY, max. Verlust, Jahre vorn, p, Umschlag; Kalenderjahre und Teilzeiträume für R25.
 
+**Ergebnis Stufe 8, erster Lauf** (Lauf 45233282094, 01/2014 bis 09/2026, nach Kosten; SPY 14,1 % p. a.):
+- R25 22,1 % p. a. (+8,1 Pp, max. Verlust −22,7 %, 8 von 13 Jahren vorn, p 0,084, Umschlag 26 % je Monat).
+- **Das Ergebnis hängt an einem Jahr:** 2020 +128,9 % gegen 17,2 %. Teilzeiträume gegen SPY: 2014–2016 +0,1 Pp, 2017–2019
+  +3,3 Pp, 2020–2022 +31,2 Pp, 2023–Ende +1,0 Pp. Ohne das Jahr 2020 gerechnet rund 15,7 % gegen 13,8 % p. a. Hinten lag R25
+  2016 (−12,8 Pp), 2019 (−5,6 Pp), 2021 (−4,4 Pp), 2025 (−8,0 Pp).
+- Gegenproben: 15 Titel 25,4 %, 50 Titel 18,5 %, ohne Haltepuffer 21,4 %, mit Trendvorlage 18,4 % (max. Verlust −18,7 %), ohne
+  Rückkäufe 18,3 % (max. Verlust −31,2 %). Ohne den besten Titel jedes Monats 6,4 %, ohne die zwei besten −0,5 %: dieser
+  Härtetest trifft jedes Depot mit 25 Titeln hart und trennt deshalb nicht; er wird um Kappung, Median-Vergleich und die Liste
+  der größten Einzelbeiträge ergänzt (zweiter Lauf, gleiche Regel, nur zusätzliche Auswertung).
+- Lesart bis dahin: kein belastbarer Vorsprung außerhalb von 2020–2022; vor einer Aussage nach außen muss geklärt sein, welche
+  Titel 2020 getragen haben und ob die Kurse stimmen.
+
 ## 5. Ausführung und Veröffentlichung
 
 - Umsetzung: `scripts/research/backtest2/` (Markt, Signale, Depotführung, Suche, Lauf mit Workern). Workflow `research.yml`, Teil
