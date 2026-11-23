@@ -370,6 +370,20 @@ Vorwärtstest. `scripts/research/backtest2/rueckkauf-hypothese.mjs`, Modus `merk
 - Lesart bis dahin: kein belastbarer Vorsprung außerhalb von 2020–2022; vor einer Aussage nach außen muss geklärt sein, welche
   Titel 2020 getragen haben und ob die Kurse stimmen.
 
+**Ergebnis Stufe 8, zweiter Lauf** (Lauf 45239682418, gleiche Regel, zusätzliche Auswertung):
+- **Der Vorsprung hängt an einem Titel:** GameStop (GME), gehalten am Ultimo 12/2020, +1.625 % im Januar 2021; bei 4 % Gewicht
+  rund 65 Prozentpunkte in einem Monat. GME steht dreimal unter den 15 größten Einzelbeiträgen (dazu +86,6 % und +58,2 %). Der
+  Kurs ist echt, kein Datenfehler; die Regel wählte GME wegen Kursstärke und starker Rückkäufe. Von 3.825 Titel-Monaten lagen
+  zwei über +100 %.
+- **Mit Kappung jeder Monatsrendite je Titel bei +30 %: 15,8 % p. a. (+1,7 Pp gegen SPY, p 0,201).** Das ist die ehrliche
+  Größenordnung der Regel ohne Glückstreffer.
+- Median der gehaltenen Titel gegen Median aller Titel des Universums: in 89 von 153 Monaten vorn, typischer Monat +0,9 Pp,
+  im Mittel +0,5 Pp. Die Auswahl trifft im Schnitt die besseren Titel; gegen einen kapitalgewichteten Index reicht das für rund
+  zwei Prozentpunkte p. a.
+- Lesart: R25 ist eine vernünftige Regel mit kleinem, nicht gesichertem Vorsprung und gutem Verhalten in schwachen Jahren
+  (2015, 2018, 2022 vor SPY). Die 22,1 % bzw. 25,4 % der Rückschau sind nicht verwendbar. Für jede künftige Studie gilt: neben
+  der Rendite immer die gekappte Rendite und die größten Einzelbeiträge berichten.
+
 ## 5. Ausführung und Veröffentlichung
 
 - Umsetzung: `scripts/research/backtest2/` (Markt, Signale, Depotführung, Suche, Lauf mit Workern). Workflow `research.yml`, Teil
