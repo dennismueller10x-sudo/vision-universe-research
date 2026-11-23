@@ -69,6 +69,8 @@
   }
 
   function json(url) {
+    /* Mit Shell: dieselbe Wiederholung wie alle Quant-/Discover-Abrufe (QuantShell.loadJSON: 5xx und Netzfehler bis zu dreimal). */
+    if (global.QuantShell && global.QuantShell.loadJSON) return global.QuantShell.loadJSON(url);
     return fetch(url, { credentials: "same-origin" }).then(function (res) {
       if (!res.ok) throw new Error(url + " -> HTTP " + res.status);
       return res.json();
