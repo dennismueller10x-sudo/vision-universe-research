@@ -30,6 +30,12 @@ const testFile = arg("--test"), maxMb = Number(arg("--max-mb", 3));
 const extraEnv = {}; process.argv.forEach((a, i) => { if (a === "--env" && process.argv[i + 1]) { const [k, ...v] = process.argv[i + 1].split("="); extraEnv[k] = v.join("="); } });
 if (!testFile) throw Error("--test angeben");
 const fail = (why, extra = {}) => { console.log(JSON.stringify({ test: testFile, ok: false, why, ...extra })); process.exit(1); };
+/* Sperre (23.11.2026): keine parallelen Freeze-Laeufe. Unter Last flackerte backtest-runner (4 Laeufe parallel) und wurde faelschlich
+   als "live rot" gemeldet. Die Sperrdatei traegt die PID; ein toter Halter wird uebernommen. */
+const lock = join(tmpdir(), "vu-freeze.lock");
+if (existsSync(lock)) { const pid = Number(readFileSync(lock, "utf8")); let lebt = false; try { process.kill(pid, 0); lebt = pid !== process.pid; } catch {} if (lebt) fail("paralleler-lauf (Sperre " + lock + ", PID " + pid + ")"); }
+writeFileSync(lock, String(process.pid));
+process.on("exit", () => { try { if (readFileSync(lock, "utf8") === String(process.pid)) rmSync(lock, { force: true }); } catch {} });
 const bundle = frozenBundleFor(join(REPO, testFile));
 const fehlt = fehlendeDatenzweigPfade();
 if (fehlt.length) fail("kein-voller-checkout (scripts/ci/seed-data-branch.sh alle ausfuehren)", { fehlt: fehlt.slice(0, 5), anzahl: fehlt.length });
@@ -39,7 +45,11 @@ const tracer = join(REPO, "scripts/quant/lib/trace-data-reads.cjs");
 /* NODE_OPTIONS vererbt den Mitschnitt an Kindprozesse; jeder schreibt <pid>.json in TRACE_DIR. */
 const live = spawnSync(process.execPath, ["--require", tracer, testFile],
   { cwd: REPO, env: { ...process.env, ...extraEnv, DATA_FIXTURE_LIVE: "1", TRACE_DIR: traceDir, NODE_OPTIONS: ((process.env.NODE_OPTIONS || "") + " --require=" + tracer).trim() }, encoding: "utf8", maxBuffer: 1 << 28, timeout: 1500000 });
-if (live.status !== 0) fail("live-rot");
+if (live.status !== 0) {
+  /* Ein Wiederholungslauf trennt "rot" von "flackert": gruen im zweiten Lauf = zeitabhaengiger Test, eigener Befund. */
+  const zwei = spawnSync(process.execPath, ["--require", tracer, testFile], { cwd: REPO, env: { ...process.env, ...extraEnv, DATA_FIXTURE_LIVE: "1", TRACE_DIR: mkdtempSync(join(tmpdir(), "vu-trace2-")) }, encoding: "utf8", maxBuffer: 1 << 28, timeout: 1500000 });
+  fail(zwei.status === 0 ? "live-flackert (erster Lauf rot, zweiter gruen: zeitabhaengiger Test, als Befund melden)" : "live-rot", { rot: live.stdout.split("\n").filter((l) => /^not ok/.test(l)).slice(0, 3) });
+}
 const tap = (o) => ({ pass: +(/^# pass (\d+)/m.exec(o) || [0, 0])[1], skipped: +(/^# skipped (\d+)/m.exec(o) || [0, 0])[1] });
 const liveTap = tap(live.stdout);
 if (liveTap.pass === 0) fail("nur-uebersprungen-oder-ohne-tests (mit --env wie in der CI)");
