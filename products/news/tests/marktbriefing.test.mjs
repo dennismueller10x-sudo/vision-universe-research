@@ -195,7 +195,7 @@ test('MB-9 www-Seite: alles im HTML, CSP-tauglich, strukturierte Daten, Navigati
   assert.match(html, /<h1 class="mb-claim mb-h1">/);
   assert.match(html, /<ol class="mb-sum"><li><svg class="mb-si"[^>]*>[\s\S]*?<\/svg><span>Am Freitag, 20\. November 2026/);
   assert.match(html, /<link rel="canonical" href="https:\/\/www\.visionuniverse\.de\/marktbriefing\/2026-11-20\/">/);
-  assert.match(html, /<a class="mb-back" href="\.\.\/">/);
+  assert.match(html, /<a class="mb-back" href="\.\.\/#archiv">/);
   assert.match(html, /<meta name="robots" content="noindex, nofollow">/, 'Landing-Build schaltet erst in Produktion auf index');
   // CSP der Website: kein ausführbares Inline-Skript, kein <style>-Block.
   for (const m of html.matchAll(/<script(?![^>]*\bsrc=)([^>]*)>/g)) assert.match(m[1], /type="application\/(ld\+)?json"/, 'Inline-Skript: ' + m[0]);
@@ -261,7 +261,10 @@ test('MB-12 Produktseite /marktbriefing/: wie Magazin und Report, führt zur Aus
   assert.equal((html.match(new RegExp(b.cards[0].title, 'g')) || []).length, 1);
   assert.match(html, /<link rel="canonical" href="https:\/\/www\.visionuniverse\.de\/marktbriefing\/">/);
   assert.equal((html.match(/<div><svg viewBox="0 0 24 24"[^>]*>[\s\S]*?<\/svg><span>/g) || []).length, 12, 'feste Kapitel des Formats als Kacheln');
-  assert.match(html, /<a href="2026-11-19\/">/);
+  assert.match(html, /<section class="full mbarchiv" id="archiv">[\s\S]*<a class="mbarch-c" href="2026-11-19\/">/);
+  const h2 = Www.productPage(b, { chrome: Www.chromeFrom(CHROME), parts, archive: [SESSION, '2026-10-30'], issues: [{ session: SESSION, title: 'Titel A', thumb: 'teilen.png' }, { session: '2026-10-30', title: null, thumb: null }] });
+  assert.match(h2, /<p class="mbarch-m">November 2026<\/p>[\s\S]*<img src="2026-11-20\/teilen\.png"[\s\S]*<b>Titel A<\/b>[\s\S]*<p class="mbarch-m">Oktober 2026<\/p>[\s\S]*<span class="mbarch-ph"><\/span>/);
+  assert.match(h2, /2 Ausgaben/);
   const ld = JSON.parse(html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1]);
   assert.equal(ld['@type'], 'CollectionPage');
   for (const m of html.matchAll(/<script(?![^>]*\bsrc=)([^>]*)>/g)) assert.match(m[1], /type="application\/(ld\+)?json"/);

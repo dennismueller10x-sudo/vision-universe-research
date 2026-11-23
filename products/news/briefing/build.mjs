@@ -104,6 +104,10 @@ export async function writeWww(briefing, landingDir, { pdf = false } = {}) {
   const has = (f) => fs.existsSync(path.join(ed, f));
   if (has(pdfName)) havePdf = true;
   const archive = fs.readdirSync(dir).filter((f) => /^\d{4}-\d{2}-\d{2}$/.test(f) && fs.existsSync(path.join(dir, f, 'index.html')) || f === briefing.session).sort().reverse();
+  // Archiv (Owner 23.11.2026): je Ausgabe ausgabe.json mit Schlagzeile; die Produktseite zeigt daraus Kacheln mit Teilen-Bild.
+  fs.writeFileSync(path.join(ed, 'ausgabe.json'), JSON.stringify({ schema: 'vu-marktbriefing-ausgabe-1', session: briefing.session, title: Www.shareTitle(briefing), chips: Www.shareChips(briefing) }, null, 1) + '\n');
+  files.push(path.join(ed, 'ausgabe.json'));
+  const issues = archive.map((d) => { const j = readJson(path.join(dir, d, 'ausgabe.json')) || {}; return { session: d, title: j.title || null, thumb: fs.existsSync(path.join(dir, d, 'teilen.png')) ? 'teilen.png' : fs.existsSync(path.join(dir, d, 'vorschau.png')) ? 'vorschau.png' : null }; });
   put(briefing.session + '/index.html', Www.page(briefing, { chrome, archive, depth: 2, pdf: havePdf ? pdfName : null,
     image: has('teilen.png') ? '/marktbriefing/' + briefing.session + '/teilen.png' : has('vorschau.png') ? '/marktbriefing/' + briefing.session + '/vorschau.png' : null,
     imageSize: has('teilen.png') ? [1200, 630] : null }));
@@ -126,7 +130,7 @@ export async function writeWww(briefing, landingDir, { pdf = false } = {}) {
   if (briefing.session === archive[0]) {
     const cards = peekIdx.map((i) => ({ file: 'karte-' + String(i + 1).padStart(2, '0') + '.png', anchor: ANCHOR[briefing.cards[i].id] || 'start',
       title: briefing.cards[i].title, kicker: briefing.cards[i].kicker })).filter((c) => has(c.file));
-    put('index.html', Www.productPage(briefing, { chrome, parts, archive, pdf: havePdf ? pdfName : null,
+    put('index.html', Www.productPage(briefing, { chrome, parts, archive, issues, pdf: havePdf ? pdfName : null,
       img: { share: has('teilen.png') ? 'teilen.png' : null, story0: has('vorschau.png') ? 'vorschau.png' : null, cover: has('titel.png') ? 'titel.png' : null, cards,
         pages: ['seite-02.png', 'seite-03.png', 'seite-04.png'].filter(has),
         screens: pick(['start', 'indizes', 'marktbreite', 'ausblick']) } }));
