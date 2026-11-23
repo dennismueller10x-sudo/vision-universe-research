@@ -11,12 +11,22 @@ const arg = (n, fallback) => { const i = process.argv.indexOf(n); return i < 0 ?
 const root = resolve(arg('--root', '.'));
 const runs = Number(arg('--runs', 3)), windowMs = Number(arg('--window', 20000));
 if (!Number.isInteger(runs) || runs < 1 || !Number.isFinite(windowMs) || windowMs < 1000) throw Error('Invalid runs/window');
+const cpuRate=Number(arg('--cpu',4));
+if(![1,2,4,6].includes(cpuRate))throw Error('Invalid --cpu (1, 2, 4 or 6)');
 const fixedTime=arg('--time');
 if(fixedTime&&!Number.isFinite(Date.parse(fixedTime)))throw Error('Invalid --time');
 const cpuProfile=arg('--cpu-profile');
 if(cpuProfile&&(!arg('--route')||runs!==1))throw Error('CPU profiling needs one route and one run');
 const {chromium} = createRequire(import.meta.url)('playwright');
-const routes = ['/', '/quant/', '/quant/#/aktie/NVDA', '/technical/#/chart/NVDA', '/fundamental/#/NVDA', '/supertrader/', '/supertrader/stock/NVDA/', '/discover/', '/quant/musterdepots/', '/analysten/', '/mein-dashboard/'];
+const defaultRoutes = ['/', '/quant/', '/quant/#/aktie/NVDA', '/technical/#/chart/NVDA', '/fundamental/#/NVDA', '/supertrader/', '/supertrader/stock/NVDA/', '/discover/', '/quant/musterdepots/', '/analysten/', '/mein-dashboard/'];
+/* --routes a,b,c: eigene Liste (Live-Ladezeit); nur Pfade mit fuehrendem Schraegstrich, kein Schema und keine Adresse. */
+const routes = arg('--routes') ? arg('--routes').split(',').map(r => { if (!/^\/[A-Za-z0-9_\-./#?=&]*$/.test(r)) throw Error('Invalid --routes entry'); return r; }) : defaultRoutes;
+let gateState = null;
+if (process.argv.includes('--gate')) {
+ if (!process.env.RESEARCH_ACCESS_PASSWORD) throw Error('GATE_PASSWORD_MISSING');
+ const {accessStateFor, STORAGE_KEY} = await import(new URL('../access-gate/build.mjs', import.meta.url));
+ gateState = [STORAGE_KEY, JSON.stringify(accessStateFor(process.env.RESEARCH_ACCESS_PASSWORD))];
+}
 const server = await startServer(root);
 const base = arg('--base-url', `http://127.0.0.1:${server.address().port}`);
 const browser = await chromium.launch({executablePath:arg('--browser', undefined)});
@@ -27,12 +37,14 @@ const delivery = await readFile(resolve(root, 'release-delivery.json'), 'utf8').
 try {
  for (const route of routes.filter(p => !arg('--route') || p === arg('--route'))) for (let run = 1; run <= runs; run++) {
   const context = await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:2,isMobile:true,hasTouch:true,serviceWorkers:'block',colorScheme:'light'});
+  /* Zugangsmaske (nur mit --gate und gesetztem RESEARCH_ACCESS_PASSWORD): der Zustand lebt nur in diesem Browserkontext (localStorage per Init-Skript), nie in Ausgabe oder Bericht; dieses Skript zeichnet nichts auf ausser den Kennzahlen. */
+  if (gateState) await context.addInitScript(([k, v, o]) => { try { if (location.origin === o) localStorage.setItem(k, v); } catch (e) { /* ohne Speicher */ } }, [...gateState, new URL(base).origin]);
   const page = await context.newPage(), cdp = await context.newCDPSession(page);
   if(fixedTime)await page.clock.setFixedTime(new Date(fixedTime));
   await cdp.send('Network.enable');
   await cdp.send('Network.setCacheDisabled', {cacheDisabled:true});
   await cdp.send('Network.emulateNetworkConditions', {offline:false,latency:150,downloadThroughput:1600000/8,uploadThroughput:750000/8,connectionType:'cellular4g'});
-  await cdp.send('Emulation.setCPUThrottlingRate', {rate:4});
+  await cdp.send('Emulation.setCPUThrottlingRate', {rate:cpuRate});
   await page.addInitScript(trackNumber => {
    const m = window.__e5 = {lcp:null,cls:0,shifts:[],tasks:[],firstNumber:null,numberText:null};
    let sum = 0, start = 0, last = 0;
@@ -74,7 +86,7 @@ try {
  }
  const median = a => {a=a.map(x=>x===null?Infinity:x).sort((a,b)=>a-b);const value=a[Math.floor(a.length/2)];return Number.isFinite(value)?value:null;};
  const rows=[...new Set(samples.map(s=>s.route))].map(route=> {const ss=samples.filter(s=>s.route===route);return {route,...Object.fromEntries(['lcp','cls','tbt','bytes','requests','firstNumber'].map(k=>[k,median(ss.map(s=>s[k]))])),incompleteRuns:ss.filter(s=>s.unfinished>0||s.lcp===null).length,failedRuns:ss.filter(s=>s.failures.length||s.errors.length).length};});
- const result={schema:1,cpuProfile:!!cpuProfile,deliveryOverlay:overlay,sourceCommit:delivery?.sourceCommit ?? null,commit:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),browser:browser.version(),measuredAt:new Date().toISOString(),profile:{viewport:'390x844',downloadBps:1600000,uploadBps:750000,latencyMs:150,cpu:4,cpuAffinity,fixedTime:fixedTime||null,windowMs,runs,cache:'cold, SW blocked',root,base},note:'TBT lab proxy: long-task blocking after FCP until fixed observation end; not INP or Lighthouse TBT. Null firstNumber = no visible stock-head price within window. Bytes = CDP wire including headers; unfinished responses counted partially.',rows,samples};
+ const result={schema:1,cpuProfile:!!cpuProfile,deliveryOverlay:overlay,sourceCommit:delivery?.sourceCommit ?? null,commit:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),browser:browser.version(),measuredAt:new Date().toISOString(),profile:{viewport:'390x844',downloadBps:1600000,uploadBps:750000,latencyMs:150,cpu:cpuRate,cpuAffinity,fixedTime:fixedTime||null,windowMs,runs,cache:'cold, SW blocked',root,base},note:'TBT lab proxy: long-task blocking after FCP until fixed observation end; not INP or Lighthouse TBT. Null firstNumber = no visible stock-head price within window. Bytes = CDP wire including headers; unfinished responses counted partially.',rows,samples};
  await writeFile(resolve(arg('--out','/tmp/e5-measurement.json')),JSON.stringify(result,null,2)+'\n');
  console.table(rows);
 } finally {await browser.close();await new Promise(r=>server.close(r));}
