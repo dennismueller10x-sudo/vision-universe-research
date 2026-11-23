@@ -90,6 +90,27 @@ class ReloadVerificationTests(unittest.TestCase):
         self.assertEqual(bericht["RELOAD_WITHOUT_SEC_REFETCH"], "FAIL")
         self.assertFalse(bericht["results"][0]["canonicalFactsIdentical"])
 
+    def _leeres_factbook(self, cik):
+        """Ein Emittent ohne XBRL-Fakten, lokal und im Reload gleich (frisch gelistet)."""
+        with gzip.open(self.facts / f"{self.cik}.json.gz", "rt", encoding="utf-8") as h:
+            doc = json.load(h)
+        doc["factbook"]["timelines"] = []
+        for ziel in (self.facts, self.reload):
+            with gzip.open(ziel / f"{cik}.json.gz", "wt", encoding="utf-8") as h:
+                json.dump(doc, h)
+
+    def test_ein_leeres_factbook_blockiert_den_lauf_nicht_aber_ersetzt_keinen_nachweis(self):
+        self._leeres_factbook("4100000002")
+        code, bericht, _ = self._run(ciks=f"{self.cik},4100000002")
+        self.assertEqual(code, 0)
+        self.assertEqual(bericht["RELOAD_WITHOUT_SEC_REFETCH"], "PASS")
+        leer = [z for z in bericht["results"] if z["cik"] == "4100000002"][0]
+        self.assertTrue(leer["empty"] and leer["pass"])
+        # Nur leere Factbooks beweisen nichts.
+        code, bericht, _ = self._run(ciks="4100000002")
+        self.assertEqual(code, 1)
+        self.assertEqual(bericht["RELOAD_WITHOUT_SEC_REFETCH"], "FAIL")
+
     def test_ein_fehlendes_objekt_wird_nicht_als_vorhanden_gemeldet(self):
         code, bericht, _ = self._run(ciks=f"{self.cik},9999999999")
         self.assertEqual(code, 1)
