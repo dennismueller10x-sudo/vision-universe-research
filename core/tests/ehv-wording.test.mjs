@@ -41,9 +41,12 @@ for (const w of legal.wording) for (const part of w.avoid.replace(/\([^)]*\)/g, 
 }
 TERMS.push("Chance/Risiko", "100 % sicher");
 const esc = (t) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+/* Owner-Entscheidung 23.11.2026 (docs/legal/WORTWAHL.md, Ausnahme Elliott „Großes Bild“): nur die Worttabelle zwischen
+   KURSMARKEN-BEGIN und KURSMARKEN-END in elliott/bigpicture.js darf Kursziel, Einstiegszone und Absicherung nennen. */
+function kursmarken(src, file) { return file.replace(/\\/g, "/") === "elliott/bigpicture.js" ? src.replace(/KURSMARKEN-BEGIN[\s\S]*?KURSMARKEN-END/, "") : src; }
 function hitsOf(files, re) {
   const hits = [];
-  for (const f of files) for (const s of strings(readFileSync(f, "utf8"), f)) {
+  for (const f of files) for (const s of strings(kursmarken(readFileSync(f, "utf8"), f), f)) {
     const v = neg(s), r = new RegExp(re.source, re.flags.includes("g") ? re.flags : re.flags + "g");
     let m;
     while ((m = r.exec(v))) hits.push(f + ": „" + m[0] + "“ … " + v.slice(Math.max(0, m.index - 30), m.index + m[0].length + 30));
@@ -149,4 +152,15 @@ test("Vorsorge: Seite je Index mit UCITS aus dem EU-Register, Beispiele mit ISIN
   assert.match(vEtf, /ESMA-Register, Stand ' \+ F\.date\(reg\.runDate\) \+ '\. ' \+ VS\.UCITS_EXAMPLE_LABEL/);
   assert.match(vEtf, /if \(ixr && r\.query\.fonds !== "1" && !r\.query\.tab && !r\.query\.play\) \{ global\.location\.replace\("#\/index\/" \+ ixr\.id\); return; \}/, "#/etf/URTH leitet auf die Index-Seite");
   assert.match(readFileSync("docs/legal/EINORDNUNG.md", "utf8"), /UCITS-Beispiele auf der Index-Seite[\s\S]*Beispiele, keine Empfehlung/, "Absatz für die Anwaltsmappe");
+});
+
+test("Elliott „Großes Bild“: Kursziel und Einstieg nur in der freigegebenen Worttabelle, Schalter vorhanden", () => {
+  const src = readFileSync("elliott/bigpicture.js", "utf8");
+  const block = src.match(/KURSMARKEN-BEGIN[\s\S]*?KURSMARKEN-END/);
+  assert.ok(block, "Worttabelle mit Markierung");
+  assert.match(block[0], /Kursziel/);
+  assert.doesNotMatch(src.replace(block[0], "").replace(/\/\*[\s\S]*?\*\//g, ""), /Kursziel|Einstiegszone|Stopp/, "außerhalb der Tabelle keine Kursmarken-Worte");
+  const cfg = JSON.parse(readFileSync("elliott/config/kursmarken.json", "utf8"));
+  assert.ok(["kursziele", "zonen"].includes(cfg.modus));
+  assert.match(readFileSync("docs/legal/WORTWAHL.md", "utf8"), /Ausnahme Elliott „Großes Bild“ \(Owner-Entscheidung 23\.11\.2026\)/);
 });

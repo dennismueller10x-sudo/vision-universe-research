@@ -54,6 +54,12 @@ einem Anwalt läuft. L1, L2 und L3 entfallen damit.
 
 Das Ergebnis der Anwaltsklärung entscheidet, ob angezeigt oder umgebaut wird.
 
+**Owner-Entscheidung 23.11.2026 (Elliott „Großes Bild“):** Das Elliott-Aktienbild zeigt im Abschnitt „Großes Bild“ Kursziele,
+eine Einstiegszone und eine Absicherung nach der Elliott-Methode (Zählung von oben, `quant/engines/technical/elliott/elliott-topdown.js`),
+mit Prozentabstand, ohne Zeitangabe, mit „keine Anlageberatung“. Das Restrisiko ist dasselbe wie bei den Supertrader-Kursmarken oben
+(Anlageempfehlung, Offenlegung nach Art. 20 MAR, Anzeige nach § 86 WpHG, Widerspruch zu den Nutzungsbedingungen); die Anwaltsklärung
+umfasst diesen Abschnitt. Schalter: `elliott/config/kursmarken.json` (`"modus": "zonen"` = neutrale Worte ohne Kursziel und Einstieg).
+
 **Was danach an Risiko bleibt:**
 - **Reels (L5 entfällt):** Beiträge in sozialen Medien zu einer bestimmten Aktie, etwa die Frage „🐂 oder 🐻?“, kann die
   Aufsicht als Anlageempfehlung werten (Art. 3 Abs. 1 Nr. 35 und Art. 20 MAR; ESMA-Hinweis von 2021 zu sozialen Medien),

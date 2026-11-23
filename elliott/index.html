@@ -13,7 +13,7 @@
      Der Start traegt seine Reiter im Inhalt (App-Konzept 2, data-vu-tabs="inhalt"), das Aktienbild #/<T> hat keine Reiterzeile (Klickentwurf 17.11.2026); app.js nimmt das auf anderen Ansichten wieder weg. -->
 <script>(function(){var w="dark";try{var v=localStorage.getItem("vu-discover-theme-v1");if(v==="dark"||v==="light")w=v;}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);if(!location.hash||/^#\/?$/.test(location.hash)||(/^#\/[A-Za-z0-9.-]+(\?|$)/.test(location.hash)&&!/[?&]ansicht=profi/.test(location.hash)))h.setAttribute("data-vu-tabs","inhalt");var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
 <link rel="stylesheet" href="/assets/vu-ui.css?v=vu-ui-1.4.0">
-<link rel="stylesheet" href="/elliott/elliott.css?v=ek-n3">
+<link rel="stylesheet" href="/elliott/elliott.css?v=ek-n4">
 <link rel="stylesheet" href="/elliott/breit.css?v=ak2-4" media="(min-width:761px)">
 <!-- Der Index ist die einzige Datenanfrage der Startseite; ein Aktien-Deep-Link (#/<T>) braucht ihn nicht -->
 <script>(function(){if(/^#\/[A-Za-z0-9.-]+(\?|$)/.test(location.hash)){/* Deep Link auf eine Aktie: Quant-Stack (Chartbild) sofort anfordern, parallel zu app.js. */fetch("/quant/index.html",{credentials:"same-origin"}).then(function(r){return r.text();}).then(function(h){var g=new DOMParser().parseFromString(h,"text/html").querySelector("script[data-content]");return g?fetch(g.getAttribute("data-content"),{credentials:"same-origin"}).then(function(r){return r.text();}):h;}).then(function(h){new DOMParser().parseFromString(h,"text/html").querySelectorAll("script[src]").forEach(function(s){var u=s.getAttribute("src");if(!u||/site-navigation\.js/.test(u))return;var l=document.createElement("link");l.rel="preload";l.as="script";l.href=u;document.head.appendChild(l);});}).catch(function(){});return;}var l=document.createElement("link");l.rel="preload";l.as="fetch";l.crossOrigin="anonymous";l.href="/quant/data/technical-intelligence/v3/elliott-home.json";document.head.appendChild(l);})();</script>
@@ -26,8 +26,9 @@
 <script src="/assets/vu-ui.js?v=vu-ui-1.4.0"></script>
 <script src="/assets/vu-chart.js"></script>
 <script src="/elliott/spark.js?v=ak2-4"></script>
-<script src="/elliott/engine/home-model.js?v=ek-n3"></script>
-<script src="/elliott/engine/plan.js?v=ek-n3"></script>
-<script src="/elliott/app.js?v=ek-n3"></script>
+<script src="/elliott/engine/home-model.js?v=ek-n4"></script>
+<script src="/elliott/engine/plan.js?v=ek-n4"></script>
+<script src="/elliott/bigpicture.js?v=ek-n4"></script>
+<script src="/elliott/app.js?v=ek-n4"></script>
 </body>
 </html>
