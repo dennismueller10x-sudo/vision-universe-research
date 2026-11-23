@@ -54,7 +54,13 @@ export function loadInputs(dataRoot, { radarFile, now } = {}) {
   const session = pulse && pulse.movers && pulse.movers.session;
   const radarPath = radarFile || (session && path.join(root, 'products/news/radar', session + '.json'));
   const radar = radarPath ? readJson(radarPath) : null;
-  return { pulse, pulseHistory, series, intraday, stocks, sec, radar, editorial: radar && radar.editorial || null, now };
+  // Wechselnde Themen: Technical-Kennzahlen, S&P-500-Rahmen und die Themen der letzten Ausgaben (Rotation).
+  const tech = readJson(path.join(dataRoot, 'technical/data/screener-v1.json'));
+  const sp500 = readJson(path.join(dataRoot, 'quant/data/market/index-membership/SP500.json'));
+  const arch = path.join(dataRoot, 'news/marktbriefing/data/archive');
+  const recentTopics = fs.existsSync(arch) ? fs.readdirSync(arch).filter((f) => /^\d{4}-\d{2}-\d{2}\.json$/.test(f) && (!session || f.slice(0, 10) < session)).sort().reverse().slice(0, 3)
+    .map((f) => ((readJson(path.join(arch, f)) || {}).topics || {}).shown || []) : [];
+  return { pulse, pulseHistory, series, intraday, stocks, sec, radar, editorial: radar && radar.editorial || null, now, tech, sp500, recentTopics };
 }
 
 export function writeBriefing(briefing, outRoot) {
