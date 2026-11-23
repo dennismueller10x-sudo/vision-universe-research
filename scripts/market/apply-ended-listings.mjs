@@ -55,6 +55,9 @@ export const EVIDENCE_SCHEMA = "listing-ended-evidence-1.0.0";
 export const MAX_LAG = 2;
 export const GRACE_DAYS = 7;
 const EVENTS = ["ACQUISITION"];
+/* Regel E (Steuerung 23.11.2026): Ereignisse fuer Titel OHNE eigene Reihe. Nur mit SEC-Beleg (sources auf sec.gov) und
+   noSeries: true im Eintrag; wirkt nur ueber die Freigabeliste (Gate --approved), nie fuer einen Titel mit Reihe. */
+export const EVENTS_NO_SERIES = Object.freeze(["TICKER_CHANGE", "DELISTED"]);
 const ISO = /^\d{4}-\d{2}-\d{2}$/;
 
 function addDays(date, n) { const d = new Date(date + "T00:00:00Z"); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); }
@@ -68,7 +71,9 @@ export function indexEvidence(doc) {
     const bad = (m) => { throw new Error("LISTING_ENDED_EVIDENCE_INVALID: records[" + i + "] " + m); };
     if (!r || typeof r.securityId !== "string" || !/^ref_/.test(r.securityId)) bad("securityId");
     if (typeof r.ticker !== "string" || !r.ticker) bad("ticker");
-    if (!EVENTS.includes(r.event)) bad("event " + r.event);
+    const noSeries = EVENTS_NO_SERIES.includes(r.event);
+    if (!EVENTS.includes(r.event) && !noSeries) bad("event " + r.event);
+    if (noSeries && (r.noSeries !== true || !(r.sources || []).some((u) => /^https:\/\/www\.sec\.gov\//.test(u)))) bad("Regel E verlangt noSeries: true und einen sec.gov-Beleg");
     if (!ISO.test(r.effectiveDate || "")) bad("effectiveDate");
     if (typeof r.counterparty !== "string" || !r.counterparty) bad("counterparty");
     if (!Array.isArray(r.sources) || !r.sources.length || !r.sources.every((u) => /^https:\/\//.test(u))) bad("sources");
@@ -105,11 +110,28 @@ export function judgeEnded(decision, series, state, evidence, ref, lag) {
   if (decision.active_status === "INACTIVE" && state && !state.active) {
     return exclude("CONFIRMED_LISTING_ENDED:MASTER_INACTIVE", "ENDED_LISTING:MASTER_INACTIVE", { master: state.status, masterEnd: state.maxEnd });
   }
-  if (evidence && t.to <= addDays(evidence.effectiveDate, GRACE_DAYS)) {
+  if (evidence && EVENTS.includes(evidence.event) && t.to <= addDays(evidence.effectiveDate, GRACE_DAYS)) {
     return exclude("CONFIRMED_LISTING_ENDED:" + evidence.event, "ENDED_LISTING:" + evidence.event,
       { event: evidence.event, effectiveDate: evidence.effectiveDate, counterparty: evidence.counterparty, sources: evidence.sources });
   }
   return null;
+}
+
+/**
+ * Regel E (Steuerung 23.11.2026): beendete Notierung OHNE eigene Reihe (z. B. JAB, SPAC-Kuerzel nach Umfirmierung).
+ * Regel A/B brauchen das Ende der Reihe als Beleg; ein Titel, der nie eine Reihe hatte, blieb dadurch im Produkt.
+ * Greift nur, wenn es keine Reihe gibt, Eignung und Stamm INACTIVE sind und das Register einen Eintrag mit einem
+ * Ereignis aus EVENTS_NO_SERIES fuehrt (sec.gov-Beleg, noSeries: true). Der Abgang braucht wie jeder andere die Freigabeliste.
+ * @returns {null | {next, rule, evidence}}
+ */
+export function judgeEndedNoSeries(decision, series, state, evidence) {
+  if (!decision || decision.product_eligibility === "EXCLUDED" || !evidence || !EVENTS_NO_SERIES.includes(evidence.event)) return null;
+  if (series && Array.isArray(series.points) && series.points.length) return null;
+  if (decision.active_status !== "INACTIVE" || !state || state.active) return null;
+  const reason = "CONFIRMED_LISTING_ENDED:" + evidence.event, rule = "ENDED_LISTING:NO_SERIES";
+  return { rule, evidence: { event: evidence.event, effectiveDate: evidence.effectiveDate, counterparty: evidence.counterparty, sources: evidence.sources, master: state.status, seriesRemoved: false },
+    next: { ...decision, product_eligibility: "EXCLUDED", product_eligibility_reason: reason,
+      evidence_source: String(decision.evidence_source || "") + "+ENDED_LISTING", review_flags: (decision.review_flags || []).concat([rule]) } };
 }
 
 /**
@@ -197,6 +219,7 @@ function main() {
     if (reuseIds.has(d.securityId)) { skippedReuse++; return d; }
     const j = judgeEnded(d, series.get(d.securityId), mIdx.byId[d.securityId], evidence.get(d.securityId), ref, lag)
       || judgeSucceeded(d, succession[d.securityId], productIds, ref)
+      || judgeEndedNoSeries(d, series.get(d.securityId), mIdx.byId[d.securityId], evidence.get(d.securityId))
       || judgeCarried(d, prevById.get(d.securityId), series.get(d.securityId), mIdx.byId[d.securityId], evidence.get(d.securityId), succession[d.securityId]);
     if (!j) return d;
     if (evidence.has(d.securityId)) usedEvidence.add(d.securityId);

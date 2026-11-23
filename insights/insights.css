@@ -450,3 +450,18 @@ html[data-vu-bleed] .in-body{padding-top:0!important}
   .in-news>section:not([class])>.in-px:has(>.in-art){grid-template-columns:repeat(3,minmax(0,1fr))}
   .in-news>.in-ueber{max-width:none}
 }
+
+/* iPhone (Owner 23.11.2026): Der Aufmacher wurde auf dem schmalen Bildschirm auf Hochformat hochgezoomt (nur die Mitte des
+   16:9-Bildes, stark vergrößert und unscharf). Jetzt steht das Bild in seinem eigenen Format 16:9 oben, mit weichem Übergang
+   ins Schwarz; Rubrik und Titel stehen darunter. Gilt für die Artikelseite und das Titelbild der News-Startseite. */
+@media(max-width:760px){
+  .in-held--artikel{min-height:0}
+  .in-held--artikel>.in-bild:not(.in-bild--app){inset:0 0 auto 0;height:auto;aspect-ratio:16/9}
+  .in-held--artikel>.in-bild:not(.in-bild--app) img{width:100%;height:100%;object-fit:cover;display:block}
+  .in-held--artikel:not(:has(.in-bild--app)) .in-held-schatten{inset:0 0 auto 0;height:56.25vw;background:linear-gradient(rgb(0 0 0/.45),rgb(0 0 0/0) 32%,rgb(0 0 0/0) 58%,#000)}
+  .in-held--artikel:not(:has(.in-bild--app)) .in-held-text{padding-top:calc(56.25vw - 28px)}
+  .in-news .in-held:has(img.in-held-bild){height:auto;min-height:0}
+  .in-news .in-held img.in-held-bild{inset:0 0 auto 0;height:56.25vw}
+  .in-news .in-held:has(img.in-held-bild) .in-held-schatten{inset:0 0 auto 0;height:56.25vw;background:linear-gradient(rgb(0 0 0/.45),rgb(0 0 0/0) 32%,rgb(0 0 0/0) 58%,#000)}
+  .in-news .in-held:has(img.in-held-bild) .in-held-text{padding-top:calc(56.25vw - 28px)}
+}

@@ -187,6 +187,8 @@ test('IN-21 · jeder Artikel ist auch ohne App lesbar: eigene Seite unter www.vi
     assert.match(html, /<section class="na-quellen">/, `${seite}: Quellen fehlen`);
     assert.match(html, /name="robots"/, `${seite}: robots-Angabe fehlt`);
     assert.ok(html.includes(`<link rel="canonical" href="https://www.visionuniverse.de/news/${a.slug}/">`), `${seite}: canonical fehlt`);
+    // Kein Bild mit fester Höhe (Owner 23.11.2026): mit zwischengespeicherter alter CSS wurde der Aufmacher sonst auf dem iPhone lang gezogen.
+    for (const m of html.matchAll(/<img[^>]+web\/img\/news\/art-[^>]+>/g)) assert.doesNotMatch(m[0], /\sheight="/, `${seite}: Bild mit fester Höhe: ${m[0].slice(0, 80)}`);
     // Kein Bild von einer anderen Adresse: www lädt nur eigene Kopien (landing/web/img/news/).
     for (const m of html.matchAll(/<img[^>]+src="([^"]+)"/g)) {
       assert.ok(m[1].startsWith('../../'), `${seite}: Bild ${m[1]} kommt nicht von www`);

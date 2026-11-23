@@ -189,7 +189,7 @@ ${auf ? `<meta property="og:image" content="${WWW}/web/img/news/${auf}">\n<meta 
   <p class="na-lead">${esc(a.unterzeile)}</p>
   <p class="na-by">Redaktion Vision Universe · Stand ${esc(a.stand)} · ${lesezeit(a)} Min. Lesezeit</p>
 </header>
-${auf ? `<figure class="na-auf"><div class="w"><img src="${R}web/img/news/${auf}" alt="${esc(a.bild.alt)}" width="1600" height="900" fetchpriority="high"><figcaption>${a.bild.ki ? "KI-Bild" : "Bild: " + esc(a.bild.quelle)}</figcaption></div></figure>` : ""}
+${auf ? `<figure class="na-auf"><div class="w"><img src="${R}web/img/news/${auf}" alt="${esc(a.bild.alt)}" style="aspect-ratio:16/9;height:auto" fetchpriority="high"><figcaption>${a.bild.ki ? "KI-Bild" : "Bild: " + esc(a.bild.quelle)}</figcaption></div></figure>` : ""}
 <div class="w na-text">
 ${koerper}
 ${a.termine?.length ? `<section class="na-termine"><h2>Termine</h2><ul>${a.termine.map(([d, t]) => `<li><b>${esc(d)}</b><span>${esc(t)}</span></li>`).join("")}</ul></section>` : ""}

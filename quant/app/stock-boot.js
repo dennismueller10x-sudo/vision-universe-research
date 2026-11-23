@@ -33,6 +33,21 @@
   var api={ticker:ticker,styleReady:style(),get:function(t,main){return live&&t===ticker&&view&&!view.authoritative&&view.main===main&&view.article.isConnected?view:null;},takeMain:function(root){return live&&view&&view.main.parentNode===root?view.main:null;}};
   w.VUQuantBoot=api;
   var key=w.VUCore.Identity.shardKey(ticker);
+  /* Ladezeit (23.11.2026): Die Daten DIESER Aktie werden schon waehrend des Buendels geholt, nicht erst nach dessen Ausfuehrung
+     (vorher eine Kette von rund 15 Abrufen hintereinander, 4,6 bis 7,4 s). quant/ui/shell.js#loadJSON und #loadCompressedJSON
+     uebernehmen den Abruf aus window.__vuEarly (gleiche URL, gleiches cache:'no-cache', gleiche Anmeldedaten: ein Abruf, kein zweiter).
+     Nur Pfade, die quant/api/product-services.js fuer jede Aktie selbst abruft (Test quant/tests/stock-early.test.mjs).
+     Nicht gebrauchte Abrufe verfallen nach 30 s wie im Seitenkopf. */
+  (function warm(){
+    var map=w.__vuEarly=w.__vuEarly||{},tech=(ticker+'_').slice(0,2).replace(/[^A-Z0-9._-]/g,'_'),id=parsed.ctx.securityId,P='/quant/data/';
+    [P+'universe/instruments/'+key+'.json',P+'universe/capability-shards/'+key+'.json',P+'market/factors/product-shards/'+key+'.json',
+     P+'product/universe-list-shards/'+key+'.json','/discover/data/stocks/US_REAL/'+ticker+'.json',P+'market/golden-preview/daily/'+id+'.chart.json',
+     P+'product/technical-signals-v1/by-ticker/'+ticker+'.json.gz',P+'product/pattern-match-v1/'+tech+'.json.gz',P+'product/factor-evidence-v1/'+tech+'.json.gz',
+     P+'product/setup-observations-v1/'+tech+'.json.gz',P+'product/radar-ticker-v1/'+tech+'.json.gz'].forEach(function(path){
+      if(map[path])return;var f=fetch(path,{cache:'no-cache',priority:'low'});f.catch(function(){});map[path]=f;
+      setTimeout(function(){if(map[path]===f)delete map[path];},30000);
+    });
+  })();
   var data=fetch('/quant/data/product/stock-head-v1/'+key+'.json',{cache:'no-cache',credentials:'omit',priority:'high'}).then(function(r){if(!r.ok)throw Error('HEAD_UNAVAILABLE');return r.json();}).then(function(d){
     var record=d&&d.entries&&d.entries[ticker];
     if(d.schema!=='quant-stock-head-view-1'||! /^[0-9a-f]{16}$/.test(d.version||'')||d.shard!==key||!record||record.ticker!==ticker||record.masterMemberId!==parsed.ctx.securityId||!Number.isFinite(record.price&&record.price.value)||!/^\d{4}-\d{2}-\d{2}$/.test(record.asOf)||record.asOf>new Date().toISOString().slice(0,10))throw Error('HEAD_CONTRACT');
