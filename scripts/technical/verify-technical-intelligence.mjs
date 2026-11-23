@@ -13,7 +13,7 @@ import { readFileSync, existsSync, readdirSync } from "node:fs";
 import { gunzipSync } from "node:zlib";
 import { join } from "node:path";
 import { createRequire } from "node:module";
-import { ROOT, readJson, weeklySeriesFromPoints, dailySeriesFromPayload } from "./lib/ti-data.mjs";
+import { ROOT, readJson, weeklySeriesFromPoints, dailySeriesFromPayload, attachWeeklyExtremes } from "./lib/ti-data.mjs";
 import { analyzeProduct } from "./lib/ti-product.mjs";
 
 const require = createRequire(import.meta.url);
@@ -46,7 +46,7 @@ for (const f of sample) {
   const j = readJson(join(wdir, f)), pub = get(j.ticker);
   if (!pub || pub.timeframe !== "1W") continue;
   if (pub.withheld) { withheld++; continue; }
-  const s = weeklySeriesFromPoints(j.points || [], j.ticker);
+  const s = weeklySeriesFromPoints(j.points || [], j.ticker); attachWeeklyExtremes(s, j.ticker);   // wie der Build (Elliott 4.0)
   if (last(s) !== pub.asOf) { newer++; continue; }
   const res = analyzeProduct(s, { evidenceTable: ev1W, calibration: ev1W && ev1W.calibration, symbol: j.ticker }).res;
   if (key(res) !== key(pub)) drift.push(j.ticker + " (Woche)"); checked++;

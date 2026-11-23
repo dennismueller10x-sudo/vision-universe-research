@@ -274,8 +274,9 @@ test("P-25 · Echte Reihe (SE, Woche): Kandidat aus dem Pool der unveränderten 
   const series = weeklySeriesFromPoints(cut, "SE"), out = analyzeProduct(series, { symbol: "SE" });
   const mc = motiveCandidateFor(series, out, PRODUCT_METHODOLOGY);
   assert.notEqual(mc.reason, "IDENTITY_MISMATCH");
-  /* SE: Der beste Welle-3-Kandidat existiert (regelkonform), kreuzt aber eine vergleichbar starke abgeschlossene Struktur → G2 */
-  assert.equal(mc.reason, "G2_HIERARCHY"); assert.ok(mc.rank > 2, "verborgen: nicht unter den angezeigten Alternativen");
+  /* SE: Der beste Welle-3-Kandidat existiert (regelkonform), bleibt aber verborgen. Elliott 3.2.2: kreuzt eine vergleichbar starke
+     abgeschlossene Struktur → G2; Elliott 3.4.0 (Ursprung hoechstens 3 Jahre): Wellen nicht vom Rauschen getrennt → G3 */
+  assert.equal(mc.reason, "G3_NOISE"); assert.ok(mc.rank > 2, "verborgen: nicht unter den angezeigten Alternativen");
   if (mc.count) {
     const legs = mc.count.waves.map((w) => ({ fromPrice: w.fromPrice, toPrice: w.toPrice, status: w.status, duration: 1 }));
     assert.equal(Pt.evaluate(mc.count.pattern, legs).valid, true, "harte Regeln erfüllt");

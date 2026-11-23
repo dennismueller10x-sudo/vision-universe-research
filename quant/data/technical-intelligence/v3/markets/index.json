@@ -1,0 +1,1128 @@
+{
+ "schemaVersion": "vu-ti-api-3.0.0",
+ "version": "elliott-markets-1.0.0",
+ "generatedAt": "2026-11-23T06:08:40.709Z",
+ "reference": "2026-11-20",
+ "rows": [
+  {
+   "t": "SPY",
+   "tf": "1W",
+   "asOf": "2026-11-20",
+   "close": 689.81,
+   "outlook": "BULLISH",
+   "structure": "UPTREND_ADVANCING",
+   "confidence": "LOW",
+   "agreement": 0.5721,
+   "template": "CONTINUATION",
+   "status": "APPROACHING",
+   "direction": "BULLISH",
+   "entry": [
+    665,
+    677
+   ],
+   "invalidation": 634,
+   "t1": [
+    774,
+    783
+   ],
+   "rr": 2.9073,
+   "distAtr": 0.93,
+   "elliott": "FLAT:C",
+   "elliottClarity": "HIGH",
+   "elliottApplicable": "LOW",
+   "countQuality": "HIGH",
+   "relabelRisk": "MEDIUM",
+   "clarity": "CLEAR",
+   "evidence": "NOT_ESTABLISHED",
+   "higherAligned": false,
+   "patterns": [],
+   "wyckoff": null,
+   "stage": 3,
+   "vol": "EXTREME",
+   "alignment": "UNAVAILABLE",
+   "empirical": {
+    "n": 27941,
+    "hit": 0.3907,
+    "base": 0.3937
+   },
+   "alerts": {
+    "scenarioId": "tis_2fe21256de15",
+    "outlook": "BULLISH",
+    "confidence": "LOW",
+    "direction": "BULLISH",
+    "levels": {
+     "entryLow": 665,
+     "entryHigh": 677,
+     "invalidation": 634,
+     "confirmation": 778.57,
+     "target1": [
+      774,
+      783
+     ]
+    },
+    "flags": {
+     "inEntryZone": false,
+     "invalidated": false,
+     "target1Reached": false,
+     "confirmed": false
+    }
+   },
+   "proj": {
+    "st": "ABSTAIN"
+   },
+   "n": "S&P 500",
+   "via": "SPDR S&P 500 ETF (SPY)",
+   "group": "index"
+  },
+  {
+   "t": "QQQ",
+   "tf": "1W",
+   "asOf": "2026-11-20",
+   "close": 608.45,
+   "outlook": "MIXED",
+   "structure": "CORRECTION_IN_UPTREND",
+   "confidence": "LOW",
+   "agreement": 0.3743,
+   "template": "PULLBACK",
+   "status": "EXTENDED",
+   "direction": "BULLISH",
+   "entry": [
+    538,
+    568
+   ],
+   "invalidation": 528,
+   "t1": [
+    678,
+    691
+   ],
+   "rr": 5.2492,
+   "distAtr": 2.02,
+   "elliott": "FLAT:C",
+   "elliottClarity": "MODERATE",
+   "elliottApplicable": "LOW",
+   "countQuality": "HIGH",
+   "relabelRisk": "LOW",
+   "clarity": "AMBIGUOUS",
+   "evidence": "NOT_ESTABLISHED",
+   "higherAligned": false,
+   "patterns": [
+    "DOUBLE_TOP:BREAKOUT_RETEST"
+   ],
+   "wyckoff": null,
+   "stage": 3,
+   "vol": "EXTREME",
+   "alignment": "UNAVAILABLE",
+   "empirical": {
+    "n": 10491,
+    "hit": 0.351,
+    "base": 0.355
+   },
+   "alerts": {
+    "scenarioId": "tis_1cec7dc7a918",
+    "outlook": "MIXED",
+    "confidence": "LOW",
+    "direction": "BULLISH",
+    "levels": {
+     "entryLow": 538,
+     "entryHigh": 568,
+     "invalidation": 528,
+     "confirmation": 751.27,
+     "target1": [
+      678,
+      691
+     ]
+    },
+    "flags": {
+     "inEntryZone": false,
+     "invalidated": false,
+     "target1Reached": false,
+     "confirmed": false
+    }
+   },
+   "proj": {
+    "st": "ABSTAIN"
+   },
+   "n": "Nasdaq 100",
+   "via": "Invesco QQQ (QQQ)",
+   "group": "index"
+  },
+  {
+   "t": "DIA",
+   "tf": "1W",
+   "asOf": "2026-11-20",
+   "close": 481.08,
+   "outlook": "BULLISH",
+   "structure": "UPTREND_ADVANCING",
+   "confidence": "LOW",
+   "agreement": 0.5715,
+   "template": "CONTINUATION",
+   "status": "EXTENDED",
+   "direction": "BULLISH",
+   "entry": [
+    458,
+    464
+   ],
+   "invalidation": 451,
+   "t1": [
+    537,
+    543
+   ],
+   "rr": 7.862,
+   "distAtr": 2.12,
+   "elliott": "ZIGZAG:done",
+   "elliottClarity": "LOW",
+   "elliottApplicable": "LOW",
+   "countQuality": "LOW",
+   "relabelRisk": "LOW",
+   "clarity": "CLEAR",
+   "evidence": "NOT_ESTABLISHED",
+   "higherAligned": false,
+   "patterns": [],
+   "wyckoff": null,
+   "stage": 3,
+   "vol": "EXTREME",
+   "alignment": "UNAVAILABLE",
+   "empirical": {
+    "n": 27941,
+    "hit": 0.3907,
+    "base": 0.3937
+   },
+   "alerts": {
+    "scenarioId": "tis_b952868983d9",
+    "outlook": "BULLISH",
+    "confidence": "LOW",
+    "direction": "BULLISH",
+    "levels": {
+     "entryLow": 458,
+     "entryHigh": 464,
+     "invalidation": 451,
+     "confirmation": 539.62,
+     "target1": [
+      537,
+      543
+     ]
+    },
+    "flags": {
+     "inEntryZone": false,
+     "invalidated": false,
+     "target1Reached": false,
+     "confirmed": false
+    }
+   },
+   "proj": {
+    "st": "ABSTAIN"
+   },
+   "n": "Dow Jones",
+   "via": "SPDR Dow Jones ETF (DIA)",
+   "group": "index"
+  },
+  {
+   "t": "IWM",
+   "tf": "1W",
+   "asOf": "2026-11-20",
+   "close": 256.61,
+   "outlook": "BULLISH",
+   "structure": "CORRECTION_IN_UPTREND",
+   "confidence": "LOW",
+   "agreement": 0.5261,
+   "template": "PULLBACK",
+   "status": "EXTENDED",
+   "direction": "BULLISH",
+   "entry": [
+    240,
+    245
+   ],
+   "invalidation": 231,
+   "t1": [
+    303,
+    307
+   ],
+   "rr": 5.4426,
+   "distAtr": 2.07,
+   "elliott": "TRIANGLE:E",
+   "elliottClarity": "MODERATE",
+   "elliottApplicable": "LOW",
+   "countQuality": "MODERATE",
+   "relabelRisk": "MEDIUM",
+   "clarity": "CLEAR",
+   "evidence": "NOT_ESTABLISHED",
+   "higherAligned": false,
+   "patterns": [],
+   "wyckoff": null,
+   "stage": 3,
+   "vol": "EXTREME",
+   "alignment": "UNAVAILABLE",
+   "empirical": {
+    "n": 13099,
+    "hit": 0.3519,
+    "base": 0.3587
+   },
+   "alerts": {
+    "scenarioId": "tis_abe70326a4ed",
+    "outlook": "BULLISH",
+    "confidence": "LOW",
+    "direction": "BULLISH",
+    "levels": {
+     "entryLow": 240,
+     "entryHigh": 245,
+     "invalidation": 231,
+     "confirmation": null,
+     "target1": [
+      303,
+      307
+     ]
+    },
+    "flags": {
+     "inEntryZone": false,
+     "invalidated": false,
+     "target1Reached": false,
+     "confirmed": false
+    }
+   },
+   "proj": {
+    "st": "ABSTAIN"
+   },
+   "n": "Russell 2000",
+   "via": "iShares Russell 2000 ETF (IWM)",
+   "group": "index"
+  },
+  {
+   "t": "FEZ",
+   "tf": "1W",
+   "asOf": "2026-11-20",
+   "close": 61.4,
+   "outlook": "BULLISH",
+   "structure": "CORRECTION_IN_UPTREND",
+   "confidence": "LOW",
+   "agreement": 0.5238,
+   "template": "PULLBACK",
+   "status": "EXTENDED",
+   "direction": "BULLISH",
+   "entry": [
+    55.5,
+    57
+   ],
+   "invalidation": 52.5,
+   "t1": [
+    71.5,
+    73
+   ],
+   "rr": 4.2267,
+   "distAtr": 3.17,
+   "elliott": "FLAT:done",
+   "elliottClarity": "MODERATE",
+   "elliottApplicable": "LOW",
+   "countQuality": "MODERATE",
+   "relabelRisk": "LOW",
+   "clarity": "CLEAR",
+   "evidence": "NOT_ESTABLISHED",
+   "higherAligned": false,
+   "patterns": [],
+   "wyckoff": null,
+   "stage": 3,
+   "vol": "EXTREME",
+   "alignment": "UNAVAILABLE",
+   "empirical": {
+    "n": 13099,
+    "hit": 0.3519,
+    "base": 0.3587
+   },
+   "alerts": {
+    "scenarioId": "tis_75cbf568caed",
+    "outlook": "BULLISH",
+    "confidence": "LOW",
+    "direction": "BULLISH",
+    "levels": {
+     "entryLow": 55.5,
+     "entryHigh": 57,
+     "invalidation": 52.5,
+     "confirmation": 72.1,
+     "target1": [
+      71.5,
+      73
+     ]
+    },
+    "flags": {
+     "inEntryZone": false,
+     "invalidated": false,
+     "target1Reached": false,
+     "confirmed": false
+    }
+   },
+   "proj": {
+    "st": "ABSTAIN"
+   },
+   "n": "Euro Stoxx 50",
+   "via": "SPDR Euro Stoxx 50 ETF (FEZ, in USD)",
+   "group": "index"
+  },
+  {
+   "t": "URTH",
+   "tf": "1W",
+   "asOf": "2026-11-20",
+   "close": 187.43,
+   "outlook": "BULLISH",
+   "structure": "UPTREND_ADVANCING",
+   "confidence": "LOW",
+   "agreement": 0.5636,
+   "template": "CONTINUATION",
+   "status": "APPROACHING",
+   "direction": "BULLISH",
+   "entry": [
+    182.5,
+    185
+   ],
+   "invalidation": 175,
+   "t1": [
+    210,
+    213
+   ],
+   "rr": 3.1383,
+   "distAtr": 0.69,
+   "elliott": "WXY:Y",
+   "elliottClarity": "MODERATE",
+   "elliottApplicable": "LOW",
+   "countQuality": "MODERATE",
+   "relabelRisk": "MEDIUM",
+   "clarity": "CLEAR",
+   "evidence": "NOT_ESTABLISHED",
+   "higherAligned": false,
+   "patterns": [],
+   "wyckoff": null,
+   "stage": 3,
+   "vol": "EXTREME",
+   "alignment": "UNAVAILABLE",
+   "empirical": {
+    "n": 27941,
+    "hit": 0.3907,
+    "base": 0.3937
+   },
+   "alerts": {
+    "scenarioId": "tis_f4fefeb5505d",
+    "outlook": "BULLISH",
+    "confidence": "LOW",
+    "direction": "BULLISH",
+    "levels": {
+     "entryLow": 182.5,
+     "entryHigh": 185,
+     "invalidation": 175,
+     "confirmation": 211.21,
+     "target1": [
+      210,
+      213
+     ]
+    },
+    "flags": {
+     "inEntryZone": false,
+     "invalidated": false,
+     "target1Reached": false,
+     "confirmed": false
+    }
+   },
+   "proj": {
+    "st": "ABSTAIN"
+   },
+   "n": "MSCI World",
+   "via": "iShares MSCI World ETF (URTH)",
+   "group": "index"
+  },
+  {
+   "t": "EEM",
+   "tf": "1W",
+   "asOf": "2026-11-20",
+   "close": 53.84,
+   "outlook": "BULLISH",
+   "structure": "CORRECTION_IN_UPTREND",
+   "confidence": "LOW",
+   "agreement": 0.5055,
+   "template": "PULLBACK",
+   "status": "APPROACHING",
+   "direction": "BULLISH",
+   "entry": [
+    51.5,
+    53
+   ],
+   "invalidation": 46,
+   "t1": [
+    70,
+    71.5
+   ],
+   "rr": 2.9664,
+   "distAtr": 0.45,
+   "elliott": "WXY:done",
+   "elliottClarity": "MODERATE",
+   "elliottApplicable": "LOW",
+   "countQuality": "HIGH",
+   "relabelRisk": "LOW",
+   "clarity": "CLEAR",
+   "evidence": "NOT_ESTABLISHED",
+   "higherAligned": false,
+   "patterns": [],
+   "wyckoff": null,
+   "stage": 3,
+   "vol": "EXTREME",
+   "alignment": "UNAVAILABLE",
+   "empirical": {
+    "n": 13099,
+    "hit": 0.3519,
+    "base": 0.3587
+   },
+   "alerts": {
+    "scenarioId": "tis_b789c7247610",
+    "outlook": "BULLISH",
+    "confidence": "LOW",
+    "direction": "BULLISH",
+    "levels": {
+     "entryLow": 51.5,
+     "entryHigh": 53,
+     "invalidation": 46,
+     "confirmation": null,
+     "target1": [
+      70,
+      71.5
+     ]
+    },
+    "flags": {
+     "inEntryZone": false,
+     "invalidated": false,
+     "target1Reached": false,
+     "confirmed": false
+    }
+   },
+   "proj": {
+    "st": "ABSTAIN"
+   },
+   "n": "Schwellenländer",
+   "via": "iShares MSCI Emerging Markets ETF (EEM)",
+   "group": "index"
+  },
+  {
+   "t": "BTCUSD",
+   "tf": "1W",
+   "asOf": "2026-11-20",
+   "close": 58838.0469,
+   "outlook": "BEARISH",
+   "structure": "DOWNTREND_ADVANCING",
+   "confidence": "LOW",
+   "agreement": -0.8663,
+   "template": "CONTINUATION",
+   "status": "EXTENDED",
+   "direction": "BEARISH",
+   "entry": [
+    67800,
+    69850
+   ],
+   "invalidation": 84510,
+   "t1": [
+    55625,
+    57675
+   ],
+   "rr": 0.7763,
+   "distAtr": 2.63,
+   "elliott": "FLAT:C",
+   "elliottClarity": "MODERATE",
+   "elliottApplicable": "LOW",
+   "countQuality": "HIGH",
+   "relabelRisk": "MEDIUM",
+   "clarity": "CLEAR",
+   "evidence": "NOT_ESTABLISHED",
+   "higherAligned": false,
+   "patterns": [],
+   "wyckoff": null,
+   "stage": 4,
+   "vol": "ELEVATED",
+   "alignment": "UNAVAILABLE",
+   "empirical": {
+    "n": 18722,
+    "hit": 0.3312,
+    "base": 0.3143
+   },
+   "alerts": {
+    "scenarioId": "tis_b70eaf32ac95",
+    "outlook": "BEARISH",
+    "confidence": "LOW",
+    "direction": "BEARISH",
+    "levels": {
+     "entryLow": 67800,
+     "entryHigh": 69850,
+     "invalidation": 84510,
+     "confirmation": 60012.093,
+     "target1": [
+      55625,
+      57675
+     ]
+    },
+    "flags": {
+     "inEntryZone": false,
+     "invalidated": false,
+     "target1Reached": false,
+     "confirmed": true
+    }
+   },
+   "proj": {
+    "st": "ABSTAIN"
+   },
+   "n": "Bitcoin",
+   "via": "BTC/USD",
+   "group": "crypto"
+  },
+  {
+   "t": "ETHUSD",
+   "tf": "1W",
+   "asOf": "2026-11-20",
+   "close": 1619.9155,
+   "outlook": "BEARISH",
+   "structure": "DOWNTREND_ADVANCING",
+   "confidence": "LOW",
+   "agreement": -0.6394,
+   "template": "CONTINUATION",
+   "status": "EXTENDED",
+   "direction": "BEARISH",
+   "entry": [
+    1980,
+    2065
+   ],
+   "invalidation": 2305,
+   "t1": [
+    1530,
+    1615
+   ],
+   "rr": 1.5911,
+   "distAtr": 2.74,
+   "elliott": "ZIGZAG:C",
+   "elliottClarity": "MODERATE",
+   "elliottApplicable": "LOW",
+   "countQuality": "MODERATE",
+   "relabelRisk": "MEDIUM",
+   "clarity": "CLEAR",
+   "evidence": "NOT_ESTABLISHED",
+   "higherAligned": false,
+   "patterns": [],
+   "wyckoff": null,
+   "stage": 4,
+   "vol": "NORMAL",
+   "alignment": "UNAVAILABLE",
+   "empirical": {
+    "n": 18722,
+    "hit": 0.3312,
+    "base": 0.3143
+   },
+   "alerts": {
+    "scenarioId": "tis_7aa80208b13d",
+    "outlook": "BEARISH",
+    "confidence": "LOW",
+    "direction": "BEARISH",
+    "levels": {
+     "entryLow": 1980,
+     "entryHigh": 2065,
+     "invalidation": 2305,
+     "confirmation": 1576.4441,
+     "target1": [
+      1530,
+      1615
+     ]
+    },
+    "flags": {
+     "inEntryZone": false,
+     "invalidated": false,
+     "target1Reached": false,
+     "confirmed": false
+    }
+   },
+   "proj": {
+    "st": "ABSTAIN"
+   },
+   "n": "Ethereum",
+   "via": "ETH/USD",
+   "group": "crypto"
+  },
+  {
+   "t": "SOLUSD",
+   "tf": "1W",
+   "asOf": "2026-11-20",
+   "close": 68.7693,
+   "outlook": "BEARISH",
+   "structure": "DOWNTREND_ADVANCING",
+   "confidence": "LOW",
+   "agreement": -0.8478,
+   "template": "CONTINUATION",
+   "status": "EXTENDED",
+   "direction": "BEARISH",
+   "entry": [
+    86,
+    90.5
+   ],
+   "invalidation": 100.5,
+   "t1": [
+    61.5,
+    66
+   ],
+   "rr": 2.0125,
+   "distAtr": 2.64,
+   "elliott": "FLAT:C",
+   "elliottClarity": "MODERATE",
+   "elliottApplicable": "LOW",
+   "countQuality": "HIGH",
+   "relabelRisk": "LOW",
+   "clarity": "CLEAR",
+   "evidence": "NOT_ESTABLISHED",
+   "higherAligned": false,
+   "patterns": [],
+   "wyckoff": null,
+   "stage": 1,
+   "vol": "NORMAL",
+   "alignment": "UNAVAILABLE",
+   "empirical": {
+    "n": 18722,
+    "hit": 0.3312,
+    "base": 0.3143
+   },
+   "alerts": {
+    "scenarioId": "tis_a97161e94b45",
+    "outlook": "BEARISH",
+    "confidence": "LOW",
+    "direction": "BEARISH",
+    "levels": {
+     "entryLow": 86,
+     "entryHigh": 90.5,
+     "invalidation": 100.5,
+     "confirmation": 63.5971,
+     "target1": [
+      61.5,
+      66
+     ]
+    },
+    "flags": {
+     "inEntryZone": false,
+     "invalidated": false,
+     "target1Reached": false,
+     "confirmed": false
+    }
+   },
+   "proj": {
+    "st": "ABSTAIN"
+   },
+   "n": "Solana",
+   "via": "SOL/USD",
+   "group": "crypto"
+  },
+  {
+   "t": "XRPUSD",
+   "tf": "1W",
+   "asOf": "2026-11-20",
+   "close": 0.9087,
+   "outlook": "BEARISH",
+   "structure": "DOWNTREND_ADVANCING",
+   "confidence": "LOW",
+   "agreement": -0.7991,
+   "template": "CONTINUATION",
+   "status": "EXTENDED",
+   "direction": "BEARISH",
+   "entry": [
+    1.1,
+    1.2
+   ],
+   "invalidation": 1.35,
+   "t1": [
+    0.88,
+    0.94
+   ],
+   "rr": 1.2065,
+   "distAtr": 2.26,
+   "elliott": "WXY:Y",
+   "elliottClarity": "MODERATE",
+   "elliottApplicable": "LOW",
+   "countQuality": "HIGH",
+   "relabelRisk": "HIGH",
+   "clarity": "CLEAR",
+   "evidence": "NOT_ESTABLISHED",
+   "higherAligned": false,
+   "patterns": [],
+   "wyckoff": null,
+   "stage": 4,
+   "vol": "ELEVATED",
+   "alignment": "UNAVAILABLE",
+   "empirical": {
+    "n": 18722,
+    "hit": 0.3312,
+    "base": 0.3143
+   },
+   "alerts": {
+    "scenarioId": "tis_3300cb435df1",
+    "outlook": "BEARISH",
+    "confidence": "LOW",
+    "direction": "BEARISH",
+    "levels": {
+     "entryLow": 1.1,
+     "entryHigh": 1.2,
+     "invalidation": 1.35,
+     "confirmation": 0.9986,
+     "target1": [
+      0.88,
+      0.94
+     ]
+    },
+    "flags": {
+     "inEntryZone": false,
+     "invalidated": false,
+     "target1Reached": true,
+     "confirmed": true
+    }
+   },
+   "proj": {
+    "st": "ABSTAIN"
+   },
+   "n": "XRP",
+   "via": "XRP/USD",
+   "group": "crypto"
+  },
+  {
+   "t": "XAUUSD",
+   "tf": "1W",
+   "asOf": "2026-11-20",
+   "close": 3526.34,
+   "outlook": "BEARISH",
+   "structure": "DOWNTREND_ADVANCING",
+   "confidence": "LOW",
+   "agreement": -0.9037,
+   "template": "CONTINUATION",
+   "status": "APPROACHING",
+   "direction": "BEARISH",
+   "entry": [
+    3745,
+    4015
+   ],
+   "invalidation": 4070,
+   "t1": [
+    3485,
+    3570
+   ],
+   "rr": 1.8614,
+   "distAtr": 1.65,
+   "elliott": "FLAT:done",
+   "elliottClarity": "LOW",
+   "elliottApplicable": "LOW",
+   "countQuality": "LOW",
+   "relabelRisk": "LOW",
+   "clarity": "CLEAR",
+   "evidence": "NOT_ESTABLISHED",
+   "higherAligned": false,
+   "patterns": [],
+   "wyckoff": null,
+   "stage": 4,
+   "vol": "EXTREME",
+   "alignment": "UNAVAILABLE",
+   "empirical": {
+    "n": 18722,
+    "hit": 0.3312,
+    "base": 0.3143
+   },
+   "alerts": {
+    "scenarioId": "tis_38880bfb71ca",
+    "outlook": "BEARISH",
+    "confidence": "LOW",
+    "direction": "BEARISH",
+    "levels": {
+     "entryLow": 3745,
+     "entryHigh": 4015,
+     "invalidation": 4070,
+     "confirmation": null,
+     "target1": [
+      3485,
+      3570
+     ]
+    },
+    "flags": {
+     "inEntryZone": false,
+     "invalidated": false,
+     "target1Reached": true,
+     "confirmed": false
+    }
+   },
+   "proj": {
+    "st": "ABSTAIN"
+   },
+   "n": "Gold",
+   "via": "Gold in USD je Unze",
+   "group": "metal"
+  },
+  {
+   "t": "XAGUSD",
+   "tf": "1W",
+   "asOf": "2026-11-20",
+   "close": 41.125,
+   "outlook": "NEUTRAL",
+   "structure": "CORRECTION_IN_UPTREND",
+   "confidence": "LOW",
+   "agreement": -0.0769,
+   "template": "RANGE",
+   "status": "IN_RANGE",
+   "direction": "NEUTRAL",
+   "entry": null,
+   "invalidation": null,
+   "t1": null,
+   "rr": null,
+   "distAtr": null,
+   "elliott": "WXY:done",
+   "elliottClarity": "LOW",
+   "elliottApplicable": "LOW",
+   "countQuality": "LOW",
+   "relabelRisk": "LOW",
+   "clarity": "AMBIGUOUS",
+   "evidence": "NO_DATA",
+   "higherAligned": false,
+   "patterns": [],
+   "wyckoff": null,
+   "stage": 4,
+   "vol": "EXTREME",
+   "alignment": "UNAVAILABLE",
+   "empirical": null,
+   "alerts": {
+    "scenarioId": "tis_69848442d539",
+    "outlook": "NEUTRAL",
+    "confidence": "LOW"
+   },
+   "proj": {
+    "st": "ABSTAIN"
+   },
+   "n": "Silber",
+   "via": "Silber in USD je Unze",
+   "group": "metal"
+  },
+  {
+   "t": "USOIL",
+   "tf": "1W",
+   "asOf": "2026-11-17",
+   "close": 89.53,
+   "outlook": "BEARISH",
+   "structure": "NO_CLEAR_TREND",
+   "confidence": "LOW",
+   "agreement": -0.2453,
+   "template": "BREAKOUT_RETEST",
+   "status": "APPROACHING",
+   "direction": "BEARISH",
+   "entry": [
+    91.5,
+    97
+   ],
+   "invalidation": 109,
+   "t1": [
+    74.5,
+    79
+   ],
+   "rr": 1.195,
+   "distAtr": 0.33,
+   "elliott": "WXY:done",
+   "elliottClarity": "LOW",
+   "elliottApplicable": "LOW",
+   "countQuality": "HIGH",
+   "relabelRisk": "LOW",
+   "clarity": "AMBIGUOUS",
+   "evidence": "NOT_ESTABLISHED",
+   "higherAligned": false,
+   "patterns": [
+    "ASCENDING_TRIANGLE:BREAKOUT"
+   ],
+   "wyckoff": null,
+   "stage": 3,
+   "vol": "NORMAL",
+   "alignment": "UNAVAILABLE",
+   "empirical": {
+    "n": 71,
+    "hit": 0.3662,
+    "base": 0.3991
+   },
+   "alerts": {
+    "scenarioId": "tis_e99f8622d088",
+    "outlook": "BEARISH",
+    "confidence": "LOW",
+    "direction": "BEARISH",
+    "levels": {
+     "entryLow": 91.5,
+     "entryHigh": 97,
+     "invalidation": 109,
+     "confirmation": 85.23,
+     "target1": [
+      74.5,
+      79
+     ]
+    },
+    "flags": {
+     "inEntryZone": false,
+     "invalidated": false,
+     "target1Reached": false,
+     "confirmed": false
+    }
+   },
+   "proj": {
+    "st": "ABSTAIN"
+   },
+   "fr": {
+    "st": "DELAYED",
+    "age": 3,
+    "last": "2026-11-17",
+    "ref": "2026-11-20",
+    "rc": "REFRESH_STOPPED"
+   },
+   "n": "Öl WTI",
+   "via": "WTI Spot in USD je Barrel (EIA)",
+   "group": "energy"
+  },
+  {
+   "t": "UKOIL",
+   "tf": "1W",
+   "asOf": "2026-11-17",
+   "close": 92.94,
+   "outlook": "BULLISH",
+   "structure": "CORRECTION_IN_UPTREND",
+   "confidence": "LOW",
+   "agreement": 0.617,
+   "template": "PULLBACK",
+   "status": "APPROACHING",
+   "direction": "BULLISH",
+   "entry": [
+    79.5,
+    85
+   ],
+   "invalidation": 68.5,
+   "t1": [
+    115.5,
+    121
+   ],
+   "rr": 2.6189,
+   "distAtr": 0.94,
+   "elliott": "FLAT:done",
+   "elliottClarity": "MODERATE",
+   "elliottApplicable": "LOW",
+   "countQuality": "MODERATE",
+   "relabelRisk": "HIGH",
+   "clarity": "CLEAR",
+   "evidence": "NOT_ESTABLISHED",
+   "higherAligned": false,
+   "patterns": [],
+   "wyckoff": null,
+   "stage": 4,
+   "vol": "ELEVATED",
+   "alignment": "UNAVAILABLE",
+   "empirical": {
+    "n": 13099,
+    "hit": 0.3519,
+    "base": 0.3587
+   },
+   "alerts": {
+    "scenarioId": "tis_adbfd3308378",
+    "outlook": "BULLISH",
+    "confidence": "LOW",
+    "direction": "BULLISH",
+    "levels": {
+     "entryLow": 79.5,
+     "entryHigh": 85,
+     "invalidation": 68.5,
+     "confirmation": 135.51,
+     "target1": [
+      115.5,
+      121
+     ]
+    },
+    "flags": {
+     "inEntryZone": false,
+     "invalidated": false,
+     "target1Reached": false,
+     "confirmed": false
+    }
+   },
+   "proj": {
+    "st": "ABSTAIN"
+   },
+   "fr": {
+    "st": "DELAYED",
+    "age": 3,
+    "last": "2026-11-17",
+    "ref": "2026-11-20",
+    "rc": "REFRESH_STOPPED"
+   },
+   "n": "Öl Brent",
+   "via": "Brent Spot in USD je Barrel (EIA)",
+   "group": "energy"
+  },
+  {
+   "t": "NATGAS",
+   "tf": "1W",
+   "asOf": "2026-11-17",
+   "close": 3.1,
+   "outlook": "BULLISH",
+   "structure": "CORRECTION_IN_UPTREND",
+   "confidence": "LOW",
+   "agreement": 0.6953,
+   "template": "PULLBACK",
+   "status": "APPROACHING",
+   "direction": "BULLISH",
+   "entry": [
+    2.5,
+    2.8
+   ],
+   "invalidation": 2.3,
+   "t1": [
+    5.05,
+    5.35
+   ],
+   "rr": 7.2571,
+   "distAtr": 0.74,
+   "elliott": "FLAT:done",
+   "elliottClarity": "LOW",
+   "elliottApplicable": "LOW",
+   "countQuality": "MODERATE",
+   "relabelRisk": "LOW",
+   "clarity": "CLEAR",
+   "evidence": "NOT_ESTABLISHED",
+   "higherAligned": false,
+   "patterns": [],
+   "wyckoff": null,
+   "stage": 2,
+   "vol": "NORMAL",
+   "alignment": "UNAVAILABLE",
+   "empirical": {
+    "n": 13099,
+    "hit": 0.3519,
+    "base": 0.3587
+   },
+   "alerts": {
+    "scenarioId": "tis_321b2a4131de",
+    "outlook": "BULLISH",
+    "confidence": "LOW",
+    "direction": "BULLISH",
+    "levels": {
+     "entryLow": 2.5,
+     "entryHigh": 2.8,
+     "invalidation": 2.3,
+     "confirmation": null,
+     "target1": [
+      5.05,
+      5.35
+     ]
+    },
+    "flags": {
+     "inEntryZone": false,
+     "invalidated": false,
+     "target1Reached": false,
+     "confirmed": false
+    }
+   },
+   "proj": {
+    "st": "DATA_INVALID"
+   },
+   "fr": {
+    "st": "DELAYED",
+    "age": 3,
+    "last": "2026-11-17",
+    "ref": "2026-11-20",
+    "rc": "REFRESH_STOPPED"
+   },
+   "n": "Erdgas",
+   "via": "Henry Hub Spot in USD je MMBtu (EIA)",
+   "group": "energy"
+  }
+ ],
+ "skipped": [],
+ "note": "Indizes über ETFs (kein lizenzierter Indexkurs), Krypto, Edelmetalle und Energie aus den Multi-Asset-Reihen; Wochenschluss, gleiche Analyse wie bei Aktien."
+}

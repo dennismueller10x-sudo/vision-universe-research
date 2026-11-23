@@ -105,3 +105,14 @@ test('ein leeres Ergebnis (HTTP-Fehler) wird nicht festgehalten: der naechste en
   await api.ensure(); await api.ensure();
   assert.equal(calls, 2);
 });
+test('read laedt 5xx und Netzfehler wie QuantShell.loadJSON nach (3 Versuche), andere 4xx nicht',async()=>{
+  const bytes=Buffer.from('{"securities":[]}\n'),ok={ok:true,arrayBuffer:async()=>bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength)};
+  const binding={url:'/discover/data/europe/catalog.json',sha256:digest(bytes)};
+  const lauf=async(antworten)=>{const waits=[],calls=[];const api=fixture(async()=>{calls.push(1);const a=antworten.shift();if(a instanceof Error)throw a;return a;},{setTimeout:(f,ms)=>{waits.push(ms);f();}});return {api,waits,calls};};
+  let t=await lauf([{ok:false,status:503},new Error('net'),ok]);
+  assert.equal((await t.api.read(binding)).securities.length,0);assert.equal(t.calls.length,3);assert.deepEqual(t.waits,[400,800]);
+  t=await lauf([{ok:false,status:503},{ok:false,status:503},{ok:false,status:502}]);
+  await assert.rejects(t.api.read(binding),/EUROPE_ARTIFACT_UNAVAILABLE/);assert.equal(t.calls.length,3);
+  t=await lauf([{ok:false,status:404},ok]);
+  await assert.rejects(t.api.read(binding),/EUROPE_ARTIFACT_UNAVAILABLE/);assert.equal(t.calls.length,1);
+});

@@ -31,7 +31,7 @@ test("TRC-2 · Verzeichnis: alte Gesellschaft ohne Namen, Konflikt TICKER_REUSE,
     execFileSync(process.execPath, [join(ROOT, "scripts/quant/build-universe-list.mjs"), "--out", out], { cwd: ROOT, stdio: "ignore" });
     const doc = JSON.parse(gunzipSync(readFileSync(out)).toString("utf8")), by = new Map(doc.entries.map((e) => [e.s, e]));
     const reg = loadTickerReuseQuarantine(ROOT);
-    assert.equal(reg.records.size, 13);
+    assert.equal(reg.records.size, 16);
     let flagged = 0;
     for (const r of reg.records.values()) {
       const e = by.get(r.ticker); if (!e) continue;

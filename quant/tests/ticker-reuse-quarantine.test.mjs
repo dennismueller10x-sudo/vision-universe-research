@@ -51,10 +51,15 @@ test("committetes Register: jeder Eintrag durch Stamm (alte Zeile), Kursreihe un
   const doc = J(TICKER_REUSE_QUARANTINE_FILE);
   const master = J("quant/data/market/security-master/us-security-master.json").rows;
   const elig = new Map(J(SECURITY_MASTER_FILE).decisions.map((d) => [d.ticker, d]));
-  assert.equal(q.records.size, 13);
+  assert.equal(q.records.size, 16);
   for (const r of doc.records) {
     const rows = master.filter((x) => x.baseline_security_id === r.securityId);
-    assert.ok(rows.length && rows.every((x) => x.start_date === r.historicIdentity.providerRow.startDate && x.start_date < r.currentInstrument.providerRow.startDate),
+    if (r.masterBinding === "BOTH_ROWS_UNDER_SECURITY_ID") {
+      /* Stamm 1.3.0 fuehrt beide Zeilen unter einer securityId: die alte Aktie (beendet) und das neue Wertpapier (anderer Typ, spaeter). */
+      const alt = rows.filter((x) => x.start_date === r.historicIdentity.providerRow.startDate && x.end_date === r.historicIdentity.providerRow.endDate);
+      const neu = rows.filter((x) => x.start_date === r.currentInstrument.providerRow.startDate && x.instrument_type === "ETF");
+      assert.ok(alt.length === 1 && neu.length === 1 && rows.length === 2, r.securityId + ": Stamm fuehrt genau die alte Aktienzeile und die neue ETF-Zeile");
+    } else assert.ok(rows.length && rows.every((x) => x.start_date === r.historicIdentity.providerRow.startDate && x.start_date < r.currentInstrument.providerRow.startDate),
       r.securityId + ": Stamm fuehrt nur die Zeile der alten Aktie (gleicher Beginn), nicht das neue Wertpapier");
     const f = join(root, r.ownSeries.file);
     assert.ok(existsSync(f), r.securityId);
@@ -65,7 +70,7 @@ test("committetes Register: jeder Eintrag durch Stamm (alte Zeile), Kursreihe un
   assert.deepEqual(doc.notWithheld.map((x) => x.securityId), ["ref_EDVA"]);
   assert.ok(!q.records.has("ref_EDVA"));
   const u = resolveProductUniverse(root);
-  assert.equal(u.counts.identityQuarantined, 13);
+  assert.equal(u.counts.identityQuarantined, 16);
   const flagged = u.securities.filter((s) => s.identityStatus === "IDENTITY_QUARANTINED").map((s) => s.securityId).sort();
   assert.deepEqual(flagged, [...q.records.keys()].sort(), "genau die belegten Titel sind markiert");
 });

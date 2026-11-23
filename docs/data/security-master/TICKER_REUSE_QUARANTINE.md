@@ -2,6 +2,10 @@
 
 Auftrag des Owners vom 31.10.: Die 14 im Security-Master-Lauf gefundenen Ticker-Wiederverwendungen werden so korrigiert, dass Discover-Seite, Kursreihe, Unternehmensidentität und securityId wieder eindeutig zusammenpassen. Grundlage sind die bestehenden Identitätsregeln und Belege, nie der Ticker allein. Unklare Fälle werden bis zur Korrektur sicher ausgeschlossen, Warnungen werden nicht bloß unterdrückt.
 
+## 0. Nachtrag 22.11.2026: DINE, LQ, LMNX (Eintrag `masterBinding: BOTH_ROWS_UNDER_SECURITY_ID`)
+
+Drei weitere belegte Fälle, gefunden über die Technik-Deckung (DINE und LQ „zu kurz“, 140 Bars). Anders als bei den 13 führt der Stamm 1.3.0 hier **beide** Zeilen unter derselben securityId: die beendete alte Aktie (DINE Rewards Network 2001-01-02 bis 2011-01-03, LQ La Quinta Holdings 2014-04-09 bis 2018-05-31, LMNX Luminex 2000-04-06 bis 2021-07-14) und das heutige Wertpapier, einen ETF (DINE und LQ ab 2026-05-05, LMNX ab 2025-10-16). Die Eignung nimmt die alte Aktienzeile (EQUITY_COMMON, REVIEW), die Tagesreihe gehört dem ETF; Discover zeigte unter dem Namen der alten Firma die Kurse des ETF (DINE 24,54, LQ 23,95, LMNX 9,16). Geprüft und nicht betroffen: CHAI, DOO, ERO, UK (aktive Aktie, ETF-Zeilen alt und inaktiv). Der Abgang der drei alten Aktienzeilen aus dem Produkt folgt über eine Freigabeliste der Eignung; bis dahin gelten sie als IDENTITY_QUARANTINED.
+
 ## 1. Befund
 
 Mit der Anbieterliste vom 31.10. (`supported_tickers.zip`, sha256 `fc51593e…`, 109.176 Zeilen) lassen sich die Fälle eindeutig zuordnen.
@@ -35,13 +39,13 @@ Die SEC-Tickerliste (`company_tickers_exchange.json`, 31.10.) führt keinen der 
 
 ## 2. Korrektur in diesem PR (Quant/Market) und im Folge-PR (Discover)
 
-- **Register** `quant/config/ticker-reuse-quarantine.json` (Schema `ticker-reuse-quarantine-1.0.0`) mit 13 Einträgen, Aktion `IDENTITY_QUARANTINED`. Jeder Eintrag belegt:
+- **Register** `quant/config/ticker-reuse-quarantine.json` (Schema `ticker-reuse-quarantine-1.0.0`) mit 16 Einträgen, Aktion `IDENTITY_QUARANTINED`. Jeder Eintrag belegt:
   - die alte Anbieterzeile und ihren Wertpapiertyp;
   - die neue Anbieterzeile;
   - die eigene Reihe;
   - die Stammzeile;
   - den bisherigen Produktstand.
-- **`scripts/market/universe-source.mjs#resolveProductUniverse`** ist die einzige Quelle des Produktuniversums. Sie markiert die 13 Titel mit `identityStatus: IDENTITY_QUARANTINED` und `identityReason`; Anzahl in `counts.identityQuarantined`, Liste in `identityQuarantine.flagged`.
+- **`scripts/market/universe-source.mjs#resolveProductUniverse`** ist die einzige Quelle des Produktuniversums. Sie markiert die 16 Titel mit `identityStatus: IDENTITY_QUARANTINED` und `identityReason`; Anzahl in `counts.identityQuarantined`, Liste in `identityQuarantine.flagged`.
   - Die Mitgliedschaft bleibt bestehen, deshalb bleiben Kursreihen, Datenhygiene (DH1) und Pipeline unverändert.
   - **Warum nicht einfach herausnehmen:** Die Hygieneprüfung verlangt dann sofort, dass Kursreihen und abgeleitete Artefakte verschwinden. Neu bauen kann das nur die Pipeline mit Anbieterzugang. `main` und der Nachtlauf wären bis dahin rot.
 - **Fail closed:** Ein Eintrag wirkt nur, wenn

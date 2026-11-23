@@ -60,16 +60,22 @@ export function entscheide({ runs, nowMs, mode, rotFrist = true }) {
     summary: names.size ? `Bestanden: ${[...names].sort().slice(0, 25).join(", ")}` : "Keine weitere Pruefung ausgeloest (reiner Doku-PR)." };
 }
 
-/** Check-Run des Gates anlegen oder aktualisieren. api: {get(path), send(method, path, body)}. */
+/** Check-Run des Gates anlegen oder aktualisieren. api: {get(path), send(method, path, body)}.
+    Nur eigene API-Checks werden aktualisiert: der Check-Run eines Actions-JOBS (details_url ".../job/<id>", z. B. vom frueheren wartenden
+    ci-gate-Job) laesst sich mit dem Workflow-Token nicht aendern (403, 23.11.2026, #2312). Den ueberspringen wir, und scheitert das
+    Aendern trotzdem (403/404/422), entsteht ein neuer Check-Run: "latest" und wait-gate.sh nehmen den mit der hoechsten ID. Fail-closed
+    bleibt, denn ein neuer Check traegt nur dann success, wenn entscheide() gruen sagt. */
 export async function setzeCheck({ api, repo, sha, name, entscheidung, detailsUrl }) {
   const liste = await api.get(`/repos/${repo}/commits/${sha}/check-runs?check_name=${encodeURIComponent(name)}&filter=latest&per_page=10`);
-  const vorhanden = (liste.check_runs || []).filter((c) => c.name === name && (!c.app || c.app.slug === "github-actions"))[0];
+  const eigene = (liste.check_runs || []).filter((c) => c.name === name && (!c.app || c.app.slug === "github-actions") && !/\/job\/\d+/.test(c.details_url || ""));
+  const vorhanden = eigene.sort((a, b) => b.id - a.id)[0];
   const body = { name, head_sha: sha, status: entscheidung.status, output: { title: entscheidung.title.slice(0, 250), summary: entscheidung.summary.slice(0, 60000) } };
   if (detailsUrl) body.details_url = detailsUrl;
   if (entscheidung.status === "completed") body.conclusion = entscheidung.conclusion;
   // Ein abgeschlossener Check wird nicht auf in_progress zurueckgesetzt (die API erlaubt es nicht verlaesslich): neuer Eintrag, "latest" gilt.
   if (vorhanden && !(vorhanden.status === "completed" && entscheidung.status !== "completed")) {
-    return api.send("PATCH", `/repos/${repo}/check-runs/${vorhanden.id}`, body);
+    try { return await api.send("PATCH", `/repos/${repo}/check-runs/${vorhanden.id}`, body); }
+    catch (e) { if (!/^(403|404|422) /.test(String(e.message))) throw e; }
   }
   return api.send("POST", `/repos/${repo}/check-runs`, body);
 }

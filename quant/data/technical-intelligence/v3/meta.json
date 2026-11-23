@@ -2,7 +2,7 @@
  "schemaVersion": "vu-ti-api-3.0.0",
  "resultSchema": "vu-technical-analysis-2.0.0",
  "bundle": "ti-bundle-2.0.0",
- "generatedAt": "2026-11-22T06:31:42.419Z",
+ "generatedAt": "2026-11-23T06:08:29.430Z",
  "methodology": "quant/methodology/technical-intelligence-v2.json",
  "elliott": {
   "engine": "v3",
@@ -12,10 +12,10 @@
  },
  "counts": {
   "daily": 5,
-  "weekly": 4896,
-  "skipped": 875,
+  "weekly": 4879,
+  "skipped": 869,
   "shards": 617,
-  "identityQuarantined": 6
+  "identityQuarantined": 7
  },
  "sources": {
   "daily": "golden-preview (5 Titel)",
@@ -41,127 +41,133 @@
   "discoverRows": "/quant/data/technical-intelligence/v3/discover-rows.json",
   "alerts": "/quant/data/technical-intelligence/v3/alerts.json",
   "methodEvidence": "/quant/data/technical-intelligence/v3/method-evidence.json",
-  "projectionTheses": "/quant/data/technical-intelligence/v3/projection-theses.json"
+  "projectionTheses": "/quant/data/technical-intelligence/v3/projection-theses.json",
+  "markets": "/quant/data/technical-intelligence/v3/markets/index.json"
  },
  "migration": "docs/technical-intelligence/API_V3_MIGRATION.md",
- "runtimeSec": 3314,
+ "runtimeSec": 1546,
  "projection": {
   "version": "elliott-projection-1.3.0",
   "store": "vu-elliott-projection-theses-1.0.0",
   "status": {
-   "ABSTAIN": 4377,
-   "NO_PROJECTION": 106,
-   "DATA_INVALID": 357,
-   "WITHHELD": 31,
-   "AVAILABLE": 35
+   "ABSTAIN": 4495,
+   "NO_PROJECTION": 83,
+   "WITHHELD": 20,
+   "DATA_INVALID": 245,
+   "AVAILABLE": 38,
+   "UNAVAILABLE": 8
   },
-  "consumerVisible": 35,
+  "consumerVisible": 38,
   "types": {
-   "NEXT_MOVE": 28,
-   "WAVE_C": 2,
-   "REVERSAL": 3,
-   "THRUST": 2
+   "THRUST": 6,
+   "NEXT_MOVE": 29,
+   "WAVE_5": 1,
+   "REVERSAL": 2
   },
   "highUpside": 0,
   "weeklyForDaily": 5,
   "explore": {
    "highlights": {
-    "securities": 68,
-    "theses": 70,
+    "securities": 48,
+    "theses": 52,
     "perSecurity": {
-     "1": 66,
-     "2": 2
+     "1": 44,
+     "2": 4
     },
     "direction": {
-     "DOWN": 46,
-     "UP": 24
+     "UP": 22,
+     "DOWN": 30
     },
     "type": {
-     "WAVE_C": 55,
+     "WAVE_C": 37,
      "WAVE_3": 15
     },
     "pattern": {
-     "FLAT": 18,
-     "ZIGZAG": 37,
+     "ZIGZAG": 26,
+     "FLAT": 11,
      "IMPULSE": 15
     },
     "failedSet": {
-     "G5": 47,
-     "G2": 23
+     "G5": 28,
+     "G2": 24
     },
     "rankPct": {
-     "0-10": 58,
-     "10-25": 12,
+     "0-10": 39,
+     "10-25": 13,
      "25-50": 0,
      "50-100": 0
     },
     "contextAgreement": {
-     "0": 28,
-     "1": 22,
-     "2": 20
+     "0": 24,
+     "1": 18,
+     "2": 10
     },
     "extendedMove": {
+     "UP 50-100%": 2,
      "DOWN 50-100%": 6,
-     "DOWN <50%": 12,
-     "UP 500-1000%": 3,
-     "UP 100-250%": 4,
-     "UP 250-500%": 9,
-     "UP 50-100%": 1,
-     "UP <50%": 6,
-     "UP >1000%": 1
+     "DOWN 100-250%": 1,
+     "DOWN <50%": 6,
+     "UP 100-250%": 6,
+     "UP 500-1000%": 6,
+     "UP 250-500%": 5,
+     "UP >1000%": 1,
+     "UP <50%": 2
     },
     "extremeMove": {
-     "UP >1000%": 3,
-     "UP 500-1000%": 8,
-     "UP 250-500%": 2,
-     "UP 100-250%": 2,
      "UP 50-100%": 2,
-     "UP <50%": 2
+     "UP 500-1000%": 8,
+     "DOWN <50%": 1,
+     "UP 250-500%": 4,
+     "UP 100-250%": 2,
+     "UP >1000%": 2,
+     "UP <50%": 1
     }
    },
    "candidates": {
-    "securities": 3625,
-    "entries": 12550,
+    "securities": 3809,
+    "entries": 15894,
     "perSecurity": {
-     "1": 477,
-     "2": 736,
-     "3": 719,
-     "4": 628,
-     "5": 458,
-     "6": 607
+     "1": 296,
+     "2": 462,
+     "3": 607,
+     "4": 614,
+     "5": 583,
+     "6": 1247
     },
     "direction": {
-     "DOWN": 6674,
-     "UP": 5876
+     "UP": 7983,
+     "DOWN": 7911
     },
     "type": {
-     "WAVE_3": 2924,
-     "WAVE_C": 9225,
-     "WAVE_5": 401
+     "WAVE_C": 10501,
+     "WAVE_3": 4934,
+     "WAVE_5": 459
     },
     "failedSet": {
-     "G3+G4": 2031,
-     "G2+G3+G4": 2982,
-     "G2+G3+G4+G5": 1360,
-     "G2+G3+G5": 865,
-     "G2+G4": 506,
-     "G3+G5": 497,
-     "G3": 806,
-     "G2+G3": 1529,
-     "G2+G4+G5": 410,
-     "G3+G4+G5": 614,
-     "G4+G5": 210,
-     "G5": 102,
-     "G4": 362,
-     "G2+G5": 136,
-     "G2": 140
+     "G2+G3+G5": 811,
+     "G2+G3+G4+G5": 1729,
+     "G2+G3+G4": 4133,
+     "G2+G3": 1381,
+     "G2+G4+G5": 488,
+     "G3+G4": 3100,
+     "G4": 501,
+     "G3": 994,
+     "G3+G5": 557,
+     "G3+G4+G5": 1095,
+     "G4+G5": 320,
+     "G2+G4": 570,
+     "G2": 65,
+     "G5": 49,
+     "G2+G5": 101
     }
    }
   },
-  "splitResolved": 208,
-  "normalAlternative": 35,
-  "motiveAlternative": 22,
-  "motiveDOWN": 22,
+  "splitResolved": 135,
+  "normalAlternative": 37,
+  "motiveAlternative": 10,
+  "motiveDOWN": 6,
+  "motiveUP": 4,
+  "motiveHighUpside": 1,
   "freshness": {
    "version": "data-freshness-1.0.0",
    "policy": {
@@ -172,74 +178,67 @@
     "calendar": "US_EQUITY"
    },
    "reference": "2026-11-20",
-   "titles": 4901,
+   "titles": 4884,
    "states": {
-    "FRESH": 4863,
-    "STALE": 31,
+    "FRESH": 4857,
+    "STALE": 20,
     "DELAYED": 7
    },
    "reasons": {
-    "REFRESH_STOPPED": 38
+    "REFRESH_STOPPED": 27
    },
    "reasonsKnown": 0,
    "delayedWithNotice": 7,
    "affected": {
-    "titles": 31,
-    "primary": 24,
-    "alternative": 22,
+    "titles": 20,
+    "primary": 17,
+    "alternative": 15,
     "motiveAlternative": 0,
     "exploreHighlights": 1,
-    "exploreCandidates": 73,
+    "exploreCandidates": 49,
     "consumerVisibleProjections": 0
    },
    "ageBuckets": {
-    "0-3": 4866,
-    "11-20": 14,
-    "6-10": 7,
-    "21-40": 6,
-    ">40": 4,
-    "4-5": 4
+    "0-3": 4860,
+    "11-20": 10,
+    "6-10": 4,
+    "4-5": 4,
+    ">40": 2,
+    "21-40": 4
    },
    "withheldTitles": [
     "ACA",
-    "ACHV",
-    "ADIL",
-    "AIXC",
-    "ANY",
     "ARI",
     "CSAN",
-    "DOMO",
     "EICA",
     "ELME",
     "GETY",
-    "GNTA",
     "GWH",
     "INDV",
-    "INM",
     "KPTI",
     "LNAI",
-    "MGPI",
     "LXP-P-C",
     "MSGS",
     "NATH",
     "PHGE",
     "PERF",
     "SWKHL",
-    "TCBI",
-    "VSME",
     "UUU",
     "WALD",
-    "VRME",
     "WEAV",
     "WPRT"
    ],
    "systemic": {
-    "share": 0.0063,
+    "share": 0.0041,
     "maxShare": 0.2,
     "systemic": false
    }
   },
-  "lifecycleEvents": 220,
-  "tracked": 416
+  "lifecycleEvents": 0,
+  "tracked": 514
+ },
+ "markets": {
+  "count": 16,
+  "skipped": 0
  }
 }

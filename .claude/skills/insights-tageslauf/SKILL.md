@@ -75,6 +75,12 @@ den Stand nennen („Schlusskurs vom …“) und die nächsten Termine. Grundlag
    nicht nur zur Branche.
    Der Aufmacher muss 16:9 mit mindestens 1600 px Breite sein (Test IN-20): Er füllt auf www die News-Bühne; hochkante
    oder kleine Bilder wirken dort abgeschnitten oder unscharf.
+   **Aufmacher für die Bühne (Owner 23.11.2026).** Der Aufmacher steht auf www groß als Bühne (Startseite, News).
+   Darum: (a) Das Motiv füllt das ganze Bild bis an die Ränder, kein einzelner Gegenstand, der auf schwarzem oder
+   weißem Grund schwebt. (b) Es zeigt das Thema des Artikels, nicht nur die Branche: eine Crash-Woche bekommt ein
+   Crash-Motiv (Handelssaal, rote Kurstafel), keinen Chip. (c) Kein Text im Bild. (d) Vor dem Einbau einmal als
+   16:9-Bühne ansehen (Startseite und /news/, Handy und Computer). Passt der Aufmacher nicht, nimmt www selbst das erste
+   Querformat-Bild aus dem Artikel (`bildQuer` in insights/artikel.json); das ist nur ein Notbehelf.
    **Themen und Firma (www-News, „Nach Aktien“ / „Nach Themen“).** `"themen"`: ein bis zwei Themenwelten aus Discover
    (`themes[].title` in `discover/data/stocks/US_REAL/<TICKER>.json`, in normaler Schreibweise, z. B. „Halbleiter & Chips“),
    die zum Artikel passen, nicht alle der Aktie. `"firma"` nur, wenn die Hauptfirma nicht der erste Ticker ist

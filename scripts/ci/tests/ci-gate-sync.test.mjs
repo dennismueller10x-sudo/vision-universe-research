@@ -149,8 +149,8 @@ const hatPullRequest = (f) => {
   return false;
 };
 
-test("CG-14 ci-gate-neu.yml: workflow_run nennt JEDEN Workflow mit pull_request (ausser den Gates), Job-Filter, Rechte, Gruppe je Commit", () => {
-  const gate = text("ci-gate-neu.yml");
+test("CG-14 ci-gate.yml: workflow_run nennt JEDEN Workflow mit pull_request (ausser den Gates), Job-Filter, Rechte, Gruppe je Commit", () => {
+  const gate = text("ci-gate.yml");
   const liste = [...(gate.match(/workflow_run:\n    workflows:\n((?:      - [^\n]+\n)+)/) || [, ""])[1].matchAll(/- '?([^'\n]+)'?\n/g)].map((m) => m[1].trim());
   const erwartet = readdirSync(DIR).filter((f) => /\.ya?ml$/.test(f) && !/^ci-gate/.test(f) && hatPullRequest(f)).map(name);
   assert.ok(erwartet.length >= 8, "PR-Workflows gefunden");
@@ -158,8 +158,43 @@ test("CG-14 ci-gate-neu.yml: workflow_run nennt JEDEN Workflow mit pull_request 
   assert.deepEqual(liste.filter((n) => !erwartet.includes(n)), [], "Eintrag ohne PR-Workflow");
   assert.match(gate, /if: github\.event_name == 'pull_request' \|\| github\.event\.workflow_run\.event == 'pull_request'/, "Push-Laeufe derselben Workflows brauchen keinen Runner");
   assert.match(gate, /permissions:\n  contents: read\n  actions: read\n  checks: write\n/);
-  assert.match(gate, /group: ci-gate-neu-\$\{\{ github\.event\.pull_request\.head\.sha \|\| github\.event\.workflow_run\.head_sha \}\}/);
+  assert.match(gate, /group: ci-gate-\$\{\{ github\.event\.pull_request\.head\.sha \|\| github\.event\.workflow_run\.head_sha \}\}/);
   assert.match(gate, /cancel-in-progress: false/);
-  assert.match(gate, /GATE_NAME: ci-gate-neu/);
+  assert.match(gate, /GATE_NAME: ci-gate\n/, "Check-Name ci-gate");
+  assert.doesNotMatch(gate, /GATE_SHADOW|head_ref/, "keine Schatten-Ausnahme mehr");
   assert.match(gate, /node scripts\/ci\/ci-gate-sync\.mjs/);
+});
+
+/* ---------- Pfadfilter: Pruefungen, die ein PR gar nicht ausloest, duerfen den Gate nie haengen lassen (Steuerung 23.11.) ---------- */
+test("CG-15 Pfadfilter: nur die Laeufe, die es gibt, zaehlen; fehlende (nie gestartete) Pruefungen blockieren nicht", () => {
+  // Nur ein Produkt-CI und ein Core-Lauf entstehen (Pfadfilter der anderen Workflows greifen nicht), alles abgeschlossen: gruen.
+  const nur = [lauf("CI", "completed", "success"), lauf("Core", "completed", "success")];
+  const gruen = entscheide({ runs: nur, nowMs: T0 + GRACE_MS + 1000, mode: "event" });
+  assert.equal(gruen.aktion, "gruen");
+  // Kein einziger Workflow (reiner Doku-PR): beim Start gruen, im Ereignismodus nie (ohne Lauf kein Ereignis, fail-closed).
+  assert.equal(entscheide({ runs: [], nowMs: T0, mode: "start" }).aktion, "gruen");
+  assert.equal(entscheide({ runs: [], nowMs: T0, mode: "event" }).aktion, "offen");
+  // Ein ausgeloester, aber noch laufender Workflow haelt den Check offen, auch wenn alle anderen fertig sind.
+  assert.equal(entscheide({ runs: [...nur, lauf("Quant CI", "in_progress", null)], nowMs: T0 + GRACE_MS + 1000, mode: "event" }).aktion, "offen");
+  // Ein Lauf, der wegen des Pfadfilters als "skipped" endet, gilt als bestanden.
+  assert.equal(entscheide({ runs: [...nur, lauf("Quant CI", "completed", "skipped")], nowMs: T0 + GRACE_MS + 1000, mode: "event" }).aktion, "gruen");
+});
+
+/* ---------- 403 auf dem Check-Run eines Actions-Jobs (23.11.2026, #2312): nie aendern, neuer Check ---------- */
+const gruen = { status: "completed", conclusion: "success", title: "ok", summary: "ok" };
+test("CG-16 Der Check-Run eines Actions-Jobs (details_url .../job/<id>) wird nicht geaendert: neuer Check-Run, kein PATCH", async () => {
+  const api = fakeApi([[]], { checks: [{ id: 7, name: "ci-gate", status: "in_progress", details_url: "https://github.com/o/r/actions/runs/1/job/2", app: { slug: "github-actions" } }] });
+  await setzeCheck({ api, repo: "o/r", sha: SHA, name: "ci-gate", entscheidung: gruen });
+  assert.equal(api.log.filter((l) => l.method === "PATCH").length, 0);
+  assert.equal(api.log.filter((l) => l.method === "POST").length, 1);
+});
+test("CG-17 403/404/422 beim Aendern: neuer Check-Run (latest gilt), andere Fehler (500) brechen ab, nie stilles Gruen", async () => {
+  const mk = (status) => {
+    const api = fakeApi([[]], { checks: [{ id: 7, name: "ci-gate", status: "in_progress", details_url: "https://github.com/o/r/actions/runs/1", app: { slug: "github-actions" } }] });
+    const send = api.send; api.send = async (m, p, b) => { if (m === "PATCH") throw new Error(`${status} https://api.github.com${p}`); return send(m, p, b); };
+    return api;
+  };
+  const a403 = mk(403); await setzeCheck({ api: a403, repo: "o/r", sha: SHA, name: "ci-gate", entscheidung: gruen });
+  assert.equal(a403.log.filter((l) => l.method === "POST").length, 1);
+  await assert.rejects(() => setzeCheck({ api: mk(500), repo: "o/r", sha: SHA, name: "ci-gate", entscheidung: gruen }), /500/);
 });
