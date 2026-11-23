@@ -222,8 +222,41 @@ export function applicableOf(rows, names) {
   };
 }
 
+/** Klarheit A–D aus den Einstufungen der Engine (gleiche Regel wie quant/app/page-chartbild.js#ewGrade). */
+export function gradeOf(applicable, clarity) {
+  const lv = applicable || "LOW";
+  return lv === "HIGH" && clarity === "HIGH" ? "A" : lv === "HIGH" || (lv === "MODERATE" && clarity === "HIGH") ? "B" : lv === "MODERATE" ? "C" : "D";
+}
+/** Leitmaerkte (Elliott-Neustart Schritt 2): Zeilen aus v3/markets/index.json, Reihenfolge der Ablage (ti-markets.mjs#MARKETS).
+    Zurueckgehaltene Maerkte (veraltete Reihe) stehen nicht auf der Startseite. */
+export function marketsOf(doc) {
+  if (!doc || !Array.isArray(doc.rows)) return null;
+  const rows = doc.rows.filter((r) => r && !r.withheld && r.elliott).map((r) => ({ t: r.t, n: r.n || r.t, via: r.via || null, group: r.group || null, tf: r.tf || null, asOf: r.asOf || null,
+    close: num(r.close), el: r.elliott, st: r.structure || null, dir: r.direction || null, inv: num(r.invalidation), app: r.elliottApplicable || null, cl: r.elliottClarity || null,
+    grade: gradeOf(r.elliottApplicable, r.elliottClarity), fr: r.fr ? r.fr.st : null }));
+  return { version: doc.version || null, rows };
+}
+
+/** Prognose-Tagebuch (Elliott-Neustart Schritt 4): Bestand der Elliott-Registry (eingefrorene Lesarten, Hash-Kette) und Abrechnungstermine je
+    Horizont. Ergebniszahlen nur mit Owner-Freigabe (elliott/config/bilanz.json, ergebnisseOeffentlich) – sie sind eine Aussage ueber Performance. */
+const H_ORDER = ["3M", "6M", "12M", "24M", "36M"];
+export function bilanzOf({ report, head, since, config }) {
+  if (!report || !head) return null;
+  const by = {};
+  for (const [k, v] of Object.entries(report.pending || {})) {
+    const h = k.split("|").pop(); if (!H_ORDER.includes(h)) continue;
+    const x = by[h] || (by[h] = { h, pending: 0, firstEvaluableWeek: null });
+    x.pending += v.events || 0;
+    if (v.firstEvaluableWeek && (!x.firstEvaluableWeek || v.firstEvaluableWeek < x.firstEvaluableWeek)) x.firstEvaluableWeek = v.firstEvaluableWeek;
+  }
+  const evaluated = Object.keys(report.horizons || {}).length, open = !!(config && config.ergebnisseOeffentlich === true);
+  return { since: since || null, asOfCompletedWeek: report.asOfCompletedWeek || null, events: report.events || 0, revisions: report.revisions || 0,
+    head: { seq: head.seq, hash: head.hash }, horizons: H_ORDER.filter((h) => by[h]).map((h) => by[h]), evaluatedGroups: evaluated,
+    resultsPublic: open, results: open ? report.horizons || {} : null };
+}
+
 /** Index aus Karten + Metadaten. Deterministisch: gleiche Eingabe, gleiche Bytes. */
-export function assembleHome({ cards, meta, indexGeneratedAt, dataAsOf, applicable }) {
+export function assembleHome({ cards, meta, indexGeneratedAt, dataAsOf, applicable, markets, bilanz }) {
   const sorted = cards.slice().sort(compareCards);
   const rows = [];
   const filters = { wave: {}, dir: {}, st: {}, role: {} };
@@ -256,6 +289,8 @@ export function assembleHome({ cards, meta, indexGeneratedAt, dataAsOf, applicab
       delayed: sorted.filter((c) => c.fr === "DELAYED").length, recent: sorted.filter((c) => c.chg).length
     },
     applicable: applicable || null,
+    markets: markets || null,
+    bilanz: bilanz || null,
     filters,
     rows,
     cards: sorted
@@ -290,5 +325,11 @@ export function buildHomeFromDir(root, dir = join(root, "quant/data/technical-in
       cards.push(...cardsOfDocument(symbol, doc, names));
     }
   }
-  return assembleHome({ cards, meta, indexGeneratedAt: index.generatedAt, dataAsOf, applicable: applicableOf(index.rows, names) });
+  const mf = join(dir, "markets", "index.json");
+  const reg = join(root, "quant/data/technical-intelligence/elliott-registry"), rf = join(reg, "reports", "latest.json"), hf = join(reg, "HEAD.json"), lf = join(reg, "ledger.jsonl");
+  let since = null;
+  if (existsSync(lf)) { const first = readFileSync(lf, "utf8").split("\n", 1)[0]; try { since = JSON.parse(first).week || null; } catch { since = null; } }
+  const cf = join(root, "elliott/config/bilanz.json");
+  const bilanz = existsSync(rf) && existsSync(hf) ? bilanzOf({ report: readJson(rf), head: readJson(hf), since, config: existsSync(cf) ? readJson(cf) : null }) : null;
+  return assembleHome({ cards, meta, indexGeneratedAt: index.generatedAt, dataAsOf, applicable: applicableOf(index.rows, names), markets: existsSync(mf) ? marketsOf(readJson(mf)) : null, bilanz });
 }

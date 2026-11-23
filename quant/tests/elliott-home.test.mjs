@@ -211,7 +211,7 @@ test("EH-11 · labels and price are correct", () => {
 /* ---------------------------------------------------------------- 3 Filter, Adresse, Suche */
 test("EH-12 · URL state round-trips, unknown values are dropped, a ticker is an alias to the detail", () => {
   const s = M.parseHash("#/?welle=3&richtung=ab&status=bestaetigt&rolle=highlight&neu=1");
-  assert.deepEqual(JSON.parse(JSON.stringify(s)), { welle: "3", richtung: "ab", status: "bestaetigt", rolle: "highlight", neu: true, reihe: null, suche: false, zaehlbar: false, q: "", ticker: null, detailQuery: "" });
+  assert.deepEqual(JSON.parse(JSON.stringify(s)), { welle: "3", richtung: "ab", status: "bestaetigt", rolle: "highlight", neu: true, reihe: null, suche: false, zaehlbar: false, bilanz: false, q: "", ticker: null, detailQuery: "" });
   assert.equal(M.buildHash(s), "#/?welle=3&richtung=ab&status=bestaetigt&rolle=highlight&neu=1");
   assert.equal(M.buildHash(M.parseHash("#/")), "#/");
   assert.equal(M.parseHash("#/?welle=9&richtung=x&rolle=nix").welle, null, "Tippfehler ergeben keine leere Liste");

@@ -68,6 +68,10 @@
     return "Die Übersicht der zählbaren Aktien lädt gerade nicht, weil " + why + " (Stand der Abfrage " + at + "). Die Suche oben öffnet jede Aktie direkt.";
   }
   function applicableOf(home) { var a = home && home.applicable; return a && Array.isArray(a.rows) ? a : null; }
+  /* Leitmaerkte (Elliott-Neustart Schritt 2): Indizes ueber ETFs, Krypto, Edelmetalle, Energie; fehlt der Block, keine Schiene. */
+  /* Prognose-Tagebuch (Elliott-Neustart Schritt 4): Stand der Registry ohne Ergebniszahlen, solange keine Owner-Freigabe vorliegt. */
+  function bilanzOf(home) { var b = home && home.bilanz; return b && typeof b.events === "number" ? b : null; }
+  function marketsOf(home) { var m = home && home.markets; return m && Array.isArray(m.rows) && m.rows.length ? m.rows : null; }
 
   var MINUS = "−";
   function group(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, "."); }
@@ -116,7 +120,7 @@
   function parseHash(hash) {
     var h = String(hash || "").replace(/^#\/?/, ""), q = h.indexOf("?"), params = new URLSearchParams(q >= 0 ? h.slice(q + 1) : "");
     var lead = (q >= 0 ? h.slice(0, q) : h).replace(/\/+$/, "");
-    var s = { welle: null, richtung: null, status: null, rolle: null, neu: false, reihe: null, suche: false, zaehlbar: false, q: "", ticker: null, detailQuery: "" };
+    var s = { welle: null, richtung: null, status: null, rolle: null, neu: false, reihe: null, suche: false, zaehlbar: false, bilanz: false, q: "", ticker: null, detailQuery: "" };
     var w = params.get("welle"); if (w === "3" || w === "5" || w === "C" || w === "c") s.welle = w.toUpperCase();
     var r = params.get("richtung"); if (DIR_PARAM[r]) s.richtung = r;
     var st = params.get("status"); if (ST_PARAM[st]) s.status = st;
@@ -125,6 +129,7 @@
     var re = params.get("reihe"); if (re && /^[A-Za-z0-9]{1,24}$/.test(re)) s.reihe = re;
     s.suche = params.get("suche") === "1";
     s.zaehlbar = params.get("zaehlbar") === "1";
+    s.bilanz = params.get("bilanz") === "1";
     s.q = (params.get("q") || "").slice(0, 60);
     if (/^[A-Za-z0-9.-]{1,12}$/.test(lead)) { s.ticker = lead.toUpperCase(); s.detailQuery = q >= 0 ? h.slice(q + 1) : ""; }
     return s;
@@ -139,6 +144,7 @@
     if (s.reihe) p.push("reihe=" + s.reihe);
     if (s.suche) p.push("suche=1");
     if (s.zaehlbar) p.push("zaehlbar=1");
+    if (s.bilanz) p.push("bilanz=1");
     if (s.q) p.push("q=" + encodeURIComponent(s.q));
     return "#/" + (p.length ? "?" + p.join("&") : "");
   }
@@ -304,7 +310,7 @@
     rowHref: rowHref, validate: validate, emptyState: emptyState,
     norm: norm, searchEntries: searchEntries, cardsByTicker: cardsByTicker, searchHint: searchHint,
     PATTERN_DE: PATTERN_DE, STRUCTURE_DE: STRUCTURE_DE, APPLICABLE_DE: APPLICABLE_DE, ZAEHLBAR_HASH: ZAEHLBAR_HASH,
-    patternDe: patternDe, phaseDe: phaseDe, structureDe: structureDe, countLine: countLine, dirOf: dirOf, invalidLine: invalidLine, GAP_SCALE: GAP_SCALE, invalidGap: invalidGap, gapOfRow: gapOfRow, gapOfAnalysis: gapOfAnalysis, applicableOf: applicableOf, redirectOf: redirectOf, shortName: shortName, loadFailText: loadFailText
+    patternDe: patternDe, phaseDe: phaseDe, structureDe: structureDe, countLine: countLine, dirOf: dirOf, invalidLine: invalidLine, GAP_SCALE: GAP_SCALE, invalidGap: invalidGap, gapOfRow: gapOfRow, gapOfAnalysis: gapOfAnalysis, applicableOf: applicableOf, marketsOf: marketsOf, bilanzOf: bilanzOf, redirectOf: redirectOf, shortName: shortName, loadFailText: loadFailText
   };
   global.VUElliottHome = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;
