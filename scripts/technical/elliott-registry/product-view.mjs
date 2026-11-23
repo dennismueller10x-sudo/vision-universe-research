@@ -19,7 +19,7 @@ import { join } from "node:path";
 import { gunzipSync } from "node:zlib";
 import { createHash } from "node:crypto";
 import { createRequire } from "node:module";
-import { ROOT, readJson, weeklySeriesFromPoints, dailySeriesFromPayload } from "../lib/ti-data.mjs";
+import { ROOT, readJson, weeklySeriesFromPoints, dailySeriesFromPayload, attachWeeklyExtremes } from "../lib/ti-data.mjs";
 import { analyzeProduct, elliottTransparency } from "../lib/ti-product.mjs";
 import { workCtx, productOpts, slim, shardKey } from "../build-technical-intelligence.mjs";
 import { projectionElliott, projectionInput, motiveCandidateFor, candidatePool, exploreCandidatesFor, highlightEligibleItems, splitResolutionFor, dataIntegrity, withProductInputs } from "../lib/ti-projection.mjs";
@@ -140,7 +140,7 @@ export function productElliottAt(sym, weeklyUsed, ticker, F, ctx, pub, corporate
     series = dailySeriesFromPayload(j, j.ticker); kind = "daily";
     if (series.length < MIN_DAILY) return { skip: "PRODUCT_TOO_SHORT", tf: tf.tf };
   } else {
-    series = weeklySeriesFromPoints(weeklyUsed, ticker); kind = "weekly"; series.corporateActions = corporateActions;
+    series = weeklySeriesFromPoints(weeklyUsed, ticker); kind = "weekly"; series.corporateActions = corporateActions; attachWeeklyExtremes(series, ticker);
     if (series.length < MIN_WEEKLY) return { skip: "PRODUCT_TOO_SHORT", tf: tf.tf };
   }
   const res = Object.assign(analyzeAndSummarize(series, kind, T, ctx), { tfRule: tf.rule });
@@ -149,7 +149,7 @@ export function productElliottAt(sym, weeklyUsed, ticker, F, ctx, pub, corporate
   let weeklyIn = null;
   if (kind === "weekly") weeklyIn = res.projIn;
   else {
-    const ws = weeklySeriesFromPoints(weeklyUsed, ticker); ws.corporateActions = corporateActions;
+    const ws = weeklySeriesFromPoints(weeklyUsed, ticker); ws.corporateActions = corporateActions; attachWeeklyExtremes(ws, ticker);
     weeklyIn = ws.length >= MIN_WEEKLY ? analyzeAndSummarize(ws, "weekly", T, ctx).projIn : null;
   }
   res.motiveIn = weeklyIn && weeklyIn.E && weeklyIn.E.hiddenMotive ? weeklyIn : null;
@@ -190,7 +190,7 @@ export function identityOne(sym, ctx, pub, productInputDir) {
     const j = readJson(f); series = dailySeriesFromPayload(j, j.ticker); kind = "daily";
   } else {
     const f = join(productInputDir, Identity.securityIdForTicker(sym) + ".json"); if (!existsSync(f)) return { s: sym, status: "NO_INPUT" };
-    const j = readJson(f); series = weeklySeriesFromPoints(j.points || [], j.ticker); kind = "weekly"; series.corporateActions = j.corporateActions || null;
+    const j = readJson(f); series = weeklySeriesFromPoints(j.points || [], j.ticker); kind = "weekly"; series.corporateActions = j.corporateActions || null; attachWeeklyExtremes(series, j.ticker);
   }
   if (series.timestamps[series.length - 1] !== P.asOf) return { s: sym, status: "INPUT_NEWER_OR_OLDER", inputAsOf: series.timestamps[series.length - 1], publishedAsOf: P.asOf };
   const shard = JSON.parse(gunzipSync(readFileSync(join(pub.dir, "shards", shardKey(sym) + ".json.gz"))).toString()).instruments[sym];

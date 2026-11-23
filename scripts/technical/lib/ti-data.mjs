@@ -45,3 +45,52 @@ export function loadWeekly(securityId) {
   const j = readJson(join(ROOT, "quant/data/market/discover-series-long", securityId + ".json"));
   return weeklySeriesFromPoints(j.points || [], j.ticker || securityId);
 }
+
+/* ---- Elliott 4.0 (Elliott-Neustart Schritt 3, Owner 22.11.2026): Wochenkerzen als Seitenkanal fuer Elliott.
+   Quelle: quant/data/product/technical-signals-v1/<Shard>.json.gz → history.weekly (Hoch/Tief/Eroeffnung, split-bereinigt,
+   dieselben Wochendaten wie discover-series-long). Die Serie selbst bleibt die Schlusskurs-Reihe (Preiswahrheit, ATR, Szenarien
+   unveraendert); nur series.extremes = { open, high, low } kommt hinzu. Elliott (elliott-v3.js, cfg.extremes) legt Wellenenden
+   damit an Hoch und Tief; das Chartbild zeigt Kerzen. Fehlt die Kerze einer Woche oder passt sie nicht zum Schluss, gilt dort der
+   Schlusskurs (O=H=L=C). Unter 80 % Abdeckung kein Seitenkanal. */
+import { existsSync as _exists } from "node:fs";
+import { gunzipSync as _gunzip } from "node:zlib";
+const Identity = require(join(ROOT, "core/identity.js"));
+export const SIGNALS_DIR = "quant/data/product/technical-signals-v1";
+const _signalShards = new Map();
+function _signalShard(key, root) {
+  const f = join(root, SIGNALS_DIR, key + ".json.gz");
+  if (!_signalShards.has(f)) {
+    let v = null; try { if (_exists(f)) v = JSON.parse(_gunzip(readFileSync(f)).toString("utf8")).instruments || null; } catch { v = null; }
+    _signalShards.set(f, v);
+    if (_signalShards.size > 4) _signalShards.delete(_signalShards.keys().next().value);   // Speicher: Titel kommen sortiert, wenige Shards genuegen
+  }
+  return _signalShards.get(f);
+}
+/** Wochenkerzen eines Titels aus der Materialisierung (oder null). Shard wie die Materialisierung: Identity.shardKey, Vorzugsaktien „X-“. */
+export function weeklyBarsFor(ticker, root = ROOT) {
+  const t = String(ticker || "").toUpperCase();
+  for (const key of [Identity.shardKey(t), t.charAt(0) + "-"]) {
+    const ins = _signalShard(key, root), w = ins && ins[t] && ins[t].history && ins[t].history.weekly;
+    if (w && Array.isArray(w.timestamps) && Array.isArray(w.high) && Array.isArray(w.low)) return w;
+  }
+  return null;
+}
+/** Haengt series.extremes an (gleiche Laenge wie die Serie) oder laesst die Serie unveraendert. Gibt die Abdeckung zurueck. */
+export function attachWeeklyExtremes(series, ticker, root = ROOT) {
+  const w = weeklyBarsFor(ticker, root);
+  if (!w || !series || !series.length) return 0;
+  const at = new Map(w.timestamps.map((d, i) => [d, i]));
+  const n = series.length, open = new Array(n), high = new Array(n), low = new Array(n);
+  let hit = 0;
+  for (let i = 0; i < n; i++) {
+    const c = series.close[i], k = at.get(series.timestamps[i]);
+    const h = k === undefined ? null : w.high[k], l = k === undefined ? null : w.low[k], o = k === undefined ? null : w.open && w.open[k];
+    /* Kerze passt zum Schluss: Schluss liegt (mit 0,5 % Rundungsspiel) zwischen Tief und Hoch */
+    if (Number.isFinite(h) && Number.isFinite(l) && l > 0 && h >= l && c <= h * 1.005 && c >= l * 0.995) {
+      high[i] = Math.max(h, c); low[i] = Math.min(l, c); open[i] = Number.isFinite(o) ? Math.min(high[i], Math.max(low[i], o)) : c; hit++;
+    } else { high[i] = c; low[i] = c; open[i] = c; }
+  }
+  const cov = hit / n;
+  if (cov >= 0.8) series.extremes = { open, high, low, coverage: Math.round(cov * 1000) / 1000, source: SIGNALS_DIR };
+  return cov;
+}
