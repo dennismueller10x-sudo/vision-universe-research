@@ -23,7 +23,7 @@ export const frozenBundleFor = (testFile) => join(dirname(testFile), "fixtures",
 
 const LIST_FNS = ["readdirSync"];
 const MAP_FIRST = {
-  sync: ["readFileSync", "readdirSync", "statSync", "lstatSync", "existsSync", "accessSync", "openSync", "opendirSync", "realpathSync", "readlinkSync"],
+  sync: ["readFileSync", "readdirSync", "statSync", "lstatSync", "existsSync", "accessSync", "openSync", "opendirSync", "realpathSync", "readlinkSync", "cpSync", "copyFileSync"],
   cb: ["readFile", "readdir", "stat", "lstat", "access", "open", "createReadStream"],
   promises: ["readFile", "readdir", "stat", "lstat", "access", "open", "opendir"]
 };
@@ -31,10 +31,13 @@ const MAP_FIRST = {
 export function installFrozenData(bundle, { repo = REPO } = {}) {
   const { root: mirror } = mountFixture(bundle, { root: repo });
   const dirs = [...new Set(Object.keys(readFixture(bundle).files).map(dataDirOf))].map((d) => join(repo, d));
+  const realNative = fs.realpathSync.native;
   const map = (p) => {
     let s;
     if (typeof p === "string") s = p; else if (p instanceof URL && p.protocol === "file:") s = fileURLToPath(p); else return p;
-    const abs = resolve(s);
+    let abs = resolve(s);
+    /* Spiegelwurzeln aus Symlinks (researchSeriesRoot): ausserhalb des Repos liegende Pfade auf ihr Ziel im Repo aufloesen. */
+    if (!abs.startsWith(repo + sep) && !abs.startsWith(mirror + sep)) { try { const r = realNative(abs); if (r.startsWith(repo + sep)) abs = r; } catch {} }
     for (const d of dirs) if (abs === d || abs.startsWith(d + sep)) return join(mirror, abs.slice(repo.length + 1));
     return p;
   };
