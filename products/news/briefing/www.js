@@ -212,7 +212,7 @@
     return "<!doctype html>\n<html lang=\"de\">\n<head>\n<meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n" +
       "<title>" + esc(title) + "</title>\n<meta name=\"description\" content=\"" + esc(desc) + "\">\n<meta name=\"robots\" content=\"noindex, nofollow\">\n" +
       '<link rel="canonical" href="' + url + '">\n<meta property="og:type" content="article">\n<meta property="og:site_name" content="Vision Universe">\n<meta property="og:locale" content="de_DE">\n' +
-      '<meta property="og:url" content="' + url + '">\n<meta property="og:title" content="' + esc(C.overview.title + " · Marktbriefing") + '">\n<meta property="og:description" content="' + esc(desc) + '">\n<meta property="og:image" content="' + img + '">\n' +
+      '<meta property="og:url" content="' + url + '">\n<meta property="og:title" content="' + esc(C.overview.title + " · Marktbriefing") + '">\n<meta property="og:description" content="' + esc(desc) + '">\n<meta property="og:image" content="' + img + '">\n' + (o.imageSize ? '<meta property="og:image:width" content="' + o.imageSize[0] + '">\n<meta property="og:image:height" content="' + o.imageSize[1] + '">\n' : "") + '<meta property="og:image:alt" content="' + esc("Marktbriefing: " + C.overview.title) + '">\n<meta name="twitter:image" content="' + img + '">\n' +
       '<meta name="twitter:card" content="summary_large_image">\n<meta property="article:published_time" content="' + esc(b.generatedAt) + '">\n' +
       '<meta name="theme-color" content="#ffffff">\n<link rel="icon" href="' + base + 'assets/icon-192.png" type="image/png">\n<link rel="apple-touch-icon" href="' + base + 'assets/apple-touch-icon.png">\n<link rel="preload" href="' + base + 'assets/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>\n<link rel="stylesheet" href="' + base + 'web/site.css">\n<link rel="stylesheet" href="' + base + 'marktbriefing/mb.css">\n' +
       '<script src="' + base + 'web/site.js" defer></script>\n<script src="' + base + 'web/consent.js" defer></script>\n<script src="' + base + 'marktbriefing/mb.js" defer></script>\n<meta name="vu-ga" content="">\n' +
@@ -300,7 +300,8 @@
     return "<!doctype html>\n<html lang=\"de\">\n<head>\n<meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n<title>" + esc(title) + "</title>\n<meta name=\"description\" content=\"" + esc(desc) + "\">\n" +
       '<meta name="robots" content="noindex, nofollow">\n<link rel="canonical" href="' + SITE + '/marktbriefing/">\n<meta property="og:type" content="website">\n<meta property="og:site_name" content="Vision Universe">\n<meta property="og:locale" content="de_DE">\n' +
       '<meta property="og:url" content="' + SITE + '/marktbriefing/">\n<meta property="og:title" content="Das Marktbriefing · Vision Universe">\n<meta property="og:description" content="' + esc(desc) + '">\n' +
-      (img.story0 ? '<meta property="og:image" content="' + SITE + "/marktbriefing/" + ed + img.story0 + '">\n' : "") + '<meta name="twitter:card" content="summary_large_image">\n<meta name="theme-color" content="#ffffff">\n' +
+      (img.share ? '<meta property="og:image" content="' + SITE + "/marktbriefing/" + ed + img.share + '">\n<meta property="og:image:width" content="1200">\n<meta property="og:image:height" content="630">\n<meta name="twitter:image" content="' + SITE + "/marktbriefing/" + ed + img.share + '">\n' :
+        img.story0 ? '<meta property="og:image" content="' + SITE + "/marktbriefing/" + ed + img.story0 + '">\n' : "") + '<meta name="twitter:card" content="summary_large_image">\n<meta name="theme-color" content="#ffffff">\n' +
       '<link rel="icon" href="../assets/icon-192.png" type="image/png">\n<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">\n<link rel="preload" href="../assets/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>\n' +
       '<link rel="stylesheet" href="../web/site.css">\n<link rel="stylesheet" href="../marktbriefing/mb.css">\n<script src="../web/site.js" defer></script>\n<script src="../web/consent.js" defer></script>\n<meta name="vu-ga" content="">\n' +
       ldTag(ld) + "\n" + NAV_HEAD + "</head>\n<body>" + NAV_BODY + "\n" + chrome.top + "\n" + main + "\n" + chrome.bottom + "\n</body>\n</html>\n";
@@ -322,6 +323,14 @@
      Schlagzeile, Knopf zur Produktseite und eine Reihe mit Titelblatt und den ersten Karten der Ausgabe; jede Karte
      führt an ihre Stelle im Briefing. Die Startseite teasert nur an, alles Weitere steht auf /marktbriefing/. */
   var RAIL = 5;
+  /* Teilen-Bild (screens.mjs#writeShare): Titel, Datum und drei Index-Chips. */
+  function shareTitle(b) { var C = {}; b.cards.forEach(function (c) { C[c.id] = c; }); return C.overview.title; }
+  function shareDate(b) { return "Börsenschluss " + longDate(b.session); }
+  function shareChips(b) {
+    var C = {}; b.cards.forEach(function (c) { C[c.id] = c; });
+    var IX = {}; (C.indices ? C.indices.bars.rows : []).forEach(function (r) { IX[r.label] = r.value; });
+    return ["Nasdaq 100", "S&P 500", "Dow Jones"].filter(function (n) { return IX[n] != null; }).map(function (n) { return [n, pct(IX[n])]; });
+  }
   function teaser(b, href, img) {
     var C = {}; b.cards.forEach(function (c) { C[c.id] = c; });
     var ed = href + b.session + "/", cards = (img && img.cards) || [], n = cards.length + (img && img.cover ? 1 : 0);
@@ -338,7 +347,7 @@
     return indexHtml.slice(0, i + a.length) + teaser(b, "./marktbriefing/", img) + indexHtml.slice(j);
   }
 
-  var api = { page: page, scenes: scenes, appStory: appStory, chromeFrom: chromeFrom, productPage: productPage, partsFrom: partsFrom, teaser: teaser, withTeaser: withTeaser, SITE: SITE };
+  var api = { page: page, scenes: scenes, appStory: appStory, shareTitle: shareTitle, shareDate: shareDate, shareChips: shareChips, chromeFrom: chromeFrom, productPage: productPage, partsFrom: partsFrom, teaser: teaser, withTeaser: withTeaser, SITE: SITE };
   if (isNode) module.exports = api;
   else global.VUMarketBriefingWww = api;
 })(typeof window !== "undefined" ? window : globalThis);
