@@ -182,6 +182,10 @@ lesend, beliebig wiederholbar). Festgelegt:
   desselben Commits: Kurs über SMA 50, SMA 50 über SMA 150, SMA 150 über SMA 200, SMA 200 steigend, mindestens 30 % über dem
   52-Wochen-Tief, höchstens 25 % unter dem 52-Wochen-Hoch, frische Reihe), davon die 25 mit dem höchsten Signal; unter 10
   Kandidaten Kasse. Das ist die Entsprechung zu H1 der Stufe 4 auf Produktdaten.
+- **R25 (ergänzt am 23.11.2026 nach Stufe 7, Regel wie §4j, vor dem ersten gezählten Monat):** unter den 1.000 größten Titeln
+  das Mittel aus drei Bausteinen: die beiden Produkt-Scores und Rückkäufe (weniger Aktien als vor einem Jahr, aus
+  `quant/data/sec/consumer` desselben Commits über `pit-fundamental-history.js#changeOver`, als Perzentil unter den wählbaren
+  Titeln); 25 Titel; Haltepuffer: ein gehaltener Titel bleibt, solange er unter den besten 50 liegt; unter 10 Kandidaten Kasse.
 - **Zählt ab Dezember 2026.** Urteil frühestens nach 12 Monaten; öffentlich nur mit Owner-Freigabe (Renditeaussage).
 
 Abweichungen von der Studie, vorab benannt: (1) Die Baustein-Scores des Produkts sind zu 70 % Branchen- und zu 30 %
@@ -190,7 +194,8 @@ durchschnittlichem Dollarumsatz. (3) Kursrendite statt Gesamtrendite, auf beiden
 
 Stand der Daten am 20.11.2026 (kein Ergebnis, nur Abdeckung): 3.923 von 5.934 Titeln tragen einen Börsenwert; unter den 1.000
 größten haben 514 beide Bausteine, unter den 500 größten 262. Daraus folgen 102 Titel (B1000) und 26 Titel (B500). Die Trendvorlage
-erfüllen 74 der wählbaren Titel unter den 1.000 größten; M25 wählt daraus 25.
+erfüllen 74 der wählbaren Titel unter den 1.000 größten; M25 wählt daraus 25. Einen Rückkauf-Wert haben 505 der 514
+wählbaren Titel; R25 wählt daraus 25.
 **Befund zur Datenqualität, eigener PR:** Der Börsenwert fehlt bei 2.011 Titeln (784 ohne Aktienzahl zum Stichtag, 360
 Berichtswährung ungleich Handelswährung, 248 Aktienzahl nicht dem Listing zuordenbar), darunter sehr große Werte; einzelne Werte
 sind offensichtlich falsch (AKTX mit über 1 Billion $). Der Bruttogewinn fehlt bei 238 der 500 größten Titel, auch bei

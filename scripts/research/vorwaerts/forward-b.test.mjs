@@ -9,7 +9,7 @@ const sec = (cap, mom, gp, gpState = 'AVAILABLE') => ({ marketCap: cap, factors:
 
 test('Registrierung: vor dem ersten gezählten Monat festgelegt, feste Varianten und Bausteine', () => {
   assert.equal(REGISTERED, '2026-11-23'); assert.equal(OFFICIAL_FROM, '2026-12'); assert.ok(REGISTERED.slice(0, 7) < OFFICIAL_FROM);
-  assert.deepEqual(VARIANTS, { B1000: { universe: 1000, top: 0.2 }, B500: { universe: 500, top: 0.1 }, M25: { universe: 1000, n: 25, template: true, minNames: 10 } });
+  assert.deepEqual(VARIANTS, { B1000: { universe: 1000, top: 0.2 }, B500: { universe: 500, top: 0.1 }, M25: { universe: 1000, n: 25, template: true, minNames: 10 }, R25: { universe: 1000, n: 25, buyback: true, buffer: 2, minNames: 10 } });
   assert.deepEqual(TEMPLATE, { minAboveLow: 0.3, maxBelowHigh: -0.25, flags: ['aboveSma50', 'sma50AboveSma150', 'sma150AboveSma200', 'sma200Rising'] });
   assert.deepEqual(COMPONENTS, { momentum: 'priceReturn12m1m', profitability: 'grossProfitabilityTtm' });
 });
@@ -24,14 +24,14 @@ test('Baustein-Score: nur AVAILABLE und Zahl, sonst null', () => {
 
 test('Zeilen: alle Titel mit Börsenwert; Signal = Mittel beider Bausteine, sonst null', () => {
   const rows = rowsOf([{ securities: { A: sec(10, 80, 40), B: sec(5, 80, 40, 'UNAVAILABLE'), C: sec(null, 80, 40), D: sec(0, 80, 40) } }, { securities: { E: sec(7, 20, 60) } }, null]);
-  assert.deepEqual(rows, [{ ticker: 'A', marketCap: 10, signal: 60, template: false }, { ticker: 'B', marketCap: 5, signal: null, template: false }, { ticker: 'E', marketCap: 7, signal: 40, template: false }]);
+  assert.deepEqual(rows, [{ ticker: 'A', marketCap: 10, signal: 60, template: false, buyback: null }, { ticker: 'B', marketCap: 5, signal: null, template: false, buyback: null }, { ticker: 'E', marketCap: 7, signal: 40, template: false, buyback: null }]);
 });
 
 test('Auswahl: erst die größten nach Börsenwert, dann der beste Anteil der wählbaren; Titel ohne Signal bleiben im Universum', () => {
   /* 1.200 Titel, Börsenwert absteigend mit dem Index; jeder zweite ohne Bruttogewinn; Signal steigt mit dem Index */
   const rows = Array.from({ length: 1200 }, (_, i) => ({ ticker: 'T' + String(i).padStart(4, '0'), marketCap: 1e6 - i, signal: i % 2 ? null : i / 12 }));
   const cov = coverageOf(rows);
-  assert.deepEqual(cov, { B1000: { universe: 1000, withSignal: 500 }, B500: { universe: 500, withSignal: 250 }, M25: { universe: 1000, withSignal: 500, withTemplate: 0 } });
+  assert.deepEqual(cov, { B1000: { universe: 1000, withSignal: 500 }, B500: { universe: 500, withSignal: 250 }, M25: { universe: 1000, withSignal: 500, withTemplate: 0 }, R25: { universe: 1000, withSignal: 500, withBuyback: 0 } });
   const p = picksOf(rows);
   assert.equal(p.B1000.length, 100, 'Fünftel der 500 wählbaren unter den 1.000 größten');
   assert.equal(p.B500.length, 25, 'Zehntel der 250 wählbaren unter den 500 größten');
@@ -52,7 +52,7 @@ test('Bewertung: Rendite der Auswahl nach Kosten gegen SPY; ein Monat zählt ers
   const days = ['2026-12-01', '2026-12-02', '2027-01-04', '2027-01-05', '2027-02-01', '2027-02-02'];
   const up = days.map((d, k) => [d, 100 * (k >= 3 ? 1.1 : 1)]), flat = days.map((d) => [d, 100]);
   const spy = days.map((d, k) => [d, 100 * (k >= 3 ? 1.02 : 1)]);
-  const snaps = [{ asOf: '2026-12-01', picks: { B1000: ['UP1', 'UP2', 'FLAT'], B500: ['UP1'], M25: [] } }, { asOf: '2027-01-04', picks: { B1000: ['UP1', 'UP2', 'FLAT'], B500: ['FLAT'], M25: ['UP1'] } }, { asOf: '2027-02-01', picks: { B1000: [], B500: [], M25: [] } }];
+  const snaps = [{ asOf: '2026-12-01', picks: { B1000: ['UP1', 'UP2', 'FLAT'], B500: ['UP1'], M25: [], R25: [] } }, { asOf: '2027-01-04', picks: { B1000: ['UP1', 'UP2', 'FLAT'], B500: ['FLAT'], M25: ['UP1'], R25: [] } }, { asOf: '2027-02-01', picks: { B1000: [], B500: [], M25: [], R25: [] } }];
   const priceOf = (t) => (t.startsWith('UP') ? up : t === 'FLAT' ? flat : null);
   const months = evaluate(snaps, priceOf, spy);
   assert.equal(months.length, 2);
@@ -94,4 +94,26 @@ test('M25: nur Titel mit Trendvorlage unter den 1.000 größten, 25 nach Signal;
   assert.equal(picksOf(mk(1200, (i) => i < 10)).M25.length, 10);
   /* die Faktor-Varianten bleiben von der Vorlage unberührt */
   assert.deepEqual(picksOf(mk(1200, () => false)).B1000, picksOf(mk(1200, () => true)).B1000);
+});
+
+test('R25: drei Bausteine (Rückkäufe als Perzentil), 25 Titel, Haltepuffer hält Titel unter den besten 50', () => {
+  /* 200 Titel, alle im Universum; Signal steigt mit dem Index, Rückkauf steigt mit dem Index -> beste 25 = 175..199 */
+  const mk = (sig, bb) => Array.from({ length: 200 }, (_, i) => ({ ticker: 'T' + String(i).padStart(3, '0'), marketCap: 1e6 - i, signal: sig(i), template: false, buyback: bb(i) }));
+  const a = picksOf(mk((i) => i / 2, (i) => i / 1000)).R25;
+  assert.equal(a.length, 25); assert.ok(a.every((t) => +t.slice(1) >= 175));
+  /* ohne Rückkauf-Wert nicht wählbar; die Faktor-Varianten bleiben davon unberührt */
+  const half = mk((i) => i / 2, (i) => (i % 2 ? null : i / 1000));
+  assert.ok(picksOf(half).R25.every((t) => +t.slice(1) % 2 === 0));
+  assert.deepEqual(picksOf(half).B1000, picksOf(mk((i) => i / 2, () => null)).B1000);
+  assert.deepEqual(picksOf(mk((i) => i / 2, () => null)).R25, [], 'ohne Rückkaufdaten Kasse statt einer Auswahl aus zwei Bausteinen');
+  /* Rückkäufe wirken: bei gleichem Signal gewinnen die Titel mit den meisten Rückkäufen */
+  assert.ok(picksOf(mk(() => 50, (i) => -i / 1000)).R25.every((t) => +t.slice(1) < 25));
+  /* Haltepuffer: Vormonat hielt die Titel 150..174 (Rang 26..50 heute) -> sie bleiben; ohne Vormonat die besten 25 */
+  const prev = { R25: Array.from({ length: 25 }, (_, k) => 'T' + (150 + k)) };
+  const b = picksOf(mk((i) => i / 2, (i) => i / 1000), prev).R25;
+  assert.deepEqual(b, prev.R25.slice().sort());
+  /* fällt ein gehaltener Titel aus den besten 50, wird er ersetzt */
+  const prev2 = { R25: ['T000', ...Array.from({ length: 24 }, (_, k) => 'T' + (151 + k))] };
+  const c = picksOf(mk((i) => i / 2, (i) => i / 1000), prev2).R25;
+  assert.equal(c.includes('T000'), false); assert.equal(c.includes('T199'), true); assert.equal(c.length, 25);
 });

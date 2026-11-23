@@ -19,6 +19,8 @@
  *   B500        bestes Zehntel der wählbaren Titel unter den 500 größten, gleich gewichtet
  *   M25         „Marktführer“ (Stufe 4, H1): unter den 1.000 größten nur Titel, die die Trendvorlage erfüllen
  *               (technical/data/screener-v1.json desselben Commits), davon die 25 mit dem höchsten Signal; unter 10 Kandidaten Kasse
+ *   R25         Stufe 8: Signal aus drei Bausteinen (dazu Rückkäufe = weniger Aktien als vor einem Jahr, aus
+ *               quant/data/sec/consumer desselben Commits, als Perzentil unter den wählbaren Titeln), 25 Titel, Haltepuffer
  *   Handel      Einstieg und Ausstieg zum Schluss des ersten Handelstags nach dem Stichtag (discover-series, Kursrendite),
  *               6 bp je Seite auf den Umschlag; Vergleich SPY aus derselben Reihe
  *
@@ -39,7 +41,9 @@ export const VERSION = 'vorwaerts-fassung-b-1.0.0';
 export const REGISTERED = '2026-11-23', OFFICIAL_FROM = '2026-12', COST_BPS = 6;
 export const SHARD_DIR = 'quant/data/product/factor-evidence-v1';
 export const COMPONENTS = Object.freeze({ momentum: 'priceReturn12m1m', profitability: 'grossProfitabilityTtm' });
-export const VARIANTS = Object.freeze({ B1000: { universe: 1000, top: 0.2 }, B500: { universe: 500, top: 0.1 }, M25: { universe: 1000, n: 25, template: true, minNames: 10 } });
+export const VARIANTS = Object.freeze({ B1000: { universe: 1000, top: 0.2 }, B500: { universe: 500, top: 0.1 }, M25: { universe: 1000, n: 25, template: true, minNames: 10 },
+  R25: { universe: 1000, n: 25, buyback: true, buffer: 2, minNames: 10 } });
+export const CONSUMER_DIR = 'quant/data/sec/consumer';
 /** Trendvorlage (veröffentlichte Lesart nach Minervini, PROTOKOLL §4f) aus den Spalten des Technical-Tagesbestands. */
 export const TEMPLATE = Object.freeze({ minAboveLow: 0.3, maxBelowHigh: -0.25, flags: ['aboveSma50', 'sma50AboveSma150', 'sma150AboveSma200', 'sma200Rising'] });
 export const SCREENER_FILE = 'technical/data/screener-v1.json';
@@ -66,13 +70,14 @@ export function componentScore(security, factor, id) {
 
 /** Zeilen aus Scherben: [{ticker, marketCap, signal|null, template}] für alle Titel mit Börsenwert; signal nur mit beiden Bausteinen;
  *  template = Trendvorlage erfüllt (aus templateOf), ohne Tagesbestand false. */
-export function rowsOf(shards, template = null) {
+export function rowsOf(shards, template = null, buybackOf = null) {
   const rows = [];
   for (const sh of shards) {
     for (const [t, s] of Object.entries((sh && sh.securities) || {})) {
       if (!isNum(s.marketCap) || !(s.marketCap > 0)) continue;
       const m = componentScore(s, 'momentum', COMPONENTS.momentum), g = componentScore(s, 'profitability', COMPONENTS.profitability);
-      rows.push({ ticker: t, marketCap: s.marketCap, signal: m === null || g === null ? null : (m + g) / 2, template: !!(template && template.get(t) === true) });
+      const bb = buybackOf ? buybackOf(s.cik) : null;
+      rows.push({ ticker: t, marketCap: s.marketCap, signal: m === null || g === null ? null : (m + g) / 2, template: !!(template && template.get(t) === true), buyback: isNum(bb) ? bb : null });
     }
   }
   return rows;
@@ -83,14 +88,28 @@ export function rowsOf(shards, template = null) {
  * DANN der beste Anteil der Titel mit Signal darin. Titel ohne Bruttogewinn (z. B. Banken) bleiben im Universum, sind aber
  * nicht wählbar. Gleichstand: Kürzel aufsteigend.
  */
-export function picksOf(rows) {
+export function picksOf(rows, prev = {}) {
   const bySize = rows.slice().sort((a, b) => b.marketCap - a.marketCap || (a.ticker < b.ticker ? -1 : 1));
   const out = {};
   for (const [name, v] of Object.entries(VARIANTS)) {
-    const ranked = bySize.slice(0, v.universe).filter((r) => r.signal !== null && (!v.template || r.template)).sort((a, b) => b.signal - a.signal || (a.ticker < b.ticker ? -1 : 1));
-    /* M25: feste Titelzahl innerhalb der Schranke; unter minNames Kandidaten bleibt das Depot in Kasse (leere Auswahl). */
+    let pool = bySize.slice(0, v.universe).filter((r) => r.signal !== null && (!v.template || r.template) && (!v.buyback || isNum(r.buyback))).map((r) => ({ ticker: r.ticker, score: r.signal, buyback: r.buyback }));
+    if (v.buyback) {
+      /* R25: dritter Baustein Rückkäufe = Perzentil (0–100) von „weniger Aktien als vor einem Jahr“ unter den wählbaren Titeln */
+      const order = pool.map((r, i) => [r.buyback, i]).sort((a, b) => a[0] - b[0]), n = order.length, pctl = new Array(n);
+      for (let i = 0; i < n;) { let j = i; while (j + 1 < n && order[j + 1][0] === order[i][0]) j++; for (let k = i; k <= j; k++) pctl[order[k][1]] = ((i + j) / 2 + 1) / n * 100; i = j + 1; }
+      pool = pool.map((r, i) => ({ ticker: r.ticker, score: (2 * r.score + pctl[i]) / 3 }));
+    }
+    const ranked = pool.sort((a, b) => b.score - a.score || (a.ticker < b.ticker ? -1 : 1));
+    /* feste Titelzahl (M25, R25): unter minNames Kandidaten bleibt das Depot in Kasse (leere Auswahl). */
     const take = v.n ? (ranked.length >= v.minNames ? Math.min(v.n, ranked.length) : 0) : Math.floor(ranked.length * v.top);
-    out[name] = ranked.slice(0, take).map((r) => r.ticker).sort();
+    let pick = [];
+    if (v.buffer && take) {
+      /* Haltepuffer: ein gehaltener Titel bleibt, solange er unter den besten buffer × n liegt */
+      const held = new Set(prev[name] || []);
+      for (const r of ranked.slice(0, v.buffer * v.n)) if (held.has(r.ticker) && pick.length < take) pick.push(r.ticker);
+      for (const r of ranked) { if (pick.length >= take) break; if (!pick.includes(r.ticker)) pick.push(r.ticker); }
+    } else pick = ranked.slice(0, take).map((r) => r.ticker);
+    out[name] = pick.sort();
   }
   return out;
 }
@@ -98,7 +117,7 @@ export function picksOf(rows) {
 /** Abdeckung je Variante: wie viele Titel des Universums ein Signal haben. */
 export function coverageOf(rows) {
   const bySize = rows.slice().sort((a, b) => b.marketCap - a.marketCap || (a.ticker < b.ticker ? -1 : 1));
-  return Object.fromEntries(Object.entries(VARIANTS).map(([name, v]) => { const u = bySize.slice(0, v.universe); return [name, { universe: u.length, withSignal: u.filter((r) => r.signal !== null).length, ...(v.template ? { withTemplate: u.filter((r) => r.signal !== null && r.template).length } : {}) }]; }));
+  return Object.fromEntries(Object.entries(VARIANTS).map(([name, v]) => { const u = bySize.slice(0, v.universe); return [name, { universe: u.length, withSignal: u.filter((r) => r.signal !== null).length, ...(v.template ? { withTemplate: u.filter((r) => r.signal !== null && r.template).length } : {}), ...(v.buyback ? { withBuyback: u.filter((r) => r.signal !== null && isNum(r.buyback)).length } : {}) }]; }));
 }
 
 /** Erster Stichtag je Monat aus [{date, ...}] (aufsteigend nach Datum). */
@@ -150,9 +169,9 @@ export function chain(months, fromMonth) {
 const pct = (x) => (isNum(x) ? (x >= 0 ? '+' : '−') + Math.abs(x * 100).toFixed(1).replace('.', ',') + ' %' : '–');
 export function report(res) {
   const L = ['# Vorwärtstest Fassung B: Momentum + Bruttogewinn je Bilanzsumme (Forschung, nicht zertifiziert)', '',
-    `Registriert am ${res.registered}; zählt ab ${res.officialFrom}. B1000 = bestes Fünftel der 1.000 größten Werte, B500 = bestes Zehntel der 500 größten, M25 = die 25 besten unter den 1.000 größten, die die Trendvorlage erfüllen; gleich gewichtet, monatlich, ${res.costBps} bp je Seite, Kursrendite gegen SPY. Stichtage: ${res.snapshots}.`, '',
-    '| Entscheidung | Einstieg | Ausstieg | B1000 | B500 | M25 | SPY |', '|---|---|---|---|---|---|---|'];
-  for (const m of res.months) L.push(`| ${m.decision} | ${m.entry} | ${m.exit} | ${pct(m.variants.B1000.net)} | ${pct(m.variants.B500.net)} | ${pct(m.variants.M25.net)} | ${pct(m.spy)} |`);
+    `Registriert am ${res.registered}; zählt ab ${res.officialFrom}. B1000 = bestes Fünftel der 1.000 größten Werte, B500 = bestes Zehntel der 500 größten, M25 = die 25 besten unter den 1.000 größten, die die Trendvorlage erfüllen, R25 = 25 Titel nach Momentum + Bruttogewinn/Bilanz + Rückkäufen mit Haltepuffer; gleich gewichtet, monatlich, ${res.costBps} bp je Seite, Kursrendite gegen SPY. Stichtage: ${res.snapshots}.`, '',
+    '| Entscheidung | Einstieg | Ausstieg | B1000 | B500 | M25 | R25 | SPY |', '|---|---|---|---|---|---|---|---|'];
+  for (const m of res.months) L.push(`| ${m.decision} | ${m.entry} | ${m.exit} | ${pct(m.variants.B1000.net)} | ${pct(m.variants.B500.net)} | ${pct(m.variants.M25.net)} | ${pct(m.variants.R25.net)} | ${pct(m.spy)} |`);
   const c = res.official;
   L.push('', `**Ab ${c.from}** (${c.months} Monate): SPY ${pct(c.spy)}; ` + Object.entries(c.variants).map(([k, v]) => `${k} ${pct(v.total)} (${v.monthsAheadSpy} Monate vor SPY)`).join(', '));
   if (res.note) L.push('', res.note);
@@ -170,6 +189,20 @@ function shardsAt(ref) {
 }
 function screenerAt(ref) { try { return JSON.parse(git(['show', `${ref}:${SCREENER_FILE}`]).toString('utf8')); } catch { return null; } }
 function screenerWorkingTree() { try { return JSON.parse(fs.readFileSync(path.join(ROOT, SCREENER_FILE), 'utf8')); } catch { return null; } }
+/** Veränderung der Aktienzahl über ein Jahr (negativ = Rückkauf) aus dem SEC-Verbraucherbündel; liefert „Rückkauf“ = −Veränderung. */
+function buybackLoader(read, asOf) {
+  const PIT = require(path.join(ROOT, 'quant/engines/pit-fundamental-history.js')), cache = new Map();
+  return (cik) => {
+    if (!cik) return null;
+    const id = String(cik).replace(/^CIK/, '').padStart(10, '0');
+    if (!cache.has(id)) {
+      let v = null;
+      try { const ch = PIT.changeOver(JSON.parse(read(`${CONSUMER_DIR}/CIK${id}.json`)), 'shares_outstanding', asOf, 1); if (isNum(ch) && Math.abs(ch) < 1) v = -ch; } catch { v = null; }
+      cache.set(id, v);
+    }
+    return cache.get(id);
+  };
+}
 function shardsWorkingTree() {
   const dir = path.join(ROOT, SHARD_DIR);
   return fs.readdirSync(dir).filter((f) => /^[A-Z0-9_-]{1,3}\.json\.gz$/.test(f)).map((f) => JSON.parse(zlib.gunzipSync(fs.readFileSync(path.join(dir, f)))));
@@ -191,16 +224,24 @@ function series(ticker) {
 function main() {
   const arg = (n) => (process.argv.includes(n) ? process.argv[process.argv.indexOf(n) + 1] : null);
   if (process.argv.includes('--picks')) {
-    const shards = shardsWorkingTree(), rows = rowsOf(shards, templateOf(screenerWorkingTree())), picks = picksOf(rows);
-    console.log(JSON.stringify({ asOf: asOfOf(shards), titlesWithMarketCap: rows.length, coverage: coverageOf(rows), B1000: picks.B1000.length, B500: picks.B500.length, M25: picks.M25.length }));
+    const shards = shardsWorkingTree(), asOf = asOfOf(shards);
+    const rows = rowsOf(shards, templateOf(screenerWorkingTree()), buybackLoader((p) => fs.readFileSync(path.join(ROOT, p), 'utf8'), asOf)), picks = picksOf(rows);
+    console.log(JSON.stringify({ asOf, titlesWithMarketCap: rows.length, coverage: coverageOf(rows), B1000: picks.B1000.length, B500: picks.B500.length, M25: picks.M25.length, R25: picks.R25.length }));
     console.log('B500:', picks.B500.join(' '));
     console.log('M25:', picks.M25.join(' '));
+    console.log('R25:', picks.R25.join(' '));
     return;
   }
   const ref = arg('--ref') || 'HEAD', out = arg('--out');
   const shallow = git(['rev-parse', '--is-shallow-repository']).toString().trim() === 'true';
   const decisions = firstPerMonth(shardCommits(ref).filter((c) => c.date.slice(0, 7) >= OFFICIAL_FROM));
-  const snaps = decisions.map((d) => { const shards = shardsAt(d.commit), rows = rowsOf(shards, templateOf(screenerAt(d.commit))); return { commit: d.commit, asOf: asOfOf(shards), picks: picksOf(rows), coverage: coverageOf(rows) }; }).filter((s) => s.asOf);
+  const snaps = []; let prevPicks = {};
+  for (const d of decisions) {
+    const shards = shardsAt(d.commit), asOf = asOfOf(shards); if (!asOf) continue;
+    const rows = rowsOf(shards, templateOf(screenerAt(d.commit)), buybackLoader((p) => git(['show', `${d.commit}:${p}`]).toString('utf8'), asOf));
+    const picks = picksOf(rows, prevPicks); prevPicks = picks;
+    snaps.push({ commit: d.commit, asOf, picks, coverage: coverageOf(rows) });
+  }
   const spy = series('SPY'), cache = new Map();
   const priceOf = (t) => { if (!cache.has(t)) cache.set(t, series(t)); return cache.get(t); };
   const months = spy ? evaluate(snaps, priceOf, spy) : [];
