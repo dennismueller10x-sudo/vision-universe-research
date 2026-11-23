@@ -54,12 +54,54 @@
   {
    "id": "termine",
    "h2": "Ex-Tag, Stichtag, Zahltag",
-   "html": "<ul><li><strong>Ex-Tag:</strong> Ab diesem Tag wird die Aktie ohne Anspruch auf die nächste Dividende gehandelt. Wer sie am Tag davor besitzt, bekommt die Dividende.</li><li><strong>Zahltag:</strong> An diesem Tag kommt das Geld aufs Konto.</li><li>Am Ex-Tag fällt der Kurs ungefähr um die Höhe der Dividende. Durch einen Kauf kurz davor gewinnt man deshalb nichts.</li></ul>"
+   "html": "<p>Am Ex-Tag fällt der Kurs ungefähr um die Höhe der Dividende. Durch einen Kauf kurz davor gewinnt man deshalb nichts.</p>",
+   "grafiken": [
+    {
+     "typ": "zeitstrahl",
+     "aktiv": 1,
+     "items": [
+      {
+       "wann": "Hauptversammlung",
+       "was": "Die Aktionäre beschließen die Dividende (in den USA entscheidet der Board)."
+      },
+      {
+       "wann": "Ex-Tag",
+       "was": "Ab heute wird ohne Dividende gehandelt. Wer am Vortag besitzt, bekommt sie."
+      },
+      {
+       "wann": "Zahltag",
+       "was": "Das Geld kommt aufs Konto."
+      }
+     ]
+    }
+   ]
   },
   {
    "id": "steuer",
    "h2": "Dividende und Steuer in Deutschland",
-   "html": "<p>Dividenden sind Kapitalerträge. Bis zum <strong>Sparer-Pauschbetrag von 1.000 €</strong> im Jahr (2.000 € bei Zusammenveranlagung) bleiben sie steuerfrei, wenn du deiner Bank einen Freistellungsauftrag gibst. Darüber fallen <strong>25 % Abgeltungsteuer</strong> plus Solidaritätszuschlag und gegebenenfalls Kirchensteuer an. Bei US-Aktien behalten die USA meist 15 % Quellensteuer ein, die in Deutschland angerechnet wird.</p><p>Das ist eine vereinfachte Übersicht, keine Steuerberatung.</p>"
+   "html": "<p>Das ist eine vereinfachte Übersicht, keine Steuerberatung.</p>",
+   "grafiken": [
+    {
+     "typ": "fakten",
+     "items": [
+      {
+       "icon": "geschenk",
+       "zahl": "1.000 €",
+       "text": "Sparer-Pauschbetrag im Jahr, mit Freistellungsauftrag steuerfrei"
+      },
+      {
+       "icon": "prozent",
+       "zahl": "25 %",
+       "text": "Abgeltungsteuer darüber, plus Soli und gegebenenfalls Kirchensteuer"
+      },
+      {
+       "icon": "globus",
+       "zahl": "15 %",
+       "text": "US-Quellensteuer, wird in Deutschland angerechnet"
+      }
+     ]
+    }
+   ]
   }
  ],
  "app": {

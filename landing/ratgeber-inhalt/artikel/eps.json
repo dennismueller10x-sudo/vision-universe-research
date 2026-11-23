@@ -1,0 +1,127 @@
+{
+ "slug": "eps",
+ "welt": "kennzahlen",
+ "titel": "Gewinn je Aktie (EPS)",
+ "kurztitel": "Gewinn je Aktie",
+ "seitentitel": "Gewinn je Aktie (EPS) einfach erklärt · Vision Universe Ratgeber",
+ "h1": "Gewinn je Aktie: <mark>Wie viel Gewinn auf eine Aktie entfällt</mark>",
+ "untertitel": "Was der Gewinn je Aktie (englisch EPS) ist, wie man ihn berechnet und warum Aktienrückkäufe ihn steigen lassen. Mit Rechner am Beispiel Apple.",
+ "teaser": "Was EPS bedeutet und warum Aktienrückkäufe den Gewinn je Aktie steigen lassen, zum Ausprobieren.",
+ "beschreibung": "Gewinn je Aktie (EPS) einfach erklärt: Berechnung, verwässert und unverwässert, Wirkung von Aktienrückkäufen und Zusammenhang mit dem KGV. Mit Rechner am Beispiel Apple.",
+ "suchbegriffe": [
+  "Gewinn je Aktie",
+  "EPS",
+  "EPS Aktie",
+  "Earnings per Share"
+ ],
+ "kurz": "Der <strong>Gewinn je Aktie</strong> (englisch <strong>EPS</strong>, earnings per share) ist der Gewinn einer Firma geteilt durch die Anzahl ihrer Aktien. Apple verdiente in den letzten vier Quartalen 132,2 Mrd. $ bei rund 14,5 Mrd. Aktien: etwa <strong>9 $ je Aktie</strong> (berichtet, verwässert: 8,97 $). Kauft eine Firma eigene Aktien zurück, sinkt die Anzahl, und der Gewinn je Aktie steigt, auch wenn der Gewinn gleich bleibt. Der Gewinn je Aktie ist die Grundlage für das KGV.",
+ "abschnitte": [
+  {
+   "id": "rechner",
+   "h2": "Gewinn je Aktie und Aktienrückkauf",
+   "html": "<p>Zieh den Regler: Was passiert mit dem Gewinn je Aktie, wenn Apple einen Teil seiner Aktien zurückkauft?</p>",
+   "grafiken": [
+    {
+     "typ": "eps-rueckkauf",
+     "ticker": "AAPL"
+    }
+   ]
+  },
+  {
+   "id": "arten",
+   "h2": "Unverwässert und verwässert",
+   "html": "",
+   "grafiken": [
+    {
+     "typ": "vergleich",
+     "links": {
+      "titel": "Unverwässert (basic)",
+      "punkte": [
+       "+ Gewinn ÷ ausstehende Aktien",
+       "+ zeigt den Stand heute"
+      ]
+     },
+     "rechts": {
+      "titel": "Verwässert (diluted)",
+      "punkte": [
+       "+ rechnet Aktienoptionen und Wandelanleihen mit ein",
+       "+ etwas niedriger, aber vorsichtiger",
+       "+ in Berichten meist die wichtigere Zahl"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "wachstum",
+   "h2": "Warum Anleger auf das Wachstum schauen",
+   "html": "<p>Wichtiger als die Höhe ist, wie sich der Gewinn je Aktie über die Jahre entwickelt. Steigt er stetig, wächst der Anteil am Gewinn, der auf jede einzelne Aktie entfällt.</p>",
+   "grafiken": [
+    {
+     "typ": "icons",
+     "items": [
+      {
+       "icon": "chart",
+       "titel": "Mehr Gewinn",
+       "text": "Das Geschäft wächst, der Gewinn steigt."
+      },
+      {
+       "icon": "muenze",
+       "titel": "Weniger Aktien",
+       "text": "Aktienrückkäufe verteilen den Gewinn auf weniger Stücke."
+      },
+      {
+       "icon": "warnung",
+       "titel": "Mehr Aktien",
+       "text": "Neue Aktien oder Mitarbeiteroptionen verwässern den Gewinn je Aktie."
+      }
+     ]
+    },
+    {
+     "typ": "merke",
+     "text": "Steigt der Gewinn je Aktie nur durch Rückkäufe, nicht durch ein wachsendes Geschäft, lohnt ein zweiter Blick."
+    }
+   ]
+  },
+  {
+   "id": "kgv",
+   "h2": "Gewinn je Aktie und KGV",
+   "html": "<p>Teilt man den Aktienkurs durch den Gewinn je Aktie, erhält man das <a href=\"../kgv/\">KGV</a>. Bei Apple: 342,56 $ ÷ 8,97 $ = 38,2. Sinkt die Aktienanzahl durch Rückkäufe, sinkt bei gleichem Kurs auch das KGV.</p>"
+  }
+ ],
+ "app": {
+  "bild": "fundamental",
+  "alt": "Fundamental in der Vision Universe App",
+  "titel": "Gewinn je Aktie über viele Jahre.",
+  "text": "Fundamental zeigt Gewinn, Gewinn je Aktie und Aktienanzahl aus den offiziellen Berichten."
+ },
+ "faq": [
+  {
+   "f": "Wie berechnet man den Gewinn je Aktie?",
+   "a": "Gewinn geteilt durch die Anzahl der Aktien. Für den verwässerten Gewinn je Aktie zählt man mögliche neue Aktien aus Optionen und Wandelanleihen mit."
+  },
+  {
+   "f": "Was bedeutet EPS?",
+   "a": "EPS steht für earnings per share, auf Deutsch Gewinn je Aktie."
+  },
+  {
+   "f": "Warum steigt der Gewinn je Aktie durch Aktienrückkäufe?",
+   "a": "Weil sich derselbe Gewinn auf weniger Aktien verteilt. Kauft eine Firma 5 % ihrer Aktien zurück, steigt der Gewinn je Aktie bei gleichem Gewinn um gut 5 %."
+  }
+ ],
+ "quellen": [
+  {
+   "titel": "Beispielwerte: Vision Universe Datenbank, Schlusskurs 20.11.2026, Geschäftszahlen aus den SEC-Quartalsberichten (10-K/10-Q) der Unternehmen"
+  },
+  {
+   "titel": "U.S. Securities and Exchange Commission: Unternehmensberichte (EDGAR)",
+   "url": "https://www.sec.gov/edgar/search/"
+  }
+ ],
+ "weiter": [
+  "kgv",
+  "marktkapitalisierung",
+  "dividende"
+ ],
+ "stand": "2026-11-23"
+}

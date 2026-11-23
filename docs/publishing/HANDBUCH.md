@@ -266,6 +266,9 @@ Zahlen und Datum, Inhaltsverzeichnis, mindestens eine bedienbare Grafik (`web/ra
 Häufige Fragen, Quellen, „Weiterlesen“; JSON-LD `Article`, `FAQPage`, `BreadcrumbList`. `landing/tests/ratgeber.test.mjs`
 prüft Pflichtbausteine, Wortwahl, Beispielwerte (KGV = Kurs ÷ Gewinn je Aktie), Rechenregeln (Zulage §§ 84–86 EStG n. F.),
 Links und Einbindung. Neuer Artikel: Datei unter `artikel/` anlegen, Eintrag im Themenplan steht schon (sonst ergänzen).
+Stand 23.11.2026: alle 31 Artikel stehen. Bausteine neben den Grafiken (für lesbare Seiten statt Textwüste): `fakten`,
+`check`, `icons`, `vergleich`, `zeitstrahl`, `schrittkarten`, `merke`. Überschriften ohne Silbentrennung; sehr lange
+Einzelwörter bekommen in Kacheln eine kleinere Schrift. Die Kacheln folgen dem Startseiten-Layout (ganzes iPhone neben dem Text).
 
 Stand 11.11.2026: nur `/insights/` ist öffentlich und indexierbar (Sitemap, Search Console, IndexNow). Die Freischaltung
 weiterer Bereiche entscheidet der Owner; dieser Plan sagt, was dafür technisch vorbereitet wird.

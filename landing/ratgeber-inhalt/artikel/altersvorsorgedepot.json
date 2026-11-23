@@ -19,7 +19,34 @@
   {
    "id": "was-ist",
    "h2": "Was ist das Altersvorsorgedepot?",
-   "html": "<p>Ein Depot für Fonds und ETFs, das der Staat mit einer Zulage und einem Steuervorteil fördert. Es ersetzt für neue Verträge die Riester-Rente. Anders als bei vielen Riester-Verträgen gibt es keine Pflicht zur Beitragsgarantie: Das Geld kann vollständig in Wertpapiere fließen.</p><p>Die Regeln stehen im Altersvorsorgereformgesetz vom 26. Mai 2026 (Bundesgesetzblatt 2026 I Nr. 156). Die Förderregeln und die Regeln für die Produkte gelten ab dem <strong>1. Januar 2027</strong>.</p>"
+   "html": "<p>Ein Depot für Fonds und ETFs, das der Staat mit einer Zulage und einem Steuervorteil fördert. Es ersetzt für neue Verträge die Riester-Rente. Anders als bei vielen Riester-Verträgen gibt es keine Pflicht zur Beitragsgarantie: Das Geld kann vollständig in Wertpapiere fließen.</p><p>Die Regeln stehen im Altersvorsorgereformgesetz vom 26. Mai 2026 (Bundesgesetzblatt 2026 I Nr. 156). Die Förderregeln und die Regeln für die Produkte gelten ab dem <strong>1. Januar 2027</strong>.</p>",
+   "grafiken": [
+    {
+     "typ": "fakten",
+     "items": [
+      {
+       "icon": "geschenk",
+       "zahl": "540 €",
+       "text": "Grundzulage im Jahr"
+      },
+      {
+       "icon": "menschen",
+       "zahl": "300 €",
+       "text": "zusätzlich je Kind"
+      },
+      {
+       "icon": "rakete",
+       "zahl": "200 €",
+       "text": "Startbonus unter 25"
+      },
+      {
+       "icon": "prozent",
+       "zahl": "1,0 %",
+       "text": "Kostendeckel Standarddepot"
+      }
+     ]
+    }
+   ]
   },
   {
    "id": "zulage",
@@ -35,7 +62,25 @@
   {
    "id": "inhalt",
    "h2": "Was darf ins Depot?",
-   "html": "<ul><li>Investmentfonds und ETFs (OGAW) sowie offene Publikums-AIF und ELTIF, jeweils mit Basisinformationsblatt und <strong>Risikoklasse höchstens 5</strong></li><li>Anleihen öffentlicher Emittenten in Euro</li></ul><p>Einzelaktien gehören nicht dazu. Wer einzelne Aktien kaufen will, braucht dafür weiter ein normales Depot.</p>"
+   "html": "",
+   "grafiken": [
+    {
+     "typ": "check",
+     "items": [
+      "Investmentfonds und ETFs (OGAW) mit Risikoklasse höchstens 5 laut Basisinformationsblatt",
+      "Offene Publikums-AIF und ELTIF bis Risikoklasse 5",
+      "Anleihen öffentlicher Emittenten in Euro"
+     ]
+    },
+    {
+     "typ": "check",
+     "art": "nein",
+     "items": [
+      "Einzelaktien",
+      "Fonds mit Risikoklasse 6 oder 7"
+     ]
+    }
+   ]
   },
   {
    "id": "kosten",
@@ -51,12 +96,41 @@
   {
    "id": "auszahlung",
    "h2": "Wann wird ausgezahlt?",
-   "html": "<p>Die Auszahlung beginnt frühestens mit <strong>65</strong> und spätestens mit <strong>70</strong>. Ausgezahlt wird als Rente oder als Auszahlplan, der mindestens bis zum <strong>85. Lebensjahr</strong> läuft. Wer das Geld vorher für etwas anderes nutzt, muss die Zulagen und Steuervorteile zurückzahlen.</p>"
+   "html": "<p>Wer das Geld vorher für etwas anderes nutzt, muss Zulagen und Steuervorteile zurückzahlen.</p>",
+   "grafiken": [
+    {
+     "typ": "zeitstrahl",
+     "aktiv": 0,
+     "items": [
+      {
+       "wann": "Ab 1. Januar 2027",
+       "was": "Einzahlen und Zulage bekommen."
+      },
+      {
+       "wann": "Ab 65",
+       "was": "Frühestmöglicher Beginn der Auszahlung."
+      },
+      {
+       "wann": "Bis 70",
+       "was": "Spätester Beginn der Auszahlung."
+      },
+      {
+       "wann": "Bis mindestens 85",
+       "was": "So lange läuft ein Auszahlplan mindestens."
+      }
+     ]
+    }
+   ]
   },
   {
    "id": "riester",
    "h2": "Was passiert mit Riester?",
-   "html": "<p>Ab 2027 werden keine neuen Riester-Verträge nach altem Modell mehr abgeschlossen. Bestehende Verträge laufen mit den bisherigen Regeln weiter. Du kannst sie behalten, ins neue Recht wechseln oder das Kapital in ein Altersvorsorgedepot übertragen. Was das jeweils bedeutet, steht im Ratgeber <a href=\"../riester-was-tun/\">Riester: behalten, wechseln oder kündigen?</a></p>"
+   "html": "<p>Ab 2027 werden keine neuen Riester-Verträge nach altem Modell mehr abgeschlossen. Bestehende Verträge laufen mit den bisherigen Regeln weiter. Du kannst sie behalten, ins neue Recht wechseln oder das Kapital in ein Altersvorsorgedepot übertragen. Was das jeweils bedeutet, steht im Ratgeber <a href=\"../riester-was-tun/\">Riester: behalten, wechseln oder kündigen?</a></p>",
+   "grafiken": [
+    {
+     "typ": "riester-wege"
+    }
+   ]
   }
  ],
  "app": {

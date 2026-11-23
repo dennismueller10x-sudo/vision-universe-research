@@ -156,6 +156,180 @@ G['riester-wege'] = () => {
 // Merksatz-Kachel.
 G['merke'] = (g) => `<aside class="rg-merke"><span>Merke</span><p>${g.text}</p></aside>`;
 
+/* ---------------------------------------------- Lese-Bausteine (Runde 2): Icons, Haken, Kennzahlen, Vergleich, Zeitstrahl ---------------------------------------------- */
+export const ICONS = {
+  check: '<path d="m5 12.5 4.5 4.5L19 7.5"/>', x: '<path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/>', uhr: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
+  muenze: '<ellipse cx="12" cy="7" rx="7" ry="3"/><path d="M5 7v5c0 1.7 3.1 3 7 3s7-1.3 7-3V7M5 12v5c0 1.7 3.1 3 7 3s7-1.3 7-3v-5"/>', chart: '<path d="M4 20h16"/><path d="m5 15 4-4 3 3 6-7"/>',
+  schild: '<path d="M12 3 19.5 6v5.5c0 4.6-3.2 7.9-7.5 9.5-4.3-1.6-7.5-4.9-7.5-9.5V6z"/><path d="m8.5 12 2.5 2.5 4.5-5"/>', globus: '<circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.5 2.6 3.7 5.5 3.7 8.5s-1.2 5.9-3.7 8.5c-2.5-2.6-3.7-5.5-3.7-8.5s1.2-5.9 3.7-8.5"/>',
+  bank: '<path d="M3.5 9 12 4l8.5 5"/><path d="M5.5 10v7M10 10v7M14 10v7M18.5 10v7M3.5 20h17"/>', dok: '<path d="M7 3.5h7l4 4v13H7z"/><path d="M14 3.5v4h4M9.5 12h6M9.5 15.5h6"/>',
+  menschen: '<circle cx="9" cy="8" r="3"/><path d="M3.5 19.5a5.5 5.5 0 0 1 11 0"/><circle cx="17" cy="9" r="2.3"/><path d="M15.5 14.2a4.5 4.5 0 0 1 5 5.3"/>', blitz: '<path d="M13 3 5.5 13.5H12L11 21l7.5-10.5H12z"/>',
+  ziel: '<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/>', waage: '<path d="M12 4v16M6 20h12M5 7h14"/><path d="m5 7-2.5 6a2.5 2.5 0 0 0 5 0zM19 7l-2.5 6a2.5 2.5 0 0 0 5 0z"/>',
+  sparschwein: '<path d="M5 11a6 5 0 0 1 12-1h1.5l1 2-1.5 1v2.5H16l-1 3h-2v-2H9v2H7l-1-3a5 5 0 0 1-1-4.5z"/><circle cx="14.5" cy="10.5" r=".8" fill="currentColor"/>', kalender: '<rect x="4" y="5.5" width="16" height="14.5" rx="2"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4"/>',
+  lupe: '<circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/>', warnung: '<path d="M12 4 21 19.5H3z"/><path d="M12 10v4.5M12 17v.5"/>', geschenk: '<rect x="4" y="9" width="16" height="11" rx="1.5"/><path d="M3.5 9h17v3h-17zM12 9v11M12 9c-2-4-6-3.5-5-1s5 1 5 1 4 1.5 5-1-3-3-5 1"/>',
+  prozent: '<path d="M18 6 6 18"/><circle cx="7.5" cy="7.5" r="2.3"/><circle cx="16.5" cy="16.5" r="2.3"/>', schichten: '<path d="m12 3.5 9 4.5-9 4.5-9-4.5z"/><path d="m3 12.5 9 4.5 9-4.5"/>',
+  rakete: '<path d="M12 3c3.3 2.8 4.3 7 3.3 11.5H8.7C7.7 10 8.7 5.8 12 3z"/><circle cx="12" cy="9" r="1.6"/><path d="M8.7 12.5 5.5 16l3.2-.4M15.3 12.5l3.2 3.5-3.2-.4M10.5 17.5 12 21l1.5-3.5"/>', auge: '<path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/>',
+  haus: '<path d="m3.5 11 8.5-7 8.5 7"/><path d="M6 9.5V20h12V9.5"/>', pfeil: '<path d="M5 12h14m-5-5 5 5-5 5"/>', schloss: '<rect x="5" y="10.5" width="14" height="9.5" rx="2"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/>',
+};
+const icn = (n, s = 22) => ic(ICONS[n] || ICONS.check, s);
+
+// Kennzahl-Kacheln: große Zahl, kurzer Satz.
+G['fakten'] = (g) => `<div class="rg-fakten n${Math.min(g.items.length, 4)}">${g.items.map((x, i) => `<div class="${i === 0 && g.hervor !== false ? 'lime' : ''}">${x.icon ? `<span class="rg-fi">${icn(x.icon, 20)}</span>` : ''}<b>${x.zahl}</b><span>${x.text}</span></div>`).join('')}</div>`;
+// Haken-Liste (art: ok = Haken, nein = Kreuz, gemischt: Punkte mit {t, ok}).
+G['check'] = (g) => `<div class="rg-check-b">${g.titel ? `<p class="rg-check-t">${g.titel}</p>` : ''}<ul class="rg-checks">${g.items.map((x) => { const t = typeof x === 'string' ? x : x.t, ok = typeof x === 'string' ? g.art !== 'nein' : x.ok; return `<li class="${ok ? 'ok' : 'nein'}"><span>${icn(ok ? 'check' : 'x', 16)}</span><p>${t}</p></li>`; }).join('')}</ul></div>`;
+// Icon-Module: Symbol, Titel, Satz.
+G['icons'] = (g) => `<div class="rg-icons n${Math.min(g.items.length, 3)}">${g.items.map((x) => `<div><span class="rg-ii">${icn(x.icon, 24)}</span><b>${x.titel}</b><p>${x.text}</p></div>`).join('')}</div>`;
+// Vergleich in zwei Spalten.
+G['vergleich'] = (g) => `<div class="rg-vgl"><div><p class="rg-vgl-h">${g.links.titel}</p><ul>${g.links.punkte.map((p) => `<li><span>${icn(p.startsWith('–') ? 'x' : 'check', 15)}</span>${esc(p.replace(/^[+–]\s*/, ''))}</li>`).join('')}</ul></div><div class="dark"><p class="rg-vgl-h">${g.rechts.titel}</p><ul>${g.rechts.punkte.map((p) => `<li><span>${icn(p.startsWith('–') ? 'x' : 'check', 15)}</span>${esc(p.replace(/^[+–]\s*/, ''))}</li>`).join('')}</ul></div></div>`;
+// Zeitstrahl.
+G['zeitstrahl'] = (g) => `<ol class="rg-zeit">${g.items.map((x, i) => `<li class="${i === (g.aktiv ?? -1) ? 'on' : ''}"><b>${x.wann}</b><p>${x.was}</p></li>`).join('')}</ol>`;
+// Nummerierte Schritt-Karten.
+G['schrittkarten'] = (g) => `<ol class="rg-skarten">${g.items.map((x, i) => `<li><span class="rg-n">${i + 1}</span><div><b>${x.titel}</b><p>${x.text}</p></div></li>`).join('')}</ol>`;
+
+/* ---------------------------------------------- Neue Grafiken (Runde 2) ---------------------------------------------- */
+const chips = (ts, D, attrs) => `<div class="rg-chips" role="group" aria-label="Beispiel wählen">${ts.map((t, i) => `<button type="button" class="rg-chip${i ? '' : ' on'}" ${attrs(D.aktien[t], t)}>${esc(D.aktien[t].name)}</button>`).join('')}</div>`;
+
+// Marge: von 100 $ Umsatz bleiben … als Münzen.
+G['marge'] = (g, D) => {
+  const a = D.aktien[g.ticker[0]], m = Math.round(a.marge * 100);
+  return `<figure class="rg-g rg-marge" data-g="marge"><figcaption class="rg-gk">Zum Ausprobieren · von 100 $ Umsatz bleiben als Gewinn</figcaption>${chips(g.ticker, D, (x) => `data-m="${x.marge}" data-name="${esc(x.name)}"`)}
+<div class="rg-marge-g"><div class="rg-100" aria-hidden="true">${Array.from({length: 100}, (_, i) => `<i class="${i < m ? 'f' : ''}"></i>`).join('')}</div><div class="rg-marge-z"><b data-o="m">${m} $</b><span data-o="satz">bleiben bei ${esc(a.name)} von 100 $ Umsatz als Gewinn.</span></div></div>
+${quelleZeile(D, '; Nettomarge der letzten vier Quartale')}</figure>`;
+};
+
+// Marktwert: Kurs × Aktienanzahl, Balken im Vergleich.
+G['marktwert'] = (g, D) => {
+  const xs = g.ticker.map((t) => D.aktien[t]), max = Math.max(...xs.map((x) => x.marktwertUSD));
+  return `<figure class="rg-g rg-bars rg-mw" data-g="balken"><figcaption class="rg-gk">Börsenwert im Vergleich</figcaption><ul>${xs.map((x) => `<li style="--w:${(x.marktwertUSD / max * 100).toFixed(1)}"><span>${esc(x.name)}</span><i></i><b>${zahl(x.marktwertUSD / 1e9, 0)}</b><small>${usd(x.kurs)} × ${zahl(x.aktienAnzahl / 1e9, 2)} Mrd. Aktien</small></li>`).join('')}</ul><p class="rg-bars-m">Werte in Milliarden Dollar</p>${quelleZeile(D, '; Aktienanzahl laut letztem Bericht')}</figure>`;
+};
+
+// Gewinn je Aktie und Aktienrückkauf.
+G['eps-rueckkauf'] = (g, D) => {
+  const x = D.aktien[g.ticker], eps = x.gewinnUSD / x.aktienAnzahl;
+  return `<figure class="rg-g rg-eps" data-g="eps" data-gewinn="${x.gewinnUSD}" data-aktien="${x.aktienAnzahl}" data-kurs="${x.kurs}"><figcaption class="rg-gk">Zum Ausprobieren · ${esc(x.name)} kauft eigene Aktien zurück</figcaption>
+<div class="rg-formel"><span>${mrd(x.gewinnUSD)} Gewinn</span><em>÷</em><span data-o="aktien">${zahl(x.aktienAnzahl / 1e9, 2)} Mrd. Aktien</span><em>=</em><span class="l" data-o="eps">${usd(eps)}</span></div>
+<div class="rg-sl"><label>Aktienrückkauf <output data-o="r">0 %</output><input type="range" min="0" max="20" step="1" value="0" data-i="r" aria-label="Anteil zurückgekaufter Aktien"></label></div>
+<div class="rg-kacheln"><div><span>Gewinn je Aktie</span><b data-o="eps2">${usd(eps)}</b></div><div class="lime"><span>Veränderung</span><b data-o="plus">+0,0 %</b></div><div><span>KGV bei gleichem Kurs</span><b data-o="kgv">${zahl(x.kurs / eps, 1)}</b></div></div>
+${quelleZeile(D, '; Gewinn je Aktie hier aus Gewinn ÷ Aktien, kann vom berichteten verwässerten Wert leicht abweichen')}</figure>`;
+};
+
+// Aktiensplit.
+G['split'] = (g, D) => {
+  const x = D.aktien[g.ticker];
+  return `<figure class="rg-g rg-split" data-g="split" data-kurs="${x.kurs}"><figcaption class="rg-gk">Zum Ausprobieren · Aktiensplit</figcaption><div class="rg-chips" role="group" aria-label="Verhältnis"><button type="button" class="rg-chip on" data-f="2">2 für 1</button><button type="button" class="rg-chip" data-f="4">4 für 1</button><button type="button" class="rg-chip" data-f="10">10 für 1</button></div>
+<div class="rg-split-g"><div><p class="rg-gk">Vorher</p><div class="rg-split-s" aria-hidden="true"><i></i></div><b>1 Aktie × ${usd(x.kurs)}</b></div><em aria-hidden="true">→</em><div><p class="rg-gk">Nachher</p><div class="rg-split-s" data-o="teile" aria-hidden="true"><i></i><i></i></div><b data-o="nach">2 Aktien × ${usd(x.kurs / 2)}</b></div></div>
+<p class="rg-split-w">Wert vorher und nachher: <strong>${usd(x.kurs)}</strong>. Am Wert der Firma und an deinem Anteil ändert sich nichts.</p><p class="rg-src">Beispiel mit dem Schlusskurs von ${esc(x.name)} am ${datum(D.stand)}. Kein angekündigter Split.</p></figure>`;
+};
+
+// Orderbuch: Angebot und Nachfrage bewegen den Kurs (Schema).
+G['orderbuch'] = () => `<figure class="rg-g rg-order" data-g="order"><figcaption class="rg-gk">Zum Ausprobieren · Angebot und Nachfrage (Schema)</figcaption>
+<div class="rg-sl"><label>Kaufinteresse <output data-o="k">50</output><input type="range" min="0" max="100" value="50" data-i="k" aria-label="Kaufinteresse"></label><label>Verkaufsinteresse <output data-o="v">50</output><input type="range" min="0" max="100" value="50" data-i="v" aria-label="Verkaufsinteresse"></label></div>
+<div class="rg-order-g"><div class="rg-order-b kauf"><span>Käufer</span><i data-o="kb" style="--w:50"></i></div><div class="rg-order-p"><span class="rg-gk">Kurs</span><b data-o="p">100,00 €</b><em data-o="d">±0,0 %</em></div><div class="rg-order-b verk"><span>Verkäufer</span><i data-o="vb" style="--w:50"></i></div></div>
+<p class="rg-src">Vereinfachtes Schema: Wollen mehr kaufen als verkaufen, steigt der Preis, bis sich wieder Käufer und Verkäufer treffen. Echte Kurse entstehen im Orderbuch aus vielen einzelnen Aufträgen.</p></figure>`;
+
+// Free Cashflow: operativer Cashflow minus Investitionen.
+G['cashflow'] = (g, D) => {
+  const x = D.aktien[g.ticker[0]], max = Math.max(...g.ticker.map((t) => D.aktien[t].cashflowUSD));
+  const w = (v) => (Math.max(0, v) / max * 100).toFixed(1);
+  return `<figure class="rg-g rg-cf" data-g="cashflow" data-max="${max}"><figcaption class="rg-gk">Zum Ausprobieren · vom Cashflow zum Free Cashflow</figcaption>${chips(g.ticker, D, (a) => `data-o1="${a.cashflowUSD}" data-o2="${a.investitionenUSD}" data-o3="${a.freeCashflowUSD}"`)}
+<ul class="rg-cf-l"><li><span>Geld aus dem Geschäft</span><i data-o="w1" style="--w:${w(x.cashflowUSD)}"></i><b data-o="b1">${mrd(x.cashflowUSD)}</b></li><li class="minus"><span>minus Investitionen</span><i data-o="w2" style="--w:${w(x.investitionenUSD)}"></i><b data-o="b2">−${mrd(x.investitionenUSD)}</b></li><li class="fcf"><span>= Free Cashflow</span><i data-o="w3" style="--w:${w(x.freeCashflowUSD)}"></i><b data-o="b3">${x.freeCashflowUSD < 0 ? '−' : ''}${mrd(Math.abs(x.freeCashflowUSD))}</b></li></ul>
+${quelleZeile(D, '; Cashflow der letzten vier Quartale')}</figure>`;
+};
+
+// Schulden und Bargeld.
+G['schulden'] = (g, D) => {
+  const xs = g.ticker.map((t) => [t, D.aktien[t]]).filter(([, x]) => x.schuldenUSD != null && x.barUSD != null), max = Math.max(...xs.flatMap(([, x]) => [x.schuldenUSD, x.barUSD]));
+  return `<figure class="rg-g rg-debt"><figcaption class="rg-gk">Schulden und Bargeld im Vergleich</figcaption><ul>${xs.map(([, x]) => { const n = x.schuldenUSD - x.barUSD; return `<li><span>${esc(x.name)}</span><div><i class="s" style="--w:${(x.schuldenUSD / max * 100).toFixed(1)}"></i><i class="c" style="--w:${(x.barUSD / max * 100).toFixed(1)}"></i></div><b class="${n > 0 ? 'neg' : 'pos'}">${n > 0 ? `${mrd(n)} netto Schulden` : `${mrd(-n)} netto Bargeld`}</b></li>`; }).join('')}</ul>
+<p class="rg-legende"><span><i class="s"></i>Schulden</span><span><i class="c"></i>Bargeld und kurzfristige Anlagen</span></p>${quelleZeile(D, '; Stand der letzten Bilanz')}</figure>`;
+};
+
+// Kosten über die Jahre.
+export function kostenWirkung(monat, jahre, rendite, ter) {
+  const a = sparplan(monat, jahre, rendite).wert, b = sparplan(monat, jahre, Math.max(rendite - ter, -0.99)).wert;
+  return {ohne: a, mit: b, verlust: a - b};
+}
+G['kosten'] = () => {
+  const k = kostenWirkung(200, 30, 0.05, 0.015), k2 = kostenWirkung(200, 30, 0.05, 0.002);
+  return `<figure class="rg-g rg-kosten" data-g="kosten"><figcaption class="rg-gk">Zum Ausprobieren · was laufende Kosten ausmachen</figcaption>
+<div class="rg-sl"><label>Sparrate im Monat <output data-o="m">200 €</output><input type="range" min="25" max="1000" step="25" value="200" data-i="m" aria-label="Sparrate"></label><label>Jahre <output data-o="j">30</output><input type="range" min="5" max="40" value="30" data-i="j" aria-label="Jahre"></label></div>
+<div class="rg-kosten-g"><div><span class="rg-gk">Kosten 0,2 % im Jahr</span><b data-o="a">${zahl(k2.mit)} €</b><i class="bar" data-o="wa" style="--w:100"></i></div><div><span class="rg-gk">Kosten 1,5 % im Jahr</span><b data-o="b">${zahl(k.mit)} €</b><i class="bar dk" data-o="wb" style="--w:${(k.mit / k2.mit * 100).toFixed(1)}"></i></div></div>
+<p class="rg-kosten-d">Unterschied: <strong data-o="d">${zahl(k2.mit - k.mit)} €</strong></p>
+<p class="rg-src">Rechenbeispiel mit angenommenen 5 % im Jahr vor Kosten, monatlich verzinst, ohne Steuern. Keine Prognose.</p></figure>`;
+};
+
+// Thesaurierend oder ausschüttend: Ausschüttungen ausgeben oder wieder anlegen.
+export function thesaurierung(start, jahre, kurs = 0.04, div = 0.02) {
+  let a = start, b = start, aus = 0;
+  for (let i = 0; i < jahre; i++) { a = a * (1 + kurs + div); aus += b * div; b = b * (1 + kurs); }
+  return {thes: a, ausWert: b, ausGezahlt: aus};
+}
+G['thesaurierung'] = () => {
+  const t = thesaurierung(10000, 20);
+  return `<figure class="rg-g rg-thes" data-g="thes"><figcaption class="rg-gk">Zum Ausprobieren · 10.000 € über die Jahre</figcaption>
+<div class="rg-sl"><label>Jahre <output data-o="j">20</output><input type="range" min="1" max="40" value="20" data-i="j" aria-label="Jahre"></label></div>
+<div class="rg-kacheln"><div class="lime"><span>Thesaurierend: Wert im Depot</span><b data-o="a">${zahl(t.thes)} €</b></div><div><span>Ausschüttend: Wert im Depot</span><b data-o="b">${zahl(t.ausWert)} €</b></div><div><span>plus ausgezahlt (ausgegeben)</span><b data-o="c">${zahl(t.ausGezahlt)} €</b></div></div>
+<p class="rg-src">Rechenbeispiel: 4 % Kursplus und 2 % Ausschüttung im Jahr, ohne Kosten und Steuern. Wer die Ausschüttungen selbst wieder anlegt, landet ungefähr beim thesaurierenden Ergebnis.</p></figure>`;
+};
+
+// Kursverlauf mit gleitenden Durchschnitten (ein Jahr).
+export function gd(werte, n) { return werte.map((_, i) => (i + 1 < n ? null : werte.slice(i + 1 - n, i + 1).reduce((a, b) => a + b, 0) / n)); }
+G['chart'] = (g, D) => {
+  const s = D.serie, p = s.punkte.map((x) => x[1]), min = Math.min(...p) * 0.97, max = Math.max(...p) * 1.02;
+  const xy = (v, i) => `${(i / (p.length - 1) * 600).toFixed(1)},${(220 - (v - min) / (max - min) * 210).toFixed(1)}`;
+  const linie = (arr) => arr.map((v, i) => (v == null ? null : xy(v, i))).filter(Boolean).join(' ');
+  const g50 = gd(p, 50);
+  return `<figure class="rg-g rg-chart" data-g="chart"><figcaption class="rg-gk">Zum Ausprobieren · ${esc(s.name)}, ein Jahr</figcaption><div class="rg-chips" role="group" aria-label="Linien"><button type="button" class="rg-chip on" data-l="kurs" aria-pressed="true">Kurs</button><button type="button" class="rg-chip on" data-l="g50" aria-pressed="true">Durchschnitt 50 Tage</button><button type="button" class="rg-chip" data-l="trend" aria-pressed="false">Trendlinie</button></div>
+<svg viewBox="0 0 600 230" class="rg-chart-s" role="img" aria-label="Kursverlauf ${esc(s.name)} mit 50-Tage-Durchschnitt"><polyline class="kurs" points="${linie(p)}"/><polyline class="g50" points="${linie(g50)}"/><line class="trend" x1="0" y1="${xy(p[0], 0).split(',')[1]}" x2="600" y2="${xy(p.at(-1), p.length - 1).split(',')[1]}"/></svg>
+<div class="rg-chart-x"><span>${datum(s.punkte[0][0])}</span><span>${datum(s.punkte.at(-1)[0])}</span></div>
+<p class="rg-src">Schlusskurse ${esc(s.name)} (${s.ticker}), Vision Universe Datenbank. Die Trendlinie verbindet nur ersten und letzten Kurs. Beispiel, keine Empfehlung.</p></figure>`;
+};
+
+// 12-Monats-Entwicklung (Momentum) im Vergleich.
+G['momentum'] = (g, D) => {
+  const xs = g.ticker.map((t) => D.aktien[t]).filter((x) => x.rendite12m != null).sort((a, b) => b.rendite12m - a.rendite12m), max = Math.max(...xs.map((x) => Math.abs(x.rendite12m)));
+  return `<figure class="rg-g rg-mom"><figcaption class="rg-gk">Kursveränderung in zwölf Monaten</figcaption><ul>${xs.map((x) => `<li><span>${esc(x.name)}</span><div><i class="${x.rendite12m >= 0 ? 'p' : 'n'}" style="--w:${(Math.abs(x.rendite12m) / max * 50).toFixed(1)}"></i></div><b>${x.rendite12m >= 0 ? '+' : '−'}${pct(Math.abs(x.rendite12m), 0)}</b></li>`).join('')}</ul>${quelleZeile(D, '; Kursveränderung der letzten zwölf Monate bis zum Stichtag')}</figure>`;
+};
+
+// Elliott-Wellen: Schema zum Durchklicken.
+G['elliott'] = () => {
+  const pts = [[0, 200], [70, 130], [110, 160], [220, 50], [270, 95], [340, 20], [400, 90], [440, 60], [520, 150]];
+  const txt = ['Welle 1: Erste Käufer steigen ein, kaum jemand bemerkt den Anstieg.', 'Welle 2: Gewinnmitnahmen, der Kurs fällt, aber nicht unter den Start.', 'Welle 3: meist die längste und stärkste Welle, viele steigen ein.', 'Welle 4: Pause und Rücksetzer.', 'Welle 5: letzter Anstieg, oft mit nachlassender Kraft.', 'Welle A: erster Rückgang nach dem Hoch.', 'Welle B: kurze Erholung.', 'Welle C: der Rückgang setzt sich fort.'];
+  const lab = ['1', '2', '3', '4', '5', 'A', 'B', 'C'];
+  return `<figure class="rg-g rg-ell" data-g="elliott"><figcaption class="rg-gk">Zum Durchklicken · das Wellenmuster (Schema)</figcaption><svg viewBox="0 0 540 220" class="rg-ell-s" role="img" aria-label="Schema: fünf Wellen aufwärts, drei abwärts"><polyline points="${pts.map((x) => x.join(',')).join(' ')}"/>${pts.slice(1).map(([x, y], i) => `<g class="pt${i === 0 ? ' on' : ''}" data-w="${i}" data-t="${esc(txt[i])}"><circle cx="${x}" cy="${y}" r="13"/><text x="${x}" y="${y + 5}">${lab[i]}</text></g>`).join('')}</svg>
+<div class="rg-ell-t"><button type="button" class="rg-btn" data-i="zurueck" aria-label="Vorherige Welle">←</button><p data-o="t">${txt[0]}</p><button type="button" class="rg-btn lime" data-i="weiter" aria-label="Nächste Welle">→</button></div><p class="rg-src">Schema nach R. N. Elliott. Welche Welle gerade läuft, ist im echten Chart oft erst im Nachhinein klar.</p></figure>`;
+};
+
+// 13F: Top-Positionen bekannter Investoren.
+G['fonds13f'] = (g, D) => {
+  const ids = g.fonds, F = D.fonds, st = {unchanged: 'unverändert', reduced: 'verringert', added: 'aufgestockt', new: 'neu'};
+  const panel = (id, i) => { const f = F[id]; return `<div class="rg-13f-p" data-p="${id}"${i ? ' hidden' : ''}><p class="rg-13f-k">${esc(f.manager)} · ${esc(f.name)} · Stichtag ${datum(f.stichtag)}, gemeldet ${datum(f.gemeldet)} · ${f.positionen} Positionen</p><ul>${f.top.map((x) => `<li style="--w:${Math.min(100, x.anteil * 1.5).toFixed(1)}"><span>${esc(x.name)}${x.art ? ` <em>${x.art === 'PUT' ? 'Put-Option' : 'Call-Option'}</em>` : ''}</span><i></i><b>${zahl(x.anteil, 1)} %</b><small>${st[x.status] || x.status}</small></li>`).join('')}</ul></div>`; };
+  return `<figure class="rg-g rg-13f" data-g="fonds"><figcaption class="rg-gk">Zum Ausprobieren · was große Investoren gemeldet haben</figcaption><div class="rg-chips" role="group" aria-label="Investor wählen">${ids.map((id, i) => `<button type="button" class="rg-chip${i ? '' : ' on'}" data-f="${id}">${esc(F[id].manager)}</button>`).join('')}</div>${ids.map(panel).join('')}
+<p class="rg-src">Formular 13F bei der SEC, Anteil am gemeldeten US-Depot. Zeigt nur meldepflichtige US-Wertpapiere, mit bis zu 45 Tagen Verzögerung. Keine Empfehlung.</p></figure>`;
+};
+
+// Rentenlücke.
+export function rentenluecke(netto, anteil, rente, jahre, inflation = 0.02) {
+  const heute = Math.max(0, netto * anteil - rente);
+  return {heute, spaeter: heute * Math.pow(1 + inflation, jahre), bedarf20: heute * Math.pow(1 + inflation, jahre) * 12 * 20};
+}
+G['rentenluecke'] = () => {
+  const r = rentenluecke(2500, 0.8, 1300, 30);
+  return `<figure class="rg-g rg-rl" data-g="rente"><figcaption class="rg-gk">Zum Ausprobieren · deine Lücke grob überschlagen</figcaption>
+<div class="rg-sl"><label>Netto heute im Monat <output data-o="n">2.500 €</output><input type="range" min="1000" max="6000" step="100" value="2500" data-i="n" aria-label="Netto im Monat"></label><label>Gewünscht im Alter <output data-o="a">80 %</output><input type="range" min="50" max="100" step="5" value="80" data-i="a" aria-label="Gewünschter Anteil"></label><label>Erwartete Rente laut Renteninformation <output data-o="r">1.300 €</output><input type="range" min="0" max="3000" step="50" value="1300" data-i="r" aria-label="Erwartete Rente"></label><label>Jahre bis zur Rente <output data-o="j">30</output><input type="range" min="1" max="45" value="30" data-i="j" aria-label="Jahre bis zur Rente"></label></div>
+<div class="rg-kacheln"><div><span>Lücke im Monat, heutige Kaufkraft</span><b data-o="h">${zahl(r.heute)} €</b></div><div class="lime"><span>Lücke im Monat bei Rentenbeginn</span><b data-o="s">${zahl(r.spaeter)} €</b></div><div><span>Kapital für 20 Jahre Rente</span><b data-o="k">${zahl(r.bedarf20)} €</b></div></div>
+<p class="rg-src">Grober Überschlag mit 2 % Preissteigerung im Jahr, Kapitalbedarf ohne Zinsen und ohne Steuern. Die erwartete Rente steht in der Renteninformation der Deutschen Rentenversicherung (Beträge dort ohne Preissteigerung).</p></figure>`;
+};
+
+// Indizes im Vergleich.
+G['indizes'] = () => {
+  const I = [['S&P 500', 'rund 500', '1 (USA)', 'Große US-Firmen'], ['MSCI World', 'rund 1.400', '23 Industrieländer', 'Große und mittlere Firmen aus Industrieländern'], ['MSCI ACWI', 'rund 2.500', '47 Länder', 'Industrie- und Schwellenländer']];
+  return `<figure class="rg-g rg-idx" data-g="idx"><figcaption class="rg-gk">Zum Ausprobieren · drei bekannte Indizes</figcaption><div class="rg-chips" role="group" aria-label="Index wählen">${I.map(([n], i) => `<button type="button" class="rg-chip${i === 1 ? ' on' : ''}" data-x="${i}">${n}</button>`).join('')}</div>
+${I.map(([n, f, l, s], i) => `<div class="rg-kacheln" data-x="${i}"${i === 1 ? '' : ' hidden'}><div class="lime"><span>Firmen</span><b>${f}</b></div><div><span>Länder</span><b>${l}</b></div><div><span>Was drin ist</span><b class="klein">${s}</b></div></div>`).join('')}
+<p class="rg-src">Gerundete Angaben nach den Indexbeschreibungen von S&amp;P Dow Jones Indices und MSCI; die genaue Zahl der Firmen ändert sich bei jeder Überprüfung.</p></figure>`;
+};
+
+// Insider: vom Kauf bis zur Meldung.
+G['insider-weg'] = () => `<figure class="rg-g"><figcaption class="rg-gk">Vom Kauf bis zur Meldung</figcaption><ol class="rg-zeit wagerecht"><li class="on"><b>Tag 0</b><p>Ein Vorstand kauft Aktien der eigenen Firma an der Börse.</p></li><li><b>bis 2 Werktage</b><p>Meldung an die SEC auf Formular 4, Code „P“ für einen Kauf am Markt.</p></li><li><b>sofort öffentlich</b><p>Die Meldung steht für alle sichtbar in der SEC-Datenbank EDGAR.</p></li></ol><p class="rg-src">Section 16 Securities Exchange Act; Formular 4 innerhalb von zwei Geschäftstagen.</p></figure>`;
+
 function grafik(g, D) {
   const f = G[g.typ];
   if (!f) throw new Error(`Ratgeber: unbekannte Grafik ${g.typ}`);
@@ -265,6 +439,8 @@ ${weiter ? `<section class="rg-weiter w"><h2>Weiterlesen</h2><div class="rg-grid
 const WELT_BILD = {altersvorsorge: 'vorsorge', einstieg: 'discover', 'aktien-verstehen': 'apple', kennzahlen: 'fundamental', 'etf-sparplan': 'portfolios', investoren: 'hedgefonds'};
 const anzahlFertig = (w, artikel) => w.artikel.filter(([s]) => artikel[s]).length;
 
+// Lange Einzelwörter (z. B. Marktkapitalisierung) bekommen eine kleinere Kachelschrift statt Silbentrennung.
+const langesWort = (t) => (String(t).split(/[\s-]+/).some((w) => w.length > 13) ? ' class="lang"' : '');
 // Kleine Schaukarten für den Kopf der Übersicht: zeigen, was die Grafiken in den Artikeln können.
 function schaukarten(D) {
   const ko = D.aktien.KO, pep = D.aktien.PEP, k = ko.kurs / ko.gewinnJeAktie;
@@ -280,7 +456,7 @@ function uebersicht(ctx) {
   const {welten, artikel, daten, newsHtml} = ctx, pre = '../', W = welten.welten;
   const auf = artikel[welten.aufmacher];
   const anzahl = W.reduce((n, w) => n + w.artikel.length, 0), fertig = Object.keys(artikel).length;
-  const tiles = W.map((w, i) => `<a class="vw-tile${['', ' dark', '', ' dark', '', ' dark'][i]}" href="${pre}ratgeber/thema/${w.id}/"><span class="vw-ti">${ic(w.icon, 22)}</span><b>${esc(w.name)}</b><small>${esc(w.satz)}</small><span class="rg-tile-n">${anzahlFertig(w, artikel) ? `${anzahlFertig(w, artikel)} von ${w.artikel.length} Artikeln` : 'Bald'}</span><span class="vw-shot"><img src="${pre}web/img/app/${WELT_BILD[w.id]}.jpg" alt="" loading="lazy"></span></a>`).join('');
+  const tiles = W.map((w, i) => `<a class="vw-tile${['', ' dark', '', ' dark', '', ' dark'][i]}" href="${pre}ratgeber/thema/${w.id}/"><span class="vw-ti">${ic(w.icon, 22)}</span><b${langesWort(w.name)}>${esc(w.name)}</b><small>${esc(w.satz)}</small><span class="rg-tile-n">${anzahlFertig(w, artikel) ? (anzahlFertig(w, artikel) === w.artikel.length ? `${w.artikel.length} Artikel` : `${anzahlFertig(w, artikel)} von ${w.artikel.length} Artikeln`) : 'Bald'}</span><span class="vw-shot"><img src="${pre}web/img/app/${WELT_BILD[w.id]}.jpg" alt="" loading="lazy"></span></a>`).join('');
   const start = welten.startHier.map((s, i) => { const a = artikel[s]; const t = a ? a.titel : W.flatMap((w) => w.artikel).find((x) => x[0] === s)?.[1];
     return a ? `<a class="rg-step" href="${pre}ratgeber/${s}/"><i>${i + 1}</i><b>${esc(t)}</b><span class="rg-more">Lesen <span aria-hidden="true">→</span></span></a>` : `<div class="rg-step bald"><i>${i + 1}</i><b>${esc(t)}</b><span class="rg-bald">Bald</span></div>`; }).join('');
   const liste = W.map((w) => `<section class="rg-welt" id="${w.id}"><div class="rg-welt-h"><a href="${pre}ratgeber/thema/${w.id}/"><span class="rg-welt-ic">${ic(w.icon, 24)}</span><span><b>${esc(w.name)}</b><small>${esc(w.satz)}</small></span></a></div><div class="rg-grid">${w.artikel.filter(([s]) => artikel[s]).map(([s]) => karte(artikel[s], w, pre)).join('')}</div>${w.artikel.some(([s]) => !artikel[s]) ? `<p class="rg-bald-l"><span class="rg-bald">Bald</span> ${w.artikel.filter(([s]) => !artikel[s]).map(([, t]) => esc(t)).join(' · ')}</p>` : ''}</section>`).join('');
@@ -299,7 +475,7 @@ ${schaukarten(daten)}</div></section>
 ${auf ? `<section class="rg-band" data-dark><div class="w rg-band-g"><div><p class="vw-k">Neu · Gesetz ab 1. Januar 2027</p><h2 class="vw-h2">Das Altersvorsorgedepot <em>kommt.</em></h2><p class="rg-band-s">${esc(auf.teaser)}</p><a class="fh-btn lime" href="${pre}ratgeber/${auf.slug}/">Was sich ändert <i aria-hidden="true">→</i></a></div>
 <ul class="rg-zahlen"><li><b>540 €</b><span>Zulage im Jahr</span></li><li><b>300 €</b><span>extra je Kind</span></li><li><b>200 €</b><span>Startbonus unter 25</span></li><li><b>1,0 %</b><span>Kostendeckel Standarddepot</span></li></ul></div></section>` : ''}
 <section class="w rg-start-s" id="start-hier"><p class="vw-k">Start hier</p><h2 class="vw-h2">In 5 Schritten <em>zur ersten Aktie.</em></h2><div class="rg-path">${start}</div></section>
-<section class="w rg-alle" id="alle"><p class="vw-k">Alle Ratgeber</p><h2 class="vw-h2">${anzahl} Fragen, <em>${fertig} Antworten schon da.</em></h2>
+<section class="w rg-alle" id="alle"><p class="vw-k">Alle Ratgeber</p><h2 class="vw-h2">${fertig === anzahl ? `${anzahl} Antworten, <em>alle auf einen Blick.</em>` : `${anzahl} Fragen, <em>${fertig} Antworten schon da.</em>`}</h2>
 <label class="rg-such"><span class="rg-sr">Ratgeber durchsuchen</span>${ic('<circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/>', 20)}<input type="search" placeholder="Wonach suchst du? z. B. KGV oder Sparplan" data-rg-such autocomplete="off"></label>
 ${liste}<p class="rg-leer" hidden data-rg-leer>Dazu gibt es noch keinen Ratgeber.</p></section>
 <section class="w"><div class="rg-cta"><div><b>Was du hier liest, zeigt die App für jede Aktie.</b><p>KGV, Dividende, Schulden, große Fonds: in einfachen Sätzen.</p></div><a class="fh-btn lime" href="${pre}#newsletter">Zum Start benachrichtigen <i aria-hidden="true">→</i></a></div></section>`;
@@ -313,12 +489,12 @@ ${liste}<p class="rg-leer" hidden data-rg-leer>Dazu gibt es noch keinen Ratgeber
 function weltSeite(w, ctx) {
   const {artikel, newsHtml} = ctx, pre = '../../../', pfad = `ratgeber/thema/${w.id}/index.html`, url = `${SITE}/ratgeber/thema/${w.id}/`;
   const da = w.artikel.map(([s]) => artikel[s]).filter(Boolean);
-  const tiles = da.map((a, i) => `<a class="vw-tile${i % 3 === 1 ? ' dark' : ''}${i === 0 ? ' t-w' : ''}" href="${pre}ratgeber/${a.slug}/"><span class="vw-ti">${ic(w.icon, 22)}</span><b>${esc(a.titel)}</b><small>${esc(a.teaser)}</small>${a.app ? `<span class="vw-shot"><img src="${pre}web/img/app/${a.app.bild}.jpg" alt="" loading="lazy"></span>` : ''}</a>`).join('');
+  const tiles = da.map((a, i) => `<a class="vw-tile${i % 3 === 1 ? ' dark' : ''}" href="${pre}ratgeber/${a.slug}/"><span class="vw-ti">${ic(w.icon, 22)}</span><b${langesWort(a.titel)}>${esc(a.titel)}</b><small>${esc(a.teaser)}</small>${a.app ? `<span class="vw-shot"><img src="${pre}web/img/app/${a.app.bild}.jpg" alt="" loading="lazy"></span>` : ''}</a>`).join('');
   const bald = w.artikel.filter(([s]) => !artikel[s]);
   const body = `<section class="fh ps-hero rg-art-hero"><div class="w fh-g"><div class="fh-copy">${krumen(pre, [['Ratgeber', `${pre}ratgeber/`], [w.name, null]])}
 <span class="rg-tag"><span class="ic">${ic(w.icon, 16)}</span>Themenwelt</span><h1>${esc(w.name)}: <mark>${esc(w.satz)}</mark></h1><p class="fh-sub">${esc(w.beschreibung)}</p></div>
 <div class="fh-phone"><div class="fh-wrap"><div class="fh-ph"><img src="${pre}web/img/app/${WELT_BILD[w.id]}.jpg" alt="" width="390" height="844"></div></div></div></div></section>
-<section class="vw-bento w rg-bento"><p class="vw-k">${da.length} ${da.length === 1 ? 'Artikel' : 'Artikel'}</p><div class="vw-tiles">${tiles}</div>
+<section class="vw-bento w rg-bento rg-wt"><p class="vw-k">${da.length} ${da.length === 1 ? 'Artikel' : 'Artikel'}</p><div class="vw-tiles">${tiles}</div>
 ${bald.length ? `<p class="rg-bald-l"><span class="rg-bald">Bald</span> ${bald.map(([, t]) => esc(t)).join(' · ')}</p>` : ''}
 <p class="rg-zur"><a href="${pre}ratgeber/">← Alle Themenwelten</a></p></section>`;
   const ld = [{'@type': 'CollectionPage', '@id': url, name: `${w.name}: ${w.satz}`, description: w.beschreibung, url, inLanguage: 'de-DE', publisher: ORG, isPartOf: {'@id': `${SITE}/ratgeber/#ratgeber`},

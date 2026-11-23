@@ -72,7 +72,103 @@
 
   function streuung(f) { var b = $(f, '[data-i="los"]'); b.addEventListener('click', function () { var on = f.classList.toggle('los'); b.textContent = on ? 'Zurücksetzen' : 'Absturz zeigen'; }); }
 
-  var init = {'kgv-rechner': kgv, anteil: anteil, zulage: zulage, sparplan: sparplan, bruch: bruch, streuung: streuung};
+  var mrd = function (v) { var a = Math.abs(v); return (v < 0 ? '−' : '') + de(a / 1e9, a >= 1e11 ? 0 : 1) + ' Mrd. $'; };
+  var chipWahl = function (f, cb) { $$(f, '.rg-chip').forEach(function (b) { b.addEventListener('click', function () { $$(f, '.rg-chip').forEach(function (x) { x.classList.toggle('on', x === b); }); cb(b); }); }); };
+
+  function marge(f) {
+    var c = $$(f, '.rg-100 i');
+    chipWahl(f, function (b) {
+      var m = Math.round(+b.getAttribute('data-m') * 100);
+      c.forEach(function (x, i) { x.className = i < m ? 'f' : ''; });
+      out(f, 'm', m + ' $'); out(f, 'satz', 'bleiben bei ' + b.getAttribute('data-name') + ' von 100 $ Umsatz als Gewinn.');
+    });
+  }
+
+  function eps(f) {
+    var g = +f.getAttribute('data-gewinn'), a = +f.getAttribute('data-aktien'), k = +f.getAttribute('data-kurs'), r = $(f, '[data-i="r"]'), e0 = g / a;
+    r.addEventListener('input', function () {
+      var n = a * (1 - r.value / 100), e = g / n;
+      out(f, 'r', r.value + ' %'); out(f, 'aktien', de(n / 1e9, 2) + ' Mrd. Aktien'); out(f, 'eps', de(e, 2) + ' $'); out(f, 'eps2', de(e, 2) + ' $');
+      out(f, 'plus', '+' + de((e / e0 - 1) * 100, 1) + ' %'); out(f, 'kgv', de(k / e, 1));
+    });
+  }
+
+  function split(f) {
+    var k = +f.getAttribute('data-kurs'), t = $(f, '[data-o="teile"]');
+    chipWahl(f, function (b) {
+      var n = +b.getAttribute('data-f'); t.innerHTML = new Array(n + 1).join('<i></i>');
+      out(f, 'nach', n + ' Aktien × ' + de(k / n, 2) + ' $');
+    });
+  }
+
+  function order(f) {
+    var k = $(f, '[data-i="k"]'), v = $(f, '[data-i="v"]');
+    function run() {
+      var d = (k.value - v.value) / 5;
+      out(f, 'k', k.value); out(f, 'v', v.value); out(f, 'p', de(100 * (1 + d / 100), 2) + ' €'); out(f, 'd', (d > 0 ? '+' : d < 0 ? '−' : '±') + de(Math.abs(d), 1) + ' %');
+      $(f, '[data-o="kb"]').style.setProperty('--w', k.value); $(f, '[data-o="vb"]').style.setProperty('--w', v.value);
+      f.classList.toggle('hoch', d > 0); f.classList.toggle('tief', d < 0);
+    }
+    k.addEventListener('input', run); v.addEventListener('input', run);
+  }
+
+  function cashflow(f) {
+    var max = +f.getAttribute('data-max');
+    chipWahl(f, function (b) {
+      [1, 2, 3].forEach(function (i) {
+        var v = +b.getAttribute('data-o' + i);
+        $(f, '[data-o="w' + i + '"]').style.setProperty('--w', (Math.max(0, v) / max * 100).toFixed(1));
+        out(f, 'b' + i, i === 2 ? '−' + mrd(v) : mrd(v));
+      });
+    });
+  }
+
+  function kosten(f) {
+    var m = $(f, '[data-i="m"]'), j = $(f, '[data-i="j"]');
+    var spar = function (monat, jahre, r) { var q = Math.pow(1 + r, 1 / 12) - 1, w = 0; for (var i = 0; i < jahre * 12; i++) w = (w + monat) * (1 + q); return w; };
+    function run() {
+      var a = spar(+m.value, +j.value, 0.048), b = spar(+m.value, +j.value, 0.035);
+      out(f, 'm', de(m.value) + ' €'); out(f, 'j', j.value); out(f, 'a', de(a) + ' €'); out(f, 'b', de(b) + ' €'); out(f, 'd', de(a - b) + ' €');
+      $(f, '[data-o="wb"]').style.setProperty('--w', (b / a * 100).toFixed(1));
+    }
+    m.addEventListener('input', run); j.addEventListener('input', run);
+  }
+
+  function thes(f) {
+    var j = $(f, '[data-i="j"]');
+    j.addEventListener('input', function () {
+      var a = 10000, b = 10000, aus = 0; for (var i = 0; i < +j.value; i++) { a *= 1.06; aus += b * 0.02; b *= 1.04; }
+      out(f, 'j', j.value); out(f, 'a', de(a) + ' €'); out(f, 'b', de(b) + ' €'); out(f, 'c', de(aus) + ' €');
+    });
+  }
+
+  function chart(f) {
+    $$(f, '.rg-chip').forEach(function (b) { b.addEventListener('click', function () { var on = !b.classList.contains('on'); b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); f.classList.toggle('ohne-' + b.getAttribute('data-l'), !on); f.classList.toggle('mit-' + b.getAttribute('data-l'), on); }); });
+  }
+
+  function elliott(f) {
+    var pts = $$(f, '.pt'), i = 0;
+    function zeig() { pts.forEach(function (p, n) { p.classList.toggle('on', n <= i); p.classList.toggle('jetzt', n === i); }); out(f, 't', pts[i].getAttribute('data-t')); }
+    $(f, '[data-i="weiter"]').addEventListener('click', function () { i = (i + 1) % pts.length; zeig(); });
+    $(f, '[data-i="zurueck"]').addEventListener('click', function () { i = (i + pts.length - 1) % pts.length; zeig(); });
+    pts.forEach(function (p, n) { p.addEventListener('click', function () { i = n; zeig(); }); });
+    zeig();
+  }
+
+  function fonds(f) { chipWahl(f, function (b) { $$(f, '.rg-13f-p').forEach(function (p) { p.hidden = p.getAttribute('data-p') !== b.getAttribute('data-f'); }); }); }
+  function idx(f) { chipWahl(f, function (b) { $$(f, '.rg-kacheln').forEach(function (p) { p.hidden = p.getAttribute('data-x') !== b.getAttribute('data-x'); }); }); }
+
+  function rente(f) {
+    var n = $(f, '[data-i="n"]'), a = $(f, '[data-i="a"]'), r = $(f, '[data-i="r"]'), j = $(f, '[data-i="j"]');
+    function run() {
+      var h = Math.max(0, n.value * a.value / 100 - r.value), s = h * Math.pow(1.02, +j.value);
+      out(f, 'n', de(n.value) + ' €'); out(f, 'a', a.value + ' %'); out(f, 'r', de(r.value) + ' €'); out(f, 'j', j.value);
+      out(f, 'h', de(h) + ' €'); out(f, 's', de(s) + ' €'); out(f, 'k', de(s * 12 * 20) + ' €');
+    }
+    [n, a, r, j].forEach(function (e) { e.addEventListener('input', run); });
+  }
+
+  var init = {'kgv-rechner': kgv, anteil: anteil, zulage: zulage, sparplan: sparplan, bruch: bruch, streuung: streuung, marge: marge, eps: eps, split: split, order: order, cashflow: cashflow, kosten: kosten, thes: thes, chart: chart, elliott: elliott, fonds: fonds, idx: idx, rente: rente};
   $$(document, '[data-g]').forEach(function (f) { var fn = init[f.getAttribute('data-g')]; if (fn) try { fn(f); } catch (e) { /* Grafik bleibt statisch */ } });
 
   // Balken erst animieren, wenn sie ins Bild kommen.

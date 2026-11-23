@@ -8,7 +8,12 @@
  "untertitel": "Das Kurs-Gewinn-Verhältnis ist die bekannteste Kennzahl der Börse. Hier siehst du, wie es funktioniert, zum Ausprobieren und an echten Firmen.",
  "teaser": "Die bekannteste Kennzahl der Börse, zum Ausprobieren: Coca-Cola, Nvidia, Tesla und der ganze Markt im Vergleich.",
  "beschreibung": "Was ist das KGV? Das Kurs-Gewinn-Verhältnis einfach erklärt, mit Rechner zum Ausprobieren und echten Beispielen von Coca-Cola, Nvidia, Apple und Tesla.",
- "suchbegriffe": ["KGV", "Kurs-Gewinn-Verhältnis", "KGV berechnen", "KGV Aktie"],
+ "suchbegriffe": [
+  "KGV",
+  "Kurs-Gewinn-Verhältnis",
+  "KGV berechnen",
+  "KGV Aktie"
+ ],
  "stand": "2026-11-23",
  "kurz": "Das <strong>KGV (Kurs-Gewinn-Verhältnis)</strong> teilt den Aktienkurs durch den Gewinn je Aktie eines Jahres. Es sagt, wie viele Jahresgewinne du beim Kauf bezahlst, wenn der Gewinn gleich bliebe. Coca-Cola kostete am 20.11.2026 rund 97 $ bei 3,40 $ Gewinn je Aktie: <strong>KGV 28,5</strong>. Der Median aller 2.130 US-Aktien mit Gewinn lag bei <strong>18,7</strong>. Ein hohes KGV heißt: Anleger zahlen viel für heutigen Gewinn, meist weil sie mehr Wachstum erwarten.",
  "abschnitte": [
@@ -16,42 +21,164 @@
    "id": "was-ist",
    "h2": "Was ist das KGV?",
    "html": "<p>Stell dir vor, du kaufst einen kleinen Laden, der jedes Jahr 10.000 € Gewinn macht. Der Verkäufer will 150.000 €. Dann zahlst du das 15-Fache des Jahresgewinns. Genau das ist das KGV: <strong>15</strong>.</p><p>Bei Aktien rechnet man dasselbe, nur für eine einzelne Aktie: der Preis einer Aktie geteilt durch den Gewinn, der auf diese eine Aktie entfällt.</p><div class=\"rg-formel\"><span>Aktienkurs</span><em>÷</em><span>Gewinn je Aktie</span><em>=</em><span class=\"l\">KGV</span></div>",
-   "grafiken": [{"typ": "kgv-rechner", "ticker": ["KO", "NVDA", "MSFT", "AAPL", "TSLA"]}]
+   "grafiken": [
+    {
+     "typ": "kgv-rechner",
+     "ticker": [
+      "KO",
+      "NVDA",
+      "MSFT",
+      "AAPL",
+      "TSLA"
+     ]
+    }
+   ]
   },
   {
    "id": "vergleich",
    "h2": "Hohes oder niedriges KGV: echte Beispiele",
    "html": "<p>Das KGV allein sagt wenig. Spannend wird es im Vergleich: mit anderen Firmen, mit der eigenen Branche und mit dem ganzen Markt. So sah es am 20.11.2026 aus:</p>",
-   "grafiken": [{"typ": "kgv-vergleich", "ticker": ["NVDA", "PEP", "AMZN", "MSFT", "KO", "AAPL", "COST", "TSLA"], "max": 60}],
+   "grafiken": [
+    {
+     "typ": "kgv-vergleich",
+     "ticker": [
+      "NVDA",
+      "PEP",
+      "AMZN",
+      "MSFT",
+      "KO",
+      "AAPL",
+      "COST",
+      "TSLA"
+     ],
+     "max": 60
+    }
+   ],
    "nach": "<p>Auffällig: Nvidia hatte mit 15,9 ein niedrigeres KGV als der Markt, obwohl der Umsatz im Jahr davor um mehr als 80 % gewachsen war. Tesla lag mit 380 weit darüber, weil der Gewinn je Aktie mit 0,91 $ klein war und Anleger trotzdem einen hohen Preis zahlten. PepsiCo und Coca-Cola verkaufen ähnliche Produkte und lagen trotzdem bei 17,7 und 28,5.</p>"
   },
   {
    "id": "bedeutung",
    "h2": "Was ein hohes oder niedriges KGV bedeuten kann",
-   "html": "<p>Ein <strong>hohes KGV</strong> heißt: Der Markt zahlt viel für jeden Dollar Gewinn von heute. Oft steckt dahinter die Erwartung, dass der Gewinn in Zukunft stark wächst. Bleibt das Wachstum aus, kann der Kurs deutlich fallen.</p><p>Ein <strong>niedriges KGV</strong> heißt: Der Markt zahlt wenig für den heutigen Gewinn. Das kann daran liegen, dass Anleger sinkende Gewinne erwarten, dass die Branche als riskant gilt, oder dass die Firma schlicht wenig beachtet wird.</p>",
-   "grafiken": [{"typ": "merke", "text": "Das KGV misst den Preis, nicht die Qualität. Eine Aktie mit niedrigem KGV ist nicht automatisch ein gutes Geschäft, eine mit hohem KGV nicht automatisch zu teuer."}]
+   "html": "<p>Ein KGV allein ist kein Urteil. Es zeigt, wie viel der Markt heute für einen Dollar Gewinn bezahlt, und dahinter stecken Erwartungen:</p>",
+   "grafiken": [
+    {
+     "typ": "vergleich",
+     "links": {
+      "titel": "Hohes KGV kann heißen",
+      "punkte": [
+       "+ Anleger erwarten starkes Wachstum",
+       "+ das Geschäft gilt als sicher",
+       "– enttäuscht das Wachstum, kann der Kurs stark fallen"
+      ]
+     },
+     "rechts": {
+      "titel": "Niedriges KGV kann heißen",
+      "punkte": [
+       "+ der Markt zahlt wenig für heutigen Gewinn",
+       "– Anleger erwarten sinkende Gewinne",
+       "– die Branche gilt als riskant"
+      ]
+     }
+    },
+    {
+     "typ": "merke",
+     "text": "Das KGV misst den Preis, nicht die Qualität. Eine Aktie mit niedrigem KGV ist nicht automatisch ein gutes Geschäft, eine mit hohem KGV nicht automatisch zu teuer."
+    }
+   ]
   },
   {
    "id": "grenzen",
    "h2": "Wo das KGV an seine Grenzen kommt",
-   "html": "<ul><li><strong>Kein Gewinn, kein KGV:</strong> Macht eine Firma Verlust, gibt es kein sinnvolles KGV. Viele junge Firmen haben deshalb gar keins.</li><li><strong>Einmaleffekte:</strong> Ein Verkauf einer Sparte oder eine Abschreibung kann den Gewinn eines Jahres stark verzerren und damit auch das KGV.</li><li><strong>Branchen sind verschieden:</strong> Software-Firmen haben oft höhere KGVs als Banken oder Autohersteller. Vergleiche deshalb am besten innerhalb einer Branche.</li><li><strong>Vergangenheit oder Zukunft:</strong> Unser KGV nutzt den Gewinn der letzten vier Quartale. Viele Portale zeigen zusätzlich ein KGV mit dem erwarteten Gewinn von Analysten. Das ist eine Schätzung.</li></ul>"
+   "html": "",
+   "grafiken": [
+    {
+     "typ": "icons",
+     "items": [
+      {
+       "icon": "warnung",
+       "titel": "Kein Gewinn, kein KGV",
+       "text": "Macht eine Firma Verlust, gibt es kein sinnvolles KGV."
+      },
+      {
+       "icon": "blitz",
+       "titel": "Einmaleffekte",
+       "text": "Ein Spartenverkauf oder eine Abschreibung kann den Gewinn eines Jahres verzerren."
+      },
+      {
+       "icon": "schichten",
+       "titel": "Branchen sind verschieden",
+       "text": "Software hat meist höhere KGVs als Banken. Vergleiche innerhalb einer Branche."
+      },
+      {
+       "icon": "uhr",
+       "titel": "Vergangenheit oder Zukunft",
+       "text": "Wir rechnen mit dem Gewinn der letzten vier Quartale. Ein Forward-KGV nutzt Schätzungen."
+      }
+     ]
+    }
+   ]
   },
   {
    "id": "berechnen",
    "h2": "KGV selbst berechnen: in drei Schritten",
-   "html": "<ol><li>Aktuellen Kurs nachsehen, zum Beispiel 96,99 $ für Coca-Cola.</li><li>Gewinn je Aktie der letzten vier Quartale nachsehen: 3,40 $. Er steht im Geschäftsbericht (englisch: EPS, earnings per share).</li><li>Teilen: 96,99 ÷ 3,40 = <strong>28,5</strong>.</li></ol><p>Den umgekehrten Wert nennt man <strong>Gewinnrendite</strong>: 3,40 ÷ 96,99 = 3,5 %. So viel Gewinn erwirtschaftet die Firma im Jahr, gemessen am Kurs. Ob dieser Gewinn ausgezahlt wird, ist eine andere Frage, mehr dazu im Ratgeber zur Dividende.</p>"
+   "html": "<p>Den umgekehrten Wert nennt man <strong>Gewinnrendite</strong>: 3,40 ÷ 96,99 = 3,5 %. So viel Gewinn erwirtschaftet die Firma im Jahr, gemessen am Kurs.</p>",
+   "grafiken": [
+    {
+     "typ": "schrittkarten",
+     "items": [
+      {
+       "titel": "Kurs nachsehen",
+       "text": "Zum Beispiel 96,99 $ für Coca-Cola."
+      },
+      {
+       "titel": "Gewinn je Aktie nachsehen",
+       "text": "Die letzten vier Quartale: 3,40 $ (im Bericht: EPS)."
+      },
+      {
+       "titel": "Teilen",
+       "text": "96,99 ÷ 3,40 = 28,5"
+      }
+     ]
+    }
+   ]
   }
  ],
- "app": {"bild": "fundamental", "alt": "Fundamental in der Vision Universe App", "titel": "Das KGV jeder US-Aktie, im Vergleich zum Markt.", "text": "Die App zeigt für jede Aktie das KGV, den Median des Markts und in einem Satz, was der Unterschied bedeutet."},
+ "app": {
+  "bild": "fundamental",
+  "alt": "Fundamental in der Vision Universe App",
+  "titel": "Das KGV jeder US-Aktie, im Vergleich zum Markt.",
+  "text": "Die App zeigt für jede Aktie das KGV, den Median des Markts und in einem Satz, was der Unterschied bedeutet."
+ },
  "faq": [
-  {"f": "Was ist ein gutes KGV?", "a": "Ein allgemein gutes KGV gibt es nicht. Ob ein KGV hoch oder niedrig ist, zeigt erst der Vergleich: mit der Branche, mit der eigenen Vergangenheit der Firma und mit dem Markt. Der Median aller US-Aktien mit Gewinn lag am 20.11.2026 bei 18,7."},
-  {"f": "Warum hat eine Aktie kein KGV?", "a": "Wenn eine Firma in den letzten zwölf Monaten Verlust gemacht hat, ist der Gewinn je Aktie negativ. Ein KGV daraus ergibt keinen Sinn und wird deshalb meist nicht angezeigt."},
-  {"f": "Was ist der Unterschied zwischen KGV und Forward-KGV?", "a": "Das normale KGV rechnet mit dem tatsächlichen Gewinn der letzten vier Quartale. Das Forward-KGV nutzt den Gewinn, den Analysten für das nächste Jahr schätzen. Es ist damit eine Vorhersage und kann danebenliegen."},
-  {"f": "Ist ein niedriges KGV automatisch ein gutes Zeichen?", "a": "Nicht unbedingt. Ein niedriges KGV kann auch bedeuten, dass der Markt sinkende Gewinne erwartet. Das KGV ist ein Startpunkt für Fragen, kein Urteil über die Aktie."}
+  {
+   "f": "Was ist ein gutes KGV?",
+   "a": "Ein allgemein gutes KGV gibt es nicht. Ob ein KGV hoch oder niedrig ist, zeigt erst der Vergleich: mit der Branche, mit der eigenen Vergangenheit der Firma und mit dem Markt. Der Median aller US-Aktien mit Gewinn lag am 20.11.2026 bei 18,7."
+  },
+  {
+   "f": "Warum hat eine Aktie kein KGV?",
+   "a": "Wenn eine Firma in den letzten zwölf Monaten Verlust gemacht hat, ist der Gewinn je Aktie negativ. Ein KGV daraus ergibt keinen Sinn und wird deshalb meist nicht angezeigt."
+  },
+  {
+   "f": "Was ist der Unterschied zwischen KGV und Forward-KGV?",
+   "a": "Das normale KGV rechnet mit dem tatsächlichen Gewinn der letzten vier Quartale. Das Forward-KGV nutzt den Gewinn, den Analysten für das nächste Jahr schätzen. Es ist damit eine Vorhersage und kann danebenliegen."
+  },
+  {
+   "f": "Ist ein niedriges KGV automatisch ein gutes Zeichen?",
+   "a": "Nicht unbedingt. Ein niedriges KGV kann auch bedeuten, dass der Markt sinkende Gewinne erwartet. Das KGV ist ein Startpunkt für Fragen, kein Urteil über die Aktie."
+  }
  ],
  "quellen": [
-  {"titel": "Kurse und Gewinn je Aktie: Vision Universe Datenbank, Schlusskurs 20.11.2026, Gewinne aus den SEC-Quartalsberichten (10-K/10-Q) der Unternehmen"},
-  {"titel": "U.S. Securities and Exchange Commission: Unternehmensberichte (EDGAR)", "url": "https://www.sec.gov/edgar/search/"}
+  {
+   "titel": "Kurse und Gewinn je Aktie: Vision Universe Datenbank, Schlusskurs 20.11.2026, Gewinne aus den SEC-Quartalsberichten (10-K/10-Q) der Unternehmen"
+  },
+  {
+   "titel": "U.S. Securities and Exchange Commission: Unternehmensberichte (EDGAR)",
+   "url": "https://www.sec.gov/edgar/search/"
+  }
  ],
- "weiter": ["aktienanalyse", "dividende", "was-ist-eine-aktie"]
+ "weiter": [
+  "aktienanalyse",
+  "dividende",
+  "was-ist-eine-aktie"
+ ]
 }

@@ -19,7 +19,26 @@
   {
    "id": "wie",
    "h2": "Wie ein Sparplan funktioniert",
-   "html": "<ol><li>Du wählst einen ETF, einen Betrag und einen Tag im Monat.</li><li>Der Broker zieht den Betrag ein und kauft Anteile, auch Bruchteile.</li><li>Das läuft automatisch weiter, bis du ihn änderst, pausierst oder beendest. Jederzeit, ohne Kündigungsfrist.</li></ol>"
+   "html": "",
+   "grafiken": [
+    {
+     "typ": "schrittkarten",
+     "items": [
+      {
+       "titel": "ETF, Betrag und Tag wählen",
+       "text": "Zum Beispiel 100 € am 1. jedes Monats."
+      },
+      {
+       "titel": "Der Broker kauft automatisch",
+       "text": "Er zieht den Betrag ein und kauft Anteile, auch Bruchteile."
+      },
+      {
+       "titel": "Jederzeit änderbar",
+       "text": "Erhöhen, pausieren, beenden, ohne Kündigungsfrist."
+      }
+     ]
+    }
+   ]
   },
   {
    "id": "rechner",
@@ -40,8 +59,28 @@
   {
    "id": "kosten",
    "h2": "Kosten im Blick",
-   "html": "<ul><li><strong>Sparplan-Gebühr:</strong> Je Ausführung, bei manchen Brokern kostenlos.</li><li><strong>Laufende Kosten (TER):</strong> Werden vom ETF jedes Jahr abgezogen.</li><li><strong>Steuern:</strong> Gewinne und Ausschüttungen über dem Sparer-Pauschbetrag von 1.000 € im Jahr sind steuerpflichtig.</li></ul>",
+   "html": "",
    "grafiken": [
+    {
+     "typ": "icons",
+     "items": [
+      {
+       "icon": "muenze",
+       "titel": "Sparplan-Gebühr",
+       "text": "Je Ausführung, bei manchen Brokern kostenlos."
+      },
+      {
+       "icon": "prozent",
+       "titel": "Laufende Kosten (TER)",
+       "text": "Werden vom ETF jedes Jahr abgezogen."
+      },
+      {
+       "icon": "dok",
+       "titel": "Steuern",
+       "text": "Erträge über dem Sparer-Pauschbetrag von 1.000 € im Jahr sind steuerpflichtig."
+      }
+     ]
+    },
     {
      "typ": "merke",
      "text": "Ein Sparplan ist nicht beliebig: Ein ETF auf einen breiten Weltindex verhält sich ganz anders als einer auf eine einzelne Branche oder ein einzelnes Land."

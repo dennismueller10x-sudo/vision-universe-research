@@ -30,7 +30,19 @@
   {
    "id": "depot",
    "h2": "Schritt 2: Ein Depot eröffnen",
-   "html": "<p>Ein Depot ist ein Konto für Wertpapiere. Es gibt es bei Filialbanken und bei Online-Brokern. Worauf es ankommt:</p><ul><li><strong>Kosten:</strong> Depotgebühr, Kosten je Kauf, Kosten je Sparplan-Ausführung</li><li><strong>Angebot:</strong> Gibt es die Aktien und ETFs, die dich interessieren? Gibt es Sparpläne?</li><li><strong>Handelsplätze:</strong> Wo werden die Aufträge ausgeführt?</li></ul><p>Die Eröffnung dauert meist wenige Minuten online, mit Ausweis-Prüfung per Video oder App. Die Wertpapiere im Depot bleiben dein Eigentum, auch wenn die Bank pleitegeht.</p>"
+   "html": "<p>Ein Depot ist ein Konto für Wertpapiere, bei Filialbanken und Online-Brokern. Die Eröffnung dauert online meist wenige Minuten. Mehr dazu im Ratgeber <a href=\"../depot/\">Was ist ein Depot?</a></p>",
+   "grafiken": [
+    {
+     "typ": "check",
+     "titel": "Worauf es ankommt",
+     "items": [
+      "Kosten: Depotgebühr, Kosten je Kauf und je Sparplan",
+      "Angebot: Gibt es die Aktien und ETFs, die dich interessieren?",
+      "Sparpläne und Bruchstücke",
+      "Wertpapiere bleiben dein Eigentum, auch bei einer Bankpleite"
+     ]
+    }
+   ]
   },
   {
    "id": "auswahl",
@@ -40,7 +52,27 @@
   {
    "id": "order",
    "h2": "Schritt 4: Die Order aufgeben",
-   "html": "<p>In der App oder auf der Website deines Brokers suchst du die Aktie, am einfachsten über ihre <strong>ISIN</strong>, eine zwölfstellige Kennung (Apple zum Beispiel: US0378331005). Dann wählst du:</p><ul><li><strong>Stückzahl</strong> oder Betrag</li><li><strong>Handelsplatz</strong>, zum Beispiel eine deutsche Börse oder ein außerbörslicher Handelsplatz</li><li><strong>Orderart:</strong> Eine <strong>Market-Order</strong> kauft sofort zum nächsten Preis. Eine <strong>Limit-Order</strong> kauft nur, wenn der Preis höchstens deinem Limit entspricht.</li></ul><p>Mit einer Limit-Order schützt du dich vor bösen Überraschungen, wenn der Kurs gerade stark springt.</p>"
+   "html": "<p>In der App deines Brokers suchst du die Aktie, am einfachsten über ihre <strong>ISIN</strong>, eine zwölfstellige Kennung (Apple: US0378331005). Dann wählst du Stückzahl, Handelsplatz und Orderart:</p>",
+   "grafiken": [
+    {
+     "typ": "vergleich",
+     "links": {
+      "titel": "Market-Order",
+      "punkte": [
+       "+ wird sofort ausgeführt",
+       "– zum nächsten verfügbaren Preis, bei starken Sprüngen ungünstig"
+      ]
+     },
+     "rechts": {
+      "titel": "Limit-Order",
+      "punkte": [
+       "+ du bestimmst den Höchstpreis",
+       "+ schützt vor Überraschungen",
+       "– wird eventuell gar nicht ausgeführt"
+      ]
+     }
+    }
+   ]
   },
   {
    "id": "sparplan",
@@ -63,7 +95,21 @@
   {
    "id": "dranbleiben",
    "h2": "Schritt 6: Dranbleiben, nicht dauernd schauen",
-   "html": "<p>Nach dem Kauf beginnt der schwierigste Teil: nicht bei jeder Schwankung zu reagieren. Viele Anfänger verkaufen nach einem Kursrutsch aus Angst und kaufen nach einem Anstieg aus Begeisterung. Ein fester Plan hilft: wie viel, wie oft, wie lange.</p><ul><li>Typische Fehler: alles auf eine Aktie setzen, Tipps aus sozialen Medien folgen, Kosten unterschätzen, auf Kredit kaufen.</li></ul>"
+   "html": "<p>Nach dem Kauf beginnt der schwierigste Teil: nicht bei jeder Schwankung zu reagieren. Ein fester Plan hilft: wie viel, wie oft, wie lange.</p>",
+   "grafiken": [
+    {
+     "typ": "check",
+     "art": "nein",
+     "titel": "Typische Anfängerfehler",
+     "items": [
+      "Alles auf eine Aktie setzen",
+      "Tipps aus sozialen Medien ungeprüft folgen",
+      "Kosten unterschätzen",
+      "Auf Kredit kaufen",
+      "Nach einem Kursrutsch aus Angst verkaufen"
+     ]
+    }
+   ]
   }
  ],
  "app": {
