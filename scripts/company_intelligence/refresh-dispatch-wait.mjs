@@ -222,6 +222,9 @@ export function realGh(env=process.env){
  return {
   dispatch:()=>run('gh',['workflow','run',WORKFLOW,'--ref','main'],env),
   listRuns:async()=>JSON.parse(await run('gh',['run','list','--workflow',WORKFLOW,'--event','workflow_dispatch','--branch','main','--limit','30','--json','databaseId,status,conclusion,createdAt'],env)),
+  /* Wartende oder laufende Pages-Laeufe auf main, die sich den Steckplatz der Gruppe pages-production teilen (pull_request-Laeufe haben je PR
+     eine eigene Gruppe). Nur lesend. */
+  activeRuns:async()=>JSON.parse(await run('gh',['run','list','--workflow',WORKFLOW,'--branch','main','--limit','50','--json','databaseId,status,event'],env)).filter(r=>ACTIVE.has(r.status)&&r.event!=='pull_request'),
   cancel:id=>run('gh',['run','cancel',String(id)],env),
   jobs:async id=>JSON.parse(await run('gh',['run','view',String(id),'--json','jobs'],env)).jobs.map(({name,status,conclusion})=>({name,status,conclusion}))
  };
@@ -232,6 +235,24 @@ export const realGeneration=async(fetcher=fetch)=>{
  return (await r.json()).generation??null;
 };
 
+/* Vor dem ERSTEN Dispatch warten, bis in der Gruppe pages-production nichts mehr laeuft oder wartet (Steuerung 23.11.2026, Auftrag c):
+   Die Gruppe haelt nur EINEN Wartesteckplatz, der neueste wartende Lauf verdraengt den aelteren (Dispatch 05:41:50 wurde um 05:42:30
+   durch einen push-Lauf verdraengt; der Dispatch der Wiederherstellung 45110356958 stand 30 min pending). Wer erst bei freier Gruppe
+   dispatcht, erhaelt den Steckplatz sofort. Das Warten ist nur eine Optimierung: ist die Gruppe nach `maxMs` nicht frei oder die
+   Laufliste unlesbar, wird trotzdem dispatcht (der Re-Dispatch bei Verdraengung bleibt die Absicherung). Rein bis auf gh.activeRuns. */
+export async function waitForFreeGroup({gh,now=()=>Date.now(),sleep=async()=>{},maxMs=0,pollMs=LIMITS.pollMs}){
+ if(!(maxMs>0)||typeof gh.activeRuns!=='function')return {free:null,reason:'DISABLED',polls:0,waitedMs:0};
+ const start=now();let polls=0;
+ for(;;){
+  let active=null;try{active=await gh.activeRuns();}catch{active=null;}
+  polls++;
+  if(!Array.isArray(active))return {free:null,reason:'UNREADABLE',polls,waitedMs:now()-start};
+  if(active.length===0)return {free:true,polls,waitedMs:now()-start};
+  if(now()-start>=maxMs)return {free:false,reason:'BUSY_AT_LIMIT',busy:active.length,polls,waitedMs:now()-start};
+  await sleep(pollMs);
+ }
+}
+
 /* Feste Wartezeit ab jetzt (Universe-Release, --wait-minutes): Wartefrist nach `minutes`, harte Frist reserveMinutes spaeter
    (ein noch laufender eigener Lauf darf bis dahin fertig ausliefern). Rein. */
 export function fixedDeadlines({nowMs=Date.now(),minutes,reserveMinutes=10}){
@@ -240,6 +261,7 @@ export function fixedDeadlines({nowMs=Date.now(),minutes,reserveMinutes=10}){
 
 /* Aufruf:
  *   --health <health.json>                Refresh: erwartete Generation = consumerGeneration, Fristen aus JOB_STARTED_AT
+ *   --wait-free-minutes N                 (optional, beide Modi) vor dem ersten Dispatch hoechstens N min (0-60) auf eine freie Gruppe pages-production warten
  *   --expected <24 hex> --wait-minutes N  Universe-Release (company-intelligence-universe-release.yml): feste Wartezeit ab jetzt.
  *     Anlass: activate 42633299211 (09.11.2026) dispatchte einmal; der Lauf 42638619534 wurde um 15:02 verdraengt, nach
  *     20 min EXACT_PRODUCTION_GENERATION_NOT_SERVED und Rueckfall auf 46. Jetzt dieselbe Neu-Dispatch-Logik wie der Refresh. */
@@ -253,9 +275,15 @@ export async function main(argv=process.argv.slice(2),env=process.env,io={}){
  if(typeof expected!=='string'||!expected)return result(false,'EXPECTED_GENERATION_UNKNOWN'); // fail-closed
  if(given&&!(Number.isFinite(waitMinutes)&&waitMinutes>=5&&waitMinutes<=90))return result(false,'WAIT_MINUTES_INVALID'); // fail-closed
  const started=Number(env.JOB_STARTED_AT),jobStartMs=Number.isFinite(started)&&started>0&&started*1000<=Date.now()?started*1000:null;
- const deadlines=given?fixedDeadlines({nowMs:(io.now||Date.now)(),minutes:waitMinutes}):planDeadlines({jobStartMs});
- const res=await waitForDelivery({expected,gh:io.gh||realGh(env),generation:io.generation||(()=>realGeneration()),
-  sleep:io.sleep||(ms=>new Promise(r=>setTimeout(r,ms))),deadlines,requireOwnSuccess:!!given,...(io.now?{now:io.now}:{})});
+const waitFreeMinutes=arg('--wait-free-minutes')===null?0:Number(arg('--wait-free-minutes'));
+ if(!(Number.isFinite(waitFreeMinutes)&&waitFreeMinutes>=0&&waitFreeMinutes<=60))return result(false,'WAIT_FREE_MINUTES_INVALID'); // fail-closed
+ const gh=io.gh||realGh(env),sleep=io.sleep||(ms=>new Promise(r=>setTimeout(r,ms))),clock=io.now||Date.now;
+ const free=await waitForFreeGroup({gh,now:clock,sleep,maxMs:waitFreeMinutes*60000});
+ if(waitFreeMinutes>0)console.log(`Pages-Gruppe vor dem Dispatch: ${free.free===true?'frei':free.free===false?'belegt, es wird trotzdem dispatcht':'unbekannt, es wird dispatcht'} (${free.waitedMs} ms, ${free.polls} Abfragen)`);
+ // Fristen erst NACH dem Warten: das Wartebudget nach dem Dispatch bleibt voll.
+ const deadlines=given?fixedDeadlines({nowMs:clock(),minutes:waitMinutes}):planDeadlines({jobStartMs,nowMs:clock()});
+ const res=await waitForDelivery({expected,gh,generation:io.generation||(()=>realGeneration()),
+  sleep,deadlines,requireOwnSuccess:!!given,...(io.now?{now:io.now}:{})});
  const safe=v=>String(v??'').replace(/[^A-Za-z0-9_,.:()<>=\- ]/g,'?').slice(0,200);
  const line=`${given?'Universe-Auslieferung':'Refresh-Auslieferung'}: ${res.served?'OK':'FEHLER'} (${safe(res.reason)}), Dispatches: ${res.dispatches}`;
  console.log(line);

@@ -71,7 +71,7 @@ test('Struktur: Fehlerpfad erfuellt den Vertrag',()=>assert.deepEqual(problems(w
 test('ADR-005: keine ${{ inputs.* }} im run-Text, Rechte minimal, Concurrency unveraendert',()=>{
  for(const [name,j] of Object.entries(wf.jobs))for(const s of j.steps||[])assert(!/\$\{\{\s*(github\.event\.)?inputs\./.test(s.run||''),`${name}/${s.name}`);
  assert.deepEqual(wf.permissions,{contents:'read',actions:'write'});
- assert.equal(wf.jobs.upgrade['timeout-minutes'],120);
+ assert.equal(wf.jobs.upgrade['timeout-minutes'],210,'90 min Warten auf Pages plus Wiederherstellung und Reserve (23.11.2026)');
 });
 test('Struktur: Entscheidungs- und Schliess-Schritt zeigen nirgends auf den entfernten Schritt "live"',()=>{
  assert(!JSON.stringify(wf).includes('steps.live.'));
@@ -231,4 +231,19 @@ test('Mutation (Verhalten): wuerde der Schliess-Schritt wieder pauschal bei fail
  assert.equal(r.closeRan,true,'der Mutant verhaelt sich wie der alte Fehlerschritt');
  const good=await simulate({fail:{run:'failure'},health:H({published:false}),baseline:B,probe:P()});
  assert.equal(good.closeRan,false);
+});
+
+test('Pages-Auslieferung der Wiederherstellung (23.11.2026, Lauf 45110356958): eigener Lauf, freie Gruppe, Re-Dispatch, 90 min Budget, Job-Limit mit Reserve',()=>{
+ const job=wf.jobs.upgrade,dispatch=find(job.steps,'dispatch'),served=find(job.steps,'served');
+ // Kein blinder Einmal-Dispatch mehr: das Wartescript dispatcht, verfolgt den eigenen Lauf und dispatcht bei Verdraengung neu.
+ assert.match(dispatch.run,/refresh-dispatch-wait\.mjs --expected "\$expected" --wait-minutes 90 --wait-free-minutes 20/);
+ assert.doesNotMatch(dispatch.run,/gh workflow run pages-release/);
+ assert.match(dispatch.run,/\^\[0-9a-f\]\{24\}\$/,'erwartete Generation wird vor dem Dispatch geprueft (fail-closed)');
+ const wait=Number(/--wait-minutes (\d+)/.exec(dispatch.run)[1]),free=Number(/--wait-free-minutes (\d+)/.exec(dispatch.run)[1]);
+ // Wiederherstellung (rund 60 min) + Warten auf freie Gruppe + Wartebudget + Live-QA/Beobachtung/Fehlerpfad (rund 30 min).
+ assert.ok(job['timeout-minutes']>=60+free+wait+30,'timeout-minutes '+job['timeout-minutes']);
+ // Gegenprobe kurz, Fehlerpfad bleibt: ein nicht ausgeliefertes, geoeffnetes Gate schliesst weiter.
+ assert.match(served.run,/PROFILE_SOURCE_GENERATION_NOT_SERVED/);assert.ok(Number(/Date\.now\(\)\+(\d+)\*60000/.exec(served.run)[1])<=5);
+ assert.ok(closeStep(job.steps),'Fehlerpfad-Schritt bleibt');
+ assert.equal(dispatch.env.GH_TOKEN,'${{ secrets.GITHUB_TOKEN }}');
 });

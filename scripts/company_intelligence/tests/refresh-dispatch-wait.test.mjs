@@ -237,7 +237,7 @@ test('Skript: kein Rollback, kein Gate, kein R2; gh nur dispatch/list/cancel und
  assert.doesNotMatch(code,/refresh-run|production-release|s3-driver|VU_HISTORY|rollback\(/i);
  assert.doesNotMatch(code,/\$\{\{/);
  const ghCalls=[...code.matchAll(/run\('gh',\[([^\]]*)\]/g)].map(m=>m[1].split(',')[0]+m[1].split(',')[1]);
- assert.deepEqual(ghCalls.sort(),["'run''cancel'","'run''list'","'run''view'","'workflow''run'"]);
+ assert.deepEqual(ghCalls.sort(),["'run''cancel'","'run''list'","'run''list'","'run''view'","'workflow''run'"],'zwei lesende Listen: eigene Laeufe und aktive Pages-Laeufe (waitForFreeGroup)');
 });
 
 test('CLI: ohne --health bzw. ohne erwartete Generation scheitert fail-closed (kein Dispatch)',async()=>{
@@ -414,4 +414,55 @@ test('UC-2 CLI: Exit-Code 4 nur fuer NOT_DELIVERED_PRODUCTION_UNCHANGED, im Univ
  const gh={dispatch:async()=>{runs.push({databaseId:7300,createdAt:new Date(t+2000).toISOString(),status:'completed',conclusion:'success'});},listRuns:async()=>runs,cancel:async()=>{}};
  const r=await real.main(['--expected',gen,'--wait-minutes','10'],{},{gh,now:()=>t,sleep:async ms=>{t+=ms;},generation:async()=>'0'.repeat(24)});
  assert.equal(r.served,false);assert.notEqual(r.reason,real.UNCHANGED_REASON);
+});
+
+
+/* ---- waitForFreeGroup (Steuerung 23.11.2026, Auftrag c) ---- */
+const clock=()=>{let t=T0;return {now:()=>t,sleep:async ms=>{t+=ms;}};};
+test('FG-1 waitForFreeGroup: sofort frei -> keine Wartezeit; belegt -> wartet bis frei; Grenze und unlesbar dispatchen trotzdem',async()=>{
+ let c=clock(),busy=3;
+ const free=await real.waitForFreeGroup({gh:{activeRuns:async()=>[]},...c,maxMs:20*MIN});
+ assert.deepEqual([free.free,free.waitedMs,free.polls],[true,0,1]);
+ c=clock();
+ const later=await real.waitForFreeGroup({gh:{activeRuns:async()=>{busy--;return busy>0?[{databaseId:1}]:[];}},...c,maxMs:20*MIN});
+ assert.equal(later.free,true);assert.equal(later.polls,3);assert.equal(later.waitedMs,2*real.LIMITS.pollMs);
+ c=clock();
+ const stuck=await real.waitForFreeGroup({gh:{activeRuns:async()=>[{databaseId:1},{databaseId:2}]},...c,maxMs:2*MIN});
+ assert.deepEqual([stuck.free,stuck.reason,stuck.busy],[false,'BUSY_AT_LIMIT',2]);assert.ok(stuck.waitedMs>=2*MIN&&stuck.waitedMs<2*MIN+real.LIMITS.pollMs+1);
+ c=clock();
+ const broken=await real.waitForFreeGroup({gh:{activeRuns:async()=>{throw Error('gh down');}},...c,maxMs:20*MIN});
+ assert.deepEqual([broken.free,broken.reason,broken.waitedMs],[null,'UNREADABLE',0],'unlesbar: nicht warten, dispatchen');
+ c=clock();
+ assert.equal((await real.waitForFreeGroup({gh:{activeRuns:async()=>[{databaseId:1}]},...c,maxMs:0})).reason,'DISABLED','ohne Minuten: aus (Refresh-Verhalten unveraendert)');
+ assert.equal((await real.waitForFreeGroup({gh:{},...c,maxMs:5*MIN})).reason,'DISABLED','ohne activeRuns: aus');
+});
+test('FG-2 CLI: --wait-free-minutes wartet VOR dem ersten Dispatch; das Wartebudget nach dem Dispatch bleibt voll; ungueltig scheitert ohne Dispatch',async()=>{
+ const gen='b'.repeat(24);let t=T0,busy=4;const events=[];
+ const gh={
+  activeRuns:async()=>{events.push('active');busy--;return busy>0?[{databaseId:9}]:[];},
+  dispatch:async()=>{events.push('dispatch@'+(t-T0)/MIN);},
+  listRuns:async()=>events.includes('dispatch@'+((t-T0)/MIN))||events.some(e=>e.startsWith('dispatch'))?[{databaseId:1,createdAt:new Date(t).toISOString(),status:'completed',conclusion:'success'}]:[],
+  cancel:async()=>{}
+ };
+ const r=await real.main(['--expected',gen,'--wait-minutes','40','--wait-free-minutes','20'],{},{gh,now:()=>t,sleep:async ms=>{t+=ms;},generation:async()=>gen});
+ assert.equal(r.served,true);
+ const firstDispatch=events.findIndex(e=>e.startsWith('dispatch'));
+ assert.ok(firstDispatch>0&&events.slice(0,firstDispatch).every(e=>e==='active'),'erst Abfragen der Gruppe, dann Dispatch: '+events.join(','));
+ assert.equal(events.filter(e=>e==='active').length,4);
+ const io={gh:{dispatch:async()=>{throw Error('darf nicht dispatchen');}},now:()=>t,sleep:async()=>{},generation:async()=>gen};
+ for(const bad of ['-1','61','abc'])assert.equal((await real.main(['--expected',gen,'--wait-minutes','40','--wait-free-minutes',bad],{},io)).reason,'WAIT_FREE_MINUTES_INVALID',bad);
+});
+test('FG-3 verdraengter Dispatch bei belegter Gruppe: nach dem Warten dispatchen, Verdraengung erkennen, neu dispatchen, ausliefern',async()=>{
+ const gen='c'.repeat(24);let t=T0,n=0;const runs=[];const log=[];
+ const gh={
+  activeRuns:async()=>[],
+  dispatch:async()=>{n++;log.push('dispatch'+n);runs.push({databaseId:100+n,createdAt:new Date(t+1000).toISOString(),status:n===1?'completed':'completed',conclusion:n===1?'cancelled':'success'});},
+  listRuns:async()=>runs.slice(),cancel:async()=>{}
+ };
+ const r=await real.main(['--expected',gen,'--wait-minutes','40','--wait-free-minutes','5'],{},{gh,now:()=>t,sleep:async ms=>{t+=ms;},generation:async()=>n>=2?gen:'old'});
+ assert.equal(r.served,true);assert.equal(r.dispatches,2,'erster Dispatch verdraengt, zweiter liefert');assert.deepEqual(log,['dispatch1','dispatch2']);
+});
+test('FG-4 Mutant: ohne Warten vor dem ersten Dispatch faellt FG-2 auf (Reihenfolge ist geprueft)',()=>{
+ const src=readFileSync(here('../refresh-dispatch-wait.mjs'),'utf8');
+ assert.match(src,/const free=await waitForFreeGroup\(\{gh,now:clock,sleep,maxMs:waitFreeMinutes\*60000\}\);[\s\S]*const deadlines=given\?fixedDeadlines\(\{nowMs:clock\(\)/,'Warten kommt vor der Fristrechnung');
 });
