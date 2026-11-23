@@ -21,11 +21,11 @@ Alle übrigen Regeln (Namen, Rollen, Sprache, Landmarken, ARIA, Zielgröße 24 p
 | Kontrast auf Bildern (Willkommen, Insights-Karten, Story-Kreise) | Weiße Schrift auf dunklem Verlauf, Sichtprüfung hell/dunkel ohne Auffälligkeit | – | ohne Änderung |
 | Tastatur | Fokusreihenfolge folgt der Leserichtung, keine positiven `tabindex`, Überspringen-Link auf allen Produktseiten außer Start, Mein Dashboard, Konto | niedrig | behoben: Sprunglink im Rahmen |
 | Fokus sichtbar | `.tc-ts-input` (Technical-Screener, Ticker-Feld) ohne sichtbaren Fokus (`outline:none`, kein Ersatz) | mittel | behoben: Rahmen um das Feld bei Fokus (`.tc-ts-field:focus-within`) |
-| Touch-Ziele (390 px) | alle ≥ 24 px (2.5.8 erfüllt); unter 44 px: Zeitraum-Knöpfe Quant 33–43 px breit, Chips Discover 34 px hoch, Fragezeichen-Knopf in der Suche 38 px, „Verdient gut …“-Reiter Quant 36 px; Text-Links „Alle ›“ in Quant 18 px | niedrig | Quant-Links auf 44 px Trefferfläche gebracht, Rest offen (Design) |
+| Touch-Ziele (390 px) | alle ≥ 24 px (2.5.8 erfüllt). 23.11.2026: Trefferfläche 44 px für „Alle ›“ (Quant und `vu-sect`), Such-KI-Knopf, Insights-Link auf Willkommen; Discover-Chips und Quant-Reiter haben 44 px über `::after`. Offen, gesperrt: Zeitraum-Knöpfe 33–43 px breit (`.vu-ranges button` in `assets/site-navigation.css`, Vorschlag `min-width:44px` prüfen auf 320 px), Link „NVIDIA · Übersicht“ 30 px hoch (`assets/stock-navigator.css`, Vorschlag Trefferfläche per `::before`) | niedrig | teilweise behoben |
 | Chart-Beschriftung | Diagramme tragen `role="img"` mit `aria-label`; Prozentwerte lesen als „Plus 71 Prozent“ | – | ohne Änderung |
 | Kennzahl-Karten | Name aus sichtbarem Inhalt, Zusatz (Platz, Kürzel, Zeitraum) als verstecktes Wort dahinter | mittel | behoben (Discover, Willkommen, Supertrader) |
 | Fehlermeldungen (Konto) | Meldung stand in höflicher Statusregion, Felder ohne Bezug zur Meldung | mittel | behoben: Fehler als `role="alert"`, Felder `aria-describedby`, Markierung fällt beim Tippen |
-| Zwei `h1` auf `/aktie/` | Hinweis, kein WCAG-Verstoß | niedrig | offen |
+| Zwei `h1` auf `/aktie/` | Das zweite `h1` („Welche Aktie willst du sehen?“) steht in `#ak-none`, das bei gültigem Kürzel `display:none` ist (nicht im Zugänglichkeitsbaum) | – | kein Befund |
 
 ## Dateien unter UI-Schutz (Owner-Freigabe 22.11.2026, nur Beschriftungen und Sprunglink)
 
