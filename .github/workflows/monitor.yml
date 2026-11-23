@@ -1,13 +1,14 @@
 name: Monitor (Live-Pruefungen gegen die veroeffentlichte Seite)
 
 # Buendel `monitor` (core/registry/workflow-bundles.json, Plan Neustart §3).
-# Fasst zwoelf Live-Pruefungen und Waechter zusammen; jede ist ein eigener Job mit unveraendertem Inhalt:
+# Fasst dreizehn Live-Pruefungen und Waechter zusammen; jede ist ein eigener Job mit unveraendertem Inhalt:
 #   cloudflare         vormals cloudflare-proof.yml
 #   cloudflare-wecker  vormals cloudflare-waker-proof.yml
 #   currency           vormals currency-production-proof.yml
 #   discover           vormals discover-live-smoke.yml
 #   discover-realtime  vormals discover-realtime-qa.yml
 #   europe-discover    vormals europe-discover-release-qa.yml
+#   ladezeit           neu 23.11.2026: taegliche Ladezeitmessung der veroeffentlichten Seiten (App hinter der Zugangsmaske, www offen)
 #   realtime           vormals realtime-production-smoke.yml
 #   sec-frische        vormals fundamental-sec-freshness.yml, Job check (Fundamental SEC-Aktualitaet)
 #   sec-veroeffentlichung  vormals fundamental-sec-freshness.yml, Job publish (Veroeffentlichung der SEC-Zahlen)
@@ -46,6 +47,7 @@ on:
           - discover
           - discover-realtime
           - europe-discover
+          - ladezeit
           - realtime
           - sec-frische
           - supertrader
@@ -116,6 +118,7 @@ jobs:
       discover: ${{ steps.wahl.outputs.discover }}
       discover_realtime: ${{ steps.wahl.outputs.discover_realtime }}
       europe_discover: ${{ steps.wahl.outputs.europe_discover }}
+      ladezeit: ${{ steps.wahl.outputs.ladezeit }}
       realtime: ${{ steps.wahl.outputs.realtime }}
       sec_frische: ${{ steps.wahl.outputs.sec_frische }}
       sec_veroeffentlichung: ${{ steps.wahl.outputs.sec_veroeffentlichung }}
@@ -162,7 +165,7 @@ jobs:
           marke() { [[ "${MSG:-}" == *"$1"* ]]; }
           claude() { [[ "$REF" == refs/heads/claude/* ]]; }
           setze() { echo "$1=$2" >> "$GITHUB_OUTPUT"; echo "$1=$2"; }
-          for k in cloudflare cloudflare_wecker currency discover discover_realtime europe_discover realtime sec_frische sec_veroeffentlichung supertrader technical vorsorge; do
+          for k in cloudflare cloudflare_wecker currency discover discover_realtime europe_discover ladezeit realtime sec_frische sec_veroeffentlichung supertrader technical vorsorge; do
             v=false
             case "$EVENT" in
               workflow_dispatch) [ "$PRUEFUNG" = "${k//_/-}" ] && v=true ;;
@@ -175,6 +178,7 @@ jobs:
               schedule)
                 case "$k" in
                   supertrader) [ "$SCHEDULE" = '43 13 * * 1-5' ] && v=true ;;
+                  ladezeit) [ "$SCHEDULE" = '17 4 * * *' ] && v=true ;;
                   sec_frische) [ "$SCHEDULE" = '40 14 * * *' ] && v=true ;;
                   sec_veroeffentlichung) [ "$SCHEDULE" = '50 19 * * *' ] && v=true ;;
                 esac ;;
@@ -1540,6 +1544,65 @@ jobs:
           name: technical-live-qa
           path: technical-live-qa
           retention-days: 14
+
+  # --- ladezeit: neu 23.11.2026 (Owner-Auftrag: Ladezeit regelmaessig live messen)
+  # Misst LCP, CLS, Requests und Wire der veroeffentlichten Seiten auf dem Handy-Profil (1,6 Mbit/s, 150 ms, CPU 4x und 2x,
+  # kalter Cache) mit scripts/mobile/measure.mjs: App (research.visionuniverse.de, hinter der Zugangsmaske) und www.visionuniverse.de.
+  # Das Geheimnis steht nur im env des einen Messschritts (nie in Argumenten, Bericht, Rohdaten oder Artefakt). Kein Commit, kein
+  # pages-production, kein Release. Verlauf ohne Commit: die Artefakte "ladezeit" der letzten Laeufe. Alarm = roter Job; er blockiert
+  # keinen Code-PR (scripts/mobile/live-ladezeit.mjs, Ziele in scripts/mobile/ladezeit-targets.json).
+  ladezeit:
+    needs: auswahl
+    if: needs.auswahl.outputs.ladezeit == 'true'
+    concurrency:
+      group: ladezeit-${{ github.ref_name }}
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            scripts/mobile
+            scripts/access-gate
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Playwright (Bibliothek, Browser ist der installierte Chrome des Runners)
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+        run: npm install --prefix /tmp/pw --no-save --no-audit --no-fund playwright@1.63.0
+      - name: Verlauf (Berichte der letzten Laeufe)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          mkdir -p ladezeit-verlauf
+          ids="$(gh api "repos/$REPO/actions/artifacts?name=ladezeit&per_page=10" --jq '[.artifacts[] | select(.expired == false)] | .[0:7] | .[].id' || true)"
+          for id in $ids; do
+            mkdir -p "ladezeit-verlauf/$id"
+            gh api "repos/$REPO/actions/artifacts/$id/zip" > "ladezeit-verlauf/$id.zip" && unzip -q -o "ladezeit-verlauf/$id.zip" -d "ladezeit-verlauf/$id" || echo "::warning::Artefakt $id nicht lesbar"
+          done
+          echo "Berichte im Verlauf: $(find ladezeit-verlauf -name report.json | wc -l)"
+      - name: Messen (390 px, CPU 4x und 2x, 150 ms, 1,6 Mbit/s, 3 Laeufe je Route)
+        env:
+          NODE_PATH: /tmp/pw/node_modules
+          RESEARCH_ACCESS_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}
+        run: node scripts/mobile/live-ladezeit.mjs --out ladezeit --history ladezeit-verlauf --browser /usr/bin/google-chrome
+      - name: Bericht in die Zusammenfassung
+        if: always()
+        run: test -f ladezeit/report.md && cat ladezeit/report.md >> "$GITHUB_STEP_SUMMARY" || true
+      - name: Bericht und Rohdaten (Kennzahlen, kein Geheimnis)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ladezeit
+          path: ladezeit
+          retention-days: 30
 
   # --- vorsorge: vormals vorsorge-live-smoke.yml (Vorsorge Live-Rauchtest)
   vorsorge:

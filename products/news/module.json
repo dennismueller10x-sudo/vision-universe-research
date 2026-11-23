@@ -16,7 +16,13 @@
   "news",
   "marktbriefing"
  ],
- "reads": ["marketPulse", "eodPrices", "fundamentalsConsumer"],
+ "reads": [
+  "marketPulse",
+  "eodPrices",
+  "fundamentalsConsumer",
+  "technicalWorld",
+  "indexMembership"
+ ],
  "producers": [
   "products/news/producer/update_news.mjs",
   "products/news/briefing/build.mjs"

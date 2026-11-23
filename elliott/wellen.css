@@ -324,3 +324,13 @@
 
 /* Leitmärkte (Elliott-Neustart Schritt 2): kein Aktienbild in anderen Modulen, keine Verweise auf Aktienseiten */
 main[data-market] .vu-sothers{display:none}
+/* Elliott-Plan (Owner 23.11.2026): laufende Welle als offene, gestrichelte Marke; Zählung mit Enthaltung oder überholt blass;
+   kein Szenario-Schriftzug im Elliott-Chart (dort steht kein Szenario-Pfad); Beschriftungen mit Hof über den Kerzen. */
+#el-detail .cb .is-ew .ti-proj-label{display:none}
+#el-detail .cb .ti-waves .is-dev .ti-wave-badge{fill:var(--vu-white,#fff);stroke:var(--vu-ink,#000);stroke-width:2;stroke-dasharray:3 2}
+#el-detail .cb .ti-waves .is-dev .ti-wave-label{fill:var(--vu-ink,#000)}
+:root[data-theme=dark] #el-detail .cb .ti-waves .is-dev .ti-wave-badge{fill:#000;stroke:#fff}
+:root[data-theme=dark] #el-detail .cb .ti-waves .is-dev .ti-wave-label{fill:#fff}
+#el-detail .cb .is-ew-weak .ti-waves{opacity:.6}
+#el-detail .cb .ti-zone-label,#el-detail .cb .ti-invalid-label{paint-order:stroke;stroke-width:4px;stroke-linejoin:round}
+#el-detail .cb-ew-over{margin:10px 0 12px}

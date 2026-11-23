@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /* =========================================================================
    Elliott-Wochenausblick (Elliott-Neustart Schritt 6, Owner 22.11.2026): je Leitmarkt eine Bildkarte (1080 × 1350, SVG, optional PNG)
-   und ein Bildtext aus dem veroeffentlichten Chartbild-Produkt (v3/markets). Rechnet nichts: Wellen, Zone, Pfad und Ungueltig-Marke
+   und ein Bildtext aus dem veroeffentlichten Chartbild-Produkt (v3/markets). Rechnet nichts: Wellen, Elliott-Zone und Ungueltig-Marke
    stehen so im Produkt. Kein Anbieteraufruf, keine Kosten, keine Veroeffentlichung: die Dateien gehen nur nach --out; gepostet wird
    ausschliesslich ueber das Approval Center nach Freigabe des Owners (docs/studio/README.md, Regeln 1 und 6).
    Wortwahl (docs/legal/WORTWAHL.md): keine Kursziele, „Zone laut Methode“, „Modell, keine Prognose“.
@@ -15,6 +15,8 @@ import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
+/* Plan der Lesart wie im Elliott-Chart (Owner 23.11.2026): nur aus der Zaehlung, nie aus dem Szenario-Modell. */
+const { planOf } = createRequire(import.meta.url)(join(ROOT, "elliott/engine/plan.js"));
 const V3 = join(ROOT, "quant/data/technical-intelligence/v3");
 const arg = (n, d) => { const i = process.argv.indexOf("--" + n); return i >= 0 ? process.argv[i + 1] : d; };
 const W = 1080, H = 1350, BG = "#08080a", INK = "#f4f5f1", MUTE = "#9a9b96", LIME = "#c8f531", RED = "#ff5a5f", PANEL = "#141416";
@@ -46,30 +48,27 @@ export function readingOf(p) {
   const wave = c.complete ? null : (c.currentWave && c.currentWave.label) || null;
   const dir = c.complete ? c.nextMove : c.currentWave && c.currentWave.direction;
   const dirWord = dir === "UP" ? "aufwärts" : dir === "DOWN" ? "abwärts" : "seitwärts";
-  const inv = (p.overlays && (p.overlays.invalidations || []).find((x) => x.scenario === "PRIMARY")) || null;
+  const plan = planOf(p) || {}, inv = plan.invalidation || null;
   const app = E.applicability ? (E.applicability.abstain ? "LOW" : E.applicability.level) : "LOW";
   const grade = gradeOf(app, E.clarityLevel);
   const what = c.complete ? pat + " abgeschlossen" : pat + " · Welle " + wave + " läuft";
   const invTxt = inv ? "ungültig bei Wochenschluss " + (inv.direction === "above" ? "über " : "unter ") + priceDe(inv.price) : null;
   const name = p.market ? p.market.name : p.symbol;
-  /* Hook: aktuelle Welle plus Richtung des Plans (Szenario der Hauptlesart; Zone und Pfad zeigen dorthin). Laeuft die Welle gegen den Plan,
-     heisst es „Welle C läuft – danach aufwärts?“, sonst „Welle 3 aufwärts – ungültig erst unter …“. */
-  const sc = (p.scenarios || []).find((x) => x.kind === "PRIMARY") || null;
-  const planDir = sc && sc.direction === "BULLISH" ? "UP" : sc && sc.direction === "BEARISH" ? "DOWN" : dir;
-  const planWord = planDir === "UP" ? "aufwärts" : planDir === "DOWN" ? "abwärts" : "seitwärts";
+  /* Hook nur aus der Zaehlung: abgeschlossen → „fertig – jetzt aufwärts?“ (Folgebewegung laut Muster), laufend → „Welle 3 aufwärts – ungültig
+     erst unter …“, letzte Welle eines Musters → „Welle C läuft – danach aufwärts?“; ueberholt (alle Projektionszonen durchlaufen) → „Zählung überholt“. */
   const short = inv ? "ungültig erst " + (inv.direction === "above" ? "über " : "unter ") + priceDe(inv.price) : null;
-  const hook = name + ": " + (c.complete ? pat + " fertig – jetzt " + planWord + "?"
-    : planDir === dir ? "Welle " + wave + " " + dirWord + (short ? " – " + short : "") : "Welle " + wave + " läuft – danach " + planWord + "?");
-  return { name, what, dir: planDir, dirWord: planWord, inv, invTxt, grade, gradeTxt: GRADE_TXT[grade], hook, close: p.price && p.price.close, asOf: p.asOf };
+  const hook = name + ": " + (plan.overtaken ? pat + " überholt – Neuzählung steht an" : c.complete ? pat + " fertig – jetzt " + dirWord + "?"
+    : plan.next && plan.next !== dir ? "Welle " + wave + " läuft – danach " + (plan.next === "UP" ? "aufwärts" : "abwärts") + "?"
+    : "Welle " + wave + " " + dirWord + (short ? " – " + short : ""));
+  return { name, what, dir, dirWord, inv, invTxt, zone: plan.zone || null, overtaken: !!plan.overtaken, grade, gradeTxt: GRADE_TXT[grade], hook, close: p.price && p.price.close, asOf: p.asOf };
 }
 
-/** Bildkarte als SVG (Kursverlauf der letzten 156 Wochen, Wellen der Hauptlesart, Zone, Pfad, Ungueltig-Marke). */
+/** Bildkarte als SVG (Kursverlauf der letzten 156 Wochen, Wellen der Hauptlesart, Elliott-Zone, Ungueltig-Marke). */
 export function cardSvg(p, r) {
   const ch = p.chart || {}, n = (ch.close || []).length, from = Math.max(0, n - 156);
   const ts = (ch.timestamps || []).slice(from), cl = (ch.close || []).slice(from);
   const ov = p.overlays || {}, waves = ((ov.waves && ov.waves.primary) || []).filter((w) => w.time >= ts[0]);
-  const zone = (ov.zones || []).find((z) => z.scenario === "PRIMARY" && (z.kind === "ENTRY" || z.kind === "DEEPER"));
-  const path = (ov.projectedPaths || []).find((x) => x.scenario === "PRIMARY");
+  const zone = r.zone, path = null;   // kein Szenario-Pfad: der Plan kommt nur aus der Zaehlung
   const X0 = 70, X1 = 840, XF = 1010, Y0 = 470, Y1 = 1060;
   const vals = cl.concat(waves.map((w) => w.price), r.inv ? [r.inv.price] : [], zone ? [zone.low, zone.high] : [], path ? path.points.map((q) => q.price) : []).filter(Number.isFinite);
   let lo = Math.min(...vals), hi = Math.max(...vals); const pad = (hi - lo) * 0.08 || 1; lo -= pad; hi += pad;
@@ -77,7 +76,7 @@ export function cardSvg(p, r) {
   const idx = (t) => { const k = ts.indexOf(t); return k >= 0 ? k : ts.findIndex((d) => d >= t); };
   const line = cl.map((v, i) => (i ? "L" : "M") + x(i).toFixed(1) + " " + y(v).toFixed(1)).join("");
   let g = "";
-  if (zone) g += `<rect x="${X1 - 120}" y="${y(zone.high).toFixed(1)}" width="${XF - X1 + 120}" height="${Math.max(4, y(zone.low) - y(zone.high)).toFixed(1)}" rx="8" fill="${LIME}" opacity=".22"/><text x="${XF}" y="${(y(zone.low) + 36).toFixed(1)}" text-anchor="end" font-size="26" fill="${LIME}">Zone laut Methode</text>`;
+  if (zone) g += `<rect x="${X1 - 120}" y="${y(zone.high).toFixed(1)}" width="${XF - X1 + 120}" height="${Math.max(4, y(zone.low) - y(zone.high)).toFixed(1)}" rx="8" fill="${LIME}" opacity=".22"/><text x="${XF}" y="${(y(zone.low) + 36).toFixed(1)}" text-anchor="end" font-size="26" fill="${LIME}">Zone laut Elliott-Projektion</text>`;
   if (r.inv) g += `<line x1="${X0}" x2="${XF}" y1="${y(r.inv.price).toFixed(1)}" y2="${y(r.inv.price).toFixed(1)}" stroke="${RED}" stroke-width="3" stroke-dasharray="12 10"/><text x="${X0}" y="${(y(r.inv.price) + (r.inv.direction === "above" ? -14 : 36)).toFixed(1)}" font-size="28" fill="${RED}">Ungültig ${r.inv.direction === "above" ? "über" : "unter"} ${esc(priceDe(r.inv.price))}</text>`;
   g += `<path d="${line}" fill="none" stroke="${INK}" stroke-width="4" stroke-linejoin="round"/>`;
   if (path && path.points.length > 1) {
@@ -115,7 +114,7 @@ export function captionOf(p, r) {
   const src = p.market && p.market.via ? p.market.via + (p.market.source && p.market.source.attribution ? " · " + p.market.source.attribution : "") : p.symbol;
   return [r.hook, "",
     "Hauptlesart: " + r.what + ". " + (r.invTxt ? "Die Lesart ist " + r.invTxt + "." : ""),
-    r.gradeTxt + ". Die Zone laut Methode und der Pfad sind ein Szenario ohne Zeitangabe.", "",
+    r.gradeTxt + "." + (r.zone ? " Die Zone laut Elliott-Projektion hat keine Zeitangabe." : "") + (r.overtaken ? " Der Kurs ist über alle Zonen hinausgelaufen, die diese Zählung zulässt." : ""), "",
     "Alle Märkte und Aktien mit Wellen, Zonen und Ungültig-Marken: Vision-Universe-App (bald verfügbar).", "",
     "Modell, keine Prognose, keine Anlageberatung. Quelle: " + src.replace(" · Daten: ", " · ") + ", Wochenschluss " + dateDe(r.asOf) + "."].join("\n").slice(0, 2200);
 }

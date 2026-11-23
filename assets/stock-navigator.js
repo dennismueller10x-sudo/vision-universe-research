@@ -285,7 +285,7 @@
     /* Owner 18.11.2026: Pfeil = zurück, woher ich kam (ohne Verlauf: Aktienzentrale); daneben die kleine grüne Schaltfläche
        „⌂ <Name> · Übersicht“, die immer in die Aktienzentrale /aktie/#/<T> führt, und klein, in welchem Modul man ist. */
     wrap.innerHTML = '<div class="vu-shead-top"><a class="vu-shead-back" href="' + esc(aktieHref(ctx)) + '" aria-label="Zurück"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></a>' +
-      '<a class="vu-shead-home" href="' + esc(aktieHref(ctx)) + '" aria-label="Zur Übersicht von ' + esc(short || ctx.displaySymbol) + '">' + HOME + '<span class="vu-shead-home-n">' + esc(short || ctx.displaySymbol) + "</span><span>· Übersicht</span></a>" +
+      '<a class="vu-shead-home" href="' + esc(aktieHref(ctx)) + '">' + HOME + '<span class="vu-shead-home-n">' + esc(short || ctx.displaySymbol) + "</span><span>· Übersicht</span></a>" +
       (m ? '<span class="vu-shead-mod">in <b>' + esc(m.plain || m.label) + "</b></span>" : "") + "</div>" +
       '<div class="vu-shead-id">' + logoHtml(o) + '<div class="vu-shead-names"><h1 class="vu-shead-name">' + esc(short || ctx.displaySymbol) + "</h1>" +
       '<p class="vu-shead-meta">' + meta + "</p></div>" + '<div class="vu-shead-actions"></div></div>' +

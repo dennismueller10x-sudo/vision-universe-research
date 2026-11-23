@@ -260,7 +260,7 @@ test('MB-12 Produktseite /marktbriefing/: wie Magazin und Report, führt zur Aus
   // Allgemein: die Ausgabe erscheint nur im Link „Neueste Ausgabe“, nicht in Überschriften oder im Inhalt.
   assert.equal((html.match(new RegExp(b.cards[0].title, 'g')) || []).length, 1);
   assert.match(html, /<link rel="canonical" href="https:\/\/www\.visionuniverse\.de\/marktbriefing\/">/);
-  assert.equal((html.match(/<div><svg viewBox="0 0 24 24"[^>]*>[\s\S]*?<\/svg><span>/g) || []).length, 11, 'feste Kapitel des Formats als Kacheln');
+  assert.equal((html.match(/<div><svg viewBox="0 0 24 24"[^>]*>[\s\S]*?<\/svg><span>/g) || []).length, 12, 'feste Kapitel des Formats als Kacheln');
   assert.match(html, /<a href="2026-11-19\/">/);
   const ld = JSON.parse(html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1]);
   assert.equal(ld['@type'], 'CollectionPage');
@@ -322,4 +322,54 @@ test('MB-15 kein Bezug auf Vorbilder: weder Personenname noch „Closing Bell“
     const p = new URL('../../../landing/marktbriefing/' + d + '/index.html', import.meta.url);
     if (fs.existsSync(p)) assert.doesNotMatch(fs.readFileSync(p, 'utf8'), rx, d);
   }
+});
+
+test('MB-16 Teilen-Bild 1200×630 als og:image; Termine liegen im Code-Zweig unter products/news/radar/', () => {
+  const b = Engine.buildBriefing(inputs());
+  const html = Www.page(b, { chrome: Www.chromeFrom(CHROME), archive: [SESSION], depth: 2, image: '/marktbriefing/2026-11-20/teilen.png', imageSize: [1200, 630] });
+  assert.match(html, /<meta property="og:image" content="https:\/\/www\.visionuniverse\.de\/marktbriefing\/2026-11-20\/teilen\.png">\n<meta property="og:image:width" content="1200">\n<meta property="og:image:height" content="630">/);
+  assert.match(html, /<meta name="twitter:image" content="https:\/\/www\.visionuniverse\.de\/marktbriefing\/2026-11-20\/teilen\.png">/);
+  assert.deepEqual(Www.shareChips(b).map((c) => c[0]), ['Nasdaq 100', 'S&P 500', 'Dow Jones']);
+  const p = Www.productPage(b, { chrome: Www.chromeFrom(CHROME), archive: [SESSION], img: { share: 'teilen.png', story0: 'vorschau.png' } });
+  assert.match(p, /<meta property="og:image" content="https:\/\/www\.visionuniverse\.de\/marktbriefing\/2026-11-20\/teilen\.png">/);
+  assert.match(fs.readFileSync(new URL('../briefing/build.mjs', import.meta.url), 'utf8'), /'products\/news\/radar', session \+ '\.json'/);
+  // jede Termin-Datei besteht die Prüfregeln der Engine vollständig
+  const dir = new URL('../radar/', import.meta.url);
+  for (const f of fs.readdirSync(dir).filter((x) => /^\d{4}-\d{2}-\d{2}\.json$/.test(x))) {
+    const r = JSON.parse(fs.readFileSync(new URL(f, dir), 'utf8'));
+    const a = Engine.cardAgenda(r, f.slice(0, 10));
+    assert.equal(a.dropped.length, 0, f + ': ' + a.dropped.map((d) => d.reason).join('; '));
+    assert.ok(a.card, f);
+  }
+});
+
+test('MB-17 Wechselnde Themen: Auswahl nach Auffälligkeit, Rotation, je Familie ein Thema, nur mit Daten vom Handelstag', () => {
+  const Topics = require('../briefing/topics.js');
+  const n = 120, cols = { s: [], close: [], chg1d: [], rsi14: [], newHigh52w: [], newLow52w: [], goldenCrossDays: [], deathCrossDays: [], crossAboveSma200Days: [], crossBelowSma200Days: [], distSma200: [], roc21: [], roc63: [], rsRank: [], relVol: [] };
+  const members = [];
+  for (let i = 0; i < n; i++) {
+    const s = 'T' + i; members.push({ symbol: s, name: 'TEST ' + i + ' INC', weight: 1 });
+    cols.s.push(s); cols.close.push(100); cols.chg1d.push(i < 30 ? -0.05 : 0.001); cols.rsi14.push(i < 30 ? 20 + i / 10 : 50);
+    cols.newHigh52w.push(false); cols.newLow52w.push(i < 12); cols.goldenCrossDays.push(null); cols.deathCrossDays.push(i < 3 ? 0 : null);
+    cols.crossAboveSma200Days.push(null); cols.crossBelowSma200Days.push(null); cols.distSma200.push(-0.1); cols.roc21.push(-0.1); cols.roc63.push(-0.2); cols.rsRank.push(10); cols.relVol.push(i < 5 ? 3.5 : 1);
+  }
+  const tech = { asOf: SESSION, cols }, sp500 = { members };
+  const a = Topics.select({ tech, sp500 }, SESSION, []);
+  assert.deepEqual(a.cards.map((c) => c.topic), ['ueberverkauft', 'kreuzungen', 'volumen'], 'stärkstes Thema zuerst, „neue Tiefs“ fällt als zweites „schwach“-Thema weg');
+  assert.match(a.cards[0].title, /^30 S&P-500-Aktien mit RSI unter 30$/);
+  assert.equal(a.cards[0].bars.rows[0].label, 'T0'); assert.equal(a.cards[0].bars.rows[0].sub.startsWith('Test 0'), true);
+  assert.ok(a.cards.every((c) => c.type === 'OWN' && /keine|Beschreibung|Zahl daneben|Trend/.test(c.sub)));
+  // Rotation: lief ein Thema in den letzten zwei Ausgaben, bekommt es einen Abschlag
+  const b = Topics.select({ tech, sp500 }, SESSION, [['ueberverkauft'], []]);
+  assert.ok(b.considered.find((c) => c.id === 'ueberverkauft').score < a.considered.find((c) => c.id === 'ueberverkauft').score);
+  // Frische: Technical-Daten von einem anderen Tag -> keine Themen
+  assert.deepEqual(Topics.select({ tech: { ...tech, asOf: '2026-11-19' }, sp500 }, SESSION, []).cards, []);
+  // im Briefing: Karten, Kurzfassung, Szene
+  const inp = inputs(); inp.tech = tech; inp.sp500 = sp500;
+  const br = Engine.buildBriefing(inp);
+  assert.deepEqual(br.topics.shown, ['ueberverkauft', 'kreuzungen', 'volumen']);
+  assert.ok(br.summary.includes('30 S&P-500-Aktien mit RSI unter 30.'));
+  const html = Www.page(br, { chrome: Www.chromeFrom(CHROME), archive: [SESSION], depth: 2 });
+  assert.match(html, /<section class="mb-sc [kwl]" id="thema-ueberverkauft"/);
+  assert.match(Render.cardSvg(br.cards.find((c) => c.topic === 'volumen'), 0, 1, SESSION), /3,5×/);
 });

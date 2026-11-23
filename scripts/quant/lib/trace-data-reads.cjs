@@ -3,15 +3,9 @@
 const fs = require("fs"), path = require("path"), mod = require("module");
 const ROOT = path.join(__dirname, "..", "..", ".."), seen = new Set();
 const missing = new Set();
-const isData = (p) => { try { const s = path.resolve(p instanceof URL ? decodeURIComponent(p.pathname) : String(p)); if (!s.startsWith(ROOT + path.sep)) return null; const rel = path.relative(ROOT, s).split(path.sep).join("/"); return rel.split("/").includes("data") && !rel.startsWith("node_modules/") && !rel.split("/").includes("fixtures") ? rel : null; } catch { return null; } };
-const rec = (p) => {
-  try {
-    const s = path.resolve(p instanceof URL ? decodeURIComponent(p.pathname) : String(p));
-    if (!s.startsWith(ROOT + path.sep)) return;
-    const rel = path.relative(ROOT, s).split(path.sep).join("/");
-    if (rel.split("/").includes("data") && !rel.startsWith("node_modules/")) seen.add(rel);
-  } catch {}
-};
+const realOf = (s) => { try { return fs.realpathSync.native(s); } catch { return s; } };
+const isData = (p) => { try { let s = path.resolve(p instanceof URL ? decodeURIComponent(p.pathname) : String(p)); if (!s.startsWith(ROOT + path.sep)) s = realOf(s); /* Spiegelwurzeln aus Symlinks (researchSeriesRoot) */ if (!s.startsWith(ROOT + path.sep)) return null; const rel = path.relative(ROOT, s).split(path.sep).join("/"); return rel.split("/").includes("data") && !rel.startsWith("node_modules/") && !rel.split("/").includes("fixtures") ? rel : null; } catch { return null; } };
+const rec = (p) => { const rel = isData(p); if (rel) seen.add(rel); };
 const wrap = (obj, name) => { const orig = obj[name]; obj[name] = function (p, ...a) { rec(p); return orig.call(this, p, ...a); }; };
 wrap(fs, "readFileSync"); wrap(fs.promises, "readFile"); wrap(fs, "readFile");
 /* Fehlende Datei: ein Lesen, das mit ENOENT endet, wird gemeldet (Einfrieren in einem unvollstaendigen Checkout, 23.11.2026). */
@@ -31,6 +25,19 @@ const existed = new Set(), lists = {};
     try { const rel = isData(String(p instanceof URL ? decodeURIComponent(p.pathname) : p) + "/x"); const plain = !(o && typeof o === "object" && (o.withFileTypes || o.recursive)); if (rel && plain && Array.isArray(r)) lists[rel.replace(/\/x$/, "")] = r.map(String).sort(); } catch {}
     return r;
   };
+}
+/* Kopien (cpSync/copyFileSync, 23.11.2026): die Quelle zaehlt als gelesen; ein Verzeichnis mit allen Dateien darunter (rekursiv). */
+{
+  const addTree = (p) => {
+    try {
+      const rel = isData(p); if (!rel) return;
+      const st = fs.statSync(p);
+      if (st.isFile()) { seen.add(rel); return; }
+      if (st.isDirectory()) for (const n of fs.readdirSync(p)) addTree(path.join(String(p instanceof URL ? decodeURIComponent(p.pathname) : p), n));
+    } catch {}
+  };
+  const ocp = fs.cpSync; fs.cpSync = function (src, dest, ...a) { addTree(src); return ocp.call(this, src, dest, ...a); };
+  const ocf = fs.copyFileSync; fs.copyFileSync = function (src, dest, ...a) { addTree(src); return ocf.call(this, src, dest, ...a); };
 }
 mod.syncBuiltinESMExports();
 process.on("exit", () => {

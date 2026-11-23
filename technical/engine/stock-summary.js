@@ -147,6 +147,8 @@
         goals: row.fresh === true ? fitList(goals, gMaps, i) : [],
         dq: dqOf(row)
       };
+      /* Vier-Phasen-Einstufung (screen-row 1.16.0): nur, wenn der Bestand die Spalte fuehrt und die Reihe frisch ist. */
+      if (row.fresh === true && !row.frozenSince && (row.trendPhase === 1 || row.trendPhase === 2 || row.trendPhase === 3 || row.trendPhase === 4)) rec.phase = row.trendPhase;
       if (!shards[key]) shards[key] = { schema: SCHEMA, version: VERSION, shard: key, asOf: artifact.asOf, generatedFrom: artifact.generatedFrom || null,
         versions: { row: artifact.versions && artifact.versions.row || null, templates: TPL.TEMPLATES_VERSION, assistant: AS.ASSISTANT_VERSION },
         limits: TPL.LIMITS, labels: Object.assign({ formations: {} }, labels), stocks: {} };

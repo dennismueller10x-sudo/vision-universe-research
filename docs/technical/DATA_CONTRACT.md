@@ -103,7 +103,7 @@ Stabile Schnittstelle der Technical-Produktwelt für Frontend, `/screener/`, DQ 
 ## Spalten
 
 <!-- contract:columns:start -->
-technical-screener-contract-1.3.0, 164 Spalten.
+technical-screener-contract-1.3.0, 165 Spalten.
 
 | Spalte | Typ | null | Werte | Bedeutung |
 |---|---|---|---|---|
@@ -259,6 +259,7 @@ technical-screener-contract-1.3.0, 164 Spalten.
 | `suspectJumpAt` | date | ja |  | jüngster auffälliger Kurssprung (252 Bars, ab screen-row 1.13.0; davor 60) |
 | `suspectJumpFactor` | num | ja | 0 … ∞ | Schlussfaktor des Kurssprungs (Schluss / Vortagesschluss) (optional) |
 | `suspectJumpStatus` | enum | ja | SUSPECT, CONFIRMED | Stufe: Verdacht oder bestätigter Datenfehler (belegte, nicht bereinigte Kapitalmaßnahme) (optional) |
+| `trendPhase` | int | ja | 1 … 4 | Vier-Phasen-Einstufung an der 150-Tage-Linie: 1 Boden, 2 Anstieg, 3 Dach, 4 Abstieg (ab screen-row 1.16.0) (optional) |
 | `ulcer14` | pct | ja | 0 … ∞ | Ulcer Index 14 (Rückschlagsrisiko) |
 | `volAboveAvg` | bool | ja |  | Volumen über Durchschnitt |
 | `volAboveAvg@1M` | bool | ja |  | Monatsvolumen über Durchschnitt |

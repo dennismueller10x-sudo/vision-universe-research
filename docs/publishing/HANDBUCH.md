@@ -172,6 +172,19 @@ Alles frei lesbar und für Google und KI-Suchen gebaut (statisches HTML, `NewsAr
 6. Owner sieht es sich live an; Korrekturen kommen als eigener kleiner PR. Kein KI-Hinweis am Text (Owner 10.11.2026):
    der Owner liest jeden Artikel und trägt die redaktionelle Verantwortung; KI-Bilder behalten „KI-Bild“.
 
+**Zwei Adressen, ein Text (Owner 23.11.2026).** Die Artikel stehen zusätzlich als eigene Seite auf der Website:
+`www.visionuniverse.de/news/<slug>/`, lesbar ohne App, ohne Konto und ohne Abo. Grund: `research.visionuniverse.de` ist der
+Bereich der App; wer sie nicht nutzt, soll die News trotzdem im Browser lesen können. Erzeuger ist
+`scripts/website/www-artikel.mjs`, aufgerufen von `scripts/website/www-news.mjs` (und damit von jedem
+`node products/insights/build.mjs`): aus derselben Artikeldatei entsteht eine Seite im Website-Design, mit Kopf und Fuß aus
+`landing/news/index.html`, Diagrammen, Kurskasten (dieselben eingefrorenen Zahlen), Quellen und Pflichthinweis. Jedes Bild
+wird nach `landing/web/img/news/` kopiert; www lädt nichts von anderen Adressen. Die Übersicht auf www und die Startseite
+verlinken auf diese Seiten, nicht mehr in die App; in der Seite führen zwei Schaltflächen zur App. `landing/scripts/build.mjs`
+nimmt die Seiten in den Cloudflare-Bau und in die Sitemap auf (`newsArtikelPages()`). Geprüft in IN-21.
+Offener Punkt: Artikeltext steht damit unter zwei Adressen. Beide Seiten zeigen derzeit auf sich selbst (`canonical`);
+soll www die führende Adresse für die Suche werden, bekommt die Research-Seite ein `canonical` auf
+`www.visionuniverse.de/news/<slug>/` (eine Zeile in `products/insights/build.mjs#artikelSeite`).
+
 **Tageslauf ohne Owner (ab 11.11.2026):** Zwei geplante Aufgaben wecken an jedem Werktag die dauerhafte Sitzung
 „Insights-Tageslauf (dauerhaft)“: um 4:47 Uhr (Frühlauf, Artikel gegen 6 Uhr: Tagesthema aus der US-Sitzung des Vortags)
 und um 10:47 Uhr (Mittagslauf, Artikel gegen 12 Uhr, vor der US-Eröffnung: Nebenwert oder Zukunftsthema). Die Sitzung
@@ -230,6 +243,18 @@ Adressen, Kopfangaben, Feed, Sitemap und `artikel.json` bleiben unverändert, de
 (neue Erklärvideos in `stories.json` brauchen einen Neubau). `/news/` (Nachrichten-Feed unter „Weitere Produkte“) ist eine andere Seite.
 
 ## 9. Suche: Plan für die Freischaltung der ganzen Website
+
+**Stand 23.11.2026: www.visionuniverse.de ist für Suchmaschinen freigegeben** (Owner-Entscheidung). Der Schalter ist
+`landing/publication.json` (`"main": "production"`; zurück auf noindex mit `"preview"`): der Cloudflare-Bau des Zweigs `main`
+liefert damit `index, follow`, eine erlaubende `robots.txt` (alle Such- und KI-Crawler), `/sitemap.xml` und kein
+`X-Robots-Tag`; Vorschau-Zweige bleiben gesperrt, der Datenschutz-Gate bleibt. Der Bau ergänzt je Seite strukturierte
+Daten aus den eigenen Angaben der Seite (`landing/scripts/seo.mjs`: Startseite `Organization`, `WebSite`, `FAQPage` aus
+dem Fragenblock; `/app/` `WebApplication`; übrige Seiten `WebPage` mit `BreadcrumbList`) und `/llms.txt`. Produkt-Titel
+tragen den Satz aus dem Menü („Quant: Das Zeugnis jeder Aktie“). Täglich 02:23 UTC (`content.yml`, Teil `search-console`)
+reicht die Search Console beide Sitemaps ein, prüft die Indexierung der www-Seiten und wertet Klicks und Suchbegriffe
+für www getrennt aus (`www` im Bericht); danach meldet IndexNow jede www-Seite, deren Text sich geändert hat
+(`indexnow.mjs www`, Fingerabdrücke im Bericht unter `indexnowWww`). `research.visionuniverse.de` bleibt bis auf
+`/insights/` hinter der Passwortmaske.
 
 Stand 11.11.2026: nur `/insights/` ist öffentlich und indexierbar (Sitemap, Search Console, IndexNow). Die Freischaltung
 weiterer Bereiche entscheidet der Owner; dieser Plan sagt, was dafür technisch vorbereitet wird.
@@ -339,7 +364,7 @@ Wirtschaftskalender (FMP-Endpunkte geprüft in `scripts/market/probe-free-source
   `products/news/tests/marktbriefing.test.mjs`.
 - Lauf: `content.yml` Teil `marktbriefing`, Mo–Fr 23:50 UTC über den Wecker (`core/registry/schedule.json`), intern im
   Datenzweig (`news/marktbriefing/`, Datenart `marktbriefing`; Research-Seite `/news/marktbriefing/` bleibt `noindex`).
-- Themen Dritter liest der Build aus `news/marktbriefing/radar/<sitzung>.json` (`items[]` mit title, publisher, source,
+- Themen Dritter und Termine liest der Build aus `products/news/radar/<sitzung>.json` (im Code-Zweig, weil `news/marktbriefing/` dem Datenzweig gehört) (`items[]` mit title, publisher, source,
   published, url, optional sub, quote, columns, bars, stats; optional `editorial` mit eigenem Titel der Titelkarte).
   Die Engine verwirft, was nicht vom Handelstag ist, nicht aus der Quellenliste kommt oder keine URL hat.
 - Ausblick (Owner 22.11.2026): `agenda[]` in derselben Radar-Datei, je Termin `date`, `kind` (`zahlen`, `daten`, `notenbank`,
@@ -348,6 +373,13 @@ Wirtschaftskalender (FMP-Endpunkte geprüft in `scripts/market/probe-free-source
   Handelstag, höchstens 4 Tage und 12 Termine; Verworfenes steht mit Grund in `dropped`. Daraus entstehen die letzte Karte
   „Die nächsten Tage“, die Szene `#ausblick` und der Satz „Als Nächstes: …“ in der Kurzfassung. Ohne `agenda` keine Karte.
   Termine sind Angaben der Unternehmen und Behörden, keine Erwartung von Vision Universe.
+- Wechselnde Themen (Owner 23.11.2026: „nicht immer gleich aussehen“): `products/news/briefing/topics.js` wählt je Ausgabe
+  bis zu drei Themen aus einem Vorrat (RSI unter 30, RSI über 70, Momentum mit neuen Hochs, neue Jahrestiefs, Golden/Death
+  Cross, Wechsel über/unter die 200-Tage-Linie, ungewöhnliches Volumen), Rahmen S&P 500, Daten aus
+  `technical/data/screener-v1.json` (nur vom Handelstag). Jedes Thema rechnet, wie auffällig es heute ist; Themen der letzten
+  zwei Ausgaben bekommen einen Abschlag (Rotation, gelesen aus dem Archiv im Datenzweig), je Familie (schwach, stark, Trend,
+  Volumen) höchstens ein Thema. Gezeigtes und Verworfenes steht in `topics` der Ausgabe. Wortwahl beschreibend, jedes Thema
+  erklärt seinen Fachbegriff und sagt, dass es keine Empfehlung ist. Weitere Themen kommen als Eintrag in `POOL` dazu.
 - Karussell und Video: `node products/news/briefing/export-png.mjs <briefing.json> <ordner>` schreibt die Karten als PNG.
 - Die Investitionskarte erscheint nur, wenn ein Hyperscaler in den letzten 3 Tagen neue Zahlen bei der SEC gemeldet hat.
 
@@ -365,6 +397,7 @@ Wirtschaftskalender (FMP-Endpunkte geprüft in `scripts/market/probe-free-source
   Desktop, Karten als Story) mit eigenem PDF (`marktbriefing-<sitzung>.pdf`), Titelbild, Vorschaubild und Karten-Bildern.
   Erzeugt von `products/news/briefing/www.js` (`page`, `productPage`); Verhalten `landing/marktbriefing/mb.js`, Stil `mb.css`
   (CSP der Website: kein Inline-Skript). Kopf, Menü und Fuß kommen aus `landing/news/index.html`.
+- Teilen-Vorschau (Owner 23.11.2026, WhatsApp): je Ausgabe `teilen.png` 1200×630 (`screens.mjs#writeShare`: Titel, Datum, Index-Chips, drei echte Bildschirme) als `og:image` und `twitter:image` von Ausgabe und Produktseite.
 - Für Suche und KI-Suche steht alles im HTML: Kurzfassung „Das Wichtigste in Kürze“ (`engine.js#summary`), JSON-LD
   (`NewsArticle` und `BreadcrumbList` je Ausgabe, `CollectionPage` auf der Produktseite), Sitemap über
   `landing/scripts/build.mjs` (`marktbriefingPages`).

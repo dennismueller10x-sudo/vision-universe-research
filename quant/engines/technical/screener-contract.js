@@ -55,6 +55,7 @@
     asOf: { type: "date", nullable: false, label: "letzter Bar des Titels" },
     bars: { type: "int", nullable: false, range: [1, Infinity], label: "Tagesbars im Analysefenster" },
     weeks: { type: "int", nullable: false, range: [0, Infinity], label: "Wochenschlüsse (lange Reihe)" },
+    trendPhase: { type: "int", nullable: true, optional: true, range: [1, 4], label: "Vier-Phasen-Einstufung an der 150-Tage-Linie: 1 Boden, 2 Anstieg, 3 Dach, 4 Abstieg (ab screen-row 1.16.0)" },
     suspectJumpAt: { type: "date", nullable: true, label: "jüngster auffälliger Kurssprung (252 Bars, ab screen-row 1.13.0; davor 60)" },
     suspectJumpFactor: { type: "num", nullable: true, optional: true, range: [0, Infinity], label: "Schlussfaktor des Kurssprungs (Schluss / Vortagesschluss)" },
     suspectJumpStatus: { type: "enum", values: ["SUSPECT", "CONFIRMED"], nullable: true, optional: true, label: "Stufe: Verdacht oder bestätigter Datenfehler (belegte, nicht bereinigte Kapitalmaßnahme)" },

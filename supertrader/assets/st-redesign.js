@@ -422,7 +422,7 @@
   /* Trader-Kachel (Prototyp trader(): 164 px, Monogramm 64 px, Zahl 38 px). */
   function traderTile(s) {
     var m = N ? N.method(s.candidateId) : null, meta = methodMeta(s), pat = m ? m.pattern : cn(s);
-    return '<a class="stp-tile stp-tap stp-trader" href="' + esc(N ? N.href(s.candidateId) : '/supertrader/strategies/?sf=' + s.candidateId) + '" data-k-method="' + esc(s.candidateId) + '" aria-haspopup="dialog" aria-label="' + esc(cn(s) + ', ' + meta.trader + ': ' + n0(s.counts.published) + ' Muster heute') + '">' +
+    return '<a class="stp-tile stp-tap stp-trader" href="' + esc(N ? N.href(s.candidateId) : '/supertrader/strategies/?sf=' + s.candidateId) + '" data-k-method="' + esc(s.candidateId) + '" aria-haspopup="dialog">' +
       '<span class="stp-fl stp-sb stp-top">' + avatar(meta.trader) + (m && m.depot ? '<span class="stp-pill stp-pill--sm">Depot</span>' : '') + '</span>' +
       '<b class="stp-b8 stp-mt12 stp-tr-n">' + esc(m && /,/.test(meta.trader) ? m.trader : meta.trader) + '</b><span class="stp-xs stp-mut stp-ell">' + esc(pat + ' · ' + meta.style) + '</span>' +
       '<b class="stp-num stp-lc stp-mt12" style="font-size:38px">' + n0(s.counts.published) + '</b><span class="stp-xs stp-mut stp-b7">Muster heute</span></a>';
@@ -510,8 +510,8 @@
       var val = function (k) { return by ? n0(by[k] || 0) : busy ? '…' : '–'; };
       today.setAttribute('aria-busy', busy ? 'true' : 'false');
       today.innerHTML = '<div class="stp-fl stp-sb stp-g8"><span class="stp-eb st-r-asof">Heute' + (isNum(nSec) ? ' · ' + n0(nSec) + ' Aktien geprüft' : '') + '</span><span class="stp-pill stp-pill--sm stp-pill--ol">Forschung</span></div>' +
-        '<button type="button" class="st-k-funnel stp-funnel" aria-haspopup="dialog" data-vu-pop="st-k-about" data-vu-pop-title="' + ABOUT + '" aria-label="' + esc('Alle US-Aktien: ' + STAGES.map(function (k) { return STAGE_TXT[k] + ' ' + val(k); }).join(', ') + '. Erklärung öffnen') + '">' +
-        STAGES.map(function (k, i) { return '<span class="st-k-fn stp-fn s' + (i + 1) + '"' + (by ? ' data-stage="' + k + '"' : '') + '><b>' + esc(i === 2 ? 'Plan' : STAGE_TXT[k]) + '</b><span class="stp-num">' + val(k) + '</span></span>'; }).join('') + '</button>' +
+        '<button type="button" class="st-k-funnel stp-funnel" aria-haspopup="dialog" data-vu-pop="st-k-about" data-vu-pop-title="' + ABOUT + '" >' +
+        STAGES.map(function (k, i) { return '<span class="st-k-fn stp-fn s' + (i + 1) + '"' + (by ? ' data-stage="' + k + '"' : '') + '><b>' + esc(i === 2 ? 'Plan' : STAGE_TXT[k]) + '</b><span class="stp-num">' + val(k) + '</span></span>'; }).join('') + '<span class="stp-vh">, alle US-Aktien. Erklärung öffnen</span></button>' +
         (rg && rg.label ? '<button type="button" class="stp-mkt" data-k-market="1" aria-haspopup="dialog"><i class="stp-dot" aria-hidden="true"></i><span><b>Marktlage: ' + esc(rg.label) + '.</b>' + (mm ? ' <span class="stp-mut">' + esc(U.num(mm.share * 100, 0) + ' % der Aktien über der 200-Tage-Linie.') + '</span>' : '') + '</span></button>' : '');
     }
     hero(null, null, true);
@@ -526,7 +526,7 @@
     railHost.innerHTML = stpSh('Die Trader', { id: 'stp-tr' }) + '<div class="stp-px">' + U.skeleton('rows') + '</div>';
     /* Musterdepots (Prototyp: eine Kachel mit belegten Plätzen je Depot). Die Zählung des Ablaufs steht im Fenster der Kachel. */
     var depStats = U.stats([{ value: n0(prep), label: 'warten' }, { value: n0(c.TRIGGERED || 0), label: 'heute aufgenommen' }, { value: n0(held), label: 'im Musterdepot', tone: 'lime' }, { value: n0(c.CLOSED || 0), label: 'abgegeben' }], { label: 'Musterdepots, ohne echtes Geld' });
-    depHost.innerHTML = stpSh('Musterdepots', { id: 'stp-dep', href: '/supertrader/treffer/', link: 'Rechenmodell, kein echtes Geld' }) + '<div class="stp-px"><button type="button" class="stp-tile stp-tap stp-dep" data-stp-dep aria-haspopup="dialog" aria-label="Musterdepots: belegte Plätze und Ablauf öffnen"><span data-seats>' + depStats + '</span></button></div>';
+    depHost.innerHTML = stpSh('Musterdepots', { id: 'stp-dep', href: '/supertrader/treffer/', link: 'Rechenmodell, kein echtes Geld' }) + '<div class="stp-px"><button type="button" class="stp-tile stp-tap stp-dep" data-stp-dep aria-haspopup="dialog"><span data-seats>' + depStats + '</span><span class="stp-vh">, Musterdepots: belegte Plätze und Ablauf öffnen</span></button></div>';
     var depRows = '';
     onTap(depHost, 'data-stp-dep', function () {
       pop('Musterdepots', '<div class="stp-sheet"><p class="stp-sm stp-sec">Fünf Methoden haben ein Musterdepot. Es zeigt, was die Regel tun würde. Rechenmodell, kein echtes Geld.</p><div class="stp-card stp-mt12">' + depStats + '</div>' +

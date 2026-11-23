@@ -161,6 +161,63 @@ werden nie überschrieben. Festgelegt:
   Registrierung). Urteil frühestens nach 12 Monaten; öffentlich nur mit Owner-Freigabe (Renditeaussage).
 - Erster Stand (Vorlauf, ein Monat Okt.–Nov.): live −1,5 %, tilt −2,5 %, mp −1,6 %, SPY −2,0 % – ein Monat sagt nichts.
 
+## 4e. Vorwärtstest Fassung B (registriert am 23.11.2026, vor dem ersten gezählten Monat)
+
+Anlass: Der einzige phasenfeste Hinweis der Stufen 2 und 3 ist Momentum + Bruttogewinn je Bilanzsumme (§4b: Fassung B +2,3 Pp p. a.
+vor SPY, p 0,15; bestes Zehntel der Top 500 p 0,07; ohne Marktfilter 7 von 8 Einstellungen vor SPY). Der Vorwärtstest §4d schreibt
+nur `live`, `tilt` und `mp` mit, den stärksten Kandidaten nicht. `scripts/research/vorwaerts/forward-b.mjs` holt das nach (nur
+lesend, beliebig wiederholbar). Festgelegt:
+- **Quelle:** die veröffentlichten Faktor-Scherben `quant/data/product/factor-evidence-v1/` (Börsenwert, Bausteine
+  `priceReturn12m1m` und `grossProfitabilityTtm`). Unveränderlich ist ihre Git-Historie: je Monat gilt der erste Commit des
+  Monats, der `summary.json` der Scherben geändert hat. Der Lauf braucht die vollständige Historie (`git fetch --unshallow`).
+- **Universum zuerst:** die 1.000 bzw. 500 größten Titel nach Börsenwert am Stichtag. Wählbar sind darin nur Titel mit beiden
+  Bausteinen (Banken und andere Titel ohne Bruttogewinn bleiben im Universum, sind aber nicht wählbar).
+- **Signal:** Mittel der beiden Baustein-Scores. **B1000** = bestes Fünftel der wählbaren Titel unter den 1.000 größten (die
+  Entsprechung zu Fassung B), **B500** = bestes Zehntel unter den 500 größten (die Einstellung mit p 0,07). Gleich gewichtet.
+- **Handel:** wie §4d: Einstieg und Ausstieg zum Schluss des ersten Handelstags nach dem Stichtag (`discover-series`,
+  Kursrendite), 6 bp je Seite auf den Umschlag, Vergleich SPY aus derselben Reihe. Kein Marktfilter (§4b: mit Filter liegen alle
+  Einstellungen hinter SPY).
+- **Zählt ab Dezember 2026.** Urteil frühestens nach 12 Monaten; öffentlich nur mit Owner-Freigabe (Renditeaussage).
+
+Abweichungen von der Studie, vorab benannt: (1) Die Baustein-Scores des Produkts sind zu 70 % Branchen- und zu 30 %
+Universumsvergleich, die Studie rangierte im Universum. (2) Das Universum wird nach Börsenwert gebildet, in der Studie nach
+durchschnittlichem Dollarumsatz. (3) Kursrendite statt Gesamtrendite, auf beiden Seiten gleich.
+
+Stand der Daten am 20.11.2026 (kein Ergebnis, nur Abdeckung): 3.923 von 5.934 Titeln tragen einen Börsenwert; unter den 1.000
+größten haben 514 beide Bausteine, unter den 500 größten 262. Daraus folgen 102 Titel (B1000) und 26 Titel (B500).
+**Befund zur Datenqualität, eigener PR:** Der Börsenwert fehlt bei 2.011 Titeln (784 ohne Aktienzahl zum Stichtag, 360
+Berichtswährung ungleich Handelswährung, 248 Aktienzahl nicht dem Listing zuordenbar), darunter sehr große Werte; einzelne Werte
+sind offensichtlich falsch (AKTX mit über 1 Billion $). Der Bruttogewinn fehlt bei 238 der 500 größten Titel, auch bei
+Nicht-Banken (z. B. XOM, ORCL, UNH, DIS, MCD, VZ). Beides begrenzt jede Aussage über „die größten Werte“ und gehört vor einer
+Produktnutzung behoben.
+
+## 4f. Stufe 4: Trader-Muster mit Faktoren (23.11.2026, vor dem ersten Lauf festgelegt)
+
+Anlass (Owner 23.11.2026): Die Trader-Regeln allein lagen in jedem Test hinter SPY (Stufe 1, SF6-Referenzen, Holdout). Die Bücher
+kaufen aber nicht jedes Muster, sondern wenige Marktführer mit starkem Geschäft. Stufe 3 nennt die Prüfung der Muster zusammen
+mit dem Profitabilitätsfilter als offene Folgerung. `scripts/research/backtest2/trader-faktor.mjs`, Modus
+`merkmale-trader-smoke` / `merkmale-trader`, gleiche Daten wie Stufe 2 und 3.
+
+Frage: Liegt ein konzentriertes Depot aus Aktien, die das Muster UND die tragenden Faktoren erfüllen, nach Kosten vor SPY, und
+trägt die Kombination mehr als jeder Teil allein? Kein Raster, keine Auswahl, acht feste Depots:
+- **H1 (die Hypothese):** Trendvorlage (veröffentlichte Lesart nach Minervini, wie `signals.mjs#TREND_TEMPLATE`) als Schranke,
+  darin die 25 Titel mit dem höchsten Mittel aus Momentum 12-1 und Bruttogewinn je Bilanzsumme.
+- **H2:** Trendvorlage, darin die 25 Titel nach Momentum, Umsatzwachstum (1 Jahr) und Eigenkapitalrendite (Minervinis
+  Geschäftskriterien, soweit mit unseren Daten abbildbar).
+- **K1 (Kontrolle Muster):** nur Trendvorlage, 25 Titel nach relativer Stärke 6 Monate.
+- **K2 (Kontrolle Faktoren):** ohne Trendvorlage, 25 Titel nach Momentum + Bruttogewinn je Bilanzsumme.
+- Jedes Depot zusätzlich mit 50 Titeln.
+- Monatsultimo, die 1.000 liquidesten Titel ≥ 5 $, gleich gewichtet, Kosten = Umschlag × Kosten je Seite, kein Marktfilter,
+  Kasse ohne Zins; unter 10 Kandidaten Kasse. Ausgewertet 2014 bis Ende gegen SPY (Gesamtrendite), dazu die vier Teilzeiträume
+  der Stufe 3.
+- **Urteil „Hinweis“** nur, wenn H1 nach Kosten vor SPY liegt, der Block-Bootstrap p < 0,10 ergibt und H1 über K1 und K2 liegt;
+  sonst „nicht belegt“. Berichtet werden alle acht Depots, auch die schlechten.
+
+Grenzen, vorab benannt: (1) Die Regeln stehen vor dem ersten Lauf fest, aber nach Einsicht in Stufe 2 und 3; dass Momentum +
+Bruttogewinn/Bilanz dort vorn lag, war bekannt. Ein positives Ergebnis ist ein Hinweis und wird im Vorwärtstest bestätigt, nicht
+aus dem Rückblick behauptet. (2) Geprüft wird die Auswahl der Aktien in monatlichen Depots, nicht die Ein- und Ausstiegsregeln
+der Methoden. (3) Folgen für Supertrader oder den Quant-Score nur in einem eigenen PR mit Vorher/Nachher.
+
 ## 5. Ausführung und Veröffentlichung
 
 - Umsetzung: `scripts/research/backtest2/` (Markt, Signale, Depotführung, Suche, Lauf mit Workern). Workflow `research.yml`, Teil

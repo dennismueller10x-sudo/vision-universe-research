@@ -32,3 +32,8 @@ test('GSC-2 · Auswertung kürzt Adressen, rundet Klickrate (Prozent) und Positi
   assert.equal(r.tage[0].datum, '2026-11-10');
   assert.deepEqual(auswerten({}).insights, { klicks: 0, impressionen: 0, ctr: 0, position: null });
 });
+
+test('GSC-3 · beide Sitemaps der Domain-Property werden eingereicht (Insights und www)', async () => {
+  const { SITEMAPS } = await import('../search-console.mjs');
+  assert.deepEqual(SITEMAPS, ['https://research.visionuniverse.de/insights/sitemap.xml', 'https://www.visionuniverse.de/sitemap.xml']);
+});
