@@ -21,7 +21,7 @@ const {chromium} = createRequire(import.meta.url)('playwright');
 const defaultRoutes = ['/', '/quant/', '/quant/#/aktie/NVDA', '/technical/#/chart/NVDA', '/fundamental/#/NVDA', '/supertrader/', '/supertrader/stock/NVDA/', '/discover/', '/quant/musterdepots/', '/analysten/', '/mein-dashboard/'];
 /* --routes a,b,c: eigene Liste (Live-Ladezeit); nur Pfade mit fuehrendem Schraegstrich, kein Schema und keine Adresse. */
 const routes = arg('--routes') ? arg('--routes').split(',').map(r => { if (!/^\/[A-Za-z0-9_\-./#?=&]*$/.test(r)) throw Error('Invalid --routes entry'); return r; }) : defaultRoutes;
-/* --expect <datei.json>: {"<route>": "<css-selektor>"}; ein Lauf ist nur gueltig, wenn die Zugangsmaske nicht steht und der Selektor (falls genannt) sichtbaren Inhalt trifft. */
+/* --expect <datei.json>: {"<route>": "<css-selektor>"}; ein Lauf ist nur gueltig, wenn die Zugangsmaske nicht steht und IRGENDEIN Element des Selektors (falls genannt) sichtbar ist. */
 const expectMap = arg('--expect') ? JSON.parse(await readFile(resolve(arg('--expect')), 'utf8')) : {};
 let gateState = null;
 if (process.argv.includes('--gate')) {
@@ -80,7 +80,7 @@ try {
   const content=await page.evaluate(sel => {
    const gate=!!document.getElementById('research-access-gate');
    let found=null;
-   if(sel){try{const el=document.querySelector(sel);if(el){const r=el.getBoundingClientRect(),st=getComputedStyle(el);found=!el.closest('[hidden]')&&st.visibility!=='hidden'&&st.display!=='none'&&r.width>0&&r.height>0;}else found=false;}catch(e){found=false;}}
+   if(sel){try{found=[...document.querySelectorAll(sel)].some(el=>{const r=el.getBoundingClientRect(),st=getComputedStyle(el);return !el.closest('[hidden]')&&st.visibility!=='hidden'&&st.display!=='none'&&r.width>0&&r.height>0;});}catch(e){found=false;}}
    return {gate,found};
   },marker);
   const metrics=await page.evaluate(() => {
