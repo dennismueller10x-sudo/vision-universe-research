@@ -39,7 +39,7 @@ export function rowsFromRaw(raw, site, cpu) {
   return {
    key: site + r.route, site, route: r.route, cpu,
    lcp: r.lcp ?? null, cls: r.cls ?? null, requests: r.requests ?? null, bytes: r.bytes ?? null,
-   runs: ss.length, incompleteRuns: r.incompleteRuns ?? 0, failedRuns: r.failedRuns ?? 0,
+   runs: ss.length, invalidRuns: r.invalidRuns ?? 0, incompleteRuns: r.incompleteRuns ?? 0, failedRuns: r.failedRuns ?? 0,
    lcpRuns: ss.map((s) => (typeof s.lcp === 'number' ? Math.round(s.lcp) : null)),
    errors: [...new Set(ss.flatMap((s) => s.errors || []))].slice(0, 3)
   };
@@ -64,6 +64,8 @@ export function evaluate(rows, targets, history) {
   const t = {...d, ...(targets.routes[row.key] || {})};
   const base = baselineFrom(history, row.key, row.cpu, d.historyRuns);
   const add = (art, text) => alarms.push({key: row.key, cpu: row.cpu, art, text});
+  /* Ungueltige Laeufe (Zugangsmaske oder Inhaltsmerkmal fehlt) zaehlen nie als Messwert: ein ungueltiger Wert ist kein gruener Wert. */
+  if (row.runs > 0 && (row.invalidRuns || 0) > row.runs / 2) { add('ungueltig', 'Messung ungueltig (' + row.invalidRuns + ' von ' + row.runs + ' Laeufen ohne Inhaltsmerkmal ' + (t.marker ? '"' + t.marker + '"' : 'oder mit Zugangsmaske') + ')'); continue; }
   const ohneLcp = (row.lcpRuns || []).filter((x) => x == null).length;
   if (row.lcp == null || ohneLcp > row.runs / 2) { add('keine-messung', 'LCP nicht gemessen (' + ohneLcp + ' von ' + row.runs + ' Laeufen ohne Wert)'); continue; }
   if (typeof t.lcpMs === 'number' && row.lcp > t.lcpMs) add('lcp-ziel', 'LCP ' + Math.round(row.lcp) + ' ms ueber dem Ziel ' + t.lcpMs + ' ms');
@@ -88,7 +90,7 @@ export function reportMarkdown(report) {
  const L = ['# Ladezeit live (' + report.measuredAt + ', Commit ' + (report.commit || '?').slice(0, 9) + ')', '',
   'Profil: 390x844, 1,6 Mbit/s, 150 ms, kalter Cache; je Route ' + report.runs + ' Laeufe, Median. Verlauf: ' + report.historyRuns + ' Berichte.', '',
   '| Seite/Route | CPU | LCP ms | CLS | Requests | Wire KB | LCP je Lauf |', '|---|---|---|---|---|---|---|'];
- for (const r of report.rows) L.push('| ' + r.key + ' | ' + r.cpu + 'x | ' + (r.lcp == null ? '-' : Math.round(r.lcp)) + ' | ' + (r.cls == null ? '-' : r.cls.toFixed(3)) + ' | ' + (r.requests ?? '-') + ' | ' + (r.bytes == null ? '-' : Math.round(r.bytes / 1024)) + ' | ' + r.lcpRuns.join(', ') + ' |');
+ for (const r of report.rows) L.push('| ' + r.key + ' | ' + r.cpu + 'x | ' + ((r.invalidRuns || 0) > r.runs / 2 ? 'ungueltig' : r.lcp == null ? '-' : Math.round(r.lcp)) + ' | ' + (r.cls == null ? '-' : r.cls.toFixed(3)) + ' | ' + (r.requests ?? '-') + ' | ' + (r.bytes == null ? '-' : Math.round(r.bytes / 1024)) + ' | ' + r.lcpRuns.join(', ') + ' |');
  L.push('', report.alarms.length ? '## Alarme (' + report.alarms.length + ')' : '## Keine Alarme', '');
  for (const a of report.alarms) L.push('- ' + a.key + ' (' + a.cpu + 'x): ' + a.text);
  return L.join('\n') + '\n';
@@ -118,6 +120,8 @@ async function main() {
   for (const cpu of CPUS) {
    const rawPath = join(out, 'raw-' + site + '-cpu' + cpu + '.json');
    const args = [join(root, 'scripts/mobile/measure.mjs'), '--base-url', base, '--routes', cfg.routes.join(','), '--runs', String(runs), '--cpu', String(cpu), '--window', String(windowMs), '--out', rawPath];
+   const expect = {}; for (const route of cfg.routes) { const m = (targets.routes[site + route] || {}).marker; if (m) expect[route] = m; }
+   const expectPath = join(out, 'expect-' + site + '.json'); writeFileSync(expectPath, JSON.stringify(expect)); args.push('--expect', expectPath);
    if (cfg.gate) args.push('--gate');
    if (arg('--browser')) args.push('--browser', arg('--browser'));
    const r = spawnSync(process.execPath, args, {cwd: root, env: process.env, encoding: 'utf8', maxBuffer: 1 << 26});

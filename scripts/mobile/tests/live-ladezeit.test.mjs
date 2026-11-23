@@ -57,3 +57,13 @@ test('measure.mjs: Zugangsmaske nur mit --gate und Umgebung, nur im Ursprung der
  const w=readFileSync(new URL('../live-ladezeit.mjs',import.meta.url),'utf8');assert.doesNotMatch(w,/screenshot|recordHar|tracing/i);
  assert.doesNotMatch(w,/args\.push\([^)]*PASSWORD/);
 });
+
+test('Ungültige Läufe (Zugangsmaske oder Inhaltsmerkmal fehlt) sind ein Alarm, kein Messwert',()=>{
+ const row={key:'app/technical/',site:'app',route:'/technical/',cpu:4,lcp:236,cls:0.06,requests:46,bytes:1,runs:3,invalidRuns:3,incompleteRuns:0,failedRuns:0,lcpRuns:[236,232,244],errors:[]};
+ const a=evaluate([row],targets,[]);
+ assert.deepEqual(a.map(x=>x.art),['ungueltig']);
+ assert.match(a[0].text,/#tc-main/);
+ assert.match(reportMarkdown({measuredAt:'2026-11-23',commit:'x',runs:3,historyRuns:0,rows:[row],alarms:a}),/\| ungueltig \|/);
+ assert.deepEqual(evaluate([{...row,invalidRuns:1}],targets,[]),[]);
+ assert.ok(targets.routes['app/technical/'].marker&&targets.routes['app/mein-dashboard/'].marker);
+});
