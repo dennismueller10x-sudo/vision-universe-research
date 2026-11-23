@@ -13,6 +13,9 @@
      WITH_DIRECTION     belastbar und phasenstabil in der ueblichen Lesart (bullisch besser, baerisch schlechter)
      AGAINST_DIRECTION  belastbar und phasenstabil GEGEN die uebliche Lesart
      NEUTRAL_PATTERN    Muster ohne Richtung (Doji u. a.): keine Lesart, nur Haeufigkeit
+   Seit 1.1.0 zusaetzlich je Zeile (beschreibend, ohne Einfluss auf `reading`):
+     baseHitRate        Trefferquote der Vergleichsgruppe: alle Titel an denselben Tagen (scripts/technical/evidence-phases.mjs)
+     breadth            dieselben Kennzahlen getrennt nach Marktbreite am Ereignistag (BROAD/NARROW, Anteil der Titel ueber SMA 200)
    Keine Zeile ist ein Kauf- oder Verkaufssignal; Kosten, Ausfuehrung und Out-of-Sample sind nicht geprueft.
    Erzeuger: build-screener.mjs (ohne --no-evidence). Kein Anbieterabruf: liest nur die Materialisierung.
    ========================================================================= */
@@ -20,7 +23,7 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
-export const SIGNAL_EVIDENCE_SCHEMA = "vu-technical-signal-evidence-1.0.0";
+export const SIGNAL_EVIDENCE_SCHEMA = "vu-technical-signal-evidence-1.1.0";
 export const READINGS = ["NOT_SIGNIFICANT", "MIXED", "WITH_DIRECTION", "AGAINST_DIRECTION", "NEUTRAL_PATTERN"];
 
 /** Einordnung einer Zeile aus 20-Tage-Ergebnis und Phasenstabilitaet (stableSign: 1, -1, 0 = widerspruechlich, null = zu wenig). */
@@ -35,8 +38,12 @@ export function readingOf(row) {
 
 function slim(row, id) {
   const h = row.h20 || {};
-  return { id, name: row.name, direction: row.direction, titles: row.titles, n: h.n, dates: h.dates, mean: h.mean, ci95: h.ci95,
+  const out = { id, name: row.name, direction: row.direction, titles: row.titles, n: h.n, dates: h.dates, mean: h.mean, ci95: h.ci95,
     hitRate: h.hitRate, significant: !!h.significant, stableSign: row.stableSign === undefined ? null : row.stableSign, reading: readingOf(row) };
+  /* Vergleichsgruppe und Marktbreite (ab Quellversion 1.2.0): nur beschreibend, die Einordnung `reading` haengt nicht davon ab. */
+  if (h.baseHitRate !== undefined) out.baseHitRate = h.baseHitRate;
+  if (row.breadth) out.breadth = Object.fromEntries(Object.entries(row.breadth).map(([k, v]) => [k, v ? { n: v.n, dates: v.dates, mean: v.mean, ci95: v.ci95, hitRate: v.hitRate, baseHitRate: v.baseHitRate } : null]));
+  return out;
 }
 
 /** Produktartefakt aus den Ergebnissen beider Auswertungen (reine Funktion, testbar ohne Daten). */
@@ -52,8 +59,11 @@ export function compose(ind, cdl) {
       knowledgeTime: "Ereignis am Schluss von Bar i nur aus Bars <= i",
       significance: "Intervall ueber Datums-Cluster, Bonferroni ueber Zeilen x Horizonte (alpha 5 %)",
       stability: "Vorzeichen gleich bei SPY ueber/unter SMA 50 und in beiden Zeithaelften (je >= 30 Ereignisse)",
-      minN: ind.minN, costs: "keine (beschreibende Statistik, keine Handelssimulation)"
+      minN: ind.minN, costs: "keine (beschreibende Statistik, keine Handelssimulation)",
+      base: ind.baseRule || null,
+      breadth: ind.breadthSplit ? ind.breadthSplit.rule : null
     },
+    breadthDates: ind.breadthSplit ? ind.breadthSplit.dates : null,
     claims: { event: "technisch definiert, nachrechenbar", observation: "historischer Mittelwert, beschreibend", strategyEdge: "nicht nachgewiesen" },
     indicators: (ind.events || []).map((r) => slim(r, r.event)),
     candles: (cdl.patterns || []).map((r) => slim(r, r.pattern)),

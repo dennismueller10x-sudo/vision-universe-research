@@ -25,6 +25,7 @@ import { gunzipSync } from "node:zlib";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import { BREADTH_SLICES, BREADTH_LEVEL, breadthAccumulator, baseCounts } from "../evidence-phases.mjs";
 
 const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
@@ -32,7 +33,7 @@ const Canonical = require(join(root, "quant/engines/technical/canonical-bars.js"
 const Ctx = require(join(root, "quant/engines/technical/ti/context.js"));
 const Fm = require(join(root, "quant/engines/technical/formations.js"));
 
-export const EVIDENCE_VERSION = "technical-formation-evidence-1.0.0";
+export const EVIDENCE_VERSION = "technical-formation-evidence-1.1.0";
 export const HORIZON = 20, MIN_N = 100, WARMUP = 120;
 /* Viele Typen werden gleichzeitig geprueft: Signifikanz nur mit Bonferroni-Korrektur (z fuer 0,05 / Anzahl Typen). */
 function zFor(alpha) { let lo = 0, hi = 10; for (let i = 0; i < 60; i++) { const m = (lo + hi) / 2, p = 0.5 * erfc(m / Math.SQRT2); if (p > alpha / 2) lo = m; else hi = m; } return (lo + hi) / 2; }
@@ -85,12 +86,13 @@ const r4 = (v) => (isNum(v) ? Math.round(v * 1e4) / 1e4 : null);
 
 export function build({ limit = 0, stride = 1, signalsDir = join(root, "quant/data/product/technical-signals-v1") } = {}) {
   const shards = readdirSync(signalsDir).filter((f) => /^[A-Z0-9_]{2}\.json\.gz$/.test(f)).sort();
-  const all = [], fwd = new Map(); let titles = 0, from = null;
+  const all = [], fwd = new Map(), fwdAll = new Map(), breadthAcc = breadthAccumulator(); let titles = 0, from = null;
   outer: for (const sh of shards) {
     const doc = JSON.parse(gunzipSync(readFileSync(join(signalsDir, sh))).toString("utf8"));
     for (const ticker of Object.keys(doc.instruments || {}).sort()) {
       const b = doc.instruments[ticker].bars;
       if (!b || !b.close || b.close.length < WARMUP + HORIZON + 10) continue;
+      { const cs = doc.instruments[ticker].bundle && doc.instruments[ticker].bundle.chartSeries; breadthAcc.add(b.timestamps, b.close, cs && cs.sma200); }
       const series = Canonical.fromRows(b.timestamps.map((d, i) => ({ date: d, open: b.open[i], high: b.high[i], low: b.low[i], close: b.close[i], volume: b.volume[i] })),
         { instrumentId: ticker, exchange: "US", currency: "USD", timeframe: "1D", priceSeriesType: "SPLIT_ADJUSTED", source: "tiingo", sourceRevision: "technical-signals-v1" });
       /* Querschnitt: 20-Tage-Rendite je Datum ueber alle Titel (Basis fuer die Ueberrendite). */
@@ -98,6 +100,7 @@ export function build({ limit = 0, stride = 1, signalsDir = join(root, "quant/da
         const r = series.close[k + HORIZON] / series.close[k] - 1;
         if (!isNum(r) || Math.abs(r) > 3) continue;
         const e = fwd.get(series.timestamps[k]) || [0, 0]; e[0] += r; e[1]++; fwd.set(series.timestamps[k], e);
+        const rs = fwdAll.get(series.timestamps[k]); if (rs) rs.push(r); else fwdAll.set(series.timestamps[k], [r]);
       }
       try {
         for (const d of detectionsOf(series, stride)) { d.ticker = ticker; all.push(d); }
@@ -114,6 +117,12 @@ export function build({ limit = 0, stride = 1, signalsDir = join(root, "quant/da
     (byType[d.type] = byType[d.type] || []).push(d);
   }
   const typeIds = Object.keys(byType).sort(), zB = zFor(0.05 / Math.max(1, typeIds.length));
+  /* Vergleichsgruppe (alle Titel desselben Datums ueber/unter dem Querschnittsmittel) und Marktbreite je Datum:
+     beschreibend und zusaetzlich, ohne Einfluss auf `significant` (scripts/technical/evidence-phases.mjs). */
+  const counts = baseCounts(fwdAll), breadthRaw = breadthAcc.finish(), breadth = new Map();
+  for (const [d, v] of breadthRaw) breadth.set(d, v);
+  const dayKey = (d) => String(d).slice(0, 10);
+  const baseOf = (ds) => { let s = 0, k = 0; for (const d of ds) { const c = counts.get(d.date); if (!c) continue; s += (d.sign < 0 ? c.neg : c.pos) / c.n; k++; } return k ? s / k : null; };
   const types = typeIds.map((type) => {
     const ds = byType[type], n = ds.length, ex = stats(ds.map((d) => d.excess20)), hits = ds.filter((d) => d.excess20 > 0).length;
     const count = (s) => ds.filter((d) => d.state20 === s).length, atK = (s) => ds.filter((d) => d.stateAtK === s).length;
@@ -123,7 +132,13 @@ export function build({ limit = 0, stride = 1, signalsDir = join(root, "quant/da
       excess20Mean: r4(ex.mean), excess20Median: r4(ex.median), excess20Ci95: r4(ex.ci95),
       /* belastbar nur, wenn das Bonferroni-Intervall die 0 nicht enthaelt */
       significant: n >= MIN_N && Math.abs(ex.mean) > zB * ex.sd / Math.sqrt(n),
-      hitRate: r4(hits / n), hitRateCi95: wilson(hits, n).map(r4) };
+      hitRate: r4(hits / n), hitRateCi95: wilson(hits, n).map(r4), baseHitRate: r4(baseOf(ds)),
+      breadth: Object.fromEntries(BREADTH_SLICES.map((k) => {
+        const sub = ds.filter((d) => { const b = breadth.get(dayKey(d.date)); return b && b.phase === k; });
+        if (!sub.length) return [k, null];
+        const e = stats(sub.map((d) => d.excess20));
+        return [k, { n: sub.length, excess20Mean: r4(e.mean), excess20Ci95: r4(e.ci95), hitRate: r4(sub.filter((d) => d.excess20 > 0).length / sub.length), baseHitRate: r4(baseOf(sub)) }];
+      })) };
   });
   return { schemaVersion: "vu-technical-formation-evidence-1.0.0", version: EVIDENCE_VERSION, engine: Fm.ENGINE_VERSION,
     window: { from: usedFrom, to: usedTo, bars: "270 Tagesbars je Titel (technical-signals-v1)", regime: "rund ein Marktjahr; kein voller Zyklus" },
@@ -131,7 +146,10 @@ export function build({ limit = 0, stride = 1, signalsDir = join(root, "quant/da
       outcome: "Zustand Stand k+20 und richtungsbereinigte Rendite Schluss k -> k+20 minus Querschnittsmittel desselben Datums (nur Daten mit mindestens 50 Titeln)",
       states: "bestaetigt / invalidiert bis k+20 laut Formation; entfallen = vorher nicht mehr gefuehrt, ohne festgehaltene Bestaetigung oder Invalidierung",
       significance: "Bonferroni ueber alle Typen, alpha 5 %",
+      base: "baseHitRate = Anteil aller Titel desselben Datums ueber dem Querschnittsmittel (baerisch: darunter), gemittelt ueber die Erkennungen",
+      breadth: "Marktbreite am Erkennungsdatum: Anteil der Titel mit Schluss ueber dem eigenen SMA 200; BROAD ab " + Math.round(BREADTH_LEVEL * 100) + " %, sonst NARROW (kausal)",
       costs: "keine (beschreibende Statistik, keine Handelssimulation)" },
+    breadthDates: Object.fromEntries(BREADTH_SLICES.map((k) => [k, [...breadth.values()].filter((v) => v.phase === k).length])),
     titles, detections: all.length, types };
 }
 

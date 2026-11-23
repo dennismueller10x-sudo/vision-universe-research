@@ -55,6 +55,7 @@ Je Aktie (`stocks[T]`):
 | `structure` | Spalte `structure` (Code; Name in `labels.structures`) |
 | `trend` | `aboveSma50`, `aboveSma200`, `sma50AboveSma200`, `sma200Rising` (Tageschart): `true`, `false` oder `null` (unbekannt) |
 | `rsRank` | Spalte `rsRank` |
+| `phase` | optional, Spalte `trendPhase` (ab screen-row 1.16.0): Vier-Phasen-Einstufung an der 150-Tage-Linie, 1 Boden, 2 Anstieg, 3 Dach, 4 Abstieg. Dieselbe Regel wie „Chart erklären“ (`ti/dow-trend.js#weinsteinStage`), gerechnet auf der SMA 150 der Vollhistorie. Nur bei frischer, nicht eingefrorener Reihe; fehlt sonst. Die Oberfläche liest das Feld noch nicht. |
 | `formations[]` | `{tf, type, state, badge, text}`. Tag aus der Spalte `formations`, Satz aus `model.js#hitSentence`. Woche aus `formationActive@1W` und `formationConfirmed@1W` |
 | `templates[]`, `goals[]` | `{id, status, label, pass, total}` für `FULL`, `NEAR` und `INCOMPLETE`, ausgewertet mit `templates.js#evaluate`. Analyseziele mit ihrer Voreinstellung (`assistant.js#build`). `NONE` erscheint nicht. Eine Aktie ohne aktuellen Kurs wird nicht eingeordnet (leere Listen) |
 | `dq[]` | `{code, tone, short, long}`: `FROZEN`, `BEHIND`, `NO_VOLUME`, `PRICE_JUMP_SUSPECT`, `PRICE_JUMP_CONFIRMED` (Text aus `price-jumps.js#describe`) |

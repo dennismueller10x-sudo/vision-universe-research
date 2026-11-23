@@ -161,3 +161,22 @@ test("veroeffentlichte Scherben (nach dem naechsten Lauf) erfuellen den Vertrag 
   assert.deepEqual([...meta.stock.shards].sort(), files.map((f) => f.slice(0, -5)).sort());
   assert.equal(meta.paths.stock, S.DIR + "<shardKey>.json");
 });
+
+test("Vier-Phasen-Einstufung (screen-row 1.16.0): Feld `phase` nur bei frischer, nicht eingefrorener Reihe; Bestand ohne Spalte bleibt unveraendert", () => {
+  const n = artifact.cols.s.length;
+  if (!artifact.cols.trendPhase) for (const sh of Object.values(built.shards)) for (const r of Object.values(sh.stocks)) assert.equal("phase" in r, false, r.s);
+  /* Spalte ergaenzt: Phase 1..4 im Wechsel; ungueltige Werte (0, 5, null) erzeugen kein Feld */
+  const withCol = Object.assign({}, artifact, { cols: Object.assign({}, artifact.cols, { trendPhase: artifact.cols.s.map((_, i) => [1, 2, 3, 4, 0, 5, null][i % 7]) }) });
+  const shards = S.build(withCol).shards;
+  let withPhase = 0, without = 0;
+  for (let i = 0; i < n; i++) {
+    const t = artifact.cols.s[i], rec = shards[Identity.shardKey(t)].stocks[t], v = withCol.cols.trendPhase[i];
+    const fresh = artifact.cols.fresh[i] === true && !(artifact.cols.frozenSince && artifact.cols.frozenSince[i]);
+    if (fresh && v >= 1 && v <= 4) { assert.equal(rec.phase, v, t); withPhase++; } else { assert.equal("phase" in rec, false, t); without++; }
+    /* alles andere bleibt gleich */
+    const rest = Object.assign({}, rec), base = Object.assign({}, recOf(t)); delete rest.phase; delete base.phase;
+    assert.deepEqual(rest, base, t);
+  }
+  assert.ok(withPhase > 0 && without > 0, withPhase + "/" + without);
+  for (const [k, sh] of Object.entries(shards)) assert.deepEqual(S.check(sh, k), [], k);
+});
