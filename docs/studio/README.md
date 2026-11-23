@@ -26,7 +26,7 @@ Einstieg für jede neue Sitzung, in der ein Reel entstehen soll. Stand 2026-10-2
 
 1. Nichts wird ohne Freigabe des Owners im Approval Center veröffentlicht. Es gibt keinen Weg daran vorbei.
 2. Jedes Reel führt zur Vision-Universe-App („bald verfügbar", Endkarte „App", nicht „Studio").
-3. Kein Kleingedrucktes im Video. Quellen, Stand und Hinweise stehen in der Caption.
+3. Kein Kleingedrucktes im Video und auf Grafiken oder Karussell-Slides (Owner 23.11.2026). Quellen, Stand und Hinweise stehen in der Caption. Markierte Wörter in Überschriften dürfen nicht in die Zeile darüber ragen (genug Zeilenabstand).
 4. Keine fremden oder ungeklärten Videos, Bilder, Stimmen oder Musik. Fremde Reels nur intern analysieren, nie wiederverwenden.
 5. Kein neues Abo, keine Änderung an der Produktivinfrastruktur, keine Anzeigen ohne Auftrag.
 6. Jeder kostenpflichtige Aufruf (HeyGen, Apify) wird vorher mit Kosten genannt und vom Owner freigegeben. Keine wiederkehrenden Abfragen ohne Zustimmung.

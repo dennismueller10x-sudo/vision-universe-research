@@ -380,6 +380,7 @@ Wirtschaftskalender (FMP-Endpunkte geprüft in `scripts/market/probe-free-source
   zwei Ausgaben bekommen einen Abschlag (Rotation, gelesen aus dem Archiv im Datenzweig), je Familie (schwach, stark, Trend,
   Volumen) höchstens ein Thema. Gezeigtes und Verworfenes steht in `topics` der Ausgabe. Wortwahl beschreibend, jedes Thema
   erklärt seinen Fachbegriff und sagt, dass es keine Empfehlung ist. Weitere Themen kommen als Eintrag in `POOL` dazu.
+- Instagram-Karussell (Owner 23.11.2026): `node products/news/briefing/social.mjs <briefing.json> <ordner> --ausgabe landing/marktbriefing/<sitzung>` schreibt bis zu sechs Slides (Hook je Thema, Thema des Tages, Bewertung, Marktbreite, Ausblick, Schluss mit echten Bildschirmen) und `caption.txt`. Kein Kleingedrucktes auf den Slides; Quellen und Hinweis in der Caption. Veröffentlichung nur über das Approval Center.
 - Karussell und Video: `node products/news/briefing/export-png.mjs <briefing.json> <ordner>` schreibt die Karten als PNG.
 - Die Investitionskarte erscheint nur, wenn ein Hyperscaler in den letzten 3 Tagen neue Zahlen bei der SEC gemeldet hat.
 

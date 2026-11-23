@@ -376,3 +376,22 @@ test('MB-17 Wechselnde Themen: Auswahl nach Auffälligkeit, Rotation, je Familie
   assert.match(html, /<section class="mb-sc [kwl]" id="thema-ueberverkauft"/);
   assert.match(Render.cardSvg(br.cards.find((c) => c.topic === 'volumen'), 0, 1, SESSION), /3,5×/);
 });
+
+test('MB-18 Instagram-Karussell: sechs Slides ohne Kleingedrucktes, Hook je Thema, Hinweis in der Caption', () => {
+  const Social = require('../briefing/social.js');
+  const inp = inputs();
+  const n = 120, cols = { s: [], close: [], chg1d: [], rsi14: [] }, members = [];
+  for (let i = 0; i < n; i++) { members.push({ symbol: 'T' + i, name: 'TEST ' + i }); cols.s.push('T' + i); cols.close.push(10); cols.chg1d.push(-0.03); cols.rsi14.push(i < 25 ? 20 : 50); }
+  inp.tech = { asOf: SESSION, cols }; inp.sp500 = { members };
+  const b = Engine.buildBriefing(inp);
+  const s = Social.slides(b, {});
+  assert.ok(s.length >= 4 && s.length <= 6, s.length + ' Slides');
+  assert.match(s[0], /25 Aktien aus dem S&amp;P&nbsp;500 sind <mark>überverkauft\.<\/mark>/);
+  const html = Social.html(b, { font: 'x' });
+  assert.ok(!/class="hint"|Keine Anlageberatung|Eigene Auswertung aus|Stand /.test(html), 'kein Kleingedrucktes auf den Slides (Owner 23.11.2026)');
+  assert.match(html, /visionuniverse\.de\/marktbriefing/);
+  const cap = Social.caption(b);
+  assert.match(cap, /Keine Anlageberatung, keine Kauf- oder Verkaufsempfehlung\./);
+  assert.ok(!/tiingo/i.test(cap + html));
+  assert.equal(Social.valTitle('NVDA: KGV seit dem Kurshoch fast halbiert'), 'Nvidias KGV hat sich seit dem Hoch fast halbiert');
+});
