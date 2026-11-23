@@ -2,18 +2,18 @@
   "schemaVersion": "dynamic-subscribe-verification-1.0.0",
   "frage": "Laesst sich die Tickerliste eines bestehenden Stufe-6-Sockets aendern, ohne die Verbindung neu aufzubauen?",
   "auftrag": "Zero-Cost Realtime V1 §1",
-  "checkedAt": "2026-09-17T13:53:04.639Z",
+  "checkedAt": "2026-11-23T16:04:04.036Z",
   "endpoint": "wss://api.tiingo.com/iex",
   "thresholdLevel": 6,
   "symbols": {
     "a": "AAPL",
     "b": "NVDA"
   },
-  "phaseSeconds": 45,
+  "phaseSeconds": 90,
   "session": {
     "phase": "REGULAR",
-    "localDate": "2026-09-17",
-    "localTime": "09:53:04",
+    "localDate": "2026-11-23",
+    "localTime": "11:04:04",
     "isOpen": true,
     "calendarCoverage": true
   },
@@ -22,10 +22,10 @@
   "consequence": "Nachmelden wirkt auf der offenen Verbindung. Der Subscription Manager darf im Modus 'dynamic' laufen (TIINGO_DYNAMIC_SUBSCRIBE=true); ein Titelwechsel kostet dann keinen Verbindungsaufbau mehr. Das Abmelden wirkt ebenfalls: AAPL verstummte.",
   "control": {
     "phase": "control",
-    "sekunden": 45,
+    "sekunden": 90,
     "symbols": {
-      "NVDA": 63,
-      "AAPL": 46
+      "AAPL": 95,
+      "NVDA": 105
     },
     "aActive": true,
     "bActive": true,
@@ -34,55 +34,55 @@
   "phases": [
     {
       "phase": "P0_baseline",
-      "from": "2026-09-17T13:53:49.767Z",
-      "to": "2026-09-17T13:54:34.768Z",
-      "seconds": 45,
+      "from": "2026-11-23T16:05:34.593Z",
+      "to": "2026-11-23T16:07:04.593Z",
+      "seconds": 90,
       "symbols": {
-        "AAPL": 52
+        "AAPL": 98
       },
-      "a": 52,
+      "a": 98,
       "b": 0
     },
     {
       "phase": "P1_add",
-      "from": "2026-09-17T13:54:34.769Z",
-      "to": "2026-09-17T13:55:19.769Z",
-      "seconds": 45,
+      "from": "2026-11-23T16:07:04.593Z",
+      "to": "2026-11-23T16:08:34.595Z",
+      "seconds": 90,
       "symbols": {
-        "NVDA": 74,
-        "AAPL": 55
+        "NVDA": 83,
+        "AAPL": 103
       },
-      "a": 55,
-      "b": 74
+      "a": 103,
+      "b": 83
     },
     {
       "phase": "P2_remove",
-      "from": "2026-09-17T13:55:19.769Z",
-      "to": "2026-09-17T13:56:04.770Z",
-      "seconds": 45,
+      "from": "2026-11-23T16:08:34.596Z",
+      "to": "2026-11-23T16:10:04.595Z",
+      "seconds": 90,
       "symbols": {
-        "NVDA": 65
+        "NVDA": 104
       },
       "a": 0,
-      "b": 65
+      "b": 104
     }
   ],
   "serverMessages": [
     {
-      "at": "2026-09-17T13:53:04.750Z",
+      "at": "2026-11-23T16:04:04.458Z",
       "nachricht": {
         "response": {
           "code": 200,
           "message": "Success"
         },
         "data": {
-          "subscriptionId": 50628158
+          "subscriptionId": 59055423
         },
         "messageType": "I"
       }
     },
     {
-      "at": "2026-09-17T13:53:04.750Z",
+      "at": "2026-11-23T16:04:04.458Z",
       "nachricht": {
         "response": {
           "code": 200,
@@ -92,20 +92,7 @@
       }
     },
     {
-      "at": "2026-09-17T13:53:49.782Z",
-      "nachricht": {
-        "response": {
-          "code": 200,
-          "message": "Success"
-        },
-        "data": {
-          "subscriptionId": 50628183
-        },
-        "messageType": "I"
-      }
-    },
-    {
-      "at": "2026-09-17T13:53:49.782Z",
+      "at": "2026-11-23T16:05:24.456Z",
       "nachricht": {
         "response": {
           "code": 200,
@@ -115,7 +102,40 @@
       }
     },
     {
-      "at": "2026-09-17T13:54:34.780Z",
+      "at": "2026-11-23T16:05:34.668Z",
+      "nachricht": {
+        "response": {
+          "code": 200,
+          "message": "Success"
+        },
+        "data": {
+          "subscriptionId": 59055499
+        },
+        "messageType": "I"
+      }
+    },
+    {
+      "at": "2026-11-23T16:05:34.668Z",
+      "nachricht": {
+        "response": {
+          "code": 200,
+          "message": "HeartBeat"
+        },
+        "messageType": "H"
+      }
+    },
+    {
+      "at": "2026-11-23T16:06:54.669Z",
+      "nachricht": {
+        "response": {
+          "code": 200,
+          "message": "HeartBeat"
+        },
+        "messageType": "H"
+      }
+    },
+    {
+      "at": "2026-11-23T16:07:04.660Z",
       "nachricht": {
         "response": {
           "code": 200,
@@ -124,15 +144,25 @@
         "data": {
           "thresholdLevel": "6",
           "tickers": [
-            "nvda",
-            "aapl"
+            "aapl",
+            "nvda"
           ]
         },
         "messageType": "I"
       }
     },
     {
-      "at": "2026-09-17T13:55:19.780Z",
+      "at": "2026-11-23T16:08:14.669Z",
+      "nachricht": {
+        "response": {
+          "code": 200,
+          "message": "HeartBeat"
+        },
+        "messageType": "H"
+      }
+    },
+    {
+      "at": "2026-11-23T16:08:34.664Z",
       "nachricht": {
         "response": {
           "code": 200,
@@ -148,7 +178,7 @@
       }
     },
     {
-      "at": "2026-09-17T13:55:49.782Z",
+      "at": "2026-11-23T16:09:34.670Z",
       "nachricht": {
         "response": {
           "code": 200,
@@ -160,7 +190,7 @@
   ],
   "sent": [
     {
-      "at": "2026-09-17T13:53:49.767Z",
+      "at": "2026-11-23T16:05:34.592Z",
       "nachricht": {
         "eventName": "subscribe",
         "eventData": {
@@ -173,7 +203,7 @@
       }
     },
     {
-      "at": "2026-09-17T13:54:34.769Z",
+      "at": "2026-11-23T16:07:04.593Z",
       "nachricht": {
         "eventName": "subscribe",
         "eventData": {
@@ -186,7 +216,7 @@
       }
     },
     {
-      "at": "2026-09-17T13:55:19.769Z",
+      "at": "2026-11-23T16:08:34.595Z",
       "nachricht": {
         "eventName": "unsubscribe",
         "eventData": {
@@ -203,14 +233,14 @@
     "stayedOpen": true,
     "closedWith": null,
     "reconnects": 0,
-    "openedAt": "2026-09-17T13:53:49.769Z"
+    "openedAt": "2026-11-23T16:05:34.593Z"
   },
   "evidence": {
     "baselineLeak": 0,
-    "addObserved": 74,
-    "aDuringAdd": 55,
+    "addObserved": 83,
+    "aDuringAdd": 103,
     "aAfterRemove": 0,
-    "bAfterRemove": 65,
+    "bAfterRemove": 104,
     "socketStayedOpen": true,
     "explicitRejection": null
   }
