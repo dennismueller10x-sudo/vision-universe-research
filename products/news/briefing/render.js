@@ -42,7 +42,7 @@
   function num(x, d) { return Math.abs(x).toFixed(d == null ? 1 : d).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, "."); }
   function sign(x) { return x > 0 ? "+" : x < 0 ? "−" : ""; }
   function pct(x, d) { return sign(x) + num(x, d) + " %"; }
-  function fmt(v, unit, d) { return unit === "bp" ? sign(v) + num(v, 0) + " bp" : unit === "%" ? pct(v, d) : num(v, d == null ? 0 : d) + (unit || ""); }
+  function fmt(v, unit, d) { if (unit === "x") return num(v, 1) + "×"; return unit === "bp" ? sign(v) + num(v, 0) + " bp" : unit === "%" ? pct(v, d) : num(v, d == null ? 0 : d) + (unit || ""); }
   function tone(v) { return v > 0 ? C.lime : C.fg; }  /* Hausregel: Plus neongrün, Minus in der Schriftfarbe, kein Rot */
   function deDate(iso) { return iso.slice(8, 10) + "." + iso.slice(5, 7) + "." + iso.slice(0, 4); }
 

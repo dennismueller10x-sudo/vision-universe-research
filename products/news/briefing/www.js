@@ -129,6 +129,19 @@
         '<div class="mb-facts">' + (cx.stats || []).map(function (s) { return "<div><b>" + pct(s.value) + "</b>" + esc(s.label) + ", " + esc(s.sub) + "</div>"; }).join("") + "</div></div>" });
     }
 
+    /* Wechselnde Themen (topics.js): eine Szene je Thema, Liste mit Kürzel, Name und Wert. */
+    var TI = { ueberverkauft: "down", ueberkauft: "up", momentum: "up", "neue-tiefs": "down", kreuzungen: "rate", "linie-200": "movers", volumen: "dots" }, tbg = ["k", "w", "l"];
+    b.cards.filter(function (c) { return c.topic; }).forEach(function (t, n) {
+      var groups = t.groups || [{ label: null, rows: t.bars.rows }], unit = t.groups ? "%" : t.bars.unit;
+      var val = function (v) { return unit === "%" ? pill(v) : '<span class="mb-pill nt">' + (unit === "x" ? num(v, 1) + "×" : num(v, 0)) + "</span>"; };
+      S.push({ id: t.id, bg: tbg[n % tbg.length], toc: t.title, html:
+        '<div class="mb-in mb-duo mb-top"><div class="mb-col">' + tag("Eigene Auswertung", TI[t.topic] || "news") + eye(TI[t.topic] || "news", t.kicker.replace(/^Thema · /, "Thema · ")) +
+        '<h2 class="mb-claim mb-m">' + esc(t.title) + '.</h2><p class="mb-say">' + esc(t.sub) + '</p></div><div class="mb-list">' +
+        groups.map(function (g) { return (g.label ? '<p class="mb-sub">' + esc(g.label) + "</p>" : "") + g.rows.map(function (r) {
+          return '<div class="mb-lr"><span class="mb-lg">' + esc(r.label.slice(0, 4)) + '</span><span class="mb-t">' + esc(r.label) + "<small>" + esc(r.sub) + "</small></span>" + val(r.value) + "</div>"; }).join(""); }).join("") +
+        "</div></div>" });
+    });
+
     third.filter(function (c) { return c.columns; }).forEach(function (f, n) {
       var r = f.columns.rows, last = r[r.length - 1].values[0];
       S.push({ id: "dritte-" + (n + 1), bg: "l", toc: f.title, html:
@@ -278,7 +291,7 @@
       ["Einordnung", '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'], ["Marktbreite", '<circle cx="6" cy="6" r="1.6"/><circle cx="12" cy="6" r="1.6"/><circle cx="18" cy="6" r="1.6"/><circle cx="6" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18" cy="12" r="1.6"/><circle cx="6" cy="18" r="1.6"/><circle cx="12" cy="18" r="1.6"/><circle cx="18" cy="18" r="1.6"/>'],
       ["Bewertung", '<path d="M12 4v16M5 8h14M7 8l-3 7h6zM17 8l-3 7h6z"/>'], ["Zinsen und Sachwerte", '<path d="M19 5L5 19"/><circle cx="7" cy="7" r="2.5"/><circle cx="17" cy="17" r="2.5"/>'],
       ["Größte Bewegungen", '<path d="M7 20V5M3 9l4-4 4 4M17 4v15M13 15l4 4 4-4"/>'], ["Unser Marktbild", '<path d="M4 16a8 8 0 1 1 16 0"/><path d="M12 16l4-5"/>'],
-      ["Thema des Tages", '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 9h10M7 13h6"/>'], ["Ausblick und Termine", Render.ICONS.markt]];
+      ["Thema des Tages", '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 9h10M7 13h6"/>'], ["Ausblick und Termine", Render.ICONS.markt], ["Wechselnde Themen", Render.ICONS.dots]];
     var STATS = [["6 Mio.", "Kursdaten ausgewertet"], ["5.200+", "US-Aktien je Börsentag"], ["5.277", "Firmenbilanzen (SEC)"], ["119", "Hedgefonds (13F-Meldungen)"]];
     var SRC = ["Notenbanken", "Börsenaufsicht SEC", "Nachrichtenagenturen", "Research großer Banken", "Hedgefonds-Meldungen", "Statistikämter", "Eigene Modelle"];
     var rail = cardsAll.length ? '<section class="full mbrailsec"><div class="mbhead"><h2>Ein Blick hinein</h2><span>Neueste Ausgabe · ' + dmy(b.session) + b.session.slice(0, 4) + '</span></div><div class="mbrail">' +

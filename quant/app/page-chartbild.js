@@ -590,29 +590,32 @@
       if (o.isPro) host.append(o.proHost);   // ?ansicht=profi: Regeln und Niveaus auch ohne Zaehlung
       return;
     }
-    var c = E.primary, prim = (a.scenarios || []).filter(function (x) { return x.kind === "PRIMARY"; })[0] || null, inv = prim && prim.invalidation;
-    var up = prim && prim.direction === "BULLISH", down = prim && prim.direction === "BEARISH";
+    /* Owner 23.11.2026: Richtung und Grenze kommen aus der Zaehlung selbst (VUElliottPlan), nicht aus dem Szenario-Modell. */
+    var c = E.primary, plan = global.VUElliottPlan ? global.VUElliottPlan.planOf(a) : null, inv = plan && plan.invalidation;
+    var up = plan && plan.dir === "UP", down = plan && plan.dir === "DOWN";
     var weekly = a.timeframe === "1W", cl = E.clarityLevel || "MODERATE", ap = E.applicability.level, rr = o.T && o.T.relabeling ? o.T.relabeling.risk : null;
-    var title = ewPattern(c.pattern, c.patternName) + (c.complete ? " abgeschlossen" : " · Welle " + ((c.currentWave && c.currentWave.label) || "–"));
-    var grade = ewGrade(E), CLV = EW_GRADE[grade], nCand = E.trace && E.trace.candidates;
-    host.append(el("div", { class: "cb-ew-say" }, [el("div", {}, [el("p", { class: "vu-ltag", text: "Wellen · " + o.tfLabel }), el("h2", { class: "vu-mt", text: title })]), ewVerdict(CLV[0], CLV[1])]), o.chartCard);
+    var title = ewPattern(c.pattern, c.patternName) + (c.complete ? " abgeschlossen" : " · Welle " + ((c.currentWave && c.currentWave.label) || "–") + " läuft");
+    var grade = ewGrade(E), CLV = EW_GRADE[grade], nCand = E.trace && E.trace.candidates, over = !!(plan && plan.overtaken);
+    /* Ueberholt: alle Elliott-Projektionszonen dieser Zaehlung sind durchlaufen – die Bewegung passt nicht mehr zur Zaehlung. */
+    var overNote = over ? el("p", { class: "vu-alert cb-ew-over", role: "status" }, [el("b", { text: "Zählung überholt. " }), el("span", { text: "Der Kurs ist über alle Zonen dieser Zählung hinausgelaufen; die Bewegung ist größer, als sie annimmt. Neuzählung steht an." })]) : null;
+    host.append(el("div", { class: "cb-ew-say" }, [el("div", {}, [el("p", { class: "vu-ltag", text: "Wellen · " + o.tfLabel }), el("h2", { class: "vu-mt", text: title })]), over ? ewVerdict("weak", "Zählung überholt") : ewVerdict(CLV[0], CLV[1])]), overNote, o.chartCard);
     var rows = [
-      ["wave", "Struktur", ewStructSentence(c, a.outlook && a.outlook.structure), up ? ewVerdict("strong", "nach oben") : down ? ewVerdict("weak", "nach unten") : ewVerdict("none", "Richtung offen")],
-      ["target", "Grenze", inv ? "Die Lesart gilt, solange " + (weekly ? "die Woche" : "der Tag") + " " + (inv.direction === "below" ? "über " : "unter ") + ewPrice(inv.price) + " schließt." : "Für diese Lesart gibt es keine Ungültig-Marke.", ewVerdict("mid", "Ungültig-Marke")],
+      ["wave", "Struktur", ewStructSentence(c, a.outlook && a.outlook.structure), up ? ewVerdict("strong", c.complete ? "danach nach oben" : "Welle nach oben") : down ? ewVerdict("weak", c.complete ? "danach nach unten" : "Welle nach unten") : ewVerdict("none", "Richtung offen")],
+      ["target", "Grenze", inv ? "Die Zählung gilt, solange " + (weekly ? "die Woche" : "der Tag") + " " + (inv.direction === "below" ? "über " : "unter ") + ewPrice(inv.price) + " schließt (Regel der Methode)." : "Für diese Zählung nennt die Methode keine feste Ungültig-Marke.", ewVerdict("mid", "Ungültig-Marke")],
       ["book", "Klarheit", CLV[1] + ": " + CLV[2] + "." + (grade === "D" ? " Diese Lesart ist die derzeit beste" + (nCand > 1 ? " von " + nCand.toLocaleString("de-DE") + " regelkonformen" : "") + "; der Chart lässt mehrere Zählungen zu." : "") + (rr && EW_RR[rr] ? " Gefahr einer Neuzählung " + EW_RR[rr] + "." : ""), ewVerdict(CLV[0], CLV[1])]
     ];
     host.append(el("section", { class: "cb-story", "aria-label": "Die Lesart in drei Sätzen", tabindex: "0" }, [el("p", { class: "vu-ltag", text: "Die Lesart in drei Sätzen" })].concat(rows.map(function (r) {
       return el("div", { class: "cb-story-r" }, [el("span", { class: "vu-hud", style: "--vu-hud:34px", "aria-hidden": "true" }, [ewIcon(EW_IC[r[0]])]), el("div", {}, [el("span", { class: "vu-ltag", text: r[1] }), el("p", { text: r[2] })]), r[3]]);
     }))));
     var ov = a.overlays && a.overlays.waves, waves = (ov && ov.primary) || [];
-    var alts = (E.alternatives || []).slice(0, 3), others = (a.scenarios || []).filter(function (x) { return x.kind !== "PRIMARY"; });
+    var alts = (E.alternatives || []).slice(0, 3), others = [];   // Szenario-Modell gehoert nicht zu den Elliott-Lesarten (Owner 23.11.2026)
     host.append(el("div", { class: "cb-eps" }, [
       ewChapter(1, ewIcon(EW_IC.wave), "Die Wellen im Chart", waves.length ? waves.map(function (w) { return w.label; }).join(" · ") + " mit Datum" : "Wellen der Lesart", function () {
         return [el("ol", { class: "cb-list cb-ew-waves" }, waves.map(function (w) { return el("li", { class: "num" }, [el("b", { text: "Welle " + w.label }), " · " + X.dateDe(w.time) + " · " + ewPrice(w.price) + (w.status === "DEVELOPING" ? " · im Aufbau" : "")]); })),
           ov && ov.alternative && ov.alternative.length ? segmented("Lesart im Chart", [["primary", "Hauptlesart"], ["alt", "Alternative"]], "primary", o.onWaves) : null,
           el("p", { class: "cb-small cb-dim", text: "Eine Wellenmarke im Chart antippen erklärt die Welle." })];
       }),
-      ewChapter(2, ewIcon(EW_IC.shapes), "Andere Lesarten", "Alternative und Randszenario", function () {
+      ewChapter(2, ewIcon(EW_IC.shapes), "Andere Lesarten", "Alternative Zählungen", function () {
         var li = alts.map(function (x, i) { return el("li", {}, [el("b", { text: (i ? "Weitere Lesart: " : "Alternative Zählung: ") + ewPattern(x.pattern, x.patternName) + (x.complete ? " abgeschlossen" : ", Welle " + ((x.currentWave && x.currentWave.label) || "–")) }),
           x.invalidation ? " · ungültig bei Schluss " + (x.invalidation.direction === "below" ? "unter " : "über ") + ewPrice(x.invalidation.price) : null]); });
         others.forEach(function (x) { li.push(el("li", {}, [el("b", { text: (x.kind === "TAIL" ? "Randszenario" : "Alternative") + ": " + (x.direction === "BULLISH" ? "nach oben" : x.direction === "BEARISH" ? "nach unten" : "seitwärts") }),
@@ -784,13 +787,16 @@
       chartHost.dataset.direction = direction(); chartHost.dataset.mode = mode;
       /* W05: in Elliott ohne belastbare Lesart zeigt der Chart die Marktstruktur (Unterstützung neongrün, Widerstand grau) statt Szenario-Zonen. */
       var ms = inElliott ? null : structureOnly() ? structureOverlay() : null;
-      /* Elliott-Neustart (Owner 22.11.2026, ersetzt Konzept EHV „nur Ungültig-Marke“): der Chart zeigt den Plan der Hauptlesart –
-         Zone, Ziele, erwarteten Pfad und Ungültig-Marke –, dieselben Werte wie die Kacheln, keine neue Rechnung. */
-      var io = inElliott && !replayStep && !pjOnChart && a.overlays ? { zones: (a.overlays.zones || []).filter(function (x) { return x.scenario === "PRIMARY"; }), invalidations: (a.overlays.invalidations || []).filter(function (x) { return x.scenario === "PRIMARY"; }), projectedPaths: (a.overlays.projectedPaths || []).filter(function (x) { return x.scenario === "PRIMARY"; }) } : null;
+      /* Elliott-Plan (Owner 23.11.2026, ersetzt den Szenario-Plan im Elliott-Chart): nur, was aus der Zaehlung folgt – Ungueltig-Marke der
+         Zaehlung und, wenn die Engine sie zeigt, die noch offene Zone der Elliott-Projektion. Zonen und Pfad des Szenario-Modells
+         (Widerstand, Unterstuetzung) stehen nicht im Elliott-Chart (VUElliottPlan, elliott/engine/plan.js, keine neue Rechnung). */
+      var ewPlan = inElliott && global.VUElliottPlan ? global.VUElliottPlan.planOf(a) : null;
+      var io = inElliott && !replayStep && !pjOnChart ? { zones: ewPlan && ewPlan.zone ? [{ scenario: "PRIMARY", kind: "ENTRY", low: ewPlan.zone.low, high: ewPlan.zone.high }] : [], invalidations: ewPlan && ewPlan.invalidation ? [{ scenario: "PRIMARY", price: ewPlan.invalidation.price, direction: ewPlan.invalidation.direction, basis: "CLOSE" }] : [], projectedPaths: [] } : null;
+      chartHost.classList.toggle("is-ew", !!io); chartHost.classList.toggle("is-ew-weak", !!(ewPlan && (ewPlan.abstain || ewPlan.overtaken)));
       if (scLeg0) scLeg0.hidden = !!ms; if (msLeg) msLeg.hidden = !ms;
-      chartHost.replaceChildren(Chart.render({ chart: a.chart, overlays: ms ? ms : io ? io : replayStep ? overlaysFromStep(replayStep) : a.overlays, scenarioKind: ms ? "STRUCTURE" : replayStep ? "PRIMARY" : kind, scenario: ms ? null : scenarioOf(kind),
+      chartHost.replaceChildren(Chart.render({ chart: a.chart, overlays: ms ? ms : io ? io : replayStep ? overlaysFromStep(replayStep) : a.overlays, scenarioKind: ms ? "STRUCTURE" : replayStep || io ? "PRIMARY" : kind, scenario: ms ? null : scenarioOf(kind),
         projection: pjOnChart ? pjChart(pjT, pjT.source === "ALTERNATIVE" || altSource(pjT) ? "alt" : null) : null, logScale: pjOnChart ? (pjLog === null ? pjAutoLog(pjT) : pjLog) : false,
-        cutoff: replayStep ? replayStep.d : null, showPath: !replayStep && !ms, uncertain: replayStep ? replayStep.cl === "AMBIGUOUS" : uncertain,
+        cutoff: replayStep ? replayStep.d : null, showPath: !replayStep && !ms && !io, uncertain: replayStep ? replayStep.cl === "AMBIGUOUS" : uncertain,
         waves: wavesOn ? waveMarks() : null, waveTone: !replayStep && (waveSet === "alt" || (pjOnChart && altSource(pjT))) ? "alt" : null, onWave: replayStep || waveSet === "alt" || (pjOnChart && (pjT.degree === "HIGHER" || altSource(pjT))) ? null : function (w) { waveInspector(a, w, rules, methodEv); },
         width: width, height: width < 520 ? 380 : 460, bars: barsFor(), mode: mode, title: ticker + " · Chartbild · " + tfLabel, labels: true }));
       if (replayStep) chartHost.prepend(el("p", { class: "cb-replay-flag", role: "status", text: "Zeitreise · Stand " + X.dateDe(replayStep.d) + " · nur damals verfügbare Daten" }));
@@ -830,7 +836,8 @@
     var chartCard = el("section", { class: "cb-chart-card", "aria-label": "Chart" }, [chartHost, controls,
       pjLegend, motiveNote, exploreNote, candidateNote,
       msLeg = el("p", { class: "cb-legend cb-legend-ms", hidden: true }, [el("span", { class: "cb-key cb-key-support", text: "Unterstützung" }), el("span", { class: "cb-key cb-key-resistance", text: "Widerstand" }), el("span", { class: "cb-dim", text: "Preisbereiche, an denen der Kurs früher gedreht hat" })]),
-      scLeg0 = el("p", { class: "cb-legend cb-legend-sc" }, [el("span", { class: "cb-key cb-key-entry", text: "Zone laut Methode" }), el("span", { class: "cb-key cb-key-invalid", text: "Ungültig (Schlusskurs)" }), el("span", { class: "cb-key cb-key-path", text: "Szenario-Korridor – keine Zeitangabe" })]),
+      scLeg0 = inElliott ? el("p", { class: "cb-legend cb-legend-sc" }, [el("span", { class: "cb-key cb-key-invalid", text: "Ungültig laut Zählung (Schlusskurs)" }), el("span", { class: "cb-key cb-key-entry", text: "offene Zone der Elliott-Projektion, falls vorhanden" }), el("span", { class: "cb-dim", text: "Offene Wellenmarke = Welle läuft noch" })])
+        : el("p", { class: "cb-legend cb-legend-sc" }, [el("span", { class: "cb-key cb-key-entry", text: "Zone laut Methode" }), el("span", { class: "cb-key cb-key-invalid", text: "Ungültig (Schlusskurs)" }), el("span", { class: "cb-key cb-key-path", text: "Szenario-Korridor – keine Zeitangabe" })]),
       wavesOn && (inElliott || !abstain) && E && E.primary ? el("p", { class: "cb-small cb-dim", text: "Tipp: Eine Wellenmarke antippen erklärt die Welle." }) : null]);
 
     // ---------------------------------------------- Elliott-Bereich (Mission III §41–§47, §57, §98–§100)
