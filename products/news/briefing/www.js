@@ -312,6 +312,12 @@
     return { dot: pick(/<span class="dot">[\s\S]*?<\/svg><\/span>/), soon: pick(/<p class="soon">[\s\S]*?<\/p>/), stores: pick(/<div class="stores">[\s\S]*?<\/p><\/div>/) };
   }
 
+  /* App-Story (willkommen/config/marktbriefing.json): Titel, Datum, Link zur Ausgabe, PDF und alle Szenen als Bilder. */
+  function appStory(b, o) {
+    var C = {}; b.cards.forEach(function (c) { C[c.id] = c; });
+    return { schema: "vu-marktbriefing-app-1", session: b.session, title: C.overview.title, label: "Briefing", url: o.url, pdf: o.pdf || null,
+      screens: (o.screens || []).map(function (x) { return { id: x.id, title: x.toc, image: x.image }; }) };
+  }
   /* Teaser für die Startseite (Region <!--MB:teaser--> in landing/index.html; Owner 22.11.2026: „Karten zum Wischen“).
      Schlagzeile, Knopf zur Produktseite und eine Reihe mit Titelblatt und den ersten Karten der Ausgabe; jede Karte
      führt an ihre Stelle im Briefing. Die Startseite teasert nur an, alles Weitere steht auf /marktbriefing/. */
@@ -332,7 +338,7 @@
     return indexHtml.slice(0, i + a.length) + teaser(b, "./marktbriefing/", img) + indexHtml.slice(j);
   }
 
-  var api = { page: page, scenes: scenes, chromeFrom: chromeFrom, productPage: productPage, partsFrom: partsFrom, teaser: teaser, withTeaser: withTeaser, SITE: SITE };
+  var api = { page: page, scenes: scenes, appStory: appStory, chromeFrom: chromeFrom, productPage: productPage, partsFrom: partsFrom, teaser: teaser, withTeaser: withTeaser, SITE: SITE };
   if (isNode) module.exports = api;
   else global.VUMarketBriefingWww = api;
 })(typeof window !== "undefined" ? window : globalThis);

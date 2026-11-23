@@ -1,6 +1,6 @@
 {
- "methodologyVersion": "quant-v2.4.1",
- "modelProfileId": "quant-v2.4.1-full-7f",
+ "methodologyVersion": "quant-v2.5.0",
+ "modelProfileId": "quant-v2.5.0-full-7f",
  "modelVersion": "2.0.0",
  "label": "VU Quant Score 2.0 · Full 7F",
  "status": "SPECIFIED_NOT_ACTIVE",
@@ -24,19 +24,19 @@
   "risk"
  ],
  "factorWeights": {
-  "quality": 0.1,
-  "growth": 0.15,
-  "momentum": 0.25,
-  "value": 0.15,
-  "profitability": 0.15,
+  "quality": 0.085,
+  "growth": 0.0425,
+  "momentum": 0.3825,
+  "value": 0.0425,
+  "profitability": 0.255,
   "revisions": 0.15,
-  "risk": 0.05
+  "risk": 0.0425
  },
  "factors": {
   "quality": {
    "label": "Quality",
    "purpose": "Durability, accounting quality and balance-sheet resilience; no profitability levels are reused.",
-   "weight": 0.1,
+   "weight": 0.085,
    "components": [
     {
      "id": "accrualRatio",
@@ -93,7 +93,7 @@
   "growth": {
    "label": "Growth",
    "purpose": "Operating expansion and acceleration; changes rather than profitability levels.",
-   "weight": 0.15,
+   "weight": 0.0425,
    "components": [
     {
      "id": "revenueCagr3y",
@@ -156,7 +156,7 @@
   "momentum": {
    "label": "Momentum",
    "purpose": "Medium-horizon price strength and market confirmation on a split-adjusted price basis.",
-   "weight": 0.25,
+   "weight": 0.3825,
    "components": [
     {
      "id": "priceReturn12m1m",
@@ -217,7 +217,7 @@
   "value": {
    "label": "Value",
    "purpose": "Price relative to current PIT-safe business fundamentals.",
-   "weight": 0.15,
+   "weight": 0.0425,
    "components": [
     {
      "id": "fcfYield",
@@ -274,7 +274,7 @@
   "profitability": {
    "label": "Profitability",
    "purpose": "Current and persistent operating profitability; excludes balance-sheet safety and accounting-quality components.",
-   "weight": 0.15,
+   "weight": 0.255,
    "components": [
     {
      "id": "roicTtm",
@@ -413,7 +413,7 @@
   "risk": {
    "label": "Risk",
    "purpose": "Historical market risk; a higher score always means lower observed risk.",
-   "weight": 0.05,
+   "weight": 0.0425,
    "components": [
     {
      "id": "realizedVolatility252d",
@@ -537,7 +537,7 @@
  },
  "score": {
   "factorFormula": "sum(componentWeight*componentScore)/sum(availableComponentWeight)",
-  "compositeFormula": "0.10*quality+0.15*growth+0.25*momentum+0.15*value+0.15*profitability+0.15*revisions+0.05*risk",
+  "compositeFormula": "0.085*quality+0.0425*growth+0.3825*momentum+0.0425*value+0.255*profitability+0.15*revisions+0.0425*risk",
   "quantScore": "deterministic percentile rank of compositeScore in eligible score universe",
   "minimumWeightedComponentCoverage": 0.8,
   "semantics": "Relative rank, not a probability, target price or recommendation.",
@@ -780,6 +780,12 @@
   "broad component coverage and cross-sectional validation"
  ],
  "versionHistory": [
+  {
+   "version": "quant-v2.5.0",
+   "date": "2026-11-22",
+   "change": "Composite weights: momentum 0.25 -> 0.3825, profitability 0.15 -> 0.255, growth and value 0.15 -> 0.0425, quality 0.10 -> 0.085, risk 0.05 -> 0.0425; revisions keep 0.15. Factor definitions, components and all factor scores are unchanged.",
+   "why": "Owner plan after Backtest 2.0 (22.11.2026, \"Ok\"): weight towards the features that held up (momentum, profitability). Variant study on rebuilt PIT documents (research.yml quality-marge-pit, mode quant-varianten, run 45054479353; 176 rank dates 2012-2025, median 822 titles, price return without costs; research, not certified). Rule fixed before the run (docs/research/backtest2/PROTOKOLL.md 4c): a variant is adopted if its IC is not lower at 3 and 12 months and its top fifth is further ahead of SPY at 12 months. tilt (non-revision weights Q .10 G .05 V .05 P .30 M .45 R .05, here scaled by 0.85): IC 0.038/0.049 vs 0.036/0.046, top fifth minus SPY over 12 months +1.55 % vs +1.35 %; rank correlation to quant-v2.4.1 0.95, top-decile overlap 78 %. The composite stays WITHHELD while revisions are BLOCKED_EXTERNAL; published factor scores do not change."
+  },
   {
    "version": "quant-v2.4.1",
    "date": "2026-11-18",

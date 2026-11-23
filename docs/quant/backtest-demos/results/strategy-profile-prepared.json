@@ -42,7 +42,7 @@
  },
  "inputHashes": {
   "code": {
-   "scripts/quant/research/backtest-runner.cjs": "b536fc8d6ed48e2b7d9e534a0642de22b2034d1fd6253e539610f4072cba93ec",
+   "scripts/quant/research/backtest-runner.cjs": "c4b675f7670b704429db5e72f4cda1433763e2ab28315e9103cf3d10fde59119",
    "scripts/quant/research/research-population.cjs": "699173804bddf7e3aae88523cff22f471dbb0f96276ce62fe9e949879a109a82",
    "quant/engines/research-studies.cjs": "474422373eeac509b043d2a5e95c17dcfecfcb8ff0f651020696bbaf027be418",
    "quant/engines/research-portfolio.cjs": "0cc42852cefca4d484935feb430f6f1b8199a7263f07b87bb0a615c1fd3f4e5e",
@@ -67,15 +67,15 @@
    "scripts/quant/v10/setup/run-setup-reconstruction.cjs": "df6ec66d87b97c2b8a18c6815a8b91f45e9d04b81d5f5f8f824723f1eb4ca30c",
    "scripts/quant/v10/factor/panel.cjs": "10f82897a00a294f35ac12262d1aca76e39f718047f8f0514ee589a70398b1d7"
   },
-  "certification": "4a4f5759965d14326c14f045c53c124af90c9535dd57e96d12d819bbd7897f88",
-  "benchmark": "58d44b907a091c501f1d3aeb78fd37e82a9afb512cecbec784ba3a1f4a07dd5e",
+  "certification": "9ad5a131d51c741904011f0e3c5d2ad7af131ae00e73176080e9cfb7d8d3ac1e",
+  "benchmark": "0683b7cf38715c85a328a59a654185db9c1a37d5de2e9afe98e978c5de5a14b7",
   "population": {
    "profile": "V10_PRIMARY",
    "profileSpecHash": "f622075f2ae6d2589d5cca45378c2e56e4c6832eaef0a0df31c354f1601dc476",
-   "populationHash": "ea3949077a7eef02f8f4c9777ed1fa55e29306c2658fe7f8b21f954f30a43509",
-   "calendarHash": "b10f4b40c258bd5956829097711e344d68ba325a9146ac5c613f1b2822e4dbbf",
-   "calendarLength": 1924,
-   "sourceManifestHash": "d9bdac5bfd1e29e1245644dae0fed8ae43ff1f063f055884c7bc326ba42788b3",
+   "populationHash": "9706c45c4f12989061536cb911773b210ca31ec5b82d67d566588501f8a7579d",
+   "calendarHash": "851e02bd084ecca43cb1a2a846dbbe5dc73c34cde135058c5a498cc66f0921e0",
+   "calendarLength": 1925,
+   "sourceManifestHash": "c4e32f9750c260bec21481939e3119a1d8e5056a5f506b3ff77562e0a32b70f4",
    "masterHash": "26c82617913ab0dcbd08d24c80eb818134ccced74cc01e9eac819b4635498332",
    "registers": {
     "identityEvidence": {
@@ -93,12 +93,12 @@
     "pitMarketCap": "d45efd4d4f08aa63a776f87c790ce85492a5670232308bc7850b702680ea23a6",
     "indexPopulation": "413663e6632617c5270f2c4257973b06d3cdd8e95f210fb46f846aa5b3b8c4ac"
    },
-   "pointsHashRoot": "0541a6e1f2b37e35423343b9f543e4c20c4950426c55b15946a5cbc632a00737"
+   "pointsHashRoot": "9d1111bbdb3934333d069e0b95c82465acb229f0b7e488a0f004dd3c1ca63a1a"
   },
   "listings": {
    "ref_MSFT": {
     "listingId": "tiingo:NASDAQ:MSFT:1986-03-13",
-    "sourceBytesHash": "70ed88f471bb5c143ab479afda407811e6f9eacc14a29eb9af55880ce219ecc4",
+    "sourceBytesHash": "50fdf78fb658a8a4ade3dde0669e8604d846f5f996011b9e3c4baf33f8e7443d",
     "registerPointsSha256": null,
     "first": "1990-01-05",
     "last": "2025-12-26",
@@ -106,7 +106,7 @@
    },
    "ref_JPM": {
     "listingId": "tiingo:NYSE:JPM:1983-12-30",
-    "sourceBytesHash": "847650fcf5e340ef390a74a657358291ae0057925a8958e45d572980a3d201f6",
+    "sourceBytesHash": "a5b16e2743c861a35e82f32c51061d3fdcc226240b31da73ce537f15e8e62c5e",
     "registerPointsSha256": null,
     "first": "1990-01-05",
     "last": "2025-12-26",
@@ -114,7 +114,7 @@
    },
    "ref_KO": {
     "listingId": "tiingo:NYSE:KO:1962-01-02",
-    "sourceBytesHash": "3894dd811c01d8e905dba13ce4d216a1055da017bbe857b46dbf33e9484f8502",
+    "sourceBytesHash": "aa2ba8ad555be673ac0999eda5b7e5173966767d619b241c920638e10046b2b4",
     "registerPointsSha256": null,
     "first": "1990-01-05",
     "last": "2025-12-26",
@@ -122,7 +122,7 @@
    },
    "ref_PG": {
     "listingId": "tiingo:NYSE:PG:1970-01-02",
-    "sourceBytesHash": "d9dc1016b2d7390d31faede04b3e3aa78397b78eb2a6816a2233917a5a8878d3",
+    "sourceBytesHash": "f1918ec93c1ae68f532986f0d6a17958f993db772a82e281685e7c5ab1fa6130",
     "registerPointsSha256": null,
     "first": "1990-01-05",
     "last": "2025-12-26",
@@ -130,7 +130,7 @@
    },
    "ref_XOM": {
     "listingId": "tiingo:NYSE:XOM:1970-01-02",
-    "sourceBytesHash": "056c85a58e4d81b8638211719bbbfbefd168734038c48c837d524e76f9efab23",
+    "sourceBytesHash": "49ba10956765a0d82df474efff1fa31b3f2c87e6aa301694fefd8ff0858f2f18",
     "registerPointsSha256": null,
     "first": "1990-01-05",
     "last": "2025-12-26",
@@ -138,7 +138,7 @@
    },
    "ref_NVDA": {
     "listingId": "tiingo:NASDAQ:NVDA:1999-01-22",
-    "sourceBytesHash": "ca9dee049ba82a0330281280cf6ab2956671546bc0d43c880d389ba43afe00c8",
+    "sourceBytesHash": "c4d62fc34cb2035e4870ceec1aaa840285f15544b27fbc796edd09b8f68c365e",
     "registerPointsSha256": null,
     "first": "1999-01-22",
     "last": "2025-12-26",
@@ -146,7 +146,7 @@
    },
    "ref_INTC": {
     "listingId": "tiingo:NASDAQ:INTC:1980-03-17",
-    "sourceBytesHash": "5e51caf9e086891f154c41d59bff3012d96cacc527a7c399d83d970344fadc7e",
+    "sourceBytesHash": "94ffa368ebcbebf9e0d3a9f37c8dfbc777f2f17b1f06998b8a517fb6f18cc76a",
     "registerPointsSha256": null,
     "first": "1990-01-05",
     "last": "2025-12-26",
@@ -154,7 +154,7 @@
    },
    "ref_CSCO": {
     "listingId": "tiingo:NASDAQ:CSCO:1990-03-26",
-    "sourceBytesHash": "c193b699663c6bc6de954814356d6aa88a5fc39820cc71a48ac33f80ea93c1d9",
+    "sourceBytesHash": "c28d2448ceebbfa9ebf575849ba189db4b0f1727c0ce219d2d467a82f5aa53dd",
     "registerPointsSha256": null,
     "first": "1990-03-30",
     "last": "2025-12-26",
@@ -162,7 +162,7 @@
    },
    "ref_ORCL": {
     "listingId": "tiingo:NYSE:ORCL:1986-03-12",
-    "sourceBytesHash": "ece261c8730650a92eed4b246ceaebd6e9206939089be55a7ccd5e6461a945cb",
+    "sourceBytesHash": "ef8ed83c837039b3dd5ff7295d5b5a2daf82e2ad96b7a78438eb823497576df8",
     "registerPointsSha256": null,
     "first": "1990-01-05",
     "last": "2025-12-26",
@@ -170,7 +170,7 @@
    },
    "ref_WMT": {
     "listingId": "tiingo:NASDAQ:WMT:1972-08-25",
-    "sourceBytesHash": "b4b8db4952653a38afec9f634dd84432bdd2854d64116c53d10729bf910b0cf2",
+    "sourceBytesHash": "9427d58ce02c11d1305850bb06aa906c8b9f86133995771e93f36a6a637e6f8e",
     "registerPointsSha256": null,
     "first": "1990-01-05",
     "last": "2025-12-26",
@@ -179,7 +179,7 @@
   },
   "private": {}
  },
- "inputHash": "e919cd40742adaed4f2d71781aa2007789efdda5d4673f11980fdba9c455f828",
+ "inputHash": "085d586776e0d74b7f29f07c980c6132ebfed12f8a02c5ab260d6c61db5b58f2",
  "kindPath": {
   "kind": "STRATEGY_BACKTEST",
   "engine": null,
@@ -194,7 +194,7 @@
    "listingId": null,
    "listingHash": null,
    "populationId": "runner:V10_PRIMARY:12f801bf7f749599",
-   "populationHash": "5b87a51cb063f7d9cd539d945a1c733ede4e3fc5b5a55a6f195390c31e412b6b",
+   "populationHash": "4d578a45006fa45f907e18d957fd914cd40ca844c4959707617a04ba2f2b19b3",
    "source": {
     "adapter": "backtest-result-adapters-1.0.0#fromCertificationKind",
     "schemaVersion": "backtest-certification-1.0.0",
@@ -255,7 +255,7 @@
     "runnerSpecHash": "12f801bf7f7495997997ece4eaec04514e186498583e9c4bf1e1d5d935c8f6a3",
     "inputHashes": {
      "code": {
-      "scripts/quant/research/backtest-runner.cjs": "b536fc8d6ed48e2b7d9e534a0642de22b2034d1fd6253e539610f4072cba93ec",
+      "scripts/quant/research/backtest-runner.cjs": "c4b675f7670b704429db5e72f4cda1433763e2ab28315e9103cf3d10fde59119",
       "scripts/quant/research/research-population.cjs": "699173804bddf7e3aae88523cff22f471dbb0f96276ce62fe9e949879a109a82",
       "quant/engines/research-studies.cjs": "474422373eeac509b043d2a5e95c17dcfecfcb8ff0f651020696bbaf027be418",
       "quant/engines/research-portfolio.cjs": "0cc42852cefca4d484935feb430f6f1b8199a7263f07b87bb0a615c1fd3f4e5e",
@@ -280,15 +280,15 @@
       "scripts/quant/v10/setup/run-setup-reconstruction.cjs": "df6ec66d87b97c2b8a18c6815a8b91f45e9d04b81d5f5f8f824723f1eb4ca30c",
       "scripts/quant/v10/factor/panel.cjs": "10f82897a00a294f35ac12262d1aca76e39f718047f8f0514ee589a70398b1d7"
      },
-     "certification": "4a4f5759965d14326c14f045c53c124af90c9535dd57e96d12d819bbd7897f88",
-     "benchmark": "58d44b907a091c501f1d3aeb78fd37e82a9afb512cecbec784ba3a1f4a07dd5e",
+     "certification": "9ad5a131d51c741904011f0e3c5d2ad7af131ae00e73176080e9cfb7d8d3ac1e",
+     "benchmark": "0683b7cf38715c85a328a59a654185db9c1a37d5de2e9afe98e978c5de5a14b7",
      "population": {
       "profile": "V10_PRIMARY",
       "profileSpecHash": "f622075f2ae6d2589d5cca45378c2e56e4c6832eaef0a0df31c354f1601dc476",
-      "populationHash": "ea3949077a7eef02f8f4c9777ed1fa55e29306c2658fe7f8b21f954f30a43509",
-      "calendarHash": "b10f4b40c258bd5956829097711e344d68ba325a9146ac5c613f1b2822e4dbbf",
-      "calendarLength": 1924,
-      "sourceManifestHash": "d9bdac5bfd1e29e1245644dae0fed8ae43ff1f063f055884c7bc326ba42788b3",
+      "populationHash": "9706c45c4f12989061536cb911773b210ca31ec5b82d67d566588501f8a7579d",
+      "calendarHash": "851e02bd084ecca43cb1a2a846dbbe5dc73c34cde135058c5a498cc66f0921e0",
+      "calendarLength": 1925,
+      "sourceManifestHash": "c4e32f9750c260bec21481939e3119a1d8e5056a5f506b3ff77562e0a32b70f4",
       "masterHash": "26c82617913ab0dcbd08d24c80eb818134ccced74cc01e9eac819b4635498332",
       "registers": {
        "identityEvidence": {
@@ -306,12 +306,12 @@
        "pitMarketCap": "d45efd4d4f08aa63a776f87c790ce85492a5670232308bc7850b702680ea23a6",
        "indexPopulation": "413663e6632617c5270f2c4257973b06d3cdd8e95f210fb46f846aa5b3b8c4ac"
       },
-      "pointsHashRoot": "0541a6e1f2b37e35423343b9f543e4c20c4950426c55b15946a5cbc632a00737"
+      "pointsHashRoot": "9d1111bbdb3934333d069e0b95c82465acb229f0b7e488a0f004dd3c1ca63a1a"
      },
      "listings": {
       "ref_MSFT": {
        "listingId": "tiingo:NASDAQ:MSFT:1986-03-13",
-       "sourceBytesHash": "70ed88f471bb5c143ab479afda407811e6f9eacc14a29eb9af55880ce219ecc4",
+       "sourceBytesHash": "50fdf78fb658a8a4ade3dde0669e8604d846f5f996011b9e3c4baf33f8e7443d",
        "registerPointsSha256": null,
        "first": "1990-01-05",
        "last": "2025-12-26",
@@ -319,7 +319,7 @@
       },
       "ref_JPM": {
        "listingId": "tiingo:NYSE:JPM:1983-12-30",
-       "sourceBytesHash": "847650fcf5e340ef390a74a657358291ae0057925a8958e45d572980a3d201f6",
+       "sourceBytesHash": "a5b16e2743c861a35e82f32c51061d3fdcc226240b31da73ce537f15e8e62c5e",
        "registerPointsSha256": null,
        "first": "1990-01-05",
        "last": "2025-12-26",
@@ -327,7 +327,7 @@
       },
       "ref_KO": {
        "listingId": "tiingo:NYSE:KO:1962-01-02",
-       "sourceBytesHash": "3894dd811c01d8e905dba13ce4d216a1055da017bbe857b46dbf33e9484f8502",
+       "sourceBytesHash": "aa2ba8ad555be673ac0999eda5b7e5173966767d619b241c920638e10046b2b4",
        "registerPointsSha256": null,
        "first": "1990-01-05",
        "last": "2025-12-26",
@@ -335,7 +335,7 @@
       },
       "ref_PG": {
        "listingId": "tiingo:NYSE:PG:1970-01-02",
-       "sourceBytesHash": "d9dc1016b2d7390d31faede04b3e3aa78397b78eb2a6816a2233917a5a8878d3",
+       "sourceBytesHash": "f1918ec93c1ae68f532986f0d6a17958f993db772a82e281685e7c5ab1fa6130",
        "registerPointsSha256": null,
        "first": "1990-01-05",
        "last": "2025-12-26",
@@ -343,7 +343,7 @@
       },
       "ref_XOM": {
        "listingId": "tiingo:NYSE:XOM:1970-01-02",
-       "sourceBytesHash": "056c85a58e4d81b8638211719bbbfbefd168734038c48c837d524e76f9efab23",
+       "sourceBytesHash": "49ba10956765a0d82df474efff1fa31b3f2c87e6aa301694fefd8ff0858f2f18",
        "registerPointsSha256": null,
        "first": "1990-01-05",
        "last": "2025-12-26",
@@ -351,7 +351,7 @@
       },
       "ref_NVDA": {
        "listingId": "tiingo:NASDAQ:NVDA:1999-01-22",
-       "sourceBytesHash": "ca9dee049ba82a0330281280cf6ab2956671546bc0d43c880d389ba43afe00c8",
+       "sourceBytesHash": "c4d62fc34cb2035e4870ceec1aaa840285f15544b27fbc796edd09b8f68c365e",
        "registerPointsSha256": null,
        "first": "1999-01-22",
        "last": "2025-12-26",
@@ -359,7 +359,7 @@
       },
       "ref_INTC": {
        "listingId": "tiingo:NASDAQ:INTC:1980-03-17",
-       "sourceBytesHash": "5e51caf9e086891f154c41d59bff3012d96cacc527a7c399d83d970344fadc7e",
+       "sourceBytesHash": "94ffa368ebcbebf9e0d3a9f37c8dfbc777f2f17b1f06998b8a517fb6f18cc76a",
        "registerPointsSha256": null,
        "first": "1990-01-05",
        "last": "2025-12-26",
@@ -367,7 +367,7 @@
       },
       "ref_CSCO": {
        "listingId": "tiingo:NASDAQ:CSCO:1990-03-26",
-       "sourceBytesHash": "c193b699663c6bc6de954814356d6aa88a5fc39820cc71a48ac33f80ea93c1d9",
+       "sourceBytesHash": "c28d2448ceebbfa9ebf575849ba189db4b0f1727c0ce219d2d467a82f5aa53dd",
        "registerPointsSha256": null,
        "first": "1990-03-30",
        "last": "2025-12-26",
@@ -375,7 +375,7 @@
       },
       "ref_ORCL": {
        "listingId": "tiingo:NYSE:ORCL:1986-03-12",
-       "sourceBytesHash": "ece261c8730650a92eed4b246ceaebd6e9206939089be55a7ccd5e6461a945cb",
+       "sourceBytesHash": "ef8ed83c837039b3dd5ff7295d5b5a2daf82e2ad96b7a78438eb823497576df8",
        "registerPointsSha256": null,
        "first": "1990-01-05",
        "last": "2025-12-26",
@@ -383,7 +383,7 @@
       },
       "ref_WMT": {
        "listingId": "tiingo:NASDAQ:WMT:1972-08-25",
-       "sourceBytesHash": "b4b8db4952653a38afec9f634dd84432bdd2854d64116c53d10729bf910b0cf2",
+       "sourceBytesHash": "9427d58ce02c11d1305850bb06aa906c8b9f86133995771e93f36a6a637e6f8e",
        "registerPointsSha256": null,
        "first": "1990-01-05",
        "last": "2025-12-26",
@@ -392,7 +392,7 @@
      },
      "private": {}
     },
-    "inputHash": "e919cd40742adaed4f2d71781aa2007789efdda5d4673f11980fdba9c455f828",
+    "inputHash": "085d586776e0d74b7f29f07c980c6132ebfed12f8a02c5ab260d6c61db5b58f2",
     "kindPath": {
      "kind": "STRATEGY_BACKTEST",
      "engine": null,
@@ -447,7 +447,7 @@
      "specHash": "7493c849bc884a35a45b0bd6941a0f9843af7a6beef1b8480e5787bf9be8dea7"
     }
    },
-   "specHash": "c279b8224da0d4f49e03fe99456ff438806dc106248d58acd19d501d8bdeba15"
+   "specHash": "fa98e272eaf68e78b98c1979770ed4e1a0a2dc965534a48e79cc081ce6ff5a67"
   },
   "events": {
    "form": "NONE",
@@ -540,7 +540,7 @@
    "totalReturnBasis": "NOT_APPLICABLE_NO_RESULT",
    "survivorship": {
     "state": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
-    "control": "population profile V10_PRIMARY (ea3949077a7eef02)"
+    "control": "population profile V10_PRIMARY (9706c45c4f129890)"
    },
    "warnings": [
     "HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING",
@@ -609,17 +609,17 @@
    "certificationStatus": "COLLECTING_HISTORY",
    "certificationScope": "KIND",
    "certificationRuleId": null,
-   "certificationSource": "quant/data/product/backtest-certification-v1.json#STRATEGY_BACKTEST@2026-11-13",
+   "certificationSource": "quant/data/product/backtest-certification-v1.json#STRATEGY_BACKTEST@2026-11-22",
    "productionApproved": false,
    "evidenceKind": "TESTED"
   },
-  "envelopeHash": "6e6afc6ff0883831a1a2bc4f0b7cfbcea752fbbb2648f79cf8e82a8d07da5702"
+  "envelopeHash": "cb0df0b70a844eab1e993ae57d4dbefb2554b9b94ab903624aca111f1beb1fdf"
  },
- "envelopeHash": "6e6afc6ff0883831a1a2bc4f0b7cfbcea752fbbb2648f79cf8e82a8d07da5702",
+ "envelopeHash": "cb0df0b70a844eab1e993ae57d4dbefb2554b9b94ab903624aca111f1beb1fdf",
  "population": {
   "profile": "V10_PRIMARY",
-  "populationHash": "ea3949077a7eef02f8f4c9777ed1fa55e29306c2658fe7f8b21f954f30a43509",
-  "frameSize": 4236,
+  "populationHash": "9706c45c4f12989061536cb911773b210ca31ec5b82d67d566588501f8a7579d",
+  "frameSize": 4168,
   "calendar": {
    "first": "1990-01-05",
    "last": "2025-12-26",
@@ -739,5 +739,5 @@
  "extras": null,
  "pit": null,
  "qa": null,
- "resultHash": "4d7094043b50666fdc892cb663639ccacd3d5881838389a93a3a5fce8bb79096"
+ "resultHash": "360456025d7ccb1fc91495259ffb24d585d19b885a8803e4c2a28e838b1eb01a"
 }
