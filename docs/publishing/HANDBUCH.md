@@ -181,6 +181,10 @@ Bereich der App; wer sie nicht nutzt, soll die News trotzdem im Browser lesen k�
 wird nach `landing/web/img/news/` kopiert; www lädt nichts von anderen Adressen. Die Übersicht auf www und die Startseite
 verlinken auf diese Seiten, nicht mehr in die App; in der Seite führen zwei Schaltflächen zur App. `landing/scripts/build.mjs`
 nimmt die Seiten in den Cloudflare-Bau und in die Sitemap auf (`newsArtikelPages()`). Geprüft in IN-21.
+Bilder auf dem iPhone (Owner 23.11.2026): Aufmacher stehen in beiden Fassungen im Querformat, auf schmalen Bildschirmen
+16:9 oben statt auf Hochformat gezoomt (`insights/insights.css`); Artikelbilder auf www ohne feste Höhe (IN-21); jedes
+Stylesheet und Skript unter `landing/web/` mit Versionsstempel, damit kein Gerät eine alte Fassung behält
+(`landing/tests/build.test.mjs`).
 Offener Punkt: Artikeltext steht damit unter zwei Adressen. Beide Seiten zeigen derzeit auf sich selbst (`canonical`);
 soll www die führende Adresse für die Suche werden, bekommt die Research-Seite ein `canonical` auf
 `www.visionuniverse.de/news/<slug>/` (eine Zeile in `products/insights/build.mjs#artikelSeite`).

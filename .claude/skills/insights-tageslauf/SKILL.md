@@ -92,6 +92,12 @@ den Stand nennen („Schlusskurs vom …“) und die nächsten Termine. Grundlag
 7. **Bauen und prüfen.** `node products/insights/build.mjs`, dann
    `node --test "products/insights/tests/*.test.mjs" "core/tests/*.test.mjs"`. Jede Quellenadresse einmal abrufen; tote
    Adressen ersetzen. Die Artikelseite im Browser ansehen (Desktop und 390 px): keine leeren Bilder, kein Überlauf.
+   **Bilder auf dem iPhone (Owner 23.11.2026):** Beide Fassungen, `/insights/<slug>/` und `landing/news/<slug>/`, im
+   Playwright-Profil `devices['iPhone 15']` öffnen und für jedes Bild Anzeigegröße gegen Bildgröße vergleichen: Der Aufmacher
+   steht im Querformat (Höhe etwa Breite × 9/16), kein Bild ist gestreckt oder stark hochgezoomt. Neue Stylesheets oder
+   Skripte unter `landing/web/` gehören in die Stempel-Liste von `landing/scripts/build.mjs` (Test in
+   `landing/tests/build.test.mjs`), Artikelbilder auf www tragen keine feste Höhe (IN-21). Nach dem Merge live im
+   iPhone-Profil mit frischem Browserkontext prüfen, nicht nur per `curl`.
 8. **Veröffentlichen.** Commit, Push, PR „Insights <Datum> <Früh|Mittag>: <Titel>“. Bei grüner CI (das Vercel-Limit
    „rate limited“ zählt nicht) mit Squash mergen. Konflikte mit `main` durch Einspielen von `main` lösen, nie Force-Push.
    Danach prüfen, dass der Artikel unter research.visionuniverse.de antwortet (die Auslieferung kann wegen der
