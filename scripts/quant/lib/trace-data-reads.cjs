@@ -20,6 +20,19 @@ wrap(fs, "readFileSync"); wrap(fs.promises, "readFile"); wrap(fs, "readFile");
   const op = fs.promises.readFile; fs.promises.readFile = async function (p, ...a) { try { return await op.call(this, p, ...a); } catch (e) { if (e && e.code === "ENOENT") { const r = isData(p); if (r) missing.add(r); } throw e; } };
 }
 mod.syncBuiltinESMExports();
+/* Existenz- und Listenzugriffe (23.11.2026): existsSync/statSync auf eine Datei (z. B. model.test) und readdirSync eines Datenverzeichnisses
+   (z. B. backtest-p2-deficits: Liste der Golden-Preview-Dateien). Sie kommen als <pid>.exists bzw. <pid>.lists neben <pid>.json. */
+const existed = new Set(), lists = {};
+{
+  const oe = fs.existsSync; fs.existsSync = function (p, ...a) { const r = oe.call(this, p, ...a); if (r) { const rel = isData(p); if (rel) existed.add(rel); } return r; };
+  const os = fs.statSync; fs.statSync = function (p, ...a) { const r = os.call(this, p, ...a); try { if (r && r.isFile && r.isFile()) { const rel = isData(p); if (rel) existed.add(rel); } } catch {} return r; };
+  const od = fs.readdirSync; fs.readdirSync = function (p, o, ...a) {
+    const r = od.call(this, p, o, ...a);
+    try { const rel = isData(String(p instanceof URL ? decodeURIComponent(p.pathname) : p) + "/x"); const plain = !(o && typeof o === "object" && (o.withFileTypes || o.recursive)); if (rel && plain && Array.isArray(r)) lists[rel.replace(/\/x$/, "")] = r.map(String).sort(); } catch {}
+    return r;
+  };
+}
+mod.syncBuiltinESMExports();
 process.on("exit", () => {
   /* TRACE_DIR (22.11.2026): jeder Prozess schreibt seine eigene Datei <pid>.json; so tragen auch Kindprozesse (NODE_OPTIONS=--require)
      zum Mitschnitt bei. Ohne TRACE_DIR bleibt es bei TRACE_OUT (nur dieser Prozess). */
@@ -27,5 +40,7 @@ process.on("exit", () => {
   if (!out) return;
   const files = [...seen].filter((f) => { try { return fs.statSync(path.join(ROOT, f)).isFile(); } catch { return false; } }).sort();
   fs.writeFileSync(out, JSON.stringify(files, null, 1) + "\n");
+  fs.writeFileSync(out.replace(/\.json$/, ".exists"), JSON.stringify([...existed].sort()) + "\n");
+  fs.writeFileSync(out.replace(/\.json$/, ".lists"), JSON.stringify(lists) + "\n");
   if (missing.size) fs.writeFileSync(out.replace(/\.json$/, ".missing"), JSON.stringify([...missing].sort()) + "\n");
 });

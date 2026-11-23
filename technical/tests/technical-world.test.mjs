@@ -1,5 +1,6 @@
 /* Produktwelt Technical: Oberflaechenmodell, Seitenverdrahtung, Datensatzvertrag.
    Laeuft in technical-ci.yml; tests/ wird nicht ausgeliefert (build-release.mjs#permitted). */
+import "../../scripts/quant/lib/frozen-data.mjs"; /* eingefrorener Datenstand (scripts/quant/lib/frozen-data.mjs, 22.11.2026) */
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, existsSync, readdirSync } from "node:fs";

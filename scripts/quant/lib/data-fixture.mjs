@@ -31,8 +31,9 @@ const isData = (rel) => rel.split("/").includes("data");
 export const dataDirOf = (rel) => { const s = rel.split("/"); return s.slice(0, s.indexOf("data") + 1).join("/"); };
 
 /** Packt Dateien des Repositories (relativ, nur unter data/) in ein Bündel. */
-export function packFixture(paths, meta, root = REPO) {
+export function packFixture(paths, meta, root = REPO, stubs = []) {
   const files = {};
+  for (const rel of stubs) { if (!isData(rel)) throw Error("FIXTURE_NOT_DATA:" + rel); files[rel] = { enc: "utf8", data: "", stub: true }; }
   for (const rel of [...new Set(paths)].sort()) {
     if (!isData(rel)) throw Error("FIXTURE_NOT_DATA:" + rel);
     const buf = readFileSync(join(root, rel));
