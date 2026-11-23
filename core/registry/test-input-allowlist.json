@@ -387,6 +387,17 @@
       "harteWerte": 0
     },
     {
+      "file": "discover/tests/product-composition-label.test.mjs",
+      "kategorie": "schema-vertrag",
+      "dynamisch": true,
+      "liest": [
+        "discover/data",
+        "quant/data"
+      ],
+      "grund": "Beschriftung des Produktumfangs (22.11.2026): Meta == compose() der beiden committeten Quant-Dateien; Vertrag zwischen Quant-Kennzahl und Anzeige, keine festen Datenwerte.",
+      "harteWerte": 0
+    },
+    {
       "file": "discover/tests/scale.test.mjs",
       "kategorie": "schema-vertrag",
       "liest": [
@@ -404,6 +415,16 @@
         "discover/data"
       ],
       "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
+      "harteWerte": 0
+    },
+    {
+      "file": "discover/tests/stock-index-count.test.mjs",
+      "kategorie": "schema-vertrag",
+      "dynamisch": true,
+      "liest": [
+        "discover/data"
+      ],
+      "grund": "Zaehl-Vertrag des Repositorys (22.11.2026): stock-index count == symbols.length == cardCount + kurzhistorie, Karten + notDelivered == Produktuniversum; Struktur, keine festen Datenwerte.",
       "harteWerte": 0
     },
     {
@@ -985,8 +1006,17 @@
         "quant/data"
       ],
       "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen.",
-      "harteWerte": 45,
+      "harteWerte": 44,
       "einfrierenVersucht": "22.11.2026 freeze-frozen-data.mjs: Bündel 69.3 MB (> 2 MB)"
+    },
+    {
+      "file": "quant/tests/elliott-markets-live.test.mjs",
+      "kategorie": "schema-vertrag",
+      "liest": [
+        "quant/data"
+      ],
+      "grund": "Elliott-Neustart Schritt 2 (22.11.2026): prueft an den echten Multi-Asset-Reihen nur Laenge und Kollisionsfreiheit der Marktkuerzel; keine festen Werte.",
+      "harteWerte": 0
     },
     {
       "file": "quant/tests/elliott-projection.test.mjs",
@@ -1345,6 +1375,16 @@
       "harteWerte": 0
     },
     {
+      "file": "quant/tests/product-identity-release.test.mjs",
+      "kategorie": "fixture-offen",
+      "liest": [
+        "quant/data"
+      ],
+      "grund": "23.11.2026: Einfrieren im vollen Checkout (freeze-frozen-data.mjs, strikt) nicht möglich, Test liest Live-Artefakte mit festen Erwartungen; Ziel bleibt eine eingefrorene Kopie.",
+      "einfrierenVersucht": "23.11.2026 freeze-frozen-data.mjs: Lesen endet mit ENOENT auf Datendateien (nicht einfrierbar ohne fehlende Dateien)",
+      "harteWerte": 8
+    },
+    {
       "file": "quant/tests/product-language.test.mjs",
       "kategorie": "schema-vertrag",
       "dynamisch": true,
@@ -1675,6 +1715,16 @@
       ],
       "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte.",
       "harteWerte": 0
+    },
+    {
+      "file": "quant/tests/security-master-weekly.test.mjs",
+      "kategorie": "fixture-offen",
+      "liest": [
+        "quant/data"
+      ],
+      "grund": "23.11.2026: Einfrieren im vollen Checkout (freeze-frozen-data.mjs, strikt) nicht möglich, Test liest Live-Artefakte mit festen Erwartungen; Ziel bleibt eine eingefrorene Kopie.",
+      "einfrierenVersucht": "23.11.2026 freeze-frozen-data.mjs: 2 Tests übersprungen (Stamm seit der Freigabe geändert, G8): Bündel wäre unvollständig",
+      "harteWerte": 4
     },
     {
       "file": "quant/tests/security-type-safety.test.mjs",
@@ -2060,6 +2110,16 @@
       "harteWerte": 0
     },
     {
+      "file": "quant/tests/v13b-largecap-strict.test.mjs",
+      "kategorie": "fixture-offen",
+      "liest": [
+        "quant/data"
+      ],
+      "grund": "23.11.2026: Einfrieren im vollen Checkout (freeze-frozen-data.mjs, strikt) nicht möglich, Test liest Live-Artefakte mit festen Erwartungen; Ziel bleibt eine eingefrorene Kopie.",
+      "einfrierenVersucht": "23.11.2026 freeze-frozen-data.mjs: 2 Tests übersprungen (private Fakten nicht verfügbar, Basis-Commit nicht verfügbar): Bündel wäre unvollständig",
+      "harteWerte": 7
+    },
+    {
       "file": "quant/tests/valuation-consistency.test.mjs",
       "kategorie": "schema-vertrag",
       "liest": [
@@ -2348,36 +2408,6 @@
       "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen.",
       "harteWerte": 17,
       "einfrierenVersucht": "22.11.2026 freeze-frozen-data.mjs: auf dem Bündel rot (liest nicht eingefrorene Daten, z. B. Verzeichnislisten)"
-    },
-    {
-      "file": "discover/tests/stock-index-count.test.mjs",
-      "kategorie": "schema-vertrag",
-      "dynamisch": true,
-      "liest": [
-        "discover/data"
-      ],
-      "grund": "Zaehl-Vertrag des Repositorys (22.11.2026): stock-index count == symbols.length == cardCount + kurzhistorie, Karten + notDelivered == Produktuniversum; Struktur, keine festen Datenwerte.",
-      "harteWerte": 0
-    },
-    {
-      "file": "discover/tests/product-composition-label.test.mjs",
-      "kategorie": "schema-vertrag",
-      "dynamisch": true,
-      "liest": [
-        "discover/data",
-        "quant/data"
-      ],
-      "grund": "Beschriftung des Produktumfangs (22.11.2026): Meta == compose() der beiden committeten Quant-Dateien; Vertrag zwischen Quant-Kennzahl und Anzeige, keine festen Datenwerte.",
-        "harteWerte": 0
-      },
-      {
-      "file": "quant/tests/elliott-markets-live.test.mjs",
-      "kategorie": "schema-vertrag",
-      "liest": [
-        "quant/data"
-      ],
-      "grund": "Elliott-Neustart Schritt 2 (22.11.2026): prueft an den echten Multi-Asset-Reihen nur Laenge und Kollisionsfreiheit der Marktkuerzel; keine festen Werte.",
-      "harteWerte": 0
     }
   ]
 }
