@@ -94,6 +94,16 @@ async function main() {
       const sel = SEL[world];
       await page.waitForSelector(sel.line, { timeout: 60000 });
       await page.waitForTimeout(2500); /* Tagesverlauf (Hub) kommt nach dem ersten Bild */
+      /* Der Kopfkurs steht erst, wenn der Tagesverlauf da ist: Discover zeigt bis dahin den letzten Schluss der Tagesreihe (NVDA 23.11.2026: 125,53 statt
+         167,05, Rerun gruen). Gewartet wird, bis der Kopf zweimal im Abstand von 1 s derselbe ist (hoechstens 12 s); bleibt er verschieden, schlaegt die Pruefung weiter an. */
+      {
+        let last = null, stable = 0;
+        for (let i = 0; i < 12 && stable < 2; i++) {
+          const now = await page.evaluate((s) => { const h = document.querySelector(s); return h ? h.textContent.trim() : null; }, sel.head);
+          stable = now !== null && now === last ? stable + 1 : 0; last = now;
+          if (stable < 2) await page.waitForTimeout(1000);
+        }
+      }
       const m = await page.evaluate((sel) => {
         const bar = document.querySelector(sel.bar);
         const all = [...document.querySelectorAll(sel.buttons)];
