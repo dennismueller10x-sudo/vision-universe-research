@@ -244,11 +244,7 @@
   },
   "ci-gate.yml": {
    "bundle": "ci",
-   "ausnahme": "Sammel-Check fuer die Pflichtpruefung im Ruleset: laeuft ohne Pfadfilter auf jedem PR und kann deshalb nicht Teil der pfadgefilterten Pruef-Matrix sein."
-  },
-  "ci-gate-neu.yml": {
-   "bundle": "ci",
-   "ausnahme": "Schattenbetrieb des ereignisgesteuerten Sammel-Checks (22.11.2026): setzt den Check ci-gate-neu neben ci-gate, ohne Runner-Wartezeit; ersetzt ci-gate.yml erst nach dem Vergleich auf denselben PRs. Laeuft auf jedem PR ohne Pfadfilter und per workflow_run, deshalb nicht Teil der Pruef-Matrix."
+   "ausnahme": "Sammel-Check fuer Merge bei Gruen (ereignisgesteuert: pull_request-Start-Job plus workflow_run je Abschluss, kein wartender Job): laeuft ohne Pfadfilter auf jedem PR und kann deshalb nicht Teil der pfadgefilterten Pruef-Matrix sein."
   },
   "ci-retry.yml": {
    "bundle": "ci",
