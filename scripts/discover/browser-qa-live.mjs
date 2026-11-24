@@ -111,11 +111,15 @@ if (SHOTS) await d.screenshot({ path: SHOTS + "/live-01-home-desktop.png" });
 for (let i = 0; i < 8; i++) { await d.mouse.wheel(0, 1400); await warten(d, 300); }
 await warten(d, 600);
 const s2 = await stats(d);
-ok("Beim Scrollen werden Abonnements gekuendigt", s2.unsubscriptions > 0, "unsubscriptions " + s2.unsubscriptions);
+/* V3-Startseite (#2208): genau fuenf Karten tragen einen Tagesverlauf, beim Scrollen wird nichts
+   nachgeladen und nichts abgemeldet - die Karten bleiben stehen. Verlangt wird deshalb: die Zahl der
+   Karten bleibt gleich, jeder Snapshot hoechstens einmal pro Karte, die Abonnenten bleiben begrenzt;
+   gekuendigt wird beim Verlassen der Startseite (weiter unten). */
+const intra2 = await d.evaluate(() => document.querySelectorAll('[data-art="intraday"]').length);
+ok("Scrollen aendert die Kartenzahl nicht: genau die 5 Karten tragen einen Tagesverlauf", intra === 5 && intra2 === 5, "vorher " + intra + ", nachher " + intra2);
 ok("Abonnenten bleiben begrenzt (<= 40 nach 8 Bildschirmen)", s2.subscribers <= 40, "subscribers " + s2.subscribers + ", cached " + s2.cachedSnapshots);
-ok("Snapshot-Abrufe bleiben unter der Kartenzahl", s2.snapshotRequests < (await d.evaluate(() => document.querySelectorAll(".dx-poster, .v2-stock").length)), "requests " + s2.snapshotRequests);
-const nachlade = await d.evaluate(() => [...document.querySelectorAll("[data-live]")].length);
-ok("Nachgeladene Karten zeigen ebenfalls Tagesverlauf", nachlade > intra, nachlade + " > " + intra);
+ok("Snapshot-Abrufe hoechstens so viele wie Karten", s2.snapshotRequests <= intra2, "requests " + s2.snapshotRequests + ", Karten " + intra2);
+ok("Abonnenten hoechstens so viele wie Karten mit Verlauf (+ Hero)", s2.subscribers <= intra2 + 2, "subscribers " + s2.subscribers + ", Karten " + intra2);
 if (SHOTS) await d.screenshot({ path: SHOTS + "/live-02-home-scrolled-desktop.png" });
 /* Polling-Zustand passt zur Marktlage */
 /* Die Regel des Hubs (live-hub.js shouldPoll): bei offener Boerse wird
@@ -130,6 +134,12 @@ const nachzug = !!(l0 && idxDate && (idxDate < l0.display || (idxDate === l0.dis
 ok("Polling nur bei offener Boerse oder bis das Verzeichnis die letzte Sitzung traegt",
    (l0 && l0.state === "OPEN") || nachzug ? s2.polling === true : s2.polling === false,
    "state " + (l0 && l0.state) + ", index " + idxDate + ", display " + (l0 && l0.display) + ", polling " + s2.polling);
+
+/* Verlassen der Startseite (Hash-Wechsel im selben Dokument): alle Abonnements werden gekuendigt. */
+const vorher = await stats(d);
+await d.evaluate(() => { location.hash = "#/maerkte"; }); await warten(d, 1200);
+const nachher = await stats(d);
+ok("Beim Verlassen der Startseite werden die Abonnements gekuendigt", nachher.subscribers === 0 && nachher.unsubscriptions >= vorher.subscribers, "vorher " + vorher.subscribers + ", nachher " + nachher.subscribers + ", gekuendigt " + nachher.unsubscriptions);
 
 /* Aktienseite: Standard 1T */
 const sym = await d.evaluate(() => { const e = window.VUDiscover.LiveHub.index().entries; return Object.keys(e)[0]; });
