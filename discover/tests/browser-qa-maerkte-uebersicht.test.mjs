@@ -35,16 +35,16 @@ test('Pruefung ist nicht stumpf: fehlendes Instrument, falscher Zustand und Einh
   assert.ok(rot(pruefeUebersicht(await lies(ohne))).some(n=>/^BTCUSD in krypto/.test(n)));
   const ohneLink=html.replace('href="#/maerkte/WTI"','data-x="1"');
   assert.ok(rot(pruefeUebersicht(await lies(ohneLink))).some(n=>/^WTI in energie/.test(n)));
-  const punkte=html.replace(/(href="#\/maerkte\/SPY"[\s\S]*?<span>)\$[\d.,]+/,'$1735 Pkt.');
+  const punkte=html.replace(/(href="#\/maerkte\/SPY"[\s\S]*?vu-lrow__price"><span>)[^<]+/,(_m,vor)=>vor+'735 Pkt.');
   assert.notEqual(punkte,html);
   assert.ok(rot(pruefeUebersicht(await lies(punkte))).includes('SPY nie als Indexpunkte'));
-  const einheit=html.replace(/(href="#\/maerkte\/XAUUSD"[\s\S]*?<span>[^<]*?)\/oz/,'$1');
+  const einheit=html.replace(/(href="#\/maerkte\/XAUUSD"[\s\S]*?vu-lrow__price"><span>[^<]*?)\/oz/,(_m,vor)=>vor);
   assert.notEqual(einheit,html);
   assert.ok(rot(pruefeUebersicht(await lies(einheit))).includes('XAUUSD Einheit /oz'));
 });
 
 test('Renditen ohne bp oder mit Kursfarbe werden rot',{skip},async()=>{
-  const farbe=html.replace(/(href="#\/maerkte\/US10Y"[\s\S]*?class="vu-chg)( vu-chg--flat)?"/,'$1 vu-chg--down"');
+  const farbe=html.replace(/(href="#\/maerkte\/US10Y"[\s\S]*?class="vu-chg)( vu-chg--flat)?"/,(_m,vor)=>vor+' vu-chg--down"');
   assert.notEqual(farbe,html);
   assert.ok(rot(pruefeUebersicht(await lies(farbe))).includes('US10Y Prozent, bp, keine Kursfarbe'));
 });
