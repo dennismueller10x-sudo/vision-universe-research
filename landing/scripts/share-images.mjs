@@ -11,6 +11,10 @@ import { readFile, writeFile, mkdir, rm } from 'node:fs/promises';
 import { createServer } from 'node:http';
 import { resolve, extname, dirname } from 'node:path';
 import { build, root, SITE_PAGES } from './build.mjs';
+import { teilKarten } from './ratgeber.mjs';
+
+// --nur-ratgeber: nur die Ratgeber-Bilder (assets/share/ratgeber*.jpg) neu bauen, Story-Seiten unverändert lassen.
+const nurRatgeber = process.argv.includes('--nur-ratgeber');
 
 const SITE = 'https://www.visionuniverse.de/';
 const out = resolve(root, 'tests/output/share');
@@ -48,7 +52,7 @@ const browser = await chromium.launch(process.env.CHROMIUM_PATH ? { executablePa
 const page = await browser.newPage({ viewport: { width: 1200, height: 630 }, deviceScaleFactor: 1 });
 await mkdir(resolve(root, 'assets/share'), { recursive: true });
 const done = [];
-for (const path of ['index.html', ...SITE_PAGES]) {
+for (const path of nurRatgeber ? [] : ['index.html', ...SITE_PAGES]) {
   const html = await readFile(resolve(out, path), 'utf8');
   const d = describe(path, html);
   const phone = (img) => `<div class="aphone"><div class="in">${ahdr}<div class="scr"><img src="/${img}" alt=""></div><img class="adock" src="/web/img/app/dock.png" alt=""></div></div>`;
@@ -78,6 +82,28 @@ p{margin-top:16px;font-size:23px;font-weight:600;color:#333;line-height:1.35;max
   const file = `assets/share/${d.slug}.jpg`;
   await page.screenshot({ path: resolve(root, file), type: 'jpeg', quality: 86 });
   done.push({ path, file, ...d });
+}
+// Ratgeber: Bilder aus den Inhaltsdaten (Bereich, Überschrift, Untertitel, App-Bild); die Seiten verweisen selbst darauf
+// (scripts/ratgeber.mjs, teilBild). Lange Überschriften bekommen eine kleinere Schrift, damit nichts abgeschnitten wird.
+const satz1 = (t) => { const e = t.split(/(?<=[.!?])\s/)[0]; return e.length <= 120 ? e : short(e, 115); };
+for (const k of teilKarten()) {
+  const lang = text(k.h1).length, groesse = lang > 62 ? 48 : lang > 46 ? 54 : 64;
+  const phone = `<div class="aphone"><div class="in">${ahdr}<div class="scr"><img src="/web/img/app/${k.bild}.jpg" alt=""></div><img class="adock" src="/web/img/app/dock.png" alt=""></div></div>`;
+  await page.setContent(`<!doctype html><html lang="de"><head><meta charset="utf-8"><base href="${base}"><link rel="stylesheet" href="${base}${css}"><style>
+html,body{margin:0}body{width:1200px;height:630px;overflow:hidden;background:#fff;display:grid;grid-template-columns:1fr 430px;align-items:center;padding:0 0 0 64px;box-sizing:border-box;position:relative}
+body::after{content:"";position:absolute;right:-140px;top:-160px;width:640px;height:640px;border-radius:50%;background:radial-gradient(closest-side,rgba(205,255,0,.5),rgba(205,255,0,0));z-index:0}
+.l{position:relative;z-index:1}.logo{width:220px;display:block;margin-bottom:30px}
+.tg{display:inline-flex;align-items:center;gap:10px;background:#000;color:#fff;border-radius:99px;padding:10px 20px 10px 12px;font-weight:800;font-size:19px}
+.tg svg{width:22px;height:22px;color:#c8f531}
+h1{margin-top:22px;font-size:${groesse}px;font-weight:900;letter-spacing:-.05em;line-height:1;max-width:660px;hyphens:manual}
+h1 mark{background:linear-gradient(transparent 12%,#c8f531 12%,#c8f531 92%,transparent 92%);color:inherit}
+p{margin-top:18px;font-size:23px;font-weight:600;color:#333;line-height:1.35;max-width:620px}
+.r{position:relative;z-index:1;align-self:stretch;display:grid;place-items:center}.r .aphone{--pw:270px;margin-top:70px}.r .aphone .scr img{animation:none}
+</style></head><body>${sprite}<div class="l"><img class="logo" src="/assets/vision-universe-logo-web.png" alt=""><span class="tg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${k.icon}</svg>${esc(k.bereich)}</span><h1>${k.h1}</h1><p>${esc(satz1(k.satz))}</p></div><div class="r">${phone}</div></body></html>`, { waitUntil: 'networkidle' });
+  await page.evaluate(() => document.fonts.ready);
+  const file = `assets/share/${k.schluessel}.jpg`;
+  await page.screenshot({ path: resolve(root, file), type: 'jpeg', quality: 84 });
+  console.log(`${k.schluessel.padEnd(36)} ${file}`);
 }
 await browser.close();
 server.close();
