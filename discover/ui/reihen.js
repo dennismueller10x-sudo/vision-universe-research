@@ -180,7 +180,8 @@
     caption(isNum(daily) ? '12 Monate · heute' : '12 Monate', daily);
     if (!Hub || !MC || !MC.renderIntraday || !Hub.enabled || !Hub.enabled() || c.region === 'EUROPE') return;
     function stop() { off = true; if (abo) { abo(); abo = null; } }
-    abo = Hub.subscribe(c.symbol, function (p) {
+    /* Nur solange die Reihe im Bild ist; beim Verlassen der Startseite sofort gekuendigt (kein Warten auf den naechsten Stand). */
+    abo = (Hub.subscribeVisible || function (n, sym, f) { return Hub.subscribe(sym, f); })(art, c.symbol, function (p) {
       if (off) return;
       if (art.__heroOn && !art.isConnected) { stop(); return; }
       if (art.isConnected) art.__heroOn = true;
@@ -190,7 +191,7 @@
       var pct = isNum(base) && base > 0 && isNum(last) ? (last / base - 1) * 100 : daily;
       box.replaceChildren(svg); box.dataset.range = '1T';
       caption((p.label && p.label.label) || 'Tagesverlauf', pct);
-    });
+    }, { rootMargin: "80px 600%" }); /* seitlich weit: alle Folien der Reihe zaehlen, solange die Reihe im Bild ist (Verlauf auf jeder Folie, Kuendigung beim Verlassen) */
     if (off && abo) { abo(); abo = null; }
   }
   /** Thema der Aktie (Reihen-Zugehörigkeit aus dem Datenlauf, discover/data/membership) als zweites Etikett, wie im Prototyp. */

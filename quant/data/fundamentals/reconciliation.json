@@ -74,10 +74,18 @@
       "note": "R2_SERIES_AVAILABLE (7.802) zaehlt gegen den WERTPAPIERSTAMM (7.803), nicht gegen das Produktuniversum (7.004) - es ist die Ablagedeckung und keine Produktkennzahl. Sie wird hier gefuehrt und NICHT in die Schnittmengen gerechnet.",
       "evidenceSources": [
         {
+          "file": "quant/data/market/scale/gate-CANARY.json",
+          "kind": "providerPriceHistory",
+          "symbolsWithReportRow": 5,
+          "symbolsImpliedPass": 0,
+          "symbolsNotInThisRun": 0,
+          "runSize": 5
+        },
+        {
           "file": "quant/data/market/scale/gate-FULL_UNIVERSE.json",
           "kind": "providerPriceHistory",
           "symbolsWithReportRow": 3446,
-          "symbolsImpliedPass": 2238,
+          "symbolsImpliedPass": 2235,
           "symbolsNotInThisRun": 2150,
           "runSize": 5684
         },
@@ -104,6 +112,14 @@
           "symbolsImpliedPass": 0,
           "symbolsNotInThisRun": 0,
           "runSize": 500
+        },
+        {
+          "file": "quant/data/technical/scale/technical-coverage-CANARY.json",
+          "kind": "technicalReadiness",
+          "symbolsWithReportRow": 5,
+          "symbolsImpliedReady": 0,
+          "evaluated": 5,
+          "requested": 5
         },
         {
           "file": "quant/data/technical/scale/technical-coverage-ELIGIBLE_US_EQUITY.json",
@@ -187,12 +203,12 @@
         "PERCENT_OF_TECHNICAL_UNIVERSE": 91.1318
       },
       "TECHNICAL_WITH_QUARTERLY_3Y": {
-        "COUNT": 4195,
-        "PERCENT_OF_TECHNICAL_UNIVERSE": 76.7051
+        "COUNT": 4197,
+        "PERCENT_OF_TECHNICAL_UNIVERSE": 76.7416
       },
       "TECHNICAL_WITH_QUARTERLY_5Y": {
-        "COUNT": 3688,
-        "PERCENT_OF_TECHNICAL_UNIVERSE": 67.4346
+        "COUNT": 3690,
+        "PERCENT_OF_TECHNICAL_UNIVERSE": 67.4712
       },
       "TECHNICAL_WITH_QUARTERLY_10Y": {
         "COUNT": 2730,
@@ -374,5 +390,5 @@
       }
     }
   },
-  "generatedAtUtc": "2026-11-23T03:25:50+00:00"
+  "generatedAtUtc": "2026-11-24T06:31:36+00:00"
 }

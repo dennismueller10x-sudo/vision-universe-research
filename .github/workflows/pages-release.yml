@@ -594,8 +594,12 @@ jobs:
           # Normale Dauer des Schritts 31-78 s; Download 200 s, Liste 60 s, zwei Versuche bleiben unter dem Job-Timeout.
           nett() { local n=0 t=$1; shift; until timeout "$t" bash -c "$1"; do n=$((n + 1)); [ "$n" -ge 2 ] && return 1; echo "::warning::Zeitlimit oder Fehler, zweiter Versuch"; sleep 5; done; }
           export REPO B
-          row=$(nett 60 'gh api "repos/$REPO/actions/artifacts?name=github-pages&per_page=10" \
-            --jq "[.artifacts[] | select(.expired==false)] | sort_by(.created_at) | reverse | .[0] | [.archive_download_url, .created_at] | @tsv"')
+          # 24.11.2026: NUR Artefakte von main. Pull-Request-Laeufe laden ebenfalls ein Artefakt "github-pages" hoch (mit wegwerfbarem
+          # Zugangspasswort und dem Stand des PRs); das neueste Artefakt war am 24.11. 01:35 UTC ein PR-Artefakt (ci-candidate-qa-diagnose),
+          # der Takt 01:36 nahm es als Basis (nur der geaenderte index.html rettete ihn in einen Voll-Release). Waere nur Intraday anders gewesen,
+          # haette der Schnellweg den PR-Stand mit unbekanntem Zugangsschluessel ausgeliefert: Maske ohne Inhalt bis zum naechsten Voll-Release.
+          row=$(nett 60 'gh api "repos/$REPO/actions/artifacts?name=github-pages&per_page=40" \
+            --jq "[.artifacts[] | select(.expired==false and .workflow_run.head_branch==\"main\")] | sort_by(.created_at) | reverse | .[0] | [.archive_download_url, .created_at] | @tsv"')
           url=${row%%$'\t'*}; at=${row##*$'\t'}
           test -n "$url" && [ "$url" != null ]
           echo "at=$at" >> "$GITHUB_OUTPUT"

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated": true,
-  "generated_at_utc": "2026-11-23T03:24:20.319Z",
+  "generated_at_utc": "2026-11-24T06:29:38.050Z",
   "generator": "scripts/universe/build-sec-universe.mjs",
   "description": "SEC-Universum aus dem kanonischen Company Master. NICHT von Hand pflegen - Aenderungen gehoeren in den Master oder in die CIK-Zuordnung. quant/config/sec-universe.json bleibt der handgepflegte Validierungssatz und steht hier an erster Stelle; eine Regression an diesen fuenf Titeln faellt damit weiterhin zuerst auf. Das Feld `cik` ist wie dort ein Hinweis: die Pipeline loest den Ticker gegen die SEC-Ticker-Map auf. Fuer ein generiertes Universum gehoert `--skip-unresolved` dazu - ein Kuerzel, das die SEC nicht kennt, ist hier der Normalfall und kein Konfigurationsfehler.",
   "sources": {
@@ -27,7 +27,7 @@
     "candidates": 5477,
     "companies": 5478,
     "validationSet": 5,
-    "withDeliveredStockPage": 5289,
+    "withDeliveredStockPage": 5286,
     "excluded": {
       "noCik": 1201,
       "notUs": 0,
@@ -3738,6 +3738,17 @@
       "name": "Artisan Partners Asset Management Inc.",
       "cik": "0001517302",
       "instrumentId": "vu_74590ff3eaa457",
+      "exchange": "NYSE",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Traegt heute eine Aktienseite.",
+      "role": "deliveredStockPage"
+    },
+    {
+      "ticker": "APD",
+      "name": "Air Products and Chemicals",
+      "cik": "0000002969",
+      "instrumentId": "vu_379152615958e3",
       "exchange": "NYSE",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
@@ -7675,17 +7686,6 @@
       "role": "deliveredStockPage"
     },
     {
-      "ticker": "BKH",
-      "name": "Black Hills Corporation",
-      "cik": "0001130464",
-      "instrumentId": "vu_0614c773ece6b2",
-      "exchange": "NYSE",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "role": "deliveredStockPage"
-    },
-    {
       "ticker": "BKHA",
       "name": "Black Hawk Acquisition Corp",
       "cik": "0002000775",
@@ -10140,20 +10140,6 @@
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Traegt heute eine Aktienseite.",
-      "role": "deliveredStockPage"
-    },
-    {
-      "ticker": "CASK",
-      "name": "Sempreon, Inc",
-      "cik": "0000835011",
-      "instrumentId": "vu_07015539367343",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "alsoTickers": [
-        "MGPI"
-      ],
       "role": "deliveredStockPage"
     },
     {
@@ -19822,20 +19808,6 @@
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Traegt heute eine Aktienseite.",
-      "role": "deliveredStockPage"
-    },
-    {
-      "ticker": "FCDH",
-      "name": "Forcendra Holding Ltd",
-      "cik": "0001951294",
-      "instrumentId": "vu_7a622d288f6167",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "alsoTickers": [
-        "VSME"
-      ],
       "role": "deliveredStockPage"
     },
     {
@@ -42545,17 +42517,6 @@
       "role": "deliveredStockPage"
     },
     {
-      "ticker": "PLCE",
-      "name": "Childrens Place, Inc.",
-      "cik": "0001041859",
-      "instrumentId": "vu_91d1ad772df200",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "role": "deliveredStockPage"
-    },
-    {
       "ticker": "PLCI",
       "name": "Pelican Acquisition II Corp",
       "cik": "0002122392",
@@ -60476,17 +60437,6 @@
       "role": "universe"
     },
     {
-      "ticker": "APD",
-      "name": "Air Products and Chemicals",
-      "cik": "0000002969",
-      "instrumentId": "vu_379152615958e3",
-      "exchange": "NYSE",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Aus dem Company Master; US-Emittent mit CIK.",
-      "role": "universe"
-    },
-    {
       "ticker": "APGE",
       "name": "Apogee Therapeutics",
       "cik": "0001974640",
@@ -60646,6 +60596,17 @@
       "role": "universe"
     },
     {
+      "ticker": "BKH",
+      "name": "Black Hills Corporation",
+      "cik": "0001130464",
+      "instrumentId": "vu_0614c773ece6b2",
+      "exchange": "NYSE",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "role": "universe"
+    },
+    {
       "ticker": "BLFS",
       "name": "Biolife Solutions",
       "cik": "0000834365",
@@ -60766,6 +60727,20 @@
       "why": "Aus dem Company Master; US-Emittent mit CIK.",
       "alsoTickers": [
         "CAPNU"
+      ],
+      "role": "universe"
+    },
+    {
+      "ticker": "CASK",
+      "name": "Sempreon, Inc",
+      "cik": "0000835011",
+      "instrumentId": "vu_07015539367343",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "alsoTickers": [
+        "MGPI"
       ],
       "role": "universe"
     },
@@ -61166,6 +61141,20 @@
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "role": "universe"
+    },
+    {
+      "ticker": "FCDH",
+      "name": "Forcendra Holding Ltd",
+      "cik": "0001951294",
+      "instrumentId": "vu_7a622d288f6167",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "alsoTickers": [
+        "VSME"
+      ],
       "role": "universe"
     },
     {
@@ -61977,6 +61966,17 @@
       "cik": "0001739174",
       "instrumentId": "vu_f13098361ebefb",
       "exchange": "AMEX",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "role": "universe"
+    },
+    {
+      "ticker": "PLCE",
+      "name": "Childrens Place, Inc.",
+      "cik": "0001041859",
+      "instrumentId": "vu_91d1ad772df200",
+      "exchange": "NASDAQ",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Aus dem Company Master; US-Emittent mit CIK.",

@@ -60,7 +60,7 @@ export function readState() {
     if (!fs.existsSync(datei)) throw new Error(`Artikeldatei fehlt: products/insights/artikel/${a.datum}-${a.slug}.json`);
     const d = JSON.parse(fs.readFileSync(datei, "utf8"));
     // Der Aufmacher liegt für die Übersicht schon als art-<slug>.jpg bereit, wenn es dasselbe Bild ist.
-    const auf = a.img && a.bildQuer === d.bild?.src ? a.img : null;
+    const auf = a.img && (a.bildQuer === d.bild?.src || d.bild?.typ === "app") ? a.img : null;
     for (const [name, from] of artikelDateien(d, auf)) files.set(name, from);
     return Object.assign(d, { _auf: auf });
   });

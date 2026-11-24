@@ -702,7 +702,7 @@ function attachFundamentals(stock, model) {
      Basis (TTM oder FY) steht dran; nichts wird gemischt. */
   const preis = Contract.valueOf(stock.price);
   const vol = stock.rawValues && isNum(stock.rawValues.avgVolume20d) ? stock.rawValues.avgVolume20d : null;
-  const bewertung = valuationOf(model, g, preis, isNum(vol) && isNum(preis) ? vol * preis : null);
+  const bewertung = valuationOf(model, g, preis, isNum(vol) && isNum(preis) ? vol * preis : null, splitsFuer(stock.securityId));
   m.f_pe = bewertung.pe ? bewertung.pe.value : null;
   m.f_ps = bewertung.ps ? bewertung.ps.value : null;
   m.f_fcfYield = bewertung.fcfYield ? bewertung.fcfYield.value : null;
@@ -746,6 +746,48 @@ function attachFundamentals(stock, model) {
    Das ADR-Verhaeltnis selbst liegt in keiner Quelle dieses Repositorys vor;
    es wird nicht geraten. */
 const SHARE_BASIS = { staleDays: 400, minTurnover: 2e-5, foreignMinTurnover: 1e-3, maxTurnover: 1, maxMarketCap: 7e12 };
+/* (3) Splits (Owner 24.11.2026, CrowdStrike): Die Jahreszahl stammt oft von VOR einem Split, der Kurs ist von danach
+   (CRWD: 250,6 Mio. Aktien zum 31.01.2026, Split 4:1 am 02.07.2026 -> Boersenwert 52 statt 209 Mrd. $). Deshalb zaehlt
+   auch die ausstehende Aktienzahl aus dem juengsten Quartalsbericht, und nur EINDEUTIGE Splits (glattes Verhaeltnis
+   wie 2:1, 25:1 oder 1:10) nach dem Stichtag der Aktienzahl werden eingerechnet. Faktoren des Anbieters fuer
+   Abspaltungen (HON 0,9535, FDX 1,241, CMCSA 1,067) aendern die Aktienzahl nicht und bleiben aussen vor. */
+export function glatterSplit(f) {
+  if (!isNum(f) || f <= 0 || f === 1) return false;
+  const r = f >= 1 ? f : 1 / f;
+  return r >= 1.99 && Math.abs(r - Math.round(r)) < 0.002;
+}
+export function splitsNach(splits, stichtag) {
+  let faktor = 1;
+  for (const [tag, f] of Array.isArray(splits) ? splits : []) if (String(tag) > String(stichtag) && glatterSplit(f)) faktor *= f;
+  return faktor;
+}
+/* Splits je Titel aus der veroeffentlichten langen Reihe (corporateActions.splits, Anbieter-Splitfaktor, ADR-002). */
+const SPLITS_CACHE = new Map();
+function splitsFuer(securityId) {
+  if (!securityId) return [];
+  if (SPLITS_CACHE.has(securityId)) return SPLITS_CACHE.get(securityId);
+  let splits = [];
+  const file = join(root, "quant", "data", "market", "discover-series-long", securityId + ".json");
+  if (existsSync(file)) { try { const ca = readJSON(file).corporateActions; splits = (ca && Array.isArray(ca.splits)) ? ca.splits : []; } catch (e) { splits = []; } }
+  SPLITS_CACHE.set(securityId, splits);
+  return splits;
+}
+/* Liegt nach dem Stichtag der Jahreszahl ein eindeutiger Split, gilt die ausstehende Aktienzahl aus einem Quartalsbericht
+   NACH dem Split - aber nur, wenn sie das Split-Verhaeltnis bestaetigt (+-15 %). Sonst bleibt alles wie bisher: Faktoren
+   ohne Folgebericht (EMBJ, Split im November) oder Aenderungen des ADR-Verhaeltnisses (AZN) werden nicht geraten.
+   Gemessen 24.11.2026 (Vorher/Nachher im PR): CRWD 52 -> 214 Mrd. $, APH 95 -> 191, BKNG 4,6 -> 108, CVNA 15 -> 76. */
+function splitBestaetigt(model, gemeldet, splits) {
+  const relevant = (Array.isArray(splits) ? splits : []).filter(([tag, f]) => String(tag) > String(gemeldet.end) && glatterSplit(f));
+  if (!relevant.length) return null;
+  const letzter = relevant.map(([tag]) => String(tag)).sort().pop();
+  const faktor = relevant.reduce((x, [, f]) => x * f, 1);
+  const quartale = (model.quarterly && model.quarterly.shares_outstanding) || [];
+  const q = quartale.filter((r) => r && isNum(r.v) && r.v > 0 && r.end && String(r.end) >= letzter).pop();
+  if (!q) return null;
+  const erwartet = gemeldet.v * faktor;
+  if (Math.abs(q.v / erwartet - 1) > 0.15) return null;
+  return Object.assign({}, q, { splitFaktor: faktor, splitTag: letzter });
+}
 function currentShares(model) {
   const pick = (rows) => (rows && rows.length ? rows[rows.length - 1] : null);
   const cands = [pick(model.annual.shares_outstanding), pick(model.annual.diluted_weighted_average_shares)]
@@ -759,11 +801,12 @@ function currentShares(model) {
   if (fyEnd && (Date.parse(fyEnd) - Date.parse(best.end)) / 864e5 > SHARE_BASIS.staleDays) return null;
   return best;
 }
-function shareBasis(model, preis, avgDollarVolume) {
+function shareBasis(model, preis, avgDollarVolume, splits) {
   const currency = model.units && (model.units.revenue || model.units.net_income || model.units.stockholders_equity || model.units.total_assets) || null;
   if (currency && currency !== "USD") return { ok: false, reason: "NON_USD_REPORTING", currency };
-  const aktien = currentShares(model);
-  if (!aktien) return { ok: false, reason: "NO_CURRENT_SHARE_COUNT" };
+  const gemeldet = currentShares(model);
+  if (!gemeldet) return { ok: false, reason: "NO_CURRENT_SHARE_COUNT" };
+  const aktien = splitBestaetigt(model, gemeldet, splits) || gemeldet;
   const mcap = preis * aktien.v;
   const turnover = isNum(avgDollarVolume) && mcap > 0 ? avgDollarVolume / mcap : null;
   const foreign = !(model.coverage && model.coverage.ttmThrough);
@@ -773,11 +816,11 @@ function shareBasis(model, preis, avgDollarVolume) {
   return { ok: true, aktien, currency: currency || "USD" };
 }
 
-function valuationOf(model, g, preis, avgDollarVolume) {
+function valuationOf(model, g, preis, avgDollarVolume, splits) {
   const out = { available: false, basis: g.basis || null };
   if (!isNum(preis) || preis <= 0) { out.reason = "NO_PRICE"; return out; }
   const M = 1e6;
-  const basis = shareBasis(model, preis, avgDollarVolume);
+  const basis = shareBasis(model, preis, avgDollarVolume, splits);
   if (!basis.ok) {
     out.marketCapReason = basis.reason;
     out.peReason = basis.reason === "NO_CURRENT_SHARE_COUNT" ? g.kgvStatus : basis.reason;
@@ -788,6 +831,7 @@ function valuationOf(model, g, preis, avgDollarVolume) {
   }
   const aktien = basis.aktien;
   out.marketCap = { value: preis * aktien.v, shares: aktien.v, sharesFy: aktien.fy, sharesEnd: aktien.end };
+  if (aktien.splitFaktor) { out.marketCap.splitFaktor = aktien.splitFaktor; out.marketCap.splitTag = aktien.splitTag; }
   if (isNum(g.umsatzTTM) && g.umsatzTTM > 0) out.ps = { value: (preis * aktien.v) / (g.umsatzTTM * M), basis: g.basis, period: g.zeitraum, calculation: "Kurs x Aktien / Umsatz (" + g.basis + ")" };
   const fcf = (model.ttm.free_cash_flow && isNum(model.ttm.free_cash_flow.v)) ? { v: model.ttm.free_cash_flow.v, basis: "TTM", through: model.ttm.free_cash_flow.through }
             : (model.annual.free_cash_flow && model.annual.free_cash_flow.length) ? Object.assign({ basis: "FY" }, model.annual.free_cash_flow[model.annual.free_cash_flow.length - 1]) : null;
@@ -1879,7 +1923,7 @@ function kurzhistorieSeiten(universe) {
     stock.rawValues = {};
     stock.seriesPath = kurzDated && kurzDated.length >= 2 ? "/quant/data/market/discover-series-kurz/" + sec.securityId + ".json" : null;
     stock.instrumentType = inst.instrumentType || null;
-    out.push({ stock, info: info || { sessionDate: kurzDated[kurzDated.length - 1].date, lastLocal: null }, firstTradeDate: erstTag, bars: kurzDated ? kurzDated.length : null });
+    out.push({ stock, info: info || { sessionDate: kurzDated[kurzDated.length - 1].date, lastLocal: null }, firstTradeDate: erstTag, bars: kurzDated ? kurzDated.length : null, letzterKurstag: kurzDated ? kurzDated[kurzDated.length - 1].date : null });
   }
   return out;
 }
@@ -2419,10 +2463,10 @@ for (const universe of universes) {
     written++;
   }
   if (universe.kind === "real") {
-    for (const { stock, info, firstTradeDate, bars } of KURZ_SEITEN.get(universe.universeId) || []) {
+    for (const { stock, info, firstTradeDate, bars, letzterKurstag } of KURZ_SEITEN.get(universe.universeId) || []) {
       const detail = buildDetail(universe, stock, instruments, universe.barsByTicker, memberships);
       detail.geschaeftszahlen = Unternehmen.leer("INSUFFICIENT_HISTORY", Kurzhistorie.LABEL + ".");
-      detail.kurzhistorie = Kurzhistorie.block(info, { firstTradeDate, bars });
+      detail.kurzhistorie = Kurzhistorie.block(info, { firstTradeDate, bars, letzterKurstag });
       /* Ab 2 veroeffentlichten Schlusskursen traegt die Seite den Chart: dieselbe Datei, dieselbe Chart-Engine, keine Kopie. */
       if (stock.seriesPath && bars >= 2) {
         detail.series = { available: true, source: "discover-series", path: stock.seriesPath,

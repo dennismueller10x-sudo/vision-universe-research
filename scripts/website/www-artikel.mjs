@@ -130,6 +130,8 @@ export function artikelSeite(a, { alle = [], shell, aufName = null }) {
   const dateien = artikelDateien(a, aufName);
   const eigen = a.bild?.src ? bildName(a.slug, "auf", a.bild.src) : null;
   const auf = aufName || (eigen && dateien.has(eigen) ? eigen : null);
+  // Aufmacher aus App-Screens: www zeigt stattdessen das erste Querformat-Bild des Artikels, mit dessen Text und Nachweis.
+  const aufBild = a.bild?.typ === "app" ? (a.abschnitte.find((x) => x.bild?.src)?.bild || a.bild) : a.bild;
   const url = `${WWW}/news/${a.slug}/`;
   const iso = `${a.datum}T${a.zeit || "12:00"}:00+01:00`;
   const ld = {
@@ -165,7 +167,7 @@ export function artikelSeite(a, { alle = [], shell, aufName = null }) {
 <meta property="og:site_name" content="Vision Universe">
 <meta property="og:title" content="${esc(a.titel)}">
 <meta property="og:description" content="${esc(a.teaser)}">
-${auf ? `<meta property="og:image" content="${WWW}/web/img/news/${auf}">\n<meta property="og:image:alt" content="${esc(a.bild.alt)}">\n<meta name="twitter:card" content="summary_large_image">` : ""}
+${auf ? `<meta property="og:image" content="${WWW}/web/img/news/${auf}">\n<meta property="og:image:alt" content="${esc(aufBild.alt)}">\n<meta name="twitter:card" content="summary_large_image">` : ""}
 <meta property="article:published_time" content="${iso}">
 <meta property="article:section" content="${esc(a.rubrik)}">
 <meta name="theme-color" content="#ffffff">
@@ -189,7 +191,7 @@ ${auf ? `<meta property="og:image" content="${WWW}/web/img/news/${auf}">\n<meta 
   <p class="na-lead">${esc(a.unterzeile)}</p>
   <p class="na-by">Redaktion Vision Universe · Stand ${esc(a.stand)} · ${lesezeit(a)} Min. Lesezeit</p>
 </header>
-${auf ? `<figure class="na-auf"><div class="w"><img src="${R}web/img/news/${auf}" alt="${esc(a.bild.alt)}" style="aspect-ratio:16/9;height:auto" fetchpriority="high"><figcaption>${a.bild.ki ? "KI-Bild" : "Bild: " + esc(a.bild.quelle)}</figcaption></div></figure>` : ""}
+${auf ? `<figure class="na-auf"><div class="w"><img src="${R}web/img/news/${auf}" alt="${esc(aufBild.alt)}" style="aspect-ratio:16/9;height:auto" fetchpriority="high"><figcaption>${aufBild.ki ? "KI-Bild" : "Bild: " + esc(aufBild.quelle)}</figcaption></div></figure>` : ""}
 <div class="w na-text">
 ${koerper}
 ${a.termine?.length ? `<section class="na-termine"><h2>Termine</h2><ul>${a.termine.map(([d, t]) => `<li><b>${esc(d)}</b><span>${esc(t)}</span></li>`).join("")}</ul></section>` : ""}

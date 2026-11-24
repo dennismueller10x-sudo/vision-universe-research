@@ -992,16 +992,22 @@ def cmd_verify_reload(args):
         zeile["everyFactHasFilingAndAccession"] = all(
             f.get("filedAt") and f.get("sourceFilingId") for f in ka)
         zeile["normalizationLogic"] = (b.get("versions") or {}).get("normalization_logic")
+        # Ein neuer Emittent ohne XBRL-Fakten (z. B. frisch gelistet, erst S-1) hat nichts, was ein Reload
+        # reproduzieren koennte: identisch geladen = "leer", kein Fehler. Der Lauf scheiterte am 22./23.11.2026 an
+        # CIK 0002130357 (0 Fakten) und blockierte damit Commit und Consumer-Nachzug des taeglichen SEC-Laufs.
+        zeile["empty"] = len(ka) == 0 and zeile["documentsIdentical"] and zeile["canonicalFactsIdentical"]
         zeile["pass"] = (zeile["documentsIdentical"] and zeile["canonicalFactsIdentical"]
-                         and zeile["everyFactHasFilingAndAccession"] and len(ka) > 0)
+                         and zeile["everyFactHasFilingAndAccession"] and (len(ka) > 0 or zeile["empty"]))
         ergebnisse.append(zeile)
-        print(f"  {cik}  {'PASS' if zeile['pass'] else 'FAIL'}  {len(ka)} kanonische Werte, "
+        print(f"  {cik}  {'LEER' if zeile['empty'] else 'PASS' if zeile['pass'] else 'FAIL'}  {len(ka)} kanonische Werte, "
               f"{zeile['annualPeriods']} Jahre, {zeile['quarterlyPeriods']} Quartale, "
               f"{'+'.join(zeile['currencies']) or '-'}, {zeile['restated']} restated, "
               f"v{zeile['normalizationLogic']}")
 
     bestanden = sum(1 for z in ergebnisse if z.get("pass"))
-    verdict = "PASS" if bestanden == len(ergebnisse) and ergebnisse else "FAIL"
+    # Leere Factbooks (noch keine XBRL-Fakten) zaehlen nicht als Nachweis; mindestens ein belegter Titel muss bestehen.
+    belegt = sum(1 for z in ergebnisse if z.get("pass") and not z.get("empty"))
+    verdict = "PASS" if bestanden == len(ergebnisse) and ergebnisse and belegt > 0 else "FAIL"
     _write(Path(args.out) if getattr(args, "out", None)
            else ROOT / "quant" / "data" / "fundamentals" / "reload-verification.json", {
         "schema_version": 1, "generated_at_utc": _utcnow(),

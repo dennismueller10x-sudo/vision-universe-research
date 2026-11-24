@@ -639,10 +639,10 @@
       "cik": "0001490161",
       "name": "Sow Good Inc.",
       "sic": "2000",
-      "rawFacts": 15235,
-      "mappedFacts": 5116,
-      "unmappedFacts": 10245,
-      "calendarYears": 17,
+      "rawFacts": 15466,
+      "mappedFacts": 5197,
+      "unmappedFacts": 10513,
+      "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1231",
@@ -651,9 +651,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 16,
-      "quarterlyPeriods": 66,
+      "quarterlyPeriods": 67,
       "firstPeriodEnd": "2010-04-09",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 15.0,
       "metrics": {
         "capital_expenditures": {
@@ -665,7 +665,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 58,
+          "quarterlyPeriods": 59,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.0
@@ -692,14 +692,14 @@
         },
         "net_income": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
         },
         "operating_cash_flow": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -720,14 +720,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 64,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 61,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -750,46 +750,47 @@
         }
       },
       "quality": {
-        "HIGH": 502,
-        "MEDIUM": 50
+        "HIGH": 507,
+        "MEDIUM": 52
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 552,
-        "resolvedValues": 552
+        "datableValues": 559,
+        "resolvedValues": 559
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 10679,
+        "rules_version": "1.1.0",
+        "total": 10938,
         "by_severity": {
-          "INFO": 10245,
-          "WARNING": 434
+          "INFO": 10513,
+          "WARNING": 425
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 247,
-          "FISCAL_PERIOD_CONFLICT": 15,
-          "RESTATEMENT_CONFLICT": 172,
-          "UNKNOWN_CONCEPT": 10245
+          "CONCEPT_DISAGREEMENT": 253,
+          "FISCAL_PERIOD_CONFLICT": 1,
+          "RESTATEMENT_CONFLICT": 171,
+          "UNKNOWN_CONCEPT": 10513
         }
       },
       "latestFiling": {
-        "accession": "0001213900-26-091752",
-        "filing_date": "2026-08-19",
+        "accession": "0001213900-26-123214",
+        "filing_date": "2026-11-23",
         "form": "10-Q",
-        "periodic_filings": 68
+        "periodic_filings": 69,
+        "acceptance_datetime": "2026-11-23T21:32:06.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
-        "formula": "1.2.0",
+        "normalization_logic": "1.15.0",
+        "formula": "1.3.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.8.0"
         }
       },
-      "sourceDigest": "38e3bc391cf5baa7895c88c7b84e1d38dc3fa29422ffeee37e48ed86c55971d9",
+      "sourceDigest": "23fa5fbb204eda3daab4afbde971c356eb0a6112b798b7b83b21ec1aba6c1ca1",
       "issuerId": "iss_cik_0001490161"
     },
     {

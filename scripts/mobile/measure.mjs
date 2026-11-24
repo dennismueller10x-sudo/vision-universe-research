@@ -7,6 +7,8 @@ import {resolve} from 'node:path';
 import {startServer} from './server.mjs';
 import {createRequire} from 'node:module';
 import {execFileSync} from 'node:child_process';
+import {accessGateDiagnostics} from '../company_intelligence/browser-diagnostics.mjs';
+import {saubereDiagnose} from './gate-diagnose.mjs';
 const arg = (n, fallback) => { const i = process.argv.indexOf(n); return i < 0 ? fallback : process.argv[i + 1]; };
 const root = resolve(arg('--root', '.'));
 const runs = Number(arg('--runs', 3)), windowMs = Number(arg('--window', 20000));
@@ -89,6 +91,8 @@ try {
   });
   if(cpuProfile){const {profile}=await cdp.send('Profiler.stop');await writeFile(resolve(cpuProfile),JSON.stringify(profile));}
   const sample={route,run,...metrics,gateShown:content.gate,contentFound:content.found,valid:!content.gate&&content.found!==false,requests:requests.length,bytes:requests.reduce((s,r)=>s+r.bytes,0),unfinished:requests.filter(r=>!r.finished&&!r.error).length,failures:requests.filter(r=>r.status>=400||r.error),errors,resources:requests};
+  /* Ungueltiger Lauf mit Maske: Diagnose des Zugangszustands (kein Schluesselwert, kein Pruefwert), sie landet im Bericht. */
+  if(!sample.valid&&sample.gateShown)sample.gateDiagnostics=saubereDiagnose(await accessGateDiagnostics(page));
   samples.push(sample);
   console.log(JSON.stringify({...sample,resources:undefined}));
   await context.close();

@@ -623,26 +623,35 @@ jobs:
           set -o pipefail
           node scripts/market/check-freshness.mjs --strict --site="$IN_SITE" | tee smoke-freshness.txt
 
+      # Zugang (Steuerung 24.11.2026): research.visionuniverse.de steht hinter der Zugangsmaske. Die vier Browser-Schritte laufen mit dem Vorlader
+      # scripts/ci/gate-init.mjs, der den Zugangszustand nur im Ursprung von IN_SITE in jeden Browserkontext legt; das Geheimnis steht nur im env
+      # des jeweiligen Schritts (nie im Log oder Artefakt). Test: scripts/ci/tests/gate-init.test.mjs.
       - name: Browser-QA Discover (Start, Welten, Suche, Feed, Aktienseite, Barrierefreiheit)
         id: qa
         continue-on-error: true
+        env:
+          RESEARCH_ACCESS_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}
         run: |
           set -o pipefail
-          node scripts/discover/browser-qa.mjs --url "$IN_SITE" --out smoke-shots/discover | tee smoke-qa.txt
+          node --import ./scripts/ci/gate-init.mjs scripts/discover/browser-qa.mjs --url "$IN_SITE" --out smoke-shots/discover | tee smoke-qa.txt
 
       - name: Browser-QA Live (Tagesverlauf, Frische, Zeitraeume, Verbraucher-Chart)
         id: qalive
         continue-on-error: true
+        env:
+          RESEARCH_ACCESS_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}
         run: |
           set -o pipefail
-          node scripts/discover/browser-qa-live.mjs "$IN_SITE" smoke-shots/live | tee smoke-qalive.txt
+          node --import ./scripts/ci/gate-init.mjs scripts/discover/browser-qa-live.mjs "$IN_SITE" smoke-shots/live | tee smoke-qalive.txt
 
       - name: Browser-QA Aktienkopf (Pillenfarbe nach Vorzeichen, keine Ueberlappung 360-430 px)
         id: qakopf
         continue-on-error: true
+        env:
+          RESEARCH_ACCESS_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}
         run: |
           set -o pipefail
-          node scripts/discover/browser-qa-stockhead.mjs "$IN_SITE" | tee smoke-qakopf.txt
+          node --import ./scripts/ci/gate-init.mjs scripts/discover/browser-qa-stockhead.mjs "$IN_SITE" | tee smoke-qakopf.txt
 
       # Neu an der Boerse (< 30 Handelstage, Steuerung 21.11.2026): Detail-QA der Kurzhistorie-Seiten (Etikett, Kurs, kein Score, Chart ab
       # 2 Schlusskursen, keine Seitenfehler). Hinter dem Entwicklungs-Passwort meldet sich der Lauf mit dem Secret an; ohne Kurzhistorie-Titel
@@ -659,13 +668,15 @@ jobs:
       - name: Browser-QA Maerkte (Uebersicht, Markt jetzt, Pulse, Details; Chromium + WebKit)
         id: qamaerkte
         continue-on-error: true
+        env:
+          RESEARCH_ACCESS_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}
         run: |
           # Beide Engines laufen immer - ein roter Chromium-Lauf darf den
           # WebKit-Befund nicht verdecken. Rot, wenn eine der beiden rot ist.
           set -o pipefail
           chromium=0; webkit=0
-          node scripts/discover/browser-qa-maerkte.mjs --url "$IN_SITE" --out smoke-shots/maerkte --realtime | tee smoke-qamaerkte.txt || chromium=$?
-          node scripts/discover/browser-qa-maerkte.mjs --url "$IN_SITE" --out smoke-shots/maerkte --engine webkit | tee -a smoke-qamaerkte.txt || webkit=$?
+          node --import ./scripts/ci/gate-init.mjs scripts/discover/browser-qa-maerkte.mjs --url "$IN_SITE" --out smoke-shots/maerkte --realtime | tee smoke-qamaerkte.txt || chromium=$?
+          node --import ./scripts/ci/gate-init.mjs scripts/discover/browser-qa-maerkte.mjs --url "$IN_SITE" --out smoke-shots/maerkte --engine webkit | tee -a smoke-qamaerkte.txt || webkit=$?
           test "$chromium" -eq 0 && test "$webkit" -eq 0
 
       - name: Screenshots und Protokolle
@@ -1582,7 +1593,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p ladezeit-verlauf
-          ids="$(gh api "repos/$REPO/actions/artifacts?name=ladezeit&per_page=10" --jq '[.artifacts[] | select(.expired == false)] | .[0:7] | .[].id' || true)"
+          ids="$(gh api "repos/$REPO/actions/artifacts?name=ladezeit&per_page=30" --jq '[.artifacts[] | select(.expired == false and .workflow_run.head_branch == "main")] | .[0:7] | .[].id' || true)"
           for id in $ids; do
             mkdir -p "ladezeit-verlauf/$id"
             gh api "repos/$REPO/actions/artifacts/$id/zip" > "ladezeit-verlauf/$id.zip" && unzip -q -o "ladezeit-verlauf/$id.zip" -d "ladezeit-verlauf/$id" || echo "::warning::Artefakt $id nicht lesbar"
