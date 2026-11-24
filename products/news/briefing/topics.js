@@ -126,7 +126,8 @@
       var res = null;
       try { res = t.run(R, t); } catch (e) { considered.push({ id: t.id, reason: "Fehler: " + e.message }); return; }
       if (!res) { considered.push({ id: t.id, score: 0 }); return; }
-      var penalty = last.some(function (ids) { return (ids || []).indexOf(t.id) >= 0; }) ? ROTATION : 1;
+      // Rotation: Abschlag für Themen der letzten zwei Ausgaben; sehr auffällige Themen (Wert ab 5) nur leicht abwerten.
+      var penalty = last.some(function (ids) { return (ids || []).indexOf(t.id) >= 0; }) ? (res.score >= 5 ? 0.75 : ROTATION) : 1;
       considered.push({ id: t.id, raw: round(res.score, 2), score: round(res.score * penalty, 2), card: res.card });
     });
     // Abwechslung: je Familie (schwach, stark, Trend, Volumen) höchstens ein Thema pro Ausgabe.
