@@ -50,8 +50,45 @@ export function indexReihen(repo) {
   return {von: daten[0], bis: daten.at(-1), daten, reihen};
 }
 
+// Weitere Aktien zum Stand der bestehenden Beispiele ergänzen, ohne die vorhandenen neu einzufrieren:
+//   node landing/scripts/ratgeber-daten.mjs --ergaenzen AMD,AVGO [--out DATEI]
+// Kurs = Schlusskurs am Stichtag aus der Kursreihe, KGV und Marktwert daraus neu gerechnet; Geschäftszahlen wie gemeldet.
+// Kurze Anzeigenamen für Grafiken (statt „Alphabet Class A“, „Advanced Micro Devices“).
+export const KURZNAMEN = {AMD: 'AMD', MU: 'Micron', GOOGL: 'Alphabet', META: 'Meta', CRWV: 'CoreWeave', SPCX: 'SpaceX', AVGO: 'Broadcom'};
+export function zumStichtag(d, punkte, tag) {
+  const a = auszug(d), p = punkte.filter(([t]) => t <= tag), kurs = p.at(-1)?.[1];
+  if (kurs == null) return null;
+  const vor = punkte.filter(([t]) => t <= `${Number(tag.slice(0, 4)) - 1}${tag.slice(4)}`).at(-1)?.[1];
+  const r = (x, k = 2) => (x == null ? null : Math.round(x * 10 ** k) / 10 ** k);
+  return {...a, name: KURZNAMEN[d.symbol] || a.name, kurs: r(kurs), kursStand: p.at(-1)[0], kgv: a.gewinnJeAktie > 0 ? r(kurs / a.gewinnJeAktie) : null,
+    marktwertUSD: a.aktienAnzahl ? Math.round(kurs * a.aktienAnzahl) : a.marktwertUSD, rendite12m: vor ? r(kurs / vor - 1, 4) : null};
+}
+
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const out = process.argv.includes('--out') ? resolve(process.argv[process.argv.indexOf('--out') + 1]) : resolve(landing, 'ratgeber-inhalt/daten.json');
+  // Kursreihe seit dem ersten Handelstag bis zum Stichtag (z. B. für junge Börsengänge): --serie SPCX
+  if (process.argv.includes('--serie')) {
+    const daten = JSON.parse(readFileSync(out, 'utf8'));
+    for (const t of process.argv[process.argv.indexOf('--serie') + 1].split(',')) {
+      const d = JSON.parse(readFileSync(resolve(repo, `discover/data/stocks/US_REAL/${t}.json`), 'utf8'));
+      const punkte = JSON.parse(readFileSync(resolve(repo, `quant/data/market/discover-series/${d.securityId}.json`), 'utf8')).points.filter(([x]) => x <= daten.stand);
+      daten.serien = {...(daten.serien || {}), [t]: punkte};
+      console.log(`${t}: ${punkte.length} Kurse ${punkte[0][0]} bis ${punkte.at(-1)[0]}`);
+    }
+    writeFileSync(out, JSON.stringify(daten, null, 1) + '\n');
+    process.exit(0);
+  }
+  if (process.argv.includes('--ergaenzen')) {
+    const daten = JSON.parse(readFileSync(out, 'utf8'));
+    for (const t of process.argv[process.argv.indexOf('--ergaenzen') + 1].split(',')) {
+      const d = JSON.parse(readFileSync(resolve(repo, `discover/data/stocks/US_REAL/${t}.json`), 'utf8'));
+      const punkte = JSON.parse(readFileSync(resolve(repo, `quant/data/market/discover-series/${d.securityId}.json`), 'utf8')).points;
+      daten.aktien[t] = zumStichtag(d, punkte, daten.stand);
+      console.log(`${t}: ${daten.aktien[t]?.kurs} $ am ${daten.aktien[t]?.kursStand}, KGV ${daten.aktien[t]?.kgv}`);
+    }
+    writeFileSync(out, JSON.stringify(daten, null, 1) + '\n');
+    process.exit(0);
+  }
   const aktien = {}; let markt = null, stand = null;
   for (const t of TICKER) {
     const d = JSON.parse(readFileSync(resolve(repo, `discover/data/stocks/US_REAL/${t}.json`), 'utf8'));
