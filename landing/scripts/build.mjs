@@ -95,7 +95,9 @@ export async function build({output = resolve(root,'dist'), config = {}, product
     if (!/<html\b/i.test(privacy) || !/<html[^>]+lang=["']de["']/i.test(privacy) || !/<title>/i.test(privacy)) throw new Error('Datenschutzhinweise müssen ein vollständiges deutsches HTML-Dokument sein.');
     if (/data-policy-status=["']draft["']/i.test(privacy)) throw new Error('Die Vorschau-Datenschutzhinweise sind noch kein freigegebener Rechtstext.');
     if (config.mode === 'public' && /data-newsletter-release-scope=["']controlled["']/i.test(privacy)) throw new Error('Datenschutzfreigabe gilt ausschließlich für den kontrollierten Test.');
-    await writeFile(resolve(output,'datenschutz/index.html'),privacy);
+    // Nur der Kopf bekommt die Teilen-Angaben der Quellseite (Vorschaubild); der freigegebene Text bleibt unverändert.
+    const teilen=((await readFile(resolve(root,'datenschutz/index.html'),'utf8')).match(/^[ \t]*<meta (?:property="og:|name="twitter:)[^>]*>$/gm)||[]).join('\n');
+    await writeFile(resolve(output,'datenschutz/index.html'),teilen&&!/property="og:image"/.test(privacy)?privacy.replace(/(<title>[^<]*<\/title>)/i,`$1\n${teilen}`):privacy);
   }
   // Dasselbe Formular steht auf der Startseite und auf der Landingpage /start/ (Owner 17.11.2026); beide schalten gleich.
   const formState = page => {

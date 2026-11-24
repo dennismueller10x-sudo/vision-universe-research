@@ -81,3 +81,19 @@ test('SEO-5 · alte Shop-Adressen leiten um, unbekannte Adressen bekommen eine e
     assert.ok(!(await readFile(resolve(out,'sitemap.xml'),'utf8')).includes('404'));
   } finally { await rm(out,{recursive:true, force:true}); }
 });
+
+test('SEO-6 · jede Seite nennt ein eigenes, vorhandenes Vorschaubild zum Teilen', async () => {
+  const out = resolve(root,'tests/output/seo-og');
+  const {existsSync} = await import('node:fs');
+  try {
+    await build({output:out, config:privacy, production:true});
+    const seiten = (await readdir(out,{recursive:true})).filter((f)=>f.endsWith('.html'));
+    assert.ok(seiten.length > 80, String(seiten.length));
+    for (const f of seiten) {
+      const html = await readFile(resolve(out,f),'utf8');
+      const og = html.match(/<meta property="og:image" content="https:\/\/www\.visionuniverse\.de\/([^"]+)"/)?.[1];
+      assert.ok(og, `${f}: kein og:image`);
+      assert.ok(existsSync(resolve(out,og)), `${f}: ${og} fehlt`);
+    }
+  } finally { await rm(out,{recursive:true, force:true}); }
+});

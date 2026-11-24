@@ -553,7 +553,7 @@ export function fehlerSeite(ctx) {
 <p class="fh-sub">Vision Universe ist die App, die Aktien einfach erklärt. Viele alte Adressen aus unserem früheren Shop sind umgezogen. Hier geht es weiter:</p>
 <div class="rg-ctas"><a class="fh-btn" href="/">Zur Startseite <i aria-hidden="true">→</i></a><a class="rg-btn ghost" href="/ratgeber/">Ratgeber</a><a class="rg-btn ghost" href="/news/">News</a><a class="rg-btn ghost" href="/report/">Aktienreport</a></div></div></div></section>
 <section class="w rg-404-l"><p class="vw-k">Beliebt im Ratgeber</p><div class="rg-weiter-l">${reihe.map((x) => `<a class="rg-card" href="/ratgeber/${x}/"><b>${esc(artikel[x].titel)}</b><span>${esc(artikel[x].teaser)}</span></a>`).join('')}</div></section>`;
-  return seite({pfad: '404.html', titel: 'Seite nicht gefunden · Vision Universe', beschreibung: 'Diese Seite gibt es nicht mehr. Vision Universe ist die App, die Aktien einfach erklärt.', ld: [], body, newsHtml: ctx.newsHtml})
+  return seite({pfad: '404.html', titel: 'Seite nicht gefunden · Vision Universe', beschreibung: 'Diese Seite gibt es nicht mehr. Vision Universe ist die App, die Aktien einfach erklärt.', ld: [], body, bild: `${SITE}/assets/share/home.jpg`, newsHtml: ctx.newsHtml})
     .replace(/<script type="application\/ld\+json">[^<]*<\/script>\n?/, '').replace(/<link rel="canonical"[^>]*>\n?/, '').replace(/<meta property="og:url"[^>]*>\n?/, '')
     .replace(/(href|src)="(?!https?:|\/|#|mailto:|data:)/g, '$1="/');
 }
