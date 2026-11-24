@@ -456,6 +456,25 @@ Code: `scripts/research/backtest2/laufen-wf.mjs`. Forschung, nicht zertifiziert.
 - Dazu berichtet: Anteil der Depots, die in beiden Hälften vor SPY liegen (auch ohne größten Gewinner), Median je Hebelwert,
   Bestenliste im Nachhinein (ausdrücklich kein Beleg).
 
+**Ergebnis Stufe 10 (Lauf 24.11.2026, Forschung, nicht zertifiziert): nicht belegt.**
+
+- **Runde A:** Aus 2014–2019 gewählt: 55-Tage-Ausbruch · Momentum + Bruttogewinn/Bilanz + Rückkäufe · 10 Titel · 25 % nachlaufend
+  (Lernjahre 19,8 %, ohne größten Gewinner 19,0 %). Prüfjahre 2020–09/2026: **13,7 % p. a. (−1,7 Pp zu SPY)**, ohne größten
+  Gewinner 10,6 %, größter Verlust −25,6 %, p 0,562. Der Median aller 216 Depots lag im Prüfzeitraum bei +1,0 Pp: die Auswahl
+  hat nichts geleistet.
+- **Runde B (Gegenprobe):** aus 2020–2026 gewählt (kein Muster · Momentum · 15 Titel · Top 500; 32,3 %), in 2014–2019 nur 3,7 %
+  (−8,9 Pp).
+- Von 216 Depots lagen 59 in beiden Hälften vor SPY, nur 10 auch ohne ihren größten Gewinner; alle 10 ranken mit Rückkäufen.
+- **Hebel (Median, ganzer Zeitraum):** Rang mit Rückkäufen 16,1 % (ohne größten Gewinner 14,3 %) gegen 12,6 % (Momentum) und
+  11,7 % (Momentum + Bruttogewinn/Bilanz). Weniger Titel bringt im Median **nicht** mehr: 10 Titel 11,6 % (max. Verlust −41,9 %),
+  15: 13,6 %, 25: 14,7 %, 40: 14,3 % (−27,7 %). Ausstieg 200-Tage-Linie 15,4 % gegen 12,5 % nachlaufend. Top 500: 15,2 %,
+  Top 1.000: 11,9 %.
+- **Rückschau (kein Beleg):** bestes Depot 55-Tage-Ausbruch + alle drei Faktoren, 10 Titel, 200-Tage-Linie: 26,1 % p. a.
+  (ohne APP 24,8 %), größter Verlust −44,8 %. Die Variante mit nachlaufendem Ausstieg ist genau die, die Runde A gewählt hat
+  und die danach hinter SPY lag.
+- Lesart: Hohe Zahlen (über 20 %) entstehen nur in stark konzentrierten Depots und halten der Auswahl-Probe nicht stand. Der
+  einzige Hebel, der über das Gitter hinweg trägt, sind die Rückkäufe im Rang; das stützt R25/L25 im Vorwärtstest, mehr nicht.
+
 ## 4m. Stufe 11: Ereignisstudie je Muster (24.11.2026, vor dem ersten Lauf festgelegt)
 
 Anlass: Seltene Muster lassen ein Monatsdepot oft leer (Stufe 6: 40 bis 43 von 153 Monaten in Kasse). Stufe 11 misst das
