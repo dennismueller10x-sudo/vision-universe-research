@@ -488,6 +488,21 @@ Ereignis selbst. Code: `scripts/research/backtest2/ereignis-studie.mjs`. Forschu
   (2014–2019, ab 2020) > 0. Nicht für die Zahl der Versuche korrigiert: ein auffälliges Muster ist ein Kandidat, kein Beleg.
 - Grenze: gemessen am Monatsultimo; ein Einstieg am Ereignistag ist nicht abgebildet (dafür Minutendaten, eigene Stufe).
 
+**Ergebnis Stufe 11 (Lauf 24.11.2026, Forschung, nicht zertifiziert): kein Muster auffällig.**
+
+- **Muster allein:** Nach 1, 3, 6 und 12 Monaten liegt kein Muster verlässlich vor dem Durchschnitt aller Aktien. Trefferanteil
+  („besser als die mittlere Aktie“) 47 % bis 53 %, t durchweg unter 1,3. Nach 12 Monaten: Trendvorlage +0,4 Pp (Median 0,0),
+  Turtle +0,6 Pp, Weinstein 0,0 Pp, Pocket Pivot +0,3 Pp, Darvas-Zweijahreshoch +0,9 Pp, Darvas-Kasten +0,2 Pp, Holy Grail −0,4 Pp.
+- **Kullamägi und Gap-Up:** Mittel nach 12 Monaten +3,6 Pp und +2,9 Pp, Median aber −1,2 Pp und −1,6 Pp, Trefferanteil 47 % und
+  48 %: wenige sehr große Gewinner, die typische markierte Aktie läuft schlechter als der Durchschnitt. Gap-Up nach 1 Monat
+  −0,5 Pp (t −2,0).
+- **Muster + bestes Fünftel Faktoren:** durchweg besser als das Muster allein. Nach 12 Monaten: Darvas-Zweijahreshoch +5,1 Pp
+  (Median +4,5 Pp, Trefferanteil 58 %), Turtle +3,8 Pp (55 %), Trendvorlage +3,1 Pp (55 %), Pocket Pivot +3,0 Pp, Weinstein
+  +2,8 Pp, Kullamägi +8,3 Pp (Median +3,2 Pp; nur 715 Ereignisse in 85 Monaten). t überall unter 1,5; ab 2020 meist deutlich
+  kleiner als 2014–2019 (Trendvorlage +5,9 Pp → +0,2 Pp, Weinstein +5,2 Pp → +0,4 Pp).
+- Lesart: Der Vorsprung kommt aus den Faktoren, nicht aus dem Muster. Das bestätigt Stufe 4 bis 10 aus einer anderen
+  Messrichtung. Offen bleibt nur der Einstieg am Ereignistag selbst (Minutendaten), den diese Stufe nicht abbildet.
+
 ## 5. Ausführung und Veröffentlichung
 
 - Umsetzung: `scripts/research/backtest2/` (Markt, Signale, Depotführung, Suche, Lauf mit Workern). Workflow `research.yml`, Teil
