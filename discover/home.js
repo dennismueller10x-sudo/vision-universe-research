@@ -80,8 +80,10 @@
     if (page.parentNode !== root) root.appendChild(page);
     var intro = header(ctx); intro.hidden = true; page.insertBefore(intro, page.firstChild);
     if (global.__vuSearchTap) { global.__vuSearchTap = 0; ctx.openSearch(); }
-    var top = keep ? page.querySelector('[data-static-top]') : null;
-    Array.prototype.slice.call(page.children).forEach(function (n) { if (n !== intro && n !== keep && n !== top) n.remove(); });
+    /* Der statische Platz der Top 10 steht in einem Rahmen mit den Klassen der echten Startseite (dp-home): so gelten für den Kopf von Anfang an dieselben Stile
+       (Rand, Schriftgröße) wie für die spätere Sektion; sonst ist der Absatz kleiner und der echte wird später als neuer LCP-Kandidat gezählt. */
+    var top = keep ? page.querySelector('[data-static-top]') : null, topBox = top && top.parentNode !== page ? top.parentNode : top;
+    Array.prototype.slice.call(page.children).forEach(function (n) { if (n !== intro && n !== keep && n !== topBox) n.remove(); });
     return D.V3.home(page, Object.assign({}, ctx, { heroWait: keep && keep.classList.contains('dp-hero') ? keep : null, topWait: top }));
   }
   V.Home = { render: render, title: title };
