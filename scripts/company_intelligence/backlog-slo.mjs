@@ -49,9 +49,19 @@ export function pickReport(artifacts,read){
  return null;
 }
 const gh=p=>execFileSync('gh',['api',p],{encoding:'buffer',maxBuffer:64*1024*1024});
+/* Gesundheitsartefakte NUR ueber die Laeufe von company-intelligence-refresh.yml auf main (Befund 24.11.2026): `actions/artifacts?per_page=100`
+   liefert repoweit nur die juengsten 100 Artefakte aller Laeufe; bei dem Aufkommen anderer Laeufe lag der Bericht des letzten Vollumfang-Laufs
+   schnell dahinter und das Rueckstandsurteil fiel auf die Stempelbasis zurueck (Health 20:57 und 00:57 'kein Vollumfang-Bericht lesbar').
+   Jetzt: die letzten 20 Laeufe des Refresh-Workflows auf main, je Lauf dessen Artefakte (sie tragen workflow_run fuer fromMain). Ein Lauf, dessen
+   Artefaktliste nicht lesbar ist, wird uebersprungen (nie ein Abbruch des Health-Laufs). gh ist einspeisbar (Test). */
+export const REFRESH_WORKFLOW='company-intelligence-refresh.yml';
+export function listRefreshArtifacts(repo,ghApi=gh){
+ const runs=JSON.parse(Buffer.from(ghApi(`repos/${repo}/actions/workflows/${REFRESH_WORKFLOW}/runs?branch=main&per_page=20`)).toString('utf8')).workflow_runs||[];
+ return runs.flatMap(r=>{try{return JSON.parse(Buffer.from(ghApi(`repos/${repo}/actions/runs/${r.id}/artifacts?per_page=30`)).toString('utf8')).artifacts||[];}catch{return [];}});
+}
 function readFromGitHub(repo){
  return {
-  list:()=>JSON.parse(gh(`repos/${repo}/actions/artifacts?per_page=100`).toString('utf8')).artifacts,
+  list:()=>listRefreshArtifacts(repo),
   read:a=>{const zip=gh(`repos/${repo}/actions/artifacts/${a.id}/zip`);
    const dir=mkdtempSync(join(tmpdir(),'ci-backlog-'));
    try{const f=join(dir,'a.zip');writeFileSync(f,zip);return JSON.parse(execFileSync('unzip',['-p',f,'health.json'],{encoding:'utf8',maxBuffer:64*1024*1024}));}

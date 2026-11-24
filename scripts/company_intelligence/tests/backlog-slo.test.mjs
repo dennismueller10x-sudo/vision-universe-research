@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {backlogSLO,backlogRatio,applyBacklog,pickReport,isFullScope,fromMain} from '../backlog-slo.mjs';
+import {backlogSLO,backlogRatio,applyBacklog,pickReport,isFullScope,fromMain,listRefreshArtifacts,REFRESH_WORKFLOW} from '../backlog-slo.mjs';
 import {evaluateHealth} from '../refresh-approval.mjs';
 
 const H=3600000,NOW=Date.parse('2026-11-20T05:00:00Z'),ago=h=>new Date(NOW-h*H).toISOString();
@@ -63,3 +63,24 @@ test('pickReport: nur Artefakte von Laeufen auf main aus dem eigenen Repository 
  assert.equal(arts.filter(noFilter).sort((x,y)=>Date.parse(y.created_at)-Date.parse(x.created_at))[0].id,2,'der Mutant waehlt das PR-Artefakt, der Test erkennt es');
 });
 
+
+test('listRefreshArtifacts: Laeufe des Refresh-Workflows auf main, je Lauf dessen Artefakte; kein repoweites Artefaktfenster (Befund 24.11.2026)',()=>{
+ const calls=[],own={head_branch:'main',head_repository_id:7,repository_id:7};
+ const api=p=>{calls.push(p);
+  if(p.includes('/workflows/'))return Buffer.from(JSON.stringify({workflow_runs:[{id:11},{id:12},{id:13}]}));
+  if(p.endsWith('/runs/11/artifacts?per_page=30'))return Buffer.from(JSON.stringify({artifacts:[{id:1,name:'company-intelligence-refresh-health-11',created_at:ago(1),workflow_run:own}]}));
+  if(p.endsWith('/runs/12/artifacts?per_page=30'))throw Error('gh api: HTTP 502');
+  if(p.endsWith('/runs/13/artifacts?per_page=30'))return Buffer.from(JSON.stringify({artifacts:[]}));
+  throw Error('unerwarteter Aufruf '+p);};
+ const list=listRefreshArtifacts('o/r',api);
+ assert.deepEqual(list.map(a=>a.id),[1],'ein unlesbarer Lauf wird uebersprungen, die uebrigen zaehlen');
+ assert.equal(REFRESH_WORKFLOW,'company-intelligence-refresh.yml');
+ assert.equal(calls[0],'repos/o/r/actions/workflows/company-intelligence-refresh.yml/runs?branch=main&per_page=20','nur Laeufe auf main');
+ assert.ok(calls.every(c=>!c.includes('/actions/artifacts?')),'kein repoweites Artefaktfenster');
+ assert.equal(calls.length,4);
+ // Das Ergebnis geht durch pickReport und damit durch den Herkunftsfilter
+ const reports={1:report(5)};assert.equal(pickReport(list,a=>reports[a.id]).scheduler.dueOverSevenDays,5);
+ assert.equal(pickReport(list.map(a=>({...a,workflow_run:{head_branch:'pr',head_repository_id:7,repository_id:7}})),a=>reports[a.id]),null);
+ // Workflow-Liste unlesbar -> Ausnahme (backlog-slo faengt sie im CLI und lasst das Stempel-Urteil stehen)
+ assert.throws(()=>listRefreshArtifacts('o/r',()=>{throw Error('gh down');}));
+});
