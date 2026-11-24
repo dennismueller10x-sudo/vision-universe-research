@@ -39,10 +39,13 @@ export const PORTFOLIOS = Object.freeze([
   ...['NONE', 'MINERVINI', 'TURTLE', 'DARVASBOX', 'KULLAMAEGI'].map((p) => ({ id: p + '+F', label: NAME[p] + ' · Momentum + Bruttogewinn/Bilanz + Rückkäufe · laufen lassen', pattern: p, score: 'mom_gpa_buyback' })),
   ...['MINERVINI', 'DARVASBOX', 'KULLAMAEGI'].map((p) => ({ id: p, label: 'nur ' + NAME[p] + ' (relative Stärke) · laufen lassen', pattern: p, score: 'rs' })),
 ]);
+/** Nachlaufender Ausstieg (Stufe 10): Position liegt am Ultimo mindestens 25 % unter ihrem höchsten Ultimo-Wert seit Kauf. */
+export const TRAIL = 0.25;
 const isNum = (x) => typeof x === 'number' && Number.isFinite(x);
 
 /**
  * Depot ohne Zurückstellen. xs: Querschnitte; flags: Muster je Monat; nextT[e]: Tagesindex des folgenden Ultimos.
+ * spec.exit: 'SMA200' (Vorgabe, Stufe 9), 'TRAIL' (nur nachlaufend) oder 'BOTH' (was zuerst greift).
  * exclude: Set von Titeln, die nie gekauft werden. Liefert Monatsrenditen des Depotwerts und die Positionsliste.
  */
 export function drift(m, xs, flags, nextT, spec, { rules = R, exclude = null } = {}) {
@@ -53,7 +56,8 @@ export function drift(m, xs, flags, nextT, spec, { rules = R, exclude = null } =
     /* Verkauf am Ultimo: Schluss nicht mehr über der 200-Tage-Linie oder kein Balken */
     for (const [s, p] of [...pos]) {
       const i = s * m.T + x.t, c = m.c[i];
-      if (!(c > 0) || !(c > m.sma200[i])) { cash += p.value * (1 - sideBps(m.adv[i] > 0 ? m.adv[i] : 1e6) / 1e4); trades.push({ s, entry: p.entry, exit: x.date, cost: p.cost, value: p.value }); pos.delete(s); }
+      const exit = spec.exit || 'SMA200', below = !(c > m.sma200[i]), trail = p.value <= (1 - TRAIL) * p.peak;
+      if (!(c > 0) || (exit !== 'TRAIL' && below) || (exit !== 'SMA200' && trail)) { cash += p.value * (1 - sideBps(m.adv[i] > 0 ? m.adv[i] : 1e6) / 1e4); trades.push({ s, entry: p.entry, exit: x.date, cost: p.cost, value: p.value }); pos.delete(s); }
     }
     /* Kauf: freie Plätze mit den besten Kandidaten, je ein Fünfundzwanzigstel des Depotwerts */
     if (pos.size < rules.slots) {
@@ -68,11 +72,11 @@ export function drift(m, xs, flags, nextT, spec, { rules = R, exclude = null } =
       for (const [, r] of cand) {
         if (pos.size >= rules.slots || cash <= 1e-9) break;
         const spend = Math.min(unit, cash), fee = spend * sideBps(x.adv[r]) / 1e4;
-        cash -= spend; pos.set(x.s[r], { value: spend - fee, cost: spend, entry: x.date });
+        cash -= spend; pos.set(x.s[r], { value: spend - fee, cost: spend, entry: x.date, peak: spend - fee });
       }
     }
     const before = cash + [...pos.values()].reduce((a, p) => a + p.value, 0);
-    for (const [s, p] of pos) { const r = forwardReturn(m, s, x.t, nextT[e]); p.value *= 1 + (isNum(r) ? r : 0); }
+    for (const [s, p] of pos) { const r = forwardReturn(m, s, x.t, nextT[e]); p.value *= 1 + (isNum(r) ? r : 0); if (p.value > p.peak) p.peak = p.value; }
     const after = cash + [...pos.values()].reduce((a, p) => a + p.value, 0);
     /* Monatsrendite einschließlich der Kosten dieses Ultimos (equity0 = Wert vor Verkäufen und Käufen) */
     net.push(after / equity0 - 1); count.push(pos.size);

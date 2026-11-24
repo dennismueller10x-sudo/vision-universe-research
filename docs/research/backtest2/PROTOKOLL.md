@@ -439,6 +439,23 @@ wie in Stufe 8 für das Depot Trendvorlage + Momentum + Bruttogewinn/Bilanz, 25 
   S&P 500“. Belastbarer bleibt das Laufenlassen (Stufe 9): dort hält der Vorsprung auch ohne den größten Gewinner. Im
   Vorwärtstest zählen M25, R25 und L25 ab 12/2026 nebeneinander.
 
+## 4l. Stufe 10: Laufen lassen im Walk-forward (24.11.2026, vor dem ersten Lauf festgelegt)
+
+Anlass (Owner 24.11.2026: „zu kurz daran gearbeitet“, Ziel deutlich höher): Stufe 9 hat acht feste Depots nach Einsicht gerechnet.
+Stufe 10 prüft, ob eine Regel, die nur aus den Lernjahren gewählt wird, in ungesehenen Jahren hält, und welcher Hebel trägt.
+Code: `scripts/research/backtest2/laufen-wf.mjs`. Forschung, nicht zertifiziert.
+
+- **Gitter (216 Depots):** Muster {keines, Trendvorlage, 55-Tage-Ausbruch} × Rang {Momentum; Momentum + Bruttogewinn/Bilanz;
+  dazu Rückkäufe} × Plätze {10, 15, 25, 40} × Ausstieg {200-Tage-Linie; Position 25 % unter ihrem höchsten Ultimo-Wert seit
+  Kauf; was zuerst greift} × Universum {größte 500, größte 1.000}. Depotführung wie Stufe 9 (kein Zurückstellen, Kosten je Seite).
+- **Auswahl nur aus den Lernjahren:** Kennzahl = Minimum aus eigener Rendite ohne den größten Gewinner und dem Median der
+  Rendite der Nachbarn (genau eine Dimension anders). Höchste Kennzahl gewinnt.
+- **Runde A (maßgeblich):** lernen 2014–2019, prüfen 2020–09/2026 mit frischem Start. **Runde B (Gegenprobe):** umgekehrt.
+- **Belegt** nur, wenn in Runde A im Prüfzeitraum: Vorsprung zu SPY > 0, Vorsprung auch ohne den größten Gewinner > 0 und
+  Block-Bootstrap-p < 0,10.
+- Dazu berichtet: Anteil der Depots, die in beiden Hälften vor SPY liegen (auch ohne größten Gewinner), Median je Hebelwert,
+  Bestenliste im Nachhinein (ausdrücklich kein Beleg).
+
 ## 5. Ausführung und Veröffentlichung
 
 - Umsetzung: `scripts/research/backtest2/` (Markt, Signale, Depotführung, Suche, Lauf mit Workern). Workflow `research.yml`, Teil
