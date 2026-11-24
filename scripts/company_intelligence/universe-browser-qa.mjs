@@ -42,7 +42,8 @@ let failure=null;const retriedAfterTimeout=[];
    und hat sich die LIVE ausgelieferte Version (Seitenrahmen kommt live) waehrend der QA geaendert? Nur lesend, nie ein Passwort oder Statuswert im Bericht. */
 async function diagnose(page){
  const dom=await page.evaluate(key=>({readyState:document.readyState,busy:document.querySelector('#v2-main')?.getAttribute('aria-busy')??null,
-  ciState:document.querySelector('.ci-company-intelligence')?.dataset.state??null,gateShown:!!document.querySelector('#research-access-gate'),storageKeyPresent:localStorage.getItem(key)!==null}),STORAGE_KEY).catch(()=>null);
+  ciState:document.querySelector('.ci-company-intelligence')?.dataset.state??null,gateShown:!!document.querySelector('#research-access-gate'),storageKeyPresent:localStorage.getItem(key)!==null,
+  accessError:(e=>e?{text:String(e.textContent||'').trim().slice(0,200),hidden:e.hidden===true||e.hasAttribute('hidden')}:null)(document.querySelector('#research-access-error'))}),STORAGE_KEY).catch(()=>null);
  const liveCommit=await fetch(origin+'/release-delivery.json?qa='+Date.now()).then(r=>r.json()).then(d=>d.sourceCommit||null).catch(()=>null);
  return {url:page.url(),dom,startCommit:release?.sourceCommit||null,liveCommitNow:liveCommit,liveReleaseChangedDuringQa:Boolean(liveCommit&&release?.sourceCommit&&liveCommit!==release.sourceCommit)};
 }
