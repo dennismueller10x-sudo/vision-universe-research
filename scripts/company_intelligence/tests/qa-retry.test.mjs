@@ -35,12 +35,25 @@ test('QR-5 isTimeout erkennt nur TimeoutError',()=>{
 });
 test('QR-6 Verdrahtung in universe-browser-qa.mjs: Wiederholung, Diagnose und Bericht; Inhaltspruefungen unveraendert, Mutanten werden erkannt',async()=>{
  const src=readFileSync(new URL('../universe-browser-qa.mjs',import.meta.url),'utf8');
- assert.match(src,/import \{runCaseWithOneRetry\} from '\.\/qa-retry\.mjs'/);
- assert.match(src,/runCaseWithOneRetry\(runCase,c,\{onRetry:/);
+ assert.match(src,/import \{runCaseWithOneRetry,isRetriable,assertHostingStatuses\} from '\.\/qa-retry\.mjs'/);
+ assert.match(src,/runCaseWithOneRetry\(runCase,c,\{retriable:isRetriable,onRetry:/);
  for(const needle of ['retriedAfterTimeout','liveReleaseChangedDuringQa','diagnosis:await diagnose(page)',"import {accessGateDiagnostics} from './browser-diagnostics.mjs'",'accessGateDiagnostics(page,{storageKey:STORAGE_KEY})'])assert.ok(src.includes(needle),needle);
  // Alle Inhaltspruefungen des Falls sind noch da (die Wiederholung darf nichts davon abschwaechen).
- for(const needle of ["ticker+':exact-reviewed-profile'","ticker+':overflow'","ticker+':estimated-window'","ticker+':valid-estimated-window-not-rendered'","assert(requests.every(r=>r.status===200))","assert.equal(requests,0,ticker+':ineligible-request')"])assert.ok(src.includes(needle),needle);
+ for(const needle of ["ticker+':exact-reviewed-profile'","ticker+':overflow'","ticker+':estimated-window'","ticker+':valid-estimated-window-not-rendered'",'assertHostingStatuses(requests)',"assert.equal(requests,0,ticker+':ineligible-request')"])assert.ok(src.includes(needle),needle);
  // Mutant: wuerde jeder Fehler wiederholt, faellt QR-3 auf.
  const all=()=>true,h=harness([new AssertionError({message:'x'}),'nach Retry']);
  assert.equal(await runCaseWithOneRetry(h.run,item,{...h.opt,retriable:all}),'nach Retry');assert.deepEqual(h.calls,[1,2],'der Mutant verhaelt sich anders als QR-3');
+});
+
+import {assertHostingStatuses,isRetriable} from '../qa-retry.mjs';
+test('QR-7: 5xx-Datenrequests sind einmal wiederholbar, 4xx und Mischformen bleiben streng',async()=>{
+ assert.doesNotThrow(()=>assertHostingStatuses([{path:'/a',status:200}]));
+ let e;try{assertHostingStatuses([{path:'/a',status:200},{path:'/b',status:503}]);}catch(x){e=x;}
+ assert.equal(e.name,'TransientHostingError');assert.equal(isRetriable(e),true);
+ for(const bad of [[{path:'/a',status:404}],[{path:'/a',status:503},{path:'/b',status:404}]]){
+  let f;try{assertHostingStatuses(bad);}catch(x){f=x;}
+  assert.equal(f.name,'AssertionError');assert.equal(isRetriable(f),false);
+ }
+ const calls=[];const out=await runCaseWithOneRetry(async(i,a)=>{calls.push(a);if(a===1){const x=new Error('503');x.name='TransientHostingError';throw x;}return 'ok';},{},{retriable:isRetriable});
+ assert.equal(out,'ok');assert.deepEqual(calls,[1,2]);
 });

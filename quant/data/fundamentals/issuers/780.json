@@ -1113,9 +1113,9 @@
       "cik": "0001840780",
       "name": "Local Bounti Corporation/DE",
       "sic": "0100",
-      "rawFacts": 4794,
-      "mappedFacts": 2012,
-      "unmappedFacts": 2776,
+      "rawFacts": 5066,
+      "mappedFacts": 2130,
+      "unmappedFacts": 2963,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -1126,28 +1126,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 7,
-      "quarterlyPeriods": 25,
+      "quarterlyPeriods": 26,
       "firstPeriodEnd": "2019-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 6.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 22,
+          "quarterlyPeriods": 23,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
         },
         "eps_diluted": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 22,
+          "quarterlyPeriods": 23,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
         },
         "free_cash_flow": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 22,
+          "quarterlyPeriods": 23,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0,
@@ -1160,28 +1160,28 @@
         },
         "long_term_debt": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 20,
+          "quarterlyPeriods": 21,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
         },
         "net_income": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 22,
+          "quarterlyPeriods": 23,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
         },
         "operating_cash_flow": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 22,
+          "quarterlyPeriods": 23,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
         },
         "revenue": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 22,
+          "quarterlyPeriods": 23,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
@@ -1195,14 +1195,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 24,
+          "quarterlyPeriods": 25,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
         },
         "total_assets": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 23,
+          "quarterlyPeriods": 24,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
@@ -1225,46 +1225,47 @@
         }
       },
       "quality": {
-        "HIGH": 231,
+        "HIGH": 239,
         "MEDIUM": 6
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 237,
-        "resolvedValues": 237
+        "datableValues": 245,
+        "resolvedValues": 245
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 3029,
+        "rules_version": "1.1.0",
+        "total": 3227,
         "by_severity": {
-          "INFO": 2776,
-          "WARNING": 253
+          "INFO": 2963,
+          "WARNING": 264
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 165,
+          "CONCEPT_DISAGREEMENT": 176,
           "FISCAL_PERIOD_CONFLICT": 12,
           "RESTATEMENT_CONFLICT": 76,
-          "UNKNOWN_CONCEPT": 2776
+          "UNKNOWN_CONCEPT": 2963
         }
       },
       "latestFiling": {
-        "accession": "0001628280-26-056162",
-        "filing_date": "2026-08-12",
+        "accession": "0001628280-26-075561",
+        "filing_date": "2026-11-23",
         "form": "10-Q",
-        "periodic_filings": 23
+        "periodic_filings": 24,
+        "acceptance_datetime": "2026-11-23T22:26:49.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
-        "formula": "1.2.0",
+        "normalization_logic": "1.15.0",
+        "formula": "1.3.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.8.0"
         }
       },
-      "sourceDigest": "221bdd1df37869af683b5ce7378574493bca7d97e1711ac42ee448ffdd25fa97",
+      "sourceDigest": "f58b95f6774562da8aab821a55212f6c625f0fc641ad55336ac4ca8d80a3210d",
       "issuerId": "iss_cik_0001840780"
     },
     {

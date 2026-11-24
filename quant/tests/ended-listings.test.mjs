@@ -64,7 +64,7 @@ test("Bezugssitzung ist die haeufigste letzte Bar des Datenbestands, nicht die U
 
 test("Das committete Register ist gueltig und belegt jeden Eintrag", () => {
   const ev = indexEvidence(JSON.parse(readFileSync(join(ROOT, "quant/config/listing-ended-evidence.json"), "utf8")));
-  assert.deepEqual([...ev.keys()].sort(), ["ref_BWMN", "ref_CBZ", "ref_ITGR", "ref_JAB", "ref_KVUE", "ref_LXFR", "ref_LXP", "ref_RAMP", "ref_ROKU"]);
+  assert.deepEqual([...ev.keys()].sort(), ["ref_ARI", "ref_BWMN", "ref_CBZ", "ref_ITGR", "ref_JAB", "ref_KVUE", "ref_LNAI", "ref_LXFR", "ref_LXP", "ref_RAMP", "ref_ROKU"]);
 });
 
 test("Regel C · Fortschreibung: nach der Bereinigung (Reihe entfernt) bleibt eine beendete Notierung ausgeschlossen", () => {
@@ -124,4 +124,10 @@ test("Regel E · ohne Reihe: Stamm INACTIVE + Registereintrag (TICKER_CHANGE/DEL
   assert.equal(judgeEndedNoSeries(d, null, inactive, { ...ev, event: "ACQUISITION" }), null, "Uebernahme bleibt Regel B");
   assert.throws(() => indexEvidence({ schemaVersion: "listing-ended-evidence-1.0.0", records: [{ ...ev, ticker: "X", counterparty: "Y", noSeries: false }] }), /Regel E/);
   assert.throws(() => indexEvidence({ schemaVersion: "listing-ended-evidence-1.0.0", records: [{ ...ev, ticker: "X", counterparty: "Y", sources: ["https://example.com/x"] }] }), /Regel E/);
+});
+
+test("Regel B · DELISTED nur mit sec.gov-Beleg; Reihe endet bis 7 Tage nach dem Stichtag", () => {
+  const ok = { securityId: "ref_X", ticker: "X", event: "DELISTED", effectiveDate: "2026-11-06", counterparty: "Liquidation", sources: ["https://www.sec.gov/x"] };
+  assert.equal(indexEvidence({ schemaVersion: "listing-ended-evidence-1.0.0", records: [ok] }).size, 1);
+  assert.throws(() => indexEvidence({ schemaVersion: "listing-ended-evidence-1.0.0", records: [{ ...ok, sources: ["https://example.com/x"] }] }), /DELISTED/);
 });

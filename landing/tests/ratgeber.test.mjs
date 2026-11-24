@@ -135,3 +135,13 @@ test('RG-8 · Indexverlauf: 10.000 $ Start, Endwert und Jahresrendite passen zur
   assert.doesNotMatch(html, /<h2>Quellen<\/h2>/);
   assert.match(html, /keine Anlage-, Steuer- oder Rechtsberatung/);
 });
+
+test('RG-9 · jede Ratgeber-Seite teilt ihr eigenes Vorschaubild (1200 × 630)', () => {
+  for (const s of ratgeberSeiten().seiten) {
+    const key = s.pfad.replace(/\/index\.html$/, '').replace(/\//g, '-');
+    const og = s.html.match(/<meta property="og:image" content="([^"]+)">/)?.[1];
+    assert.equal(og, `https://www.visionuniverse.de/assets/share/${key}.jpg`, s.pfad);
+    assert.ok(existsSync(resolve(root, `assets/share/${key}.jpg`)), `${key}.jpg fehlt: node landing/scripts/share-images.mjs --nur-ratgeber`);
+    assert.match(s.html, /<meta property="og:image:width" content="1200">/);
+  }
+});

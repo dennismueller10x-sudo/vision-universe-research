@@ -142,3 +142,12 @@ test('Bericht: ungültige Zeile mit Maske trägt die Diagnose in den Details',()
  assert.match(md,/ungueltig, Maske sichtbar: readyState complete/);
  assert.match(md,/Huelle deadbeef/);
 });
+
+test('Ausfall einer Messung: Fehlerende im Log und Alarm statt "Keine Alarme"', async () => {
+  const { readFileSync } = await import('node:fs');
+  const src = readFileSync(new URL('../live-ladezeit.mjs', import.meta.url), 'utf8');
+  assert.match(src, /Messung fehlgeschlagen \(Exit/);
+  assert.match(src, /r\.stderr/);
+  assert.match(src, /ausfaelle\.push\(/);
+  assert.match(src, /Messung ausgefallen: /);
+});

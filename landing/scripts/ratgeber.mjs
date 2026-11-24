@@ -369,10 +369,18 @@ function chrome(newsHtml, tiefe) {
   return {top: fix(top).trim(), bottom: fix(bottom).trim()};
 }
 
+// Vorschaubilder zum Teilen (WhatsApp, LinkedIn …): je Ratgeber-Seite ein eigenes Bild assets/share/<schlüssel>.jpg,
+// gebaut von scripts/share-images.mjs. Fehlt eins, gilt das allgemeine Ratgeber-Bild bzw. das News-Bild.
+export const teilSchluessel = (pfad) => pfad.replace(/\/index\.html$/, '').replace(/\//g, '-');
+function teilBild(pfad) {
+  for (const k of [teilSchluessel(pfad), 'ratgeber']) if (existsSync(resolve(root, `assets/share/${k}.jpg`))) return `${SITE}/assets/share/${k}.jpg`;
+  return null;
+}
+
 function seite({pfad, titel, beschreibung, ld, body, bild, newsHtml}) {
   const tiefe = pfad.split('/').length - 1, pre = '../'.repeat(tiefe), url = `${SITE}/${pfad.replace('index.html', '')}`;
   const c = chrome(newsHtml, tiefe);
-  const og = bild || `${SITE}/assets/share/news.jpg`;
+  const og = bild || teilBild(pfad) || `${SITE}/assets/share/news.jpg`;
   return `<!doctype html>
 <html lang="de" class="vw">
 <head>
@@ -389,6 +397,10 @@ function seite({pfad, titel, beschreibung, ld, body, bild, newsHtml}) {
 <meta property="og:title" content="${esc(titel)}">
 <meta property="og:description" content="${esc(beschreibung)}">
 <meta property="og:image" content="${og}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="${esc(titel)}">
+<meta name="twitter:image" content="${og}">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#ffffff">
 <link rel="icon" href="${pre}assets/icon-192.png" type="image/png">
@@ -531,10 +543,36 @@ export function balken(ctx, pre = './') {
 <div class="rg-bar-rail">${reihe.map((s, i) => { const a = artikel[s], w = W.find((x) => x.id === a.welt); return `<a class="rg-bar-c${i ? '' : ' on'}" href="${pre}ratgeber/${s}/"><span class="rg-card-w">${ic(w.icon, 16)}${esc(w.name)}</span><b>${esc(a.titel)}</b><span class="rg-more">Lesen <span aria-hidden="true">→</span></span></a>`; }).join('')}</div></div></section>`;
 }
 
+// Seite für unbekannte Adressen (404.html, Cloudflare liefert sie mit Status 404). Alte Shop-Adressen leitet
+// scripts/build.mjs per _redirects um; alles andere landet hier statt still auf der Startseite (sonst halten Suchmaschinen
+// alte Seiten für lebendig). Pfade sind absolut, weil die Seite unter jeder Adresse erscheint.
+export function fehlerSeite(ctx) {
+  const {welten, artikel} = ctx;
+  const reihe = [welten.aufmacher, ...welten.startHier].filter((x, i, l) => artikel[x] && l.indexOf(x) === i).slice(0, 4);
+  const body = `<section class="fh ps-hero rg-404"><div class="w"><div class="fh-copy"><span class="rg-tag">Fehler 404</span><h1>Diese Seite gibt es <mark>nicht mehr.</mark></h1>
+<p class="fh-sub">Vision Universe ist die App, die Aktien einfach erklärt. Viele alte Adressen aus unserem früheren Shop sind umgezogen. Hier geht es weiter:</p>
+<div class="rg-ctas"><a class="fh-btn" href="/">Zur Startseite <i aria-hidden="true">→</i></a><a class="rg-btn ghost" href="/ratgeber/">Ratgeber</a><a class="rg-btn ghost" href="/news/">News</a><a class="rg-btn ghost" href="/report/">Aktienreport</a></div></div></div></section>
+<section class="w rg-404-l"><p class="vw-k">Beliebt im Ratgeber</p><div class="rg-weiter-l">${reihe.map((x) => `<a class="rg-card" href="/ratgeber/${x}/"><b>${esc(artikel[x].titel)}</b><span>${esc(artikel[x].teaser)}</span></a>`).join('')}</div></section>`;
+  return seite({pfad: '404.html', titel: 'Seite nicht gefunden · Vision Universe', beschreibung: 'Diese Seite gibt es nicht mehr. Vision Universe ist die App, die Aktien einfach erklärt.', ld: [], body, newsHtml: ctx.newsHtml})
+    .replace(/<script type="application\/ld\+json">[^<]*<\/script>\n?/, '').replace(/<link rel="canonical"[^>]*>\n?/, '').replace(/<meta property="og:url"[^>]*>\n?/, '')
+    .replace(/(href|src)="(?!https?:|\/|#|mailto:|data:)/g, '$1="/');
+}
+
+// Inhalt der Teilen-Bilder (scripts/share-images.mjs): Bereich mit Icon, Überschrift, erster Satz, App-Bild im iPhone.
+export function teilKarten(base = root) {
+  const {welten, artikel} = laden(base), W = welten.welten;
+  const fertig = Object.keys(artikel).length;
+  return [
+    {schluessel: 'ratgeber', icon: W[3].icon, bereich: `Ratgeber · ${fertig} Artikel`, h1: 'Geld und Börse, <mark>einfach erklärt.</mark>', satz: 'Mit Grafiken zum Ausprobieren und echten Zahlen von echten Firmen.', bild: 'fundamental'},
+    ...W.map((w) => ({schluessel: teilSchluessel(`ratgeber/thema/${w.id}/index.html`), icon: w.icon, bereich: `Ratgeber · Themenwelt`, h1: `${esc(w.name)}: <mark>${esc(w.satz)}</mark>`, satz: w.beschreibung, bild: WELT_BILD[w.id]})),
+    ...Object.values(artikel).map((a) => { const w = W.find((x) => x.id === a.welt); return {schluessel: teilSchluessel(`ratgeber/${a.slug}/index.html`), icon: w.icon, bereich: `Ratgeber · ${w.name}`, h1: a.h1, satz: a.untertitel, bild: a.app?.bild || WELT_BILD[w.id]}; }),
+  ];
+}
+
 export function ratgeberSeiten(base = root) {
   const ctx = {...laden(base), newsHtml: readFileSync(resolve(base, 'news/index.html'), 'utf8')};
   const seiten = [uebersicht(ctx), ...ctx.welten.welten.map((w) => weltSeite(w, ctx)), ...Object.values(ctx.artikel).map((a) => artikelSeite(a, ctx))];
-  return {seiten, balken: balken(ctx), ctx};
+  return {seiten, balken: balken(ctx), fehler: fehlerSeite(ctx), ctx};
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

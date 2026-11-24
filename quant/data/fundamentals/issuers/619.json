@@ -163,10 +163,10 @@
       "cik": "0001504619",
       "name": "PennantPark Floating Rate Capital Ltd.",
       "sic": null,
-      "rawFacts": 4010,
-      "mappedFacts": 712,
-      "unmappedFacts": 3338,
-      "calendarYears": 8,
+      "rawFacts": 4456,
+      "mappedFacts": 783,
+      "unmappedFacts": 3768,
+      "calendarYears": 10,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "0930",
@@ -175,11 +175,11 @@
         "PFLA"
       ],
       "status": "INGESTED",
-      "annualPeriods": 6,
-      "quarterlyPeriods": 20,
-      "firstPeriodEnd": "2020-09-30",
-      "lastPeriodEnd": "2026-06-30",
-      "historyYears": 5.0,
+      "annualPeriods": 10,
+      "quarterlyPeriods": 25,
+      "firstPeriodEnd": "2017-09-30",
+      "lastPeriodEnd": "2026-09-30",
+      "historyYears": 9.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 0,
@@ -216,18 +216,18 @@
           "historyYears": 0.0
         },
         "net_income": {
-          "annualPeriods": 6,
-          "quarterlyPeriods": 19,
+          "annualPeriods": 7,
+          "quarterlyPeriods": 20,
           "firstAvailablePeriod": "2020-09-30",
-          "lastAvailablePeriod": "2025-09-30",
-          "historyYears": 5.0
+          "lastAvailablePeriod": "2026-09-30",
+          "historyYears": 6.0
         },
         "operating_cash_flow": {
-          "annualPeriods": 6,
-          "quarterlyPeriods": 19,
+          "annualPeriods": 7,
+          "quarterlyPeriods": 20,
           "firstAvailablePeriod": "2020-09-30",
-          "lastAvailablePeriod": "2025-09-30",
-          "historyYears": 5.0
+          "lastAvailablePeriod": "2026-09-30",
+          "historyYears": 6.0
         },
         "revenue": {
           "annualPeriods": 0,
@@ -244,18 +244,18 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 5,
-          "quarterlyPeriods": 20,
-          "firstAvailablePeriod": "2021-09-30",
-          "lastAvailablePeriod": "2025-09-30",
-          "historyYears": 4.0
+          "annualPeriods": 10,
+          "quarterlyPeriods": 25,
+          "firstAvailablePeriod": "2017-09-30",
+          "lastAvailablePeriod": "2026-09-30",
+          "historyYears": 9.0
         },
         "total_assets": {
-          "annualPeriods": 5,
-          "quarterlyPeriods": 17,
+          "annualPeriods": 6,
+          "quarterlyPeriods": 18,
           "firstAvailablePeriod": "2021-09-30",
-          "lastAvailablePeriod": "2025-09-30",
-          "historyYears": 4.0
+          "lastAvailablePeriod": "2026-09-30",
+          "historyYears": 5.0
         },
         "total_debt": {
           "annualPeriods": 0,
@@ -275,44 +275,45 @@
         }
       },
       "quality": {
-        "HIGH": 97
+        "HIGH": 113
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 97,
-        "resolvedValues": 97
+        "datableValues": 113,
+        "resolvedValues": 113
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 3354,
+        "rules_version": "1.1.0",
+        "total": 3790,
         "by_severity": {
-          "INFO": 3338,
-          "WARNING": 16
+          "INFO": 3768,
+          "WARNING": 22
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 11,
-          "RESTATEMENT_CONFLICT": 5,
-          "UNKNOWN_CONCEPT": 3338
+          "CONCEPT_DISAGREEMENT": 15,
+          "RESTATEMENT_CONFLICT": 7,
+          "UNKNOWN_CONCEPT": 3768
         }
       },
       "latestFiling": {
-        "accession": "0001193125-26-342352",
-        "filing_date": "2026-08-10",
-        "form": "10-Q",
-        "periodic_filings": 63
+        "accession": "0001193125-26-472327",
+        "filing_date": "2026-11-23",
+        "form": "10-K",
+        "periodic_filings": 64,
+        "acceptance_datetime": "2026-11-23T21:07:47.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
-        "formula": "1.2.0",
+        "normalization_logic": "1.15.0",
+        "formula": "1.3.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.8.0"
         }
       },
-      "sourceDigest": "ad469c4c4f0f2ace6ccc7d7fb9b518e5d326e5d204f0584728c7878258134e5b",
+      "sourceDigest": "ead662a1f0498e6c2b16ecd3d07ffa652fcf2dd7ed0629c7cab143f50082cce7",
       "issuerId": "iss_cik_0001504619"
     },
     {

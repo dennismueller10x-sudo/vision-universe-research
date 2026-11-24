@@ -836,9 +836,9 @@
       "cik": "0001622345",
       "name": "Polar Power, Inc.",
       "sic": "3690",
-      "rawFacts": 7810,
-      "mappedFacts": 3232,
-      "unmappedFacts": 4775,
+      "rawFacts": 8079,
+      "mappedFacts": 3328,
+      "unmappedFacts": 5021,
       "calendarYears": 10,
       "industry": null,
       "industryMetrics": {},
@@ -848,9 +848,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 11,
-      "quarterlyPeriods": 43,
+      "quarterlyPeriods": 44,
       "firstPeriodEnd": "2015-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 10.0,
       "metrics": {
         "capital_expenditures": {
@@ -862,7 +862,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 19,
+          "quarterlyPeriods": 20,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
@@ -889,21 +889,21 @@
         },
         "net_income": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 42,
+          "quarterlyPeriods": 43,
           "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.0
         },
         "operating_cash_flow": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 42,
+          "quarterlyPeriods": 43,
           "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.0
         },
         "revenue": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 42,
+          "quarterlyPeriods": 43,
           "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.0
@@ -917,14 +917,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 11,
-          "quarterlyPeriods": 40,
+          "quarterlyPeriods": 41,
           "firstAvailablePeriod": "2015-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 10.0
         },
         "total_assets": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 39,
+          "quarterlyPeriods": 40,
           "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.0
@@ -947,44 +947,46 @@
         }
       },
       "quality": {
-        "HIGH": 328
+        "HIGH": 333,
+        "MEDIUM": 1
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 328,
-        "resolvedValues": 328
+        "datableValues": 334,
+        "resolvedValues": 334
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 4962,
+        "rules_version": "1.1.0",
+        "total": 5215,
         "by_severity": {
-          "INFO": 4775,
-          "WARNING": 187
+          "INFO": 5021,
+          "WARNING": 194
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 152,
+          "CONCEPT_DISAGREEMENT": 159,
           "RESTATEMENT_CONFLICT": 35,
-          "UNKNOWN_CONCEPT": 4775
+          "UNKNOWN_CONCEPT": 5021
         }
       },
       "latestFiling": {
-        "accession": "0001493152-26-039040",
-        "filing_date": "2026-08-18",
+        "accession": "0001493152-26-053820",
+        "filing_date": "2026-11-23",
         "form": "10-Q",
-        "periodic_filings": 44
+        "periodic_filings": 45,
+        "acceptance_datetime": "2026-11-23T22:22:53.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
-        "formula": "1.2.0",
+        "normalization_logic": "1.15.0",
+        "formula": "1.3.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.8.0"
         }
       },
-      "sourceDigest": "049f3de2f427ba5125411b15bc2811d051a8ffc3eaa17b02895540b3a26a428a",
+      "sourceDigest": "0d27f1338052b2bb250242b2a4952398155896940d7a3ae9eb30f626d36a4a4a",
       "issuerId": "iss_cik_0001622345"
     },
     {

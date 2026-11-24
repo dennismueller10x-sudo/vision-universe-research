@@ -26,6 +26,12 @@ test("News-Seite: Bühnenbild mit srcset, Vorladen im Kopf vor der Schrift, hohe
   const hero = html.match(/<div class="ts-sl[^"]*"[^>]*><div class="ts-art"><img [^>]*>/g) || [];
   assert.equal(hero.length, 5);
   assert.match(hero[0], /srcset="[^"]*800w[^"]*" sizes="[^"]*" width="1600" height="900" alt="" fetchpriority="high"/);
-  for (const h of hero.slice(1)) assert.match(h, /loading="lazy"/);
+  for (const h of hero.slice(1)) assert.match(h, /loading="lazy" fetchpriority="low" decoding="async"/);
   assert.equal((html.match(/fetchpriority="high"/g) || []).length, 2, "Preload und erstes Bild, sonst nichts");
+  // Alle Bilder der Buehne und der Regale ausser dem Aufmacher: im HTML mit src (Suchmaschinen, KI-Suche, ohne JS), aber niedrige Prioritaet,
+  // damit sie dem Aufmacher auf langsamer Leitung keine Bandbreite nehmen (Ladezeit-Lauf 45369693746: Aufmacher 94 KB erst nach 3,1 s).
+  const regale = (html.slice(html.indexOf('class="ts-hero"')).match(/<img [^>]*>/g) || []).filter((t) => /src="[^"]*web\/img\/news\//.test(t));
+  const ohne = regale.slice(1).filter((t) => !/loading="lazy" fetchpriority="low" decoding="async"/.test(t));
+  assert.ok(regale.length > 5 && ohne.length === 0, "Bilder ohne niedrige Prioritaet: " + ohne.slice(0, 3).join(" "));
+  assert.ok(regale.slice(1).every((t) => /src="/.test(t)), "jedes Bild behaelt src");
 });

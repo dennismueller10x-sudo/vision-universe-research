@@ -166,7 +166,7 @@ async function main() {
  const secrets = [password];
  if (password) { const {accessStateFor} = await import(new URL('../access-gate/build.mjs', import.meta.url)); secrets.push(accessStateFor(password).key); }
  mkdirSync(out, {recursive: true});
- const rows = [];
+ const rows = [], ausfaelle = [];
  for (const [site, cfg] of Object.entries(SITES)) {
   if (which !== 'all' && which !== site) continue;
   if (cfg.gate && !password) { console.error('Kein RESEARCH_ACCESS_PASSWORD: ' + site + ' nicht gemessen'); rows.push(...cfg.routes.flatMap((route) => CPUS.map((cpu) => ({key: site + route, site, route, cpu, lcp: null, cls: null, requests: null, bytes: null, runs: 0, incompleteRuns: 1, failedRuns: 0, lcpRuns: [], errors: ['Zugang fehlt']})))); continue; }
@@ -180,11 +180,17 @@ async function main() {
    if (arg('--browser')) args.push('--browser', arg('--browser'));
    const r = spawnSync(process.execPath, args, {cwd: root, env: process.env, encoding: 'utf8', maxBuffer: 1 << 26});
    assertNoSecret((r.stdout || '') + (r.stderr || ''), secrets);
-   if (r.status !== 0) { console.error(site + ' CPU ' + cpu + 'x: Messung fehlgeschlagen (Exit ' + r.status + ')'); continue; }
+   if (r.status !== 0) {
+    const ende = ((r.stderr || '') + (r.error ? '\n' + r.error.message : '')).trim().split('\n').slice(-6).join(' | ').slice(0, 600);
+    console.error(site + ' CPU ' + cpu + 'x: Messung fehlgeschlagen (Exit ' + r.status + (r.signal ? ', Signal ' + r.signal : '') + ')' + (ende ? ': ' + ende : ''));
+    ausfaelle.push(site + ' CPU ' + cpu + 'x (Exit ' + r.status + ')');
+    continue;
+   }
    rows.push(...rowsFromRaw(JSON.parse(readFileSync(rawPath, 'utf8')), site, cpu).map((r) => { const l = (targets.routes[r.key] || {}).label; return l ? {...r, label: l} : r; }));
   }
  }
  const alarms = evaluate(rows, targets, history);
+ for (const a of ausfaelle) alarms.push({key: a, cpu: '-', art: 'ausfall', text: 'Messung ausgefallen: ' + a});
  let commit = ''; try { commit = process.env.GITHUB_SHA || ''; } catch { /* ohne */ }
  const report = {schema: 'vu-ladezeit-1', measuredAt: new Date().toISOString(), commit, runs, historyRuns: history.length, rows, alarms};
  const json = JSON.stringify(report, null, 2) + '\n', md = reportMarkdown(report);

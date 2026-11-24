@@ -1,0 +1,199 @@
+{
+ "status": "FREIGEGEBEN",
+ "statusNote": "Steuerung 23./24.11.2026 (Eignungspaket): ITGR und LXFR nach abgeschlossener Uebernahme (Regel B, 8-K 2.01 + Form 25-NSE); ARI (Liquidation) und LNAI (Nasdaq-Delisting) mit Form 25 (Regel B, DELISTED); GLMD und BNRG als Kuerzelwechsel-Vorgaenger (Regel D, #2280); JAB ohne eigene Reihe (Regel E, 8-K 5.03, Stamm INACTIVE). Die Erzeugerkette nimmt zusaetzlich ANSS heraus (Uebernahme durch Synopsys 2025, Beleg im Stamm-Register), vom Gate zugelassen; Forschungsreihen eingefroren. Ersetzt eligibility-ended-2026-11-23.json (nicht gelaufen: Boersenfenster).",
+ "decidedBy": "Steuerung 23.11.2026 08:13/08:17/15:33 UTC; Wiedervorlage ARI/LNAI 24.11.",
+ "schema": "vu-eligibility-catchup-1",
+ "id": "eligibility-ended-2026-11-24",
+ "prevSha256": "9284ba47bdc131453a21d5d68c22b25456c13dc86ec9680e60090df12fbe8d2d",
+ "sourceRun": "lokal 24.11.2026 gegen main 3461d247871 (apply-ended-listings: Regel B ITGR/LXFR/ARI/LNAI, Regel D GLMD/BNRG, Regel E JAB)",
+ "productUniverseBefore": 6009,
+ "productUniverseAfter": 6002,
+ "counts": {
+  "changes": 7,
+  "leaveProduct": 7,
+  "enterProduct": 0
+ },
+ "leaveReasons": {
+  "CONFIRMED_LISTING_ENDED:ACQUISITION": 2,
+  "CONFIRMED_LISTING_ENDED:DELISTED": 2,
+  "CONFIRMED_LISTING_ENDED:SUCCEEDED": 2,
+  "CONFIRMED_LISTING_ENDED:TICKER_CHANGE": 1
+ },
+ "enterReasons": {},
+ "impact": {
+  "discover": {
+   "before": 5506,
+   "removed": 2,
+   "addedWithPage": 0
+  },
+  "elliott": {
+   "before": 4883,
+   "removed": 4,
+   "addedWithPage": 0
+  },
+  "fundamental": {
+   "before": 5249,
+   "removed": 2,
+   "addedWithPage": 0
+  },
+  "hedgefonds": {
+   "before": 4503,
+   "removed": 2,
+   "addedWithPage": 0
+  },
+  "quant": {
+   "before": 6007,
+   "removed": 6,
+   "addedWithPage": 0
+  },
+  "supertrader": {
+   "before": 1600,
+   "removed": 1,
+   "addedWithPage": 0
+  },
+  "technical": {
+   "before": 5446,
+   "removed": 4,
+   "addedWithPage": 0
+  },
+  "technik": {
+   "before": 4883,
+   "removed": 4,
+   "addedWithPage": 0
+  }
+ },
+ "changes": [
+  {
+   "securityId": "ref_ITGR",
+   "ticker": "ITGR",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:ACQUISITION"
+  },
+  {
+   "securityId": "ref_ARI",
+   "ticker": "ARI",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:DELISTED"
+  },
+  {
+   "securityId": "ref_LXFR",
+   "ticker": "LXFR",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:ACQUISITION"
+  },
+  {
+   "securityId": "ref_GLMD",
+   "ticker": "GLMD",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:SUCCEEDED"
+  },
+  {
+   "securityId": "ref_LNAI",
+   "ticker": "LNAI",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:DELISTED"
+  },
+  {
+   "securityId": "ref_BNRG",
+   "ticker": "BNRG",
+   "from": "REVIEW",
+   "to": "EXCLUDED",
+   "reasonBefore": "UNCONFIRMED:LISTING_INACTIVE",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:SUCCEEDED"
+  },
+  {
+   "securityId": "ref_JAB",
+   "ticker": "JAB",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:SPAC",
+   "reasonAfter": "CONFIRMED_LISTING_ENDED:TICKER_CHANGE"
+  }
+ ],
+ "leave": [
+  {
+   "ticker": "ITGR",
+   "securityId": "ref_ITGR",
+   "reason": "CONFIRMED_LISTING_ENDED:ACQUISITION",
+   "products": [
+    "discover",
+    "elliott",
+    "fundamental",
+    "hedgefonds",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "ARI",
+   "securityId": "ref_ARI",
+   "reason": "CONFIRMED_LISTING_ENDED:DELISTED",
+   "products": [
+    "elliott",
+    "hedgefonds",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "LXFR",
+   "securityId": "ref_LXFR",
+   "reason": "CONFIRMED_LISTING_ENDED:ACQUISITION",
+   "products": [
+    "discover",
+    "elliott",
+    "fundamental",
+    "quant",
+    "supertrader",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "GLMD",
+   "securityId": "ref_GLMD",
+   "reason": "CONFIRMED_LISTING_ENDED:SUCCEEDED",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "LNAI",
+   "securityId": "ref_LNAI",
+   "reason": "CONFIRMED_LISTING_ENDED:DELISTED",
+   "products": [
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "BNRG",
+   "securityId": "ref_BNRG",
+   "reason": "CONFIRMED_LISTING_ENDED:SUCCEEDED",
+   "products": []
+  },
+  {
+   "ticker": "JAB",
+   "securityId": "ref_JAB",
+   "reason": "CONFIRMED_LISTING_ENDED:TICKER_CHANGE",
+   "products": [
+    "quant"
+   ]
+  }
+ ],
+ "enter": []
+}

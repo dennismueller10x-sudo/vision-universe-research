@@ -264,17 +264,28 @@ test("LH-V3 · Die Billboard-Folie der Startseite abonniert ueber subscribeVisib
   assert.doesNotMatch(r, /abo = Hub\.subscribe\(c\.symbol/);
 });
 
-test("LH-V4 · subscribeVisible: der Rand ist einstellbar (Karussell: seitlich weit), Standard bleibt 80px 0px", () => {
-  const s = snap("AAPL", 4, false);
-  const { Hub, w } = fenster({ "/idx.json": idx({ AAPL: eintrag("AAPL", s) }, { sessionDate: s.sessionDate, isComplete: false }), "/snap/AAPL.json": s }, "2026-09-11T14:30:00Z");
-  const { IO, beobachter: liste } = beobachter(); w.IntersectionObserver = IO;
-  Hub.subscribeVisible({}, "AAPL", () => {});
-  Hub.subscribeVisible({}, "AAPL", () => {}, { rootMargin: "80px 600%" });
-  assert.equal(liste[0].opts.rootMargin, "80px 0px");
-  assert.equal(liste[1].opts.rootMargin, "80px 600%");
+test("LH-V4 · Die Billboard-Folien binden ihr Abonnement an den Abschnitt der Reihe (nicht an die Folie): alle Folien, solange die Reihe im Bild ist", () => {
+  const r = src("discover/ui/reihen.js");
+  assert.match(r, /art\.__heroBind = function \(host\)/);
+  assert.match(r, /\(host, c\.symbol, onSnapshot\)/);
+  assert.match(r, /slide\.__heroBind\(sec\)/);
+  assert.doesNotMatch(r, /rootMargin: "80px 600%"/, "ein weiter Rand hilft nicht: der Scrollbereich schneidet seitliche Folien ab");
+  assert.doesNotMatch(r, /abo = \(Hub\.subscribeVisible[^;]*\)\(art,/, "nicht mehr je Folie beobachten");
 });
 
-test("LH-V5 · Die Billboard-Folien nutzen den weiten Rand: alle Folien der Reihe abonnieren, solange die Reihe im Bild ist", () => {
-  const r = src("discover/ui/reihen.js");
-  assert.match(r, /\{ rootMargin: "80px 600%" \}\); \/\* seitlich weit/);
+test("LH-V5 · Fuenf Abonnements an einen gemeinsamen Abschnitt: alle zugleich im Bild, alle zugleich gekuendigt", async () => {
+  const syms = ["AAA", "BBB", "CCC", "DDD", "EEE"];
+  const eintraege = Object.fromEntries(syms.map((x) => [x, eintrag(x, snap(x, 4, false))]));
+  const antworten = { "/idx.json": idx(eintraege, { sessionDate: "2026-09-11", isComplete: false }) };
+  syms.forEach((x) => { antworten["/snap/" + x + ".json"] = snap(x, 4, false); });
+  const { Hub, w } = fenster(antworten, "2026-09-11T14:30:00Z");
+  const { IO, beobachter: liste } = beobachter(); w.IntersectionObserver = IO;
+  const abschnitt = {};
+  syms.forEach((x) => Hub.subscribeVisible(abschnitt, x, () => {}));
+  assert.equal(liste.length, 5); assert.ok(liste.every((o) => o.ziele[0] === abschnitt));
+  liste.forEach((o) => o.melde(true));
+  assert.equal(Hub.stats().subscribers, 5, "alle fuenf im Bild");
+  liste.forEach((o) => o.melde(false));
+  assert.equal(Hub.stats().subscribers, 0, "Reihe verlassen: alle gekuendigt");
+  assert.equal(Hub.stats().unsubscriptions, 5);
 });
