@@ -37,7 +37,14 @@ export async function consumerContracts(directory){
  }
  if(listings!==46)throw Error('REFRESH_CONSUMER_SCOPE_FAILED');return {status:'PASS',listings,issuers:45};
 }
-function py(script,args){try{return execFileSync('python3',['scripts/company_intelligence/'+script,...args],{encoding:'utf8',maxBuffer:4*1024*1024,timeout:1200000});}catch(e){
+/* Prozess-Timeout des Python-Refresh (24.11.2026, Lauf 45483191760: publicMaxSeconds 1400 lief gegen den festen Timeout von 1200 s, PYTHON_PROCESS_FAILURE
+   nach 1200 s in POLL_BUILD). Er haengt jetzt an den Zeitbudgets der Konfiguration: oeffentlich + SEC + 600 s Reserve fuer Aufbau und Pruefung, nie unter 1200 s. */
+export const BASE_PROCESS_TIMEOUT_MS=1200000,PROCESS_RESERVE_MS=600000;
+export function processTimeoutMs(...configs){
+ const budgets=configs.map(c=>((Number(c?.publicMaxSeconds)||0)+(Number(c?.secMaxSeconds)||0))*1000+PROCESS_RESERVE_MS);
+ return Math.max(BASE_PROCESS_TIMEOUT_MS,...budgets);
+}
+function py(script,args,timeout=BASE_PROCESS_TIMEOUT_MS){try{return execFileSync('python3',['scripts/company_intelligence/'+script,...args],{encoding:'utf8',maxBuffer:4*1024*1024,timeout});}catch(e){
  const text=String(e.stderr||''),code=text.match(/(?:ValueError|RuntimeError): ([A-Z0-9_:-]+)\s*$/)?.[1];
  const line=[...text.matchAll(/File "[^\n]*\/(continuous_refresh\.py|pipeline\.py)", line (\d+)/g)].at(-1);
  throw Error(code||'PYTHON_'+(text.match(/([A-Za-z]+Error):[^\n]*\s*$/)?.[1]||'PROCESS_FAILURE').toUpperCase()+(line?'_L'+line[2]:''));
@@ -116,7 +123,7 @@ export async function runRefresh(driver,{temporary,identityRoot,verification=fal
   if(beforeBuild){stage='BOUNDED_CONTENT_PREPARATION';report.contentPreparation=await beforeBuild({state,temporary:root,identityRoot});}
   stage='POLL_BUILD';
   const args=['--state',state,'--identity-root',identityRoot,'--consumer',consumer,'--evidence',evidence];
-  if(!network)args.push('--offline');if(financial)args.push('--financial');if(universe)args.push('--universe');py('continuous_refresh.py',args);
+  if(!network)args.push('--offline');if(financial)args.push('--financial');if(universe)args.push('--universe');py('continuous_refresh.py',args,processTimeoutMs(refreshConfig,universe?universeConfig:null));
   const engine=json(evidence); const {privateIntegrity,inventory,run,...aggregate}=engine; Object.assign(report,aggregate);
   if(universe&&sourceAudit){
    stage='SOURCE_REGISTRY_AUDIT';
