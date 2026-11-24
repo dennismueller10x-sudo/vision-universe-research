@@ -9,8 +9,8 @@
   var CONFIG = "/elliott/config/kursmarken.json";
   /* KURSMARKEN-BEGIN (Owner-Entscheidung 23.11.2026: Kursziele und Einstiege im Elliott-Bild; Restrisiko docs/legal/EINORDNUNG.md §0) */
   var WORDS = {
-    kursziele: { target: "Kursziel", entry: "Einstiegszone laut Methode", guard: "Absicherung laut Methode", guardText: "1 % jenseits der Einstiegszone", invalid: "Ungültig laut Methode", tag: "Kursziele und Einstieg nach der Elliott-Methode" },
-    zonen: { target: "Zielzone der Methode", entry: "Zone laut Methode", guard: null, guardText: null, invalid: "Ungültig-Marke laut Methode", tag: "Zonen nach der Elliott-Methode" }
+    kursziele: { target: "Kursziel", entry: "Einstiegszone laut Methode", guard: "Absicherung laut Methode", guardText: "1 % jenseits der Einstiegszone", invalid: "Ungültig laut Methode", tag: "Kursziele und Einstieg nach der Elliott-Methode", tShort: "Kursziel", eShort: "Einstieg" },
+    zonen: { target: "Zielzone der Methode", entry: "Zone laut Methode", guard: null, guardText: null, invalid: "Ungültig-Marke laut Methode", tag: "Zonen nach der Elliott-Methode", tShort: "Ziel", eShort: "Zone" }
   };
   /* KURSMARKEN-END */
   var mode = "zonen", ready = null;
@@ -124,8 +124,9 @@
     for (var k = m0; k < M.length; k++) { out.t.push(M[k][0]); out.c.push(M[k][1]); out.o.push(M[k][1]); out.h.push(M[k][1]); out.l.push(M[k][1]); }
     return out;
   }
-  function svgHK(td, rows, W, a, range) {
-    var narrow = W < 560, H = Math.round(narrow ? W * 1.04 : Math.min(560, W * 0.62)), padL = 6, padR = narrow ? 62 : 74, padT = 16, padB = 24;
+  function svgHK(td, rows, W, a, range, opt) {
+    opt = opt || {};
+    var narrow = W < 560, H = Math.round(narrow ? W * (opt.tall ? 1.3 : opt.short ? 0.82 : 1.04) : Math.min(560, W * 0.62)), padL = 6, padR = narrow ? 62 : 74, padT = 16, padB = 24;
     var S = seriesOf(a, td, range); if (S.c.length < 6) return "";
     var plotW = W - padL - padR, fut = narrow ? 0.4 : 0.34, histW = plotW * (1 - fut), x0 = padL, xNow = x0 + histW, xEnd = padL + plotW;
     var vals = S.l.concat(S.h).filter(function (v) { return v > 0; });
@@ -156,7 +157,7 @@
       var z1 = zs[0], lbl = (r.role === "entry" ? "Einstieg" : r.role === "target" ? "Ziel " + r.n : r.step.disp) + " · " + num(z1.lo) + "–" + num(z1.hi);
       /* Beschriftung links oben im Band (die Pfeile laufen nach rechts zu den Punkten), bei schmalen Bändern darüber */
       var bandH = y(z1.lo) - y(z1.hi), ly = bandH >= 18 ? y(z1.hi) + 13 : y(z1.hi) - 4;
-      if (r.role !== "step" && !narrow) g.push('<text class="hk-zl" x="' + (x1 + 5).toFixed(1) + '" y="' + ly.toFixed(1) + '">' + esc(lbl) + "</text>");
+      if (r.role !== "step" && (!narrow || opt.labels)) g.push('<text class="hk-zl" x="' + (x1 + 5).toFixed(1) + '" y="' + ly.toFixed(1) + '">' + esc(lbl) + "</text>");
       if (r.role === "target") tags.push({ y: y((z1.lo + z1.hi) / 2), t: num(r.step.dir === "UP" ? z1.lo : z1.hi), c: "hk-tag-t" });
       if (r.role === "entry") tags.push({ y: y((z1.lo + z1.hi) / 2), t: num(r.step.dir === "DOWN" ? z1.hi : z1.lo), c: "hk-tag-e" });
     });
@@ -188,13 +189,16 @@
       g.push('<line class="hk-arrow ' + (upS ? "hk-a-up" : "hk-a-dn") + '" x1="' + P[s2 - 1][0].toFixed(1) + '" y1="' + P[s2 - 1][1].toFixed(1) + '" x2="' + P[s2][0].toFixed(1) + '" y2="' + P[s2][1].toFixed(1) + '" marker-end="url(#hk-h-' + (upS ? "up" : "dn") + ')"/>');
       g.push('<text class="hk-w ' + (rows[s2 - 1].step.deg === "BIG" ? "hk-w-big" : "hk-w-sub") + '" x="' + P[s2][0].toFixed(1) + '" y="' + (P[s2][1] + (upS ? -12 : 22)).toFixed(1) + '" text-anchor="middle">' + esc(rows[s2 - 1].step.disp) + "</text>");
     }
+    /* Variante „Schritte“: nummerierte Punkte 1 (heute), 2 (Einstieg), 3 (Kursziel) auf dem Pfad */
+    if (opt.numbered) { var NP = [P[0]]; rows.forEach(function (r, k) { if (r.role === "entry" || (r.role === "target" && r.n === 1)) NP.push(P[k + 1]); });
+      NP.slice(0, 3).forEach(function (pt, k) { g.push('<g class="hk-num hk-num' + (k + 1) + '"><circle cx="' + pt[0].toFixed(1) + '" cy="' + pt[1].toFixed(1) + '" r="12"/><text x="' + pt[0].toFixed(1) + '" y="' + (pt[1] + 5).toFixed(1) + '" text-anchor="middle">' + (k + 1) + "</text></g>"); }); }
     /* Preis-Etiketten an der Achse, ohne Überlappung */
     tags.push({ y: y(S.c[n - 1]), t: num(S.c[n - 1]), c: "hk-tag-p" });
     tags.sort(function (p, q) { return p.y - q.y; });
     for (var k2 = 1; k2 < tags.length; k2++) if (tags[k2].y - tags[k2 - 1].y < 20) tags[k2].y = tags[k2 - 1].y + 20;
     tags.forEach(function (tg) { g.push('<g class="hk-tag ' + tg.c + '"><rect x="' + (xEnd + 2) + '" y="' + (tg.y - 10).toFixed(1) + '" width="' + (padR - 4) + '" height="20" rx="6"/><text x="' + (xEnd + 2 + (padR - 4) / 2).toFixed(1) + '" y="' + (tg.y + 4).toFixed(1) + '" text-anchor="middle">' + esc(tg.t) + "</text></g>"); });
     var defs = '<defs><marker id="hk-h-up" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="hk-hd-up"/></marker><marker id="hk-h-dn" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="hk-hd-dn"/></marker></defs>';
-    return '<svg class="hk-svg" viewBox="0 0 ' + W + " " + H + '" width="100%" role="img" aria-label="Großes Bild mit Wellen, Zonen und Pfad der Methode">' + defs + g.join("") + "</svg>";
+    return '<svg class="hk-svg' + (opt.light ? " hk-light" : "") + '" viewBox="0 0 ' + W + " " + H + '" width="100%" role="img" aria-label="Großes Bild mit Wellen, Zonen und Pfad der Methode">' + defs + g.join("") + "</svg>";
   }
   /* ---------------------------------------------------------- Abschnitt */
   function titleOf(td) {
@@ -241,6 +245,58 @@
   var LEVEL = { STRONG_UP: "stark aufwärts", UP: "aufwärts", MIXED: "gemischt", DOWN: "abwärts", STRONG_DOWN: "stark abwärts" };
   var LEGEND = "[3] große Welle · (3) Unterwelle · grüne Bänder = Ziele (Zone 1 kräftig, 2 und 3 blasser) · graues Band = Einstieg · gestrichelt = Ungültig-Marke · Etiketten rechts = Preise";
   function countLine(c) { return KIND[c.kind] + " " + (c.dir === "UP" ? "aufwärts" : "abwärts") + " seit " + year(c.waves[0].ft) + ", Welle [" + c.cur + "]"; }
+  /* ---------------------------------------------------------- Ansichten im Vergleich (Owner 24.11.2026, Prototyp: #/<T>?bild=a|b|c|d)
+     Alle Ansichten zeigen nur das Ergebnis der Zählung von oben, mit festem Bild (keine Umschalter für Zeitraum oder Kerzen), wenig Text;
+     die Fachangaben stehen eingeklappt unter „Mehr zur Zählung“. */
+  var VARIANTS = { a: "Poster", b: "Drei Zahlen", c: "Schritte", d: "Analyst" };
+  function variantOf() { var m = /[?&]bild=([a-d])/.exec(String(global.location && global.location.hash || "")); return m ? m[1] : null; }
+  function headline(td, rows) {
+    var e = rows.filter(function (r) { return r.role === "entry"; })[0], t = rows.filter(function (r) { return r.role === "target"; })[0], W0 = WORDS[mode];
+    var tw = W0.tShort;
+    if (e && t) return (e.step.dir === "DOWN" ? "Erst runter bis " : "Erst hoch bis ") + num(e.lo) + "–" + num(e.hi) + " $, dann " + tw + " " + num(t.lo) + "–" + num(t.hi) + " $";
+    if (t) return "Welle " + t.step.disp + " – " + tw + " " + num(t.lo) + "–" + num(t.hi) + " $";
+    return titleOf(td);
+  }
+  function facts(td, rows) {
+    var e = rows.filter(function (r) { return r.role === "entry"; })[0], t = rows.filter(function (r) { return r.role === "target"; })[0], inv = td.primary.inv, c = td.close;
+    return { e: e ? { v: num(e.lo) + "–" + num(e.hi), d: pct(e.step.dir === "DOWN" ? e.hi : e.lo, c) } : null,
+             t: t ? { v: num(t.lo) + "–" + num(t.hi), d: pct(t.step.dir === "UP" ? t.lo : t.hi, c), l: t.step.disp } : null,
+             i: inv ? { v: (inv.d === "below" ? "unter " : "über ") + num(inv.p), s: inv.d === "below" ? "< " + num(inv.p) : "> " + num(inv.p) } : null,
+             sc: td.score || null };
+  }
+  function details(td, rows, td0, other, amb) {
+    return '<details class="bp-more"><summary>Mehr zur Zählung</summary><p class="bp-legend">' + esc(titleOf(td)) + "</p>" + story(td, rows) + '<ol class="bp-plan">' + rowsHtml(td, rows) + "</ol>" +
+      (other ? '<p class="bp-alt">' + esc(other + (amb ? " · " + amb : "")) + "</p>" : "") + '<p class="bp-legend">' + esc(LEGEND) + "</p></details>";
+  }
+  function variantHtml(v, td, rows, W2, a, td0, seg, other, amb) {
+    var f = facts(td, rows), T = WORDS[mode].tShort, E = WORDS[mode].eShort, sc = f.sc;
+    var pill = sc ? '<span class="vb-pill vb-pill-' + (sc.v >= 65 ? "up" : sc.v <= 35 ? "dn" : "mid") + '" title="Setup-Score">' + sc.v + "</span>" : "";
+    var note = '<p class="vb-note">' + esc("Elliott-Zählung auf Wochenbasis · Zonen laut Methode · keine Anlageberatung") + "</p>";
+    if (v === "a") return '<div class="vb vb-a"><div class="vb-head"><h2 class="vb-h">' + esc(headline(td, rows)) + "</h2>" + pill + "</div>" + seg +
+      '<div class="bp-chart hk">' + svgHK(td, rows, W2, a, "3j", {}) + "</div>" +
+      '<dl class="vb-lines">' + (f.t ? '<div class="vb-l vb-l-t"><dt>' + T + "</dt><dd>" + esc(f.t.v + " $") + "<span>" + esc(f.t.d) + "</span></dd></div>" : "") +
+      (f.e ? '<div class="vb-l"><dt>' + E + "</dt><dd>" + esc(f.e.v + " $") + "</dd></div>" : "") + (f.i ? '<div class="vb-l"><dt>Ungültig</dt><dd>' + esc(f.i.v + " $") + "</dd></div>" : "") + "</dl>" +
+      details(td, rows, td0, other, amb) + note + "</div>";
+    if (v === "b") return '<div class="vb vb-b"><h2 class="vb-h">' + esc(headline(td, rows)) + "</h2>" + seg +
+      '<div class="vb-card">' + svgHK(td, rows, W2 - 24, a, "3j", { light: true, short: true }) + "</div>" +
+      '<div class="vb-tiles">' + (f.e ? '<div class="vb-t vb-t-e"><span>' + E + "</span><b>" + esc(f.e.v) + "</b><small>" + esc(f.e.d) + "</small></div>" : "") +
+      (f.t ? '<div class="vb-t vb-t-t"><span>' + T + "</span><b>" + esc(f.t.v) + "</b><small>" + esc(f.t.d) + "</small></div>" : "") +
+      (f.i ? '<div class="vb-t vb-t-i"><span>Ungültig</span><b>' + esc(f.i.s) + "</b><small>Schluss</small></div>" : "") + "</div>" +
+      (sc ? '<div class="vb-score">' + pill + "<div><b>Setup-Score: " + esc(LEVEL[sc.level] || "") + "</b><span>Stärke, Trend, Momentum und Welle</span></div></div>" : "") +
+      details(td, rows, td0, other, amb) + note + "</div>";
+    if (v === "c") return '<div class="vb vb-c"><div class="vb-head"><h2 class="vb-h">Der Plan in 3 Schritten</h2>' + pill + "</div>" + seg +
+      '<div class="bp-chart hk">' + svgHK(td, rows, W2, a, "3j", { numbered: true }) + "</div>" +
+      '<ol class="vb-steps"><li><span class="vb-n vb-n1">1</span><div><b>' + esc("Jetzt " + num(td.close) + " $") + "</b><small>" + esc((td.sub ? "Welle (" + td.sub.cur + ")" : "Welle [" + td.primary.cur + "]") + " läuft") + "</small></div></li>" +
+      (f.e ? '<li><span class="vb-n vb-n2">2</span><div><b>' + esc(E + " " + f.e.v + " $") + "</b><small>dort endet laut Methode der Rücksetzer</small></div></li>" : "") +
+      (f.t ? '<li><span class="vb-n vb-n3">3</span><div><b class="vb-lime">' + esc(T + " " + f.t.v + " $ · " + f.t.d) + "</b><small>" + esc("nächste Welle " + f.t.l) + "</small></div></li>" : "") + "</ol>" +
+      (f.i ? '<p class="vb-foot">' + esc("Ungültig " + f.i.v + " $") + "</p>" : "") + details(td, rows, td0, other, amb) + note + "</div>";
+    return '<div class="vb vb-d"><div class="vb-head"><h2 class="vb-h vb-h-s">' + esc("Wochenchart · " + titleOf(td)) + "</h2>" + pill + "</div>" + seg +
+      '<div class="bp-chart hk">' + svgHK(td, rows, W2, a, "3j", { labels: true, tall: true }) + "</div>" +
+      '<p class="vb-sum">' + esc(headline(td, rows) + (f.t ? " (" + f.t.d + ")" : "")) + "</p>" + details(td, rows, td0, other, amb) + note + "</div>";
+  }
+  function switcher(v) {
+    return '<div class="vb-switch" role="group" aria-label="Ansicht wählen (Prototyp)"><span>Ansicht</span>' + Object.keys(VARIANTS).map(function (k) { return '<button type="button" data-v="' + k + '" aria-pressed="' + (k === v) + '">' + k.toUpperCase() + " · " + VARIANTS[k] + "</button>"; }).join("") + "</div>";
+  }
   function render(host, a, which) {
     var td0 = a.elliottTopDown, hasAlt = !!(td0.alternative && td0.altPath && td0.altPath.length), w = hasAlt && which === "alt" ? "alt" : "main", td = viewOf(td0, w);
     var rows = plan(td), W = Math.max(320, Math.min(1000, host.clientWidth || (global.innerWidth || 390) - 32));
@@ -250,6 +306,13 @@
     /* Reihenfolge wie im Analysten-Video: Überschrift, großes Bild, dann die Sätze und der Plan */
     var rg = host.dataset.r || "3j", W2 = Math.max(320, Math.min(1000, (host.parentNode && host.parentNode.clientWidth) || W));
     var segR = '<div class="bp-seg bp-seg-r" role="group" aria-label="Zeitraum"><button type="button" data-r="3j" aria-pressed="' + (rg === "3j") + '">3 Jahre</button><button type="button" data-r="all" aria-pressed="' + (rg === "all") + '">Seit Börsengang</button></div>';
+    var vv = host.dataset.v || variantOf();
+    if (vv) {
+      host.innerHTML = switcher(vv) + variantHtml(vv, td, rows, W2, a, td0, seg, other, amb);
+      Array.prototype.forEach.call(host.querySelectorAll(".vb-switch button"), function (b) { b.addEventListener("click", function () { host.dataset.v = b.getAttribute("data-v"); render(host, a, host.dataset.w || "main"); }); });
+      Array.prototype.forEach.call(host.querySelectorAll(".bp-seg button[data-w]"), function (b) { b.addEventListener("click", function () { host.dataset.w = b.getAttribute("data-w"); render(host, a, host.dataset.w); }); });
+      return;
+    }
     host.innerHTML = '<p class="vu-ltag">' + esc("Großes Bild · " + WORDS[mode].tag) + '</p><h2 class="vu-mt bp-title">' + esc(titleOf(td)) + "</h2>" + seg +
       '<div class="bp-chart hk">' + svgHK(td, rows, W2, a, rg) + "</div>" + segR + '<p class="bp-legend">' + esc(LEGEND) + "</p>" + story(td, rows) +
       '<ol class="bp-plan">' + rowsHtml(td, rows) + "</ol>" +
