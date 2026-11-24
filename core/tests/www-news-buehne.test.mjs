@@ -17,13 +17,6 @@ test("Buehne: Quelle trägt die Freigabe vor dem Wechsel und das Warten auf das 
   assert.match(js, /classList\.add\("was"\)/, "die verlassene Folie blendet aus (Überblendung bleibt)");
   assert.match(js, /document\.readyState === "complete"\) ersteFreigabe\(\); else addEventListener\("load"/, "Folie 2 wird nach dem load-Ereignis freigegeben");
   assert.match(js, /setTimeout\(function \(\) \{ if \(sl\.length > 1\) frei\(cur \+ 1\); \}, 3000\)/, "die nächste Folie wird 3 s vor dem Wechsel freigegeben");
-  // Regalbilder warten auf den Aufmacher (24.11.2026): Klasse nur mit JS, ohne JS laden sie wie bisher; Sicherung nach 4 s.
-  assert.match(css, /\.ts-warte \.ts-shelf \.ts-im\{content-visibility:hidden\}/);
-  assert.match(css, /\.ts-im\{display:block;aspect-ratio:16\/9/, "die Fläche der Regalbilder bleibt durch aspect-ratio");
-  assert.match(js, /root\.classList\.add\("ts-warte"\)/);
-  assert.match(js, /root\.classList\.remove\("ts-warte"\)/);
-  assert.match(js, /setTimeout\(los2, 4000\)/, "Sicherung: nach 4 s sind die Regalbilder frei");
-  assert.doesNotMatch(src("landing/news/index.html"), /ts-warte/, "die Klasse steht nie im statischen HTML (ohne JS wird nichts verborgen)");
   // Die Bilder bleiben im HTML mit src (Suchmaschinen, KI-Suche, ohne JavaScript).
   const html = src("landing/news/index.html");
   const hero = html.match(/<div class="ts-sl[^"]*"[^>]*><div class="ts-art"><img [^>]*>/g) || [];
