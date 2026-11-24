@@ -61,6 +61,20 @@ export function gateOf(ss) {
  return sh == null || co == null ? null : {shellMs: Math.round(sh), contentMs: Math.round(co), extraMs: Math.round(co - sh)};
 }
 
+/** Eine Zeile Zugangsdiagnose (kein Schluesselwert): Ladezustand, gespeicherter Zustand gegen Browser-Zeit, Fehlertext, access.js. */
+export function diagnoseText(g) {
+ if (!g) return 'keine Diagnose';
+ const st = g.gate && g.gate.stored;
+ const abgelaufen = st && typeof st.expiresAt === 'number' && typeof g.browserNow === 'number' ? (st.expiresAt <= g.browserNow ? 'abgelaufen' : 'gueltig bis ' + new Date(st.expiresAt).toISOString()) : null;
+ const js = g.gate && g.gate.accessJs;
+ return ['readyState ' + g.readyState, 'busy ' + g.busy,
+  'Schluessel im Speicher: ' + (g.storageKeyPresent ? 'ja' : 'nein'),
+  st ? 'gespeichert v' + (st.version ?? '?') + (abgelaufen ? ' (' + abgelaufen + ')' : '') + (st.unreadable ? ' (unlesbar)' : '') : null,
+  g.gate && g.gate.settings ? 'Maske v' + (g.gate.settings.version ?? '?') + (g.gate.settings.verifier8 ? ' (Huelle ' + g.gate.settings.verifier8 + ')' : '') : null,
+  g.accessError ? 'Fehlertext "' + g.accessError.text + '"' + (g.accessError.hidden ? ' (verborgen)' : '') : 'kein Fehlertext',
+  js ? (js.error ? 'access.js ' + js.error : 'access.js ' + js.status + (js.lastModified ? ' ' + js.lastModified : '')) : null].filter(Boolean).join(', ');
+}
+
 /** Zeilen je Route aus der Rohdatei von measure.mjs (nur Kennzahlen; keine Adressen, keine Antworten). */
 export function rowsFromRaw(raw, site, cpu) {
  return (raw.rows || []).map((r) => {
@@ -70,7 +84,7 @@ export function rowsFromRaw(raw, site, cpu) {
    lcp: r.lcp ?? null, cls: r.cls ?? null, requests: r.requests ?? null, bytes: r.bytes ?? null,
    runs: ss.length, invalidRuns: r.invalidRuns ?? 0, incompleteRuns: r.incompleteRuns ?? 0, failedRuns: r.failedRuns ?? 0,
    lcpRuns: ss.map((s) => (typeof s.lcp === 'number' ? Math.round(s.lcp) : null)),
-   lcpElement: lcpElementOf(ss), topShift: topShiftOf(ss), gate: gateOf(ss),
+   lcpElement: lcpElementOf(ss), topShift: topShiftOf(ss), gate: gateOf(ss), gateDiagnostics: (ss.find((x) => x.gateDiagnostics) || {}).gateDiagnostics || null,
    errors: [...new Set(ss.flatMap((s) => s.errors || []))].slice(0, 3)
   };
  });
@@ -129,6 +143,7 @@ export function reportMarkdown(report) {
  for (const r of detail) {
   if (r.lcpElement) d.push('- ' + r.key + ' (' + r.cpu + 'x)' + ' LCP-Element: ' + r.lcpElement.tag + (r.lcpElement.id ? '#' + r.lcpElement.id : '') + (r.lcpElement.url ? ' ' + r.lcpElement.url : ''));
   if (r.topShift) d.push('- ' + r.key + ' (' + r.cpu + 'x)' + ' groesste Verschiebung: ' + r.topShift.value + ' bei ' + r.topShift.atMs + ' ms, Knoten ' + r.topShift.nodes.map((n, i) => { const m = (r.topShift.moves || [])[i]; return m && m.from && m.to ? n + ' (y ' + m.from.y + '→' + m.to.y + ', h ' + m.from.h + '→' + m.to.h + ')' : n; }).join(' | '));
+  if (r.gateDiagnostics && (r.invalidRuns || 0) > r.runs / 2) d.push('- ' + r.key + ' (' + r.cpu + 'x) ungueltig, Maske sichtbar: ' + diagnoseText(r.gateDiagnostics));
   if (r.gate) d.push('- ' + r.key + ' (' + r.cpu + 'x)' + ' Zugangshuelle: Huelle bis ' + r.gate.shellMs + ' ms, Inhalt bis ' + r.gate.contentMs + ' ms (+' + r.gate.extraMs + ' ms)');
  }
  if (d.length) L.push('## Details (je CPU-Stufe)', '', ...d, '');
