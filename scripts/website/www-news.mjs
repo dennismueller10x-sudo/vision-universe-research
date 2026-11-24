@@ -86,6 +86,9 @@ export function readState() {
 // Artikel öffnen auf www selbst (Owner 23.11.2026): /news/<slug>/ ist ohne App und ohne Konto lesbar.
 // Der Weg in die App steht in der Seite selbst (scripts/website/www-artikel.mjs), nicht mehr in jedem Link.
 const link = (href) => `/news/${slug(href)}/`;
+// Bilder, die nicht im ersten Bild liegen (Folien 2-5 der Buehne, Regale, Magazin/Report): weiter im HTML mit src (Suchmaschinen,
+// KI-Suche, Seite ohne JS), aber nach dem Aufmacher geladen. Der Aufmacher selbst bleibt fetchpriority=high mit Preload.
+const LAZY_NIEDRIG = ' loading="lazy" fetchpriority="low" decoding="async"';
 const img = (R, name, alt = "", extra = "") => name ? `<img src="${R}web/img/news/${name}" alt="${esc(alt)}"${extra}>` : "";
 
 
@@ -135,8 +138,8 @@ export function regions(state) {
   const lcpPreload = (R) => a0.img && a0.img800 ? `<link rel="preload" as="image" href="${R}web/img/news/${a0.img}" imagesrcset="${R}web/img/news/${a0.img800} 800w, ${R}web/img/news/${a0.img} 1600w" imagesizes="${HERO_SIZES}" fetchpriority="high">` : "";
   const topShelf = (R) => {
     const pic = (x, lazy = true, hero = false) => !x.img ? '<span class="ts-noimg"></span>'
-      : hero && x.img800 ? `<img src="${R}web/img/news/${x.img}" srcset="${R}web/img/news/${x.img800} 800w, ${R}web/img/news/${x.img} 1600w" sizes="${HERO_SIZES}" width="1600" height="900" alt=""${lazy ? ' loading="lazy"' : ' fetchpriority="high"'}>`
-      : `<img src="${R}web/img/news/${x.img}" alt=""${lazy ? ' loading="lazy"' : ""}>`;
+      : hero && x.img800 ? `<img src="${R}web/img/news/${x.img}" srcset="${R}web/img/news/${x.img800} 800w, ${R}web/img/news/${x.img} 1600w" sizes="${HERO_SIZES}" width="1600" height="900" alt=""${lazy ? LAZY_NIEDRIG : ' fetchpriority="high"'}>`
+      : `<img src="${R}web/img/news/${x.img}" alt=""${lazy ? LAZY_NIEDRIG : ""}>`;
     const meta = (x) => `${dmy(x.datum)} · ${esc(x.rubrik)}`;
     const card = (x) => `<a class="ts-c" data-tk="${esc(x.firma?.ticker || "")}" data-th="${esc((x.themen || []).join("|"))}" href="${link(x.href)}"><span class="ts-im">${pic(x)}</span><small>${meta(x)}</small><b>${esc(x.titel)}</b></a>`;
     const arrows = '<span class="ts-arr"><button type="button" aria-label="Zurück">‹</button><button type="button" aria-label="Weiter">›</button></span>';
@@ -158,7 +161,7 @@ export function regions(state) {
     const all = artikel.map(card).join("");
     const pick = (kind, h, items, label) => `<section class="ts-shelf ts-pick" data-kind="${kind}"><div class="w ts-sh"><h2>${h} <span aria-hidden="true">›</span></h2></div>`
       + `<div class="ts-track ts-chips">${items}</div><div class="w ts-sh ts-ph"><h3>${label}</h3>${arrows}</div><div class="ts-track ts-res">${all}</div></section>`;
-    const pub = (href, cover, k, t) => cover ? `<a class="ts-p2" href="${R}${href}"><span class="ts-im">${img(R, cover, "", ' loading="lazy"')}</span><small>${k}</small><b>${esc(t)}</b></a>` : "";
+    const pub = (href, cover, k, t) => cover ? `<a class="ts-p2" href="${R}${href}"><span class="ts-im">${img(R, cover, "", LAZY_NIEDRIG)}</span><small>${k}</small><b>${esc(t)}</b></a>` : "";
     const pubs = pub("magazin/", heft.cover, `Aktienmagazin · KW ${esc(heft.kw)}`, heft.titel) + (report ? pub("report/", report.cover, "Aktienreport", report.titel) : "");
     return `<section class="ts-hero" aria-roledescription="Karussell" aria-label="Die neuesten Artikel">${slides}<div class="ts-dots"><div class="w">${dots}</div></div></section>`
       + shelf("neueste", "Neueste Artikel", rest.map(card).join(""))
