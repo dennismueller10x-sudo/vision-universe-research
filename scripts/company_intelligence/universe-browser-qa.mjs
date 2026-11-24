@@ -10,7 +10,7 @@ import {accessStateFor,STORAGE_KEY} from '../access-gate/build.mjs';
 import {eligibilityRollout} from './eligibility-rollout.mjs';
 import {eligibilityValid} from './universe-approval.mjs';
 import {objectPool} from './bounded-objects.mjs';
-import {runCaseWithOneRetry} from './qa-retry.mjs';
+import {runCaseWithOneRetry,isRetriable,assertHostingStatuses} from './qa-retry.mjs';
 import {accessGateDiagnostics} from './browser-diagnostics.mjs';
 import {readLiveAsset,isTransientNetworkError,networkError,LIVE_SETTLE_MS,LIVE_READ_CONCURRENCY} from './live-asset-read.mjs';
 import {waitForHydratedConsumer} from './hydrated-consumer-review.mjs';
@@ -85,7 +85,7 @@ try{
    assert.equal(await chapter.locator('.ci-event').count()>0,flags.nextEvent,ticker+':events');
    assert.equal(await chapter.locator('.ci-missing-profile').count(),0);assert.equal(await page.locator('vu-navigation').count(),1);
    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,ticker+':overflow');assert.deepEqual(errors,[],ticker);
-   assert(requests.some(r=>r.path.includes(m.generation)));assert(requests.every(r=>r.status===200));
+   assert(requests.some(r=>r.path.includes(m.generation)));assertHostingStatuses(requests);
    if(expected.latestFinancials.stale&&flags.financials)assert(text.includes('Veraltete Geschäftszahlen'));
    // Expectation comes from the shipped view model (hidden past/superseded estimates are not defects);
    // the rendered event pills must match it in both directions.
@@ -111,7 +111,7 @@ try{
     uniqueConsumerRequestedBytes:[...new Set(requests.map(r=>r.path.split('/company-intelligence/data/')[1]))].reduce((sum,path)=>sum+(m.assets[path]?.bytes||0),0)});
   }catch(e){failure={ticker,cid,width,theme,attempt,message:String(e.message).slice(0,600),errors,requests,scriptFailures,stockResponses,visibleText:(await page.locator('#v2-main').innerText().catch(()=>'' )).slice(0,500),diagnosis:await diagnose(page)};await page.screenshot({path:out+(attempt>1?'-failure.png':'-failure-attempt1.png')}).catch(()=>{});throw e;}finally{await page.close();await new Promise(r=>setTimeout(r,750));}
  };
- await objectPool(work,c=>runCaseWithOneRetry(runCase,c,{onRetry:e=>{
+ await objectPool(work,c=>runCaseWithOneRetry(runCase,c,{retriable:isRetriable,onRetry:e=>{
   retriedAfterTimeout.push({ticker:c.ticker,width:c.width,theme:c.theme,message:String(e.message).slice(0,200),diagnosis:failure?.diagnosis||null});
   console.log(JSON.stringify({retriedAfterTimeout:{ticker:c.ticker,width:c.width,theme:c.theme,gateShown:failure?.diagnosis?.dom?.gateShown??null,liveReleaseChangedDuringQa:failure?.diagnosis?.liveReleaseChangedDuringQa??null}}));
   failure=null;
