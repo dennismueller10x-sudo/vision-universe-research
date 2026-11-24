@@ -143,7 +143,7 @@
     if (LOG) { for (var e = Math.floor(Math.log10(lo)); e <= Math.ceil(Math.log10(hi)); e++) [1, 2, 5].forEach(function (m) { var tv = m * Math.pow(10, e); if (tv >= lo && tv <= hi) ticks.push(tv); }); }
     else { var rg = hi - lo, st = Math.pow(10, Math.floor(Math.log10(rg / 5))); [1, 2, 5, 10].some(function (m) { if (rg / (st * m) <= 6) { st *= m; return true; } return false; }); for (var tv = Math.ceil(lo / st) * st; tv <= hi; tv += st) ticks.push(tv); }
     while (ticks.length > 7) ticks = ticks.filter(function (_, i) { return i % 2 === 0; });
-    ticks.forEach(function (tv) { g.push('<line class="hk-grid" x1="' + x0 + '" x2="' + xEnd + '" y1="' + y(tv).toFixed(1) + '" y2="' + y(tv).toFixed(1) + '"/><text class="hk-ax" x="' + (xEnd + 6) + '" y="' + (y(tv) + 4).toFixed(1) + '">' + esc(num(tv)) + "</text>"); });
+    ticks.forEach(function (tv) { g.push('<line class="hk-grid" x1="' + x0 + '" x2="' + xEnd + '" y1="' + y(tv).toFixed(1) + '" y2="' + y(tv).toFixed(1) + '"/>'); });
     var lastY = "", lastX = -1e9;
     S.t.forEach(function (t0, i) { var yr = String(t0).slice(0, 4); if (yr !== lastY && i > 0 && x(i) - lastX > 46) { lastX = x(i); g.push('<text class="hk-ax" x="' + x(i).toFixed(1) + '" y="' + (H - 6) + '" text-anchor="middle">' + yr + "</text>"); } lastY = yr; });
     g.push('<rect class="hk-future" x="' + xNow.toFixed(1) + '" y="' + padT + '" width="' + (xEnd - xNow).toFixed(1) + '" height="' + (H - padT - padB) + '"/>');
@@ -176,8 +176,10 @@
       if (!c) return;
       c.waves.forEach(function (w) {
         var i = at(w.tt); if (i === null || i === undefined) return;
+        if (w.dev) return;   // laufende Welle: der Pfad zeigt, wo sie endet (sonst steht dieselbe Marke doppelt am letzten Kurs)
         var upE = w.tp >= w.fp, yy = (upE ? y(S.candles ? S.h[i] : w.tp) - 14 : y(S.candles ? S.l[i] : w.tp) + 24);
-        used.forEach(function (u) { if (Math.abs(u[0] - x(i)) < 24 && Math.abs(u[1] - yy) < 22) yy += upE ? -24 : 24; }); used.push([x(i), yy]);
+        for (var tries = 0; tries < 6 && used.some(function (u) { return Math.abs(u[0] - x(i)) < 26 && Math.abs(u[1] - yy) < 20; }); tries++) yy += upE ? -20 : 20;
+        used.push([x(i), yy]);
         g.push('<text class="hk-w ' + (big ? "hk-w-big" : "hk-w-sub") + (w.dev ? " hk-w-dev" : "") + '" x="' + x(i).toFixed(1) + '" y="' + yy.toFixed(1) + '" text-anchor="middle">' + esc(big ? "[" + w.l + "]" : "(" + w.l + ")") + "</text>");
       });
     }
@@ -196,6 +198,8 @@
     tags.push({ y: y(S.c[n - 1]), t: num(S.c[n - 1]), c: "hk-tag-p" });
     tags.sort(function (p, q) { return p.y - q.y; });
     for (var k2 = 1; k2 < tags.length; k2++) if (tags[k2].y - tags[k2 - 1].y < 20) tags[k2].y = tags[k2 - 1].y + 20;
+    /* Achsenzahlen nur, wo kein Preis-Etikett steht */
+    ticks.forEach(function (tv) { if (tags.every(function (tg) { return Math.abs(tg.y - y(tv)) > 16; })) g.push('<text class="hk-ax" x="' + (xEnd + 6) + '" y="' + (y(tv) + 4).toFixed(1) + '">' + esc(num(tv)) + "</text>"); });
     tags.forEach(function (tg) { g.push('<g class="hk-tag ' + tg.c + '"><rect x="' + (xEnd + 2) + '" y="' + (tg.y - 10).toFixed(1) + '" width="' + (padR - 4) + '" height="20" rx="6"/><text x="' + (xEnd + 2 + (padR - 4) / 2).toFixed(1) + '" y="' + (tg.y + 4).toFixed(1) + '" text-anchor="middle">' + esc(tg.t) + "</text></g>"); });
     var defs = '<defs><marker id="hk-h-up" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="hk-hd-up"/></marker><marker id="hk-h-dn" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="hk-hd-dn"/></marker></defs>';
     return '<svg class="hk-svg' + (opt.light ? " hk-light" : "") + '" viewBox="0 0 ' + W + " " + H + '" width="100%" role="img" aria-label="Großes Bild mit Wellen, Zonen und Pfad der Methode">' + defs + g.join("") + "</svg>";
