@@ -80,8 +80,9 @@
     if (page.parentNode !== root) root.appendChild(page);
     var intro = header(ctx); intro.hidden = true; page.insertBefore(intro, page.firstChild);
     if (global.__vuSearchTap) { global.__vuSearchTap = 0; ctx.openSearch(); }
-    Array.prototype.slice.call(page.children).forEach(function (n) { if (n !== intro && n !== keep) n.remove(); });
-    return D.V3.home(page, Object.assign({}, ctx, { heroWait: keep && keep.classList.contains('dp-hero') ? keep : null }));
+    var top = keep ? page.querySelector('[data-static-top]') : null;
+    Array.prototype.slice.call(page.children).forEach(function (n) { if (n !== intro && n !== keep && n !== top) n.remove(); });
+    return D.V3.home(page, Object.assign({}, ctx, { heroWait: keep && keep.classList.contains('dp-hero') ? keep : null, topWait: top }));
   }
   V.Home = { render: render, title: title };
 })(window);

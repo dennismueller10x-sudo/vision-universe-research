@@ -16,10 +16,15 @@ export function previewHtml(p){
 }
 /* Der Platzhalter oder eine fruehere Vorschau (beide: data-static-Folie der Startseite, ohne verschachtelte section). */
 const SLOT=/<section class="dr-sec dr-bb dp-hero dp-hero--wait(?: dp-hero--preview)?" data-static aria-label="Heute im Blick">[\s\S]*?<\/section>/;
+/* Kopf der Top-10-Sektion (24.11.2026): steht direkt unter der Folie und ist, wenn der Name der ersten Folie kurz ist, sonst der groesste
+   Textblock im ersten Bild und damit das LCP-Element. Gleicher Text und gleiche Funktion wie die Laufzeit (engines/reihen.js#top10Head). */
+const TOP_SLOT=/<!--top10-head-->[\s\S]*?<!--\/top10-head-->/;
+export function top10PreviewHtml(p){return p&&p.top10>0?Reihen.top10Head(p.top10,Reihen.TOP10.href):'';}
 /** Setzt die Vorschau; ohne Vorschau (null) wieder den leeren Platzhalter - nie eine alte Vorschau stehen lassen. */
 export function applyHeroPreview(html,p){
  if(!SLOT.test(html))throw Error('DISCOVER_HERO_PLACEHOLDER_MISSING');
- return html.replace(SLOT,()=>p?previewHtml(p):PLACEHOLDER);
+ const out=html.replace(SLOT,()=>p?previewHtml(p):PLACEHOLDER);
+ return TOP_SLOT.test(out)?out.replace(TOP_SLOT,()=>'<!--top10-head-->'+top10PreviewHtml(p)+'<!--/top10-head-->'):out;
 }
 /** Dieselben Dateien wie die Laufzeit: meta.json -> erster Chunk der Startseite (Flaeche "hero") und Reihe "im-blick". */
 export async function heroPreviewFromData(root,universe='US_REAL'){
