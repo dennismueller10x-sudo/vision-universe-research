@@ -186,6 +186,11 @@ lesend, beliebig wiederholbar). Festgelegt:
   das Mittel aus drei Bausteinen: die beiden Produkt-Scores und Rückkäufe (weniger Aktien als vor einem Jahr, aus
   `quant/data/sec/consumer` desselben Commits über `pit-fundamental-history.js#changeOver`, als Perzentil unter den wählbaren
   Titeln); 25 Titel; Haltepuffer: ein gehaltener Titel bleibt, solange er unter den besten 50 liegt; unter 10 Kandidaten Kasse.
+- **L25 „laufen lassen“ (ergänzt am 24.11.2026 nach Stufe 9, vor dem ersten gezählten Monat):** Signal wie R25, nur Titel über
+  der 200-Tage-Linie (Spalte `aboveSma200` des Technical-Tagesbestands desselben Commits, frische Reihe); bis zu 25 Positionen;
+  ein gehaltener Titel bleibt, bis er am Stichtag nicht mehr über der 200-Tage-Linie liegt, unabhängig vom Rang; frei gewordene
+  Plätze besetzen die besten Kandidaten; jeder Kauf ein Fünfundzwanzigstel des Depotwerts, kein Zurückstellen. Entsprechung
+  zum Depot „kein Muster · laufen lassen“ der Stufe 9 mit monatlichem Stichtag.
 - **Zählt ab Dezember 2026.** Urteil frühestens nach 12 Monaten; öffentlich nur mit Owner-Freigabe (Renditeaussage).
 
 Abweichungen von der Studie, vorab benannt: (1) Die Baustein-Scores des Produkts sind zu 70 % Branchen- und zu 30 %

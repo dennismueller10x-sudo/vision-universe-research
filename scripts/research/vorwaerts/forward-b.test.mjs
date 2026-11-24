@@ -1,7 +1,7 @@
 // Vorwärtstest Fassung B: Gegentests auf künstlichen Scherben und Kursen. Schreibt nichts ins Repository.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { componentScore, rowsOf, picksOf, coverageOf, firstPerMonth, evaluate, chain, templateOf, VARIANTS, COMPONENTS, TEMPLATE, OFFICIAL_FROM, REGISTERED } from './forward-b.mjs';
+import { componentScore, rowsOf, picksOf, coverageOf, firstPerMonth, evaluate, chain, templateOf, trendOf, VARIANTS, COMPONENTS, TEMPLATE, OFFICIAL_FROM, REGISTERED } from './forward-b.mjs';
 
 const sec = (cap, mom, gp, gpState = 'AVAILABLE') => ({ marketCap: cap, factors: {
   momentum: { components: [{ id: 'priceReturn12m1m', state: 'AVAILABLE', score: mom }, { id: 'priceReturn6m', state: 'AVAILABLE', score: 1 }] },
@@ -9,7 +9,7 @@ const sec = (cap, mom, gp, gpState = 'AVAILABLE') => ({ marketCap: cap, factors:
 
 test('Registrierung: vor dem ersten gezählten Monat festgelegt, feste Varianten und Bausteine', () => {
   assert.equal(REGISTERED, '2026-11-23'); assert.equal(OFFICIAL_FROM, '2026-12'); assert.ok(REGISTERED.slice(0, 7) < OFFICIAL_FROM);
-  assert.deepEqual(VARIANTS, { B1000: { universe: 1000, top: 0.2 }, B500: { universe: 500, top: 0.1 }, M25: { universe: 1000, n: 25, template: true, minNames: 10 }, R25: { universe: 1000, n: 25, buyback: true, buffer: 2, minNames: 10 } });
+  assert.deepEqual(VARIANTS, { B1000: { universe: 1000, top: 0.2 }, B500: { universe: 500, top: 0.1 }, M25: { universe: 1000, n: 25, template: true, minNames: 10 }, R25: { universe: 1000, n: 25, buyback: true, buffer: 2, minNames: 10 }, L25: { universe: 1000, n: 25, buyback: true, drift: true } });
   assert.deepEqual(TEMPLATE, { minAboveLow: 0.3, maxBelowHigh: -0.25, flags: ['aboveSma50', 'sma50AboveSma150', 'sma150AboveSma200', 'sma200Rising'] });
   assert.deepEqual(COMPONENTS, { momentum: 'priceReturn12m1m', profitability: 'grossProfitabilityTtm' });
 });
@@ -24,14 +24,14 @@ test('Baustein-Score: nur AVAILABLE und Zahl, sonst null', () => {
 
 test('Zeilen: alle Titel mit Börsenwert; Signal = Mittel beider Bausteine, sonst null', () => {
   const rows = rowsOf([{ securities: { A: sec(10, 80, 40), B: sec(5, 80, 40, 'UNAVAILABLE'), C: sec(null, 80, 40), D: sec(0, 80, 40) } }, { securities: { E: sec(7, 20, 60) } }, null]);
-  assert.deepEqual(rows, [{ ticker: 'A', marketCap: 10, signal: 60, template: false, buyback: null }, { ticker: 'B', marketCap: 5, signal: null, template: false, buyback: null }, { ticker: 'E', marketCap: 7, signal: 40, template: false, buyback: null }]);
+  assert.deepEqual(rows, [{ ticker: 'A', marketCap: 10, signal: 60, template: false, buyback: null, above200: false }, { ticker: 'B', marketCap: 5, signal: null, template: false, buyback: null, above200: false }, { ticker: 'E', marketCap: 7, signal: 40, template: false, buyback: null, above200: false }]);
 });
 
 test('Auswahl: erst die größten nach Börsenwert, dann der beste Anteil der wählbaren; Titel ohne Signal bleiben im Universum', () => {
   /* 1.200 Titel, Börsenwert absteigend mit dem Index; jeder zweite ohne Bruttogewinn; Signal steigt mit dem Index */
   const rows = Array.from({ length: 1200 }, (_, i) => ({ ticker: 'T' + String(i).padStart(4, '0'), marketCap: 1e6 - i, signal: i % 2 ? null : i / 12 }));
   const cov = coverageOf(rows);
-  assert.deepEqual(cov, { B1000: { universe: 1000, withSignal: 500 }, B500: { universe: 500, withSignal: 250 }, M25: { universe: 1000, withSignal: 500, withTemplate: 0 }, R25: { universe: 1000, withSignal: 500, withBuyback: 0 } });
+  assert.deepEqual(cov, { B1000: { universe: 1000, withSignal: 500 }, B500: { universe: 500, withSignal: 250 }, M25: { universe: 1000, withSignal: 500, withTemplate: 0 }, R25: { universe: 1000, withSignal: 500, withBuyback: 0 }, L25: { universe: 1000, withSignal: 500, withBuyback: 0 } });
   const p = picksOf(rows);
   assert.equal(p.B1000.length, 100, 'Fünftel der 500 wählbaren unter den 1.000 größten');
   assert.equal(p.B500.length, 25, 'Zehntel der 250 wählbaren unter den 500 größten');
@@ -52,7 +52,7 @@ test('Bewertung: Rendite der Auswahl nach Kosten gegen SPY; ein Monat zählt ers
   const days = ['2026-12-01', '2026-12-02', '2027-01-04', '2027-01-05', '2027-02-01', '2027-02-02'];
   const up = days.map((d, k) => [d, 100 * (k >= 3 ? 1.1 : 1)]), flat = days.map((d) => [d, 100]);
   const spy = days.map((d, k) => [d, 100 * (k >= 3 ? 1.02 : 1)]);
-  const snaps = [{ asOf: '2026-12-01', picks: { B1000: ['UP1', 'UP2', 'FLAT'], B500: ['UP1'], M25: [], R25: [] } }, { asOf: '2027-01-04', picks: { B1000: ['UP1', 'UP2', 'FLAT'], B500: ['FLAT'], M25: ['UP1'], R25: [] } }, { asOf: '2027-02-01', picks: { B1000: [], B500: [], M25: [], R25: [] } }];
+  const snaps = [{ asOf: '2026-12-01', picks: { B1000: ['UP1', 'UP2', 'FLAT'], B500: ['UP1'], M25: [], R25: [], L25: [] } }, { asOf: '2027-01-04', picks: { B1000: ['UP1', 'UP2', 'FLAT'], B500: ['FLAT'], M25: ['UP1'], R25: [], L25: [] } }, { asOf: '2027-02-01', picks: { B1000: [], B500: [], M25: [], R25: [], L25: [] } }];
   const priceOf = (t) => (t.startsWith('UP') ? up : t === 'FLAT' ? flat : null);
   const months = evaluate(snaps, priceOf, spy);
   assert.equal(months.length, 2);
@@ -116,4 +116,31 @@ test('R25: drei Bausteine (Rückkäufe als Perzentil), 25 Titel, Haltepuffer hä
   const prev2 = { R25: ['T000', ...Array.from({ length: 24 }, (_, k) => 'T' + (151 + k))] };
   const c = picksOf(mk((i) => i / 2, (i) => i / 1000), prev2).R25;
   assert.equal(c.includes('T000'), false); assert.equal(c.includes('T199'), true); assert.equal(c.length, 25);
+});
+
+test('L25 laufen lassen: gehaltene Titel bleiben über der 200-Tage-Linie unabhängig vom Rang; Depot stellt nicht zurück', () => {
+  assert.deepEqual([...trendOf({ cols: { s: ['A', 'B', 'C'], fresh: [true, true, false], aboveSma200: [true, false, true] } }).entries()], [['A', true], ['B', false], ['C', false]]);
+  const mk = (up) => Array.from({ length: 200 }, (_, i) => ({ ticker: 'T' + String(i).padStart(3, '0'), marketCap: 1e6 - i, signal: i / 2, template: false, buyback: i / 1000, above200: up(i) }));
+  /* erster Monat: die 25 besten über der Linie */
+  const a = picksOf(mk(() => true)).L25;
+  assert.equal(a.length, 25); assert.ok(a.every((t) => +t.slice(1) >= 175));
+  /* Vormonat hielt die schwächsten 25 (Rang 176..200): sie bleiben alle, solange sie über der Linie liegen */
+  const weak = Array.from({ length: 25 }, (_, k) => 'T' + String(k).padStart(3, '0'));
+  assert.deepEqual(picksOf(mk(() => true), { L25: weak }).L25, weak);
+  /* fünf davon fallen unter die Linie: sie gehen, die fünf besten Kandidaten über der Linie rücken nach */
+  const b = picksOf(mk((i) => i >= 5), { L25: weak }).L25;
+  assert.equal(b.length, 25); assert.equal(b.filter((t) => +t.slice(1) < 5).length, 0); assert.equal(b.filter((t) => +t.slice(1) >= 195).length, 5);
+  /* kein Titel unter der Linie wird je gekauft */
+  assert.ok(picksOf(mk((i) => i < 100)).L25.every((t) => +t.slice(1) < 100));
+
+  /* Bewertung: die Position wächst mit dem Kurs und wird nicht zurückgestellt */
+  const days = ['2026-12-01', '2026-12-02', '2027-01-04', '2027-01-05', '2027-02-01', '2027-02-02'];
+  const dbl = days.map((d, k) => [d, 100 * (k >= 3 ? 2 : 1) * (k >= 5 ? 2 : 1)]), flat = days.map((d) => [d, 100]);
+  const none = { B1000: [], B500: [], M25: [], R25: [] };
+  const snaps = [{ asOf: days[0], picks: { ...none, L25: ['DBL', 'FLAT'] } }, { asOf: days[2], picks: { ...none, L25: ['DBL', 'FLAT'] } }, { asOf: days[4], picks: { ...none, L25: [] } }];
+  const months = evaluate(snaps, (t) => (t === 'DBL' ? dbl : flat), flat, { costBps: 0 });
+  /* je 1/25 des Depots: Monat 1 +4 % (DBL verdoppelt), Monat 2 +8/104 (die gewachsene Position verdoppelt erneut) */
+  assert.ok(Math.abs(months[0].variants.L25.net - 0.04) < 1e-12);
+  assert.ok(Math.abs(months[1].variants.L25.net - 0.08 / 1.04) < 1e-12, 'ohne Zurückstellen zählt die gewachsene Position');
+  assert.equal(months[1].variants.L25.turnover, 0); assert.equal(months[0].variants.L25.names, 2);
 });

@@ -21,6 +21,8 @@
  *               (technical/data/screener-v1.json desselben Commits), davon die 25 mit dem höchsten Signal; unter 10 Kandidaten Kasse
  *   R25         Stufe 8: Signal aus drei Bausteinen (dazu Rückkäufe = weniger Aktien als vor einem Jahr, aus
  *               quant/data/sec/consumer desselben Commits, als Perzentil unter den wählbaren Titeln), 25 Titel, Haltepuffer
+ *   L25         Stufe 9 „laufen lassen“: Signal wie R25, nur Titel über der 200-Tage-Linie; ein gehaltener Titel bleibt, bis er
+ *               am Stichtag nicht mehr über der 200-Tage-Linie liegt; kein Zurückstellen auf gleiche Gewichte
  *   Handel      Einstieg und Ausstieg zum Schluss des ersten Handelstags nach dem Stichtag (discover-series, Kursrendite),
  *               6 bp je Seite auf den Umschlag; Vergleich SPY aus derselben Reihe
  *
@@ -42,7 +44,8 @@ export const REGISTERED = '2026-11-23', OFFICIAL_FROM = '2026-12', COST_BPS = 6;
 export const SHARD_DIR = 'quant/data/product/factor-evidence-v1';
 export const COMPONENTS = Object.freeze({ momentum: 'priceReturn12m1m', profitability: 'grossProfitabilityTtm' });
 export const VARIANTS = Object.freeze({ B1000: { universe: 1000, top: 0.2 }, B500: { universe: 500, top: 0.1 }, M25: { universe: 1000, n: 25, template: true, minNames: 10 },
-  R25: { universe: 1000, n: 25, buyback: true, buffer: 2, minNames: 10 } });
+  R25: { universe: 1000, n: 25, buyback: true, buffer: 2, minNames: 10 },
+  L25: { universe: 1000, n: 25, buyback: true, drift: true } });
 export const CONSUMER_DIR = 'quant/data/sec/consumer';
 /** Trendvorlage (veröffentlichte Lesart nach Minervini, PROTOKOLL §4f) aus den Spalten des Technical-Tagesbestands. */
 export const TEMPLATE = Object.freeze({ minAboveLow: 0.3, maxBelowHigh: -0.25, flags: ['aboveSma50', 'sma50AboveSma150', 'sma150AboveSma200', 'sma200Rising'] });
@@ -61,6 +64,14 @@ export function templateOf(screener) {
 }
 const isNum = (x) => typeof x === 'number' && Number.isFinite(x);
 
+/** Map Kürzel -> true: frische Reihe und Schluss über der 200-Tage-Linie (Spalte aboveSma200 des Technical-Tagesbestands). */
+export function trendOf(screener) {
+  const out = new Map(), c = screener && screener.cols;
+  if (!c || !Array.isArray(c.s) || !c.aboveSma200) return out;
+  for (let i = 0; i < c.s.length; i++) out.set(c.s[i], !!(c.fresh && c.fresh[i] === true && c.aboveSma200[i] === true));
+  return out;
+}
+
 /** Baustein-Score eines Titels oder null (nur AVAILABLE, 0–100). */
 export function componentScore(security, factor, id) {
   const f = security && security.factors && security.factors[factor];
@@ -70,14 +81,14 @@ export function componentScore(security, factor, id) {
 
 /** Zeilen aus Scherben: [{ticker, marketCap, signal|null, template}] für alle Titel mit Börsenwert; signal nur mit beiden Bausteinen;
  *  template = Trendvorlage erfüllt (aus templateOf), ohne Tagesbestand false. */
-export function rowsOf(shards, template = null, buybackOf = null) {
+export function rowsOf(shards, template = null, buybackOf = null, trend = null) {
   const rows = [];
   for (const sh of shards) {
     for (const [t, s] of Object.entries((sh && sh.securities) || {})) {
       if (!isNum(s.marketCap) || !(s.marketCap > 0)) continue;
       const m = componentScore(s, 'momentum', COMPONENTS.momentum), g = componentScore(s, 'profitability', COMPONENTS.profitability);
       const bb = buybackOf ? buybackOf(s.cik) : null;
-      rows.push({ ticker: t, marketCap: s.marketCap, signal: m === null || g === null ? null : (m + g) / 2, template: !!(template && template.get(t) === true), buyback: isNum(bb) ? bb : null });
+      rows.push({ ticker: t, marketCap: s.marketCap, signal: m === null || g === null ? null : (m + g) / 2, template: !!(template && template.get(t) === true), buyback: isNum(bb) ? bb : null, above200: !!(trend && trend.get(t) === true) });
     }
   }
   return rows;
@@ -92,7 +103,7 @@ export function picksOf(rows, prev = {}) {
   const bySize = rows.slice().sort((a, b) => b.marketCap - a.marketCap || (a.ticker < b.ticker ? -1 : 1));
   const out = {};
   for (const [name, v] of Object.entries(VARIANTS)) {
-    let pool = bySize.slice(0, v.universe).filter((r) => r.signal !== null && (!v.template || r.template) && (!v.buyback || isNum(r.buyback))).map((r) => ({ ticker: r.ticker, score: r.signal, buyback: r.buyback }));
+    let pool = bySize.slice(0, v.universe).filter((r) => r.signal !== null && (!v.template || r.template) && (!v.buyback || isNum(r.buyback)) && (!v.drift || r.above200)).map((r) => ({ ticker: r.ticker, score: r.signal, buyback: r.buyback }));
     if (v.buyback) {
       /* R25: dritter Baustein Rückkäufe = Perzentil (0–100) von „weniger Aktien als vor einem Jahr“ unter den wählbaren Titeln */
       const order = pool.map((r, i) => [r.buyback, i]).sort((a, b) => a[0] - b[0]), n = order.length, pctl = new Array(n);
@@ -103,7 +114,13 @@ export function picksOf(rows, prev = {}) {
     /* feste Titelzahl (M25, R25): unter minNames Kandidaten bleibt das Depot in Kasse (leere Auswahl). */
     const take = v.n ? (ranked.length >= v.minNames ? Math.min(v.n, ranked.length) : 0) : Math.floor(ranked.length * v.top);
     let pick = [];
-    if (v.buffer && take) {
+    if (v.drift) {
+      /* L25 „laufen lassen“ (Stufe 9): gehaltene Titel bleiben, solange sie über der 200-Tage-Linie liegen (unabhängig vom Rang);
+         nur frei gewordene Plätze werden mit den besten Kandidaten über der 200-Tage-Linie besetzt. */
+      const up = new Set(rows.filter((r) => r.above200).map((r) => r.ticker));
+      pick = (prev[name] || []).filter((t) => up.has(t));
+      for (const r of ranked) { if (pick.length >= v.n) break; if (!pick.includes(r.ticker)) pick.push(r.ticker); }
+    } else if (v.buffer && take) {
       /* Haltepuffer: ein gehaltener Titel bleibt, solange er unter den besten buffer × n liegt */
       const held = new Set(prev[name] || []);
       for (const r of ranked.slice(0, v.buffer * v.n)) if (held.has(r.ticker) && pick.length < take) pick.push(r.ticker);
@@ -133,12 +150,30 @@ export function firstPerMonth(items) {
  */
 export function evaluate(snaps, priceOf, spy, { costBps = COST_BPS } = {}) {
   const months = [], prev = Object.fromEntries(Object.keys(VARIANTS).map((k) => [k, new Set()]));
+  const book = Object.fromEntries(Object.keys(VARIANTS).filter((k) => VARIANTS[k].drift).map((k) => [k, { cash: 1, pos: new Map() }]));
   for (let m = 0; m + 1 < snaps.length; m++) {
     const s = snaps[m], e0 = closeAfter(spy, s.asOf), e1 = closeAfter(spy, snaps[m + 1].asOf);
     if (!e0 || !e1) continue;
     const row = { decision: s.asOf, entry: e0.date, exit: e1.date, spy: e1.close / e0.close - 1, variants: {} };
     for (const name of Object.keys(VARIANTS)) {
       const pick = s.picks[name] || [];
+      if (VARIANTS[name].drift) {
+        /* Depot ohne Zurückstellen: Positionen wachsen mit ihrem Kurs; Verkauf, wenn der Titel nicht mehr in der Auswahl ist;
+           jeder Kauf ein n-tel des Depotwerts (höchstens die Kasse); Kosten je Kauf und Verkauf. */
+        const b = book[name], want = new Set(pick), fee = costBps / 1e4;
+        const equity0 = b.cash + [...b.pos.values()].reduce((a, v) => a + v, 0); let traded = 0, missing = 0;
+        for (const [t, v] of [...b.pos]) if (!want.has(t)) { b.cash += v * (1 - fee); traded += v; b.pos.delete(t); }
+        for (const t of pick) {
+          if (b.pos.has(t) || b.cash <= 1e-12) continue;
+          const p = priceOf(t), a = p && closeOnOrBefore(p, row.entry);
+          if (!a || a.date !== row.entry) { missing++; continue; }
+          const spend = Math.min(equity0 / VARIANTS[name].n, b.cash); b.cash -= spend; b.pos.set(t, spend * (1 - fee)); traded += spend;
+        }
+        for (const [t, v] of b.pos) { const p = priceOf(t), a = p && closeOnOrBefore(p, row.entry), z = p && closeOnOrBefore(p, row.exit); if (a && z && a.close > 0) b.pos.set(t, v * z.close / a.close); }
+        const equity1 = b.cash + [...b.pos.values()].reduce((a, v) => a + v, 0);
+        row.variants[name] = { names: b.pos.size, missingEntry: missing, gross: null, net: equity1 / equity0 - 1, turnover: traded / equity0, cashShare: b.cash / equity1 };
+        continue;
+      }
       let sum = 0, n = 0, missing = 0;
       for (const t of pick) {
         const p = priceOf(t), a = p && closeOnOrBefore(p, row.entry), b = p && closeOnOrBefore(p, row.exit);
@@ -169,9 +204,9 @@ export function chain(months, fromMonth) {
 const pct = (x) => (isNum(x) ? (x >= 0 ? '+' : '−') + Math.abs(x * 100).toFixed(1).replace('.', ',') + ' %' : '–');
 export function report(res) {
   const L = ['# Vorwärtstest Fassung B: Momentum + Bruttogewinn je Bilanzsumme (Forschung, nicht zertifiziert)', '',
-    `Registriert am ${res.registered}; zählt ab ${res.officialFrom}. B1000 = bestes Fünftel der 1.000 größten Werte, B500 = bestes Zehntel der 500 größten, M25 = die 25 besten unter den 1.000 größten, die die Trendvorlage erfüllen, R25 = 25 Titel nach Momentum + Bruttogewinn/Bilanz + Rückkäufen mit Haltepuffer; gleich gewichtet, monatlich, ${res.costBps} bp je Seite, Kursrendite gegen SPY. Stichtage: ${res.snapshots}.`, '',
-    '| Entscheidung | Einstieg | Ausstieg | B1000 | B500 | M25 | R25 | SPY |', '|---|---|---|---|---|---|---|---|'];
-  for (const m of res.months) L.push(`| ${m.decision} | ${m.entry} | ${m.exit} | ${pct(m.variants.B1000.net)} | ${pct(m.variants.B500.net)} | ${pct(m.variants.M25.net)} | ${pct(m.variants.R25.net)} | ${pct(m.spy)} |`);
+    `Registriert am ${res.registered}; zählt ab ${res.officialFrom}. B1000 = bestes Fünftel der 1.000 größten Werte, B500 = bestes Zehntel der 500 größten, M25 = die 25 besten unter den 1.000 größten, die die Trendvorlage erfüllen, R25 = 25 Titel nach Momentum + Bruttogewinn/Bilanz + Rückkäufen mit Haltepuffer, L25 = dieselbe Auswahl ohne Zurückstellen (halten bis unter die 200-Tage-Linie); gleich gewichtet (L25: wachsende Positionen), monatlich, ${res.costBps} bp je Seite, Kursrendite gegen SPY. Stichtage: ${res.snapshots}.`, '',
+    '| Entscheidung | Einstieg | Ausstieg | B1000 | B500 | M25 | R25 | L25 | SPY |', '|---|---|---|---|---|---|---|---|---|'];
+  for (const m of res.months) L.push(`| ${m.decision} | ${m.entry} | ${m.exit} | ${pct(m.variants.B1000.net)} | ${pct(m.variants.B500.net)} | ${pct(m.variants.M25.net)} | ${pct(m.variants.R25.net)} | ${pct(m.variants.L25.net)} | ${pct(m.spy)} |`);
   const c = res.official;
   L.push('', `**Ab ${c.from}** (${c.months} Monate): SPY ${pct(c.spy)}; ` + Object.entries(c.variants).map(([k, v]) => `${k} ${pct(v.total)} (${v.monthsAheadSpy} Monate vor SPY)`).join(', '));
   if (res.note) L.push('', res.note);
@@ -225,11 +260,12 @@ function main() {
   const arg = (n) => (process.argv.includes(n) ? process.argv[process.argv.indexOf(n) + 1] : null);
   if (process.argv.includes('--picks')) {
     const shards = shardsWorkingTree(), asOf = asOfOf(shards);
-    const rows = rowsOf(shards, templateOf(screenerWorkingTree()), buybackLoader((p) => fs.readFileSync(path.join(ROOT, p), 'utf8'), asOf)), picks = picksOf(rows);
-    console.log(JSON.stringify({ asOf, titlesWithMarketCap: rows.length, coverage: coverageOf(rows), B1000: picks.B1000.length, B500: picks.B500.length, M25: picks.M25.length, R25: picks.R25.length }));
+    const scr = screenerWorkingTree(), rows = rowsOf(shards, templateOf(scr), buybackLoader((p) => fs.readFileSync(path.join(ROOT, p), 'utf8'), asOf), trendOf(scr)), picks = picksOf(rows);
+    console.log(JSON.stringify({ asOf, titlesWithMarketCap: rows.length, coverage: coverageOf(rows), B1000: picks.B1000.length, B500: picks.B500.length, M25: picks.M25.length, R25: picks.R25.length, L25: picks.L25.length }));
     console.log('B500:', picks.B500.join(' '));
     console.log('M25:', picks.M25.join(' '));
     console.log('R25:', picks.R25.join(' '));
+    console.log('L25:', picks.L25.join(' '));
     return;
   }
   const ref = arg('--ref') || 'HEAD', out = arg('--out');
@@ -238,7 +274,7 @@ function main() {
   const snaps = []; let prevPicks = {};
   for (const d of decisions) {
     const shards = shardsAt(d.commit), asOf = asOfOf(shards); if (!asOf) continue;
-    const rows = rowsOf(shards, templateOf(screenerAt(d.commit)), buybackLoader((p) => git(['show', `${d.commit}:${p}`]).toString('utf8'), asOf));
+    const scr = screenerAt(d.commit), rows = rowsOf(shards, templateOf(scr), buybackLoader((p) => git(['show', `${d.commit}:${p}`]).toString('utf8'), asOf), trendOf(scr));
     const picks = picksOf(rows, prevPicks); prevPicks = picks;
     snaps.push({ commit: d.commit, asOf, picks, coverage: coverageOf(rows) });
   }
