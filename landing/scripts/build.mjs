@@ -9,6 +9,12 @@ import {WEITERE, RECHT, teilenTags} from './teilen.mjs';
 
 // Umleitungen der alten Shopify-Adressen (Cloudflare Pages _redirects, Reihenfolge zählt: erste Regel gewinnt).
 export const ALTE_SHOP_ADRESSEN = [
+  // Alte Report-Seiten mit Suchnachfrage (Search Console Okt./Nov. 2026) auf die passenden Ratgeber-Artikel.
+  ['/products/aktienreport-spacex-der-jahrhundert-ipo', '/ratgeber/spacex-aktie/'],
+  ['/products/aktienreport-ki-spezial', '/ratgeber/ki-aktien/'],
+  ['/products/aktienreport-agentic-ai', '/ratgeber/ki-aktien/'],
+  ['/pages/ki', '/ratgeber/ki-aktien/'],
+  ['/pages/agentic-ai', '/ratgeber/ki-aktien/'],
   ['/blogs/*', '/news/'],
   ['/products/*', '/report/'],
   ['/collections/*', '/report/'],

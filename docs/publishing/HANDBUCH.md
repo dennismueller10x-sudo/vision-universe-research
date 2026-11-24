@@ -279,6 +279,10 @@ eingefroren in `daten.json` (`indizes`). Vorschaubild zum Teilen je Seite: `asse
 `node landing/scripts/share-images.mjs --nur-ratgeber` (Playwright lokal) nach jedem neuen oder umbenannten Artikel (Test RG-9). Alle übrigen Seiten von www haben ebenfalls ein eigenes Bild: Story-Seiten
 über `share-images.mjs` (ohne Schalter), Rechtliches, Partner, Instagram und Newsletter über `--weitere` (Liste `WEITERE`),
 News-Artikel über ihr Artikelbild, das Marktbriefing über `teilen.png`. Test SEO-6 prüft jede gebaute Seite.
+Fotos im Ratgeber (Owner 24.11.2026, „visuell brutal stark“): `aufmacher` je Artikel sowie die Bausteine `foto` und `fotos`,
+Dateien unter `landing/web/img/ratgeber/` (1600 px, offizielles Pressematerial mit Bildnachweis `quelle`, keine Privatpersonen;
+Test RG-10). Junge Börsengänge zeigt `kursverlauf` aus `daten.json` (`serien`, `--serie SPCX`); weitere Aktien zum selben
+Stichtag mit `--ergaenzen T1,T2`. Alte Report-Adressen mit Suchnachfrage (SpaceX, KI) leiten auf `spacex-aktie` und `ki-aktien` um.
 
 **Alte Shop-Adressen** (24.11.2026): Der frühere Shopify-Shop lief unter derselben Domain. Seine Adressen (`/pages/*`,
 `/products/*`, `/collections/*`, `/blogs/*`, `/cart`, `/account`, `/search`) leitet `_redirects` dauerhaft (301) auf die

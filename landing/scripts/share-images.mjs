@@ -89,10 +89,10 @@ p{margin-top:16px;font-size:23px;font-weight:600;color:#333;line-height:1.35;max
 }
 // Ratgeber: Bilder aus den Inhaltsdaten (Bereich, Überschrift, Untertitel, App-Bild); die Seiten verweisen selbst darauf
 // (scripts/ratgeber.mjs, teilBild). Lange Überschriften bekommen eine kleinere Schrift, damit nichts abgeschnitten wird.
-const satz1 = (t) => { const e = t.split(/(?<=[.!?])\s/)[0]; return e.length <= 120 ? e : short(e, 115); };
+const satz1 = (t) => { const x = t.split(/(?<=[.!?])\s/), e = x[0].length < 40 && x[1] ? `${x[0]} ${x[1]}` : x[0]; return e.length <= 120 ? e : short(e, 115); };
 async function karte(k) {
   const lang = text(k.h1).length, groesse = lang > 62 ? 48 : lang > 46 ? 54 : 64;
-  const phone = `<div class="aphone"><div class="in">${ahdr}<div class="scr"><img src="/web/img/app/${k.bild}.jpg" alt=""></div><img class="adock" src="/web/img/app/dock.png" alt=""></div></div>`;
+  const phone = k.foto ? `<div class="ft"><img src="/${k.foto}" alt=""></div>` : `<div class="aphone"><div class="in">${ahdr}<div class="scr"><img src="/web/img/app/${k.bild}.jpg" alt=""></div><img class="adock" src="/web/img/app/dock.png" alt=""></div></div>`;
   await page.setContent(`<!doctype html><html lang="de"><head><meta charset="utf-8"><base href="${base}"><link rel="stylesheet" href="${base}${css}"><style>
 html,body{margin:0}body{width:1200px;height:630px;overflow:hidden;background:#fff;display:grid;grid-template-columns:1fr 430px;align-items:center;padding:0 0 0 64px;box-sizing:border-box;position:relative}
 body::after{content:"";position:absolute;right:-140px;top:-160px;width:640px;height:640px;border-radius:50%;background:radial-gradient(closest-side,rgba(205,255,0,.5),rgba(205,255,0,0));z-index:0}
@@ -103,6 +103,7 @@ h1{margin-top:22px;font-size:${groesse}px;font-weight:900;letter-spacing:-.05em;
 h1 mark{background:linear-gradient(transparent 12%,#c8f531 12%,#c8f531 92%,transparent 92%);color:inherit}
 p{margin-top:18px;font-size:23px;font-weight:600;color:#333;line-height:1.35;max-width:620px}
 .r{position:relative;z-index:1;align-self:stretch;display:grid;place-items:center}.r .aphone{--pw:270px;margin-top:70px}.r .aphone .scr img{animation:none}
+.ft{width:400px;height:500px;border-radius:30px;overflow:hidden;transform:rotate(3deg);box-shadow:0 30px 60px -30px rgba(0,0,0,.6),0 0 0 6px #fff}.ft img{width:100%;height:100%;object-fit:cover;display:block}
 </style></head><body>${sprite}<div class="l"><img class="logo" src="/assets/vision-universe-logo-web.png" alt=""><span class="tg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${k.icon}</svg>${esc(k.bereich)}</span><h1>${k.h1}</h1><p>${esc(satz1(k.satz))}</p></div><div class="r">${phone}</div></body></html>`, { waitUntil: 'networkidle' });
   await page.evaluate(() => document.fonts.ready);
   const file = `assets/share/${k.schluessel}.jpg`;

@@ -348,6 +348,36 @@ G['index-chart'] = (g, D) => {
 <p class="rg-src">Gesamtrendite in US-Dollar mit wieder angelegten Ausschüttungen, gemessen an den ETFs SPY, URTH und ACWI; vor Steuern, ohne Wechselkurseffekt in Euro. Stand ${datum(I.bis)}. Vergangene Entwicklung sagt nichts über die Zukunft.</p></figure>`;
 };
 
+// Kursverlauf einer jungen Aktie seit dem ersten Handelstag, mit erstem Schlusskurs, Hoch, Tief und Stichtag.
+G['kursverlauf'] = (g, D) => {
+  const p = D.serien[g.ticker], v = p.map((x) => x[1]), x = D.aktien[g.ticker];
+  const hi = v.indexOf(Math.max(...v)), lo = v.indexOf(Math.min(...v)), min = Math.min(...v) * 0.92, max = Math.max(...v) * 1.05;
+  const X = (i) => (i / (v.length - 1) * 600).toFixed(1), Y = (y) => (280 - (y - min) / (max - min) * 245).toFixed(1);
+  const linie = v.map((y, i) => `${X(i)},${Y(y)}`).join(' ');
+  const punkt = (i, k, t) => `<g class="pt ${k}"><circle cx="${X(i)}" cy="${Y(v[i])}" r="8"/>${k === 'jetzt' ? `<text x="${Math.min(+X(i), 545)}" y="${+Y(v[i]) - 18}" text-anchor="end">${t}</text>` : ''}</g>`;
+  const k = [['Erster Schlusskurs', 0, datum(p[0][0])], ['Hoch', hi, datum(p[hi][0])], ['Tief', lo, datum(p[lo][0])], ['Stichtag', v.length - 1, datum(p.at(-1)[0])]];
+  return `<figure class="rg-g rg-kv"><figcaption class="rg-gk">${esc(x.name)} seit dem Börsengang</figcaption>
+<svg viewBox="0 0 600 300" class="rg-kv-s" role="img" aria-label="Kursverlauf ${esc(g.ticker)} vom ${datum(p[0][0])} bis ${datum(p.at(-1)[0])}"><defs><linearGradient id="kvf" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#c8f531" stop-opacity=".55"/><stop offset="1" stop-color="#c8f531" stop-opacity="0"/></linearGradient></defs><line class="basis" x1="0" x2="600" y1="${Y(v[0])}" y2="${Y(v[0])}"/><polygon class="fl" points="0,300 ${linie} 600,300"/><polyline class="ln" points="${linie}"/>${punkt(0, 'start', usd(v[0]))}${punkt(hi, 'hoch', usd(v[hi]))}${punkt(lo, 'tief', usd(v[lo]))}${punkt(v.length - 1, 'jetzt', usd(v.at(-1)))}</svg>
+<div class="rg-kv-l">${k.map(([t, i, d], n) => `<div class="${n === 3 ? 'lime' : ''}"><span>${t}</span><b>${usd(v[i])}</b><small>${d}${n ? ` · ${v[i] >= v[0] ? '+' : '−'}${zahl(Math.abs(v[i] / v[0] - 1) * 100, 0)} % zum Start` : ''}</small></div>`).join('')}</div>
+<p class="rg-src">Schlusskurse ${esc(g.ticker)} an der Nasdaq, Vision Universe Datenbank, Stand ${datum(p.at(-1)[0])}. Vergangene Kurse sagen nichts über die Zukunft.</p></figure>`;
+};
+
+// Umsatz nach Sparten (Werte aus einer Unternehmensmeldung, im Artikel angegeben).
+G['sparten'] = (g) => {
+  const max = Math.max(...g.teile.map((t) => t[1])), summe = g.teile.reduce((a, t) => a + t[1], 0);
+  return `<figure class="rg-g rg-sp"><figcaption class="rg-gk">${esc(g.titel)}</figcaption><div class="rg-sp-sum"><b>${zahl(summe, 1)} ${esc(g.einheit)}</b><span>${esc(g.summe)}</span></div>
+<div class="rg-sp-bar" aria-hidden="true">${g.teile.map(([n, w], i) => `<i class="t${i}" style="width:${(w / summe * 100).toFixed(1)}%"></i>`).join('')}</div>
+<ul class="rg-sp-l">${g.teile.map(([n, w, t], i) => `<li class="t${i}"><i style="--w:${(w / max * 100).toFixed(1)}"></i><span><b>${esc(n)}</b>${t ? `<small>${esc(t)}</small>` : ''}</span><em>${zahl(w, 1)} ${esc(g.einheit)}<small>${zahl(w / summe * 100, 0)} %</small></em></li>`).join('')}</ul>
+<p class="rg-src">${esc(g.quelle)}</p></figure>`;
+};
+
+// Fotos (Owner 24.11.2026: Berichte mit vielen starken Bildern): offizielles Pressematerial mit Bildnachweis, Dateien unter
+// web/img/ratgeber/. Artikel liegen immer zwei Ebenen tief, daher der feste Pfad. "fotos" stellt zwei Bilder nebeneinander.
+const FOTO = '../../web/img/ratgeber/';
+const fotoFig = (b, cls = '') => `<figure class="rg-foto${cls}"><img src="${FOTO}${esc(b.src)}" alt="${esc(b.alt)}" loading="lazy"${b.w ? ` width="${b.w}" height="${b.h}"` : ''}><figcaption>${b.text ? `${esc(b.text)} ` : ''}<span>Bild: ${esc(b.quelle)}${b.ki ? ' · KI-Bild' : ''}</span></figcaption></figure>`;
+G['foto'] = (g) => fotoFig(g);
+G['fotos'] = (g) => `<div class="rg-fotos">${g.bilder.map((b) => fotoFig(b, ' klein')).join('')}</div>`;
+
 // Insider: vom Kauf bis zur Meldung.
 G['insider-weg'] = () => `<figure class="rg-g"><figcaption class="rg-gk">Vom Kauf bis zur Meldung</figcaption><ol class="rg-zeit wagerecht"><li class="on"><b>Tag 0</b><p>Ein Vorstand kauft Aktien der eigenen Firma an der Börse.</p></li><li><b>bis 2 Werktage</b><p>Meldung an die SEC auf Formular 4, Code „P“ für einen Kauf am Markt.</p></li><li><b>sofort öffentlich</b><p>Die Meldung steht für alle sichtbar in der SEC-Datenbank EDGAR.</p></li></ol><p class="rg-src">Section 16 Securities Exchange Act; Formular 4 innerhalb von zwei Geschäftstagen.</p></figure>`;
 
@@ -449,6 +479,7 @@ function artikelSeite(a, ctx) {
 <span class="rg-tag"><span class="ic">${ic(w.icon, 16)}</span>${esc(w.name)}</span>
 <h1>${a.h1}</h1><p class="fh-sub">${esc(a.untertitel)}</p>
 <p class="rg-meta"><span class="rg-av" aria-hidden="true">VU</span>Redaktion Vision Universe · Stand ${datum(a.stand)} · ${lesezeit(a)} Min. Lesezeit</p></div>${heldBild}</div></section>
+${a.aufmacher ? `<div class="w rg-aufmacher-w">${fotoFig(a.aufmacher, ' aufmacher').replace(' loading="lazy"', ' fetchpriority="high"')}</div>` : ''}
 <div class="rg-body w"><div class="rg-text">
 <aside class="rg-kurz"><span>Kurz gesagt</span><p>${a.kurz}</p></aside>
 <nav class="rg-toc" aria-label="Inhalt"><span>Inhalt</span><ol>${toc}</ol></nav>
@@ -461,7 +492,8 @@ ${weiter ? `<section class="rg-weiter w"><h2>Weiterlesen</h2><div class="rg-grid
 </article>`;
   const ld = [
     {'@type': 'Article', '@id': url + '#artikel', headline: a.titel, description: a.beschreibung, inLanguage: 'de-DE', datePublished: a.erschienen || a.stand, dateModified: a.stand, mainEntityOfPage: url,
-      author: {'@type': 'Organization', name: 'Redaktion Vision Universe', url: `${SITE}/`}, publisher: ORG, about: (a.suchbegriffe || []).slice(0, 3), isPartOf: {'@id': `${SITE}/ratgeber/#ratgeber`}},
+      author: {'@type': 'Organization', name: 'Redaktion Vision Universe', url: `${SITE}/`}, publisher: ORG,
+      image: [a.aufmacher ? `${SITE}/web/img/ratgeber/${a.aufmacher.src}` : null, teilBild(pfad)].filter(Boolean), about: (a.suchbegriffe || []).slice(0, 3), isPartOf: {'@id': `${SITE}/ratgeber/#ratgeber`}},
     ...((a.faq || []).length ? [{'@type': 'FAQPage', '@id': url + '#fragen', mainEntity: a.faq.map((f) => ({'@type': 'Question', name: f.f, acceptedAnswer: {'@type': 'Answer', text: strip(f.a)}}))}] : []),
     ldKrumen([['Vision Universe', `${SITE}/`], ['Ratgeber', `${SITE}/ratgeber/`], [w.name, `${SITE}/ratgeber/thema/${w.id}/`], [a.kurztitel || a.titel, url]]),
   ];
@@ -565,7 +597,7 @@ export function teilKarten(base = root) {
   return [
     {schluessel: 'ratgeber', icon: W[3].icon, bereich: `Ratgeber · ${fertig} Artikel`, h1: 'Geld und Börse, <mark>einfach erklärt.</mark>', satz: 'Mit Grafiken zum Ausprobieren und echten Zahlen von echten Firmen.', bild: 'fundamental'},
     ...W.map((w) => ({schluessel: teilSchluessel(`ratgeber/thema/${w.id}/index.html`), icon: w.icon, bereich: `Ratgeber · Themenwelt`, h1: `${esc(w.name)}: <mark>${esc(w.satz)}</mark>`, satz: w.beschreibung, bild: WELT_BILD[w.id]})),
-    ...Object.values(artikel).map((a) => { const w = W.find((x) => x.id === a.welt); return {schluessel: teilSchluessel(`ratgeber/${a.slug}/index.html`), icon: w.icon, bereich: `Ratgeber · ${w.name}`, h1: a.h1, satz: a.untertitel, bild: a.app?.bild || WELT_BILD[w.id]}; }),
+    ...Object.values(artikel).map((a) => { const w = W.find((x) => x.id === a.welt); return {schluessel: teilSchluessel(`ratgeber/${a.slug}/index.html`), icon: w.icon, bereich: `Ratgeber · ${w.name}`, h1: a.h1, satz: a.untertitel, bild: a.app?.bild || WELT_BILD[w.id], foto: a.aufmacher ? `web/img/ratgeber/${a.aufmacher.src}` : null}; }),
   ];
 }
 
