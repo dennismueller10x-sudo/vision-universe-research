@@ -625,7 +625,8 @@
       if (Hub && Hub.enabled && Hub.enabled()) {
         st.unsub = Hub.subscribe(o.ticker, function (p) {
           st.intraday = p && p.snapshot ? p : null;
-          if (st.intraday && !st.intraday.snapshot.regularComplete) startRelay();
+          /* Auch bei einem abgeschlossenen Snapshot vom Vortag: laeuft heute die Boerse, fuehrt der Strom den heutigen Tag (startRelay prueft OPEN). */
+          if (st.intraday && (!st.intraday.snapshot.regularComplete || (heute() && st.intraday.snapshot.sessionDate < heute()))) startRelay();
           if (first) { first = false; if (!st.touched) draw(available("1D") && eod.length < 2 ? "1D" : startRange()); reportIntraday(); return; }
           if (st.range === "1D") draw("1D"); else { syncButtons(); reportIntraday(); }
         });
