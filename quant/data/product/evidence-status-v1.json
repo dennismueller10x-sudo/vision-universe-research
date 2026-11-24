@@ -1,6 +1,6 @@
 {
  "schemaVersion": "evidence-status-1.0.0",
- "generatedAt": "2026-11-22T23:14:01.339Z",
+ "generatedAt": "2026-11-24T00:39:41.452Z",
  "kinds": [
   {
    "id": "HISTORICAL_REPLAY",
@@ -36,8 +36,8 @@
    },
    "coverage": {
     "universe": 5451,
-    "covered": 5136,
-    "available": 4182,
+    "covered": 5135,
+    "available": 4181,
     "sufficient": {
      "m1": 1995,
      "m3": 1932,
@@ -48,7 +48,7 @@
      "m6": 671
     },
     "reasons": {
-     "NOT_COVERED": 315,
+     "NOT_COVERED": 316,
      "NO_PRICE_CONDITION_TODAY": 856,
      "NO_COMPARABLE_CASE": 98
     }
@@ -130,7 +130,7 @@
      "id": "PIT_FUNDAMENTALS",
      "label": "Fundamentaldaten zeitpunktgenau",
      "required": "datierbar je Wert",
-     "measured": "4965 von 6009 Titeln",
+     "measured": "5002 von 6009 Titeln",
      "state": "PASS"
     },
     {
@@ -169,7 +169,7 @@
      "id": "PIT",
      "label": "Stände unverändert (contentHash)",
      "required": "bestanden",
-     "measured": "39 von 39 geprüft",
+     "measured": "40 von 40 geprüft",
      "state": "PASS"
     },
     {
@@ -183,14 +183,14 @@
      "id": "HISTORYDATES",
      "label": "veröffentlichte Stichtage",
      "required": "120",
-     "measured": "39",
+     "measured": "40",
      "state": "FAIL"
     },
     {
      "id": "HISTORYSPAN",
      "label": "Spanne der Historie",
      "required": "180 Tage",
-     "measured": "71 Tage",
+     "measured": "74 Tage",
      "state": "FAIL"
     },
     {
@@ -338,8 +338,8 @@
   },
   "HISTORICAL_REPLAY_COVERAGE": {
    "universe": 5451,
-   "covered": 5136,
-   "available": 4182,
+   "covered": 5135,
+   "available": 4181,
    "sufficient": {
     "m1": 1995,
     "m3": 1932,
@@ -350,7 +350,7 @@
     "m6": 671
    },
    "reasons": {
-    "NOT_COVERED": 315,
+    "NOT_COVERED": 316,
     "NO_PRICE_CONDITION_TODAY": 856,
     "NO_COMPARABLE_CASE": 98
    }

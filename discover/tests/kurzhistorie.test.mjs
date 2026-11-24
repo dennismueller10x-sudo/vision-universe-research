@@ -55,7 +55,9 @@ test("ausgelieferte Kurzhistorie-Seiten: kein Score, kein Rang, keine Reihe, im 
     assert.ok(idx.symbols.includes(d.symbol), f + " fehlt im Stock-Index");
     for (const k of ["leadership", "momentum", "relativeStrength"]) assert.equal(d.scores[k].score, null, f + " " + k);
     assert.equal(d.ranks.leadershipPercentile, null, f);
-    assert.equal(d.series.available, false, f);
+    /* Ab 2 veroeffentlichten Schlusskursen traegt die Seite den Chart aus der Kurzreihe (839078db, 21.11.2026), davor keine Reihe. */
+    if (d.kurzhistorie.bars >= 2) { assert.equal(d.series.available, true, f); assert.equal(d.series.source, "discover-series", f); assert.match(d.series.path, /^\/quant\/data\/market\/discover-series-kurz\/ref_/, f); }
+    else assert.equal(d.series.available, false, f);
     assert.equal(d.priceSeries.status, "INSUFFICIENT_HISTORY", f);
     assert.equal(d.geschaeftszahlen.status, "INSUFFICIENT_HISTORY", f);
     for (const k of ["return1M", "return3M", "return6M", "return12M"]) assert.equal(d.metrics[k], null, f + " " + k);
@@ -84,4 +86,15 @@ test("block: mit veroeffentlichter Kurzreihe gilt der Tagesschluss (ADR-002), so
   const b = K.block({ sessionDate: "2026-11-20", lastLocal: null }, { firstTradeDate: "2026-11-19", bars: 2 });
   assert.equal(b.stand.art, "TAGESSCHLUSS");
   assert.equal(b.bars, 2);
+});
+
+test("block/stand: mit Kurzreihe gilt der letzte Kurstag der Reihe, unabhaengig von der Intraday-Ablage (mit, ohne, alt, neu: gleiches Ergebnis)", () => {
+  const mitAlt = {sessionDate: "2026-11-20", lastLocal: "15:55"}, mitNeu = {sessionDate: "2026-11-23", lastLocal: "15:55"}, fallback = {sessionDate: "2026-11-23", lastLocal: null};
+  const ref = K.block(mitAlt, {firstTradeDate: "2026-11-19", bars: 3, letzterKurstag: "2026-11-23"});
+  assert.deepEqual(ref.stand, {sessionDate: "2026-11-23", lokal: null, art: "TAGESSCHLUSS"});
+  for (const info of [mitNeu, fallback, null]) assert.deepEqual(K.block(info, {firstTradeDate: "2026-11-19", bars: 3, letzterKurstag: "2026-11-23"}), ref, "info darf den Block nicht veraendern: " + JSON.stringify(info));
+});
+test("block/stand: ohne Kurzreihe bleibt der letzte Intraday-Punkt der Sitzung (INTRADAY_LETZTER_PUNKT), ohne info null", () => {
+  assert.deepEqual(K.block({sessionDate: "2026-11-20", lastLocal: "15:55"}, {bars: null}).stand, {sessionDate: "2026-11-20", lokal: "15:55", art: "INTRADAY_LETZTER_PUNKT"});
+  assert.equal(K.block(null, {bars: null}).stand, null);
 });

@@ -47,6 +47,16 @@
     };
   }
 
+  /** Stand des Kurses. Mit veroeffentlichter Kurzreihe (opts.bars, opts.letzterKurstag) ist es der Tagesschluss dieser Reihe:
+      Datum = letzter Kurstag der Reihe (der Kurs der Karte ist genau dieser Schluss, ADR-002), ohne Ortszeit (die Seite zeigt sie bei
+      TAGESSCHLUSS nicht). So haengt der Block nicht davon ab, ob und wie frisch die Intraday-Ablage beim Bau war (23.11.2026: ANT,
+      Produktionsbau mit Ablage vom 20.11., Neubau im Test mit Ablage vom 23.11.: producer-ownership rot). Ohne Kurzreihe gilt der
+      letzte Intraday-Punkt der Sitzung. */
+  function stand(info, opts) {
+    if (opts.bars && opts.letzterKurstag) return { sessionDate: opts.letzterKurstag, lokal: null, art: "TAGESSCHLUSS" };
+    return info ? { sessionDate: info.sessionDate, lokal: info.lastLocal || null, art: opts.bars ? "TAGESSCHLUSS" : "INTRADAY_LETZTER_PUNKT" } : null;
+  }
+
   /** Der Block `kurzhistorie` der Detailseite. */
   function block(info, opts) {
     opts = opts || {};
@@ -56,7 +66,7 @@
       minBars: MIN_BARS,
       firstTradeDate: opts.firstTradeDate || null,
       /* Mit veroeffentlichter Kurzreihe (>= 1 Schlusskurs) gilt der Tagesschluss (ADR-002), sonst der letzte Intraday-Punkt. */
-      stand: info ? { sessionDate: info.sessionDate, lokal: info.lastLocal || null, art: opts.bars ? "TAGESSCHLUSS" : "INTRADAY_LETZTER_PUNKT" } : null,
+      stand: stand(info, opts),
       bars: opts.bars || null,
       message: "Neu an der Börse: " + LABEL + ". Es gibt noch keine Scores, keine Rangliste und keine Renditekennzahlen."
     };
