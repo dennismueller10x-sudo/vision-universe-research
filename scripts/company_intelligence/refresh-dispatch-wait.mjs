@@ -30,9 +30,10 @@
  *     abgebrochen, damit er nicht NACH dem Rollback mit altem Stand ausliefert. Ein laufender Lauf wird nie abgebrochen.
  *
  * FRIST-RECHNUNG (alles ab Jobstart `JOB_STARTED_AT`, siehe planDeadlines/guaranteedWaitMs):
- *   Job-Timeout 100 min - Reserve 10 min (Rollback, disable, OFF-Dispatch, Upload; Teil von refresh-live-verify) = Frist der Live-QA t=90.
- *   Wartefrist endet 15 min (Gesamtbudget der Live-QA) davor, t=75. Der Refresh selbst braucht gemessen 25 min.
- *   Garantiertes Warten = 100 - 10 - 15 - 25 = 50 min. EHRLICH: das sind rund 8 warme (6 min) oder rund 4 kalte Pages-Laeufe (13 min,
+ *   Job-Timeout 130 min - Reserve 10 min (Rollback, disable, OFF-Dispatch, Upload; Teil von refresh-live-verify) = Frist der Live-QA t=120.
+ *   Wartefrist endet 15 min (Gesamtbudget der Live-QA) davor, t=105. Der Refresh selbst braucht gemessen 41-49 min (23./24.11.2026), mit
+ *   publicMaxSeconds 1400 hoechstens ca. 56 min (frueher fuer 25 min gerechnet; die Rechnung war seit dem Vollumfang veraltet).
+ *   Garantiertes Warten = 130 - 10 - 15 - 56 = 49 min. EHRLICH: das sind rund 8 warme (6 min) oder rund 4 kalte Pages-Laeufe (13 min,
  *   FULL_UNIVERSE_ROLLOUT.md) hintereinander. Eine laengere Warteschlange scheitert weiterhin (dann Rollback nach der Frist).
  * GRENZEN (dokumentiert in CONTINUOUS_REFRESH.md): "eigener Lauf" = neuer workflow_dispatch-Lauf auf main seit dem ersten Dispatch; ein
  *   fremder Dispatch (manuell, Re-Freeze, profile-source) kann so als eigen zaehlen. Jeder (Re-)Dispatch belegt den einen Wartesteckplatz
@@ -63,8 +64,8 @@ export const LIMITS=Object.freeze({
  reserveMs:VERIFY_LIMITS.reserveMs,       // Rollback, disable, OFF-Dispatch, Upload
  verifyCapMs:VERIFY_LIMITS.totalCapMs,    // Gesamtbudget der Live-Verifikation nach der Auslieferung
  minVerifyMs:300000,              // darunter lohnt auch eine Grace-Verlaengerung nicht (hartes Ende der Wartezeit)
- pipelineMaxMs:25*60000,          // gemessene Dauer des Refresh vor dem Pages-Schritt (Kommentar im Workflow)
- minWaitMs:40*60000,              // Mindestwartezeit ab Pipelineende (Untergrenze im Test; tatsaechlich 50 min = ~8 warme oder ~4 kalte Pages-Laeufe zu 6 bzw. 13 min)
+ pipelineMaxMs:56*60000,          // gemessene Dauer des Refresh vor dem Pages-Schritt: 41-49 min (23./24.11.2026) plus 6,3 min durch publicMaxSeconds 1400
+ minWaitMs:40*60000,              // Mindestwartezeit ab Pipelineende (Untergrenze im Test; tatsaechlich 49 min = ~8 warme oder ~4 kalte Pages-Laeufe zu 6 bzw. 13 min)
  skewMs:60000                     // Uhrenabweichung Runner/GitHub bei createdAt
 });
 
