@@ -21,7 +21,7 @@ const runPlan=(...steps)=>steps.map(([m,s,c=''])=>[m*MIN,s,c]);
  *  plans: je Dispatch (n-ter) der Plan des entstehenden Laufs oder null (Lauf erscheint nie)
  *  deliveredAtMin: Minute ab T0, ab der die Generation ausgeliefert ist (null = nie)
  */
-function sim(mod,{plans,deliveredAtMin=null,deliveredAfterCalls=null,otherAtMin=null,jobStartMin=-25,limits,dispatchFails=0,extraKnown=[],jobs=null}){
+function sim(mod,{plans,deliveredAtMin=null,deliveredAfterCalls=null,otherAtMin=null,jobStartMin=-55,limits,dispatchFails=0,extraKnown=[],jobs=null}){
  let t=T0,genCalls=0;const log={dispatch:[],cancel:[],list:0},runs=[...extraKnown];
  const gh={
   dispatch:async()=>{
@@ -100,10 +100,10 @@ const scenarios={
  },
  async runningRunGetsGraceAndIsNeverCancelled(mod){
   // jobStart = T0-70 min -> Wartefrist T0+5, harte Frist T0+15 (Live-QA-Frist T0+20)
-  const late=sim(mod,{plans:[runPlan([0,'queued'],[3,'in_progress'],[16,'completed','success'])],deliveredAtMin:16.5,jobStartMin:-70});
+  const late=sim(mod,{plans:[runPlan([0,'queued'],[3,'in_progress'],[16,'completed','success'])],deliveredAtMin:16.5,jobStartMin:-100});
   const r=await late.run();
   assert.equal(r.served,false);assert.equal(r.reason,'RUN_STILL_ACTIVE_AT_HARD_DEADLINE');assert.deepEqual(late.log.cancel,[],'laufender Lauf wird nie abgebrochen');
-  const grace=sim(mod,{plans:[runPlan([0,'queued'],[3,'in_progress'],[8,'completed','success'])],deliveredAtMin:9,jobStartMin:-70});
+  const grace=sim(mod,{plans:[runPlan([0,'queued'],[3,'in_progress'],[8,'completed','success'])],deliveredAtMin:9,jobStartMin:-100});
   const rg=await grace.run();
   assert.equal(rg.served,true);assert.equal(rg.reason,'DELIVERED');assert.deepEqual(grace.log.cancel,[]);
   assert.ok(grace.clock()>grace.deadlines.waitDeadlineMs,'ausgeliefert erst in der Grace nach der Wartefrist');
@@ -180,7 +180,7 @@ test('Frist: Job-Timeout im Skript = timeout-minutes des Workflows (einzige Quel
  assert.ok(Object.isFrozen(real.LIMITS));assert.equal(real.LIMITS.maxRedispatch,2);
 });
 
-test('Frist: Rechnung - Pipeline 25 min, danach >= 40 min Warten, dann Live-QA-Budget und Reserve passen in das Job-Timeout',()=>{
+test('Frist: Rechnung - Pipeline 56 min (gemessen 41-49 plus 6,3 durch publicMaxSeconds 1400), danach >= 40 min Warten, dann Live-QA-Budget und Reserve passen in das Job-Timeout',()=>{
  const L=real.LIMITS,jobStart=T0;
  const d=real.planDeadlines({jobStartMs:jobStart,nowMs:jobStart,limits:L});
  assert.equal(d.verifyDeadlineMs,jobStart+WF_TIMEOUT_MS-L.reserveMs,'Live-QA-Frist = Job-Timeout minus Reserve (wie refresh-live-verify.mjs)');
@@ -188,7 +188,7 @@ test('Frist: Rechnung - Pipeline 25 min, danach >= 40 min Warten, dann Live-QA-B
  const pipelineEnd=jobStart+L.pipelineMaxMs;
  assert.ok(d.waitDeadlineMs-pipelineEnd>=L.minWaitMs,'>= 40 min Wartefrist nach dem Pipelineende');
  assert.equal(real.guaranteedWaitMs(L),d.waitDeadlineMs-pipelineEnd);
- assert.equal(real.guaranteedWaitMs(L),50*MIN,'100 - 10 - 15 - 25');
+ assert.equal(real.guaranteedWaitMs(L),49*MIN,'130 - 10 - 15 - 56');
  // Worst Case: Warten bis zur harten Frist, danach bleibt mindestens minVerify; Reserve fuer Rollback bleibt immer unberuehrt
  assert.ok(d.hardDeadlineMs<d.verifyDeadlineMs&&d.verifyDeadlineMs-d.hardDeadlineMs>=L.minVerifyMs);
  assert.ok(d.verifyDeadlineMs+L.reserveMs===jobStart+WF_TIMEOUT_MS,'Rollback-Schritt laeuft innerhalb des Job-Timeouts');
@@ -321,12 +321,12 @@ test('Replay Refresh-Lauf 37 (15.10.): Dispatch 19:59:27, verdraengt 20:02:47, f
  // Jobstart 19:54:51 = 4,6 min vor dem Dispatch; die alte feste 15-min-Frist endete 20:14:34 (Minute 15,1).
  for(const cdnMin of [0,10]){
   const cancelled=runPlan([0,'queued'],[3.33,'completed','cancelled']);
-  const s=sim(real,{plans:[cancelled,cancelled,cancelled],jobStartMin:-4.6,deliveredAtMin:18.3+cdnMin});const r=await s.run();
+  const s=sim(real,{plans:[cancelled,cancelled,cancelled],jobStartMin:-34.6,deliveredAtMin:18.3+cdnMin});const r=await s.run();
   assert.equal(r.served,true,String(cdnMin));assert.equal(r.reason,'DELIVERED');assert.ok(s.clock()-T0>15.1*MIN,'nach der alten Frist ausgeliefert');
   assert.ok(s.clock()<s.deadlines.waitDeadlineMs);assert.deepEqual(s.log.cancel,[]);
  }
  // Dieselbe Kette, aber der Re-Dispatch landet im Pin-Abbruch wie 38798770814: kein sofortiger Rollback mehr.
- const s=sim(real,{plans:[runPlan([0,'queued'],[3.33,'completed','cancelled']),failedRun,okRun],jobs:[[],PRE],jobStartMin:-4.6,deliveredAtMin:18.3});
+ const s=sim(real,{plans:[runPlan([0,'queued'],[3.33,'completed','cancelled']),failedRun,okRun],jobs:[[],PRE],jobStartMin:-34.6,deliveredAtMin:18.3});
  const r=await s.run();assert.equal(r.served,true);assert.equal(r.reason,'DELIVERED');
 });
 // Auch gegen die Mutanten: Vor-Deploy-Fehler mit Re-Dispatch, Obergrenze und Fehler nach dem Deploy.
