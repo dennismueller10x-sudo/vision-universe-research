@@ -1,21 +1,26 @@
 {
   "version": "company-master-1.0.0",
   "masterId": "VU_COMPANY_MASTER",
-  "generatedAt": "2026-11-23T03:24:19.574Z",
+  "generatedAt": "2026-11-23T23:59:53.706Z",
   "asOf": "2026-11-23",
   "provider": "tiingo",
   "source": {
     "kind": "COMMITTED_GATE_UNIVERSES",
-    "file": "quant/data/market/scale/universe-ELIGIBLE_US_EQUITY.json, quant/data/market/scale/universe-FULL_UNIVERSE.json, quant/data/market/scale/universe-GATE_100.json, quant/data/market/scale/universe-GATE_2000.json, quant/data/market/scale/universe-GATE_500.json",
+    "file": "quant/data/market/scale/universe-CANARY.json, quant/data/market/scale/universe-ELIGIBLE_US_EQUITY.json, quant/data/market/scale/universe-FULL_UNIVERSE.json, quant/data/market/scale/universe-GATE_100.json, quant/data/market/scale/universe-GATE_2000.json, quant/data/market/scale/universe-GATE_500.json",
     "generatedAt": "2026-09-09T16:07:59.170Z",
     "complete": false,
     "incompleteReason": "Das vollstaendige Anbieterverzeichnis liegt in der Arbeitsablage (.market-cache) und wird nicht mit dem Repository ausgeliefert. Ohne Anbieterzugang laesst es sich nicht neu ziehen. Aufgenommen ist deshalb der bereits ausgelieferte Auszug - ein echter Auszug derselben Quelle, aber nicht das Ganze. Mit gesetztem TIINGO_API_KEY holt scripts/market/build-market-universe.mjs das Verzeichnis, und derselbe Lauf hier nimmt dann alles auf.",
     "providerSource": {
-      "rows": 108573,
+      "rows": 109386,
       "note": "Zeilenzahl des Anbieterverzeichnisses, aus dem diese Auszuege stammen."
     },
     "providerRowsSeen": 7841,
     "provenance": [
+      {
+        "file": "quant/data/market/scale/universe-CANARY.json",
+        "gate": "CANARY",
+        "securities": 5
+      },
       {
         "file": "quant/data/market/scale/universe-ELIGIBLE_US_EQUITY.json",
         "gate": "ELIGIBLE_US_EQUITY",
@@ -2692,10 +2697,10 @@
   },
   "run": {
     "source": "github-actions",
-    "runId": "45105418433",
-    "commit": "2757eb2b9059f7068cdf789558d3b9186ce2f962",
-    "normalizeMs": 108,
-    "syncMs": 125,
+    "runId": "45292177265",
+    "commit": "333dc665c15dc0b36f99b04638c98f47ee592819",
+    "normalizeMs": 69,
+    "syncMs": 79,
     "shardsWritten": 0,
     "shardsUnchanged": 646,
     "publishedBytes": 10147598
