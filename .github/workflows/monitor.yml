@@ -1593,7 +1593,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p ladezeit-verlauf
-          ids="$(gh api "repos/$REPO/actions/artifacts?name=ladezeit&per_page=10" --jq '[.artifacts[] | select(.expired == false)] | .[0:7] | .[].id' || true)"
+          ids="$(gh api "repos/$REPO/actions/artifacts?name=ladezeit&per_page=30" --jq '[.artifacts[] | select(.expired == false and .workflow_run.head_branch == "main")] | .[0:7] | .[].id' || true)"
           for id in $ids; do
             mkdir -p "ladezeit-verlauf/$id"
             gh api "repos/$REPO/actions/artifacts/$id/zip" > "ladezeit-verlauf/$id.zip" && unzip -q -o "ladezeit-verlauf/$id.zip" -d "ladezeit-verlauf/$id" || echo "::warning::Artefakt $id nicht lesbar"
