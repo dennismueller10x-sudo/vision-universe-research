@@ -113,14 +113,16 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
        (ADR-009, build-market-factors.mjs). So zeigt sich ein Sprung an der Naht (CASK, FCDH). */
     let joined = null;
     if (argv.includes("--join")) {
-      const { loadSuccessions } = await import(join(root, "scripts", "market", "lib", "ticker-succession-bars.mjs"));
+      const { loadSuccessions, rebaseAdjusted } = await import(join(root, "scripts", "market", "lib", "ticker-succession-bars.mjs"));
       const succ = loadSuccessions(root), entry = succ.TS.predecessorOf(Identity.securityIdForTicker(t), succ.map);
       const pred = entry ? await store.getSeries(entry.fromTicker) : null;
       if (pred && Array.isArray(pred.bars)) {
-        const j = succ.TS.joinBars(pred.bars, doc.bars, entry.effective);
+        /* wie die Verbraucher (withPredecessor): Anpassungsniveau an der Naht angeglichen (rebaseAdjusted, 24.11.2026) */
+        const rb = rebaseAdjusted(pred.bars, doc.bars, entry.effective);
+        const j = succ.TS.joinBars(rb.bars, doc.bars, entry.effective);
         bars = j.bars;
-        joined = { from: entry.fromTicker, effective: entry.effective, predecessorLast: pred.last, lastPredecessor: j.lastPredecessor, firstSuccessor: j.firstSuccessor };
-        console.log(`${t}: mit Vorgaenger ${entry.fromTicker} verbunden (Stichtag ${entry.effective}, Naht ${j.lastPredecessor} -> ${j.firstSuccessor})`);
+        joined = { from: entry.fromTicker, effective: entry.effective, predecessorLast: pred.last, lastPredecessor: j.lastPredecessor, firstSuccessor: j.firstSuccessor, adjustmentRebase: rb.factor };
+        console.log(`${t}: mit Vorgaenger ${entry.fromTicker} verbunden (Stichtag ${entry.effective}, Naht ${j.lastPredecessor} -> ${j.firstSuccessor}, Anpassungsfaktor ${rb.factor})`);
       }
     }
     const verdict = MQ.validateAdjustmentConsistency(bars, { claimedStatus: doc.adjustmentStatus, dividendConvention: "TIINGO_REINVESTMENT_CLOSE" });
