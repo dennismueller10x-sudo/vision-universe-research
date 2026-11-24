@@ -56,7 +56,7 @@ jobs:
   # Marktbriefing (docs/publishing/HANDBUCH.md §10): nach US-Schluss aus Market Pulse, Tagesschluessen und
   # SEC-Daten; Ergebnis nur im Datenzweig (BRANCH_ONLY). Nicht frisch -> Exit 3, nichts geschrieben (Alarm statt alter Zahlen).
   marktbriefing:
-    if: ((github.event_name == 'schedule' || inputs.zeitplan != '') && (github.event.schedule || inputs.zeitplan) == '50 23 * * 1-5') || ((github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && (inputs.teil == 'alle' || inputs.teil == 'marktbriefing'))
+    if: ((github.event_name == 'schedule' || inputs.zeitplan != '') && (github.event.schedule || inputs.zeitplan) == '20 2 * * 2-6') || ((github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && (inputs.teil == 'alle' || inputs.teil == 'marktbriefing'))
     runs-on: ubuntu-latest
     concurrency:
       group: content-marktbriefing-${{ github.ref_name }}
