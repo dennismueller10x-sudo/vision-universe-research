@@ -385,7 +385,10 @@ function weltOhneHeute(now, stream, mitVortag) {
   antworten["/idx.json"] = idx(eintraege, { sessionDate: "2026-09-17", isComplete: false });
   return fenster(antworten, now, stream);
 }
-const tick = (sym, preis, ms) => ({ op: "u", v: [[sym, preis, ms, preis, preis, preis, preis]] });
+/* Ein bestaetigter Trade (Schema 1.1.0, wie quant/api/live-relay-client.js#decode ihn verlangt); quote() ist ein Kursangebot. */
+const SEM = (priceType) => ({ priceType, messageForm: "iexTyped", candlePriceType: "REALTIME_REFERENCE" });
+const tick = (sym, preis, ms) => ({ op: "u", schemaVersion: "vu-live-update-1.1.0", v: [[sym, preis, ms, preis, preis, preis, preis]], semantics: [SEM("TRADE")] });
+const quote = (sym, preis, ms) => ({ op: "u", schemaVersion: "vu-live-update-1.1.0", v: [[sym, preis, ms, preis, preis, preis, preis]], semantics: [SEM("QUOTE")] });
 const MIN = 60000;
 
 test("LS-17 ohne Snapshot der laufenden Sitzung baut der Strom den Verlauf (Minutentakt, ab dem zweiten Punkt; Vortag bleibt Original)", async () => {
@@ -447,6 +450,43 @@ test("LS-20 ein Tick von gestern oder geschlossene Boerse erzeugt keinen Verlauf
   const b = await aufAktienseite(g);
   assert.equal(g.protokoll.opens, 0);
   assert.equal(b.letzte().snapshot.fromStream, undefined);
+});
+
+test("LS-22 ein Kursangebot (QUOTE) erzeugt keinen Punkt der Kurslinie, ein bestaetigter Trade schon; der Kurs im Kopf folgt weiter (Steuerung 24.11.2026)", async () => {
+  const h = weltOhneHeute(OFFEN, STROM, true);
+  const a = await aufAktienseite(h);
+  h.sockets[0].oeffnen();
+  h.sockets[0].sagt(quote("AAPL", 9999, Date.parse(OFFEN) + 2 * MIN));       /* 10:02 Angebot */
+  h.sockets[0].sagt(quote("AAPL", 9999, Date.parse(OFFEN) + 7 * MIN));       /* 10:07 Angebot */
+  assert.equal(a.letzte().snapshot.fromStream, undefined, "Angebote bauen keinen Verlauf: der Vortag bleibt");
+  assert.equal(a.letzte().snapshot.sessionDate, "2026-09-16");
+  h.sockets[0].sagt(tick("AAPL", 200.4, Date.parse(OFFEN) + 2 * MIN));       /* 10:02 Trade */
+  h.sockets[0].sagt(quote("AAPL", 9999, Date.parse(OFFEN) + 4 * MIN));
+  h.sockets[0].sagt(tick("AAPL", 201.0, Date.parse(OFFEN) + 7 * MIN));       /* 10:07 Trade */
+  const p = a.letzte();
+  assert.equal(p.snapshot.fromStream, true);
+  assert.deepEqual(p.snapshot.points, [["10:02", 200.4], ["10:07", 201.0]], "nur die Trades stehen in der Linie");
+  /* Nachrichten ohne Semantik (aeltere Form) gelten nicht als Trade */
+  h.sockets[0].sagt({ op: "u", v: [["AAPL", 300, Date.parse(OFFEN) + 9 * MIN, 300, 300, 300, 300]] });
+  assert.deepEqual(a.letzte().snapshot.points, [["10:02", 200.4], ["10:07", 201.0]]);
+});
+
+test("LS-23 derselbe Nachrichtenablauf ergibt in Discover (Hub) und in Quant/Technical (Relay-Client) dieselben Trades und damit dieselbe Punktzahl", async () => {
+  const { createRequire } = await import("node:module");
+  const decode = createRequire(import.meta.url)(join(root, "quant/api/live-relay-client.js")).decode;
+  const t0 = Date.parse(OFFEN);
+  /* Zeilen mit 8 Spalten wie der Worker sie sendet (providerAt in Spalte 8, vor dem Empfang) */
+  const zeile = (preis, ms, art) => ({ op: "u", schemaVersion: "vu-live-update-1.1.0", v: [["AAPL", preis, ms, preis, preis, preis, preis, ms - 50]], semantics: [SEM(art)] });
+  const ablauf = [zeile(200.1, t0 + 2 * MIN, "TRADE"), zeile(9999, t0 + 3 * MIN, "QUOTE"), zeile(200.9, t0 + 7 * MIN, "TRADE"), zeile(9999, t0 + 8 * MIN, "QUOTE")];
+  const quant = ablauf.flatMap((m) => decode(m, "AAPL", m.v[0][2] + 100)); /* jede Nachricht im Moment ihres Eintreffens */
+  const h = weltOhneHeute(OFFEN, STROM, true);
+  const a = await aufAktienseite(h);
+  h.sockets[0].oeffnen();
+  ablauf.forEach((m) => h.sockets[0].sagt(m));
+  const discover = a.letzte().snapshot.points;
+  assert.equal(quant.length, 2);
+  assert.equal(discover.length, quant.length, "gleiche Punktzahl");
+  assert.deepEqual(discover.map((x) => x[1]), quant.map((x) => x.price), "gleiche Preise");
 });
 
 test("LS-21 die Detailseite beschriftet den Verlauf aus dem Strom ehrlich und holt die Startlinie aus der Tagesreihe", () => {

@@ -576,11 +576,17 @@
     return true;
   }
 
+  /** Ist Zeile i der Nachricht ein bestaetigter Trade? Ohne Semantik (aeltere Nachricht) gilt sie nicht als Trade. */
+  function istTrade(n, i) {
+    var sem = Array.isArray(n.semantics) ? n.semantics[i] : null;
+    return n.schemaVersion === "vu-live-update-1.1.0" && !!sem && sem.priceType === "TRADE" && sem.messageForm === "iexTyped";
+  }
+
   function stromNachricht(n) {
     if (n.op === "u" && Array.isArray(n.v)) {
       var jetzt = st.now().getTime();
       var betroffen = [];
-      n.v.forEach(function (z) {
+      n.v.forEach(function (z, i) {
         if (!Array.isArray(z) || z.length < 2) return;
         var sym = String(z[0]).toUpperCase();
         lv.werte[sym] = { price: z[1], at: z[2] || jetzt, open: z[3], high: z[4], low: z[5], close: z[6],
@@ -590,7 +596,9 @@
                           providerAt: typeof z[7] === "number" ? z[7] : null,
                           receivedAt: jetzt };
         delete lv.abgelehnt[sym];
-        reiheFuehren(sym, lv.werte[sym]);
+        /* Die Kurslinie nimmt nur bestaetigte Trades (wie quant/api/live-relay-client.js#decode, Steuerung 24.11.2026): ein Kursangebot
+           gehoert nicht in die Reihe (01.10.2026: 354,67 $ wurde zu 9.999,00 $). Kopf und Kurs bleiben wie bisher. */
+        if (istTrade(n, i)) reiheFuehren(sym, lv.werte[sym]);
         lv.stats.ticks++;
         betroffen.push(sym);
       });

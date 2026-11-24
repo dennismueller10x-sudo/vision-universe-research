@@ -13,12 +13,11 @@
       Datenpunkt, Abdeckung nach core/chart-history.js (95-%-Regel). 1W
       ist ein Betrachtungszeitraum aus Tagesschluessen, keine Wochenkerze.
 
-   2. START. 1T beim ersten Oeffnen; ausserhalb der Handelszeit zeigt 1T
-      die letzte Sitzung (der Snapshot traegt Datum und Uhrzeit). Hat der
-      Nutzer einen Zeitraum gewaehlt, gilt dieser auch in der naechsten
-      Welt (ein Schluessel, kein Produkt). Fehlt der Tagesverlauf ganz,
-      startet der laengste abgedeckte Zeitraum bis 1J - 1T bleibt sichtbar,
-      aber abgeschaltet. Nie ein aus Tagesschluessen gebauter Tagesverlauf.
+   2. START. Der gemerkte Zeitraum des Nutzers (ein Schluessel, kein Produkt, gilt in der naechsten Welt), sonst
+      DEFAULT_RANGE 1J, sonst der laengste abgedeckte Zeitraum bis 1J (FALLBACK); 1T bleibt in der Leiste, wird aber
+      nicht automatisch gewaehlt (Redesign 2027, C06/D09; Discover-Ueberblick: 1J "wie im Mockup"). Was 1T ZEIGT, regelt
+      intradayView: heute gehandelt = heutige Sitzung, sonst die letzte Sitzung (Etikett). Nie ein aus Tagesschluessen
+      gebauter Tagesverlauf.
 
    3. WAEHRUNG. Anzeige ueber die vorhandene FX-Schicht (quant/engines/fx,
       VUFx.layer; Praeferenz vu-currency-preference-v1, Vorgabe seit 13.11.2026 USD, siehe DEFAULT_DISPLAY). Hier
