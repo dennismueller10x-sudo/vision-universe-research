@@ -245,3 +245,18 @@ test('FP-9b Verhalten: Nicht-Intraday-Aenderung im Fenster = AUFSCHUB, um 21:00 
   const mix = [I + '/index.json', ...nurAndere];
   assert.equal(klassifiziere(mix, {fenster: true}).mode, 'FAST', 'Intraday + Rest: Schnellweg wie heute, Rest wartet');
 });
+
+test('FP-11 Basis-Paket nur von main: ein neueres Artefakt eines PR-Laufs (wegwerfbares Zugangspasswort, PR-Stand) wird nie Basis des Schnellwegs (24.11.2026)', () => {
+  const wf = readFileSync(new URL('../../.github/workflows/pages-release.yml', import.meta.url), 'utf8');
+  const m = wf.match(/artifacts\?name=github-pages&per_page=(\d+)" \\\n\s+--jq "((?:[^"\\]|\\.)*)"/);
+  assert.ok(m, 'Abfrage des Basis-Pakets nicht gefunden');
+  assert.ok(Number(m[1]) >= 20, 'genug Artefakte, damit PR-Artefakte main nicht verdraengen');
+  const filter = m[2].replace(/\\"/g, '"');
+  const art = (id, at, branch, expired = false) => ({id, expired, created_at: at, archive_download_url: 'u' + id, workflow_run: {head_branch: branch}});
+  const waehle = (artifacts) => execFileSync('jq', ['-r', filter], {input: JSON.stringify({artifacts}), encoding: 'utf8'}).trim();
+  // 24.11. 01:35:47 PR-Artefakt neuer als das main-Artefakt von 01:33:03
+  assert.equal(waehle([art(1, '2026-11-24T01:33:03Z', 'main'), art(2, '2026-11-24T01:35:47Z', 'ci-candidate-qa-diagnose')]).split('\t')[0], 'u1');
+  assert.equal(waehle([art(3, '2026-11-24T01:40:00Z', 'main'), art(2, '2026-11-24T01:35:47Z', 'x')]).split('\t')[0], 'u3', 'neuestes main-Artefakt gewinnt');
+  assert.equal(waehle([art(4, '2026-11-24T01:40:00Z', 'main', true), art(1, '2026-11-24T01:33:03Z', 'main')]).split('\t')[0], 'u1', 'abgelaufene zaehlen nicht');
+  assert.match(waehle([art(2, '2026-11-24T01:35:47Z', 'feature')]).split('\t')[0], /^(|null)$/, 'nur PR-Artefakte: leere URL, der Schritt scheitert (test -n), also Voll-Release statt Schnellweg');
+});
