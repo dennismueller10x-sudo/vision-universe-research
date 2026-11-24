@@ -43,15 +43,16 @@ test("PF-1 ohne Dispatch-Laeufe oder nur abgeschlossene: frei (Exit 0), eine RES
     assert.match(r.calls[0], /pages-release\.yml\/runs\?event=workflow_dispatch/);
   }
 });
-test("PF-2 ein offener Dispatch-Lauf (queued, waiting, pending, in_progress) belegt die Gruppe: Exit 1, Lauf wird genannt", () => {
-  for (const s of ["queued", "waiting", "pending", "in_progress"]) {
+test("PF-2 ein WARTENDER Dispatch-Lauf (queued, waiting, pending) belegt den Wartesteckplatz: Exit 1, Lauf wird genannt; ein laufender (in_progress) blockiert nicht (24.11.2026)", () => {
+  assert.equal(lauf([{ runs: [run("in_progress", 5)] }]).status, 0, "laufend: kann nicht verdraengt werden");
+  for (const s of ["queued", "waiting", "pending"]) {
     const r = lauf([{ runs: [run("completed", 1), run(s, 42)] }]);
     assert.equal(r.status, 1, s);
     assert.match(r.stderr, new RegExp(`42 ${s}`));
   }
 });
 test("PF-3 mit Wartezeit: wird frei, sobald der Dispatch-Lauf fertig ist (Exit 0 nach Warten)", () => {
-  const r = lauf([{ runs: [run("in_progress", 7)] }, { runs: [run("completed", 7)] }], 5);
+  const r = lauf([{ runs: [run("pending", 7)] }, { runs: [run("completed", 7)] }], 5);
   assert.equal(r.status, 0, r.stderr);
   assert.ok(r.sleeps.length >= 1, "hat gewartet");
 });
@@ -60,7 +61,7 @@ test("PF-4 Fehler sind nie 'frei': API-Fehler und unlesbare Antwort enden mit Ex
   assert.equal(lauf([{ roh: "<html>" }]).status, 2);
 });
 test("PF-5 ein einzelner API-Fehler beim Warten wird wiederholt, nicht als frei gewertet", () => {
-  const r = lauf([{ fehler: true }, { runs: [run("in_progress")] }, { runs: [] }], 5);
+  const r = lauf([{ fehler: true }, { runs: [run("pending")] }, { runs: [] }], 5);
   assert.equal(r.status, 0, r.stderr);
 });
 
@@ -76,7 +77,7 @@ test("PF-6 Boersenfenster: Merge mit Produkt-Pfad (Mo-Fr 13:30-20:59 UTC) endet 
 });
 test("PF-7 Boersenfenster: Doku-, Test- und scripts/ci-Pfade sind ausgenommen (weiter nur die Dispatch-Pruefung); Dispatch belegt bleibt Exit 1", () => {
   assert.equal(lauf([frei], 0, { dow: "3", hm: "1500", pr: 9, dateien: nurDoku }).status, 0);
-  assert.equal(lauf([{ runs: [run("in_progress", 5)] }], 0, { dow: "3", hm: "1500", pr: 9, dateien: nurDoku }).status, 1);
+  assert.equal(lauf([{ runs: [run("pending", 5)] }], 0, { dow: "3", hm: "1500", pr: 9, dateien: nurDoku }).status, 1);
 });
 test("PF-8 Wochenende und alle Tage Mo-Fr ausserhalb des Fensters: kein Boersenfenster (Sa/So 15:00, Fr 21:00, Mo 07:00)", () => {
   for (const [dow, hm] of [["6", "1500"], ["7", "1500"], ["5", "2100"], ["1", "0700"]]) assert.equal(lauf([frei], 0, { dow, hm, pr: 9, dateien: mitPfad }).status, 0, `${dow} ${hm}`);
