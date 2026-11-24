@@ -18,29 +18,7 @@ const nurRatgeber = process.argv.includes('--nur-ratgeber');
 // --weitere: nur die von Hand gepflegten Seiten ohne eigenes Story-Layout (Rechtliches, Instagram, Partner, Newsletter).
 const nurWeitere = process.argv.includes('--weitere');
 
-// Seiten außerhalb von SITE_PAGES und Ratgeber (Owner 24.11.2026: jede Unterseite zeigt beim Teilen ihr eigenes Bild).
-// Überschrift und Satz stehen hier, weil die Seiten selbst dafür keinen einheitlichen Kopf haben.
-const ICON = {
-  recht: '<path d="M12 3 4 6v6c0 4.5 3.4 8.2 8 9 4.6-.8 8-4.5 8-9V6z"/>',
-  insta: '<rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r=".6"/>',
-  post: '<rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m4 7 8 6 8-6"/>',
-  app: '<rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M10.5 18.5h3"/>',
-};
-export const WEITERE = [
-  ['impressum/index.html', 'recht', 'Rechtliches', 'Impressum', 'Anbieter, Kontakt und Verantwortliche von Vision Universe.', 'apple'],
-  ['datenschutz/index.html', 'recht', 'Rechtliches', 'Datenschutz', 'Welche Daten Vision Universe verarbeitet, wofür und welche Rechte du hast.', 'apple'],
-  ['partner/index.html', 'app', 'Produktvorstellung', 'Investieren mit <mark>Weitblick.</mark>', 'Aktien finden, prüfen und verstehen: zehn Analysewerkzeuge in einer App.', 'discover'],
-  ['instagram/index.html', 'insta', 'Vision Universe auf Instagram', 'Die Aktien aus <mark>unseren Reels.</mark>', 'Die Aktienlisten aus unseren Reels und die App, die bald kommt.', 'discover'],
-  ['instagram/energie/index.html', 'insta', 'Instagram · Aus dem Reel', 'Zehn <mark>Energie&#8209;Aktien.</mark>', 'Aus dem Reel „Wenn du tankst, verdienen diese Aktien“.', 'discover'],
-  ['instagram/ki-unterstuetzung/index.html', 'insta', 'Instagram · Aus dem Reel', '<mark>KI&#8209;Aktien</mark> an der Unterstützung.', 'Zehn KI-Aktien vor Nvidias Zahlen an einer Unterstützungszone.', 'technical'],
-  ['instagram/robotaxi/index.html', 'insta', 'Instagram · Aus dem Reel', 'Zehn Aktien rund ums <mark>Robotaxi.</mark>', 'Aus dem Reel „Tesla überholt Waymo“.', 'discover'],
-  ['instagram/robotaxi-nebenwerte/index.html', 'insta', 'Instagram · Aus dem Reel', 'Robotaxi: <mark>die zweite Reihe.</mark>', 'Zehn Nebenwerte rund um autonome Taxis.', 'discover'],
-  ['instagram/zonen/index.html', 'insta', 'Instagram · Aus dem Reel', 'Nach dem Crash: <mark>vier KI&#8209;Aktien</mark> an der Unterstützung.', 'Aus dem Vision-Universe-Reel zum Crash vom 05.11.2026.', 'technical'],
-  ['instagram/teilnahmebedingungen/index.html', 'insta', 'Instagram', 'Teilnahme&shy;bedingungen', 'Die Regeln für Aktionen von Vision Universe auf Instagram.', 'discover'],
-  ['newsletter/bestaetigen/index.html', 'post', 'Newsletter', 'Bitte bestätige deine <mark>E-Mail-Adresse.</mark>', 'Vision Universe erklärt Aktien in einfachen Sätzen. Bald als App für iPhone und Android.', 'discover'],
-  ['newsletter/bestaetigt/index.html', 'post', 'Newsletter', 'Danke für deine <mark>Bestätigung.</mark>', 'Vision Universe erklärt Aktien in einfachen Sätzen. Bald als App für iPhone und Android.', 'discover'],
-  ['newsletter/fehler/index.html', 'post', 'Newsletter', 'Deine Anmeldung ist <mark>nicht bestätigt.</mark>', 'Vision Universe erklärt Aktien in einfachen Sätzen. Bald als App für iPhone und Android.', 'discover'],
-];
+import { WEITERE, ICON, RECHT, teilenTags } from './teilen.mjs';
 
 const SITE = 'https://www.visionuniverse.de/';
 const out = resolve(root, 'tests/output/share');
@@ -156,15 +134,11 @@ for (const { path, file, slug, h1, lead } of done) {
   console.log(`${slug.padEnd(24)} ${file}`);
 }
 
-// Weitere Seiten: Teilen-Angaben einsetzen oder ersetzen (die Seiten hatten bisher keine).
-for (const { path, file, h1, satz } of weitere) {
+// Weitere Seiten: Teilen-Angaben einsetzen oder ersetzen. Rechtstexte (RECHT) bleiben unberührt, ihre Angaben setzt
+// scripts/build.mjs beim Bau ein (die Dateien sind per Prüfsumme freigegeben, review/legal-revisions.json).
+for (const { path, h1, satz } of weitere) {
+  if (RECHT.has(path)) continue;
   const src = resolve(root, path);
-  let html = await readFile(src, 'utf8');
-  const url = SITE + path.replace(/index\.html$/, '');
-  const titel = esc(text(h1.replace(/&shy;/g, '').replace(/&#8209;/g, '-')) + ' · Vision Universe');
-  html = html.replace(/\n?[ \t]*<meta (?:property="og:[^"]+"|name="twitter:[^"]+") content="[^"]*">/g, '');
-  const tags = [['property="og:type"', 'website'], ['property="og:url"', url], ['property="og:site_name"', 'Vision Universe'], ['property="og:locale"', 'de_DE'], ['property="og:title"', titel], ['property="og:description"', esc(satz)], ['property="og:image"', SITE + file], ['property="og:image:width"', '1200'], ['property="og:image:height"', '630'], ['property="og:image:alt"', titel], ['name="twitter:card"', 'summary_large_image'], ['name="twitter:image"', SITE + file]];
-  const ein = html.match(/\n([ \t]*)<title>/)?.[1] ?? '';
-  html = html.replace(/(<title>[^<]*<\/title>)/, `$1\n${tags.map(([k, v]) => `${ein}<meta ${k} content="${v}">`).join('\n')}`);
-  await writeFile(src, html);
+  const html = await readFile(src, 'utf8');
+  await writeFile(src, teilenTags(html, path, h1, satz));
 }

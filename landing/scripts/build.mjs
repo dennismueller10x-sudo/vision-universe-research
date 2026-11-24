@@ -5,6 +5,7 @@ import {fileURLToPath} from 'node:url';
 import {createHash} from 'node:crypto';
 import {mitStrukturiertenDaten, llmsTxt} from './seo.mjs';
 import {ratgeberSeiten} from './ratgeber.mjs';
+import {WEITERE, RECHT, teilenTags} from './teilen.mjs';
 
 // Umleitungen der alten Shopify-Adressen (Cloudflare Pages _redirects, Reihenfolge zählt: erste Regel gewinnt).
 export const ALTE_SHOP_ADRESSEN = [
@@ -95,9 +96,7 @@ export async function build({output = resolve(root,'dist'), config = {}, product
     if (!/<html\b/i.test(privacy) || !/<html[^>]+lang=["']de["']/i.test(privacy) || !/<title>/i.test(privacy)) throw new Error('Datenschutzhinweise müssen ein vollständiges deutsches HTML-Dokument sein.');
     if (/data-policy-status=["']draft["']/i.test(privacy)) throw new Error('Die Vorschau-Datenschutzhinweise sind noch kein freigegebener Rechtstext.');
     if (config.mode === 'public' && /data-newsletter-release-scope=["']controlled["']/i.test(privacy)) throw new Error('Datenschutzfreigabe gilt ausschließlich für den kontrollierten Test.');
-    // Nur der Kopf bekommt die Teilen-Angaben der Quellseite (Vorschaubild); der freigegebene Text bleibt unverändert.
-    const teilen=((await readFile(resolve(root,'datenschutz/index.html'),'utf8')).match(/^[ \t]*<meta (?:property="og:|name="twitter:)[^>]*>$/gm)||[]).join('\n');
-    await writeFile(resolve(output,'datenschutz/index.html'),teilen&&!/property="og:image"/.test(privacy)?privacy.replace(/(<title>[^<]*<\/title>)/i,`$1\n${teilen}`):privacy);
+    await writeFile(resolve(output,'datenschutz/index.html'),privacy);
   }
   // Dasselbe Formular steht auf der Startseite und auf der Landingpage /start/ (Owner 17.11.2026); beide schalten gleich.
   const formState = page => {
@@ -117,6 +116,9 @@ export async function build({output = resolve(root,'dist'), config = {}, product
       const version=createHash('sha256').update(await readFile(resolve(output,'legal.css'))).digest('hex').slice(0,16);
       page=page.replace(/href="((?:\.\.\/)+legal\.css)"/g,`href="$1?v=${version}"`);
     }
+    // Rechtstexte: Teilen-Angaben (Vorschaubild) nur im Bau einsetzen, die freigegebenen Quelldateien bleiben unverändert.
+    const recht = WEITERE.find(([p]) => p === path && RECHT.has(p));
+    if (recht) page = teilenTags(page, path, recht[3], recht[4]);
     if (path === 'index.html') html = page; else await writeFile(resolve(output,path),page);
   }
 
