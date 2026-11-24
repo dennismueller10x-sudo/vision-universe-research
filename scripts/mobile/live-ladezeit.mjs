@@ -70,7 +70,7 @@ export function diagnoseText(g) {
  return ['readyState ' + g.readyState, 'busy ' + g.busy,
   'Schluessel im Speicher: ' + (g.storageKeyPresent ? 'ja' : 'nein'),
   st ? 'gespeichert v' + (st.version ?? '?') + (abgelaufen ? ' (' + abgelaufen + ')' : '') + (st.unreadable ? ' (unlesbar)' : '') : null,
-  g.gate && g.gate.settings ? 'Maske v' + (g.gate.settings.version ?? '?') : null,
+  g.gate && g.gate.settings ? 'Maske v' + (g.gate.settings.version ?? '?') + (g.gate.settings.verifier8 ? ' (Huelle ' + g.gate.settings.verifier8 + ')' : '') : null,
   g.accessError ? 'Fehlertext "' + g.accessError.text + '"' + (g.accessError.hidden ? ' (verborgen)' : '') : 'kein Fehlertext',
   js ? (js.error ? 'access.js ' + js.error : 'access.js ' + js.status + (js.lastModified ? ' ' + js.lastModified : '')) : null].filter(Boolean).join(', ');
 }

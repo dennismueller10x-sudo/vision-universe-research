@@ -121,24 +121,24 @@ import {saubereDiagnose} from '../gate-diagnose.mjs';
 import {diagnoseText} from '../live-ladezeit.mjs';
 const diag={readyState:'complete',busy:null,ciState:null,gateShown:true,browserNow:2000,accessError:{text:'Zugang abgelaufen',hidden:false},storageKeyPresent:true,
  gate:{settings:{version:3,verifier8:'deadbeef'},stored:{version:3,expiresAt:1000},accessJs:{status:200,lastModified:'Mon, 23 Nov 2026 10:00:00 GMT',etag:'"x"'}}};
-test('saubereDiagnose lässt den Prüfwert-Anfang und unbekannte Felder draußen',()=>{
- const s=saubereDiagnose(diag);
- assert.equal(JSON.stringify(s).includes('deadbeef'),false);
+test('saubereDiagnose behält den Hüllen-Anfang (verifier8), lässt unbekannte Felder und den gespeicherten Schlüssel draußen',()=>{
+ const s=saubereDiagnose({...diag,extra:'x',gate:{...diag.gate,stored:{version:3,expiresAt:1000},settings:{version:3,verifier8:'deadbeefcafe'}}});
+ assert.equal(s.gate.settings.verifier8,'deadbeef');assert.equal('extra' in s,false);assert.equal(JSON.stringify(s).includes('cafe'),false);
  assert.equal(s.gate.settings.version,3);assert.equal(s.storageKeyPresent,true);assert.equal(s.gate.stored.expiresAt,1000);
  assert.equal(saubereDiagnose(null),null);
 });
 test('diagnoseText nennt Zustand, Ablauf gegen Browser-Zeit, Fehlertext und access.js',()=>{
  const t=diagnoseText(saubereDiagnose(diag));
- for(const w of ['readyState complete','Schluessel im Speicher: ja','gespeichert v3 (abgelaufen)','Maske v3','Fehlertext "Zugang abgelaufen"','access.js 200'])assert.match(t,new RegExp(w.replace(/[()"]/g,'\\$&')));
+ for(const w of ['readyState complete','Schluessel im Speicher: ja','gespeichert v3 (abgelaufen)','Maske v3 (Huelle deadbeef)','Fehlertext "Zugang abgelaufen"','access.js 200'])assert.match(t,new RegExp(w.replace(/[()"]/g,'\\$&')));
  assert.match(diagnoseText(saubereDiagnose({...diag,gate:{...diag.gate,stored:{version:3,expiresAt:9000}}})),/gueltig bis 1970/);
  assert.equal(diagnoseText(null),'keine Diagnose');
 });
-test('Bericht: ungültige Zeile mit Maske trägt die Diagnose in den Details, ohne Schlüssel',()=>{
+test('Bericht: ungültige Zeile mit Maske trägt die Diagnose in den Details',()=>{
  const raw={rows:[{route:'/quant/',lcp:null,cls:null,requests:3,bytes:4000,incompleteRuns:0,failedRuns:0,invalidRuns:3}],
   samples:[1,2,3].map(()=>({route:'/quant/',lcp:null,errors:[],gateDiagnostics:saubereDiagnose(diag)}))};
  const [r]=rowsFromRaw(raw,'app',4);
  assert.equal(r.invalidRuns,3);assert.ok(r.gateDiagnostics);
  const md=reportMarkdown({schema:'vu-ladezeit-1',measuredAt:'2026-11-24T00:00:00Z',rows:[r],alarms:[],targets});
  assert.match(md,/ungueltig, Maske sichtbar: readyState complete/);
- assert.equal(md.includes('deadbeef'),false);
+ assert.match(md,/Huelle deadbeef/);
 });
