@@ -38,10 +38,10 @@
      Richtung des zweiten, ist er selbst Kursziel. */
   function plan(td) {
     var P = td.path || [], out = [], nT = 0, entry = null;
-    var turn = P.length > 1 && P[0].dir !== P[1].dir, dirT = turn ? P[1].dir : P[0] && P[0].dir;
+    var RO = global.VUElliottRoles || (typeof require === "function" ? require("./engine/roles.js") : null), RR = RO.roles(P, td.primary && td.primary.cur);   // elliott/engine/roles.js
     P.forEach(function (s, k) {
       var c = core(s);
-      var role = k === 0 && turn ? "entry" : s.dir === dirT ? "target" : "step";
+      var role = RR.roles[k];
       if (role === "target") nT++;
       var row = { step: s, role: role, n: role === "target" ? nT : null, lo: c.lo, hi: c.hi, ext: c.ext, zones: c.zones };
       if (role === "entry") entry = row;
@@ -337,7 +337,7 @@
     var t = null; global.addEventListener && global.addEventListener("resize", function () { clearTimeout(t); t = setTimeout(function () { if (host.isConnected) again(); }, 200); });
     return host;
   }
-  var api = { section: section, plan: plan, titleOf: titleOf, viewOf: viewOf, WORDS: WORDS, load: load, mode: function () { return mode; }, _setMode: function (m) { if (WORDS[m]) mode = m; } };
+  var api = { REL: REL, section: section, plan: plan, titleOf: titleOf, viewOf: viewOf, WORDS: WORDS, load: load, mode: function () { return mode; }, _setMode: function (m) { if (WORDS[m]) mode = m; } };
   if (global.document) load();   // Einstellung früh holen: Startseite (Radar) und Aktienbild nutzen dieselben Worte
   global.VUElliottBig = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;

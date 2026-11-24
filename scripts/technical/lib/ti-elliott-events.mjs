@@ -6,6 +6,8 @@
    - Indexzeile `td`: Schlüssel der Lesart, Ungültig-Marke, Einstiegszone und Kursziel 1 (Rollen wie elliott/bigpicture.js#plan).
    - Ereignisse: Einstiegszone erreicht, Kursziel erreicht, Zählung ungültig, Neuzählung – nur gegen die Zeile des letzten Laufs. */
 
+import { createRequire } from "node:module";
+const ROLES = createRequire(import.meta.url)("../../../elliott/engine/roles.js");
 const isNum = (v) => typeof v === "number" && Number.isFinite(v);
 const r4 = (v) => (isNum(v) ? Number(v.toPrecision(4)) : null);
 
@@ -20,18 +22,17 @@ export function tailwind(close, rs) {
   return { trend, mom, rs: isNum(rs) ? Math.round(rs * 100) / 100 : null, rsT, score, dir: score >= 2 ? "UP" : score <= -2 ? "DOWN" : "MIXED" };
 }
 
-/** Rollen im Pfad wie im Großen Bild: dreht der Pfad nach dem ersten Schritt, ist dessen Zone die Einstiegszone. */
-export function roles(path) {
-  const P = path || [], turn = P.length > 1 && P[0].dir !== P[1].dir, dirT = turn ? P[1].dir : P[0] && P[0].dir;
+/** Rollen im Pfad wie im Großen Bild (elliott/engine/roles.js): Einstiegszone und erstes Kursziel. */
+export function roles(path, cur) {
+  const P = path || [], R = ROLES.roles(P, cur);   // elliott/engine/roles.js: Richtung des ersten Antriebsschritts, Einstieg = Korrektur davor
   const core = (s) => { const t = s.tiers.filter((z) => !z.done); const z = t[0] || s.tiers[s.tiers.length - 1]; return z ? { lo: z.lo, hi: z.hi, dir: s.dir, l: s.disp } : null; };
-  const entry = turn ? core(P[0]) : null, target = P.find((s, k) => s.dir === dirT && (k > 0 || !turn));
-  return { entry, target: target ? core(target) : null };
+  return { entry: R.entry >= 0 ? core(P[R.entry]) : null, target: R.first >= 0 && P[R.first] ? core(P[R.first]) : null };
 }
 
 /** Kompakte Indexzeile der Zählung von oben (für Ereignisse, Radar und Startseite). */
 export function tdRow(td) {
   if (!td || td.status !== "OK" || !td.primary) return null;
-  const p = td.primary, ro = roles(td.path);
+  const p = td.primary, ro = roles(td.path, p.cur);
   return { k: p.kind + ":" + p.dir + ":" + p.cur + ":" + (p.waves[0] && String(p.waves[0].ft).slice(0, 7)), cur: p.cur, kind: p.kind, dir: p.dir,
            inv: p.inv ? [p.inv.p, p.inv.d] : null, e: ro.entry, t1: ro.target, rw: td.rw ? td.rw.dir : null, sc: td.score ? [td.score.v, td.score.level] : null };
 }

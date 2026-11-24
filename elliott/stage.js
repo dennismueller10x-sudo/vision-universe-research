@@ -37,11 +37,16 @@
     opt = opt || {};
     var td0 = a.elliottTopDown, b = Big();
     if (!td0 || !td0.primary || !(td0.path && td0.path.length) || !b) return null;
-    var S0 = null, st = { range: opt.range || "focus", which: "main", focus: null, t0: null, intro: true, story: -1 };
+    var S0 = null, SW = null, SN = opt.history || a.elliottHistory || null, st = { range: opt.range || "focus", which: "main", focus: null, t0: null, intro: true, story: -1, tm: null, reveal: false };
     var root = document.createElement("div"); root.className = "st-wrap";
     host.appendChild(root);
 
     function view() {
+      /* Zeitreise: Stand der Zählung an einem früheren Wochenschluss (kausal gerechnet), Kurs auf der ganzen Wochenreihe */
+      if (st.tm != null && SN) {
+        var sn = SN.snaps[st.tm], tdS = { primary: sn.p, sub: sn.s, path: sn.path, close: sn.c, asOf: sn.a };
+        return { td: tdS, rows: b.plan(tdS), S: SW || (SW = SN.weekly.map(function (q) { return { t: T(q[0]), c: q[1] }; })), tm: sn };
+      }
       var td = b.viewOf ? b.viewOf(td0, st.which) : td0, rows = b.plan(td), S = S0 || (S0 = seriesOf(a, td0));
       return { td: td, rows: rows, S: S };
     }
@@ -55,14 +60,15 @@
     }
 
     function svgOf(V, W, H) {
-      var td = V.td, rows = V.rows, S = V.S, close = td.close || S[S.length - 1].c;
+      var td = V.td, rows = V.rows, S = V.S, close = td.close || S[S.length - 1].c, tm = V.tm || null;
       var tEnd = S[S.length - 1].t, t0 = st.t0, vis = S.filter(function (p) { return p.t >= t0; });
       if (vis.length < 4) vis = S.slice(-4);
       var narrow = W < 560, OV = 62, CT = 66, padT = narrow ? 162 : 150, padB = 26 + OV + CT, padR = narrow ? 54 : 64, plotR = W - padR, oy0 = H - CT - OV;
-      var xNow = Math.round(plotR * (narrow ? 0.62 : 0.7)), xEnd = plotR - 10;
-      function x(t) { return 2 + (t - t0) / Math.max(DAY, tEnd - t0) * (xNow - 2); }
+      var tC = tm ? T(tm.a) : tEnd, xR = tm ? plotR - 6 : Math.round(plotR * (narrow ? 0.62 : 0.7)), xEnd = tm ? plotR - 6 : plotR - 10;
+      function x(t) { return 2 + (t - t0) / Math.max(DAY, tEnd - t0) * (xR - 2); }
+      var xNow = tm ? x(tC) : xR;
       var nS = rows.length; function px(k) { return xNow + (xEnd - xNow) * ((k + 1) / (nS + 0.15)); }
-      var big = pivots(td.primary, close, tEnd, "BIG"), sub = pivots(td.sub, close, tEnd, "SUB");
+      var big = pivots(td.primary, close, tC, "BIG"), sub = pivots(td.sub, close, tC, "SUB");
       /* Wertebereich: sichtbarer Kurs, sichtbare Wendepunkte, Kernzonen der Schritte, Ungültig-Marke in Reichweite */
       var vals = vis.map(function (p) { return p.c; });
       big.concat(sub).forEach(function (q) { if (q.t >= t0) vals.push(q.p); });
@@ -84,18 +90,21 @@
       var dim = function (k) { return st.focus && st.focus.indexOf(k) < 0 ? ' opacity=".16"' : ""; };
       g.push('<g class="st-grid">' + tk.map(function (v) { return '<line x1="0" x2="' + plotR + '" y1="' + f(y(v)) + '" y2="' + f(y(v)) + '"/>'; }).join("") + "</g>");
       var yrs = [], span = (tEnd - t0) / YEAR, every = span > 24 ? 5 : span > 10 ? 2 : 1, y0 = new Date(t0).getUTCFullYear() + 1, lastX = -99;
-      for (var yr = y0; yr <= new Date(tEnd).getUTCFullYear(); yr++) if (yr % every === 0) { var xt = x(Date.UTC(yr, 0, 1)); if (xt > 14 && xt < xNow - 46 && xt - lastX > 44) { lastX = xt; yrs.push('<text class="st-ax" x="' + f(xt) + '" y="' + (H - padB + 17) + '" text-anchor="middle">' + yr + "</text>"); } }
+      for (var yr = y0; yr <= new Date(tEnd).getUTCFullYear(); yr++) if (yr % every === 0) { var xt = x(Date.UTC(yr, 0, 1)); if (xt > 14 && xt < (tm ? xR - 20 : xNow - 46) && xt - lastX > 44 && (!tm || Math.abs(xt - Math.min(xNow, plotR - 50)) > 66)) { lastX = xt; yrs.push('<text class="st-ax" x="' + f(xt) + '" y="' + (H - padB + 17) + '" text-anchor="middle">' + yr + "</text>"); } }
       g.push(yrs.join(""));
       /* Zukunft: eigener Raum ohne Zeitachse */
       g.push('<line class="st-now" x1="' + xNow + '" x2="' + xNow + '" y1="' + (padT - 22) + '" y2="' + (H - padB + 4) + '"/>' +
-        '<text class="st-ax st-ax-r" x="' + (xNow + 7) + '" y="' + (H - padB + 17) + '">Plan der Methode →</text>' +
-        '<text class="st-ax" x="' + (xNow - 5) + '" y="' + (H - padB + 17) + '" text-anchor="end">heute</text>');
+        (tm ? '<text class="st-ax st-ax-tm" x="' + f(Math.min(xNow, plotR - 50)) + '" y="' + (H - padB + 17) + '" text-anchor="middle">' + esc("Stand " + md(tC)) + "</text>"
+            : '<text class="st-ax st-ax-r" x="' + (xNow + 7) + '" y="' + (H - padB + 17) + '">Plan der Methode →</text>' +
+              '<text class="st-ax" x="' + (xNow - 5) + '" y="' + (H - padB + 17) + '" text-anchor="end">heute</text>'));
       /* Ungültig-Marke */
       if (invIn) g.push('<g class="st-inv"' + dim("inv") + '><line x1="0" x2="' + plotR + '" y1="' + f(y(inv.p)) + '" y2="' + f(y(inv.p)) + '"/></g>');
       /* Kurs als Linie mit Fläche */
-      var d = vis.map(function (p, i) { return (i ? "L" : "M") + f(x(p.t)) + " " + f(y(p.c)); }).join("");
-      g.push('<g class="st-pg"' + dim("price") + '><path class="st-area" d="' + d + "L" + f(x(tEnd)) + " " + (H - padB) + "L" + f(x(vis[0].t)) + " " + (H - padB) + 'Z" fill="url(#st-area)"/>' +
-        '<path class="st-price" pathLength="1" d="' + d + '"/></g>');
+      var pre = tm ? vis.filter(function (p) { return p.t <= tC; }) : vis, post = tm ? vis.filter(function (p) { return p.t >= tC; }) : [];
+      if (!pre.length) pre = vis.slice(0, 1);
+      var line = function (L) { return L.map(function (p, i) { return (i ? "L" : "M") + f(x(p.t)) + " " + f(y(p.c)); }).join(""); }, d = line(pre);
+      g.push('<g class="st-pg"' + dim("price") + '><path class="st-area" d="' + d + "L" + f(x(pre[pre.length - 1].t)) + " " + (H - padB) + "L" + f(x(pre[0].t)) + " " + (H - padB) + 'Z" fill="url(#st-area)"/>' +
+        '<path class="st-price" pathLength="1" d="' + d + '"/>' + (post.length > 1 ? '<path class="st-after" pathLength="1" d="' + line(post) + '"/>' : "") + "</g>");
       /* Gerüst der Zählung: Unterwellen fein, großer Grad kräftig */
       function skel(P, cls, key) {
         if (P.length < 2) return "";
@@ -125,11 +134,11 @@
       /* Pfad der Methode: Zonen als Felder am Zielpunkt, Pfeile vom heutigen Kurs */
       var W0 = words(), P0 = [xNow, y(close)], pts = rows.map(function (r, k) { return [px(k), y(r.step.point)]; }), proj = [], pads = [], tags = [];
       var firstT = rows.filter(function (r) { return r.role === "target"; })[0];
-      if (firstT) { var gk = rows.indexOf(firstT); pads.push('<circle' + dim("target") + ' cx="' + f(pts[gk][0]) + '" cy="' + f((y(firstT.lo) + y(firstT.hi)) / 2) + '" r="96" fill="url(#st-glow)"/>'); }
+      if (firstT && !tm) { var gk = rows.indexOf(firstT); pads.push('<circle' + dim("target") + ' cx="' + f(pts[gk][0]) + '" cy="' + f((y(firstT.lo) + y(firstT.hi)) / 2) + '" r="96" fill="url(#st-glow)"/>'); }
       rows.forEach(function (r, k) {
         var role = r.role, key = role === "target" ? "target" : role === "entry" ? "entry" : "step", cx = pts[k][0], hw = narrow ? 22 : 28;
-        (r.zones || [{ lo: r.lo, hi: r.hi }]).slice(0, 2).forEach(function (z, q) {
-          pads.push('<rect class="st-pad st-pad-' + key + " st-z" + (q + 1) + '"' + dim(key) + ' x="' + f(cx - hw) + '" y="' + f(y(z.hi)) + '" width="' + 2 * hw + '" height="' + f(Math.max(4, y(z.lo) - y(z.hi))) + '" rx="7"/>');
+        (r.zones || [{ lo: r.lo, hi: r.hi }]).slice(0, tm ? (key === "step" ? 0 : 1) : 2).forEach(function (z, q) {   // Zeitreise: nur Einstieg und Kursziel als Bänder
+          pads.push('<rect class="st-pad st-pad-' + key + " st-z" + (q + 1) + (tm ? " st-band" : "") + '"' + dim(key) + ' x="' + f(tm ? xNow : cx - hw) + '" y="' + f(y(z.hi)) + '" width="' + f(tm ? Math.max(4, xEnd - xNow) : 2 * hw) + '" height="' + f(Math.max(4, y(z.lo) - y(z.hi))) + '" rx="7"/>');
         });
         var A = k ? pts[k - 1] : P0, Bp = pts[k], tgt = role === "target";
         proj.push('<path class="st-arrow ' + (tgt ? "st-a-t" : "st-a-w") + '"' + dim(key) + ' pathLength="1" d="M' + f(A[0]) + " " + f(A[1]) + "L" + f(Bp[0]) + " " + f(Bp[1]) + '" marker-end="url(#' + (tgt ? "st-ah" : "st-aw") + ')"/>');
@@ -147,7 +156,24 @@
         }
         nodes.push({ x: cx, y: Bp[1], row: r });
       });
-      g.push('<g class="st-g3">' + pads.join("") + proj.join("") + "</g>");
+      /* Geisterpfad der Alternative (nur in der Hauptzählung): dünn, damit man sieht, wohin die zweite regelkonforme Lesart führt */
+      var ghost = "";
+      if (!tm && st.which === "main" && td0.alternative && td0.altPath && td0.altPath.length && b.viewOf) {
+        var rA = b.plan(b.viewOf(td0, "alt")), nA = rA.length, GP = [P0].concat(rA.map(function (r, k) { return [xNow + (xEnd - xNow) * ((k + 1) / (nA + 0.15)), y(r.step.point)]; }));
+        ghost = '<g class="st-ghostpath"' + dim("alt") + '><path d="' + GP.map(function (q, i) { return (i ? "L" : "M") + f(q[0]) + " " + f(q[1]); }).join("") + '"/>' +
+          '<text x="' + f(GP[GP.length - 1][0]) + '" y="' + f(GP[GP.length - 1][1] + 16) + '" text-anchor="middle">Alternative</text></g>';
+      }
+      g.push('<g class="st-g3">' + ghost + pads.join("") + proj.join("") + "</g>");
+      /* Zeitreise: was danach geschah – Zone erreicht, Kursziel erreicht oder Zählung ungültig, am Kurs markiert */
+      if (tm) {
+        var at = function (dt) { var tt = T(dt), best = S[0]; S.forEach(function (q) { if (Math.abs(q.t - tt) < Math.abs(best.t - tt)) best = q; }); return best; };
+        [["e", "st-mk-e", "Zone"], ["t", "st-mk-t", "Ziel erreicht"], ["x", "st-mk-x", "ungültig"]].forEach(function (m) {
+          var dt = tm.o[m[0]]; if (!dt) return; if (m[0] === "x" && tm.o.t && tm.o.t <= dt) return; if (m[0] === "t" && tm.o.x && tm.o.x < dt) return;
+          var q = at(dt), X = x(q.t), Y = y(q.c), up = m[0] !== "x" ? Y < y(close) : Y > y(close);
+          g.push('<g class="st-mk ' + m[1] + '"><circle class="st-mk-r" cx="' + f(X) + '" cy="' + f(Y) + '" r="9"/><circle cx="' + f(X) + '" cy="' + f(Y) + '" r="4.5"/>' +
+            '<text x="' + f(Math.min(X, plotR - 40)) + '" y="' + f(up ? Y - 16 : Y + 24) + '" text-anchor="middle">' + esc(m[2] + " · " + md(q.t)) + "</text></g>");
+        });
+      }
       /* Beschriftung der Ungültig-Linie dort, wo kein Kreis und kein Zielpunkt steht */
       if (invIn) {
         var iy = y(inv.p), itx = "ungültig " + (inv.d === "below" ? "unter " : "über ") + num(inv.p) + " $", iw = itx.length * 5.6;
@@ -170,21 +196,34 @@
       function oy(v) { return oy0 + 10 + (Math.log(oHi) - Math.log(Math.max(v, oLo))) / Math.max(1e-9, Math.log(oHi) - Math.log(oLo)) * (OV - 20); }
       var ostep = Math.max(1, Math.floor(S.length / 360)), od = "";
       for (var oi = 0; oi < S.length; oi += ostep) od += (od ? "L" : "M") + f(ox(S[oi].t)) + " " + f(oy(S[oi].c));
-      od += "L" + f(ox(tEnd)) + " " + f(oy(close));
-      var wx = ox(t0), bigO = pivots(td.primary, close, tEnd, "BIG");
+      od += "L" + f(ox(tEnd)) + " " + f(oy(S[S.length - 1].c));
+      var wx = ox(t0), bigO = pivots(td.primary, close, tC, "BIG");
+      /* Zeitreise: jeder Stand ein Punkt (grün: Kursziel zuerst, grau: ungültig zuerst, weiß: offen), die grüne Linie ist der gewählte */
+      var snapMarks = tm ? SN.snaps.map(function (q, i) { var v = verdict(q); return '<circle class="st-ov-s st-ov-' + v + '" cx="' + f(ox(T(q.a))) + '" cy="' + (oy0 + OV - 7) + '" r="' + (i === st.tm ? 4 : 2.4) + '"/>'; }).join("") +
+        '<line class="st-ov-at" x1="' + f(ox(tC)) + '" x2="' + f(ox(tC)) + '" y1="' + (oy0 + 2) + '" y2="' + (oy0 + OV - 2) + '"/>' : "";
       g.push('<g class="st-ov"><rect class="st-ov-bg" x="0" y="' + oy0 + '" width="' + W + '" height="' + OV + '"/>' +
         '<path class="st-ov-p" d="' + od + '"/>' + (bigO.length > 1 ? '<path class="st-ov-sk" d="' + bigO.map(function (q, i) { return (i ? "L" : "M") + f(ox(q.t)) + " " + f(oy(q.p)); }).join("") + '"/>' : "") +
         bigO.filter(function (q) { return q.l && !q.dev; }).map(function (q) { return '<circle class="st-ov-n" cx="' + f(ox(q.t)) + '" cy="' + f(oy(q.p)) + '" r="2.6"/>'; }).join("") +
         '<rect class="st-ov-sh" x="0" y="' + oy0 + '" width="' + f(Math.max(0, wx)) + '" height="' + OV + '"/>' +
         '<rect class="st-ov-w" x="' + f(wx) + '" y="' + (oy0 + 1) + '" width="' + f(Math.max(4, plotR - 3 - wx)) + '" height="' + (OV - 2) + '" rx="8"/>' +
         '<rect class="st-ov-grip" x="' + f(wx - 3) + '" y="' + (oy0 + OV / 2 - 12) + '" width="6" height="24" rx="3"/>' +
-        '<text class="st-ax" x="' + (plotR + 6) + '" y="' + (oy0 + OV / 2 - 2) + '">' + new Date(tA).getUTCFullYear() + '</text><text class="st-ax" x="' + (plotR + 6) + '" y="' + (oy0 + OV / 2 + 12) + '">bis heute</text></g>');
+        snapMarks + '<text class="st-ax" x="' + (plotR + 6) + '" y="' + (oy0 + OV / 2 - 2) + '">' + new Date(tA).getUTCFullYear() + '</text><text class="st-ax" x="' + (plotR + 6) + '" y="' + (oy0 + OV / 2 + 12) + '">bis heute</text></g>');
       g.push('<g class="st-scrub"></g>');
-      return { svg: '<svg class="st-svg' + (st.intro ? " st-intro" : "") + '" viewBox="0 0 ' + W + " " + H + '" width="' + W + '" height="' + H + '" role="img" aria-label="Elliott-Wellen seit Börsengang mit Plan der Methode">' + g.join("") + "</svg>",
-               geo: { oy0: oy0, OV: OV, tA: tA, ox0: 4, ow: plotR - 8, x: x, y: y, xNow: xNow, vis: vis, t0: t0, tEnd: tEnd, big: big, sub: sub, nodes: nodes, H: H, padT: padT, padB: padB, close: close } };
+      return { svg: '<svg class="st-svg' + (st.intro ? " st-intro" : "") + (st.reveal ? " st-reveal" : "") + '" viewBox="0 0 ' + W + " " + H + '" width="' + W + '" height="' + H + '" role="img" aria-label="Elliott-Wellen seit Börsengang mit Plan der Methode">' + g.join("") + "</svg>",
+               geo: { tm: tm, tC: tC, xR: xR, P: { big: big, sub: sub }, oy0: oy0, OV: OV, tA: tA, ox0: 4, ow: plotR - 8, x: x, y: y, xNow: xNow, vis: vis, t0: t0, tEnd: tEnd, big: big, sub: sub, nodes: nodes, H: H, padT: padT, padB: padB, close: close } };
     }
 
+    function verdict(q) { var o = q.o || {}; return o.t && (!o.x || o.t <= o.x) ? "t" : o.x ? "x" : "o"; }
+    function tally() { var n = { t: 0, x: 0, o: 0 }; SN.snaps.forEach(function (q) { n[verdict(q)]++; }); return n; }
+    function months(a0, b0) { var m = Math.max(1, Math.round((T(b0) - T(a0)) / (YEAR / 12))); return m === 1 ? "1 Monat" : m.toLocaleString("de-DE") + " Monaten"; }
     function head(V) {
+      if (V.tm) {
+        var q = V.tm, rT = V.rows.filter(function (r) { return r.role === "target"; })[0], v = verdict(q), W1 = words(), n = tally();
+        var line = v === "t" ? "✓ " + W1.tShort + " erreicht im " + md(T(q.o.t)) + " (nach " + months(q.a, q.o.t) + ")" : v === "x" ? "✗ Zählung ungültig im " + md(T(q.o.x)) + " (nach " + months(q.a, q.o.x) + ")" : "○ offen: bisher weder " + W1.tShort + " noch ungültig";
+        return '<div class="st-head"><div class="st-f1"><div class="st-kick">' + esc("Zeitreise · Stand " + md(T(q.a)) + " · Kurs damals " + num(q.c) + " $") + '</div><div class="st-big">' +
+          esc(rT ? num(rT.lo) + "–" + num(rT.hi) + " $" : waveName(q.p.cur, "BIG") + " lief") + '</div><div class="st-sub st-v-' + v + '"><b>' + esc(line) + "</b></div></div>" +
+          '<div class="st-tally" title="Alle Stände dieser Aktie, Forschung"><b>' + n.t + "</b><small>" + esc(W1.tShort) + "</small><b>" + n.x + "</b><small>ungültig</small><b>" + n.o + "</b><small>offen</small></div></div>";
+      }
       var td = V.td, rows = V.rows, W0 = words(), e = rows.filter(function (r) { return r.role === "entry"; })[0], t = rows.filter(function (r) { return r.role === "target"; })[0], c = td.close;
       var sc = td0.score, scH = sc && isNum(sc.v) ? '<div class="st-score' + (sc.v >= 65 ? " st-score-up" : sc.v <= 35 ? " st-score-dn" : "") + '" title="Setup-Score"><b>' + sc.v + "</b><small>Score</small></div>" : "";
       var kick = esc((a.name || a.ticker || "") + " · Wellen seit " + new Date(V.S[0].t).getUTCFullYear());
@@ -233,8 +272,16 @@
         (on ? '<div class="st-story" role="button" tabindex="0" aria-label="Weiter"><div class="st-bars">' + stories.map(function (_, i) { return '<i class="' + (i < st.story ? "done" : i === st.story ? "on" : "") + '"><b></b></i>'; }).join("") +
           '</div><p class="st-cap">' + esc(on.s) + '</p><p class="st-tap">Tippen für weiter · <button type="button" class="st-x">Beenden</button></p></div>'
           : '<div class="st-ctl"><div class="st-seg" role="group" aria-label="Zeitraum">' + seg.map(function (s) { return '<button type="button" data-r="' + s[0] + '" aria-pressed="' + (st.range === s[0]) + '">' + s[1] + "</button>"; }).join("") +
-          '</div><button type="button" class="st-play">▶ Erklären</button></div>') + "</div>" + facts(V, hasAlt);
+          '</div>' + (SN ? '<button type="button" class="st-tmb" aria-label="Zeitreise">⟲</button>' : "") + '<button type="button" class="st-play">▶ Erklären</button></div>') + "</div>" + facts(V, hasAlt);
+      if (V.tm) root.innerHTML = '<div class="st" style="height:' + H + 'px">' + head(V) + '<div class="st-svgbox"></div><div class="st-bub" hidden></div>' +
+        '<div class="st-ctl"><button type="button" class="st-nav" data-d="-1" aria-label="früherer Stand">‹</button><button type="button" class="st-nav st-run" aria-label="abspielen">' + (runT ? "❚❚" : "▶") + '</button><button type="button" class="st-nav" data-d="1" aria-label="späterer Stand">›</button>' +
+        '<button type="button" class="st-play st-exit">Zurück zu heute</button></div></div>' +
+        '<p class="st-note st-tmnote">Zeitreise: Jeder Punkt unten ist ein Quartalsstand. Die Zählung ist nur mit den Kursen bis zu diesem Tag gerechnet; die blasse Linie danach zeigt, was wirklich geschah. Ziehen Sie unten über die Punkte. Forschung, nicht zertifiziert; Einzelwerte ohne Vergleich mit dem Zufall.</p>';
       stage = root.querySelector(".st"); svgBox = root.querySelector(".st-svgbox"); bub = root.querySelector(".st-bub");
+      var tmb = root.querySelector(".st-tmb"); if (tmb) tmb.addEventListener("click", function () { var Wk = SN.snaps, k = Wk.length - 1, lim = T(Wk[Wk.length - 1].a) - 2 * YEAR; while (k > 0 && T(Wk[k].a) > lim) k--; enterTm(k); });
+      root.querySelectorAll(".st-nav[data-d]").forEach(function (bt) { bt.addEventListener("click", function () { halt(); snap(st.tm + Number(bt.getAttribute("data-d"))); }); });
+      var run = root.querySelector(".st-run"); if (run) run.addEventListener("click", function () { if (runT) halt(); else { if (st.tm >= SN.snaps.length - 1) snap(0); runT = setInterval(function () { if (st.tm >= SN.snaps.length - 1) halt(); else snap(st.tm + 1); }, 1150); run.textContent = "❚❚"; } });
+      var ex = root.querySelector(".st-exit"); if (ex) ex.addEventListener("click", function () { halt(); st.tm = null; st.t0 = null; st.reveal = false; st.intro = true; stage = null; paint(); });
       root.querySelectorAll(".st-seg button").forEach(function (bt) { bt.addEventListener("click", function () { root.querySelectorAll(".st-seg button").forEach(function (o) { o.setAttribute("aria-pressed", String(o === bt)); }); setRange(bt.getAttribute("data-r"), view()); }); });
       var play = root.querySelector(".st-play"); if (play) play.addEventListener("click", function () { go(0); });
       var sb = root.querySelector(".st-story"); if (sb) {
@@ -246,6 +293,16 @@
       svgBox.addEventListener("pointermove", function (ev) { if (drag) { ov(ev); return; } if (inOv(ev)) { unscrub(); return; } if (ev.buttons || ev.pointerType === "mouse") scrub(ev); });
       svgBox.addEventListener("pointercancel", function () { drag = false; }); svgBox.addEventListener("lostpointercapture", function () { drag = false; });
       svgBox.addEventListener("pointerleave", unscrub); svgBox.addEventListener("pointerup", function (ev) { if (drag) { drag = false; return; } if (ev.pointerType !== "mouse") setTimeout(unscrub, 1600); });
+    }
+    var runT = null;
+    function halt() { if (runT) { clearInterval(runT); runT = null; var r0 = root.querySelector(".st-run"); if (r0) r0.textContent = "▶"; } }
+    function enterTm(k) { st.tm = null; st.story = -1; st.focus = null; snap(k, true); }
+    /* Stand wechseln: Ausschnitt 4 Jahre vor dem Stand bis heute, Kopf neu, die Linie danach zeichnet sich neu */
+    function snap(k, rebuild) {
+      k = Math.max(0, Math.min(SN.snaps.length - 1, k)); var was = st.tm; st.tm = k; st.reveal = true;
+      var V = view(); st.t0 = Math.max(V.S[0].t, T(V.tm.a) - 4 * YEAR);
+      if (rebuild || was == null || !stage) { stage = null; paint(); } else { paint(true); var h0 = root.querySelector(".st-head"); if (h0) h0.outerHTML = head(V); }
+      st.reveal = false;
     }
     function go(i) {
       var V = view(), stories = story(V); clearTimeout(timer);
@@ -260,26 +317,56 @@
     /* Übersicht ziehen: der Finger setzt den Beginn des Ausschnitts (rechts bleibt immer heute) */
     function ov(ev) {
       var r = svgBox.getBoundingClientRect(), G = geo, u = Math.max(0, Math.min(1, (ev.clientX - r.left - G.ox0) / G.ow)), S = view().S, tEnd = S[S.length - 1].t;
+      if (G.tm) { var tt = G.tA + u * (tEnd - G.tA), kb = 0; SN.snaps.forEach(function (q, i) { if (Math.abs(T(q.a) - tt) < Math.abs(T(SN.snaps[kb].a) - tt)) kb = i; }); halt(); if (kb !== st.tm) snap(kb); return; }
       st.t0 = Math.min(tEnd - 1.5 * YEAR, G.tA + u * (tEnd - G.tA)); st.range = "custom"; unscrub();
       root.querySelectorAll(".st-seg button").forEach(function (o) { o.setAttribute("aria-pressed", "false"); });
       paint(true);
     }
     function unscrub() { if (!geo) return; var g = svgBox.querySelector(".st-scrub"); if (g) g.innerHTML = ""; bub.hidden = true; }
+    var lastWave = null, lastPad = null;
+    /* Rechenweg: welches Wellenstück die Methode misst (Bezugsstrecke) und welche Fibonacci-Verhältnisse die Zonenkanten ergeben */
+    var REF = { W2_RETRACE: [0, "1"], W3_PROJECT: [0, "1"], W5_PROJECT: [0, "1"], W4_RETRACE: ["2", "3"], W5_NET13: [0, "3"], A_RETRACE: [0, "5"], B_RETRACE: [0, "A"], C_PROJECT: [0, "A"] };
+    function measure(G, R0, cx) {
+      var out = "", z = (R0.zones || [])[0], up = R0.step.dir === "UP", fr = function (v) { return String(v).replace(".", ","); };
+      var hw = (svgBox.clientWidth || 390) < 560 ? 22 : 28, ym = (G.y(R0.lo) + G.y(R0.hi)) / 2;
+      var tier = R0.step.tiers.filter(function (q) { return !q.done; })[0] || R0.step.tiers[0];
+      if (tier && tier.r && tier.r.length === 2) {
+        var rLo = up ? tier.r[0] : tier.r[1], rHi = up ? tier.r[1] : tier.r[0];
+        out += '<g class="st-ms-r"><text x="' + f(cx - hw - 5) + '" y="' + f(G.y(R0.hi) + 4) + '" text-anchor="end">' + esc(fr(rHi)) + '</text><text x="' + f(cx - hw - 5) + '" y="' + f(G.y(R0.lo) + 4) + '" text-anchor="end">' + esc(fr(rLo)) + "</text></g>";
+      }
+      var m = REF[R0.step.rel], P = R0.step.deg === "SUB" || R0.step.rel === "C_PROJECT" ? G.P.sub : G.P.big;
+      if (m && P.length) {
+        var find = function (l) { for (var i = 0; i < P.length; i++) if (P[i].l === l && !P[i].dev) return P[i]; return null; };
+        var A0 = m[0] === 0 ? P[0] : find(m[0]), B0 = find(m[1]);
+        if (A0 && B0 && B0.t >= G.t0) {
+          var cl = function (v) { return Math.max(G.padT, Math.min(G.H - G.padB, v)); }, xa = Math.max(2, G.x(A0.t)), xb = G.x(B0.t), ya = cl(G.y(A0.p)), yb = cl(G.y(B0.p)), bx = Math.min(G.xNow - 6, xb + 12);
+          out += '<g class="st-ms"><path class="st-ms-leg" d="M' + f(xa) + " " + f(ya) + "L" + f(xb) + " " + f(yb) + '"/>' +
+            '<line class="st-ms-b" x1="' + f(bx) + '" x2="' + f(bx) + '" y1="' + f(ya) + '" y2="' + f(yb) + '"/><line class="st-ms-b" x1="' + f(bx - 5) + '" x2="' + f(bx + 5) + '" y1="' + f(ya) + '" y2="' + f(ya) + '"/><line class="st-ms-b" x1="' + f(bx - 5) + '" x2="' + f(bx + 5) + '" y1="' + f(yb) + '" y2="' + f(yb) + '"/>' +
+            '<path class="st-ms-c" d="M' + f(bx) + " " + f(yb) + "L" + f(cx - hw) + " " + f(ym) + '"/>' +
+            '<text x="' + f(bx - 8) + '" y="' + f((ya + yb) / 2) + '" text-anchor="end">' + esc("Bezug " + (m[0] === 0 ? "Start" : m[0]) + "–" + m[1]) + "</text></g>";
+        }
+      }
+      return out;
+    }
     function scrub(ev) {
       if (!geo || st.story >= 0) return;
       var r = svgBox.getBoundingClientRect(), mx = ev.clientX - r.left, my = ev.clientY - r.top, G = geo, txt = "", lx = mx, ly = G.padT - 4, gl = "";
       var nb = null, dmin = 26; G.nodes.forEach(function (n) { var dd = Math.hypot(n.x - mx, n.y - my); if (dd < dmin) { dmin = dd; nb = n; } });
       if (nb && nb.q) { var w = nb.q.w; txt = "<b>Welle " + esc(w.l) + "</b> · " + esc(md(T(w.ft)) + " – " + md(T(w.tt))) + "<br>" + esc(num(w.fp) + " → " + num(w.tp) + " $ (" + pct(w.tp, w.fp) + ")"); lx = nb.x; ly = nb.y - 20; }
-      else if (mx > G.xNow + 6) {
+      else if (mx > G.xNow + 6 && !G.tm) {
         var best = null; G.nodes.forEach(function (n) { if (n.row && (!best || Math.abs(n.x - mx) < Math.abs(best.x - mx))) best = n; });
-        if (best) { var R0 = best.row, W0 = words(), nm = R0.role === "target" ? W0.tShort : R0.role === "entry" ? W0.eShort : "Zwischenschritt";
-          txt = "<b>" + esc(waveName(R0.step.l, R0.step.deg)) + "</b> · " + esc(nm) + "<br>" + esc(num(R0.lo) + "–" + num(R0.hi) + " $ (" + pct(R0.step.dir === "UP" ? R0.lo : R0.hi, G.close) + ")"); lx = best.x; ly = best.y - 26; }
+        if (best) { var R0 = best.row, W0 = words(), nm = R0.role === "target" ? W0.tShort : R0.role === "entry" ? W0.eShort : "Zwischenschritt", rel = R0.step.rel, RL = (b.REL || {})[rel];
+          txt = "<b>" + esc(waveName(R0.step.l, R0.step.deg)) + "</b> · " + esc(nm) + "<br>" + esc(num(R0.lo) + "–" + num(R0.hi) + " $ (" + pct(R0.step.dir === "UP" ? R0.lo : R0.hi, G.close) + ")") + (RL ? '<br><small>' + esc(RL) + "</small>" : "");
+          lx = best.x; ly = Math.min(best.y, G.y(R0.hi)) - 30; gl = measure(G, R0, best.x);
+          if (best !== lastPad && global.navigator && navigator.vibrate) { try { navigator.vibrate(8); } catch (e) { } } lastPad = best; }
       } else {
-        var t = G.t0 + (mx - 2) / (G.xNow - 2) * (G.tEnd - G.t0), p = G.vis[0];
+        var t = G.t0 + (mx - 2) / (G.xR - 2) * (G.tEnd - G.t0), p = G.vis[0];
         G.vis.forEach(function (q) { if (Math.abs(q.t - t) < Math.abs(p.t - t)) p = q; });
         var inW = function (P) { for (var i = 1; i < P.length; i++) if (p.t > P[i - 1].t && p.t <= P[i].t && P[i].l) return P[i]; return null; };
         var wb = inW(G.big), ws = inW(G.sub);
-        txt = "<b>" + esc(num(p.c) + " $") + "</b> · " + esc(md(p.t)) + (wb ? "<br>" + esc("in Welle " + wb.l + (ws ? " · darin (" + ws.l + ")" : "")) : "");
+        if (p.t > G.tC) wb = ws = null;
+        txt = "<b>" + esc(num(p.c) + " $") + "</b> · " + esc(md(p.t)) + (wb ? "<br>" + esc("in Welle " + wb.l + (ws ? " · darin (" + ws.l + ")" : "")) : p.t > G.tC ? "<br>danach" : "");
+        var wk = (wb ? wb.l : "") + "/" + (ws ? ws.l : ""); if (wk !== lastWave && lastWave !== null && global.navigator && navigator.vibrate) { try { navigator.vibrate(6); } catch (e) { } } lastWave = wk;
         var X = G.x(p.t), Y = G.y(p.c); gl = '<line x1="' + f(X) + '" x2="' + f(X) + '" y1="' + G.padT + '" y2="' + (G.H - G.padB) + '"/><circle cx="' + f(X) + '" cy="' + f(Y) + '" r="5"/>'; lx = X; ly = Math.min(Y, G.padT + 40) - 30;
       }
       var sg = svgBox.querySelector(".st-scrub"); if (sg) sg.innerHTML = gl;

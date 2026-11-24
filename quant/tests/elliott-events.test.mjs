@@ -22,7 +22,7 @@ test("EE-1 · Einstiegszone erreicht nur beim Übergang, Kursziel erreicht, Zäh
 test("EE-2 · Rückenwind: Trend, Momentum, Relative Stärke; Rollen wie im Großen Bild", () => {
   const up = Array.from({ length: 60 }, (_, i) => 100 + i), dn = up.slice().reverse();
   assert.deepEqual([E.tailwind(up, 0.9).dir, E.tailwind(dn, 0.1).dir, E.tailwind(up, 0.1).dir], ["UP", "DOWN", "MIXED"]);
-  const ro = E.roles([{ dir: "DOWN", disp: "(4)", tiers: [{ lo: 119, hi: 142, done: 0 }] }, { dir: "UP", disp: "(5)", tiers: [{ lo: 181, hi: 220, done: 0 }] }]);
+  const ro = E.roles([{ l: "4", deg: "SUB", dir: "DOWN", disp: "(4)", tiers: [{ lo: 119, hi: 142, done: 0 }] }, { l: "5", deg: "SUB", dir: "UP", disp: "(5)", tiers: [{ lo: 181, hi: 220, done: 0 }] }]);
   assert.deepEqual([ro.entry.l, ro.target.l], ["(4)", "(5)"]);
 });
 
@@ -48,4 +48,28 @@ test("EE-4 · Setup-Score: feste Gewichte, Stufen, Richtung des Elliott-Plans", 
   const r = H.radarOf([{ t: "A", close: 50, asOf: "2026-11-20", td: { cur: "2", e: { lo: 40, hi: 60, dir: "DOWN", l: "(2)" }, t1: { lo: 80, hi: 90, dir: "UP", l: "(3)" }, sc: [55, "MIXED"] } },
     { t: "B", close: 50, asOf: "2026-11-20", td: { cur: "2", e: { lo: 40, hi: 60, dir: "DOWN", l: "(2)" }, t1: { lo: 80, hi: 90, dir: "UP", l: "(3)" }, sc: [88, "STRONG_UP"] } }], null, null);
   assert.deepEqual(r.rows.map((x) => x.t), ["B", "A"], "hoher Score in Richtung des Ziels zuerst");
+});
+
+test("EE-5 · Rollen im Pfad: Kursziel in Richtung des ersten Antriebsschritts, Einstieg nur bei einer Korrektur davor", async () => {
+  const { createRequire } = await import("node:module");
+  const R = createRequire(import.meta.url)(join(ROOT, "elliott/engine/roles.js"));
+  const z = (lo, hi) => [{ t: "BASE", lo, hi, r: [0.382, 0.618], done: 0 }];
+  const st = (l, dir, deg, lo, hi) => ({ l, disp: deg === "SUB" ? "(" + l + ")" : "[" + l + "]", deg, dir, tiers: z(lo, hi) });
+  const of = (P) => R.roles(P).roles.join(",");
+  // laufende Welle 3: [3] ist das Kursziel, [4] kein Einstieg und kein Kursziel (Fehler bis 24.11.2026: „Einstieg Welle 3, Kursziel Welle 4“)
+  assert.equal(of([st("3", "UP", "BIG"), st("4", "DOWN", "BIG"), st("5", "UP", "BIG")]), "target,step,target");
+  // (C) beendet Welle 4: Einstieg, dann Kursziel Welle 5
+  assert.equal(of([st("C", "DOWN", "SUB"), st("5", "UP", "BIG"), st("A", "DOWN", "BIG")]), "entry,target,step");
+  // Korrektur A-B-C abwärts: A und C sind Kursziele, B nicht
+  assert.equal(of([st("A", "DOWN", "BIG"), st("B", "UP", "BIG"), st("C", "DOWN", "BIG")]), "target,step,target");
+  // Ende der Korrektur, dann neuer Impuls
+  assert.equal(of([st("C", "DOWN", "BIG"), st("1", "UP", "BIG")]), "entry,target");
+  // Unterwellen einer laufenden großen Korrektur führen zur Einstiegszone: (5) beendet Welle C, dann Welle 1 aufwärts
+  assert.equal(R.roles([st("3", "DOWN", "SUB"), st("4", "UP", "SUB"), st("5", "DOWN", "SUB"), st("1", "UP", "BIG")], "C").roles.join(","), "step,step,entry,target");
+  // Unter-(C) beendet eine große Antriebswelle 5: Kursziel
+  assert.equal(R.roles([st("C", "UP", "SUB"), st("A", "DOWN", "BIG"), st("B", "UP", "BIG")], "5").roles.join(","), "target,step,step");
+  // ohne Antriebsschritt: frühere Lesart (Wende nach dem ersten Schritt)
+  assert.equal(of([st("C", "UP", "SUB"), st("C", "DOWN", "BIG")]), "entry,target");
+  const ro = E.roles([st("3", "UP", "BIG", 0, 0), st("4", "DOWN", "BIG"), st("5", "UP", "BIG")].map((s, i) => Object.assign(s, { tiers: z(100 + i, 120 + i) })));
+  assert.equal(ro.entry, null); assert.equal(ro.target.l, "[3]");
 });

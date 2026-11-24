@@ -88,10 +88,10 @@ test("TD-7 · Produktform: Monatsreihe, 4 signifikante Stellen, zurückgehaltene
   assert.doesNotMatch(keep, /elliottTopDown/, "Datenstand-Richtlinie: zurückgehaltene Titel ohne laufende Zählung");
 });
 
-test("TD-8 · Großes Bild: dreht der Pfad, ist der erste Schritt Einstiegszone, danach Kursziele in der neuen Richtung", () => {
+test("TD-8 · Großes Bild: Korrektur vor dem ersten Antriebsschritt ist Einstiegszone, danach Kursziele in dessen Richtung (elliott/engine/roles.js)", () => {
   const td = { close: 146, primary: { kind: "IMPULSE", dir: "UP" },
-    path: [{ dir: "DOWN", tiers: [{ t: "BASE", lo: 119, hi: 142, done: 0 }, { t: "EXTENDED", lo: 100, hi: 119, done: 0 }] },
-           { dir: "UP", tiers: [{ t: "BASE", lo: 181, hi: 220, done: 0 }] }, { dir: "DOWN", tiers: [{ t: "BASE", lo: 94, hi: 118, done: 0 }] }, { dir: "UP", tiers: [{ t: "BASE", lo: 297, hi: 423, done: 0 }] }] };
+    path: [{ l: "4", deg: "SUB", dir: "DOWN", tiers: [{ t: "BASE", lo: 119, hi: 142, done: 0 }, { t: "EXTENDED", lo: 100, hi: 119, done: 0 }] },
+           { l: "5", deg: "SUB", dir: "UP", tiers: [{ t: "BASE", lo: 181, hi: 220, done: 0 }] }, { l: "2", deg: "BIG", dir: "DOWN", tiers: [{ t: "BASE", lo: 94, hi: 118, done: 0 }] }, { l: "3", deg: "BIG", dir: "UP", tiers: [{ t: "BASE", lo: 297, hi: 423, done: 0 }] }] };
   const rows = Big.plan(td);
   assert.deepEqual(rows.map((r) => r.role + (r.n || "")), ["entry", "target1", "step", "target2"]);
   assert.deepEqual([rows[0].lo, rows[0].hi, rows[0].ext.lo], [119, 142, 100]);
