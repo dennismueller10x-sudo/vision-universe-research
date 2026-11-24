@@ -89,7 +89,7 @@ export function classifyStep(step, bars, { window = 3, tolerance = 0.15 } = {}) 
 }
 
 async function makeStore() {
-  const budget = Guard.createBudget({ classAOperations: 0, classBOperations: TICKERS.length });
+  const budget = Guard.createBudget({ classAOperations: 0, classBOperations: TICKERS.length * (argv.includes("--join") ? 2 : 1) });
   const local = arg("--local-root");
   if (local) {
     const { createFsDriver } = await import(join(root, "scripts", "market", "storage", "fs-driver.mjs"));
@@ -108,7 +108,21 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   for (const t of TICKERS) {
     const doc = await store.getSeries(t);
     if (!doc) { report.tickers[t] = { state: "NOT_IN_STORE" }; console.log(`${t}: nicht in der Ablage`); continue; }
-    const bars = doc.bars;
+    let bars = doc.bars;
+    /* --join (24.11.2026): wie der Faktorlauf verbindet ein Nachfolger die Bars seines Vorgaengers vor dem Stichtag
+       (ADR-009, build-market-factors.mjs). So zeigt sich ein Sprung an der Naht (CASK, FCDH). */
+    let joined = null;
+    if (argv.includes("--join")) {
+      const { loadSuccessions } = await import(join(root, "scripts", "market", "lib", "ticker-succession-bars.mjs"));
+      const succ = loadSuccessions(root), entry = succ.TS.predecessorOf(Identity.securityIdForTicker(t), succ.map);
+      const pred = entry ? await store.getSeries(entry.fromTicker) : null;
+      if (pred && Array.isArray(pred.bars)) {
+        const j = succ.TS.joinBars(pred.bars, doc.bars, entry.effective);
+        bars = j.bars;
+        joined = { from: entry.fromTicker, effective: entry.effective, predecessorLast: pred.last, lastPredecessor: j.lastPredecessor, firstSuccessor: j.firstSuccessor };
+        console.log(`${t}: mit Vorgaenger ${entry.fromTicker} verbunden (Stichtag ${entry.effective}, Naht ${j.lastPredecessor} -> ${j.firstSuccessor})`);
+      }
+    }
     const verdict = MQ.validateAdjustmentConsistency(bars, { claimedStatus: doc.adjustmentStatus, dividendConvention: "TIINGO_REINVESTMENT_CLOSE" });
     /* Vorher/Nachher mit dem Register belegter Spruenge (quant/config/adjustment-step-evidence.json) */
     const withEvidence = MQ.validateAdjustmentConsistency(bars, { claimedStatus: doc.adjustmentStatus, dividendConvention: "TIINGO_REINVESTMENT_CLOSE",
@@ -117,7 +131,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     const steps = explainSteps(bars);
     const divs = bars.filter((b) => b.dividend > 0).map((b) => ({ date: b.date, dividend: b.dividend, close: b.close }));
     report.tickers[t] = {
-      state: "READ", first: doc.first, last: doc.last, barCount: doc.barCount, adjustmentStatus: doc.adjustmentStatus,
+      state: "READ", joined, first: doc.first, last: doc.last, barCount: doc.barCount, adjustmentStatus: doc.adjustmentStatus,
       findings: verdict.findings, blockedWithoutRegister: blocked(verdict), blockedWithRegister: blocked(withEvidence),
       explainedByRegister: withEvidence.findings.filter((f) => f.code === "adjustment_step_explained").map((f) => f.context), dividendsReported: divs, splitsReported: bars.filter((b) => b.splitFactor && b.splitFactor !== 1).map((b) => ({ date: b.date, splitFactor: b.splitFactor })),
       unexplainedSteps: steps.filter((s) => !s.explained).map((s) => ({ ...s, classification: classifyStep(s, bars) })),
