@@ -427,6 +427,18 @@ Gewinner und lässt bei seltenen Mustern Geld liegen; die Bücher halten dagegen
   Der Vorsprung der Faktor-Depots kommt nicht aus mehr Verdopplern, sondern aus weniger schwachen Titeln und daraus, Gewinner
   nicht zu stutzen.
 
+**Nachtrag Ausreißerprobe Marktführer-Depot (Stufe 4, H1; Lauf 24.11.2026, Forschung, nicht zertifiziert).** Dieselbe Probe
+wie in Stufe 8 für das Depot Trendvorlage + Momentum + Bruttogewinn/Bilanz, 25 Titel, monatlich gleichgewichtet:
+
+- Ungekappt 18,4 % p. a. (+4,3 Pp zu SPY, p 0,157). Monatsrendite je Titel bei +30 % gekappt: **10,7 % p. a. (−3,4 Pp,
+  p 0,805)**, größter Verlust −24,7 %.
+- Größte Einzelbeiträge: GME 12/2020 +1.625 %, ein delisteter Titel 07/2021 +291 %, APP 10/2024 +99 %, AGNT 12/2020 +69 %,
+  TNDM 07/2018 +66 %, AEHR 09/2021 +66 %.
+- Lesart: Der Vorsprung des monatlich zurückgestellten Marktführer-Depots hängt an wenigen Extremmonaten, voran GameStop.
+  Die Kappe ist streng (sie schneidet auch echte Trendgewinner), aber das Ergebnis reicht nicht für eine Aussage „schlägt den
+  S&P 500“. Belastbarer bleibt das Laufenlassen (Stufe 9): dort hält der Vorsprung auch ohne den größten Gewinner. Im
+  Vorwärtstest zählen M25, R25 und L25 ab 12/2026 nebeneinander.
+
 ## 5. Ausführung und Veröffentlichung
 
 - Umsetzung: `scripts/research/backtest2/` (Markt, Signale, Depotführung, Suche, Lauf mit Workern). Workflow `research.yml`, Teil
