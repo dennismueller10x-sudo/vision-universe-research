@@ -1,7 +1,7 @@
 {
  "schemaVersion": "vu-ti-api-3.0.0",
  "version": "elliott-markets-1.0.0",
- "generatedAt": "2026-11-24T06:07:26.031Z",
+ "generatedAt": "2026-11-24T12:11:05.027Z",
  "reference": "2026-11-23",
  "rows": [
   {
@@ -88,7 +88,11 @@
      "dir": "UP",
      "l": "(5)"
     },
-    "rw": "DOWN"
+    "rw": "DOWN",
+    "sc": [
+     40,
+     "MIXED"
+    ]
    },
    "proj": {
     "st": "ABSTAIN"
@@ -183,7 +187,11 @@
      "dir": "DOWN",
      "l": "(C)"
     },
-    "rw": "DOWN"
+    "rw": "DOWN",
+    "sc": [
+     20,
+     "STRONG_DOWN"
+    ]
    },
    "proj": {
     "st": "ABSTAIN"
@@ -276,7 +284,11 @@
      "dir": "DOWN",
      "l": "[2]"
     },
-    "rw": "DOWN"
+    "rw": "DOWN",
+    "sc": [
+     20,
+     "STRONG_DOWN"
+    ]
    },
    "proj": {
     "st": "ABSTAIN"
@@ -369,7 +381,11 @@
      "dir": "DOWN",
      "l": "(3)"
     },
-    "rw": "DOWN"
+    "rw": "DOWN",
+    "sc": [
+     20,
+     "STRONG_DOWN"
+    ]
    },
    "proj": {
     "st": "ABSTAIN"
@@ -452,7 +468,11 @@
     ],
     "e": null,
     "t1": null,
-    "rw": "DOWN"
+    "rw": "DOWN",
+    "sc": [
+     30,
+     "DOWN"
+    ]
    },
    "proj": {
     "st": "ABSTAIN"
@@ -545,7 +565,11 @@
      "dir": "UP",
      "l": "(5)"
     },
-    "rw": "DOWN"
+    "rw": "DOWN",
+    "sc": [
+     40,
+     "MIXED"
+    ]
    },
    "proj": {
     "st": "ABSTAIN"
@@ -638,7 +662,11 @@
      "dir": "DOWN",
      "l": "(3)"
     },
-    "rw": "DOWN"
+    "rw": "DOWN",
+    "sc": [
+     20,
+     "STRONG_DOWN"
+    ]
    },
    "proj": {
     "st": "ABSTAIN"
@@ -731,7 +759,11 @@
      "dir": "UP",
      "l": "[5]"
     },
-    "rw": "DOWN"
+    "rw": "DOWN",
+    "sc": [
+     40,
+     "MIXED"
+    ]
    },
    "proj": {
     "st": "ABSTAIN"
@@ -824,7 +856,11 @@
      "dir": "UP",
      "l": "[3]"
     },
-    "rw": "DOWN"
+    "rw": "DOWN",
+    "sc": [
+     40,
+     "MIXED"
+    ]
    },
    "proj": {
     "st": "ABSTAIN"
@@ -917,7 +953,11 @@
      "dir": "UP",
      "l": "[C]"
     },
-    "rw": "DOWN"
+    "rw": "DOWN",
+    "sc": [
+     40,
+     "MIXED"
+    ]
    },
    "proj": {
     "st": "ABSTAIN"
@@ -1010,7 +1050,11 @@
      "dir": "UP",
      "l": "[5]"
     },
-    "rw": "DOWN"
+    "rw": "DOWN",
+    "sc": [
+     40,
+     "MIXED"
+    ]
    },
    "proj": {
     "st": "ABSTAIN"
@@ -1023,11 +1067,11 @@
    "t": "XAUUSD",
    "tf": "1W",
    "asOf": "2026-11-23",
-   "close": 3608.6,
+   "close": 3631.83,
    "outlook": "BEARISH",
    "structure": "DOWNTREND_ADVANCING",
    "confidence": "LOW",
-   "agreement": -0.8648,
+   "agreement": -0.8552,
    "template": "CONTINUATION",
    "status": "APPROACHING",
    "direction": "BEARISH",
@@ -1041,7 +1085,7 @@
     3570
    ],
    "rr": 1.8995,
-   "distAtr": 1.09,
+   "distAtr": 0.9,
    "elliott": "FLAT:done",
    "elliottClarity": "LOW",
    "elliottApplicable": "LOW",
@@ -1092,18 +1136,22 @@
      "below"
     ],
     "e": {
-     "lo": 3343,
-     "hi": 3826,
+     "lo": 3033,
+     "hi": 3462,
      "dir": "DOWN",
-     "l": "(C)"
+     "l": "[2]"
     },
     "t1": {
-     "lo": 6978,
-     "hi": 9224,
+     "lo": 6668,
+     "hi": 8914,
      "dir": "UP",
      "l": "[3]"
     },
-    "rw": "DOWN"
+    "rw": "DOWN",
+    "sc": [
+     40,
+     "MIXED"
+    ]
    },
    "proj": {
     "st": "ABSTAIN"
@@ -1116,11 +1164,11 @@
    "t": "XAGUSD",
    "tf": "1W",
    "asOf": "2026-11-23",
-   "close": 42.1765,
+   "close": 43.1775,
    "outlook": "NEUTRAL",
    "structure": "CORRECTION_IN_UPTREND",
    "confidence": "LOW",
-   "agreement": -0.0769,
+   "agreement": -0.0715,
    "template": "RANGE",
    "status": "IN_RANGE",
    "direction": "NEUTRAL",
@@ -1158,18 +1206,22 @@
      "below"
     ],
     "e": {
-     "lo": 52.1,
-     "hi": 68.02,
+     "lo": 36.3,
+     "hi": 50.62,
      "dir": "DOWN",
-     "l": "(C)"
+     "l": "[2]"
     },
     "t1": {
-     "lo": 126.3,
-     "hi": 179,
+     "lo": 128.7,
+     "hi": 181.3,
      "dir": "UP",
      "l": "[3]"
     },
-    "rw": "DOWN"
+    "rw": "DOWN",
+    "sc": [
+     40,
+     "MIXED"
+    ]
    },
    "proj": {
     "st": "ABSTAIN"
@@ -1264,7 +1316,11 @@
      "dir": "UP",
      "l": "[1]"
     },
-    "rw": "DOWN"
+    "rw": "DOWN",
+    "sc": [
+     40,
+     "MIXED"
+    ]
    },
    "proj": {
     "st": "ABSTAIN"
@@ -1364,7 +1420,11 @@
      "dir": "UP",
      "l": "[4]"
     },
-    "rw": "DOWN"
+    "rw": "DOWN",
+    "sc": [
+     40,
+     "MIXED"
+    ]
    },
    "proj": {
     "st": "ABSTAIN"
@@ -1464,7 +1524,11 @@
      "dir": "DOWN",
      "l": "(3)"
     },
-    "rw": "UP"
+    "rw": "UP",
+    "sc": [
+     60,
+     "MIXED"
+    ]
    },
    "proj": {
     "st": "DATA_INVALID"
@@ -1482,26 +1546,6 @@
   }
  ],
  "skipped": [],
- "events": [
-  {
-   "t": "URTH",
-   "asOf": "2026-11-23",
-   "close": 195.3,
-   "type": "TARGET_REACHED",
-   "zone": [
-    188.7,
-    208.5
-   ],
-   "wave": "(5)",
-   "text": "Kursziel erreicht ((5) 188.7–208.5)"
-  },
-  {
-   "t": "EEM",
-   "asOf": "2026-11-23",
-   "close": 57.83,
-   "type": "RECOUNT",
-   "text": "Neue Lesart: Welle [4] statt [B]"
-  }
- ],
+ "events": [],
  "note": "Indizes über ETFs (kein lizenzierter Indexkurs), Krypto, Edelmetalle und Energie aus den Multi-Asset-Reihen; Wochenschluss, gleiche Analyse wie bei Aktien."
 }

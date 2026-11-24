@@ -56,7 +56,7 @@
     if (M.length < 6) return "";
     var fut = W < 520 ? 0.36 : 0.32, plotW = W - padL - padR, histW = plotW * (1 - fut), x0 = padL, xNow = x0 + histW;
     var vals = M.map(function (m) { return m[1]; }).filter(function (v) { return v > 0; });
-    rows.forEach(function (r) { vals.push(r.lo, r.hi); });
+    rows.forEach(function (r) { vals.push(r.lo, r.hi); (r.zones || []).forEach(function (z) { vals.push(z.lo, z.hi); }); });
     if (td.primary.inv && td.primary.inv.p > 0) vals.push(td.primary.inv.p);
     var lo = Math.min.apply(null, vals) * 0.85, hi = Math.max.apply(null, vals) * 1.12, L = Math.log;
     function y(v) { return padT + (L(hi) - L(Math.max(v, lo))) / (L(hi) - L(lo)) * (H - padT - padB); }
