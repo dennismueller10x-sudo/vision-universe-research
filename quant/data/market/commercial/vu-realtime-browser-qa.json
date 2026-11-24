@@ -1,11 +1,11 @@
 {
   "schemaVersion": "vu-realtime-browser-qa-1.1.0",
   "auftrag": "Owner 17.09.2026 §19/§20: Realtime auf der Aktienseite, im echten Browser",
-  "checkedAt": "2026-11-23T14:39:57.235Z",
+  "checkedAt": "2026-11-24T14:41:39.383Z",
   "origin": "https://research.visionuniverse.de",
   "session": {
     "phase": "REGULAR",
-    "localTime": "09:39:57",
+    "localTime": "09:41:39",
     "isOpen": true
   },
   "mode": "WORKTREE",
@@ -15,9 +15,9 @@
     {
       "symbol": "AAPL",
       "prices": {
-        "kopf": 310.5,
-        "chart": 346.67,
-        "kopfText": "310,50 €+1,20 % heute",
+        "kopf": 313.77,
+        "chart": 350.33,
+        "kopfText": "313,77 €+2,27 % heute",
         "deviation": null
       },
       "connected": true,
@@ -25,9 +25,9 @@
       "subscribed": [
         "AAPL"
       ],
-      "ticks": 19,
-      "firstTickMs": 248,
-      "chartUpdatesAfterLoad": 16,
+      "ticks": 18,
+      "firstTickMs": 249,
+      "chartUpdatesAfterLoad": 6,
       "surface": {
         "letzteSitzung": false,
         "intradayChart": true,
@@ -42,11 +42,11 @@
         "Markt geöffnet · Live"
       ],
       "latencyMs": {
-        "samples": 19,
-        "providerToCloudflare": 4356,
-        "cloudflareToClient": 655,
-        "endToEnd": 5012,
-        "max": 5917
+        "samples": 18,
+        "providerToCloudflare": 531,
+        "cloudflareToClient": 666,
+        "endToEnd": 1196,
+        "max": 2202
       },
       "consoleErrors": [
         "Failed to load resource: the server responded with a status of 404 (Not Found)"
@@ -56,9 +56,9 @@
     {
       "symbol": "NVDA",
       "prices": {
-        "kopf": 141.17,
-        "chart": 157.62,
-        "kopfText": "141,17 €+25,56 % heute",
+        "kopf": 139.05,
+        "chart": 155.25,
+        "kopfText": "139,05 €+23,68 % heute",
         "deviation": null
       },
       "connected": true,
@@ -66,9 +66,9 @@
       "subscribed": [
         "NVDA"
       ],
-      "ticks": 20,
+      "ticks": 16,
       "firstTickMs": 249,
-      "chartUpdatesAfterLoad": 14,
+      "chartUpdatesAfterLoad": 1,
       "surface": {
         "letzteSitzung": false,
         "intradayChart": true,
@@ -83,11 +83,11 @@
         "Markt geöffnet · Live"
       ],
       "latencyMs": {
-        "samples": 20,
-        "providerToCloudflare": 6346,
-        "cloudflareToClient": 582,
-        "endToEnd": 6928,
-        "max": 8177
+        "samples": 16,
+        "providerToCloudflare": 6172,
+        "cloudflareToClient": 571,
+        "endToEnd": 6743,
+        "max": 7665
       },
       "consoleErrors": [
         "Failed to load resource: the server responded with a status of 404 (Not Found)"
@@ -97,9 +97,9 @@
     {
       "symbol": "AFG",
       "prices": {
-        "kopf": 141.5,
-        "chart": 157.99,
-        "kopfText": "141,50 €+0,71 % zum Vortag",
+        "kopf": 142.58,
+        "chart": 159.2,
+        "kopfText": "142,58 €+0,76 % heute",
         "deviation": null
       },
       "connected": true,
@@ -107,27 +107,34 @@
       "subscribed": [
         "AFG"
       ],
-      "ticks": 0,
-      "firstTickMs": null,
+      "ticks": 1,
+      "firstTickMs": 20250,
       "chartUpdatesAfterLoad": 0,
       "surface": {
-        "letzteSitzung": true,
-        "intradayChart": true,
+        "letzteSitzung": false,
+        "intradayChart": false,
         "aktiverZeitraum": "1T",
         "eintagVerfuegbar": true,
         "eintagGrund": null,
-        "sourceState": "STALE",
-        "sourceReason": "currentSessionMissing",
-        "quellenText": "Tagesverlauf am 20.11.2026: seit Vortagesschluss 156,87 $ · 5-Minuten-Kurse"
+        "sourceState": null,
+        "sourceReason": null,
+        "quellenText": "Tagesverlauf heute: seit Vortagesschluss 157,99 $ · Live-Kurse im Minutentakt (Kursreferenz aus einem Teilmarkt)"
       },
       "labels": [
-        "Letzter Handelstag · 2026-11-20 · heutige Kurse fehlen"
+        "Letzter Handelstag · 2026-11-20 · heutige Kurse fehlen",
+        "Markt geöffnet · Live"
       ],
-      "latencyMs": null,
+      "latencyMs": {
+        "samples": 1,
+        "providerToCloudflare": 40,
+        "cloudflareToClient": 1016,
+        "endToEnd": 1056,
+        "max": 1056
+      },
       "consoleErrors": [
         "Failed to load resource: the server responded with a status of 404 (Not Found)"
       ],
-      "verdict": "CONNECTED_NO_TRADE"
+      "verdict": "TICKS"
     }
   ],
   "reconnect": {
@@ -150,15 +157,15 @@
         "opens": 2,
         "closes": 1,
         "errors": 0,
-        "messages": 12,
-        "ticks": 8,
+        "messages": 16,
+        "ticks": 12,
         "denied": 0,
         "retries": 1,
         "subscribes": 1,
         "unsubscribes": 0,
-        "notifications": 13,
-        "lastMessageAt": "2026-11-23T14:43:24.227Z",
-        "lastTickAt": "2026-11-23T14:43:24.227Z",
+        "notifications": 17,
+        "lastMessageAt": "2026-11-24T14:45:07.794Z",
+        "lastTickAt": "2026-11-24T14:45:07.794Z",
         "state": "OPEN",
         "reason": null,
         "symbols": 1,
@@ -197,15 +204,17 @@
       "question": "AAPL und NVDA liefern Kurse ohne Neuladen",
       "ok": true,
       "detail": [
-        "AAPL:19",
-        "NVDA:20"
+        "AAPL:18",
+        "NVDA:16"
       ]
     },
     {
       "id": "tagesverlaufDa",
       "question": "bei offener Boerse liegt fuer jeden Titel ein Tagesverlauf aus",
-      "ok": true,
-      "detail": []
+      "ok": false,
+      "detail": [
+        "AFG: Zeitraum 1T, 1T frei"
+      ]
     },
     {
       "id": "chartBewegt",
@@ -216,10 +225,10 @@
           "AAPL",
           "NVDA"
         ],
-        "letzteSitzung": [
+        "letzteSitzung": [],
+        "ohneTagesverlauf": [
           "AFG"
-        ],
-        "ohneTagesverlauf": []
+        ]
       }
     },
     {
@@ -227,9 +236,9 @@
       "question": "Kopf und Chart zeigen denselben Kurs",
       "ok": true,
       "detail": [
-        "AAPL: {\"kopf\":310.5,\"chart\":346.67,\"kopfText\":\"310,50 €+1,20 % heute\",\"deviation\":null}",
-        "NVDA: {\"kopf\":141.17,\"chart\":157.62,\"kopfText\":\"141,17 €+25,56 % heute\",\"deviation\":null}",
-        "AFG: {\"kopf\":141.5,\"chart\":157.99,\"kopfText\":\"141,50 €+0,71 % zum Vortag\",\"deviation\":null}"
+        "AAPL: {\"kopf\":313.77,\"chart\":350.33,\"kopfText\":\"313,77 €+2,27 % heute\",\"deviation\":null}",
+        "NVDA: {\"kopf\":139.05,\"chart\":155.25,\"kopfText\":\"139,05 €+23,68 % heute\",\"deviation\":null}",
+        "AFG: {\"kopf\":142.58,\"chart\":159.2,\"kopfText\":\"142,58 €+0,76 % heute\",\"deviation\":null}"
       ]
     },
     {
@@ -249,15 +258,238 @@
           "eintag": {
             "discover": {
               "frei": true,
-              "punkte": 2
+              "punkte": 2,
+              "diag": {
+                "websockets": [
+                  "wss://live.visionuniverse.de/live"
+                ],
+                "fehler": [
+                  "404 https://research.visionuniverse.de/discover/logos/credits/NV.json",
+                  "404 https://research.visionuniverse.de/core/data/stock-availability/NV.json"
+                ],
+                "intraday": [
+                  "200 /quant/data/market/intraday/index.json",
+                  "200 /quant/data/market/intraday/2026-11-20/ref_NVDA.json"
+                ],
+                "marketState": "OPEN",
+                "sessionDate": "2026-11-24",
+                "hubEnabled": true,
+                "liveState": {
+                  "state": "OPEN",
+                  "reason": null,
+                  "since": "2026-11-24T14:43:56.535Z",
+                  "url": "wss://live.visionuniverse.de/live",
+                  "symbols": [
+                    "NVDA"
+                  ],
+                  "subscribed": [
+                    "NVDA"
+                  ],
+                  "hello": {
+                    "op": "hello",
+                    "mode": "dynamic",
+                    "session": "REGULAR",
+                    "coalesceMs": 1000,
+                    "maxSymbols": 50,
+                    "budget": "OK",
+                    "priceType": "REALTIME_REFERENCE",
+                    "source": "TIINGO_IEX_LEVEL6"
+                  },
+                  "connected": true
+                },
+                "hasRelayClient": false,
+                "hasQuantChart": false
+              }
             },
             "quant": {
               "frei": true,
-              "punkte": 78
+              "punkte": 78,
+              "diag": {
+                "websockets": [],
+                "fehler": [
+                  "404 https://research.visionuniverse.de/quant/data/market/factors/product-shards/NV.json",
+                  "404 https://research.visionuniverse.de/quant/data/product/universe-list-shards/NV.json",
+                  "404 https://research.visionuniverse.de/quant/data/market/factors/factors-FULL_UNIVERSE-product.json",
+                  "404 https://research.visionuniverse.de/quant/data/universe/capability-shards/NV.json",
+                  "404 https://research.visionuniverse.de/quant/data/market/golden-preview/daily/ref_NVDA.chart.json",
+                  "404 https://research.visionuniverse.de/core/data/stock-availability/NV.json",
+                  "404 https://research.visionuniverse.de/quant/data/product/technical-signals-v1/by-ticker/NVDA.json.gz",
+                  "404 https://research.visionuniverse.de/quant/data/market/golden-preview/daily/ref_NVDA.chart.json"
+                ],
+                "intraday": [
+                  "200 /quant/data/market/intraday/index.json",
+                  "200 /quant/data/market/intraday/2026-11-20/ref_NVDA.json"
+                ],
+                "marketState": "OPEN",
+                "sessionDate": "2026-11-24",
+                "hubEnabled": true,
+                "liveState": {
+                  "state": "IDLE",
+                  "reason": null,
+                  "since": null,
+                  "url": "wss://live.visionuniverse.de/live",
+                  "symbols": [],
+                  "subscribed": [],
+                  "hello": null,
+                  "connected": false
+                },
+                "hasRelayClient": true,
+                "hasQuantChart": true
+              }
             },
             "technical": {
               "frei": true,
-              "punkte": 78
+              "punkte": 78,
+              "diag": {
+                "websockets": [],
+                "fehler": [
+                  "404 https://research.visionuniverse.de/quant/data/product/technical-signals-v1/by-ticker/NVDA.json.gz",
+                  "404 https://research.visionuniverse.de/core/data/stock-availability/NV.json"
+                ],
+                "intraday": [
+                  "200 /quant/data/market/intraday/index.json",
+                  "200 /quant/data/market/intraday/2026-11-20/ref_NVDA.json"
+                ],
+                "marketState": "OPEN",
+                "sessionDate": "2026-11-24",
+                "hubEnabled": true,
+                "liveState": {
+                  "state": "IDLE",
+                  "reason": null,
+                  "since": null,
+                  "url": "wss://live.visionuniverse.de/live",
+                  "symbols": [],
+                  "subscribed": [],
+                  "hello": null,
+                  "connected": false
+                },
+                "hasRelayClient": true,
+                "hasQuantChart": true
+              }
+            }
+          },
+          "ok": false
+        },
+        {
+          "symbol": "AFG",
+          "gleicheProben": 20,
+          "proben": 20,
+          "letzteProbe": {
+            "discover": "157,99",
+            "quant": "157,99",
+            "technical": "157,99"
+          },
+          "eintag": {
+            "discover": {
+              "frei": true,
+              "punkte": 0,
+              "diag": {
+                "websockets": [
+                  "wss://live.visionuniverse.de/live"
+                ],
+                "fehler": [
+                  "404 https://research.visionuniverse.de/discover/logos/credits/AF.json",
+                  "404 https://research.visionuniverse.de/core/data/stock-availability/AF.json"
+                ],
+                "intraday": [
+                  "200 /quant/data/market/intraday/index.json",
+                  "200 /quant/data/market/intraday/2026-11-20/ref_AFG.json"
+                ],
+                "marketState": "OPEN",
+                "sessionDate": "2026-11-24",
+                "hubEnabled": true,
+                "liveState": {
+                  "state": "OPEN",
+                  "reason": null,
+                  "since": "2026-11-24T14:44:23.265Z",
+                  "url": "wss://live.visionuniverse.de/live",
+                  "symbols": [
+                    "AFG"
+                  ],
+                  "subscribed": [
+                    "AFG"
+                  ],
+                  "hello": {
+                    "op": "hello",
+                    "mode": "dynamic",
+                    "session": "REGULAR",
+                    "coalesceMs": 1000,
+                    "maxSymbols": 50,
+                    "budget": "OK",
+                    "priceType": "REALTIME_REFERENCE",
+                    "source": "TIINGO_IEX_LEVEL6"
+                  },
+                  "connected": true
+                },
+                "hasRelayClient": false,
+                "hasQuantChart": false
+              }
+            },
+            "quant": {
+              "frei": true,
+              "punkte": 77,
+              "diag": {
+                "websockets": [],
+                "fehler": [
+                  "404 https://research.visionuniverse.de/quant/data/market/factors/product-shards/AF.json",
+                  "404 https://research.visionuniverse.de/quant/data/product/universe-list-shards/AF.json",
+                  "404 https://research.visionuniverse.de/quant/data/market/factors/factors-FULL_UNIVERSE-product.json",
+                  "404 https://research.visionuniverse.de/quant/data/universe/capability-shards/AF.json",
+                  "404 https://research.visionuniverse.de/quant/data/market/golden-preview/daily/ref_AFG.json",
+                  "404 https://research.visionuniverse.de/core/data/stock-availability/AF.json",
+                  "404 https://research.visionuniverse.de/quant/data/product/technical-signals-v1/by-ticker/AFG.json.gz",
+                  "404 https://research.visionuniverse.de/quant/data/market/golden-preview/daily/ref_AFG.json"
+                ],
+                "intraday": [
+                  "200 /quant/data/market/intraday/index.json",
+                  "200 /quant/data/market/intraday/2026-11-20/ref_AFG.json"
+                ],
+                "marketState": "OPEN",
+                "sessionDate": "2026-11-24",
+                "hubEnabled": true,
+                "liveState": {
+                  "state": "IDLE",
+                  "reason": null,
+                  "since": null,
+                  "url": "wss://live.visionuniverse.de/live",
+                  "symbols": [],
+                  "subscribed": [],
+                  "hello": null,
+                  "connected": false
+                },
+                "hasRelayClient": true,
+                "hasQuantChart": true
+              }
+            },
+            "technical": {
+              "frei": true,
+              "punkte": 77,
+              "diag": {
+                "websockets": [],
+                "fehler": [
+                  "404 https://research.visionuniverse.de/quant/data/product/technical-signals-v1/by-ticker/AFG.json.gz",
+                  "404 https://research.visionuniverse.de/core/data/stock-availability/AF.json"
+                ],
+                "intraday": [
+                  "200 /quant/data/market/intraday/index.json",
+                  "200 /quant/data/market/intraday/2026-11-20/ref_AFG.json"
+                ],
+                "marketState": "OPEN",
+                "sessionDate": "2026-11-24",
+                "hubEnabled": true,
+                "liveState": {
+                  "state": "IDLE",
+                  "reason": null,
+                  "since": null,
+                  "url": "wss://live.visionuniverse.de/live",
+                  "symbols": [],
+                  "subscribed": [],
+                  "hello": null,
+                  "connected": false
+                },
+                "hasRelayClient": true,
+                "hasQuantChart": true
+              }
             }
           },
           "ok": false
@@ -281,7 +513,7 @@
       "detail": [
         "AAPL: [\"Markt geöffnet · Live\"]",
         "NVDA: [\"Markt geöffnet · Live\"]",
-        "AFG: [\"Letzter Handelstag · 2026-11-20 · heutige Kurse fehlen\"]"
+        "AFG: [\"Letzter Handelstag · 2026-11-20 · heutige Kurse fehlen\",\"Markt geöffnet · Live\"]"
       ]
     },
     {
@@ -324,15 +556,15 @@
           "opens": 2,
           "closes": 1,
           "errors": 0,
-          "messages": 12,
-          "ticks": 8,
+          "messages": 16,
+          "ticks": 12,
           "denied": 0,
           "retries": 1,
           "subscribes": 1,
           "unsubscribes": 0,
-          "notifications": 13,
-          "lastMessageAt": "2026-11-23T14:43:24.227Z",
-          "lastTickAt": "2026-11-23T14:43:24.227Z",
+          "notifications": 17,
+          "lastMessageAt": "2026-11-24T14:45:07.794Z",
+          "lastTickAt": "2026-11-24T14:45:07.794Z",
           "state": "OPEN",
           "reason": null,
           "symbols": 1,
@@ -379,7 +611,7 @@
     }
   ],
   "result": "FAIL",
-  "reason": "dreiWelten,keineFehler",
+  "reason": "tagesverlaufDa,dreiWelten,keineFehler",
   "dreiWelten": [
     {
       "symbol": "NVDA",
@@ -393,15 +625,114 @@
       "eintag": {
         "discover": {
           "frei": true,
-          "punkte": 2
+          "punkte": 2,
+          "diag": {
+            "websockets": [
+              "wss://live.visionuniverse.de/live"
+            ],
+            "fehler": [
+              "404 https://research.visionuniverse.de/discover/logos/credits/NV.json",
+              "404 https://research.visionuniverse.de/core/data/stock-availability/NV.json"
+            ],
+            "intraday": [
+              "200 /quant/data/market/intraday/index.json",
+              "200 /quant/data/market/intraday/2026-11-20/ref_NVDA.json"
+            ],
+            "marketState": "OPEN",
+            "sessionDate": "2026-11-24",
+            "hubEnabled": true,
+            "liveState": {
+              "state": "OPEN",
+              "reason": null,
+              "since": "2026-11-24T14:43:56.535Z",
+              "url": "wss://live.visionuniverse.de/live",
+              "symbols": [
+                "NVDA"
+              ],
+              "subscribed": [
+                "NVDA"
+              ],
+              "hello": {
+                "op": "hello",
+                "mode": "dynamic",
+                "session": "REGULAR",
+                "coalesceMs": 1000,
+                "maxSymbols": 50,
+                "budget": "OK",
+                "priceType": "REALTIME_REFERENCE",
+                "source": "TIINGO_IEX_LEVEL6"
+              },
+              "connected": true
+            },
+            "hasRelayClient": false,
+            "hasQuantChart": false
+          }
         },
         "quant": {
           "frei": true,
-          "punkte": 78
+          "punkte": 78,
+          "diag": {
+            "websockets": [],
+            "fehler": [
+              "404 https://research.visionuniverse.de/quant/data/market/factors/product-shards/NV.json",
+              "404 https://research.visionuniverse.de/quant/data/product/universe-list-shards/NV.json",
+              "404 https://research.visionuniverse.de/quant/data/market/factors/factors-FULL_UNIVERSE-product.json",
+              "404 https://research.visionuniverse.de/quant/data/universe/capability-shards/NV.json",
+              "404 https://research.visionuniverse.de/quant/data/market/golden-preview/daily/ref_NVDA.chart.json",
+              "404 https://research.visionuniverse.de/core/data/stock-availability/NV.json",
+              "404 https://research.visionuniverse.de/quant/data/product/technical-signals-v1/by-ticker/NVDA.json.gz",
+              "404 https://research.visionuniverse.de/quant/data/market/golden-preview/daily/ref_NVDA.chart.json"
+            ],
+            "intraday": [
+              "200 /quant/data/market/intraday/index.json",
+              "200 /quant/data/market/intraday/2026-11-20/ref_NVDA.json"
+            ],
+            "marketState": "OPEN",
+            "sessionDate": "2026-11-24",
+            "hubEnabled": true,
+            "liveState": {
+              "state": "IDLE",
+              "reason": null,
+              "since": null,
+              "url": "wss://live.visionuniverse.de/live",
+              "symbols": [],
+              "subscribed": [],
+              "hello": null,
+              "connected": false
+            },
+            "hasRelayClient": true,
+            "hasQuantChart": true
+          }
         },
         "technical": {
           "frei": true,
-          "punkte": 78
+          "punkte": 78,
+          "diag": {
+            "websockets": [],
+            "fehler": [
+              "404 https://research.visionuniverse.de/quant/data/product/technical-signals-v1/by-ticker/NVDA.json.gz",
+              "404 https://research.visionuniverse.de/core/data/stock-availability/NV.json"
+            ],
+            "intraday": [
+              "200 /quant/data/market/intraday/index.json",
+              "200 /quant/data/market/intraday/2026-11-20/ref_NVDA.json"
+            ],
+            "marketState": "OPEN",
+            "sessionDate": "2026-11-24",
+            "hubEnabled": true,
+            "liveState": {
+              "state": "IDLE",
+              "reason": null,
+              "since": null,
+              "url": "wss://live.visionuniverse.de/live",
+              "symbols": [],
+              "subscribed": [],
+              "hello": null,
+              "connected": false
+            },
+            "hasRelayClient": true,
+            "hasQuantChart": true
+          }
         }
       },
       "ok": false
@@ -418,18 +749,117 @@
       "eintag": {
         "discover": {
           "frei": true,
-          "punkte": 77
+          "punkte": 0,
+          "diag": {
+            "websockets": [
+              "wss://live.visionuniverse.de/live"
+            ],
+            "fehler": [
+              "404 https://research.visionuniverse.de/discover/logos/credits/AF.json",
+              "404 https://research.visionuniverse.de/core/data/stock-availability/AF.json"
+            ],
+            "intraday": [
+              "200 /quant/data/market/intraday/index.json",
+              "200 /quant/data/market/intraday/2026-11-20/ref_AFG.json"
+            ],
+            "marketState": "OPEN",
+            "sessionDate": "2026-11-24",
+            "hubEnabled": true,
+            "liveState": {
+              "state": "OPEN",
+              "reason": null,
+              "since": "2026-11-24T14:44:23.265Z",
+              "url": "wss://live.visionuniverse.de/live",
+              "symbols": [
+                "AFG"
+              ],
+              "subscribed": [
+                "AFG"
+              ],
+              "hello": {
+                "op": "hello",
+                "mode": "dynamic",
+                "session": "REGULAR",
+                "coalesceMs": 1000,
+                "maxSymbols": 50,
+                "budget": "OK",
+                "priceType": "REALTIME_REFERENCE",
+                "source": "TIINGO_IEX_LEVEL6"
+              },
+              "connected": true
+            },
+            "hasRelayClient": false,
+            "hasQuantChart": false
+          }
         },
         "quant": {
           "frei": true,
-          "punkte": 77
+          "punkte": 77,
+          "diag": {
+            "websockets": [],
+            "fehler": [
+              "404 https://research.visionuniverse.de/quant/data/market/factors/product-shards/AF.json",
+              "404 https://research.visionuniverse.de/quant/data/product/universe-list-shards/AF.json",
+              "404 https://research.visionuniverse.de/quant/data/market/factors/factors-FULL_UNIVERSE-product.json",
+              "404 https://research.visionuniverse.de/quant/data/universe/capability-shards/AF.json",
+              "404 https://research.visionuniverse.de/quant/data/market/golden-preview/daily/ref_AFG.json",
+              "404 https://research.visionuniverse.de/core/data/stock-availability/AF.json",
+              "404 https://research.visionuniverse.de/quant/data/product/technical-signals-v1/by-ticker/AFG.json.gz",
+              "404 https://research.visionuniverse.de/quant/data/market/golden-preview/daily/ref_AFG.json"
+            ],
+            "intraday": [
+              "200 /quant/data/market/intraday/index.json",
+              "200 /quant/data/market/intraday/2026-11-20/ref_AFG.json"
+            ],
+            "marketState": "OPEN",
+            "sessionDate": "2026-11-24",
+            "hubEnabled": true,
+            "liveState": {
+              "state": "IDLE",
+              "reason": null,
+              "since": null,
+              "url": "wss://live.visionuniverse.de/live",
+              "symbols": [],
+              "subscribed": [],
+              "hello": null,
+              "connected": false
+            },
+            "hasRelayClient": true,
+            "hasQuantChart": true
+          }
         },
         "technical": {
           "frei": true,
-          "punkte": 77
+          "punkte": 77,
+          "diag": {
+            "websockets": [],
+            "fehler": [
+              "404 https://research.visionuniverse.de/quant/data/product/technical-signals-v1/by-ticker/AFG.json.gz",
+              "404 https://research.visionuniverse.de/core/data/stock-availability/AF.json"
+            ],
+            "intraday": [
+              "200 /quant/data/market/intraday/index.json",
+              "200 /quant/data/market/intraday/2026-11-20/ref_AFG.json"
+            ],
+            "marketState": "OPEN",
+            "sessionDate": "2026-11-24",
+            "hubEnabled": true,
+            "liveState": {
+              "state": "IDLE",
+              "reason": null,
+              "since": null,
+              "url": "wss://live.visionuniverse.de/live",
+              "symbols": [],
+              "subscribed": [],
+              "hello": null,
+              "connected": false
+            },
+            "hasRelayClient": true,
+            "hasQuantChart": true
+          }
         }
       },
-      "ok": true
+      "ok": false
     }
   ],
   "realtimeVerified": false
