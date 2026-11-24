@@ -1879,7 +1879,7 @@ function kurzhistorieSeiten(universe) {
     stock.rawValues = {};
     stock.seriesPath = kurzDated && kurzDated.length >= 2 ? "/quant/data/market/discover-series-kurz/" + sec.securityId + ".json" : null;
     stock.instrumentType = inst.instrumentType || null;
-    out.push({ stock, info: info || { sessionDate: kurzDated[kurzDated.length - 1].date, lastLocal: null }, firstTradeDate: erstTag, bars: kurzDated ? kurzDated.length : null });
+    out.push({ stock, info: info || { sessionDate: kurzDated[kurzDated.length - 1].date, lastLocal: null }, firstTradeDate: erstTag, bars: kurzDated ? kurzDated.length : null, letzterKurstag: kurzDated ? kurzDated[kurzDated.length - 1].date : null });
   }
   return out;
 }
@@ -2419,10 +2419,10 @@ for (const universe of universes) {
     written++;
   }
   if (universe.kind === "real") {
-    for (const { stock, info, firstTradeDate, bars } of KURZ_SEITEN.get(universe.universeId) || []) {
+    for (const { stock, info, firstTradeDate, bars, letzterKurstag } of KURZ_SEITEN.get(universe.universeId) || []) {
       const detail = buildDetail(universe, stock, instruments, universe.barsByTicker, memberships);
       detail.geschaeftszahlen = Unternehmen.leer("INSUFFICIENT_HISTORY", Kurzhistorie.LABEL + ".");
-      detail.kurzhistorie = Kurzhistorie.block(info, { firstTradeDate, bars });
+      detail.kurzhistorie = Kurzhistorie.block(info, { firstTradeDate, bars, letzterKurstag });
       /* Ab 2 veroeffentlichten Schlusskursen traegt die Seite den Chart: dieselbe Datei, dieselbe Chart-Engine, keine Kopie. */
       if (stock.seriesPath && bars >= 2) {
         detail.series = { available: true, source: "discover-series", path: stock.seriesPath,
