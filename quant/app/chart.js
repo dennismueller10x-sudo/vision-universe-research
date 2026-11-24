@@ -625,7 +625,7 @@
       if (Hub && Hub.enabled && Hub.enabled()) {
         st.unsub = Hub.subscribe(o.ticker, function (p) {
           st.intraday = p && p.snapshot ? p : null;
-          if (st.intraday && !st.intraday.snapshot.regularComplete) startRelay();
+          if (st.intraday && (!st.intraday.snapshot.regularComplete || (heute() && st.intraday.snapshot.sessionDate < heute()))) startRelay();
           if (first) { first = false; if (!st.touched) draw(available("1D") && eod.length < 2 ? "1D" : startRange()); reportIntraday(); return; }
           if (st.range === "1D") draw("1D"); else { syncButtons(); reportIntraday(); }
         });
@@ -647,11 +647,13 @@
     }
     function startRelay() {
       var RC = global.VULiveRelayClient;
+      global.__vuRelayDiag = { rc: !!RC, realtime: !!o.realtime, ws: typeof global.WebSocket, relay: !!st.relay, disposed: st.disposed };
       if (st.relay || st.disposed || !RC || !o.realtime || typeof global.WebSocket !== "function") return;
       var r = Hub && Hub.resolution ? Hub.resolution() : null;
       if (!r || r.marketState !== "OPEN") return;
       st.relay = { pending: true };
       Promise.resolve(o.realtime()).then(function (cap) {
+        global.__vuRelayDiag.cap = cap ? (cap.state + "/" + (cap.reason || "")) : "none";
         if (st.disposed || !cap || cap.state !== "AVAILABLE") { st.relay = null; return; }
         var client = RC.create({ capability: cap, connect: function (url) { return new global.WebSocket(url); },
           onChange: function (snap) {

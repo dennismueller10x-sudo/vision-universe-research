@@ -400,7 +400,7 @@ if (sitzung.phase === "REGULAR") {
         const r = H && H.resolution ? H.resolution() : null;
         return { marketState: r && r.marketState, sessionDate: r && ((r.displaySession && r.displaySession.sessionDate) || r.localDate),
                  hubEnabled: !!(H && H.enabled && H.enabled()), liveState: H && H.liveState ? H.liveState() : null,
-                 hasRelayClient: !!window.VULiveRelayClient, hasQuantChart: !!window.VUQuantChart };
+                 hasRelayClient: !!window.VULiveRelayClient, relayDiag: window.__vuRelayDiag || null, hasQuantChart: !!window.VUQuantChart };
       }).catch((e) => ({ evalFehler: String(e && e.message || e) })));
       await seiten[welt].context().close();
     }
