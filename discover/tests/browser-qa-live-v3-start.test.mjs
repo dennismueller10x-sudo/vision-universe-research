@@ -29,3 +29,11 @@ test('Live-QA: Aktienseite startet mit 1J, 1T bleibt waehlbar und zeigt den Intr
   const cs = fs.readFileSync(new URL('../../core/chart-standard.js', import.meta.url), 'utf8');
   assert.match(cs, /DEFAULT_RANGE\s*=\s*["']1J["']/, 'die Erwartung folgt dem Standard im Code');
 });
+
+/* V3-Karten: Beschriftung in der svg-Beschreibung, sichtbar sind Karten mit Tagesverlauf (Monitor-Lauf 45319262430). */
+test('Live-QA: Beschriftung auch aus der Beschreibung, sichtbare Karten auch als Tagesverlauf-Svg gezählt', () => {
+  assert.match(src, /titelLabels/);
+  assert.match(src, /const labels = sichtLabels\.length \? sichtLabels : titelLabels/);
+  assert.match(src, /labels\.length > 0 && labels\.every/, 'ohne jede Beschriftung bleibt die Prüfung rot');
+  assert.match(src, /\[data-art="intraday"\]'\)\]\.filter/);
+});

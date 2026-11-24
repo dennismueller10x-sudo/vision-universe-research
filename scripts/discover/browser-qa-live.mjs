@@ -83,11 +83,16 @@ if (stromUnerreichbar) console.log("\n  Hinweis: " + stromUnerreichbar + " Konso
 await d.mouse.wheel(0, 700); await warten(d, 900);
 const intra = await d.evaluate(() => [...document.querySelectorAll('[data-art="intraday"]')].length);
 ok("Tagesverlauf auf Karten gezeichnet (>=5 nach einem Bildschirm)", intra >= 5, "intraday svgs: " + intra);
-const labels = await d.evaluate(() => [...new Set([...document.querySelectorAll(".dx-live-label")].map((n) => n.textContent.trim()))]);
+const sichtLabels = await d.evaluate(() => [...new Set([...document.querySelectorAll(".dx-live-label")].map((n) => n.textContent.trim()))]);
+/* V3-Karten tragen die Beschriftung in der Beschreibung (svg-title: "<Symbol>: Tagesverlauf ... — <Beschriftung> — 5-Minuten-Kurse, Stand ..."),
+   nicht mehr als eigenes Element. Gilt die sichtbare Beschriftung, wird sie geprueft; sonst die der Beschreibung - nie keine. */
+const titelLabels = await d.evaluate(() => [...new Set([...document.querySelectorAll('[data-art="intraday"] title')].map((t) => (t.textContent.split(" — ")[1] || "").trim()))]);
+const labels = sichtLabels.length ? sichtLabels : titelLabels;
 /* V4: der Freshness-Vertrag kennt vier Zustaende; ein Stand, der nicht der
    letzte Handelstag ist, heisst "nicht aktuell" und nie "Letzter Handelstag". */
 ok("Beschriftung in Seitensprache (Heute/Letzter Handelstag/nicht aktuell)", labels.length > 0 && labels.every((t) =>
-  /^(Heute · (live|Stand \d\d:\d\d|Schluss \d\d:\d\d)|Letzter Handelstag · |Stand (Mo|Di|Mi|Do|Fr|Sa|So)\., \d\d\.\d\d\. · nicht aktuell|Heute · Stand \d\d:\d\d · nicht aktuell)/.test(t)), labels.join(" | "));
+  /^(Heute · (live|Stand \d\d:\d\d|Schluss \d\d:\d\d)|Letzter Handelstag · |Stand (Mo|Di|Mi|Do|Fr|Sa|So)\., \d\d\.\d\d\. · nicht aktuell|Heute · Stand \d\d:\d\d · nicht aktuell)/.test(t)),
+  (sichtLabels.length ? "sichtbar: " : "Beschreibung: ") + labels.join(" | "));
 ok("STALE heisst nie 'Letzter Handelstag' und traegt den Warnton", await d.evaluate(() =>
   [...document.querySelectorAll('.dx-live-label[data-freshness="STALE"]')].every((n) => /nicht aktuell/.test(n.textContent) && !/Letzter Handelstag/.test(n.textContent) && n.classList.contains("dx-live-label--stale"))));
 ok("Keine technischen Codes auf Karten", labels.every((t) => !/OPEN|CLOSED|PRE_MARKET|AFTER_HOURS|HOLIDAY|Keine Live-Daten/.test(t)));
@@ -98,8 +103,8 @@ ok("Jede Intraday-Linie traegt Sitzung, Kursart und Stand - ohne Anbietername", 
 const s1 = await stats(d);
 /* Abonniert wird je sichtbarem Kartenbild (data-symbol) - auch eines, fuer
    das noch kein Snapshot vorliegt: es bekommt ihn, sobald einer kommt. */
-const sichtbar = await d.evaluate(() => [...document.querySelectorAll(".dx-poster-media[data-symbol], .dx-lazy-media[data-symbol]")].filter((n) => { const r = n.getBoundingClientRect(); return r.bottom > -80 && r.top < innerHeight + 80; }).length);
-ok("Abonnements nur fuer sichtbare Karten (Abonnenten <= sichtbare Kartenbilder + Hero)", s1.subscribers <= sichtbar + 2, "subscribers " + s1.subscribers + ", sichtbar " + sichtbar);
+const sichtbar = await d.evaluate(() => [...document.querySelectorAll('.dx-poster-media[data-symbol], .dx-lazy-media[data-symbol], [data-art="intraday"]')].filter((n) => { const r = n.getBoundingClientRect(); return r.bottom > -80 && r.top < innerHeight + 80; }).length);
+ok("Abonnements nur fuer sichtbare Karten (Abonnenten <= sichtbare Kartenbilder + Hero; V3: Karten mit Tagesverlauf)", s1.subscribers <= sichtbar + 2, "subscribers " + s1.subscribers + ", sichtbar " + sichtbar);
 ok("Ein Verzeichnis-Abruf, jeder Snapshot hoechstens einmal geholt (requests == cached, keine Fehler)",
    s1.indexLoads === 1 && s1.snapshotRequests === s1.cachedSnapshots && s1.failures === 0, JSON.stringify(s1));
 /* Seit der Discover-Konsolidierung ist der Einstieg die Hero-Reihe des
