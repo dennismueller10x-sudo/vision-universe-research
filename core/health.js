@@ -17,6 +17,9 @@
                ausgeliefert (repositoryOnly)
      RELEASE_ONLY  gegen das Repository gemessen, Artefakt entsteht erst im
                Release-Bau und liegt nur in der Auslieferung (releaseOnly)
+     BRANCH_NOT_CHECKED  Repository-Stand, Datenart nur auf dem Datenzweig
+               (BRANCH_ONLY), Zweig lokal nicht lesbar: "Stand auf dem
+               Datenzweig, nicht geprüft" statt STALE aus der alten main-Kopie
      UNKNOWN   kein Zeitstempel - Frische nicht messbar
 
    Jede Zeile traegt: letzter Lauf, erwarteter und tatsaechlicher Stand,
@@ -41,7 +44,7 @@
   "use strict";
 
   var VERSION = "core-health-1.0.0";
-  var RANK = { OK: 0, DISABLED: 0, NOT_DELIVERED: 0, RELEASE_ONLY: 0, UNKNOWN: 1, DEGRADED: 2, STALE: 3, FAILED: 4 };
+  var RANK = { OK: 0, DISABLED: 0, NOT_DELIVERED: 0, RELEASE_ONLY: 0, BRANCH_NOT_CHECKED: 0, UNKNOWN: 1, DEGRADED: 2, STALE: 3, FAILED: 4 };
   var HOUR = 3600000;
 
   /** Wert unter einem Punktpfad ("a.b.0.c"); null, wenn nicht vorhanden. */
@@ -120,6 +123,13 @@
     if (domain.repositoryOnly && ctx.target === "site") {
       out.status = "NOT_DELIVERED"; out.reason = "REPOSITORY_ONLY";
       out.warnings.push("Wird nicht ausgeliefert; nur gegen das Repository messbar.");
+      return out;
+    }
+    /* BRANCH_ONLY (core/registry/data-branch.json): Die Kopie in main ist eingefroren, der Stand liegt auf dem Datenzweig. Ist der
+       Zweig im Repository-Stand nicht lesbar, wird nichts geraten: kein STALE aus der alten Kopie. */
+    if (ctx.branchNotChecked && ctx.branchNotChecked[domain.id] && ctx.target !== "site") {
+      out.status = "BRANCH_NOT_CHECKED"; out.reason = "BRANCH_NOT_CHECKED";
+      out.warnings.push("Stand auf dem Datenzweig, nicht geprüft.");
       return out;
     }
     if (domain.releaseOnly && ctx.target !== "site") {
@@ -324,7 +334,8 @@
       try { resolution = opts.tradingSession.resolve(now, { calendar: opts.calendar }); } catch (e) { resolution = null; }
     }
     var ctx = { now: now, calendar: opts.calendar || null, tradingSession: opts.tradingSession || null, resolution: resolution,
-                target: opts.target === "site" ? "site" : "repository", artifacts: artifacts };
+                target: opts.target === "site" ? "site" : "repository", artifacts: artifacts,
+                branchNotChecked: opts.branchNotChecked || null, branchRead: opts.branchRead || null };
     var domains = (registry.domains || []).map(function (d) { return assessDomain(d, artifacts[d.artifact], ctx); });
     var overall = "OK";
     domains.forEach(function (d) {

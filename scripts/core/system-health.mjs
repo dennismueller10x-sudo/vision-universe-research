@@ -17,17 +17,27 @@
    ========================================================================= */
 import { writeFileSync, appendFileSync } from "node:fs";
 import { createRequire } from "node:module";
-import { args, makeLoader, loadEngines, loadArtifacts } from "./lib.mjs";
+import { readFileSync } from "node:fs";
+import { args, makeLoader, makeBranchAwareLoader, loadEngines, loadArtifacts, BRANCH_NOT_READABLE, REPO_ROOT } from "./lib.mjs";
 import { loadModules } from "./build-modules.mjs";
 
 const Modules = createRequire(import.meta.url)("../../core/modules.js");
 
 const a = args();
 const E = loadEngines();
-const load = makeLoader({ site: a.site || null });
+/* Repository-Stand: Datenarten mit Phase BRANCH_ONLY liegen aktuell nur auf dem Datenzweig, die Kopie in main ist eingefroren.
+   Sie werden dort gelesen (git show, nichts wird geholt). Ist der Zweig lokal nicht lesbar: "nicht geprüft" statt STALE. Gegen die Seite
+   (--site) liefert die Auslieferung den Datenzweig, dort gilt die Seite. */
+const dataBranch = JSON.parse(readFileSync(new URL("../../core/registry/data-branch.json", import.meta.url), "utf8"));
+const base = makeLoader({ site: a.site || null });
+const branch = a.site ? null : makeBranchAwareLoader(base, dataBranch);
+const load = branch ? branch.load : base;
 const now = a.now ? new Date(a.now) : new Date();
 const artifacts = await loadArtifacts(E.registry, load);
-const report = E.Health.evaluate(E.registry, artifacts, { now, calendar: E.calendar, tradingSession: E.TradingSession, target: a.site ? "site" : "repository" });
+const branchNotChecked = {};
+for (const d of E.registry.domains) if (artifacts[d.artifact] && !artifacts[d.artifact].ok && String(artifacts[d.artifact].error).startsWith(BRANCH_NOT_READABLE)) branchNotChecked[d.id] = true;
+const report = E.Health.evaluate(E.registry, artifacts, { now, calendar: E.calendar, tradingSession: E.TradingSession, target: a.site ? "site" : "repository", branchNotChecked });
+if (branch) { report.branchRead = branch.state.read; for (const d of report.domains) { const r = branch.state.read[d.artifact]; if (r) d.source = r; } }
 report.target = a.site || "repository";
 /* Produkte aus den Steckbriefen (products/<id>/module.json): schlechtester Zustand ihrer Datenarten. */
 report.products = Modules.productHealth(loadModules().map((x) => x.m), report);
