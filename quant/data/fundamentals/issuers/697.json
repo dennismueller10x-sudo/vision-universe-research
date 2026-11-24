@@ -322,9 +322,9 @@
       "cik": "0001178697",
       "name": "DNA X, Inc.",
       "sic": "3661",
-      "rawFacts": 8733,
-      "mappedFacts": 2893,
-      "unmappedFacts": 5958,
+      "rawFacts": 9005,
+      "mappedFacts": 2974,
+      "unmappedFacts": 6208,
       "calendarYears": 9,
       "industry": null,
       "industryMetrics": {},
@@ -334,9 +334,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 9,
-      "quarterlyPeriods": 35,
+      "quarterlyPeriods": 36,
       "firstPeriodEnd": "2017-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 8.0,
       "metrics": {
         "capital_expenditures": {
@@ -348,7 +348,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 19,
+          "quarterlyPeriods": 20,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
@@ -375,14 +375,14 @@
         },
         "net_income": {
           "annualPeriods": 8,
-          "quarterlyPeriods": 34,
+          "quarterlyPeriods": 35,
           "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 7.0
         },
         "operating_cash_flow": {
           "annualPeriods": 8,
-          "quarterlyPeriods": 34,
+          "quarterlyPeriods": 35,
           "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 7.0
@@ -403,14 +403,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 35,
+          "quarterlyPeriods": 36,
           "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 8.0
         },
         "total_assets": {
           "annualPeriods": 8,
-          "quarterlyPeriods": 31,
+          "quarterlyPeriods": 32,
           "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 7.0
@@ -433,46 +433,47 @@
         }
       },
       "quality": {
-        "HIGH": 289,
-        "MEDIUM": 25
+        "HIGH": 292,
+        "MEDIUM": 27
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 314,
-        "resolvedValues": 314
+        "datableValues": 319,
+        "resolvedValues": 319
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 6216,
+        "rules_version": "1.1.0",
+        "total": 6474,
         "by_severity": {
-          "INFO": 5958,
-          "WARNING": 258
+          "INFO": 6208,
+          "WARNING": 266
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 151,
+          "CONCEPT_DISAGREEMENT": 155,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
-          "RESTATEMENT_CONFLICT": 105,
-          "UNKNOWN_CONCEPT": 5958
+          "RESTATEMENT_CONFLICT": 109,
+          "UNKNOWN_CONCEPT": 6208
         }
       },
       "latestFiling": {
-        "accession": "0001493152-26-039226",
-        "filing_date": "2026-08-19",
+        "accession": "0001493152-26-053764",
+        "filing_date": "2026-11-23",
         "form": "10-Q",
-        "periodic_filings": 43
+        "periodic_filings": 44,
+        "acceptance_datetime": "2026-11-23T21:16:00.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
-        "formula": "1.2.0",
+        "normalization_logic": "1.15.0",
+        "formula": "1.3.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.8.0"
         }
       },
-      "sourceDigest": "223defe78a8f238be838c426393d55a96e2fbc8b5aa5806435961d14947c2317",
+      "sourceDigest": "53285951e186cd2195f578c65e7f76a653d0a9df42451caf2bcaf7cbba1eeed8",
       "issuerId": "iss_cik_0001178697"
     },
     {

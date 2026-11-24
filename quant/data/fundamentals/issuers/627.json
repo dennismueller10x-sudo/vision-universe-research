@@ -710,9 +710,9 @@
       "cik": "0001425627",
       "name": "SOBR Safe, Inc.",
       "sic": "2721",
-      "rawFacts": 11402,
-      "mappedFacts": 4005,
-      "unmappedFacts": 7356,
+      "rawFacts": 11684,
+      "mappedFacts": 4088,
+      "unmappedFacts": 7663,
       "calendarYears": 15,
       "industry": null,
       "industryMetrics": {},
@@ -722,9 +722,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 17,
-      "quarterlyPeriods": 62,
+      "quarterlyPeriods": 63,
       "firstPeriodEnd": "2010-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 15.0,
       "metrics": {
         "capital_expenditures": {
@@ -736,7 +736,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 12,
+          "quarterlyPeriods": 13,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
@@ -763,14 +763,14 @@
         },
         "net_income": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 60,
+          "quarterlyPeriods": 61,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.0
         },
         "operating_cash_flow": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 59,
+          "quarterlyPeriods": 60,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.0
@@ -791,14 +791,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 58,
+          "quarterlyPeriods": 59,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
         },
         "total_assets": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 57,
+          "quarterlyPeriods": 58,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.0
@@ -821,47 +821,48 @@
         }
       },
       "quality": {
-        "HIGH": 331,
-        "MEDIUM": 49
+        "HIGH": 337,
+        "MEDIUM": 48
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 380,
-        "resolvedValues": 380
+        "datableValues": 385,
+        "resolvedValues": 385
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 7868,
+        "rules_version": "1.1.0",
+        "total": 8187,
         "by_severity": {
-          "INFO": 7356,
-          "WARNING": 512
+          "INFO": 7663,
+          "WARNING": 524
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 302,
+          "CONCEPT_DISAGREEMENT": 309,
           "NEGATIVE_WHERE_IMPOSSIBLE": 1,
-          "RESTATEMENT_CONFLICT": 107,
+          "RESTATEMENT_CONFLICT": 112,
           "UNEXPECTED_DURATION": 102,
-          "UNKNOWN_CONCEPT": 7356
+          "UNKNOWN_CONCEPT": 7663
         }
       },
       "latestFiling": {
-        "accession": "0001477932-26-005085",
-        "filing_date": "2026-08-14",
+        "accession": "0001477932-26-007251",
+        "filing_date": "2026-11-23",
         "form": "10-Q",
-        "periodic_filings": 78
+        "periodic_filings": 79,
+        "acceptance_datetime": "2026-11-23T22:27:21.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
-        "formula": "1.2.0",
+        "normalization_logic": "1.15.0",
+        "formula": "1.3.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.8.0"
         }
       },
-      "sourceDigest": "e44f73a3a9466eba385ef4034afb7e2c1c94a95d273c6899a952de6b057ca3e3",
+      "sourceDigest": "8ccd13a63c2b05b9600c855624151ae7d8b8351e57455b46efeebc442360bc38",
       "issuerId": "iss_cik_0001425627"
     },
     {
