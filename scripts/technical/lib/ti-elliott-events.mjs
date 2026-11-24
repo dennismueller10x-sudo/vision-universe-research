@@ -33,7 +33,7 @@ export function tdRow(td) {
   if (!td || td.status !== "OK" || !td.primary) return null;
   const p = td.primary, ro = roles(td.path);
   return { k: p.kind + ":" + p.dir + ":" + p.cur + ":" + (p.waves[0] && String(p.waves[0].ft).slice(0, 7)), cur: p.cur, kind: p.kind, dir: p.dir,
-           inv: p.inv ? [p.inv.p, p.inv.d] : null, e: ro.entry, t1: ro.target, rw: td.rw ? td.rw.dir : null };
+           inv: p.inv ? [p.inv.p, p.inv.d] : null, e: ro.entry, t1: ro.target, rw: td.rw ? td.rw.dir : null, sc: td.score ? [td.score.v, td.score.level] : null };
 }
 
 const reached = (z, close) => z && isNum(close) && (z.dir === "UP" ? close >= z.lo : close <= z.hi);

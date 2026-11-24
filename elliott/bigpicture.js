@@ -30,7 +30,7 @@
   function num(v) { if (typeof v !== "number" || !isFinite(v)) return "–"; var d = v >= 1000 ? 0 : v >= 100 ? 0 : v >= 10 ? 2 : 2; return v.toLocaleString("de-DE", { minimumFractionDigits: d, maximumFractionDigits: d }); }
   function pct(v, base) { var p = (v / base - 1) * 100; return (p > 0 ? "+" : p < 0 ? "−" : "±") + Math.abs(Math.round(p)).toLocaleString("de-DE") + " %"; }
   /* Kernzone = erste noch offene Stufe; die naechste Stufe steht als „erweitert“ daneben. */
-  function core(step) { var t = step.tiers.filter(function (z) { return !z.done; }); if (!t.length) t = step.tiers.slice(-1); return { lo: t[0].lo, hi: t[0].hi, ext: t[1] || null }; }
+  function core(step) { var t = step.tiers.filter(function (z) { return !z.done; }); if (!t.length) t = step.tiers.slice(-1); return { lo: t[0].lo, hi: t[0].hi, ext: t[1] || null, zones: t.slice(0, 3) }; }
   function year(t) { return String(t || "").slice(0, 4); }
 
   /* Rolle eines Schritts (wie in der Praxis gelesen): dreht der Pfad nach dem ersten Schritt, ist dessen Zone die Einstiegszone und die
@@ -43,7 +43,7 @@
       var c = core(s);
       var role = k === 0 && turn ? "entry" : s.dir === dirT ? "target" : "step";
       if (role === "target") nT++;
-      var row = { step: s, role: role, n: role === "target" ? nT : null, lo: c.lo, hi: c.hi, ext: c.ext };
+      var row = { step: s, role: role, n: role === "target" ? nT : null, lo: c.lo, hi: c.hi, ext: c.ext, zones: c.zones };
       if (role === "entry") entry = row;
       out.push(row);
     });
@@ -96,7 +96,11 @@
     rows.forEach(function (r, k) {
       var x = xNow + fw * ((k + 1) / (n + 0.4)), yp = y(r.step.point), up = r.step.dir === "UP";
       var bw = Math.min(46, fw / (n + 1) * 0.8);
-      g.push('<rect class="bp-zone bp-zone-' + r.role + '" x="' + (x - bw / 2).toFixed(1) + '" y="' + y(r.hi).toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + Math.max(3, y(r.lo) - y(r.hi)).toFixed(1) + '" rx="4"/>');
+      /* Zonen 1–3 (Basis, Erweitert, Extrem) als gestufte Kästen: Zone 1 kräftig, 2 und 3 blasser */
+      (r.zones && r.zones.length ? r.zones : [{ lo: r.lo, hi: r.hi }]).forEach(function (z, q) {
+        g.push('<rect class="bp-zone bp-zone-' + r.role + ' bp-zone-z' + (q + 1) + '" x="' + (x - bw / 2).toFixed(1) + '" y="' + y(z.hi).toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + Math.max(3, y(z.lo) - y(z.hi)).toFixed(1) + '" rx="4"/>');
+        if (q && W >= 360) g.push('<text class="bp-zt" x="' + (x + bw / 2 + 3).toFixed(1) + '" y="' + ((y(z.hi) + y(z.lo)) / 2 + 4).toFixed(1) + '">' + (q + 1) + "</text>");
+      });
       g.push('<line class="bp-arrow ' + (up ? "is-up" : "is-down") + '" x1="' + px.toFixed(1) + '" y1="' + py.toFixed(1) + '" x2="' + x.toFixed(1) + '" y2="' + yp.toFixed(1) + '" marker-end="url(#bp-head-' + (up ? "up" : "down") + ')"/>');
       g.push('<text class="bp-step" x="' + x.toFixed(1) + '" y="' + (up ? y(r.hi) - 6 : y(r.lo) + 14).toFixed(1) + '" text-anchor="middle">' + esc(r.step.disp) + "</text>");
       px = x; py = yp;
@@ -119,7 +123,7 @@
       var dist = inside ? "Kurs liegt in der Zone" : pct(s.dir === "UP" ? r.lo : r.hi, c) + " bis " + pct(s.dir === "UP" ? r.hi : r.lo, c);
       var k = r.role === "entry" ? W0.entry : r.role === "target" ? (mode === "kursziele" ? W0.target + " " + r.n : W0.target) : "Zwischenschritt";
       var extra = r.role === "entry" && W0.guard ? '<span class="bp-sub">' + esc(W0.guard + ": " + W0.guardText + " (" + num(s.dir === "UP" ? r.hi * 1.01 : r.lo * 0.99) + " $)") + "</span>" : "";
-      h.push('<li class="bp-row bp-row-' + r.role + '"><span class="bp-k">' + esc(k) + ' <b>' + esc(s.disp) + "</b></span><span class=\"bp-v num\">" + esc(range) + '</span><span class="bp-d num">' + esc(dist) + '</span><span class="bp-sub">' + esc((REL[s.rel] || "") + (s.dev ? " · Welle läuft" : "") + (r.ext ? " · erweitert " + num(r.ext.lo) + "–" + num(r.ext.hi) + " $" : "")) + "</span>" + extra + "</li>");
+      h.push('<li class="bp-row bp-row-' + r.role + '"><span class="bp-k">' + esc(k) + ' <b>' + esc(s.disp) + "</b></span><span class=\"bp-v num\">" + esc(range) + '</span><span class="bp-d num">' + esc(dist) + '</span><span class="bp-sub">' + esc((REL[s.rel] || "") + (s.dev ? " · Welle läuft" : "") + (r.zones && r.zones.length > 1 ? " · " + r.zones.map(function (z, q) { return "Zone " + (q + 1) + ": " + num(z.lo) + "–" + num(z.hi) + " $ (" + pct(s.dir === "UP" ? z.lo : z.hi, c) + ")"; }).join(" · ") : "")) + "</span>" + extra + "</li>");
     });
     var inv = td.primary.inv;
     if (inv) h.push('<li class="bp-row bp-row-inv"><span class="bp-k">' + esc(W0.invalid) + '</span><span class="bp-v num">' + esc((inv.d === "below" ? "unter " : "über ") + num(inv.p) + " $") + '</span><span class="bp-d num">' + esc(pct(inv.p, c)) + '</span><span class="bp-sub">' + esc(inv.text || "") + "</span></li>");
@@ -141,11 +145,15 @@
     var entry = rows.filter(function (r) { return r.role === "entry"; })[0], t1 = rows.filter(function (r) { return r.role === "target"; })[0];
     var plan = (entry ? "erst " + W0.entry.replace(" laut Methode", "") + " " + num(entry.lo) + "–" + num(entry.hi) + " $" : "") + (entry && t1 ? ", dann " : "") + (t1 ? (mode === "kursziele" ? W0.target + " 1" : W0.target) + " " + num(t1.lo) + "–" + num(t1.hi) + " $ (" + pct(t1.step.dir === "UP" ? t1.lo : t1.hi, td.close) + ")" : "");
     var inv = td.primary.inv ? "Schluss " + (td.primary.inv.d === "below" ? "unter " : "über ") + num(td.primary.inv.p) + " $" : "keine feste Marke";
-    var rw = td.rw || null, R = rw ? [["Trend", rw.trend], ["Momentum", rw.mom], ["Relative Stärke", rw.rsT]].map(function (x) { return x[0] + " " + (x[1] > 0 ? "▲" : x[1] < 0 ? "▼" : "◆"); }).join(" · ") : null;
+    var rw = td.rw || null, S = td.score || null, ar = function (v) { return v > 0.15 ? "▲" : v < -0.15 ? "▼" : "◆"; };
+    var R = S ? [["Relative Stärke", S.parts.rs], ["Trend", S.parts.trend], ["Momentum", S.parts.mom], ["Elliott-Plan", S.parts.elliott]].map(function (x) { return x[0] + " " + ar(x[1]); }).join(" · ")
+      : rw ? [["Trend", rw.trend], ["Momentum", rw.mom], ["Relative Stärke", rw.rsT]].map(function (x) { return x[0] + " " + ar(x[1]); }).join(" · ") : null;
     return '<dl class="bp-story"><div><dt>Jetzt</dt><dd>' + esc(now) + '</dd></div><div><dt>Plan laut Methode</dt><dd>' + esc(plan || "kein nächster Schritt") + '</dd></div><div><dt>Falsch, wenn</dt><dd>' + esc(inv) + "</dd></div>" +
-      (R ? '<div><dt>Rückenwind</dt><dd>' + esc(R + " – " + (rw.dir === "UP" ? "spricht für steigende Kurse" : rw.dir === "DOWN" ? "spricht für fallende Kurse" : "kein klares Bild")) + '<span class="bp-sub">Trend, Momentum und Relative Stärke tragen im Rückwärtstest mehr Richtungsinformation als die Zählung.</span></dd></div>' : "") + "</dl>";
+      (S ? '<div class="bp-score bp-score-' + S.level.toLowerCase() + '"><dt>Setup-Score</dt><dd><span class="bp-score-v num">' + S.v + "</span> " + esc(LEVEL[S.level] || "") + '<span class="bp-sub">' + esc(R + ". 50 = kein klares Bild, darüber aufwärts, darunter abwärts.") + "</span></dd></div>"
+        : R ? '<div><dt>Rückenwind</dt><dd>' + esc(R + " – " + (rw.dir === "UP" ? "spricht für steigende Kurse" : rw.dir === "DOWN" ? "spricht für fallende Kurse" : "kein klares Bild")) + "</dd></div>" : "") + "</dl>";
   }
-  var LEGEND = "[3] große Welle · (3) Unterwelle · gestrichelter Kreis = läuft noch · grün = Ziel in Trendrichtung · grau = Korrektur · gestrichelte Linie = Ungültig-Marke";
+  var LEVEL = { STRONG_UP: "stark aufwärts", UP: "aufwärts", MIXED: "gemischt", DOWN: "abwärts", STRONG_DOWN: "stark abwärts" };
+  var LEGEND = "[3] große Welle · (3) Unterwelle · gestrichelter Kreis = läuft noch · grün = Ziel in Trendrichtung (Zone 1 kräftig, 2 und 3 blasser) · grau = Korrektur · gestrichelte Linie = Ungültig-Marke";
   function countLine(c) { return KIND[c.kind] + " " + (c.dir === "UP" ? "aufwärts" : "abwärts") + " seit " + year(c.waves[0].ft) + ", Welle [" + c.cur + "]"; }
   function render(host, a, which) {
     var td0 = a.elliottTopDown, hasAlt = !!(td0.alternative && td0.altPath && td0.altPath.length), w = hasAlt && which === "alt" ? "alt" : "main", td = viewOf(td0, w);

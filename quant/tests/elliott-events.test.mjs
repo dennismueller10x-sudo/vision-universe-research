@@ -34,3 +34,18 @@ test("EE-3 · Radar: nur Kurs in der Einstiegszone, Rückenwind zuerst; Alarme n
   const ev = H.eventsOf({ events: [{ t: "GH", asOf: "2026-11-13", type: "RECOUNT" }, { t: "AAA", asOf: "2026-11-20", type: "TARGET_REACHED" }] }, null, null);
   assert.deepEqual(ev.map((x) => x.t), ["AAA", "GH"]);
 });
+
+test("EE-4 · Setup-Score: feste Gewichte, Stufen, Richtung des Elliott-Plans", async () => {
+  const { createRequire } = await import("node:module");
+  const SS = createRequire(import.meta.url)(join(ROOT, "quant/engines/technical/elliott/setup-score.js"));
+  assert.deepEqual(SS.WEIGHTS, { rs: 0.4, trend: 0.2, mom: 0.2, elliott: 0.2 });
+  const top = SS.score({ rs: 0.95, trend: 1, mom: 1, elliott: "UP" }), low = SS.score({ rs: 0.05, trend: -1, mom: -1, elliott: "DOWN" });
+  assert.equal(top.v, 98); assert.equal(top.level, "STRONG_UP"); assert.equal(low.v, 2); assert.equal(low.level, "STRONG_DOWN");
+  assert.equal(SS.score({ rs: 0.5, trend: 1, mom: -1, elliott: null }).level, "MIXED");
+  assert.equal(SS.planDir([{ dir: "DOWN" }, { dir: "UP" }]), "UP", "nach der Wende zählt die Richtung des Kursziels");
+  assert.equal(SS.planDir([{ direction: "UP" }]), "UP");
+  const H = await import(join(ROOT, "scripts/technical/elliott-home/home.mjs"));
+  const r = H.radarOf([{ t: "A", close: 50, asOf: "2026-11-20", td: { cur: "2", e: { lo: 40, hi: 60, dir: "DOWN", l: "(2)" }, t1: { lo: 80, hi: 90, dir: "UP", l: "(3)" }, sc: [55, "MIXED"] } },
+    { t: "B", close: 50, asOf: "2026-11-20", td: { cur: "2", e: { lo: 40, hi: 60, dir: "DOWN", l: "(2)" }, t1: { lo: 80, hi: 90, dir: "UP", l: "(3)" }, sc: [88, "STRONG_UP"] } }], null, null);
+  assert.deepEqual(r.rows.map((x) => x.t), ["B", "A"], "hoher Score in Richtung des Ziels zuerst");
+});

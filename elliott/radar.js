@@ -27,12 +27,13 @@
         })));
     }
     if (R && R.rows && R.rows.length) {
-      host.append(sh("Wochen-Radar"), el("p", { class: "ek-sub ek-sm ek-mut", text: R.count.toLocaleString("de-DE") + (R.count === 1 ? " Wert liegt" : " Werte liegen") + " gerade in der " + W.entry + " der Zählung von oben. Zuerst die mit Rückenwind in Richtung des nächsten Ziels." }),
+      host.append(sh("Wochen-Radar"), el("p", { class: "ek-sub ek-sm ek-mut", text: R.count.toLocaleString("de-DE") + (R.count === 1 ? " Wert liegt" : " Werte liegen") + " gerade in der " + W.entry + " der Zählung von oben. Zuerst die mit hohem Setup-Score in Richtung des nächsten Ziels." }),
         el("div", { class: "ek-rail", role: "list", "aria-label": "Wochen-Radar" }, R.rows.slice(0, 16).map(function (r) {
           var up = r.dir === "UP";
           return el("a", { class: "el-cr ek-tile ek-tap ek-nc", role: "listitem", href: M.detailHref(r.t), dataset: { symbol: r.t }, "aria-label": [r.n, "Welle " + r.ew, W.entry + " " + num(r.e[0]) + " bis " + num(r.e[1]), W.target + " " + num(r.t1[0]) + " bis " + num(r.t1[1]), r.rw ? RW[r.rw] : ""].filter(Boolean).join(", ") }, [
             el("span", { class: "ek-nc-h" }, [el("span", { class: "ek-f1" }, [el("b", { class: "ek-b8", text: r.n }), el("span", { class: "ek-xs ek-mut", text: "Welle " + r.ew + " in der Zone " + num(r.e[0]) + "–" + num(r.e[1]) + " $" })]),
-              r.rw ? el("span", { class: "ek-pill ek-pill--sm" + (r.rwOk ? "" : " ek-pill--wh"), text: r.rwOk ? "Rückenwind" : "Gegenwind" }) : null]),
+              typeof r.sc === "number" ? el("span", { class: "ek-pill ek-pill--sm" + (r.scOk ? "" : " ek-pill--wh"), text: "Score " + r.sc })
+                : r.rw ? el("span", { class: "ek-pill ek-pill--sm" + (r.rwOk ? "" : " ek-pill--wh"), text: r.rwOk ? "Rückenwind" : "Gegenwind" }) : null]),
             el("span", { class: "ek-nc-f" }, [el("span", { class: "ek-xs ek-b7", text: (up ? "▲ " : "▼ ") + T + " " + r.tw + " " + num(r.t1[0]) + "–" + num(r.t1[1]) + " $ (" + pct(r.dist) + ")" })])]);
         })));
     }

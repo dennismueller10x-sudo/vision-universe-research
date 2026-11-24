@@ -25,6 +25,7 @@ import { createRequire } from "node:module";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 const TD = createRequire(import.meta.url)(join(ROOT, "quant/engines/technical/elliott/elliott-topdown.js"));
+const SS = createRequire(import.meta.url)(join(ROOT, "quant/engines/technical/elliott/setup-score.js"));
 const arg = (n, d) => { const i = process.argv.indexOf("--" + n); return i >= 0 ? process.argv[i + 1] : d; };
 const OUT = arg("out", null); if (!OUT) { console.error("--out fehlt"); process.exit(2); }
 const STEP = Number(arg("step", 13)), FROM = arg("from", "2010-01-01"), H = Number(arg("horizon", 78)), EVERY = Number(arg("every", 1));
@@ -63,13 +64,36 @@ const files = readdirSync(D).filter((f) => f.endsWith(".json"));
 /* Filter für M3 (kausal am Stichtag): Trend = Schluss über dem 40-Wochen-Schnitt, Momentum = 26-Wochen-Rendite > 0,
    Relative Stärke = Drittel der 52-Wochen-Rendite im Querschnitt aller Titel am selben Wochendatum. Jeder Filter wird auch allein
    gemessen (Richtung des Filters, gleiche Fälle, gleiche Schranken): so zeigt sich, ob Elliott über den Filter hinaus etwas beiträgt. */
-const R52 = new Map();
+const R52 = new Map(), R26 = new Map(), ALL = [];
 for (let k = 0; k < files.length; k += EVERY) {
   let j; try { j = JSON.parse(readFileSync(join(D, files[k]), "utf8")); } catch { continue; }
   const pts = j.points || [];
+  if (pts.length > 60) { const idx = new Map(); pts.forEach((p0, i) => idx.set(p0[0], i)); ALL.push({ c: pts.map((p0) => p0[1]), idx }); }
   for (let i = 52; i < pts.length; i++) { const d = pts[i][0], v = pts[i][1] / pts[i - 52][1] - 1; if (!R52.has(d)) R52.set(d, []); R52.get(d).push(v); }
+  for (let i = 26; i < pts.length; i++) { const d = pts[i][0], v = pts[i][1] / pts[i - 26][1] - 1; if (!R26.has(d)) R26.set(d, []); R26.get(d).push(v); }
 }
 for (const [, a] of R52) a.sort((x, y) => x - y);
+for (const [, a] of R26) a.sort((x, y) => x - y);
+/* Setup-Score: Relative Stärke wie im Produkt (Perzentil der 26-Wochen-Rendite, ti-projection.mjs#rsRanks) */
+function rs26(d, v) { const a = R26.get(d); if (!a || a.length < 50) return null; let lo = 0, hi = a.length; while (lo < hi) { const m = (lo + hi) >> 1; if (a[m] < v) lo = m + 1; else hi = m; } return lo / a.length; }
+function rsPct(d, v) { const a = R52.get(d); if (!a || a.length < 50) return null; let lo = 0, hi = a.length; while (lo < hi) { const m = (lo + hi) >> 1; if (a[m] < v) lo = m + 1; else hi = m; } return lo / a.length; }
+/* M4 Setup-Score (setup-score.js, Gewichte vorher festgelegt): je Stufe und Zeitraum (a) Richtung mit symmetrischen Schranken ±15 %
+   in 26 Wochen, (b) Kursziel-Zonen 1–3 des Elliott-Pfads (Basis, Erweitert, Extrem) vor der Ungültig-Marke, gegen dieselbe Geometrie
+   gespiegelt (Zufall). Zonen nur, wenn Score und Elliott-Plan dieselbe Richtung haben. */
+const M4 = {};
+/* Fairer Vergleich M4 („Markt am selben Tag“): dieselbe Richtung und dieselben Abstände in Prozent (Ziel, Ungültig-Marke),
+   angewandt auf 5 andere Titel am selben Wochendatum (deterministisch gewählt). Nimmt Marktdrift und Marktphase heraus. */
+function sameDay(date, seed, up, tgtPct, invPct, f) {
+  let n = 0, h = 0;
+  for (let q = 1; q <= 40 && n < 5; q++) {
+    const S0 = ALL[(seed * 7919 + q * 104729) % ALL.length], i = S0.idx.get(date); if (i === undefined || S0.c[i] < 5) continue;
+    const c0 = S0.c[i], T = up ? c0 * (1 + tgtPct) : c0 * (1 - tgtPct), I = invPct === null ? null : up ? c0 * (1 - invPct) : c0 * (1 + invPct);
+    const o = up ? firstHit(S0.c, i, T, I) : firstHit(S0.c, i, I, T); if (!o) continue;
+    n++; if (up ? o === 1 : o === -1) h++;
+  }
+  return { n, h };
+}
+function m4(key, f, v) { const m = (M4[key] = M4[key] || {}); const x = (m[f] = m[f] || { n: 0, h: 0 }); x.n++; if (v) x.h++; }
 function rsTercile(d, v) { const a = R52.get(d); if (!a || a.length < 50) return null; let lo = 0, hi = a.length; while (lo < hi) { const m = (lo + hi) >> 1; if (a[m] < v) lo = m + 1; else hi = m; } const q = lo / a.length; return q < 1 / 3 ? -1 : q > 2 / 3 ? 1 : 0; }
 let cuts = 0;
 for (let k = 0; k < files.length; k += EVERY) {
@@ -80,6 +104,33 @@ for (let k = 0; k < files.length; k += EVERY) {
     let r; try { r = TD.analyzeTopDown({ close: c, times: t, asOfIndex: a }); } catch { continue; }
     if (!r || r.status !== "OK" || !r.primary.invalidation || !r.path.length) continue;
     cuts++;
+    {
+      const pp = SS.priceParts(c, a), plan = SS.planDir(r.path), sc = pp && a >= 52 ? SS.score({ rs: rs26(t[a], c[a] / c[a - 26] - 1), trend: pp.trend, mom: pp.mom, elliott: plan }) : null;
+      if (sc && sc.dir) {
+        const per = t[a] < "2018-01-01" ? "2010–2017" : "2018–2026", keys = [sc.level, sc.level + " " + per];
+        let o = 0; for (let i = a + 1; i <= Math.min(c.length - 1, a + 26); i++) { if (c[i] >= c[a] * 1.15) { o = 1; break; } if (c[i] <= c[a] * 0.85) { o = -1; break; } }
+        if (o) keys.forEach((k) => m4(k, "richtung", sc.dir === "UP" ? o === 1 : o === -1));
+        { let n0 = 0, h0 = 0; for (let q = 1; q <= 30 && n0 < 5; q++) { const S0 = ALL[(a * 31 + k * 7 + q * 104729) % ALL.length], i = S0.idx.get(t[a]); if (i === undefined || S0.c[i] < 5) continue;
+            let o0 = 0; for (let w = i + 1; w <= Math.min(S0.c.length - 1, i + 26); w++) { if (S0.c[w] >= S0.c[i] * 1.15) { o0 = 1; break; } if (S0.c[w] <= S0.c[i] * 0.85) { o0 = -1; break; } }
+            if (!o0) continue; n0++; if (sc.dir === "UP" ? o0 === 1 : o0 === -1) h0++; }
+          for (let q = 0; q < n0; q++) keys.forEach((kk) => m4(kk, "richtung Markt", q < h0)); }
+        const inv0 = r.primary.invalidation;
+        if (plan === sc.dir && inv0) {
+          const P = r.path, ts = P.length > 1 && P[0].direction !== P[1].direction ? P[1] : P[0];
+          const upT = ts.direction === "UP", invOk = inv0.direction === "below" ? inv0.price < c[a] : inv0.price > c[a];
+          if (invOk) ts.zone.tiers.forEach((z, k) => {
+            const near = upT ? z.low : z.high; if (upT ? near <= c[a] : near >= c[a]) return;
+            const oz = upT ? firstHit(c, a, near, inv0.direction === "below" ? inv0.price : null) : firstHit(c, a, inv0.direction === "above" ? inv0.price : null, near);
+            const mN = 2 * c[a] - near, mI = 2 * c[a] - inv0.price;
+            const om = upT ? firstHit(c, a, mI > c[a] ? mI : null, mN > 0 ? mN : null) : firstHit(c, a, mN, mI > 0 && mI < c[a] ? mI : null);
+            if (oz) keys.forEach((kk) => m4(kk, "zone" + (k + 1), upT ? oz === 1 : oz === -1));
+            if (om) keys.forEach((kk) => m4(kk, "zone" + (k + 1) + " Zufall", upT ? om === -1 : om === 1));
+            const bs = sameDay(t[a], a * 13 + k, upT, Math.abs(near / c[a] - 1), Math.abs(inv0.price / c[a] - 1));
+            for (let q = 0; q < bs.n; q++) keys.forEach((kk) => m4(kk, "zone" + (k + 1) + " Markt", q < bs.h));
+          });
+        }
+      }
+    }
     const now = c[a], inv = r.primary.invalidation.price;
     const step = r.path.find((s) => !s.exhausted); if (!step) continue;
     const open = step.zone.tiers.find((z) => !z.passed); if (!open) continue;
@@ -154,6 +205,7 @@ const m2 = { kandidaten: M2.n, eingestiegen: M2.filled, ziel: M2.win, absicherun
   beliebigerRuecksetzer: { faelle: M2.pull.filled, trefferQuote: pct(M2.pull.win, M2.pull.win + M2.pull.loss), erwartungR: M2.pull.win + M2.pull.loss ? Math.round((M2.pull.rSum / (M2.pull.win + M2.pull.loss)) * 100) / 100 : null, erwartungRGedeckelt: M2.pull.win + M2.pull.loss ? Math.round((M2.pull.cSum / (M2.pull.win + M2.pull.loss)) * 100) / 100 : null } };
 mkdirSync(OUT, { recursive: true });
 const m3o = Object.fromEntries(Object.entries(M3).map(([k, m]) => [k, { faelle: m.n, trefferQuote: pct(m.hit, m.n), immerAufwaerts: pct(m.up, m.n) }]));
-const out = { schema: "vu-elliott-topdown-backtest-1", label: "Forschung, nicht zertifiziert", engine: TD.VERSION, generatedAt: new Date().toISOString(), params: { step: STEP, from: FROM, horizonWeeks: H, every: EVERY }, titel: Math.ceil(files.length / EVERY), stichtage: cuts, M1: m1, M2: m2, M3: m3o };
+const out = { schema: "vu-elliott-topdown-backtest-1", label: "Forschung, nicht zertifiziert", engine: TD.VERSION, generatedAt: new Date().toISOString(), params: { step: STEP, from: FROM, horizonWeeks: H, every: EVERY }, titel: Math.ceil(files.length / EVERY), stichtage: cuts, M1: m1, M2: m2, M3: m3o,
+  M4: Object.fromEntries(Object.entries(M4).sort().map(([k, m]) => [k, Object.fromEntries(Object.entries(m).map(([f, x]) => [f, { faelle: x.n, quote: pct(x.h, x.n) }]))])) };
 writeFileSync(join(OUT, "backtest.json"), JSON.stringify(out, null, 1));
 console.log(JSON.stringify(out, null, 1));
