@@ -54,7 +54,8 @@ export const RULE_VERSION = "ended-listings-1.0.0";
 export const EVIDENCE_SCHEMA = "listing-ended-evidence-1.0.0";
 export const MAX_LAG = 2;
 export const GRACE_DAYS = 7;
-const EVENTS = ["ACQUISITION"];
+/* Regel B: ACQUISITION; DELISTED (24.11.2026, Liquidation/Boersenabgang mit Form 25) nur mit sec.gov-Beleg. */
+const EVENTS = ["ACQUISITION", "DELISTED"];
 /* Regel E (Steuerung 23.11.2026): Ereignisse fuer Titel OHNE eigene Reihe. Nur mit SEC-Beleg (sources auf sec.gov) und
    noSeries: true im Eintrag; wirkt nur ueber die Freigabeliste (Gate --approved), nie fuer einen Titel mit Reihe. */
 export const EVENTS_NO_SERIES = Object.freeze(["TICKER_CHANGE", "DELISTED"]);
@@ -71,9 +72,11 @@ export function indexEvidence(doc) {
     const bad = (m) => { throw new Error("LISTING_ENDED_EVIDENCE_INVALID: records[" + i + "] " + m); };
     if (!r || typeof r.securityId !== "string" || !/^ref_/.test(r.securityId)) bad("securityId");
     if (typeof r.ticker !== "string" || !r.ticker) bad("ticker");
-    const noSeries = EVENTS_NO_SERIES.includes(r.event);
-    if (!EVENTS.includes(r.event) && !noSeries) bad("event " + r.event);
-    if (noSeries && (r.noSeries !== true || !(r.sources || []).some((u) => /^https:\/\/www\.sec\.gov\//.test(u)))) bad("Regel E verlangt noSeries: true und einen sec.gov-Beleg");
+    const noSeries = r.noSeries === true;
+    if (!noSeries && r.event === "TICKER_CHANGE") bad("Regel E verlangt noSeries: true und einen sec.gov-Beleg");
+    if (noSeries ? !EVENTS_NO_SERIES.includes(r.event) : !EVENTS.includes(r.event)) bad("event " + r.event);
+    if (r.event === "DELISTED" && !(r.sources || []).some((u) => /^https:\/\/www\.sec\.gov\//.test(u))) bad("DELISTED verlangt einen sec.gov-Beleg");
+    if (noSeries && !(r.sources || []).some((u) => /^https:\/\/www\.sec\.gov\//.test(u))) bad("Regel E verlangt noSeries: true und einen sec.gov-Beleg");
     if (!ISO.test(r.effectiveDate || "")) bad("effectiveDate");
     if (typeof r.counterparty !== "string" || !r.counterparty) bad("counterparty");
     if (!Array.isArray(r.sources) || !r.sources.length || !r.sources.every((u) => /^https:\/\//.test(u))) bad("sources");
@@ -110,7 +113,7 @@ export function judgeEnded(decision, series, state, evidence, ref, lag) {
   if (decision.active_status === "INACTIVE" && state && !state.active) {
     return exclude("CONFIRMED_LISTING_ENDED:MASTER_INACTIVE", "ENDED_LISTING:MASTER_INACTIVE", { master: state.status, masterEnd: state.maxEnd });
   }
-  if (evidence && EVENTS.includes(evidence.event) && t.to <= addDays(evidence.effectiveDate, GRACE_DAYS)) {
+  if (evidence && !evidence.noSeries && EVENTS.includes(evidence.event) && t.to <= addDays(evidence.effectiveDate, GRACE_DAYS)) {
     return exclude("CONFIRMED_LISTING_ENDED:" + evidence.event, "ENDED_LISTING:" + evidence.event,
       { event: evidence.event, effectiveDate: evidence.effectiveDate, counterparty: evidence.counterparty, sources: evidence.sources });
   }
@@ -125,7 +128,7 @@ export function judgeEnded(decision, series, state, evidence, ref, lag) {
  * @returns {null | {next, rule, evidence}}
  */
 export function judgeEndedNoSeries(decision, series, state, evidence) {
-  if (!decision || decision.product_eligibility === "EXCLUDED" || !evidence || !EVENTS_NO_SERIES.includes(evidence.event)) return null;
+  if (!decision || decision.product_eligibility === "EXCLUDED" || !evidence || evidence.noSeries !== true || !EVENTS_NO_SERIES.includes(evidence.event)) return null;
   if (series && Array.isArray(series.points) && series.points.length) return null;
   if (decision.active_status !== "INACTIVE" || !state || state.active) return null;
   const reason = "CONFIRMED_LISTING_ENDED:" + evidence.event, rule = "ENDED_LISTING:NO_SERIES";
