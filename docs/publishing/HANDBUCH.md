@@ -277,6 +277,12 @@ Einzelwörter bekommen in Kacheln eine kleinere Schrift. Die Kacheln folgen dem 
 als interner Beleg. Indexverlauf (`index-chart`): Gesamtrendite der ETFs SPY, URTH, ACWI aus `vorsorge/data/series`,
 eingefroren in `daten.json` (`indizes`).
 
+**Alte Shop-Adressen** (24.11.2026): Der frühere Shopify-Shop lief unter derselben Domain. Seine Adressen (`/pages/*`,
+`/products/*`, `/collections/*`, `/blogs/*`, `/cart`, `/account`, `/search`) leitet `_redirects` dauerhaft (301) auf die
+neuen Seiten um (`ALTE_SHOP_ADRESSEN` in `landing/scripts/build.mjs`); alle anderen unbekannten Adressen bekommen
+`404.html` mit Status 404 statt still die Startseite. Sonst halten Bing und damit ChatGPT die alten Aktienreport-Seiten
+für lebendig. Test `SEO-5`.
+
 Stand 11.11.2026: nur `/insights/` ist öffentlich und indexierbar (Sitemap, Search Console, IndexNow). Die Freischaltung
 weiterer Bereiche entscheidet der Owner; dieser Plan sagt, was dafür technisch vorbereitet wird.
 

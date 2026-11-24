@@ -6,6 +6,19 @@ import {createHash} from 'node:crypto';
 import {mitStrukturiertenDaten, llmsTxt} from './seo.mjs';
 import {ratgeberSeiten} from './ratgeber.mjs';
 
+// Umleitungen der alten Shopify-Adressen (Cloudflare Pages _redirects, Reihenfolge zählt: erste Regel gewinnt).
+export const ALTE_SHOP_ADRESSEN = [
+  ['/blogs/*', '/news/'],
+  ['/products/*', '/report/'],
+  ['/collections/*', '/report/'],
+  ['/pages/*', '/'],
+  ['/cart', '/'],
+  ['/cart/*', '/'],
+  ['/account', '/'],
+  ['/account/*', '/'],
+  ['/search', '/'],
+];
+
 export const root = fileURLToPath(new URL('../', import.meta.url));
 // Story-Website (Owner 17.11.2026): Unterseiten neben index.html; Bilder, Stil und Skript unter web/.
 // Marktbriefing (products/news/briefing/www.js): neueste Ausgabe unter marktbriefing/, Archiv unter marktbriefing/<sitzung>/.
@@ -148,6 +161,9 @@ export async function build({output = resolve(root,'dist'), config = {}, product
     await writeFile(resolve(output,r.pfad),page);
     llmsSeiten.push({pfad:r.pfad,html:page});
   }
+  // Unbekannte Adressen: echte 404-Seite statt stiller Startseite (Cloudflare Pages liefert 404.html mit Status 404).
+  // Die Seite bleibt immer noindex; Pfade sind absolut, daher Stempel mit Präfix "/".
+  await writeFile(resolve(output,'404.html'),stampPage(ratgeber.fehler.replace('<head>','<head>\n  <meta http-equiv="Content-Security-Policy" content="'+esc(csp)+'">\n  <meta name="referrer" content="no-referrer">'),'/').replace('<meta name="vu-ga" content="">',`<meta name="vu-ga" content="${ga}">`));
   // The partner presentation is shared by direct link only and stays out of search.
   let partner=await readFile(resolve(output,'partner/index.html'),'utf8');
   partner=partner.replace('<head>','<head>\n  <meta http-equiv="Content-Security-Policy" content="'+esc(csp)+'">\n  <meta name="referrer" content="no-referrer">');
@@ -171,12 +187,15 @@ export async function build({output = resolve(root,'dist'), config = {}, product
     await writeFile(resolve(output,page),html);
   }
   await writeFile(resolve(output,'_headers'),`/*\n  Content-Security-Policy: ${csp}\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: no-referrer\n  X-Frame-Options: DENY\n  Permissions-Policy: camera=(), microphone=(), geolocation=()\n${production?'':'  X-Robots-Tag: noindex, nofollow\n'}`);
+  // Alte Shopify-Adressen (früherer Shop unter visionuniverse.de) dauerhaft umleiten, damit Suchmaschinen und KI-Suchen
+  // die alten Aktienreport-Seiten ersetzen (docs/publishing/HANDBUCH.md §9). /policies/* bleibt: dort liegen echte Seiten.
+  await writeFile(resolve(output,'_redirects'),ALTE_SHOP_ADRESSEN.map(([von,nach])=>`${von} ${nach} 301`).join('\n')+'\n');
   // Pages handles apex -> www in custom-domain settings, not _redirects.
   // Static aliases keep the existing Research legal links working later.
   for(const [alias,target] of [['legal-notice','impressum'],['privacy-policy','datenschutz']]){
     await mkdir(resolve(output,'policies',alias),{recursive:true});
     const legal=await readFile(resolve(output,target,'index.html'),'utf8');
-    await writeFile(resolve(output,'policies',alias,'index.html'),legal.replaceAll('href="../','href="../../'));
+    await writeFile(resolve(output,'policies',alias,'index.html'),legal.replaceAll('href="../','href="../../').replaceAll('src="../','src="../../'));
   }
   await writeFile(resolve(output,'.nojekyll'),'');
   // Suche (docs/publishing/HANDBUCH.md §9): llms.txt für KI-Suchen, IndexNow-Schlüssel (derselbe wie auf research, IndexNow
