@@ -2,8 +2,9 @@
 # Prueft, ob die Gruppe pages-production frei ist von Dispatch-Laeufen (Recovery, Refresh-Re-Dispatch), bevor eine Sitzung einen PR mergt,
 # der pages-release ausloest (Pfade ausserhalb der Ignorierliste in .github/workflows/pages-release.yml). Warum (Steuerung 23.11.2026):
 # die Gruppe hat EINEN Wartesteckplatz, ein neuer wartender Lauf verdraengt den wartenden; 05:42:29 UTC verdraengte ein Merge-Push den
-# Re-Dispatch von 05:41:50 nach 40 s (Company-Intelligence-Recovery). Ein Lauf mit Ereignis workflow_dispatch, der noch nicht abgeschlossen ist
-# (queued, waiting, pending, in_progress), belegt die Gruppe.
+# Re-Dispatch von 05:41:50 nach 40 s (Company-Intelligence-Recovery). Ein Lauf mit Ereignis workflow_dispatch, der WARTET (queued, waiting, pending),
+# belegt den Wartesteckplatz und blockiert. Ein LAUFENDER Dispatch (in_progress) blockiert nicht mehr (24.11.2026, Steuerung): er kann nicht
+# verdraengt werden, ein Merge-Push wird hoechstens der wartende Lauf, den ein neuerer Dispatch (Recovery, Refresh, Notfall) ersetzt.
 # BOERSENFENSTER (Steuerung 23.11.2026): Mo-Fr 13:30 <= UTC < 21:00 liefert ein Merge, der pages-release ausloest, Exit 1 "Boersenfenster"
 # (14:24 UTC mergte ein Produkt-PR, der Voll-Release hielt die Gruppe 23 min und liess die Takte 14:25-14:43 ausfallen). Ob ein PR pages-release
 # ausloest, entscheidet der push-Pfadfilter aus pages-release.yml (pages-release-pfade.mjs): Doku-, Test- und scripts/ci-Pfade loesen nichts aus.
@@ -31,7 +32,7 @@ end=$(( $(date +%s) + max * 60 )); fehler=0
 while :; do
   if out="$(gh api "repos/{owner}/{repo}/actions/workflows/pages-release.yml/runs?event=workflow_dispatch&per_page=30" 2>/dev/null)"; then
     fehler=0
-    belegt="$(printf '%s' "$out" | jq -r '[.workflow_runs[]|select(.status != "completed")|"\(.id) \(.status) seit \(.created_at)"]|join("; ")' 2>/dev/null)"
+    belegt="$(printf '%s' "$out" | jq -r '[.workflow_runs[]|select(.status != "completed" and .status != "in_progress")|"\(.id) \(.status) seit \(.created_at)"]|join("; ")' 2>/dev/null)"
     rc=$?
     if [ $rc -eq 0 ]; then
       if [ -z "$belegt" ]; then echo "pages-production frei (kein Dispatch-Lauf offen)"; exit 0; fi
