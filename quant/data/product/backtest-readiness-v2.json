@@ -1,9 +1,9 @@
 {
  "schemaVersion": "backtest-readiness-2.0.0",
- "generatedAt": "2026-11-22T23:13:44.243Z",
+ "generatedAt": "2026-11-24T00:39:19.432Z",
  "signalStudy": {
   "asOf": "2026-11-20",
-  "generatedAt": "2026-11-22T23:11:51.658Z",
+  "generatedAt": "2026-11-24T00:37:14.756Z",
   "returnType": "TOTAL_RETURN",
   "studySchemaVersion": "signal-backtest-study-2.0.0",
   "studyEngineVersion": "signal-backtest-2.0.0",
@@ -49,31 +49,31 @@
   {
    "id": "setupObservations",
    "label": "Setup-Beobachtungen und Wechsel",
-   "count": 39,
+   "count": 40,
    "from": "2026-09-10",
-   "to": "2026-11-20",
-   "spanDays": 71,
+   "to": "2026-11-23",
+   "spanDays": 74,
    "replay": {
     "titles": 160,
-    "observations": 127579,
+    "observations": 127725,
     "from": "1991-03-08"
    }
   },
   {
    "id": "factorSnapshots",
    "label": "Faktor-Snapshots",
-   "count": 39,
+   "count": 40,
    "from": "2026-09-23",
-   "to": "2026-11-20",
-   "spanDays": 58
+   "to": "2026-11-23",
+   "spanDays": 61
   },
   {
    "id": "strategyAssignments",
    "label": "Strategie-Zuordnungen und Wechsel",
-   "count": 39,
-   "from": "2026-11-19",
-   "to": "2026-11-20",
-   "spanDays": 1
+   "count": 40,
+   "from": "2026-11-20",
+   "to": "2026-11-23",
+   "spanDays": 3
   },
   {
    "id": "membershipSnapshots",
@@ -97,7 +97,7 @@
    },
    "daily": {
     "titlesFullHistory": 5,
-    "titlesLastYear": 5997
+    "titlesLastYear": 5998
    }
   },
   {
@@ -112,7 +112,7 @@
     "reason": null,
     "contract": "canonical-total-return-1.0.0",
     "asOf": "2026-11-20",
-    "generatedAt": "2026-11-22T23:11:51.658Z"
+    "generatedAt": "2026-11-24T00:37:14.756Z"
    },
    "daily": {
     "titles": 5,
@@ -128,7 +128,7 @@
   {
    "id": "regimeHistory",
    "label": "Marktphasen-Historie",
-   "count": 39,
+   "count": 40,
    "from": "2026-09-10",
    "derivable": {
     "from": "1995-01-03",
@@ -154,7 +154,7 @@
   {
    "id": "levels",
    "label": "Einstieg, Invalidierung, Ziele",
-   "publishedSnapshots": 39,
+   "publishedSnapshots": 40,
    "reconstructible": {
     "titles": 5
    }
@@ -186,7 +186,7 @@
   {
    "id": "pitFundamentals",
    "label": "Fundamentaldaten point-in-time",
-   "ready": 4965,
+   "ready": 5002,
    "of": 6009
   },
   {
@@ -242,7 +242,7 @@
      "id": "pit",
      "label": "Point-in-Time-Wiederholung",
      "state": "PASS",
-     "value": "5931 veröffentlichte Stände exakt nachgerechnet, 0 Verstöße",
+     "value": "6081 veröffentlichte Stände exakt nachgerechnet, 0 Verstöße",
      "reason": null
     },
     {
@@ -271,7 +271,7 @@
     {
      "id": "SETUP_CONFIRMED",
      "trust": "LIMITED",
-     "n": 825,
+     "n": 826,
      "titles": 116,
      "displayAllowed": false,
      "returnType": "TOTAL_RETURN"
@@ -279,7 +279,7 @@
     {
      "id": "SETUP_NEW",
      "trust": "LIMITED",
-     "n": 7509,
+     "n": 7519,
      "titles": 148,
      "displayAllowed": false,
      "returnType": "TOTAL_RETURN"
@@ -287,7 +287,7 @@
     {
      "id": "SETUP_WEAKENED",
      "trust": "LIMITED",
-     "n": 8287,
+     "n": 8294,
      "titles": 149,
      "displayAllowed": false,
      "returnType": "TOTAL_RETURN"
@@ -414,7 +414,7 @@
      "id": "pitFactors",
      "label": "Faktorhistorie point-in-time",
      "state": "PASS",
-     "value": "39 Faktor-Snapshots seit 2026-09-23",
+     "value": "40 Faktor-Snapshots seit 2026-09-23",
      "reason": null
     },
     {
@@ -456,14 +456,14 @@
      "id": "factorHistory",
      "label": "Faktorhistorie",
      "state": "PASS",
-     "value": "39 Snapshots über 58 Tage",
+     "value": "40 Snapshots über 61 Tage",
      "reason": null
     },
     {
      "id": "pitFundamentals",
      "label": "Fundamentaldaten datierbar",
      "state": "PASS",
-     "value": "4965 von 6009 Titeln",
+     "value": "5002 von 6009 Titeln",
      "reason": null
     },
     {
