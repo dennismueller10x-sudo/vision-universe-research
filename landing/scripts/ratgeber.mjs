@@ -369,10 +369,18 @@ function chrome(newsHtml, tiefe) {
   return {top: fix(top).trim(), bottom: fix(bottom).trim()};
 }
 
+// Vorschaubilder zum Teilen (WhatsApp, LinkedIn …): je Ratgeber-Seite ein eigenes Bild assets/share/<schlüssel>.jpg,
+// gebaut von scripts/share-images.mjs. Fehlt eins, gilt das allgemeine Ratgeber-Bild bzw. das News-Bild.
+export const teilSchluessel = (pfad) => pfad.replace(/\/index\.html$/, '').replace(/\//g, '-');
+function teilBild(pfad) {
+  for (const k of [teilSchluessel(pfad), 'ratgeber']) if (existsSync(resolve(root, `assets/share/${k}.jpg`))) return `${SITE}/assets/share/${k}.jpg`;
+  return null;
+}
+
 function seite({pfad, titel, beschreibung, ld, body, bild, newsHtml}) {
   const tiefe = pfad.split('/').length - 1, pre = '../'.repeat(tiefe), url = `${SITE}/${pfad.replace('index.html', '')}`;
   const c = chrome(newsHtml, tiefe);
-  const og = bild || `${SITE}/assets/share/news.jpg`;
+  const og = bild || teilBild(pfad) || `${SITE}/assets/share/news.jpg`;
   return `<!doctype html>
 <html lang="de" class="vw">
 <head>
@@ -389,6 +397,10 @@ function seite({pfad, titel, beschreibung, ld, body, bild, newsHtml}) {
 <meta property="og:title" content="${esc(titel)}">
 <meta property="og:description" content="${esc(beschreibung)}">
 <meta property="og:image" content="${og}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="${esc(titel)}">
+<meta name="twitter:image" content="${og}">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#ffffff">
 <link rel="icon" href="${pre}assets/icon-192.png" type="image/png">
@@ -544,6 +556,17 @@ export function fehlerSeite(ctx) {
   return seite({pfad: '404.html', titel: 'Seite nicht gefunden · Vision Universe', beschreibung: 'Diese Seite gibt es nicht mehr. Vision Universe ist die App, die Aktien einfach erklärt.', ld: [], body, newsHtml: ctx.newsHtml})
     .replace(/<script type="application\/ld\+json">[^<]*<\/script>\n?/, '').replace(/<link rel="canonical"[^>]*>\n?/, '').replace(/<meta property="og:url"[^>]*>\n?/, '')
     .replace(/(href|src)="(?!https?:|\/|#|mailto:|data:)/g, '$1="/');
+}
+
+// Inhalt der Teilen-Bilder (scripts/share-images.mjs): Bereich mit Icon, Überschrift, erster Satz, App-Bild im iPhone.
+export function teilKarten(base = root) {
+  const {welten, artikel} = laden(base), W = welten.welten;
+  const fertig = Object.keys(artikel).length;
+  return [
+    {schluessel: 'ratgeber', icon: W[3].icon, bereich: `Ratgeber · ${fertig} Artikel`, h1: 'Geld und Börse, <mark>einfach erklärt.</mark>', satz: 'Mit Grafiken zum Ausprobieren und echten Zahlen von echten Firmen.', bild: 'fundamental'},
+    ...W.map((w) => ({schluessel: teilSchluessel(`ratgeber/thema/${w.id}/index.html`), icon: w.icon, bereich: `Ratgeber · Themenwelt`, h1: `${esc(w.name)}: <mark>${esc(w.satz)}</mark>`, satz: w.beschreibung, bild: WELT_BILD[w.id]})),
+    ...Object.values(artikel).map((a) => { const w = W.find((x) => x.id === a.welt); return {schluessel: teilSchluessel(`ratgeber/${a.slug}/index.html`), icon: w.icon, bereich: `Ratgeber · ${w.name}`, h1: a.h1, satz: a.untertitel, bild: a.app?.bild || WELT_BILD[w.id]}; }),
+  ];
 }
 
 export function ratgeberSeiten(base = root) {
