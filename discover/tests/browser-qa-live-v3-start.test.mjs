@@ -18,3 +18,14 @@ test('Live-QA: genau fuenf Karten, Snapshots hoechstens je Karte, Abos beim Verl
   assert.match(src, /location\.hash = "#\/maerkte"/);
   assert.match(src, /nachher\.subscribers === 0 && nachher\.unsubscriptions >= vorher\.subscribers/);
 });
+
+/* Standardzeitraum 1J laut core/chart-standard.js; 1T bleibt waehlbar (AY, 24.11.2026). */
+test('Live-QA: Aktienseite startet mit 1J, 1T bleibt waehlbar und zeigt den Intraday-Chart', () => {
+  assert.doesNotMatch(src, /Aktienseite: 1T ist Standard/);
+  assert.doesNotMatch(src, /Mobil: Aktienseite 1T mit Chart/);
+  assert.match(src, /standardTf === "1J"/);
+  assert.match(src, /1T zeigt den Intraday-Chart mit Zeitachse/);
+  assert.match(src, /Mobil: 1T waehlbar und zeigt den Intraday-Chart/);
+  const cs = fs.readFileSync(new URL('../../core/chart-standard.js', import.meta.url), 'utf8');
+  assert.match(cs, /DEFAULT_RANGE\s*=\s*["']1J["']/, 'die Erwartung folgt dem Standard im Code');
+});

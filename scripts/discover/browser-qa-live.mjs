@@ -144,8 +144,15 @@ ok("Beim Verlassen der Startseite werden die Abonnements gekuendigt", nachher.su
 /* Aktienseite: Standard 1T */
 const sym = await d.evaluate(() => { const e = window.VUDiscover.LiveHub.index().entries; return Object.keys(e)[0]; });
 await d.goto(BASE + "/discover/#/s/US_REAL/" + sym, { waitUntil: "networkidle" }); await warten(d, 1500);
-ok("Aktienseite: 1T ist Standard", (await d.locator('.dx-tf button[aria-pressed="true"]').first().textContent()) === "1T");
-ok("Aktienseite: Intraday-Chart mit Zeitachse", (await d.locator(".dx-intraday-chart .dx-micro-axis").count()) >= 3);
+/* Standardzeitraum ist 1J (core/chart-standard.js DEFAULT_RANGE, Redesign 2027 C06/D09; AY, 24.11.2026);
+   1T bleibt in der Leiste waehlbar und zeigt den Tagesverlauf (#2114). */
+const standardTf = await d.locator('.dx-tf button[aria-pressed="true"]').first().textContent();
+ok("Aktienseite: 1J ist Standard", standardTf === "1J", standardTf);
+ok("Aktienseite: Standard 1J zeichnet den Verbraucher-Chart", (await d.locator(".dx-range-chart").count()) === 1);
+const tag1 = d.locator('.dx-tf button', { hasText: /^1T$/ });
+ok("Aktienseite: 1T bleibt waehlbar", (await tag1.count()) === 1 && !(await tag1.first().isDisabled()));
+await tag1.first().click(); await warten(d, 800);
+ok("Aktienseite: 1T zeigt den Intraday-Chart mit Zeitachse", (await d.locator(".dx-intraday-chart .dx-micro-axis").count()) >= 3);
 /* Der Zustand des Tagesverlaufs muss auf der Seite stehen - aber nicht
    zwingend in der Fussnote. Seit V4.1 traegt ihn die Statuszeile ueber
    dem Chart ("Markt geoeffnet · Live", "Letzter Handelstag · Donnerstag",
@@ -195,7 +202,10 @@ const hoehen = await m.evaluate(() => [...document.querySelectorAll(".dx-poster-
 ok("Mobil: Kartenbilder gleich hoch (kein Sprung durch Live)", new Set(hoehen).size <= 2, hoehen.join(","));
 if (SHOTS) await m.screenshot({ path: SHOTS + "/live-04-home-mobile.png" });
 await m.goto(BASE + "/discover/#/s/US_REAL/" + sym, { waitUntil: "networkidle" }); await warten(m, 1500);
-ok("Mobil: Aktienseite 1T mit Chart", (await m.locator(".dx-intraday-chart").count()) === 1);
+ok("Mobil: Aktienseite startet mit 1J (Verbraucher-Chart)", (await m.locator(".dx-range-chart").count()) === 1 && (await m.locator('.dx-tf button[aria-pressed="true"]').first().textContent()) === "1J");
+{ const tm = m.locator('.dx-tf button', { hasText: /^1T$/ });
+  if (await tm.count()) { await tm.first().click(); await warten(m, 800); }
+  ok("Mobil: 1T waehlbar und zeigt den Intraday-Chart", (await m.locator(".dx-intraday-chart").count()) === 1); }
 if (SHOTS) await m.screenshot({ path: SHOTS + "/live-05-detail-mobile.png" });
 ok("Mobil: keine Konsolenfehler", m.__m.length === 0, m.__m.slice(0, 3).join(" | "));
 
