@@ -276,7 +276,9 @@ Einzelwörter bekommen in Kacheln eine kleinere Schrift. Die Kacheln folgen dem 
 (Owner 23.11.2026): Datum und Datenherkunft stehen in der kleinen Zeile unter jeder Grafik, `quellen` im Artikel bleibt
 als interner Beleg. Indexverlauf (`index-chart`): Gesamtrendite der ETFs SPY, URTH, ACWI aus `vorsorge/data/series`,
 eingefroren in `daten.json` (`indizes`). Vorschaubild zum Teilen je Seite: `assets/share/ratgeber*.jpg`, neu bauen mit
-`node landing/scripts/share-images.mjs --nur-ratgeber` (Playwright lokal) nach jedem neuen oder umbenannten Artikel (Test RG-9).
+`node landing/scripts/share-images.mjs --nur-ratgeber` (Playwright lokal) nach jedem neuen oder umbenannten Artikel (Test RG-9). Alle übrigen Seiten von www haben ebenfalls ein eigenes Bild: Story-Seiten
+über `share-images.mjs` (ohne Schalter), Rechtliches, Partner, Instagram und Newsletter über `--weitere` (Liste `WEITERE`),
+News-Artikel über ihr Artikelbild, das Marktbriefing über `teilen.png`. Test SEO-6 prüft jede gebaute Seite.
 
 **Alte Shop-Adressen** (24.11.2026): Der frühere Shopify-Shop lief unter derselben Domain. Seine Adressen (`/pages/*`,
 `/products/*`, `/collections/*`, `/blogs/*`, `/cart`, `/account`, `/search`) leitet `_redirects` dauerhaft (301) auf die

@@ -15,6 +15,10 @@ import { teilKarten } from './ratgeber.mjs';
 
 // --nur-ratgeber: nur die Ratgeber-Bilder (assets/share/ratgeber*.jpg) neu bauen, Story-Seiten unverändert lassen.
 const nurRatgeber = process.argv.includes('--nur-ratgeber');
+// --weitere: nur die von Hand gepflegten Seiten ohne eigenes Story-Layout (Rechtliches, Instagram, Partner, Newsletter).
+const nurWeitere = process.argv.includes('--weitere');
+
+import { WEITERE, ICON, RECHT, teilenTags } from './teilen.mjs';
 
 const SITE = 'https://www.visionuniverse.de/';
 const out = resolve(root, 'tests/output/share');
@@ -52,7 +56,7 @@ const browser = await chromium.launch(process.env.CHROMIUM_PATH ? { executablePa
 const page = await browser.newPage({ viewport: { width: 1200, height: 630 }, deviceScaleFactor: 1 });
 await mkdir(resolve(root, 'assets/share'), { recursive: true });
 const done = [];
-for (const path of nurRatgeber ? [] : ['index.html', ...SITE_PAGES]) {
+for (const path of nurRatgeber || nurWeitere ? [] : ['index.html', ...SITE_PAGES]) {
   const html = await readFile(resolve(out, path), 'utf8');
   const d = describe(path, html);
   const phone = (img) => `<div class="aphone"><div class="in">${ahdr}<div class="scr"><img src="/${img}" alt=""></div><img class="adock" src="/web/img/app/dock.png" alt=""></div></div>`;
@@ -86,7 +90,7 @@ p{margin-top:16px;font-size:23px;font-weight:600;color:#333;line-height:1.35;max
 // Ratgeber: Bilder aus den Inhaltsdaten (Bereich, Überschrift, Untertitel, App-Bild); die Seiten verweisen selbst darauf
 // (scripts/ratgeber.mjs, teilBild). Lange Überschriften bekommen eine kleinere Schrift, damit nichts abgeschnitten wird.
 const satz1 = (t) => { const e = t.split(/(?<=[.!?])\s/)[0]; return e.length <= 120 ? e : short(e, 115); };
-for (const k of teilKarten()) {
+async function karte(k) {
   const lang = text(k.h1).length, groesse = lang > 62 ? 48 : lang > 46 ? 54 : 64;
   const phone = `<div class="aphone"><div class="in">${ahdr}<div class="scr"><img src="/web/img/app/${k.bild}.jpg" alt=""></div><img class="adock" src="/web/img/app/dock.png" alt=""></div></div>`;
   await page.setContent(`<!doctype html><html lang="de"><head><meta charset="utf-8"><base href="${base}"><link rel="stylesheet" href="${base}${css}"><style>
@@ -104,7 +108,11 @@ p{margin-top:18px;font-size:23px;font-weight:600;color:#333;line-height:1.35;max
   const file = `assets/share/${k.schluessel}.jpg`;
   await page.screenshot({ path: resolve(root, file), type: 'jpeg', quality: 84 });
   console.log(`${k.schluessel.padEnd(36)} ${file}`);
+  return file;
 }
+if (!nurWeitere) for (const k of teilKarten()) await karte(k);
+const weitere = [];
+if (!nurRatgeber) for (const [path, icon, bereich, h1, satz, bild] of WEITERE) weitere.push({ path, satz, h1, file: await karte({ schluessel: path.replace(/\/index\.html$/, '').replace(/\//g, '-'), icon: ICON[icon], bereich, h1, satz, bild }) });
 await browser.close();
 server.close();
 await rm(out, { recursive: true, force: true });
@@ -124,4 +132,13 @@ for (const { path, file, slug, h1, lead } of done) {
   else html = html.replace(/<meta property="og:url" content="[^"]*">/, `<meta property="og:url" content="${url}">`);
   await writeFile(src, html);
   console.log(`${slug.padEnd(24)} ${file}`);
+}
+
+// Weitere Seiten: Teilen-Angaben einsetzen oder ersetzen. Rechtstexte (RECHT) bleiben unberührt, ihre Angaben setzt
+// scripts/build.mjs beim Bau ein (die Dateien sind per Prüfsumme freigegeben, review/legal-revisions.json).
+for (const { path, h1, satz } of weitere) {
+  if (RECHT.has(path)) continue;
+  const src = resolve(root, path);
+  const html = await readFile(src, 'utf8');
+  await writeFile(src, teilenTags(html, path, h1, satz));
 }

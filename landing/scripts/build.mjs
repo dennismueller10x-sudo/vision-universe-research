@@ -5,6 +5,7 @@ import {fileURLToPath} from 'node:url';
 import {createHash} from 'node:crypto';
 import {mitStrukturiertenDaten, llmsTxt} from './seo.mjs';
 import {ratgeberSeiten} from './ratgeber.mjs';
+import {WEITERE, RECHT, teilenTags} from './teilen.mjs';
 
 // Umleitungen der alten Shopify-Adressen (Cloudflare Pages _redirects, Reihenfolge zählt: erste Regel gewinnt).
 export const ALTE_SHOP_ADRESSEN = [
@@ -115,6 +116,9 @@ export async function build({output = resolve(root,'dist'), config = {}, product
       const version=createHash('sha256').update(await readFile(resolve(output,'legal.css'))).digest('hex').slice(0,16);
       page=page.replace(/href="((?:\.\.\/)+legal\.css)"/g,`href="$1?v=${version}"`);
     }
+    // Rechtstexte: Teilen-Angaben (Vorschaubild) nur im Bau einsetzen, die freigegebenen Quelldateien bleiben unverändert.
+    const recht = WEITERE.find(([p]) => p === path && RECHT.has(p));
+    if (recht) page = teilenTags(page, path, recht[3], recht[4]);
     if (path === 'index.html') html = page; else await writeFile(resolve(output,path),page);
   }
 
