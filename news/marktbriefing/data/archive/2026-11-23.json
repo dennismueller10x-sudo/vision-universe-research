@@ -3,7 +3,7 @@
  "method": "market-briefing-1.0.0",
  "kind": "CLOSE",
  "session": "2026-11-23",
- "generatedAt": "2026-11-24T01:47:46.331Z",
+ "generatedAt": "2026-11-24T02:20:55.454Z",
  "fresh": {
   "ok": true,
   "session": "2026-11-23",
@@ -14,8 +14,8 @@
    "id": "overview",
    "type": "MARKET",
    "kicker": "Wall Street am Montag",
-   "title": "Tech treibt die Wall Street kräftig an",
-   "sub": null,
+   "title": "Huang ist zurück, Nvidia springt 31 %",
+   "sub": "Nach der Rückkehr von Jensen Huang als Nvidia-Chef holt der Markt einen Großteil des Freitags-Verlusts zurück. Der Nasdaq 100 hat seinen besten Tag seit April 2025.",
    "stats": [
     {
      "label": "Nasdaq 100",
@@ -1147,6 +1147,20 @@
    "source": "Tagesschlüsse · Hoch = höchster Schluss in 12 Monaten"
   },
   {
+   "id": "third-1",
+   "type": "THIRD",
+   "kicker": "Auslöser",
+   "title": "Jensen Huang kehrt als Nvidia-Chef zurück",
+   "sub": "Nvidia setzt Huang wieder als Chef ein. Die Aktie schloss mehr als 31 % höher und zog Chipwerte und den ganzen Technologiesektor mit.",
+   "columns": null,
+   "bars": null,
+   "quote": null,
+   "stats": null,
+   "source": "CNBC · 23.11.2026",
+   "url": "https://www.cnbc.com/2026/11/23/anthropic-nvidia-shares.html",
+   "publisher": "CNBC"
+  },
+  {
    "id": "valuation",
    "type": "OWN",
    "kicker": "Bewertung",
@@ -1400,65 +1414,70 @@
    "source": "Vision Universe Marktbreite · US-Aktienuniversum · Tagesschluss"
   },
   {
-   "kicker": "Thema · Chartsignale",
-   "title": "4 Golden Cross, 3 Death Cross",
-   "sub": "Golden Cross: Der 50-Tage-Durchschnitt steigt über den 200-Tage-Durchschnitt. Death Cross: Er fällt darunter. Beides beschreibt den Trend, es ist keine Empfehlung.",
+   "kicker": "Thema · Trendwechsel",
+   "title": "39 Aktien springen über die 200-Tage-Linie",
+   "sub": "Die 200-Tage-Linie ist der Durchschnitt der Schlusskurse der letzten 200 Handelstage. Viele Anleger lesen sie als Grenze zwischen Auf- und Abwärtstrend.",
    "groups": [
     {
-     "label": "Golden Cross",
+     "label": "Darüber gestiegen",
      "rows": [
       {
-       "label": "EXR",
-       "sub": "Extra Space Storage · Abstand zur 200-Tage-Linie",
-       "value": 9.4
+       "label": "HPE",
+       "sub": "Hewlett Packard Enterprise",
+       "value": 17.4
       },
       {
-       "label": "KMB",
-       "sub": "Kimberly Clark · Abstand zur 200-Tage-Linie",
-       "value": 4
+       "label": "MPWR",
+       "sub": "Monolithic Power Systems",
+       "value": 16.8
       },
       {
-       "label": "KR",
-       "sub": "Kroger · Abstand zur 200-Tage-Linie",
-       "value": 4.8
+       "label": "TSLA",
+       "sub": "Tesla",
+       "value": 11.5
       },
       {
-       "label": "PSA",
-       "sub": "Public Storage · Abstand zur 200-Tage-Linie",
-       "value": 7.7
+       "label": "PLTR",
+       "sub": "Palantir Technologies",
+       "value": 11.1
       }
      ]
     },
     {
-     "label": "Death Cross",
+     "label": "Darunter gefallen",
      "rows": [
       {
-       "label": "COF",
-       "sub": "Capital One Financial · Abstand zur 200-Tage-Linie",
-       "value": -9.5
+       "label": "MNST",
+       "sub": "Monster Beverage",
+       "value": -2.9
       },
       {
-       "label": "FANG",
-       "sub": "Diamondback Energy · Abstand zur 200-Tage-Linie",
-       "value": -9.5
+       "label": "STZ",
+       "sub": "Constellation Brands",
+       "value": -2.8
       },
       {
-       "label": "STX",
-       "sub": "Seagate Technology · Abstand zur 200-Tage-Linie",
-       "value": -26.1
+       "label": "CCI",
+       "sub": "Crown Castle",
+       "value": -1.4
+      },
+      {
+       "label": "PM",
+       "sub": "Philip Morris International",
+       "value": -0.9
       }
      ]
     }
    ],
    "stat": {
-    "label": "Kreuzungen",
-    "value": 7,
+    "label": "Wechsel",
+    "value": 43,
     "of": 495
    },
-   "id": "thema-kreuzungen",
-   "topic": "kreuzungen",
+   "id": "thema-linie-200",
+   "topic": "linie-200",
    "type": "OWN",
-   "score": 2.8,
+   "score": 5.38,
    "source": "Vision Universe Technical (S&P 500, Tagesschluss 23.11.)"
   },
   {
@@ -1822,7 +1841,7 @@
  },
  "topics": {
   "shown": [
-   "kreuzungen",
+   "linie-200",
    "neue-tiefs"
   ],
   "considered": [
@@ -1852,13 +1871,13 @@
     "id": "kreuzungen",
     "raw": 2.8,
     "score": 2.8,
-    "shown": true
+    "shown": false
    },
    {
     "id": "linie-200",
     "raw": 7.17,
-    "score": 2.51,
-    "shown": false
+    "score": 5.38,
+    "shown": true
    },
    {
     "id": "volumen",
@@ -1871,15 +1890,16 @@
  "counts": {
   "MARKET": 5,
   "OWN": 6,
-  "THIRD": 0,
+  "THIRD": 1,
   "AGENDA": 1
  },
  "summary": [
   "Am Montag, 23. November 2026 gewannen der Nasdaq 100 7,0 %, der S&P 500 4,7 % und der Dow Jones 3,1 %.",
+  "Jensen Huang kehrt als Nvidia-Chef zurück (CNBC).",
   "Größte Bewegung unter den Schwergewichten: NVDA +31,5 %.",
   "18 % von 5.231 US-Aktien schlossen im Minus; 40 neuen 52-Wochen-Tiefs standen 23 Hochs gegenüber.",
   "Größter Tagesgewinn im Nasdaq 100 seit April 2025.",
-  "4 Golden Cross, 3 Death Cross.",
+  "39 Aktien springen über die 200-Tage-Linie.",
   "Als Nächstes: Dienstag US-Verbrauchervertrauen November; Mittwoch US-Wachstum 3. Quartal und PCE-Inflation Oktober."
  ]
 }
