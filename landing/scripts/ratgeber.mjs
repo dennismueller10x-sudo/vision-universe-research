@@ -492,7 +492,8 @@ ${weiter ? `<section class="rg-weiter w"><h2>Weiterlesen</h2><div class="rg-grid
 </article>`;
   const ld = [
     {'@type': 'Article', '@id': url + '#artikel', headline: a.titel, description: a.beschreibung, inLanguage: 'de-DE', datePublished: a.erschienen || a.stand, dateModified: a.stand, mainEntityOfPage: url,
-      author: {'@type': 'Organization', name: 'Redaktion Vision Universe', url: `${SITE}/`}, publisher: ORG, about: (a.suchbegriffe || []).slice(0, 3), isPartOf: {'@id': `${SITE}/ratgeber/#ratgeber`}},
+      author: {'@type': 'Organization', name: 'Redaktion Vision Universe', url: `${SITE}/`}, publisher: ORG,
+      image: [a.aufmacher ? `${SITE}/web/img/ratgeber/${a.aufmacher.src}` : null, teilBild(pfad)].filter(Boolean), about: (a.suchbegriffe || []).slice(0, 3), isPartOf: {'@id': `${SITE}/ratgeber/#ratgeber`}},
     ...((a.faq || []).length ? [{'@type': 'FAQPage', '@id': url + '#fragen', mainEntity: a.faq.map((f) => ({'@type': 'Question', name: f.f, acceptedAnswer: {'@type': 'Answer', text: strip(f.a)}}))}] : []),
     ldKrumen([['Vision Universe', `${SITE}/`], ['Ratgeber', `${SITE}/ratgeber/`], [w.name, `${SITE}/ratgeber/thema/${w.id}/`], [a.kurztitel || a.titel, url]]),
   ];
