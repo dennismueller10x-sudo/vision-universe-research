@@ -510,7 +510,7 @@
       body.replaceChildren();
       if (g) {
         if (wait0) { wait0.remove(); wait0 = null; }
-        if (top0) { top0.remove(); top0 = null; }
+        if (top0) { (top0.parentNode !== page ? top0.parentNode : top0).remove(); top0 = null; }
         R().genrePlan(g, avail).forEach(function (slot) {
           if (slot.kind === 'themes') { var t = themesSection(ctx, true); if (t) body.appendChild(t); }
           else body.appendChild(railSection(slot, ctx, avail));
@@ -533,7 +533,9 @@
       function has(kind, row) { return plan.filter(function (s) { return s.kind === kind && (!row || s.row === row); })[0] || null; }
       if (has('recent')) body.appendChild(recentSection(ctx, recent));
       /* Release-Vorschau (index.html, data-static-top): der Kopf der Top 10 steht schon im HTML; hier wird er übernommen und später durch die Sektion ersetzt. */
+      var topBox = top0 && top0.parentNode !== page ? top0.parentNode : null;
       var topSlot = top0 || h('div', 'dr-slot'); top0 = null; topSlot.removeAttribute('data-static-top'); body.appendChild(topSlot);
+      if (topBox) topBox.remove(); /* der leere statische Rahmen (dp-home) hat seinen Platz an body abgegeben */
       if (has('themes')) { var th = themesSection(ctx, false); if (th) body.appendChild(th); }
       var first = true;
       PROTO_ROWS.forEach(function (id) {
