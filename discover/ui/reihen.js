@@ -180,7 +180,8 @@
     caption(isNum(daily) ? '12 Monate · heute' : '12 Monate', daily);
     if (!Hub || !MC || !MC.renderIntraday || !Hub.enabled || !Hub.enabled() || c.region === 'EUROPE') return;
     function stop() { off = true; if (abo) { abo(); abo = null; } }
-    abo = Hub.subscribe(c.symbol, function (p) {
+    /* Nur solange die Folie im Bild ist; beim Verlassen der Startseite sofort gekuendigt (kein Warten auf den naechsten Stand). */
+    abo = (Hub.subscribeVisible || function (n, sym, f) { return Hub.subscribe(sym, f); })(art, c.symbol, function (p) {
       if (off) return;
       if (art.__heroOn && !art.isConnected) { stop(); return; }
       if (art.isConnected) art.__heroOn = true;
