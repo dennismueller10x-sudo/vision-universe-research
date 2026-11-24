@@ -402,6 +402,26 @@ Gewinner und lässt bei seltenen Mustern Geld liegen; die Bücher halten dagegen
 - Kein Urteil nach fester Schranke: Die Depotform ist neu und nach Einsicht in Stufe 2 bis 8 gewählt; berichtet wird
   beschreibend, ein gutes Ergebnis ist ein Hinweis für den Vorwärtstest.
 
+**Ergebnis Stufe 9** (Lauf 45411433777, 01/2014 bis 09/2026, nach Kosten; SPY 14,1 % p. a.):
+- **Teil A, laufen lassen mit Faktoren:** kein Muster 18,8 % p. a. (+4,8 Pp, max. Verlust −34,2 %, 8 von 13 Jahren vorn, p 0,114;
+  ohne den größten Gewinner 17,6 %), Minervini 18,3 % (+4,3 Pp, −27,7 %, p 0,084; ohne größten Gewinner 16,2 %), Turtle 18,0 %
+  (+4,0 Pp, −34,1 %; ohne GME 14,7 %). Darvas-Kasten 11,1 % (−2,9 Pp, −19,1 %), Kullamägi 11,9 % (−2,2 Pp; ohne NVDA 8,8 %).
+- **Nur Muster, laufen lassen:** Minervini 15,7 % (+1,7 Pp, max. Verlust −49,4 %), Darvas-Kasten 15,7 % (+1,6 Pp, −23,7 %),
+  Kullamägi 14,5 % (+0,5 Pp, −36,7 %). Für Darvas ist das die erste Form, in der das Muster vor SPY liegt.
+- Die fünf größten Positionen tragen 29 % bis 62 % des Gewinns; mittlere Haltedauer 8 bis 9 Monate, rund 400 bis 450 Käufe in
+  12,75 Jahren. Größte Positionen: GME ×14,2, APP ×6,8 bis ×15,1, RNG ×7,0, FTI ×8,3, NVDA ×7,6 (2015–2018) und ×4,3 (2023–2025),
+  ENPH ×9,9, PLTR ×9,2, TSLA ×6,7.
+- Gegenüber dem monatlichen Zurückstellen (Stufe 8, gekappt 15,8 %) hält das Laufenlassen den Vorsprung auch ohne den größten
+  Gewinner (16 % bis 18 %), bezahlt ihn aber mit größeren Verlustphasen.
+- **Teil B, Gewinner-Erkennung** (139.567 Titel-Monate, Grundquote für „mindestens +100 % in 12 Monaten“ 3,1 %): Ausbeute
+  Kullamägi 6,2 % (×2,0), Gap-Up 6,8 % (×2,2), Holy Grail 4,1 % (×1,3), Turtle 3,0 % (×1,0), Pocket Pivot 2,9 %, Trendvorlage
+  2,6 % (×0,8), Weinstein 2,6 %, bestes Fünftel nach Signal 2,6 %, Darvas 1,6 %, Darvas-Kasten 1,3 % (×0,4). Kein Muster hebt
+  die Ausbeute über 7 %: von 100 markierten Titeln verdoppeln sich höchstens 7. Die breiten Muster (Weinstein, Pocket Pivot,
+  Turtle) hatten rund 40 % aller späteren Gewinner markiert, aber auch rund 40 % aller Titel.
+- Lesart: Die Muster „springen an“, aber bei sehr vielen Titeln; sie sagen einen Verdoppler kaum besser voraus als der Zufall.
+  Der Vorsprung der Faktor-Depots kommt nicht aus mehr Verdopplern, sondern aus weniger schwachen Titeln und daraus, Gewinner
+  nicht zu stutzen.
+
 ## 5. Ausführung und Veröffentlichung
 
 - Umsetzung: `scripts/research/backtest2/` (Markt, Signale, Depotführung, Suche, Lauf mit Workern). Workflow `research.yml`, Teil
