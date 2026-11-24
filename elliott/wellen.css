@@ -390,3 +390,37 @@ main[data-market] .vu-sothers{display:none}
 #el-detail .bp-zt{fill:var(--vu-mute,#6e6e6e);font-size:10px;font-weight:700}
 #el-detail .bp-score-v{display:inline-block;min-width:44px;padding:2px 10px;border-radius:999px;background:var(--vu-ink,#000);color:var(--vu-inv,#fff);text-align:center;font-weight:800}
 #el-detail .bp-score-strong_up .bp-score-v,#el-detail .bp-score-up .bp-score-v{background:#c8f531;color:#000}
+/* Großes Bild im Analysten-Stil (Owner 24.11.2026): randlos auf dem Telefon, dunkle Bühne, Bänder bis zum Rand, dicke Pfeile, Preis-Etiketten */
+#el-detail .bp-chart.hk{margin:6px -16px 0;background:#000;border-radius:0}
+@media(min-width:760px){#el-detail .bp-chart.hk{margin:6px 0 0;border-radius:16px;overflow:hidden}}
+#el-detail .hk-svg{display:block}
+#el-detail .hk-grid{stroke:#2a2a2a;stroke-width:1}
+#el-detail .hk-ax{fill:#9b9b9b;font-size:11px}
+#el-detail .hk-future{fill:#141414}
+#el-detail .hk-zone{stroke:none}
+#el-detail .hk-target{fill:#c8f531;fill-opacity:.34}
+#el-detail .hk-entry,#el-detail .hk-step{fill:#9b9b9b;fill-opacity:.3}
+#el-detail .hk-z2{fill-opacity:.17}
+#el-detail .hk-z3{fill-opacity:.08}
+#el-detail .hk-zl{fill:#fff;font-size:11px;font-weight:700;paint-order:stroke;stroke:#000;stroke-width:3px}
+#el-detail .hk-inv{stroke:#fff;stroke-width:1.4;stroke-dasharray:6 5}
+#el-detail .hk-line{fill:none;stroke:#fff;stroke-width:1.8;stroke-linejoin:round}
+#el-detail .hk-c line{stroke:#9b9b9b;stroke-width:1}
+#el-detail .hk-up rect{fill:#fff}
+#el-detail .hk-dn rect{fill:#555}
+#el-detail .hk-w{font-size:13px;font-weight:800;paint-order:stroke;stroke:#000;stroke-width:4px}
+#el-detail .hk-w-big{fill:#c8f531;font-size:14px}
+#el-detail .hk-w-sub{fill:#fff}
+#el-detail .hk-w-dev{fill-opacity:.65}
+#el-detail .hk-arrow{stroke-width:3.4;stroke-linecap:round}
+#el-detail .hk-a-up{stroke:#c8f531}
+#el-detail .hk-a-dn{stroke:#9b9b9b;stroke-dasharray:7 5}
+#el-detail .hk-hd-up{fill:#c8f531}
+#el-detail .hk-hd-dn{fill:#9b9b9b}
+#el-detail .hk-tag text{font-size:11px;font-weight:800}
+#el-detail .hk-tag-p rect{fill:#fff} #el-detail .hk-tag-p text{fill:#000}
+#el-detail .hk-tag-t rect{fill:#c8f531} #el-detail .hk-tag-t text{fill:#000}
+#el-detail .hk-tag-e rect{fill:#6e6e6e} #el-detail .hk-tag-e text{fill:#fff}
+#el-detail .hk-tag-i rect{fill:#000;stroke:#fff;stroke-dasharray:3 2} #el-detail .hk-tag-i text{fill:#fff}
+#el-detail .bp-seg-r{margin:8px 0 4px}
+@media(max-width:560px){#el-detail .bp-story>div{grid-template-columns:1fr;gap:2px;padding:8px 12px}#el-detail .bp-story dt{font-size:11px;text-transform:uppercase;letter-spacing:.04em}#el-detail .bp-story dd{font-size:15px}}

@@ -110,6 +110,92 @@
     return '<svg class="bp-svg" viewBox="0 0 ' + W + " " + H + '" width="100%" role="img" aria-label="Großes Bild seit ' + esc(year(M[0][0])) + ' mit Wellen und Pfad der Methode">' + defs + g.join("") + "</svg>";
   }
 
+  /* ---------------------------------------------------------- Bild im Analysten-Stil (Owner 24.11.2026: „mehr wie HKCM, hochkant nicht gequetscht“)
+     Hochformat: hohes Bild über die volle Breite, Zukunft rechts mit Zonen als Bänder bis zum Rand, dicker Pfeil-Pfad, Preis-Etiketten an
+     der Achse (Kurs, Einstiegszone, Kursziel, Ungültig-Marke). Zeitraum „3 Jahre“ (Wochenkerzen) oder „seit Börsengang“ (Monatslinie). */
+  function seriesOf(a, td, range) {
+    var ch = a && a.chart, out = { t: [], o: [], h: [], l: [], c: [], candles: false };
+    if (range !== "all" && ch && ch.timeframe === "1W" && ch.timestamps && ch.timestamps.length > 30) {
+      var n = ch.timestamps.length, from = Math.max(0, n - 156), hasC = !ch.closeOnly && ch.open && ch.high && ch.low;
+      for (var i = from; i < n; i++) { out.t.push(ch.timestamps[i]); out.c.push(ch.close[i]); out.o.push(hasC ? ch.open[i] : ch.close[i]); out.h.push(hasC ? ch.high[i] : ch.close[i]); out.l.push(hasC ? ch.low[i] : ch.close[i]); }
+      out.candles = !!hasC; return out;
+    }
+    var M = td.monthly || [], m0 = range === "all" ? 0 : Math.max(0, M.length - 36);
+    for (var k = m0; k < M.length; k++) { out.t.push(M[k][0]); out.c.push(M[k][1]); out.o.push(M[k][1]); out.h.push(M[k][1]); out.l.push(M[k][1]); }
+    return out;
+  }
+  function svgHK(td, rows, W, a, range) {
+    var narrow = W < 560, H = Math.round(narrow ? W * 1.04 : Math.min(560, W * 0.62)), padL = 6, padR = narrow ? 62 : 74, padT = 16, padB = 24;
+    var S = seriesOf(a, td, range); if (S.c.length < 6) return "";
+    var plotW = W - padL - padR, fut = narrow ? 0.4 : 0.34, histW = plotW * (1 - fut), x0 = padL, xNow = x0 + histW, xEnd = padL + plotW;
+    var vals = S.l.concat(S.h).filter(function (v) { return v > 0; });
+    rows.forEach(function (r) { (r.zones || [{ lo: r.lo, hi: r.hi }]).forEach(function (z) { vals.push(z.lo, z.hi); }); });
+    var inv = td.primary.inv, hiD = Math.max.apply(null, S.h), loD = Math.min.apply(null, S.l);
+    if (inv && inv.p > 0 && inv.p > loD / 3 && inv.p < hiD * 3) vals.push(inv.p);
+    var lo = Math.min.apply(null, vals), hi = Math.max.apply(null, vals), LOG = hi / lo > 3;
+    if (LOG) { lo /= 1.08; hi *= 1.08; } else { var pd = (hi - lo) * 0.06; lo = Math.max(lo - pd, lo * 0.5); hi += pd; }
+    function y(v) { var t = LOG ? (Math.log(hi) - Math.log(Math.max(v, lo))) / (Math.log(hi) - Math.log(lo)) : (hi - v) / (hi - lo); return padT + t * (H - padT - padB); }
+    var n = S.c.length, step = histW / n; function x(i) { return x0 + step * (i + 0.5); }
+    var g = [], tags = [];
+    /* Gitter und Achse */
+    var ticks = [];
+    if (LOG) { for (var e = Math.floor(Math.log10(lo)); e <= Math.ceil(Math.log10(hi)); e++) [1, 2, 5].forEach(function (m) { var tv = m * Math.pow(10, e); if (tv >= lo && tv <= hi) ticks.push(tv); }); }
+    else { var rg = hi - lo, st = Math.pow(10, Math.floor(Math.log10(rg / 5))); [1, 2, 5, 10].some(function (m) { if (rg / (st * m) <= 6) { st *= m; return true; } return false; }); for (var tv = Math.ceil(lo / st) * st; tv <= hi; tv += st) ticks.push(tv); }
+    while (ticks.length > 7) ticks = ticks.filter(function (_, i) { return i % 2 === 0; });
+    ticks.forEach(function (tv) { g.push('<line class="hk-grid" x1="' + x0 + '" x2="' + xEnd + '" y1="' + y(tv).toFixed(1) + '" y2="' + y(tv).toFixed(1) + '"/><text class="hk-ax" x="' + (xEnd + 6) + '" y="' + (y(tv) + 4).toFixed(1) + '">' + esc(num(tv)) + "</text>"); });
+    var lastY = "", lastX = -1e9;
+    S.t.forEach(function (t0, i) { var yr = String(t0).slice(0, 4); if (yr !== lastY && i > 0 && x(i) - lastX > 46) { lastX = x(i); g.push('<text class="hk-ax" x="' + x(i).toFixed(1) + '" y="' + (H - 6) + '" text-anchor="middle">' + yr + "</text>"); } lastY = yr; });
+    g.push('<rect class="hk-future" x="' + xNow.toFixed(1) + '" y="' + padT + '" width="' + (xEnd - xNow).toFixed(1) + '" height="' + (H - padT - padB) + '"/>');
+    /* Zonen als Bänder bis zum rechten Rand (Einstiegszone grau, Kursziele grün, Zone 2/3 blasser) */
+    var nS = rows.length, px = function (k) { return xNow + (xEnd - xNow) * ((k + 1) / (nS + 0.35)); };
+    rows.forEach(function (r, k) {
+      var zs = r.zones && r.zones.length ? r.zones : [{ lo: r.lo, hi: r.hi }], x1 = Math.max(xNow - histW * 0.1, px(k - 1) - 6);
+      zs.forEach(function (z, q) {
+        g.push('<rect class="hk-zone hk-' + r.role + ' hk-z' + (q + 1) + '" x="' + x1.toFixed(1) + '" y="' + y(z.hi).toFixed(1) + '" width="' + (xEnd - x1).toFixed(1) + '" height="' + Math.max(3, y(z.lo) - y(z.hi)).toFixed(1) + '"/>');
+      });
+      var z1 = zs[0], lbl = (r.role === "entry" ? "Einstieg" : r.role === "target" ? "Ziel " + r.n : r.step.disp) + " · " + num(z1.lo) + "–" + num(z1.hi);
+      /* Beschriftung links oben im Band (die Pfeile laufen nach rechts zu den Punkten), bei schmalen Bändern darüber */
+      var bandH = y(z1.lo) - y(z1.hi), ly = bandH >= 18 ? y(z1.hi) + 13 : y(z1.hi) - 4;
+      if (r.role !== "step" && !narrow) g.push('<text class="hk-zl" x="' + (x1 + 5).toFixed(1) + '" y="' + ly.toFixed(1) + '">' + esc(lbl) + "</text>");
+      if (r.role === "target") tags.push({ y: y((z1.lo + z1.hi) / 2), t: num(r.step.dir === "UP" ? z1.lo : z1.hi), c: "hk-tag-t" });
+      if (r.role === "entry") tags.push({ y: y((z1.lo + z1.hi) / 2), t: num(r.step.dir === "DOWN" ? z1.hi : z1.lo), c: "hk-tag-e" });
+    });
+    /* Ungültig-Marke */
+    if (inv && inv.p >= lo && inv.p <= hi) { g.push('<line class="hk-inv" x1="' + x0 + '" x2="' + xEnd + '" y1="' + y(inv.p).toFixed(1) + '" y2="' + y(inv.p).toFixed(1) + '"/>'); tags.push({ y: y(inv.p), t: num(inv.p), c: "hk-tag-i" }); }
+    /* Kurs */
+    if (S.candles) {
+      var bw = Math.max(1, Math.min(7, step * 0.6));
+      for (var i2 = 0; i2 < n; i2++) { var up = S.c[i2] >= S.o[i2]; g.push('<g class="hk-c ' + (up ? "hk-up" : "hk-dn") + '"><line x1="' + x(i2).toFixed(1) + '" x2="' + x(i2).toFixed(1) + '" y1="' + y(S.h[i2]).toFixed(1) + '" y2="' + y(S.l[i2]).toFixed(1) + '"/><rect x="' + (x(i2) - bw / 2).toFixed(1) + '" y="' + y(Math.max(S.o[i2], S.c[i2])).toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + Math.max(1, Math.abs(y(S.o[i2]) - y(S.c[i2]))).toFixed(1) + '"/></g>'); }
+    } else g.push('<path class="hk-line" d="' + S.c.map(function (v, i) { return (i ? "L" : "M") + x(i).toFixed(1) + " " + y(v).toFixed(1); }).join("") + '"/>');
+    /* Wellenmarken: grosser Grad [x] in Grün, Unterteilung (x) weiß; nur, was im Zeitraum liegt */
+    var idx = {}; S.t.forEach(function (t0, i) { idx[String(t0).slice(0, 10)] = i; });
+    function at(t0) { t0 = String(t0).slice(0, 10); if (t0 in idx) return idx[t0]; for (var i = S.t.length - 1; i >= 0; i--) if (S.t[i] <= t0) return S.t[i].slice(0, 7) === t0.slice(0, 7) || !S.candles ? i : null; return null; }
+    var used = [];
+    function mark(c, big) {
+      if (!c) return;
+      c.waves.forEach(function (w) {
+        var i = at(w.tt); if (i === null || i === undefined) return;
+        var upE = w.tp >= w.fp, yy = (upE ? y(S.candles ? S.h[i] : w.tp) - 14 : y(S.candles ? S.l[i] : w.tp) + 24);
+        used.forEach(function (u) { if (Math.abs(u[0] - x(i)) < 24 && Math.abs(u[1] - yy) < 22) yy += upE ? -24 : 24; }); used.push([x(i), yy]);
+        g.push('<text class="hk-w ' + (big ? "hk-w-big" : "hk-w-sub") + (w.dev ? " hk-w-dev" : "") + '" x="' + x(i).toFixed(1) + '" y="' + yy.toFixed(1) + '" text-anchor="middle">' + esc(big ? "[" + w.l + "]" : "(" + w.l + ")") + "</text>");
+      });
+    }
+    mark(td.sub, false); mark(td.primary, true);
+    /* Pfad: dicker Pfeil von heute über die Punkte der Schritte */
+    var P = [[x(n - 1), y(S.c[n - 1])]].concat(rows.map(function (r, k) { return [px(k), y(r.step.point)]; }));
+    for (var s2 = 1; s2 < P.length; s2++) {
+      var upS = rows[s2 - 1].step.dir === "UP";
+      g.push('<line class="hk-arrow ' + (upS ? "hk-a-up" : "hk-a-dn") + '" x1="' + P[s2 - 1][0].toFixed(1) + '" y1="' + P[s2 - 1][1].toFixed(1) + '" x2="' + P[s2][0].toFixed(1) + '" y2="' + P[s2][1].toFixed(1) + '" marker-end="url(#hk-h-' + (upS ? "up" : "dn") + ')"/>');
+      g.push('<text class="hk-w ' + (rows[s2 - 1].step.deg === "BIG" ? "hk-w-big" : "hk-w-sub") + '" x="' + P[s2][0].toFixed(1) + '" y="' + (P[s2][1] + (upS ? -12 : 22)).toFixed(1) + '" text-anchor="middle">' + esc(rows[s2 - 1].step.disp) + "</text>");
+    }
+    /* Preis-Etiketten an der Achse, ohne Überlappung */
+    tags.push({ y: y(S.c[n - 1]), t: num(S.c[n - 1]), c: "hk-tag-p" });
+    tags.sort(function (p, q) { return p.y - q.y; });
+    for (var k2 = 1; k2 < tags.length; k2++) if (tags[k2].y - tags[k2 - 1].y < 20) tags[k2].y = tags[k2 - 1].y + 20;
+    tags.forEach(function (tg) { g.push('<g class="hk-tag ' + tg.c + '"><rect x="' + (xEnd + 2) + '" y="' + (tg.y - 10).toFixed(1) + '" width="' + (padR - 4) + '" height="20" rx="6"/><text x="' + (xEnd + 2 + (padR - 4) / 2).toFixed(1) + '" y="' + (tg.y + 4).toFixed(1) + '" text-anchor="middle">' + esc(tg.t) + "</text></g>"); });
+    var defs = '<defs><marker id="hk-h-up" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="hk-hd-up"/></marker><marker id="hk-h-dn" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="hk-hd-dn"/></marker></defs>';
+    return '<svg class="hk-svg" viewBox="0 0 ' + W + " " + H + '" width="100%" role="img" aria-label="Großes Bild mit Wellen, Zonen und Pfad der Methode">' + defs + g.join("") + "</svg>";
+  }
   /* ---------------------------------------------------------- Abschnitt */
   function titleOf(td) {
     var p = td.primary, cur = p.cur, w = p.waves[p.waves.length - 1];
@@ -153,7 +239,7 @@
         : R ? '<div><dt>Rückenwind</dt><dd>' + esc(R + " – " + (rw.dir === "UP" ? "spricht für steigende Kurse" : rw.dir === "DOWN" ? "spricht für fallende Kurse" : "kein klares Bild")) + "</dd></div>" : "") + "</dl>";
   }
   var LEVEL = { STRONG_UP: "stark aufwärts", UP: "aufwärts", MIXED: "gemischt", DOWN: "abwärts", STRONG_DOWN: "stark abwärts" };
-  var LEGEND = "[3] große Welle · (3) Unterwelle · gestrichelter Kreis = läuft noch · grün = Ziel in Trendrichtung (Zone 1 kräftig, 2 und 3 blasser) · grau = Korrektur · gestrichelte Linie = Ungültig-Marke";
+  var LEGEND = "[3] große Welle · (3) Unterwelle · grüne Bänder = Ziele (Zone 1 kräftig, 2 und 3 blasser) · graues Band = Einstieg · gestrichelt = Ungültig-Marke · Etiketten rechts = Preise";
   function countLine(c) { return KIND[c.kind] + " " + (c.dir === "UP" ? "aufwärts" : "abwärts") + " seit " + year(c.waves[0].ft) + ", Welle [" + c.cur + "]"; }
   function render(host, a, which) {
     var td0 = a.elliottTopDown, hasAlt = !!(td0.alternative && td0.altPath && td0.altPath.length), w = hasAlt && which === "alt" ? "alt" : "main", td = viewOf(td0, w);
@@ -161,12 +247,16 @@
     var seg = hasAlt ? '<div class="bp-seg" role="group" aria-label="Zählung wählen"><button type="button" data-w="main" aria-pressed="' + (w === "main") + '">Hauptzählung</button><button type="button" data-w="alt" aria-pressed="' + (w === "alt") + '">Alternative</button></div>' : "";
     var other = w === "main" ? (td0.alternative ? "Alternative: " + countLine(td0.alternative) : "") : "Hauptzählung: " + countLine(td0.primary);
     var C = td0.candidates, amb = C && C.total ? C.total.toLocaleString("de-DE") + " regelkonforme Zählungen des großen Grades, " + (C.near > 1 ? C.near + " davon nahe an der besten" : "die beste mit klarem Abstand") + "." : "";
-    host.innerHTML = '<p class="vu-ltag">' + esc("Großes Bild · " + WORDS[mode].tag) + '</p><h2 class="vu-mt bp-title">' + esc(titleOf(td)) + "</h2>" + seg + story(td, rows) +
-      '<div class="bp-chart">' + svgOf(td, rows, W) + "</div>" + '<p class="bp-legend">' + esc(LEGEND) + "</p>" +
+    /* Reihenfolge wie im Analysten-Video: Überschrift, großes Bild, dann die Sätze und der Plan */
+    var rg = host.dataset.r || "3j", W2 = Math.max(320, Math.min(1000, (host.parentNode && host.parentNode.clientWidth) || W));
+    var segR = '<div class="bp-seg bp-seg-r" role="group" aria-label="Zeitraum"><button type="button" data-r="3j" aria-pressed="' + (rg === "3j") + '">3 Jahre</button><button type="button" data-r="all" aria-pressed="' + (rg === "all") + '">Seit Börsengang</button></div>';
+    host.innerHTML = '<p class="vu-ltag">' + esc("Großes Bild · " + WORDS[mode].tag) + '</p><h2 class="vu-mt bp-title">' + esc(titleOf(td)) + "</h2>" + seg +
+      '<div class="bp-chart hk">' + svgHK(td, rows, W2, a, rg) + "</div>" + segR + '<p class="bp-legend">' + esc(LEGEND) + "</p>" + story(td, rows) +
       '<ol class="bp-plan">' + rowsHtml(td, rows) + "</ol>" +
       (other ? '<p class="bp-alt">' + esc(other + (amb ? " · " + amb : "")) + "</p>" : "") +
       '<p class="bp-note">' + esc("Zählung von oben auf Wochenschlusskursen seit " + year((td0.monthly[0] || [])[0]) + " (Frost & Prechter, Elliott Wave Principle). Zonen ohne Zeitangabe, keine Wahrscheinlichkeit. Analyse nach einer Methode, keine Anlageberatung.") + "</p>";
-    Array.prototype.forEach.call(host.querySelectorAll(".bp-seg button"), function (b) { b.addEventListener("click", function () { host.dataset.w = b.getAttribute("data-w"); render(host, a, host.dataset.w); }); });
+    Array.prototype.forEach.call(host.querySelectorAll(".bp-seg button[data-w]"), function (b) { b.addEventListener("click", function () { host.dataset.w = b.getAttribute("data-w"); render(host, a, host.dataset.w); }); });
+    Array.prototype.forEach.call(host.querySelectorAll(".bp-seg button[data-r]"), function (b) { b.addEventListener("click", function () { host.dataset.r = b.getAttribute("data-r"); render(host, a, host.dataset.w || "main"); }); });
   }
   /** Abschnitt fuer das Aktienbild; null ohne Zaehlung von oben. */
   function section(a) {
