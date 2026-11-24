@@ -183,7 +183,7 @@ test('FP-6d overlay/smoke: Datendateien (neu, geaendert, geloescht) byte-gleich,
   assert.ok((await pruefe(repo, site, liste)).fehler.some((f) => /Pruefsumme/.test(f)));
 });
 
-test('FP-7 Boersenfenster: Mo-Fr 13:30 bis 21:00 UTC, Grenzen und Wochenende', () => {
+test('FP-7 Boersenfenster: Mo-Fr 13:30 bis 21:30 UTC (Sammelrelease), Grenzen und Wochenende', () => {
   const t = (iso) => imFenster(new Date(iso));
   assert.equal(t('2026-11-18T13:29:59Z'), false);
   assert.equal(t('2026-11-18T13:30:00Z'), true, 'seit 23.11.2026 ab 13:30');
@@ -192,7 +192,9 @@ test('FP-7 Boersenfenster: Mo-Fr 13:30 bis 21:00 UTC, Grenzen und Wochenende', (
   assert.equal(t('2026-11-18T14:23:00Z'), true, 'Befund 19.11.: Voll-Release 14:23 haette aufgeschoben werden muessen');
   assert.equal(t('2026-11-18T14:30:00Z'), true);
   assert.equal(t('2026-11-18T20:59:59Z'), true);
-  assert.equal(t('2026-11-18T21:00:00Z'), false);
+  assert.equal(t('2026-11-18T21:00:00Z'), true, 'seit 24.11.2026 bis 21:30');
+  assert.equal(t('2026-11-18T21:29:59Z'), true);
+  assert.equal(t('2026-11-18T21:30:00Z'), false);
   assert.equal(t('2026-11-21T16:00:00Z'), false, 'Samstag');
   assert.equal(t('2026-11-22T16:00:00Z'), false, 'Sonntag');
   assert.equal(t('2026-11-20T16:00:00Z'), true, 'Freitag');
@@ -234,12 +236,14 @@ test('FP-9 push auf main geht durch den Schnellweg-Job: Im Fenster kein Voll-Rel
   assert.match(pkg, /needs\.intraday-schnell\.outputs\.aufschub != 'true'/, 'bei AUFSCHUB baut package nicht');
   assert.match(pkg, /needs: intraday-schnell/);
 });
-test('FP-9b Verhalten: Nicht-Intraday-Aenderung im Fenster = AUFSCHUB, um 21:00 UTC = FULL, mit Intraday-Datei = FAST, Aufschub nur im Fenster', () => {
+test('FP-9b Verhalten: Nicht-Intraday-Aenderung im Fenster = AUFSCHUB, ab 21:30 UTC = FULL, mit Intraday-Datei = FAST, Aufschub nur im Fenster', () => {
   const nurAndere = ['landing/scripts/ratgeber.mjs', 'web/ratgeber.css'];
   assert.equal(klassifiziere(nurAndere, {fenster: imFenster(new Date('2026-11-23T14:24:55Z'))}).mode, 'AUFSCHUB', '14:24 (Ratgeber)');
   assert.equal(klassifiziere(nurAndere, {fenster: imFenster(new Date('2026-11-23T13:40:00Z'))}).mode, 'AUFSCHUB', '13:40 ab 13:30');
   assert.equal(klassifiziere(nurAndere, {fenster: imFenster(new Date('2026-11-23T20:59:30Z'))}).mode, 'AUFSCHUB', '20:59');
-  assert.equal(klassifiziere(nurAndere, {fenster: imFenster(new Date('2026-11-23T21:00:30Z'))}).mode, 'FULL', 'ab 21:00 liefert der naechste Lauf alles');
+  assert.equal(klassifiziere(nurAndere, {fenster: imFenster(new Date('2026-11-23T21:00:30Z'))}).mode, 'AUFSCHUB', '21:00-21:30 wartet auf das Sammelrelease');
+  assert.equal(klassifiziere(nurAndere, {fenster: imFenster(new Date('2026-11-23T21:29:30Z'))}).mode, 'AUFSCHUB', '21:29');
+  assert.equal(klassifiziere(nurAndere, {fenster: imFenster(new Date('2026-11-23T21:30:30Z'))}).mode, 'FULL', 'ab 21:30 liefert der Takt alles in EINEM Voll-Release');
   assert.equal(klassifiziere(nurAndere, {fenster: imFenster(new Date('2026-11-23T13:29:00Z'))}).mode, 'FULL', 'vor 13:30 Voll-Release wie bisher');
   assert.equal(klassifiziere(nurAndere, {fenster: imFenster(new Date('2026-11-28T15:00:00Z'))}).mode, 'FULL', 'Samstag');
   const mix = [I + '/index.json', ...nurAndere];
@@ -259,4 +263,13 @@ test('FP-11 Basis-Paket nur von main: ein neueres Artefakt eines PR-Laufs (wegwe
   assert.equal(waehle([art(3, '2026-11-24T01:40:00Z', 'main'), art(2, '2026-11-24T01:35:47Z', 'x')]).split('\t')[0], 'u3', 'neuestes main-Artefakt gewinnt');
   assert.equal(waehle([art(4, '2026-11-24T01:40:00Z', 'main', true), art(1, '2026-11-24T01:33:03Z', 'main')]).split('\t')[0], 'u1', 'abgelaufene zaehlen nicht');
   assert.match(waehle([art(2, '2026-11-24T01:35:47Z', 'feature')]).split('\t')[0], /^(|null)$/, 'nur PR-Artefakte: leere URL, der Schritt scheitert (test -n), also Voll-Release statt Schnellweg');
+});
+
+test('FP-10 Sammelrelease: Der Wecker-Takt trifft Mo-Fr 21:30 UTC (und 21:35-21:55 als Rueckfall), nicht Sa/So; das Fenster endet genau dort', async () => {
+  const {cronTrifft} = await import('../../worker-waker/src/zeitplan.mjs');
+  const {INTRADAY_CRON} = await import('../../worker-waker/src/index.mjs');
+  for (const iso of ['2026-11-24T21:30:00Z', '2026-11-24T21:35:00Z', '2026-11-27T21:30:00Z']) assert.equal(cronTrifft(INTRADAY_CRON, Date.parse(iso)), true, iso);
+  assert.equal(cronTrifft(INTRADAY_CRON, Date.parse('2026-11-28T21:30:00Z')), false, 'Samstag');
+  assert.equal(imFenster(new Date('2026-11-24T21:29:59Z')), true);
+  assert.equal(imFenster(new Date('2026-11-24T21:30:00Z')), false);
 });

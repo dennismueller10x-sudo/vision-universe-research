@@ -79,16 +79,21 @@ export function isIntraday(path) {
 export function isIgnored(path) {
   return IGNORED_PREFIXES.some((p) => path.startsWith(p)) || IGNORED_PATTERNS.some((r) => r.test(path));
 }
-/* BOERSENFENSTER (Steuerung 19.11.2026, seit 23.11.2026 ab 13:30): Mo-Fr 13:30 bis 21:00 UTC (Boerse 14:30; die letzte halbe Stunde davor ist der Vorlauf, weil ein Voll-Release bis 22 Minuten dauert). In dieser Zeit blockierte ein Voll-Release (~15-30 Minuten) die
+/* BOERSENFENSTER (Steuerung 19.11.2026, seit 23.11.2026 ab 13:30): Mo-Fr 13:30 bis 21:30 UTC (Boerse 14:30; die letzte halbe Stunde davor ist der Vorlauf, weil ein Voll-Release bis 22 Minuten dauert). In dieser Zeit blockierte ein Voll-Release (~15-30 Minuten) die
    gemeinsame Gruppe pages-production; der Intraday-Stand lag 25-31 Minuten hinter der Boerse. Im Fenster liefert der Schnellweg
-   deshalb auch dann nur die Intraday-Dateien aus, wenn andere Dateien warten; der Voll-Release dafuer kommt nach 21:00 UTC (der
+   deshalb auch dann nur die Intraday-Dateien aus, wenn andere Dateien warten; der Voll-Release dafuer kommt ab 21:30 UTC (der
    Wecker stoesst bis 21:55 an) oder sofort mit workflow_dispatch notfall=true. Zeitumstellung: die Grenzen sind UTC, im Sommer
    (US-Handel ab 13:30 UTC) ist das Fenster anzupassen. Befund 19.11.: ein Voll-Release (Technical-Screener per workflow_run) startete 14:23 und
    lief bis 14:45; die erste Live-Lieferung kam erst 14:47 (Watchdog auslieferungVerspaetet). Deshalb begann das Fenster um 14:00, seit 23.11.2026 um 13:30. */
 /* 23.11.2026 (Steuerung): das Fenster beginnt um 13:30 UTC, ein Fenster fuer alles (Takte, Datenlaeufe, push auf main) und gleich wie
    pages-frei.sh. Anlass: 14:24 (#2333) und 15:11/15:16 (#2346, #2347) UTC liefen push-Voll-Releases von 16-26 Minuten im Fenster, die
    Takte fielen 14:25-14:43 und 15:13-15:40 aus (Waechter 15:30/15:45 rot). push-Laeufe gehen jetzt durch denselben Schnellweg-Job. */
-export const FENSTER = {von: 13 * 60 + 30, bis: 21 * 60};
+/* 24.11.2026 (Steuerung): Das Aufschubfenster endet um 21:30 UTC statt 21:00 (Sammelrelease). Am 23.11. entstanden nach 21:00 SIEBEN
+   Voll-Releases in 95 Minuten (Deploys 21:16, 21:31, 21:45, 21:59, 22:15, 22:36, 22:51): der Takt 21:01 lieferte alles Aufgeschobene, danach
+   mergten alle Sitzungen (ab 21:00 erlaubt, pages-frei.sh) und die Datenlaeufe kamen dazu; solange alle 5-10 Minuten ein Ausloeser folgt, folgt
+   auf jedes Release das naechste, und die Live-Seite wechselt ununterbrochen (Zugangsmaske ohne Inhalt, 5xx nach dem Wechsel). Jetzt wartet
+   alles bis zum EINEN Voll-Release des Wecker-Takts um 21:30 (INTRADAY_CRON: alle 5 Minuten von 13 bis 21 Uhr, trifft 21:30); Mergen bleibt ab 21:00 erlaubt. */
+export const FENSTER = {von: 13 * 60 + 30, bis: 21 * 60 + 30};
 export function imFenster(jetzt = new Date()) {
   const wt = jetzt.getUTCDay();
   if (wt < 1 || wt > 5) return false;
@@ -99,7 +104,7 @@ export function klassifiziere(changed, {fenster = false} = {}) {
   const other = changed.filter((p) => p && !isIntraday(p) && !isFastData(p) && !isIgnored(p));
   const intraday = changed.filter((p) => isIntraday(p) || isFastData(p));
   if (other.length && fenster) {
-    const wartet = other.length + ' andere Dateien warten bis 21:00 UTC';
+    const wartet = other.length + ' andere Dateien warten bis 21:30 UTC (Sammelrelease)';
     if (intraday.length) return {mode: 'FAST', reason: 'Fenster: ' + intraday.length + ' Intraday-/Datendateien, ' + wartet, aufgeschoben: other.length};
     return {mode: 'AUFSCHUB', reason: 'Fenster: ' + wartet + ', keine Intraday-Aenderung', aufgeschoben: other.length};
   }
