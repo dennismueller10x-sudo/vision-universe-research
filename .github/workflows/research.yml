@@ -2208,7 +2208,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/anpassung"
-          node scripts/diagnose/adjustment-steps.mjs --blocked --out "$RUNNER_TEMP/anpassung/adjustment-steps.json" | tee "$RUNNER_TEMP/anpassung/adjustment-steps.txt"
+          node scripts/diagnose/adjustment-steps.mjs --blocked --join --out "$RUNNER_TEMP/anpassung/adjustment-steps.json" | tee "$RUNNER_TEMP/anpassung/adjustment-steps.txt"
       - name: Bericht als CI-Artefakt
         if: always()
         uses: actions/upload-artifact@v4
