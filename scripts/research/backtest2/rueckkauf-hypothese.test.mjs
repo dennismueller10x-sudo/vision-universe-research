@@ -51,9 +51,10 @@ test('Auswertung: Kalenderjahre, Teilzeiträume, Gegenproben und Bericht', () =>
   assert.ok(ev.hypothesis.excess > 0 && ev.hypothesis.cashMonths === 0);
   assert.equal(ev.checks.length, 8); assert.equal('net' in ev.hypothesis, false); assert.equal('held' in ev.hypothesis, false);
   assert.equal(ev.topSingle.length, 15); assert.ok(ev.topSingle[0].ret >= ev.topSingle[14].ret); assert.equal(ev.singleOver100, 0);
+  assert.deepEqual(ev.marktfuehrer.map((r) => r.id), ['H1', 'H1-Kappe30']); assert.ok(ev.marktfuehrer[1].cagr <= ev.marktfuehrer[0].cagr + 1e-9); assert.ok(Array.isArray(ev.marktfuehrerTopSingle));
   assert.equal(ev.medianCheck.months, months); assert.ok(ev.medianCheck.monthsAhead === months, 'gehaltene Titel liegen im Median jeden Monat vor dem Universum');
   assert.ok(ev.checks.find((c) => c.id === 'R25-ohne-1').cagr <= ev.hypothesis.cagr + 1e-9);
   assert.ok(ev.worstYearVsSpy && ev.worstYearVsSpy.months === 12);
   const md = report({ result: ev, smoke: true, data: { loaded: 60 }, dataFingerprint: 'test' });
-  assert.match(md, /Stufe 8/); assert.match(md, /Kalenderjahre/); assert.match(md, /Härtetest/); assert.match(md, /Hängt es an Ausreißern/); assert.match(md, /\(6 Mon\.\)/); assert.doesNotMatch(md, /NaN|undefined/);
+  assert.match(md, /Stufe 8/); assert.match(md, /Kalenderjahre/); assert.match(md, /Härtetest/); assert.match(md, /Hängt es an Ausreißern/); assert.match(md, /Ausreißerprobe für das Marktführer-Depot/); assert.match(md, /\(6 Mon\.\)/); assert.doesNotMatch(md, /NaN|undefined/);
 });

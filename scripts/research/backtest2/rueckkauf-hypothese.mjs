@@ -37,6 +37,12 @@ export const CHECKS = Object.freeze([
   { id: 'R25-Trendvorlage', label: 'wie R25, nur Titel mit Trendvorlage (Minervini)', pattern: true },
   { id: 'MG25', label: 'wie R25, ohne Rückkäufe (Momentum + Bruttogewinn/Bilanz)', score: 'mom_gpa' },
 ].map((c) => ({ ...HYPOTHESIS, ...c })));
+/** Ausreißerprobe für das Marktführer-Depot der Stufe 4 (H1: Trendvorlage + Momentum + Bruttogewinn/Bilanz, 25 Titel, ohne Puffer),
+ *  ergänzt am 24.11.2026: dieselbe Regel wie dort, zusätzlich mit Kappung je Titel bei +30 %. */
+export const MARKTFUEHRER = Object.freeze([
+  { id: 'H1', label: 'Marktführer (Stufe 4, H1): Trendvorlage + Momentum + Bruttogewinn/Bilanz · 25 Titel', pattern: true, score: 'mom_gpa', n: 25, hold: false, dropTop: 0, cap: null },
+  { id: 'H1-Kappe30', label: 'Marktführer, Monatsrendite je Titel bei +30 % gekappt (Härtetest)', pattern: true, score: 'mom_gpa', n: 25, hold: false, dropTop: 0, cap: 0.30 },
+]);
 const isNum = (x) => typeof x === 'number' && Number.isFinite(x);
 
 /** Monatsreihe nach Kosten. dropTop entfernt im Nachhinein die k besten Titel des Monats aus dem Mittel (Kosten bleiben). */
@@ -81,7 +87,9 @@ export function evaluate(xs, flags, bench, { draws = 4999, nameOf = (s) => Strin
     return { id: spec.id, label: spec.label, ...st, pBootstrap: bootstrapP(idx.map((i) => s.net[i] - spy[i]), draws),
       avgTurnover: idx.reduce((a, i) => a + s.turnover[i], 0) / idx.length, cashMonths: idx.filter((i) => s.names[i] === 0).length, net: s.net, held: s.held, medianEdge: s.medianEdge };
   };
-  const h = rowOf(HYPOTHESIS), checks = CHECKS.map(rowOf);
+  const h = rowOf(HYPOTHESIS), checks = CHECKS.map(rowOf), mf = MARKTFUEHRER.map(rowOf);
+  const mfSingle = []; for (const i of idx) for (const [sid, r] of mf[0].held[i]) mfSingle.push({ ticker: nameOf(sid), month: months[i], ret: r });
+  mfSingle.sort((a, b) => b.ret - a.ret);
   const years = [...new Set(idx.map((i) => yr(i)))].map((y) => { const k = idx.filter((i) => yr(i) === y); return { year: y, months: k.length, r25: total(k.map((i) => h.net[i])), spy: total(k.map((i) => spy[i])) }; });
   const periods = PERIODS.map(([a, b]) => { const k = idx.filter((i) => yr(i) >= a && yr(i) <= b); return k.length ? { years: [a, Math.min(b, yr(k.at(-1)))], r25: ann(k.map((i) => h.net[i])), spy: ann(k.map((i) => spy[i])) } : null; }).filter(Boolean);
   const strip = ({ net, held, medianEdge, ...r }) => r;
@@ -92,7 +100,7 @@ export function evaluate(xs, flags, bench, { draws = 4999, nameOf = (s) => Strin
   const medianCheck = { months: me.length, monthsAhead: me.filter((v) => v > 0).length, medianOfMonthly: meSorted.length ? meSorted[meSorted.length >> 1] : null, mean: me.length ? me.reduce((a, b) => a + b, 0) / me.length : null };
   const over100 = single.filter((x) => x.ret > 1).length;
   return { window: [months[idx[0]], months[idx.at(-1)]], months: idx.length, benchmarks: Object.fromEntries(Object.entries(bench).map(([k, v]) => [k, { cagr: ann(idx.map((i) => v[i])) }])),
-    hypothesis: strip(h), checks: checks.map(strip), years, periods, topSingle: single.slice(0, 15), singleOver100: over100, holdingsMonths: single.length, medianCheck,
+    hypothesis: strip(h), checks: checks.map(strip), marktfuehrer: mf.map(strip), marktfuehrerTopSingle: mfSingle.slice(0, 10), years, periods, topSingle: single.slice(0, 15), singleOver100: over100, holdingsMonths: single.length, medianCheck,
     worstYearVsSpy: years.filter((y) => y.months === 12).reduce((m, y) => (m === null || y.r25 - y.spy < m.r25 - m.spy ? y : m), null) };
 }
 
@@ -115,6 +123,8 @@ export function report(res) {
     `Von ${e.holdingsMonths} Titel-Monaten hatten ${e.singleOver100} eine Monatsrendite über +100 %.`, '',
     '| Titel | Monat (Ultimo) | Rendite im Folgemonat |', '|---|---|---|');
   for (const t of e.topSingle) L.push(`| ${t.ticker} | ${t.month} | ${pct(t.ret)} |`);
+  L.push('', '## Ausreißerprobe für das Marktführer-Depot (Stufe 4, H1)', '', '| Depot | Rendite p. a. | vs. SPY | max. Verlust | Jahre vor SPY | p | Umschlag/Monat | Monate in Kasse |', '|---|---|---|---|---|---|---|---|', ...e.marktfuehrer.map(row), '',
+    'Größte Einzelbeiträge: ' + e.marktfuehrerTopSingle.map((t) => `${t.ticker} ${t.month.slice(0, 7)} ${pct(t.ret)}`).join(', ') + '.');
   L.push('', '## Teilzeiträume (p. a.)', '', '| Zeitraum | R25 | SPY | Abstand |', '|---|---|---|---|');
   for (const p of e.periods) L.push(`| ${p.years.join('–')} | ${pct(p.r25)} | ${pct(p.spy)} | ${pp(p.r25 - p.spy)} |`);
   L.push('', '## Lesehilfe', '',
