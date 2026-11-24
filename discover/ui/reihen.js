@@ -180,8 +180,7 @@
     caption(isNum(daily) ? '12 Monate · heute' : '12 Monate', daily);
     if (!Hub || !MC || !MC.renderIntraday || !Hub.enabled || !Hub.enabled() || c.region === 'EUROPE') return;
     function stop() { off = true; if (abo) { abo(); abo = null; } }
-    /* Nur solange die Reihe im Bild ist; beim Verlassen der Startseite sofort gekuendigt (kein Warten auf den naechsten Stand). */
-    abo = (Hub.subscribeVisible || function (n, sym, f) { return Hub.subscribe(sym, f); })(art, c.symbol, function (p) {
+    function onSnapshot(p) {
       if (off) return;
       if (art.__heroOn && !art.isConnected) { stop(); return; }
       if (art.isConnected) art.__heroOn = true;
@@ -191,8 +190,14 @@
       var pct = isNum(base) && base > 0 && isNum(last) ? (last / base - 1) * 100 : daily;
       box.replaceChildren(svg); box.dataset.range = '1T';
       caption((p.label && p.label.label) || 'Tagesverlauf', pct);
-    }, { rootMargin: "80px 600%" }); /* seitlich weit: alle Folien der Reihe zaehlen, solange die Reihe im Bild ist (Verlauf auf jeder Folie, Kuendigung beim Verlassen) */
-    if (off && abo) { abo(); abo = null; }
+    }
+    /* Das Abonnement hängt an der ganzen Reihe (billboard() ruft __heroBind mit dem Abschnitt), nicht an der Folie: im Karussell liegen
+       die anderen Folien seitlich ausserhalb des Scrollbereichs, ein IntersectionObserver je Folie sähe sie nie. Solange die Reihe im Bild
+       ist, abonnieren alle Folien; beim Verlassen der Startseite oder Wegscrollen der Reihe wird sofort gekündigt. */
+    art.__heroBind = function (host) {
+      if (abo || off) return;
+      abo = (Hub.subscribeVisible || function (n, sym, f) { return Hub.subscribe(sym, f); })(host, c.symbol, onSnapshot);
+    };
   }
   /** Thema der Aktie (Reihen-Zugehörigkeit aus dem Datenlauf, discover/data/membership) als zweites Etikett, wie im Prototyp. */
   function heroThemes(sec, ctx) {
@@ -222,6 +227,7 @@
       });
     }, { passive: true });
     sec.append(track, dots);
+    Array.prototype.forEach.call(track.children, function (slide) { if (slide.__heroBind) slide.__heroBind(sec); });
     setTimeout(function () { if (sec.isConnected) heroThemes(sec, ctx); }, 600);
     return sec;
   }
