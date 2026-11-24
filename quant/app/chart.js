@@ -659,7 +659,12 @@
           onChange: function (snap) {
             var last = snap && snap.isLive && snap.last;
             st.trade = last ? { fresh: true, price: last.price, at: new Date(last.timestamp).toISOString(), priceType: "TRADE" } : null;
+            var dg = global.__vuRelayDiag = global.__vuRelayDiag || {}; dg.changes = (dg.changes || 0) + 1;
+            dg.snap = snap ? { isLive: snap.isLive, hasLast: !!snap.last, keys: Object.keys(snap).slice(0, 12) } : null;
+            dg.trade = st.trade ? { at: st.trade.at, price: st.trade.price } : null;
             streamFuehren(st.trade);
+            dg.streamN = st.stream ? st.stream.pts.length : -1; dg.streamDay = st.stream && st.stream.day; dg.heute = heute();
+            dg.viewMode = (function () { try { var v = view(withLive(st.intraday, st.trade, heute())); return v && v.mode; } catch (e) { return "ERR " + e.message; } })();
             if (st.range === "1D" && !st.disposed) draw("1D"); else reportIntraday();
           } });
         st.relay = client;
