@@ -1579,6 +1579,7 @@ jobs:
           sparse-checkout: |
             scripts/mobile
             scripts/access-gate
+            scripts/company_intelligence
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
