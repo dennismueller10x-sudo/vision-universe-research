@@ -11,6 +11,7 @@ import {eligibilityRollout} from './eligibility-rollout.mjs';
 import {eligibilityValid} from './universe-approval.mjs';
 import {objectPool} from './bounded-objects.mjs';
 import {runCaseWithOneRetry} from './qa-retry.mjs';
+import {accessGateDiagnostics} from './browser-diagnostics.mjs';
 import {readLiveAsset,isTransientNetworkError,networkError,LIVE_SETTLE_MS,LIVE_READ_CONCURRENCY} from './live-asset-read.mjs';
 import {waitForHydratedConsumer} from './hydrated-consumer-review.mjs';
 import {expectsEstimatedWindow,mustShowEstimatedWindow} from './estimated-window-expectation.mjs';
@@ -41,8 +42,7 @@ let failure=null;const retriedAfterTimeout=[];
 /* Befund bei einem Timeout: war die Zugangsschranke sichtbar (der Zugangsstatus der QA wurde nicht angenommen), wurde der gesetzte Status gelesen,
    und hat sich die LIVE ausgelieferte Version (Seitenrahmen kommt live) waehrend der QA geaendert? Nur lesend, nie ein Passwort oder Statuswert im Bericht. */
 async function diagnose(page){
- const dom=await page.evaluate(key=>({readyState:document.readyState,busy:document.querySelector('#v2-main')?.getAttribute('aria-busy')??null,
-  ciState:document.querySelector('.ci-company-intelligence')?.dataset.state??null,gateShown:!!document.querySelector('#research-access-gate'),storageKeyPresent:localStorage.getItem(key)!==null}),STORAGE_KEY).catch(()=>null);
+ const dom=await accessGateDiagnostics(page,{storageKey:STORAGE_KEY});
  const liveCommit=await fetch(origin+'/release-delivery.json?qa='+Date.now()).then(r=>r.json()).then(d=>d.sourceCommit||null).catch(()=>null);
  return {url:page.url(),dom,startCommit:release?.sourceCommit||null,liveCommitNow:liveCommit,liveReleaseChangedDuringQa:Boolean(liveCommit&&release?.sourceCommit&&liveCommit!==release.sourceCommit)};
 }

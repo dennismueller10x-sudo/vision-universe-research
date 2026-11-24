@@ -37,7 +37,7 @@ test('QR-6 Verdrahtung in universe-browser-qa.mjs: Wiederholung, Diagnose und Be
  const src=readFileSync(new URL('../universe-browser-qa.mjs',import.meta.url),'utf8');
  assert.match(src,/import \{runCaseWithOneRetry\} from '\.\/qa-retry\.mjs'/);
  assert.match(src,/runCaseWithOneRetry\(runCase,c,\{onRetry:/);
- for(const needle of ['retriedAfterTimeout','gateShown','storageKeyPresent','liveReleaseChangedDuringQa','diagnosis:await diagnose(page)'])assert.ok(src.includes(needle),needle);
+ for(const needle of ['retriedAfterTimeout','liveReleaseChangedDuringQa','diagnosis:await diagnose(page)',"import {accessGateDiagnostics} from './browser-diagnostics.mjs'",'accessGateDiagnostics(page,{storageKey:STORAGE_KEY})'])assert.ok(src.includes(needle),needle);
  // Alle Inhaltspruefungen des Falls sind noch da (die Wiederholung darf nichts davon abschwaechen).
  for(const needle of ["ticker+':exact-reviewed-profile'","ticker+':overflow'","ticker+':estimated-window'","ticker+':valid-estimated-window-not-rendered'","assert(requests.every(r=>r.status===200))","assert.equal(requests,0,ticker+':ineligible-request')"])assert.ok(src.includes(needle),needle);
  // Mutant: wuerde jeder Fehler wiederholt, faellt QR-3 auf.
