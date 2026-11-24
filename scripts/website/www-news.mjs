@@ -23,6 +23,8 @@ export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "
 const LANDING = path.join(ROOT, "landing");
 // Bühnenbild: ab 900 px Breite 66 % der Seite (web/sub.css .ts-art), sonst die volle Breite.
 const HERO_SIZES = "(min-width: 900px) 66vw, 100vw";
+// Karten in den Regalen: Handy ~75 % der Breite (Karte = Innenbreite - 44 px), ab 640 px zwei, ab 1000 px vier nebeneinander (web/sub.css .ts-c).
+const CARD_SIZES = "(min-width: 1000px) 25vw, (min-width: 640px) 50vw, 75vw";
 const IMG = path.join(LANDING, "web/img/news");
 const NEWS = path.join(LANDING, "news");
 const ARTIKEL = path.join(ROOT, "products/insights/artikel");
@@ -52,7 +54,15 @@ export function readState() {
     if (!a.img) continue;
     const from = files.get(a.img), hash = crypto.createHash("sha1").update(fs.readFileSync(path.join(ROOT, from))).digest("hex").slice(0, 8);
     a.img800 = a.img.replace(/\.[a-z]+$/i, "") + `-${hash}-800.jpg`;
-    variants.set(a.img800, from);
+    variants.set(a.img800, { from, width: 800 });
+  }
+  // Ladezeit (24.11.2026): Regal- und Listenbilder zeigen eine ~300 px breite Karte; die 1600-px-Originale (bis 344 KB) luden bei
+  // langsamer Leitung gleichzeitig mit dem Aufmacher und hielten ihn bis 2,9 s auf. 640 px reichen bis doppelte Pixeldichte.
+  for (const a of artikel) {
+    if (!a.img) continue;
+    const from = files.get(a.img), hash = crypto.createHash("sha1").update(fs.readFileSync(path.join(ROOT, from))).digest("hex").slice(0, 8);
+    a.img640 = a.img.replace(/\.[a-z]+$/i, "") + `-${hash}-640.jpg`;
+    variants.set(a.img640, { from, width: 640 });
   }
   // Volltext je Artikel für die eigenen Seiten unter /news/<slug>/ (Owner 23.11.2026) samt ihrer Bilder.
   const voll = artikel.map((a) => {
@@ -139,6 +149,7 @@ export function regions(state) {
   const topShelf = (R) => {
     const pic = (x, lazy = true, hero = false) => !x.img ? '<span class="ts-noimg"></span>'
       : hero && x.img800 ? `<img src="${R}web/img/news/${x.img}" srcset="${R}web/img/news/${x.img800} 800w, ${R}web/img/news/${x.img} 1600w" sizes="${HERO_SIZES}" width="1600" height="900" alt=""${lazy ? LAZY_NIEDRIG : ' fetchpriority="high"'}>`
+      : x.img640 ? `<img src="${R}web/img/news/${x.img}" srcset="${R}web/img/news/${x.img640} 640w, ${R}web/img/news/${x.img} 1600w" sizes="${CARD_SIZES}" alt=""${lazy ? LAZY_NIEDRIG : ""}>`
       : `<img src="${R}web/img/news/${x.img}" alt=""${lazy ? LAZY_NIEDRIG : ""}>`;
     const meta = (x) => `${dmy(x.datum)} · ${esc(x.rubrik)}`;
     const card = (x) => `<a class="ts-c" data-tk="${esc(x.firma?.ticker || "")}" data-th="${esc((x.themen || []).join("|"))}" href="${link(x.href)}"><span class="ts-im">${pic(x)}</span><small>${meta(x)}</small><b>${esc(x.titel)}</b></a>`;
@@ -223,11 +234,11 @@ export function syncWww({ check = false } = {}) {
     if (fs.existsSync(dest) && fs.readFileSync(dest).equals(src)) continue;
     stale.push(`landing/web/img/news/${to}`); if (!check) fs.writeFileSync(dest, src);
   }
-  for (const [to, from] of state.variants) {
+  for (const [to, { from, width }] of state.variants) {
     const dest = path.join(IMG, to);
     if (fs.existsSync(dest)) continue;
     stale.push(`landing/web/img/news/${to}`);
-    if (!check) try { execFileSync("convert", [path.join(ROOT, from), "-resize", "800x", "-strip", "-sampling-factor", "4:2:0", "-quality", "72", dest]); } catch (e) { throw new Error(`Verkleinerung ${to} nicht möglich (ImageMagick convert nötig): ${e.message}`); }
+    if (!check) try { execFileSync("convert", [path.join(ROOT, from), "-resize", `${width}x`, "-strip", "-sampling-factor", "4:2:0", "-quality", "72", dest]); } catch (e) { throw new Error(`Verkleinerung ${to} nicht möglich (ImageMagick convert nötig): ${e.message}`); }
   }
   return stale;
 }
