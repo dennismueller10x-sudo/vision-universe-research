@@ -29,7 +29,7 @@ export async function pruefeBuehne({engine = 'chromium', shots = null, ohneCv = 
     const ctx = await browser.newContext({viewport: {width: 390, height: 844}, deviceScaleFactor: 2, isMobile: engine !== 'firefox', hasTouch: engine !== 'firefox', serviceWorkers: 'block'});
     const page = await ctx.newPage();
     const t0 = Date.now(), anfragen = [];
-    let frei = 0;
+    let frei = 0, aufmacherGesehen = false;
     await ctx.route('**/*', async route => {
       const u = new URL(route.request().url());
       if (u.origin !== ORIGIN) return route.abort();
@@ -42,9 +42,15 @@ export async function pruefeBuehne({engine = 'chromium', shots = null, ohneCv = 
       if (!f) return route.fulfill({status: 404, body: 'nicht da'});
       let body = fs.readFileSync(f);
       if (ohneCv && f.endsWith('sub.css')) body = Buffer.from(String(body).replace(/content-visibility:hidden/g, 'color:inherit'));
+      const start = Date.now() - t0;
       const jetzt = Date.now(); frei = Math.max(frei, jetzt) + body.length * 8 / 1.6e6 * 1000;
-      await new Promise(r => setTimeout(r, Math.max(150, frei - jetzt)));
-      if (/\/web\/img\/news\//.test(u.pathname)) anfragen.push({pfad: u.pathname.split('/').pop(), t: Date.now() - t0});
+      // Der Aufmacher (erste 800er-Datei) kommt auf der langsamen Leitung spaet, weil er sich die Bandbreite teilt: hier fest um 1,5 s verzoegert,
+      // damit Bilder, die ohne Rücksicht auf ihn starten, sichtbar vor ihm anfangen.
+      const extra = !aufmacherGesehen && /\/web\/img\/news\/[^/]*-800\.jpg$/.test(u.pathname) ? (aufmacherGesehen = true, 1500) : 0;
+      const eintrag = /\/web\/img\/news\//.test(u.pathname) ? {pfad: u.pathname.split('/').pop(), start, t: null} : null;
+      if (eintrag) anfragen.push(eintrag);
+      await new Promise(r => setTimeout(r, Math.max(150, frei - jetzt) + extra));
+      if (eintrag) eintrag.t = Date.now() - t0;
       return route.fulfill({status: 200, contentType: TYPEN[path.extname(f)] || 'application/octet-stream', body});
     });
     // Im Seitenkontext: jede Folie, die ihre Klasse "on" bekommt, meldet, ob ihr Bild dann fertig gezeichnet werden kann.
@@ -69,9 +75,16 @@ export async function pruefeBuehne({engine = 'chromium', shots = null, ohneCv = 
     await page.waitForTimeout(150);
     const folienBilder = await page.evaluate(() => [...document.querySelectorAll('.ts-sl')].map(s => { const im = s.querySelector('img'); return im ? (im.currentSrc || im.src).split('/').pop() : null; }));
     const cvZu = async (i) => page.evaluate(n => getComputedStyle(document.querySelectorAll('.ts-sl')[n].querySelector('.ts-art')).contentVisibility, i);
-    const imHtml = name => anfragen.find(a => name && a.pfad === name.split('?')[0]);
+    const imHtml = name => anfragen.find(a => name && a.pfad === name.split('?')[0] && a.t !== null);
     const cvUnterstuetzt = await page.evaluate(() => CSS.supports('content-visibility', 'hidden'));
     const cv = !ohneCv && cvUnterstuetzt;
+
+    // E: Regalbilder (640er) starten erst, wenn der Aufmacher fertig ist (mit content-visibility); ohne die Eigenschaft nur zur Information.
+    const aufm = anfragen.find(a => /-800\.jpg$/.test(a.pfad));
+    const regal = anfragen.filter(a => /-640\.jpg$/.test(a.pfad));
+    const fruehesRegal = regal.length ? Math.min(...regal.map(a => a.start)) : null;
+    p('E Regalbilder starten erst nach dem Aufmacher' + (cv ? '' : ' (nur mit content-visibility)'),
+      !cv || (aufm && aufm.t !== null && regal.length > 0 && fruehesRegal >= aufm.t - 30), {aufmacherFertigMs: aufm && aufm.t, erstesRegalbildStartMs: fruehesRegal, regalbilder: regal.length});
 
     // A: gleich nach dem load-Ereignis ist nur Folie 1 und die naechste (2) frei; Folien 3-5 sind noch nicht angefragt.
     const fruehe = folienBilder.map((n, i) => ({folie: i + 1, geladen: !!imHtml(n)}));
