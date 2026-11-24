@@ -186,7 +186,8 @@ for(const [key,viewport,scheme] of [['390-light',{width:390,height:844},'light']
  const d=(n,ok,x)=>check(key+' detail: '+n,ok,x);
  for(const sym of (key==='390-light'?DETAIL:['QQQ','BTCUSD','US10Y','FED_TARGET'])){
   await page.goto(base+'/discover/#/maerkte/'+sym,{waitUntil:'networkidle'});
-  await page.waitForSelector('.dx-md h1',{timeout:30000});
+  /* Nur-Hash-Wechsel bleibt im selben Dokument: auf die Seite des gefragten Symbols warten, sonst liest die Pruefung die alte (data-instrument). */
+  await page.waitForSelector('.dx-md[data-instrument="'+sym+'"] h1',{timeout:30000});
   await page.waitForFunction(()=>document.querySelector('.dx-md-chart svg')||document.querySelector('.dx-md-chart .dx-md-leer'),null,{timeout:20000}).catch(()=>null);
   const r=await page.evaluate(()=>{const t=s=>{const x=document.querySelector(s);return x?x.textContent.trim():''};
    const svg=document.querySelector('.dx-md-chart svg');
