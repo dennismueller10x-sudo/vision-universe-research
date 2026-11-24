@@ -362,6 +362,14 @@ if (sitzung.phase === "REGULAR") {
     const seiten = {};
     for (const [welt, w] of Object.entries(WELTEN)) {
       const p = await seite();
+      /* Diagnose 24.11.2026 (Ursache Quant 78 vs. Discover 2): welche Verbindungen und fehlgeschlagenen Anfragen hat die Seite? */
+      p.__diag = { websockets: [], fehler: [], intraday: [] };
+      p.on("websocket", (ws) => p.__diag.websockets.push(ws.url()));
+      p.on("response", (r) => {
+        const u = r.url();
+        if (r.status() >= 400) p.__diag.fehler.push(r.status() + " " + u);
+        else if (/\/market\/intraday\//.test(u)) p.__diag.intraday.push(r.status() + " " + u.replace(/^https?:\/\/[^/]+/, ""));
+      });
       await p.goto(BASIS + w.route(sym), { waitUntil: "networkidle" }).catch(() => null);
       seiten[welt] = p;
     }
@@ -387,6 +395,13 @@ if (sitzung.phase === "REGULAR") {
         const d = document.querySelector(sel.line);
         return { frei: true, punkte: d ? (d.getAttribute("d") || "").split(/[ML]/).filter(Boolean).length : 0 };
       }, { tf: w.tf, line: w.line }).catch(() => ({ frei: false, punkte: 0 }));
+      eintag[welt].diag = Object.assign({}, seiten[welt].__diag, await seiten[welt].evaluate(() => {
+        const H = window.VUDiscover && window.VUDiscover.LiveHub;
+        const r = H && H.resolution ? H.resolution() : null;
+        return { marketState: r && r.marketState, sessionDate: r && ((r.displaySession && r.displaySession.sessionDate) || r.localDate),
+                 hubEnabled: !!(H && H.enabled && H.enabled()), liveState: H && H.liveState ? H.liveState() : null,
+                 hasRelayClient: !!window.VULiveRelayClient, hasQuantChart: !!window.VUQuantChart };
+      }).catch((e) => ({ evalFehler: String(e && e.message || e) })));
       await seiten[welt].context().close();
     }
     const gleich = proben.filter((x) => x.discover && x.discover === x.quant && x.quant === x.technical).length;
