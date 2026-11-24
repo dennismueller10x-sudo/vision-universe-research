@@ -384,6 +384,24 @@ Vorwärtstest. `scripts/research/backtest2/rueckkauf-hypothese.mjs`, Modus `merk
   (2015, 2018, 2022 vor SPY). Die 22,1 % bzw. 25,4 % der Rückschau sind nicht verwendbar. Für jede künftige Studie gilt: neben
   der Rendite immer die gekappte Rendite und die größten Einzelbeiträge berichten.
 
+## 4k. Stufe 9: Gewinner laufen lassen und Gewinner-Erkennung (24.11.2026, vor dem ersten Lauf festgelegt)
+
+Anlass (Owner 24.11.2026): Die Depots der Stufen 4 bis 8 stellen jeden Monat auf gleiche Gewichte zurück. Das stutzt jeden
+Gewinner und lässt bei seltenen Mustern Geld liegen; die Bücher halten dagegen wenige Positionen, solange der Trend läuft.
+`scripts/research/backtest2/laufen-lassen.mjs`, Modus `merkmale-laufen-smoke` / `merkmale-laufen`.
+- **Teil A, Depot ohne Zurückstellen:** bis zu 25 Positionen; freie Plätze besetzen die besten Kandidaten des Monats (Muster als
+  Schranke, Rang nach Signal, nur Titel über der 200-Tage-Linie); jeder Kauf ein Fünfundzwanzigstel des Depotwerts, höchstens
+  die Kasse; kein monatliches Angleichen. Verkauf nur, wenn der Monatsschluss nicht mehr über der 200-Tage-Linie liegt oder der
+  Titel endet. Kasse 0 %, Kosten je Kauf und Verkauf. Acht feste Depots: kein Muster, Minervini, Turtle, Darvas-Kasten,
+  Kullamägi je mit Momentum + Bruttogewinn/Bilanz + Rückkäufen; Minervini, Darvas-Kasten, Kullamägi zusätzlich „nur Muster“.
+- **Ehrlichkeitsproben je Depot** (Lehre aus Stufe 8): derselbe Lauf ohne die Aktie mit dem größten Gewinnbeitrag, Anteil der
+  fünf größten Positionen am Gesamtgewinn, die größten Positionen mit Namen.
+- **Teil B, Gewinner-Erkennung:** Gewinner = Titel des Universums mit mindestens +100 % in den folgenden 12 Monaten. Je Muster
+  und für das beste Fünftel nach Signal: Ausbeute (Anteil der Markierten, die Gewinner wurden), Faktor gegenüber der Grundquote
+  und Anteil aller Gewinner, der am Stichtag markiert war.
+- Kein Urteil nach fester Schranke: Die Depotform ist neu und nach Einsicht in Stufe 2 bis 8 gewählt; berichtet wird
+  beschreibend, ein gutes Ergebnis ist ein Hinweis für den Vorwärtstest.
+
 ## 5. Ausführung und Veröffentlichung
 
 - Umsetzung: `scripts/research/backtest2/` (Markt, Signale, Depotführung, Suche, Lauf mit Workern). Workflow `research.yml`, Teil
