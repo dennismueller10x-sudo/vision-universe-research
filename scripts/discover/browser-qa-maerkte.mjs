@@ -18,6 +18,7 @@
 // Usage: node scripts/discover/browser-qa-maerkte.mjs --url https://research.visionuniverse.de --out /tmp/maerkte-qa [--engine webkit] [--realtime]
 import {createRequire} from 'node:module';
 import {mkdir,writeFile} from 'node:fs/promises';
+import {leseUebersicht,pruefeUebersicht} from './maerkte-uebersicht.mjs';
 const require=createRequire(import.meta.url);
 let playwright;
 try{playwright=require('playwright');}catch{playwright=require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright');}
@@ -26,13 +27,6 @@ const base=arg('url','http://127.0.0.1:8765').replace(/\/$/,'');
 const out=arg('out','/tmp/maerkte-qa');await mkdir(out,{recursive:true});
 const engine=arg('engine','chromium');if(!['chromium','webkit'].includes(engine))throw Error('engine');
 
-const GRUPPEN=['aktien','energie','edelmetalle','krypto','us-renditen','eu-renditen','leitzinsen','devisen'];
-const PFLICHT={
- aktien:['QQQ','SPY','DIA','N225'],energie:['WTI','BRENT','NATGAS'],edelmetalle:['XAUUSD','XAGUSD','XPTUSD','XPDUSD'],
- krypto:['BTCUSD','ETHUSD','SOLUSD','XRPUSD'],'us-renditen':['US2Y','US5Y','US10Y','US30Y'],'eu-renditen':['DE2Y','DE10Y','DE30Y'],
- leitzinsen:['FED_TARGET','US_EFFR','ECB_DFR'],devisen:['EURUSD']
-};
-const TRACKER={QQQ:'Nasdaq 100',SPY:'S&P 500',DIA:'Dow Jones'};
 
 const checks=[];
 function check(name,pass,detail){checks.push({name,pass:!!pass,detail:detail===undefined?null:detail});}
@@ -43,93 +37,19 @@ for(const [key,viewport] of [['mobile',{width:390,height:844}],['desktop',{width
  const page=await browser.newPage({viewport});
  const pageErrors=[];page.on('pageerror',e=>pageErrors.push(String(e)));
  await page.goto(base+'/discover/#/maerkte',{waitUntil:'networkidle'});
- await page.waitForSelector('.dx-maerkte .dx-markt-karte',{timeout:30000});
- const seite=await page.evaluate(()=>{
-  const t=(n,s)=>{const x=n.querySelector(s);return x?x.textContent.trim():null;};
-  return {
-   gruppen:[...document.querySelectorAll('.dx-maerkte-gruppe')].map(g=>({id:g.id.replace(/^maerkte-/,''),titel:t(g,'h2'),
-    karten:[...g.querySelectorAll('.dx-markt-karte')].map(k=>({symbol:k.dataset.instrument,assetClass:k.dataset.assetClass,proxy:k.dataset.proxy,
-     quoteState:k.dataset.quoteState,freshness:k.dataset.freshness,unit:k.dataset.unit,klasse:t(k,'.dx-markt-klasse'),titel:t(k,'h3'),
-     wert:t(k,'.dx-markt-wert'),veraenderung:t(k,'.dx-markt-veraenderung b'),
-     richtung:(k.querySelector('.dx-markt-veraenderung')||{className:''}).className.replace('dx-markt-veraenderung','').trim(),
-     zustand:t(k,'.dx-markt-zustand'),semantik:t(k,'.dx-markt-semantik'),quelle:t(k,'.dx-markt-quelle')}))})),
-   sprung:[...document.querySelectorAll('.dx-maerkte-sprung')].map(b=>b.textContent.trim()),
-   querlauf:document.documentElement.scrollWidth>window.innerWidth,
-   datenstand:t(document,'.dx-maerkte-stand')
-  };
- });
+await page.waitForSelector('.dx-maerkte .dv3-mrow',{timeout:30000});
+ /* Uebersicht (V3): Auslesen und Pruefen in maerkte-uebersicht.mjs, dort gegen einen Mitschnitt getestet. */
+ const seite=await page.evaluate(leseUebersicht);
  evidence[key]={...seite,pageErrors};
- const karten=Object.fromEntries(seite.gruppen.flatMap(g=>g.karten.map(k=>[k.symbol,{...k,gruppe:g.id}])));
  const p=(n,ok,d)=>check(key+': '+n,ok,d);
-
- p('Gruppen in der Reihenfolge der Owner-Liste',JSON.stringify(seite.gruppen.map(g=>g.id))===JSON.stringify(GRUPPEN),seite.gruppen.map(g=>g.id));
- p('Sprungleiste je Gruppe',seite.sprung.length===seite.gruppen.length,seite.sprung);
- for(const [gruppe,syms] of Object.entries(PFLICHT))for(const s of syms){
-  const k=karten[s];
-  p(s+' in '+gruppe+' mit Wert',k&&k.gruppe===gruppe&&k.quoteState==='AVAILABLE'&&!!k.wert,k?{gruppe:k.gruppe,state:k.quoteState,wert:k.wert,frische:k.freshness}:'fehlt');
- }
- for(const [s,markt] of Object.entries(TRACKER)){
-  const k=karten[s]||{};
-  p(s+' als Tracker gekennzeichnet',k.assetClass==='ETF'&&k.proxy==='tracker'&&k.klasse&&k.klasse.toLowerCase()===('tracker · '+s).toLowerCase()&&k.titel===markt,{klasse:k.klasse,titel:k.titel,proxy:k.proxy});
-  p(s+' nie als Indexpunkte',k.wert&&!/Pkt|Punkte/.test(k.wert)&&/%$/.test(k.veraenderung||''),{wert:k.wert,veraenderung:k.veraenderung});
-  p(s+' Offenlegung sichtbar',/nicht der offizielle Indexstand/.test(k.semantik||''),k.semantik);
- }
- const n225=karten.N225||{};
- p('Nikkei 225 als echter Index in Punkten',n225.assetClass==='INDEX'&&/Pkt\.$/.test(n225.wert||'')&&n225.proxy==='none',{wert:n225.wert,assetClass:n225.assetClass});
- for(const s of PFLICHT.krypto){const k=karten[s]||{};p(s+' 24/7 ohne Boersensitzung',/24\/7/.test(k.zustand||'')&&!/Sitzung|Börse/.test(k.zustand||''),k.zustand);}
- for(const s of [...PFLICHT['us-renditen'],...PFLICHT['eu-renditen'],...PFLICHT.leitzinsen]){
-  const k=karten[s]||{};
-  p(s+' Prozent, bp, keine Kursfarbe',/%$/.test(k.wert||'')&&!/[€$]/.test(k.wert||'')&&/ bp$/.test(k.veraenderung||'')&&k.richtung==='is-neutral',{wert:k.wert,veraenderung:k.veraenderung,richtung:k.richtung});
- }
- for(const [s,einheit] of [['WTI','/bbl'],['BRENT','/bbl'],['NATGAS','/MMBtu'],['XAUUSD','/oz'],['XAGUSD','/oz'],['XPTUSD','/oz'],['XPDUSD','/oz']]){
-  const k=karten[s]||{};p(s+' Einheit '+einheit,(k.wert||'').endsWith(einheit),k.wert);
- }
- const fx=karten.EURUSD||{};p('EUR/USD als Kurs, nicht umgerechnet',/USD$/.test(fx.wert||'')&&!/€/.test(fx.wert||''),fx.wert);
- p('Keine Seitenfehler',pageErrors.length===0,pageErrors);
- if(key==='mobile')p('Kein Querlauf auf dem Telefon',!seite.querlauf,seite.querlauf);
- /* Markets 4.1: Uebersicht wie in einer Broker-App - Kurse zuerst, eine
-    Karte Marktstimmung, die Erklaerung einen Tipp tiefer (#/maerkte/einordnung). */
- const ov=await page.evaluate(()=>{const seite=document.querySelector('.dx-mk');if(!seite)return null;
-  const kinder=[...seite.children].map(n=>n.id||n.className.split(' ')[0]);
-  const st=document.getElementById('maerkte-stimmung');
-  return {kinder,titel:(seite.querySelector('h1')||{}).textContent||'',
-   titelSichtbar:(()=>{const h=seite.querySelector('h1');if(!h)return false;const r=h.getBoundingClientRect();return r.width>40&&r.height>20;})(),
-   stimmung:st?{text:st.textContent,link:(st.querySelector('a.dx-m3-st-link')||{}).getAttribute?.('href')}:null,
-   analyse:!!document.querySelector('.dx-m3-hero,#maerkte-dimensionen,#maerkte-warum'),
-   stories:[...document.querySelectorAll('.dx-m3-story')].map(s=>({titel:s.querySelector('h3').textContent,stand:(s.querySelector('.dx-m3-story-stand')||{}).textContent||'',
-     links:[...s.querySelectorAll('.dx-m3-story-wert')].map(a=>a.getAttribute('href'))})),
-   movers:[...document.querySelectorAll('.dx-movers-spalte a')].map(a=>a.getAttribute('href')),
-   kartenLinks:[...document.querySelectorAll('a.dx-markt-karte')].map(a=>a.getAttribute('href'))};});
- const pos=id=>ov?ov.kinder.indexOf(id):-1;
- p('Uebersicht: Titel "Märkte" sichtbar, Kategorien vor den Kursen',!!ov&&ov.titel==='Märkte'&&ov.titelSichtbar&&pos('dx-maerkte-nav')>=0&&pos('dx-maerkte-nav')<pos('maerkte-aktien'),ov&&ov.kinder);
- p('Uebersicht: Marktbarometer ganz oben -> Kategorien -> Aktienmaerkte -> Top & Flop -> Was heute auffaellt -> weitere Maerkte',
-   pos('maerkte-stimmung')>=0&&pos('maerkte-stimmung')<pos('dx-maerkte-nav')&&pos('dx-maerkte-nav')<pos('maerkte-aktien')&&pos('maerkte-aktien')<pos('maerkte-movers')&&pos('maerkte-movers')<pos('maerkte-jetzt')&&pos('maerkte-jetzt')<pos('maerkte-energie'),ov&&ov.kinder);
- p('Uebersicht: Marktbarometer mit Stufe, Rueckschlag-Risiko und eindeutigem Knopf zur 2-Minuten-Erklaerung',!!ov&&!!ov.stimmung&&/Rückschlag-Risiko: (normal|erhöht|gering)/.test(ov.stimmung.text)&&
-   /Was heißt „[^“]+“\?/.test(ov.stimmung.text)&&/In 2 Minuten erklärt/.test(ov.stimmung.text)&&ov.stimmung.link==='#/maerkte/einordnung',ov&&ov.stimmung&&ov.stimmung.link);
- p('Uebersicht: keine Analyse-Abschnitte auf der Kursseite',!!ov&&!ov.analyse,null);
- {const beleg=await page.evaluate(()=>{const a=document.querySelector('#maerkte-stimmung a.dx-m3-st-beleg');return a?{href:a.getAttribute('href'),text:a.textContent}:null;});
-  p('Uebersicht: Stresstest-Beleg im Marktbarometer (x von y Abstuerzen, nachgerechnet)',!!beleg&&beleg.href==='#/maerkte/einordnung'&&/\d von \d großen Abstürzen früh erkannt/.test(beleg.text)&&/nachgerechnet/.test(beleg.text),beleg);}
-/* Markets 4.6: Knopf zur Erklaerung im Discover-Gruen vor dem Stresstest-Streifen,
-    darunter "Im Klartext" mit den grossen Zahlen und dem Schnitt aller Tage. */
- {const kt=await page.evaluate(()=>{const st=document.getElementById('maerkte-stimmung'),k=document.getElementById('maerkte-klartext');
-   const link=st&&st.querySelector('a.dx-m3-st-link'),beleg=st&&st.querySelector('a.dx-m3-st-beleg');
-   return {knopfVorBeleg:!!link&&!!beleg&&!!(link.compareDocumentPosition(beleg)&Node.DOCUMENT_POSITION_FOLLOWING),
-    knopfFarbe:link?getComputedStyle(link).backgroundColor:'',knopfHoehe:link?link.getBoundingClientRect().height:0,
-    box:k?{text:k.textContent,zahlen:k.querySelectorAll('.dx-m3-kt-zahl').length,held:(()=>{const h=k.querySelector('.dx-m3-kt-held-zahl');return h?{text:h.textContent,px:parseFloat(getComputedStyle(h).fontSize)}:null;})(),balken:k.querySelectorAll('.dx-m3-kt-stufen li').length,heute:k.querySelectorAll('.dx-m3-kt-stufen li.is-heute').length,stapel:k.querySelectorAll('.dx-m3-kt-stapel').length,schnitt:(k.textContent.match(/Schnitt aller Tage/g)||[]).length}:null};});
-  p('Uebersicht: Knopf "Was heisst ...?" gruen, gross und vor dem Stresstest-Streifen',kt.knopfVorBeleg&&kt.knopfFarbe==='rgb(200, 245, 49)'&&kt.knopfHoehe>=60,kt);
-  p('Uebersicht: "Im Klartext" direkt unter dem Barometer - Bedeutung, Hauptzahl x von 100 im Plus, Aufteilung je Stufe, Rendite als Nebenzahl, Hinweis',
-   pos('maerkte-klartext')===pos('maerkte-stimmung')+1&&!!kt.box&&kt.box.zahlen===3&&!!kt.box.held&&/^\d+ von 100$/.test(kt.box.held.text)&&kt.box.held.px>=48&&kt.box.balken>=4&&kt.box.heute===1&&kt.box.stapel===kt.box.balken+1&&/verschiebt kaum die Höhe der typischen Rendite/.test(kt.box.text)&&/ähnlich dem S&P 500/.test(kt.box.text)&&/auf einen Blick/.test(kt.box.text)&&/\d+ im Plus/.test(kt.box.text)&&
-   /kein verlässlicher Hinweis/.test(kt.box.text)&&!/Kaufsignal|kaufen|verkaufen|sollten Sie/i.test(kt.box.text),kt.box&&{zahlen:kt.box.zahlen,schnitt:kt.box.schnitt,held:kt.box.held,balken:kt.box.balken,heute:kt.box.heute,stapel:kt.box.stapel});}
- p('Markt jetzt: Geschichten mit Stand, jede Bewegung verlinkt',!!ov&&ov.stories.length>=1&&ov.stories.every(s=>/Stand|Handelstag/.test(s.stand)&&s.links.length&&s.links.every(h=>/^#\/maerkte\/[A-Z0-9_]+$/.test(h))),ov&&ov.stories);
- p('Movers verlinken auf Aktienseiten',!!ov&&(ov.movers.length===0||ov.movers.every(h=>/^#\/s\/US_REAL\//.test(h))),ov&&ov.movers.slice(0,3));
- p('Jede Karte mit Wert ist ein Link zum Marktdetail',!!ov&&ov.kartenLinks.length>=28&&ov.kartenLinks.every(h=>/^#\/maerkte\//.test(h)),ov&&ov.kartenLinks.length);
+ for(const c of pruefeUebersicht(seite,{mobil:key==='mobile',seitenfehler:pageErrors}))p(c.name,c.pass,c.detail);
  await page.screenshot({path:`${out}/maerkte-${key}.png`});
- {const y0=await page.evaluate(()=>scrollY);await page.click('.dx-maerkte-sprung[data-ziel="maerkte-krypto"]');
+ {const y0=await page.evaluate(()=>scrollY);await page.click('.dv3-jumps button:has-text("Zinsen")');
   /* Weicher Bildlauf ueber eine lange Seite: warten, bis er steht (max. 6 s). */
   let vor=-1,ruhig=0;for(let i=0;i<30&&ruhig<2;i++){await page.waitForTimeout(200);const y=await page.evaluate(()=>scrollY);ruhig=y===vor&&y>0?ruhig+1:0;vor=y;}
-  const sprung=await page.evaluate(()=>{const r=document.getElementById('maerkte-krypto').getBoundingClientRect();return {y:scrollY,top:r.top};});
-  p('Sprungleiste fuehrt zur Gruppe',sprung.y!==y0&&sprung.top>=-5&&sprung.top<250,sprung);
-  await page.screenshot({path:`${out}/maerkte-${key}-krypto.png`});}
+  const sprung=await page.evaluate(()=>{const r=document.getElementById('maerkte-weitere').getBoundingClientRect();return {y:scrollY,top:r.top};});
+  p('Reiter "Zinsen" fuehrt zu den weiteren Maerkten',sprung.y!==y0&&sprung.top>=-5&&sprung.top<250,sprung);
+  await page.screenshot({path:`${out}/maerkte-${key}-weitere.png`});}
  /* Markets 4.2: das Marktbarometer in zwei Minuten (#/maerkte/einordnung). */
  await page.goto(base+'/discover/#/maerkte/einordnung',{waitUntil:'networkidle'});
  await page.waitForSelector('#bm-heute',{timeout:30000});
@@ -195,12 +115,11 @@ for(const [key,viewport] of [['mobile',{width:390,height:844}],['desktop',{width
    stories:[...document.querySelectorAll('.dx-m3-story')].map(s=>({titel:s.querySelector('h3').textContent,stand:(s.querySelector('.dx-m3-story-stand')||{}).textContent||'',
      links:[...s.querySelectorAll('.dx-m3-story-wert')].map(a=>a.getAttribute('href'))})),
    m3Text:(document.querySelector('.dx-m3')||{}).textContent||'',
-   movers:[...document.querySelectorAll('.dx-movers-spalte a')].map(a=>a.getAttribute('href')),
-   kartenLinks:[...document.querySelectorAll('a.dx-markt-karte')].map(a=>a.getAttribute('href'))
+   movers:[...document.querySelectorAll('.dx-movers-spalte a')].map(a=>a.getAttribute('href'))
   };
  });
  evidence[key].intelligence={environment:intel.environment,zustand:intel.zustand,aussage:intel.aussage,anleger:intel.anleger,zyklus:intel.zyklus,seit:intel.seit,
-  dims:intel.dims.map(d=>d.id+':'+d.state),vjTop:intel.vjTop,worauf:intel.worauf,aendern:intel.aendern,breite:intel.breite,stories:ov?ov.stories.map(s=>s.titel):[]};
+  dims:intel.dims.map(d=>d.id+':'+d.state),vjTop:intel.vjTop,worauf:intel.worauf,aendern:intel.aendern,breite:intel.breite,stories:[]};
  const LEVELS=['DEFENSIVE','CAUTIOUS','SELECTIVE','CONSTRUCTIVE','BROADLY_CONSTRUCTIVE'];
  p('Hero: Marktumfeld als Zustand (kein Score)',LEVELS.includes(intel.environment)&&intel.zustand.length>=5&&!/\d+\s*\/\s*100/.test(intel.zustand),{env:intel.environment,zustand:intel.zustand});
  p('Hero: Hauptaussage und Bedeutung fuer Anleger',intel.aussage.length>15&&intel.anleger.length>30,{aussage:intel.aussage,anleger:intel.anleger});
@@ -314,7 +233,7 @@ for(const [key,viewport,scheme] of [['390-light',{width:390,height:844},'light']
    /* Je Route eine frische Seite mit festem Farbschema: kein Themenwechsel
       (und keine Farbuebergaenge) waehrend der Messung. */
    const page=await browser.newPage({viewport:{width:390,height:844},colorScheme:scheme,reducedMotion:'reduce'});
-   await page.goto(base+'/discover/'+route,{waitUntil:'networkidle'});await page.waitForSelector(route==='#/maerkte'?'.dx-markt-karte':route==='#/maerkte/einordnung'?'#bm-heute':route==='#/maerkte/einordnung/details'?'.dx-m3-hero':'.dx-md h1');
+   await page.goto(base+'/discover/'+route,{waitUntil:'networkidle'});await page.waitForSelector(route==='#/maerkte'?'.dv3-mrow':route==='#/maerkte/einordnung'?'#bm-heute':route==='#/maerkte/einordnung/details'?'.dx-m3-hero':'.dx-md h1');
    await page.waitForTimeout(400);
    await page.addScriptTag({path:axePath});
    const v=await page.evaluate(()=>axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa']}}).then(r=>r.violations.filter(x=>['critical','serious'].includes(x.impact)).map(x=>({id:x.id,nodes:x.nodes.slice(0,3).map(n=>n.target)}))));
@@ -326,20 +245,20 @@ for(const [key,viewport,scheme] of [['390-light',{width:390,height:844},'light']
 /* Navigation: Karte -> Detail, Reload auf der Detailroute, Zurueck. */
 {
  const page=await browser.newPage({viewport:{width:390,height:844}});
- await page.goto(base+'/discover/#/maerkte',{waitUntil:'networkidle'});await page.waitForSelector('a.dx-markt-karte');
- await page.click('a.dx-markt-karte[data-instrument="BTCUSD"]');await page.waitForSelector('.dx-md h1');
+ await page.goto(base+'/discover/#/maerkte',{waitUntil:'networkidle'});await page.waitForSelector('a.dv3-mrow');
+ await page.click('a.dv3-mrow[href="#/maerkte/BTCUSD"]');await page.waitForSelector('.dx-md h1');
  check('Navigation: Karte oeffnet Marktdetail',(await page.evaluate(()=>location.hash))==='#/maerkte/BTCUSD',null);
  await page.reload({waitUntil:'networkidle'});await page.waitForSelector('.dx-md h1');
  check('Navigation: Reload auf Detailroute',(await page.textContent('.dx-md h1')).trim()==='Bitcoin',null);
  await page.goBack({waitUntil:'networkidle'});await page.waitForSelector('.dx-maerkte',{timeout:15000}).catch(()=>null);
  check('Navigation: Browser-Zurueck fuehrt zur Uebersicht',(await page.evaluate(()=>location.hash))==='#/maerkte',null);
- await page.waitForSelector('a.dx-m3-st-link');await page.click('a.dx-m3-st-link');await page.waitForSelector('#bm-heute');
+ await page.waitForSelector('a.vu-navcard[href="#/maerkte/einordnung"]');await page.click('a.vu-navcard[href="#/maerkte/einordnung"]');await page.waitForSelector('#bm-heute');
  check('Navigation: Marktbarometer oeffnet die 2-Minuten-Erklaerung',(await page.evaluate(()=>location.hash))==='#/maerkte/einordnung',null);
  await page.click('a.bm-mehr');await page.waitForSelector('.dx-m3-hero');
  check('Navigation: von dort zu allen Details',(await page.evaluate(()=>location.hash))==='#/maerkte/einordnung/details',null);
  await page.click('.dx-mk-einordnung>.dx-back');await page.waitForSelector('#bm-heute');
  check('Navigation: aus den Details zurueck zum Marktbarometer',(await page.evaluate(()=>location.hash))==='#/maerkte/einordnung',null);
- await page.click('.dx-bm>.dx-back');await page.waitForSelector('#maerkte-stimmung');
+ await page.click('.dx-bm>.dx-back');await page.waitForSelector('.dx-maerkte .dv3-baro');
  check('Navigation: aus dem Marktbarometer zurueck zu den Maerkten',(await page.evaluate(()=>location.hash))==='#/maerkte',null);
  await page.close();
 }
@@ -393,5 +312,5 @@ const report={schemaVersion:'vu-discover-maerkte-qa-1.2.0',checkedAt:new Date().
 await writeFile(`${out}/maerkte-qa-${engine}.json`,JSON.stringify(report,null,1));
 for(const c of checks)console.log((c.pass?'PASS ':'FAIL ')+c.name+(c.pass?'':' -> '+JSON.stringify(c.detail)));
 console.log(`\nMaerkte-QA (${engine}) gegen ${base}: ${report.result} (${checks.length-failed.length}/${checks.length})`);
-for(const k of evidence.mobile.gruppen)console.log(`  ${k.titel}: `+k.karten.map(x=>`${x.symbol} ${x.wert||'-'} ${x.veraenderung||''}`).join(' | '));
+console.log('  '+(evidence.mobile.zeilen||[]).map(x=>`${x.symbol} ${x.wert||'-'} ${x.veraenderung||''}`).join(' | '));
 process.exit(failed.length?1:0);
