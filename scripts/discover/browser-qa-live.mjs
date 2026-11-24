@@ -143,8 +143,12 @@ ok("Aktienseite: Intraday-Chart mit Zeitachse", (await d.locator(".dx-intraday-c
    etwas dazu, wenn es ueber den Zustand hinaus etwas zu sagen gibt.
    Geprueft wird deshalb der Block, den ein Leser sieht, nicht ein
    einzelner Knoten darin. */
+/* Die Fussnote gibt es nur, wenn ein Tagesverlauf gezeichnet wurde
+   (detail.js, Leerzweige ohne Verlauf haben keine). Fehlt sie, zaehlt die
+   Statuszeile allein; ein harter textContent() lief 30 s in den Timeout. */
+const fussnote = d.locator(".dx-intraday-note");
 const zustandstext = (await d.locator(".dx-chart-hero-meta").textContent()) + " " +
-                     (await d.locator(".dx-intraday-note").textContent());
+                     ((await fussnote.count()) ? await fussnote.first().textContent() : "");
 ok("Aktienseite: Beschriftung mit Stand und Quelle",
    /Stand|schluss|Schluss|Letzter Handelstag|Live/.test(zustandstext), zustandstext.trim().slice(0, 120));
 /* V4 §13: 1W aus der Tagesreihe (sieben Kalendertage), 5T gibt es nicht. */
