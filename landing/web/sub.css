@@ -55,6 +55,9 @@
    liefen bei langsamer Leitung gleichzeitig mit dem Aufmacher). Die Fläche bleibt durch aspect-ratio. sub.js gibt die nächste Folie (.nx) kurz vor
    dem Wechsel frei, die gerade verlassene (.was) bleibt für das Ausblenden. Ohne content-visibility (ältere Browser) bleibt es beim bisherigen Laden. */
 .ts-sl:not(.on):not(.nx):not(.was) .ts-art{content-visibility:hidden}
+/* Regalbilder (24.11.2026): bis der Aufmacher geladen ist, rendern sie nicht und starten ihr lazy-Laden nicht (die erste Reihe liegt im Lazy-Abstand;
+   ihre ~160 KB teilten sich die langsame Leitung mit dem Aufmacher). Die Klasse setzt sub.js; ohne JS fehlt sie und alles lädt wie bisher. */
+.ts-warte .ts-shelf .ts-im{content-visibility:hidden}
 .ts-art{position:relative;aspect-ratio:16/9;width:100%;background:#111}
 .ts-art img{width:100%;height:100%;object-fit:cover;object-position:50% 32%}
 .ts-art::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,#000 0%,rgba(0,0,0,0) 40%)}

@@ -22,6 +22,9 @@
      Reihen mit Pfeilen, „Nach Aktien“ und „Nach Themen“ zeigen die passenden Artikel. */
   var hero = document.querySelector(".ts-hero");
   if (hero) {
+    /* Regalbilder warten auf den Aufmacher (24.11.2026, siehe sub.css .ts-warte); Sicherung nach 4 s, falls er nicht ankommt. */
+    var auf = $$("img", hero)[0], los2 = function () { root.classList.remove("ts-warte"); };
+    if (auf && !auf.complete) { root.classList.add("ts-warte"); auf.addEventListener("load", los2, { once: true }); auf.addEventListener("error", los2, { once: true }); setTimeout(los2, 4000); }
     var sl = $$(".ts-sl", hero), dots = $$(".ts-dots button", hero), cur = 0, timer = null;
     /* Folien laden erst kurz vor ihrem Wechsel (24.11.2026): frei() gibt eine Folie frei und startet ihr Bild sofort (loading=eager);
        show() wartet beim Wechsel (Punkt, Wischen, Zeitgeber) auf das Bild, höchstens 1,5 s, damit nie eine leere Folie erscheint. */
