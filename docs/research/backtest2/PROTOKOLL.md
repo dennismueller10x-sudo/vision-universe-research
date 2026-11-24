@@ -456,6 +456,19 @@ Code: `scripts/research/backtest2/laufen-wf.mjs`. Forschung, nicht zertifiziert.
 - Dazu berichtet: Anteil der Depots, die in beiden Hälften vor SPY liegen (auch ohne größten Gewinner), Median je Hebelwert,
   Bestenliste im Nachhinein (ausdrücklich kein Beleg).
 
+## 4m. Stufe 11: Ereignisstudie je Muster (24.11.2026, vor dem ersten Lauf festgelegt)
+
+Anlass: Seltene Muster lassen ein Monatsdepot oft leer (Stufe 6: 40 bis 43 von 153 Monaten in Kasse). Stufe 11 misst das
+Ereignis selbst. Code: `scripts/research/backtest2/ereignis-studie.mjs`. Forschung, nicht zertifiziert.
+
+- Je Monatsultimo ab 2014 und Horizont 1, 3, 6, 12 Monate: Rendite der markierten Titel minus Rendite aller Titel der größten
+  1.000 am selben Ultimo, als Mittel und als Median; mindestens 3 markierte Titel je Monat. Jeder Monat zählt gleich.
+- Zehn Muster, jeweils allein und als Teilmenge „markiert und bestes Fünftel nach Momentum + Bruttogewinn/Bilanz + Rückkäufe“.
+- t-Wert mit um die Überlappung gekürzter Monatszahl (n / Horizont). Ohne Kosten (kein Depot).
+- **Auffällig** nur, wenn nach 3 und nach 12 Monaten: Vorsprung im Mittel und im Median > 0, t > 2, und in beiden Hälften
+  (2014–2019, ab 2020) > 0. Nicht für die Zahl der Versuche korrigiert: ein auffälliges Muster ist ein Kandidat, kein Beleg.
+- Grenze: gemessen am Monatsultimo; ein Einstieg am Ereignistag ist nicht abgebildet (dafür Minutendaten, eigene Stufe).
+
 ## 5. Ausführung und Veröffentlichung
 
 - Umsetzung: `scripts/research/backtest2/` (Markt, Signale, Depotführung, Suche, Lauf mit Workern). Workflow `research.yml`, Teil
