@@ -386,7 +386,12 @@ test('MB-18 Instagram-Karussell: sechs Slides ohne Kleingedrucktes, Hook je Them
   const b = Engine.buildBriefing(inp);
   const s = Social.slides(b, {});
   assert.ok(s.length >= 4 && s.length <= 6, s.length + ' Slides');
-  assert.match(s[0], /25 Aktien aus dem S&amp;P&nbsp;500 sind <mark>überverkauft\.<\/mark>/);
+  // großer Tag (Nasdaq −5,7 %, NVDA −14 %): Schlagzeile der Ausgabe als Hook
+  assert.match(s[0], new RegExp('<h1>' + b.cards[0].title.split(' ')[0]));
+  // ruhiger Tag: Hook des stärksten Themas
+  const calm = JSON.parse(JSON.stringify(b));
+  calm.cards.forEach((c) => { if (c.id === 'megacaps') c.bars.rows.forEach((r) => { r.value = 0.5; }); if (c.id === 'indices') c.bars.rows.forEach((r) => { r.value = 0.3; }); });
+  assert.match(Social.slides(calm, {})[0], /25 Aktien aus dem S&amp;P&nbsp;500 sind <mark>überverkauft\.<\/mark>/);
   const html = Social.html(b, { font: 'x' });
   assert.ok(!/class="hint"|Keine Anlageberatung|Eigene Auswertung aus|Stand /.test(html), 'kein Kleingedrucktes auf den Slides (Owner 23.11.2026)');
   assert.match(html, /visionuniverse\.de\/marktbriefing/);
