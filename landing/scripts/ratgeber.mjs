@@ -531,10 +531,25 @@ export function balken(ctx, pre = './') {
 <div class="rg-bar-rail">${reihe.map((s, i) => { const a = artikel[s], w = W.find((x) => x.id === a.welt); return `<a class="rg-bar-c${i ? '' : ' on'}" href="${pre}ratgeber/${s}/"><span class="rg-card-w">${ic(w.icon, 16)}${esc(w.name)}</span><b>${esc(a.titel)}</b><span class="rg-more">Lesen <span aria-hidden="true">→</span></span></a>`; }).join('')}</div></div></section>`;
 }
 
+// Seite für unbekannte Adressen (404.html, Cloudflare liefert sie mit Status 404). Alte Shop-Adressen leitet
+// scripts/build.mjs per _redirects um; alles andere landet hier statt still auf der Startseite (sonst halten Suchmaschinen
+// alte Seiten für lebendig). Pfade sind absolut, weil die Seite unter jeder Adresse erscheint.
+export function fehlerSeite(ctx) {
+  const {welten, artikel} = ctx;
+  const reihe = [welten.aufmacher, ...welten.startHier].filter((x, i, l) => artikel[x] && l.indexOf(x) === i).slice(0, 4);
+  const body = `<section class="fh ps-hero rg-404"><div class="w"><div class="fh-copy"><span class="rg-tag">Fehler 404</span><h1>Diese Seite gibt es <mark>nicht mehr.</mark></h1>
+<p class="fh-sub">Vision Universe ist die App, die Aktien einfach erklärt. Viele alte Adressen aus unserem früheren Shop sind umgezogen. Hier geht es weiter:</p>
+<div class="rg-ctas"><a class="fh-btn" href="/">Zur Startseite <i aria-hidden="true">→</i></a><a class="rg-btn ghost" href="/ratgeber/">Ratgeber</a><a class="rg-btn ghost" href="/news/">News</a><a class="rg-btn ghost" href="/report/">Aktienreport</a></div></div></div></section>
+<section class="w rg-404-l"><p class="vw-k">Beliebt im Ratgeber</p><div class="rg-weiter-l">${reihe.map((x) => `<a class="rg-card" href="/ratgeber/${x}/"><b>${esc(artikel[x].titel)}</b><span>${esc(artikel[x].teaser)}</span></a>`).join('')}</div></section>`;
+  return seite({pfad: '404.html', titel: 'Seite nicht gefunden · Vision Universe', beschreibung: 'Diese Seite gibt es nicht mehr. Vision Universe ist die App, die Aktien einfach erklärt.', ld: [], body, newsHtml: ctx.newsHtml})
+    .replace(/<script type="application\/ld\+json">[^<]*<\/script>\n?/, '').replace(/<link rel="canonical"[^>]*>\n?/, '').replace(/<meta property="og:url"[^>]*>\n?/, '')
+    .replace(/(href|src)="(?!https?:|\/|#|mailto:|data:)/g, '$1="/');
+}
+
 export function ratgeberSeiten(base = root) {
   const ctx = {...laden(base), newsHtml: readFileSync(resolve(base, 'news/index.html'), 'utf8')};
   const seiten = [uebersicht(ctx), ...ctx.welten.welten.map((w) => weltSeite(w, ctx)), ...Object.values(ctx.artikel).map((a) => artikelSeite(a, ctx))];
-  return {seiten, balken: balken(ctx), ctx};
+  return {seiten, balken: balken(ctx), fehler: fehlerSeite(ctx), ctx};
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
