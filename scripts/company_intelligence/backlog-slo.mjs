@@ -38,9 +38,13 @@ export function applyBacklog(verdict,report,now=Date.now()){
  out.exitCode=out.status==='CRITICAL'?1:0;
  return out;
 }
-/* Juengstes Produktionsartefakt (nicht Verifikation) mit Scheduler-Daten waehlen. artifacts: [{name,created_at,expired}], read(a)->report|null */
+/* Herkunft (Befund BB 24.11.2026): `actions/artifacts` listet Artefakte aller Laeufe, auch von Pull-Requests. Nur Artefakte eines Laufs auf main aus dem
+   EIGENEN Repository zaehlen (workflow_run.head_branch == main und head_repository_id == repository_id, wie bei der Basis des Schnellwegs, #2370).
+   Fehlt die Herkunftsangabe oder ist sie unvollstaendig, gilt das Artefakt nicht (fail-closed). */
+export const fromMain=a=>{const w=a?.workflow_run;return !!w&&w.head_branch==='main'&&w.head_repository_id!=null&&w.repository_id!=null&&w.head_repository_id===w.repository_id;};
+/* Juengstes Produktionsartefakt (nicht Verifikation) mit Scheduler-Daten waehlen. artifacts: [{name,created_at,expired,workflow_run:{head_branch,head_repository_id,repository_id}}], read(a)->report|null */
 export function pickReport(artifacts,read){
- const list=(artifacts||[]).filter(a=>a&&!a.expired&&String(a.name).startsWith(ARTIFACT_PREFIX)).sort((a,b)=>Date.parse(b.created_at)-Date.parse(a.created_at));
+ const list=(artifacts||[]).filter(a=>a&&!a.expired&&fromMain(a)&&String(a.name).startsWith(ARTIFACT_PREFIX)).sort((a,b)=>Date.parse(b.created_at)-Date.parse(a.created_at));
  for(const a of list.slice(0,8)){let r=null;try{r=read(a);}catch{}if(r&&r.verification===false&&r.scheduler)return r;}
  return null;
 }
