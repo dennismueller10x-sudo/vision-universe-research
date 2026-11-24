@@ -263,3 +263,18 @@ test("LH-V3 · Die Billboard-Folie der Startseite abonniert ueber subscribeVisib
   assert.match(r, /Hub\.subscribeVisible \|\| function/);
   assert.doesNotMatch(r, /abo = Hub\.subscribe\(c\.symbol/);
 });
+
+test("LH-V4 · subscribeVisible: der Rand ist einstellbar (Karussell: seitlich weit), Standard bleibt 80px 0px", () => {
+  const s = snap("AAPL", 4, false);
+  const { Hub, w } = fenster({ "/idx.json": idx({ AAPL: eintrag("AAPL", s) }, { sessionDate: s.sessionDate, isComplete: false }), "/snap/AAPL.json": s }, "2026-09-11T14:30:00Z");
+  const { IO, beobachter: liste } = beobachter(); w.IntersectionObserver = IO;
+  Hub.subscribeVisible({}, "AAPL", () => {});
+  Hub.subscribeVisible({}, "AAPL", () => {}, { rootMargin: "80px 600%" });
+  assert.equal(liste[0].opts.rootMargin, "80px 0px");
+  assert.equal(liste[1].opts.rootMargin, "80px 600%");
+});
+
+test("LH-V5 · Die Billboard-Folien nutzen den weiten Rand: alle Folien der Reihe abonnieren, solange die Reihe im Bild ist", () => {
+  const r = src("discover/ui/reihen.js");
+  assert.match(r, /\{ rootMargin: "80px 600%" \}\); \/\* seitlich weit/);
+});

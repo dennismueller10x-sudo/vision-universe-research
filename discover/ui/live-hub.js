@@ -280,16 +280,17 @@
    * Abonnement, das nur lebt, solange der Knoten im Bild ist (IntersectionObserver, 80 px Rand oben und unten):
    * ausserhalb des Bildes - auch wenn der Knoten aus dem Dokument genommen wird (Routenwechsel, Abbau der
    * Startseite) - wird sofort gekuendigt, beim Wiedereintritt neu abonniert (der Snapshot liegt im Zwischenspeicher).
+   * `opts.rootMargin` ersetzt den Rand (Karussell: seitlich weit, damit alle Folien einer Reihe im Bild zaehlen).
    * Liefert die endgueltige Kuendigung. Ohne IntersectionObserver: wie subscribe.
    */
-  function subscribeVisible(node, symbol, cb) {
+  function subscribeVisible(node, symbol, cb, opts) {
     var IO = global.IntersectionObserver, abo = null, io = null, fertig = false;
     function an() { if (!abo && !fertig) abo = subscribe(symbol, cb); }
     function aus() { if (abo) { abo(); abo = null; } }
     if (!IO || !node) { an(); return function () { fertig = true; aus(); }; }
     io = new IO(function (eintraege) {
       eintraege.forEach(function (e) { if (e.isIntersecting) an(); else aus(); });
-    }, { rootMargin: "80px 0px" });
+    }, { rootMargin: (opts && opts.rootMargin) || "80px 0px" });
     io.observe(node);
     return function () { fertig = true; aus(); io.disconnect(); };
   }
