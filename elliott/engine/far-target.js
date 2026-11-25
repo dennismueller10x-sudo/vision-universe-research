@@ -8,6 +8,7 @@
       1,0–1,618 × (I) ab dem Ende von (II), erweitert bis 2,618 × (I). Harte Regel: (III) endet über dem Ende von (I).
    2. Läuft der Impuls noch in Welle 1 bis 4 und steht Welle 5 nicht im Pfad, ist das Fernziel ihr Ende: über das Ende von Welle 3
       hinaus, 0,382–0,618 × Strecke 1 bis 3 ab dem Ende von Welle 4 (wie W5_NET13 der Engine), erweitert bis 1,0.
+   Übergeordneter Grad in römischen Ziffern (I, II, III), damit er sich von den Wellen 1–5 und den Unterwellen (a)–(c) abhebt.
    Bei einem übergeordneten Abwärtsimpuls gibt es kein Fernziel (Rückgabe { none: "DOWN" }). Linear wie der Pfad der Methode. */
 (function (global) {
   "use strict";
@@ -27,12 +28,12 @@
       var highs = W.filter(function (w) { return "12345".indexOf(w.l) >= 0 && !w.dev; }).map(function (w) { return Math.max(w.fp, w.tp); });
       var top = w5 && !w5.dev ? Math.max.apply(null, highs) : Math.max.apply(null, highs.concat([mid(s5)]));
       var L = top - O, wc = wave("C"), sc = ends("C");
-      var two = sc ? mid(sc) : wc && !wc.dev ? wc.tp : top - 0.5 * L, twoFrom = sc ? "Zone C im Pfad" : wc && !wc.dev ? "Ende von C" : "50 % von (I)";
+      var two = sc ? mid(sc) : wc && !wc.dev ? wc.tp : top - 0.5 * L, twoFrom = sc ? "Zone C im Pfad" : wc && !wc.dev ? "Ende von C" : "50 % von Welle I";
       if (!(L > 0) || !isNum(two)) return null;
-      return { kind: "III", label: "(III)", lo: Math.max(top, two + L), hi: two + 1.618 * L, ext: { lo: two + 1.618 * L, hi: two + 2.618 * L },
+      return { kind: "III", label: "III", lo: Math.max(top, two + L), hi: two + 1.618 * L, ext: { lo: two + 1.618 * L, hi: two + 2.618 * L },
                top: top, origin: O, two: two, twoFrom: twoFrom, since: since,
-               rule: "Welle (III) = 1,0–1,618 × Welle (I) ab dem Ende von (II), erweitert bis 2,618; sie muss über dem Ende von (I) enden",
-               assume: "Annahme: der Impuls seit " + since + " ist Welle (I) eines noch größeren Aufwärtstrends; (II) endet bei " + twoFrom };
+               rule: "Welle III = 1,0–1,618 × Welle I ab dem Ende der Korrektur II, erweitert bis 2,618; sie muss über dem Ende von Welle I enden",
+               assume: "Annahme: die Wellen 1 bis 5 seit " + since + " bilden zusammen Welle I eines noch größeren Aufwärtstrends; die Korrektur II endet bei " + twoFrom };
     }
     var w3 = wave("3"), w4 = wave("4"), e3 = w3 && !w3.dev ? w3.tp : mid(ends("3")), e4 = w4 && !w4.dev ? w4.tp : mid(ends("4"));
     if (!isNum(e3) || !isNum(e4) || !(e3 > O)) return null;

@@ -228,3 +228,9 @@
 :root[data-theme=light] .st-far-a{stroke:#000}
 :root[data-theme=light] .st-c-far b{color:#000;text-decoration:underline;text-decoration-color:#c8f531;text-decoration-thickness:.42em;text-underline-offset:-.22em;text-decoration-skip-ink:none}
 :root[data-theme=light] .st-c-far small+small{color:#8c8c8c}
+/* übergeordneter Grad (römisch, eckig): Welle I = 1–5, Korrektur II, Welle III ins Fernziel */
+.st-deg rect{fill:#000;stroke:var(--st-lime);stroke-width:2.2;stroke-dasharray:4 2.5}
+.st-deg text{fill:var(--st-lime);font-size:13px;font-weight:900;letter-spacing:.04em}
+.st-far-w{stroke-dasharray:6 6}
+:root[data-theme=light] .st-deg rect{fill:#fff;stroke:#000}
+:root[data-theme=light] .st-deg text{fill:#000}
