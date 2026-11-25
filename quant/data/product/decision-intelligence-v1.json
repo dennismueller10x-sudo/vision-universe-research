@@ -1,13 +1,13 @@
 {
  "schemaVersion": "decision-intelligence-1.0.0",
- "generatedAt": "2026-11-25T07:45:21.407Z",
+ "generatedAt": "2026-11-25T08:49:32.570Z",
  "asOf": "2026-11-24",
  "measures": {
-  "RADAR_EVENTS_TOTAL": 862,
+  "RADAR_EVENTS_TOTAL": 867,
   "RADAR_EVENTS_BY_TYPE": {
    "SETUP_CONFIRMED": 5,
    "SETUP_NEW": 75,
-   "STRATEGY_MATCH_NEW": 25,
+   "STRATEGY_MATCH_NEW": 27,
    "NEW_52W_HIGH": 106,
    "MOMENTUM_IMPROVED": 130,
    "TREND_UP": 114,
@@ -16,7 +16,7 @@
    "RISK_RISING": 6,
    "SETUP_WEAKENED": 39,
    "SETUP_INVALIDATED": 0,
-   "STRATEGY_MATCH_LOST": 35,
+   "STRATEGY_MATCH_LOST": 38,
    "MOMENTUM_DETERIORATED": 57,
    "TREND_DOWN": 66,
    "EVIDENCE_CHANGED": 0
@@ -24,20 +24,20 @@
   "SETUPS_TRACKED": 889,
   "SETUP_TRANSITIONS": 10809,
   "SETUP_TRANSITIONS_LATEST": 164,
-  "BACKTEST_ELIGIBLE_RULES": 96,
-  "BACKTEST_WITHHELD_RULES": 84,
+  "BACKTEST_ELIGIBLE_RULES": 97,
+  "BACKTEST_WITHHELD_RULES": 83,
   "HISTORICAL_REPLAY_COVERAGE": {
-   "universe": 5444,
-   "covered": 5126,
-   "available": 4173,
+   "universe": 5439,
+   "covered": 5121,
+   "available": 4168,
    "sufficient": {
-    "m1": 1991,
-    "m3": 1928,
-    "m6": 1860,
-    "m12": 1783
+    "m1": 1988,
+    "m3": 1925,
+    "m6": 1857,
+    "m12": 1780
    },
    "broad": {
-    "m6": 669
+    "m6": 667
    },
    "reasons": {
     "NOT_COVERED": 318,
@@ -46,13 +46,13 @@
    }
   },
   "WATCHLIST_TRACKABLE_TITLES": 5402,
-  "ALERT_READY_EVENTS": 862
+  "ALERT_READY_EVENTS": 867
  },
  "criteria": [
   {
    "question": "welche Aktien heute interessant werden",
    "pass": true,
-   "measured": "721 Karten aus 862 Ereignissen"
+   "measured": "723 Karten aus 867 Ereignissen"
   },
   {
    "question": "warum",
@@ -77,7 +77,7 @@
   {
    "question": "was historisch bei derselben Lage geschah",
    "pass": true,
-   "measured": "1860 Titel mit ≥ 10 abgeschlossenen 6-Monats-Fällen"
+   "measured": "1857 Titel mit ≥ 10 abgeschlossenen 6-Monats-Fällen"
   },
   {
    "question": "wie belastbar diese Evidenz ist",
@@ -94,7 +94,9 @@
   {
    "ticker": "NVDA",
    "kind": "Großwert",
-   "radarEvents": [],
+   "radarEvents": [
+    "STRATEGY_MATCH_LOST"
+   ],
    "setup": {
     "state": "NO_SETUP",
     "since": "2026-10-30",
