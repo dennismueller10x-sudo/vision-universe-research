@@ -7,7 +7,7 @@ Produktfilm für das Marktbriefing, 39 s, 1080 × 1920, Stimme Helmut, Musik Dro
 | Was | Wo |
 |---|---|
 | Original (1080 × 1920) | HeyGen-Asset `fe12a838468a4118beba93a4b8a31433` (`https://resource2.heygen.ai/video/fe12a838468a4118beba93a4b8a31433/original.mp4`) |
-| Web-Fassung (720 × 1280, 2,6 MB) und Vorschaubild | `landing/marktbriefing/film/` – eingebunden oben auf `/marktbriefing/` (`www.js`, `filmBlock`) |
+| Web-Fassung (720 × 1280, 2,6 MB) und Vorschaubild (= Titelbild, `cover.html`) | `landing/marktbriefing/film/` – eingebunden oben auf `/marktbriefing/` (`www.js`, `filmBlock`) |
 | Tages-Reel 23.11.2026 (Huang, Nvidia +31 %) | HeyGen-Asset `1b107f0ab6d24e2a8d7b75841b1eee7f` |
 
 ## Bau
@@ -17,3 +17,5 @@ Wie `studio/reels/README.md`: `build_script.py script.txt tts …`, Stimme, `tig
 `assets/` braucht: `inter-latin.woff2`, `vision-universe-logo.png` (dunkel, ohne Invertieren), aus einer Ausgabe `landing/marktbriefing/<datum>/` die Bildschirme `bildschirm-01/04/07/14.jpg`, `titel.png`, `seite-02.png`, `seite-03.png`, dazu ein App-Bild mit geöffnetem Briefing (`app-story23.png`, Playwright auf `/willkommen/`, Kreis „Briefing“ antippen).
 
 Regeln aus der Entstehung: keine Aktienanzahl und kein „US“ im Sprechertext (Universum kann wachsen, ETFs sind drin); kein „täglich“; Bildschirme sind Beispiele, die Caption sagt das.
+
+Titelbild (Instagram-Cover und Vorschaubild der Website): `cover.html` mit `node cover.mjs` (1080 × 1920; wichtiges im mittleren 3:4-Ausschnitt). Owner 25.11.2026: das erste Videobild (Stempel) taugt nicht als Titelbild.
