@@ -179,6 +179,19 @@ test("every reason the published artifacts actually carry has a plain-language g
   }
 });
 
+test("every check code the technical materializer throws has a plain-language group", () => {
+  /* Die Kursstruktur schreibt den Text ihres Abbruchs als Grund in
+     technical-signals-v1 (INVALID_HISTORY_OBSERVED_AT am 25.11.2026). Der
+     Erzeuger ist die Liste, nicht der heutige Datenstand. */
+  const quelle = readFileSync(join(ROOT, "scripts/technical/materialize-product-intelligence.mjs"), "utf8");
+  const codes = new Set(Array.from(quelle.matchAll(/new Error\("([A-Z][A-Z0-9_]+)"\)/g), (m) => m[1]));
+  assert.ok(codes.has("INVALID_HISTORY_OBSERVED_AT"), "liest dieser Test noch den Erzeuger?");
+  codes.delete("NO_IO"); /* Rezept-Lader ohne Dateizugriff, kein Titelgrund */
+  for (const code of codes) {
+    assert.equal(Shape.knows(code), true, "der Abbruchgrund " + code + " hat keine Gruppe in Alltagssprache");
+  }
+});
+
 test("the measured titles land in the shape their data justifies", async () => {
   const screening = await api.getFactorEvidenceScreening();
   const zeilen = new Map((screening.rows || []).map((r) => [r.ticker, r]));
