@@ -396,7 +396,7 @@ Wirtschaftskalender (FMP-Endpunkte geprüft in `scripts/market/probe-free-source
 - Engine `products/news/briefing/engine.js` (Kartenregeln, Frische, Prüfung der Themen Dritter), Darstellung
   `products/news/briefing/render.js` (jede Karte ein SVG 1080×1350), Build `products/news/briefing/build.mjs`, Tests
   `products/news/tests/marktbriefing.test.mjs`.
-- Lauf: `content.yml` Teil `marktbriefing`, Di–Sa 02:20 UTC über den Wecker (nach Market Pulse und Technical-Screener; 23:50 war zu früh, 24.11.2026) (`core/registry/schedule.json`), intern im
+- Lauf: `content.yml` Teil `marktbriefing`, Di–Sa in drei Versuchen um 02:20, 04:20 und 07:20 UTC über den Wecker (nach Market Pulse und Technical-Screener; 23:50 war zu früh, 24.11.2026). Der erste Versuch mit frischen Daten schreibt, spätere überspringen (`--skip-if-current`); fehlen die Daten, bleibt ein früher Versuch grün, erst der letzte wird rot und öffnet ein Issue `[marktbriefing]` (Label `pipeline-alarm`). Anlass 25.11.2026: der Kurs-Lauf hing im Abgleich der dauerhaften Ablage und veröffentlichte nichts; dieser Schritt hat seitdem 30 Minuten Zeitlimit und hält die Veröffentlichung nicht mehr auf (`core/registry/schedule.json`), intern im
   Datenzweig (`news/marktbriefing/`, Datenart `marktbriefing`; Research-Seite `/news/marktbriefing/` bleibt `noindex`).
 - Themen Dritter und Termine liest der Build aus `products/news/radar/<sitzung>.json` (im Code-Zweig, weil `news/marktbriefing/` dem Datenzweig gehört) (`items[]` mit title, publisher, source,
   published, url, optional sub, quote, columns, bars, stats; optional `editorial` mit eigenem Titel der Titelkarte).
@@ -442,7 +442,7 @@ Wirtschaftskalender (FMP-Endpunkte geprüft in `scripts/market/probe-free-source
   rund 1,5 MB je Ausgabe im Repo.
 - Veröffentlichung nur auf Auslösung (Owner 22.11.2026: ob täglich, ist noch offen): `content.yml` Teil `marktbriefing` mit
   `website=ja` baut Seite, PDF und Bilder und committet `landing/marktbriefing` und den Startseiten-Teaser nach `main`;
-  Cloudflare Pages baut www daraus. Der Zeitplan (Di–Sa 02:20 UTC) rechnet das Briefing nur intern in den Datenzweig.
+  Cloudflare Pages baut www daraus. Der Zeitplan (Di–Sa 02:20, 04:20, 07:20 UTC) rechnet das Briefing nur intern in den Datenzweig.
   Seiten und PDF versprechen kein tägliches Erscheinen.
 - Startseiten-Teaser in der Region `<!--MB:teaser-->` (eigene Zeile über den Insights-Kacheln), verlinkt die Produktseite;
   Menüpunkt „Marktbriefing“ auf allen Seiten.

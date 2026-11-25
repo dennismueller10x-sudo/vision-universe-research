@@ -159,6 +159,12 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
     console.error('Marktbriefing nicht frisch, nichts geschrieben: ' + briefing.fresh.problems.join('; '));
     process.exit(3);
   }
+  // Zeitplan mit mehreren Versuchen: steht das Briefing dieser Sitzung schon im Datenzweig, nichts neu schreiben.
+  const current = process.argv.includes('--skip-if-current') ? readJson(path.join(outRoot, 'news/marktbriefing/data/latest.json')) : null;
+  if (current && current.session === briefing.session) {
+    console.log('Marktbriefing ' + briefing.session + ' steht schon im Datenzweig, nichts geschrieben.');
+    process.exit(0);
+  }
   const files = writeBriefing(briefing, outRoot);
   if (arg('--www')) files.push(...await writeWww(briefing, path.resolve(arg('--www')), { pdf: process.argv.includes('--pdf') }));
   console.log('Marktbriefing ' + briefing.session + ': ' + briefing.cards.length + ' Karten (' +
