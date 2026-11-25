@@ -51,6 +51,12 @@ try {
   await cdp.send('Emulation.setCPUThrottlingRate', {rate:cpuRate});
   await page.addInitScript(trackNumber => {
    const m = window.__e5 = {lcp:null,cls:0,shifts:[],tasks:[],firstNumber:null,numberText:null,lcpList:[]};
+   /* Ereignisse der Seite mit Zeit (ms): zeigt, WAS eine zweite Zeichnung ausloest (Kurse, Waehrung, Route) und wann die Startseite fertig ist.
+      Abgegriffen wird dispatchEvent (nicht addEventListener): die Zugangshuelle ersetzt das Dokument per document.open(), das entfernt Zuhoerer. */
+   m.events = [];
+   const dispatch = EventTarget.prototype.dispatchEvent;
+   EventTarget.prototype.dispatchEvent = function (ev) { try { if (ev && /^(vu-fx-ready|vu-currency-change|vu-home-drawn|hashchange)$/.test(ev.type)) m.events.push({n: ev.type, t: Math.round(performance.now())}); } catch (e) { /* nie die Seite stoeren */ } return dispatch.call(this, ev); };
+   window.addEventListener('hashchange', () => m.events.push({n: 'hashchange', t: Math.round(performance.now())}), true);
    let sum = 0, start = 0, last = 0;
    new PerformanceObserver(list => {for (const e of list.getEntries()) {m.lcp = e.startTime;m.lcpElement={tag:e.element?.tagName,id:e.element?.id,text:e.element?.textContent?.trim().slice(0,160),size:e.size,url:e.url};m.lcpList.push({t:Math.round(e.startTime),tag:e.element?.tagName,cls:String(e.element?.className||'').slice(0,40),par:String(e.element?.parentElement?.className||'').slice(0,40),size:e.size,len:(e.element?.textContent||'').trim().length});}}).observe({type:'largest-contentful-paint',buffered:true});
    new PerformanceObserver(list => {for (const e of list.getEntries()) if (!e.hadRecentInput) {if (e.startTime-last > 1000 || e.startTime-start > 5000) {sum=0;start=e.startTime;} sum+=e.value;last=e.startTime;m.shifts.push({at:e.startTime,value:e.value,sources:(e.sources||[]).map(s=>({node:(s.node?.nodeName||'')+'#'+(s.node?.id||'')+'.'+(typeof s.node?.className==='string'?s.node.className:''),previous:s.previousRect.toJSON(),current:s.currentRect.toJSON()}))});m.cls=Math.max(m.cls,sum);}}).observe({type:'layout-shift',buffered:true});
