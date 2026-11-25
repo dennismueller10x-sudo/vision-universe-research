@@ -400,3 +400,14 @@ test('MB-18 Instagram-Karussell: sechs Slides ohne Kleingedrucktes, Hook je Them
   assert.ok(!/tiingo/i.test(cap + html));
   assert.equal(Social.valTitle('NVDA: KGV seit dem Kurshoch fast halbiert'), 'Nvidias KGV hat sich seit dem Hoch fast halbiert');
 });
+
+test('MB-19 Produktfilm oben auf /marktbriefing/: nur wenn die Datei da ist, selbst gehostet, ohne Autoplay', () => {
+  const b = Engine.buildBriefing(inputs());
+  const base = { chrome: Www.chromeFrom(CHROME), archive: [SESSION] };
+  assert.doesNotMatch(Www.productPage(b, base), /<video/);
+  const p = Www.productPage(b, { ...base, film: { src: 'film/marktbriefing-film.mp4', poster: 'film/poster.jpg' } });
+  assert.match(p, /<video class="mbvid" controls playsinline preload="none" poster="film\/poster\.jpg"[^>]*><source src="film\/marktbriefing-film\.mp4" type="video\/mp4">/);
+  assert.doesNotMatch(p, /autoplay/);
+  assert.ok(p.indexOf('mbfilm') < p.indexOf('mbstory'), 'Film steht vor dem Story-Block');
+  assert.ok(fs.existsSync(new URL('../../../landing/marktbriefing/film/marktbriefing-film.mp4', import.meta.url)));
+});
