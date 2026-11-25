@@ -111,3 +111,44 @@ test("TD-9 · Alternative mit eigener Unterteilung und eigenem Pfad, Mehrdeutigk
   assert.equal(v.primary, p.alternative, "Umschalter zeigt die Alternative");
   assert.equal(Big.viewOf(p, "main"), p);
 });
+
+/* 1.2.0 (Owner 25.11.2026): Proportion, laufende Welle in eigener Korrektur, Grenze einer laufenden Welle B */
+const tslaLike = () => series(1.2, [[150, 60], [4, 28], [90, 400], [60, 110], [100, 480], [40, 346]]);
+
+test("TD-10 · Proportion: ein Rücklauf innerhalb einer Antriebswelle ist nie größer als die größte Korrekturwelle desselben Grades", () => {
+  const r = TD.analyzeTopDown(tslaLike());
+  for (const c of [r.primary, r.alternative].filter(Boolean)) {
+    const L = (w) => Math.abs(Math.log(w.toPrice / w.fromPrice));
+    const ref = Math.max(0, ...c.waves.filter((w) => /^[24B]$/.test(w.label) && w.status !== "DEVELOPING").map(L));
+    const w3 = c.waves.find((w) => w.label === "3");
+    // der Absturz 400 → 110 (−72 %) liegt nicht innerhalb einer Welle 3, wenn die Welle 2 flacher war
+    if (w3 && ref > 0) assert.ok(!(w3.fromTime < "2016-11-01" && (w3.toTime > "2017-01-01")) || ref >= Math.log(400 / 110) - 1e-9, JSON.stringify(c.waves));
+  }
+});
+
+test("TD-11 · Laufende Welle in eigener Korrektur: Welle 3 kürzer als Welle 1 läuft noch, ihr Extrem steht als peak", () => {
+  const r = TD.analyzeTopDown(tslaLike());
+  const cur = r.primary.waves[r.primary.waves.length - 1];
+  assert.equal(r.primary.current.label, "3", JSON.stringify(r.primary.waves.map((w) => w.label + " " + w.toPrice.toFixed(0))));
+  assert.ok(cur.peakPrice > 470 && cur.toPrice < cur.peakPrice, "Extrem 480, Kurs heute darunter");
+  assert.equal(r.primary.invalidation.ruleId, "W3_START");
+  const p = topDownFor({ timeframe: "1W", close: tslaLike().close, timestamps: tslaLike().times });
+  assert.ok(p.primary.waves[p.primary.waves.length - 1].pk > 470, "kompakte Form trägt pk/pt");
+  assert.ok(r.path.length >= 2 && r.path.some((s) => s.label === "5" && s.degree === "BIG"), "Pfad bis zum Ende von Welle 5");
+});
+
+test("TD-12 · Laufende Welle B ist ungültig, sobald sie mehr als 138,2 % von Welle A zurückläuft; Ungültig-Marke = diese Grenze", () => {
+  // Impuls bis 120, A bis 70, danach steigt der Kurs bis 200 (B wäre 260 % von A)
+  const s = series(10, [[60, 30], [30, 15], [60, 90], [30, 60], [40, 120], [30, 70], [40, 200]]);
+  const all = TD._readAll(s);
+  const bad = all.filter((c) => c.current === "B" && (() => { const A = c.waves.find((w) => w.label === "A"), B = c.waves.find((w) => w.label === "B");
+    return Math.abs(c.pts[B.b].p - c.pts[B.a].p) / Math.abs(c.pts[A.b].p - c.pts[A.a].p) >= 1.382; })());
+  assert.equal(bad.length, 0, "keine Lesart mit laufender Welle B jenseits 138,2 %");
+  // innerhalb der Grenze: Marke = A-Ende + 1,382 × A in Richtung von B
+  const s2 = series(10, [[60, 30], [30, 15], [60, 90], [30, 60], [40, 120], [30, 70], [20, 100]]);
+  const r = TD.analyzeTopDown(s2);
+  const withB = [r.primary, r.alternative].filter((c) => c && c.current.label === "B");
+  withB.forEach((c) => { const A = c.waves.find((w) => w.label === "A");
+    assert.equal(c.invalidation.ruleId, "B_NOT_BEYOND_138");
+    assert.ok(Math.abs(c.invalidation.price - (A.toPrice + (c.current.direction === "UP" ? 1 : -1) * 1.382 * Math.abs(A.toPrice - A.fromPrice))) < 1e-6); });
+});

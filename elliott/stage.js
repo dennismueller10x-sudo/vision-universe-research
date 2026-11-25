@@ -29,7 +29,11 @@
   function pivots(c, close, tEnd, deg) {
     if (!c || !c.waves || !c.waves.length) return [];
     var w = c.waves, P = [{ t: T(w[0].ft), p: w[0].fp, l: null, deg: deg }];
-    w.forEach(function (x) { P.push(x.dev ? { t: tEnd, p: close, l: x.l, dev: 1, deg: deg, w: x } : { t: T(x.tt), p: x.tp, l: x.l, deg: deg, w: x }); });
+    w.forEach(function (x) {
+      /* laufende Welle in eigener Korrektur: erst ihr bisheriges Extrem (ohne Etikett), dann der Kurs heute */
+      if (x.dev && isNum(x.pk) && x.pt) P.push({ t: T(x.pt), p: x.pk, l: null, deg: deg, peak: 1 });
+      P.push(x.dev ? { t: tEnd, p: close, l: x.l, dev: 1, deg: deg, w: x } : { t: T(x.tt), p: x.tp, l: x.l, deg: deg, w: x });
+    });
     return P;
   }
 
@@ -79,11 +83,12 @@
          in „Nächste Ziele“, damit nichts zusammengedrückt wird */
       if (FT && fk > 0 && !tm) {
         var k5r = -1, kcr = -1; rows.forEach(function (r, k) { var l = String(r.step.l); if (l === "5") k5r = k; if (l === "C") kcr = k; });
-        var cut = FT.kind === "III" ? (k5r >= 0 ? k5r : FT.twoFrom === "Zone C im Pfad" && kcr >= 0 ? kcr : rows.length - 1) : rows.length - 1;
-        rows = rows.filter(function (r, k) { return k <= cut && (r.step.deg === "BIG" || r.role === "entry" || k === cut); });
+        var cut = FT.kind === "III" ? (k5r >= 0 ? k5r : FT.twoFrom === "Zone C im Pfad" && kcr >= 0 ? kcr : rows.length - 1) : FT.inPath && k5r >= 0 ? k5r : rows.length - 1;
+        /* erste Unterwelle bleibt, wenn sie die laufende große Welle abschließt (ihr großer Kreis steht daneben) */
+        rows = rows.filter(function (r, k) { return k <= cut && (r.step.deg === "BIG" || r.role === "entry" || k === cut || (k === 0 && rows[1] && rows[1].step.deg === "BIG")); });
       }
       /* Ansicht Fernziel: eigene Plätze für Welle II und III des übergeordneten Grads */
-      var farII = FT && FT.kind === "III" && FT.twoFrom !== "Zone C im Pfad", nS = rows.length + (fk > 0 ? 1 + (farII ? 1 : 0) : 0);
+      var farII = FT && FT.kind === "III" && FT.twoFrom !== "Zone C im Pfad", nS = rows.length + (fk > 0 && !FT.inPath ? 1 + (farII ? 1 : 0) : 0);
       function px(k) { return xNow + (xEnd - xNow) * ((k + 1) / (nS + 0.15)); }
       var big = pivots(td.primary, close, tC, "BIG"), sub = pivots(td.sub, close, tC, "SUB");
       /* Wertebereich: sichtbarer Kurs, sichtbare Wendepunkte, Kernzonen der Schritte, Ungültig-Marke in Reichweite */
@@ -150,7 +155,7 @@
         });
         return out.join("");
       }
-      g.push(labels(sub, false) + labels(big, true) + "</g>");
+      g.push((fk >= 0.5 ? "" : labels(sub, false)) + labels(big, true) + "</g>");   // Fernziel: nur der große Grad beschriftet
       /* Pfad der Methode: Zonen als Felder am Zielpunkt, Pfeile vom heutigen Kurs */
       var W0 = words(), P0 = [xNow, y(close)], pts = rows.map(function (r, k) { return [px(k), y(r.step.point)]; }), proj = [], pads = [], tags = [];
       var firstT = rows.filter(function (r) { return r.role === "target"; })[0];
@@ -186,7 +191,11 @@
       g.push('<g class="st-g3">' + ghost + pads.join("") + proj.join("") + "</g>");
       /* Fernziel als gezeichneter Weg des übergeordneten Grads (römisch, eckig): die Wellen 1–5 bilden zusammen Welle I,
          danach Korrektur II (ohne Zone C im Pfad: Ende bei 50 % von I) und Welle III ins Fernziel; bei jungem Impuls nur das Ende von Welle 5 */
-      if (fk > 0 && rows.length) {
+      if (fk > 0 && rows.length && FT.inPath) {
+        /* Ende von Welle 5 steht schon als Schritt im Pfad: dort nur hervorheben, kein zweites Feld */
+        var k5p = -1; rows.forEach(function (r, k) { if (String(r.step.l) === "5" && r.step.deg === "BIG") k5p = k; });
+        if (k5p >= 0) g.push('<g class="st-far"' + dim("far") + ' opacity="' + fk.toFixed(2) + '"><circle cx="' + f(pts[k5p][0]) + '" cy="' + f((y(rows[k5p].lo) + y(rows[k5p].hi)) / 2) + '" r="110" fill="url(#st-glow)"/></g>');
+      } else if (fk > 0 && rows.length) {
         var lastK = rows.length - 1, A1 = pts[lastK] || P0, fx = xEnd - 2, fw = narrow ? 40 : 52, fc = fx - fw / 2, fyB = (y(FT.lo) + y(FT.hi)) / 2, ft = num(FT.lo) + "–" + num(FT.hi) + " $";
         var deg = function (cx, cy, t) { var w = 14 + t.length * 7; return '<g class="st-deg"><rect x="' + f(cx - w / 2) + '" y="' + f(cy - 12) + '" width="' + f(w) + '" height="24" rx="6"/><text x="' + f(cx) + '" y="' + f(cy + 4.5) + '" text-anchor="middle">' + esc(t) + "</text></g>"; };
         var fg = ['<circle cx="' + f(fc) + '" cy="' + f(fyB) + '" r="110" fill="url(#st-glow)"/>',

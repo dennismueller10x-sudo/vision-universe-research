@@ -80,7 +80,11 @@ test("EE-6 · Fernziel: Welle (III) nach dem großen Impuls, Ende von Welle 5 be
   const w = (l, fp, tp, dev) => ({ l, ft: "2010-01-01", fp, tt: "2012-01-01", tp, dev: dev ? 1 : 0 });
   const st = (l, deg, dir, lo, hi) => ({ l, deg, dir, tiers: [{ t: "BASE", lo, hi, done: 0 }] });
   // Impuls seit 10 $, Hoch 480 $ (Welle 3 über der Mitte der Zone 5): (I) = 10 → 480, (II) = 50 % = 245, (III) = 1,0–1,618 × 470 ab 245
-  const a = F.far({ primary: { kind: "IMPULSE", dir: "UP", cur: "4", waves: [w("1", 10, 100), w("2", 100, 50), w("3", 50, 480), w("4", 480, 350, 1)] }, path: [st("C", "SUB", "DOWN", 230, 290), st("5", "BIG", "UP", 400, 500), st("A", "BIG", "DOWN", 260, 320)] });
+  // Welle 4 läuft, Welle 5 steht im Pfad: Fernziel ist ihre Zone (1.2.0), nicht schon Welle III danach
+  const a4 = F.far({ primary: { kind: "IMPULSE", dir: "UP", cur: "4", waves: [w("1", 10, 100), w("2", 100, 50), w("3", 50, 480), w("4", 480, 350, 1)] }, path: [st("C", "SUB", "DOWN", 230, 290), st("5", "BIG", "UP", 400, 500), st("A", "BIG", "DOWN", 260, 320)] });
+  assert.equal(a4.kind, "5"); assert.ok(a4.inPath && a4.lo === 400 && a4.hi === 500, JSON.stringify(a4));
+  // Welle 5 läuft (Ende im Pfad): die Wellen 1–5 bilden Welle I, danach II und III
+  const a = F.far({ primary: { kind: "IMPULSE", dir: "UP", cur: "5", waves: [w("1", 10, 100), w("2", 100, 50), w("3", 50, 480), w("4", 480, 350), w("5", 350, 400, 1)] }, path: [st("5", "SUB", "UP", 400, 500), st("A", "BIG", "DOWN", 260, 320)] });
   assert.equal(a.kind, "III");
   assert.ok(Math.abs(a.lo - (245 + 470)) < 1 && Math.abs(a.hi - (245 + 1.618 * 470)) < 1, JSON.stringify(a));
   assert.ok(a.lo >= a.top, "harte Regel: (III) über dem Ende von (I)");
@@ -88,4 +92,7 @@ test("EE-6 · Fernziel: Welle (III) nach dem großen Impuls, Ende von Welle 5 be
   const b = F.far({ primary: { kind: "IMPULSE", dir: "UP", cur: "2", waves: [w("1", 5, 10), w("2", 10, 7, 1)] }, path: [st("C", "SUB", "DOWN", 5, 6), st("3", "BIG", "UP", 12, 14), st("4", "BIG", "DOWN", 11, 12)] });
   assert.equal(b.kind, "5"); assert.ok(b.lo >= 13 && b.hi > b.lo);
   assert.deepEqual(F.far({ primary: { kind: "IMPULSE", dir: "DOWN", cur: "3", waves: [w("1", 50, 20)] }, path: [] }), { none: "DOWN" });
+  // Korrektur II tiefer als 88,6 % von Welle I: kein Fernziel; Kurs unter der Zone C: II mindestens bis zum Kurs
+  const deep = F.far({ close: 20, primary: { kind: "IMPULSE", dir: "UP", cur: "C", waves: [w("1", 10, 100), w("2", 100, 50), w("3", 50, 480), w("4", 480, 350), w("5", 350, 500), w("A", 500, 300), w("B", 300, 400), w("C", 400, 20, 1)] }, path: [st("C", "SUB", "DOWN", 200, 250)] });
+  assert.deepEqual(deep, { none: "DEEP" });
 });

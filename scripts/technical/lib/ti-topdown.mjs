@@ -11,7 +11,8 @@ export const TOPDOWN_VERSION = TD.VERSION;
 
 /** Preis auf 4 signifikante Stellen (Anzeige, kein Rechenwert). */
 export function sig(v) { if (typeof v !== "number" || !isFinite(v)) return null; if (v === 0) return 0; const d = Math.max(0, 3 - Math.floor(Math.log10(Math.abs(v)))); return Number(v.toFixed(Math.min(d, 6))); }
-const wave = (w) => ({ l: w.label, ft: w.fromTime, fp: sig(w.fromPrice), tt: w.toTime, tp: sig(w.toPrice), dev: w.status === "DEVELOPING" ? 1 : 0 });
+const wave = (w) => Object.assign({ l: w.label, ft: w.fromTime, fp: sig(w.fromPrice), tt: w.toTime, tp: sig(w.toPrice), dev: w.status === "DEVELOPING" ? 1 : 0 },
+  w.peakPrice != null ? { pt: w.peakTime, pk: sig(w.peakPrice) } : {});
 function count(c) {
   if (!c) return null;
   return { kind: c.kind, dir: c.direction, cur: c.current.label, curDir: c.current.direction, waves: c.waves.map(wave),

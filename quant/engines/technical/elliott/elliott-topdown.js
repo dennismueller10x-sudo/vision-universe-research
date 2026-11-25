@@ -16,6 +16,12 @@
       kuerzeste, Welle 4 nicht im Gebiet von Welle 1, Welle 3 uebersteigt das Ende von Welle 1; eine laufende Welle verletzt eine Regel
       schon dann, wenn ihr bisheriges Extrem sie bricht. Richtlinien (EWP Kap. 4) bewerten: Ruecklauf Welle 2 (50–78,6 %), Welle 3
       mindestens 1,618 × Welle 1, Ruecklauf Welle 4 (23,6–50 %), Welle B und C einer Korrektur.
+      PROPORTION (EWP Kap. 2, „Right Look“; 1.2.0): kein Ruecklauf innerhalb einer Antriebswelle ist groesser als die groesste
+      abgeschlossene Korrekturwelle desselben Grades (2, 4 bzw. B); sonst waere er selbst eine Welle dieses Grades. Ohne diese Regel las
+      die Engine z. B. bei Tesla den Absturz 2021–2023 (−72 %) als Teil einer Welle 3, deren Welle 2 nur −52 % tief war.
+      LAUFENDE WELLE IN EIGENER KORREKTUR (1.2.0): die letzte Antriebswelle darf nach ihrem bisherigen Extrem zuruecklaufen, ohne beendet
+      zu sein (z. B. Welle 3 laeuft, gerade in ihrer Unterwelle 2 oder 4), solange der Ruecklauf hoechstens 61,8 % der bisherigen Welle betraegt. Ihr Extrem
+      steht als peak in der Ausgabe; die innere Korrektur hat 1 bis 3 Abschnitte.
    3. GRAD. Bevorzugt wird ein Ursprung, der das Extrem der ganzen Reihe ist (Allzeittief bzw. -hoch), und die groessere
       Abdeckung. Ein Ursprung vor Handelsbeginn ist nicht pruefbar und wird nicht angenommen.
    4. UNTERTEILUNG. Dieselbe Lesung auf der laufenden grossen Welle mit feineren Schwellen.
@@ -24,7 +30,7 @@
    ========================================================================= */
 (function (global) {
   "use strict";
-  var VERSION = "elliott-topdown-1.1.0";   // 1.1.0: Alternative mit eigener Unterteilung und Pfad, Mehrdeutigkeit (Owner 23.11.2026)
+  var VERSION = "elliott-topdown-1.2.0";   // 1.2.0: Proportion (Right Look) und laufende Welle in eigener Korrektur (Owner 25.11.2026); 1.1.0: Alternative mit eigener Unterteilung und Pfad
   var EWP = "Frost & Prechter, Elliott Wave Principle";
   var THRESHOLDS = [1.0, 0.8, 0.65, 0.5];          // grosser Grad: log-Schwellen (≈ +172 %/−63 %, +123 %/−55 %, +92 %/−48 %, +65 %/−39 %)
   var SUB_THRESHOLDS = [0.4, 0.3, 0.22, 0.16, 0.11];
@@ -82,6 +88,7 @@
   function len(w, pts) { return Math.abs(pts[w.b].p - pts[w.a].p); }
   function checkImpulse(ws, pts, s, done) {
     var P = function (k) { return pts[k].p; }, rules = [], g = [], dev = pts[ws[ws.length - 1].b].dev;
+    var E = function (x) { return x.inner ? pts[x.e].p : pts[x.b].p; };   // bisheriges Extrem einer Welle
     function R(id, ok, text) { rules.push({ id: id, passed: ok, text: text }); return ok; }
     var w = {}; ws.forEach(function (x) { w[x.label] = x; });
     if (w["2"]) {
@@ -91,8 +98,9 @@
     if (w["3"]) {
       var l3 = len(w["3"], pts), l1 = len(w["1"], pts);
       var c3 = !(pts[w["3"].b].dev && !done);
-      if (c3 && !R("W3_BEYOND_W1_END", s * (P(w["3"].b) - P(w["1"].b)) > 0, "Welle 3 übersteigt das Ende von Welle 1")) return null;
+      if ((c3 || w["3"].inner) && !R("W3_BEYOND_W1_END", s * (E(w["3"]) - P(w["1"].b)) > 0, "Welle 3 übersteigt das Ende von Welle 1")) return null;
       if (c3) g.push(l3 / l1 >= 1.618 ? 1 : l3 / l1 >= 1 ? 0.7 : 0.35);
+      if (w["3"].inner) g.push(stillRunning(Math.abs(E(w["3"]) - P(w["3"].a)) / l1, 1.0, 1.618));
     }
     if (w["4"]) {
       if (!R("W4_NOT_IN_W1_TERRITORY", s * (P(w["4"].b) - P(w["1"].b)) > 0, "Welle 4 fällt nicht in das Kursgebiet von Welle 1")) return null;
@@ -102,6 +110,7 @@
       var l5 = len(w["5"], pts), five = !(pts[w["5"].b].dev && !done);
       if (five && !R("W3_NEVER_SHORTEST", !(len(w["3"], pts) < len(w["1"], pts) && len(w["3"], pts) < l5), "Welle 3 ist nie die kürzeste der Wellen 1, 3, 5")) return null;
       if (five) g.push(band(l5 / len(w["1"], pts), [0.618, 1.618], [0.382, 2.618]));
+      if (w["5"].inner) g.push(stillRunning(Math.abs(E(w["5"]) - P(w["5"].a)) / len(w["1"], pts), 0.618, 1.0));
     }
     if (w["A"]) {
       var imp = Math.abs(P(w["5"].b) - P(w["1"].a));
@@ -109,21 +118,26 @@
     }
     if (w["B"]) {
       var rb = len(w["B"], pts) / len(w["A"], pts);
-      if (!R("B_NOT_BEYOND_138", rb < 1.382 || pts[w["B"].b].dev, "Welle B läuft höchstens 138,2 % von Welle A zurück (erweiterte Flat)")) return null;
+      if (!R("B_NOT_BEYOND_138", rb < 1.382, "Welle B läuft höchstens 138,2 % von Welle A zurück (erweiterte Flat)")) return null;
       g.push(band(rb, [0.382, 1.0], [0.236, 1.382]));
     }
     if (w["C"] && !pts[w["C"].b].dev) g.push(band(len(w["C"], pts) / len(w["A"], pts), [0.618, 1.618], [0.382, 2.618]));
+    if (w["C"] && w["C"].inner) g.push(stillRunning(Math.abs(E(w["C"]) - P(w["C"].a)) / len(w["A"], pts), 0.618, 1.0));
     return { rules: rules, guide: g.length ? g.reduce(function (a, b) { return a + b; }, 0) / g.length : ws.length < 2 ? 0.4 : 0.6 };
   }
+  /* Richtlinie fuer eine laufende Welle in eigener Korrektur (1.2.0): hat sie ihr uebliches Mass (Verhaeltnis zur Referenzwelle) schon
+     erreicht, ist „beendet, naechste Welle laeuft“ die naheliegende Lesart; ist sie noch kurz, laeuft sie eher noch. */
+  function stillRunning(r, lo, hi) { return r < lo ? 1 : r < hi ? 0.7 : 0.35; }
   function checkCorrection(ws, pts, s) {
     var rules = [], g = [], w = {}; ws.forEach(function (x) { w[x.label] = x; });
     if (w["B"]) {
       var rb = len(w["B"], pts) / len(w["A"], pts);
-      if (!(rb < 1.382 || pts[w["B"].b].dev)) return null;
+      if (!(rb < 1.382)) return null;   // auch eine laufende Welle B (1.2.0; vorher ausgenommen)
       rules.push({ id: "B_NOT_BEYOND_138", passed: true, text: "Welle B läuft höchstens 138,2 % von Welle A zurück (erweiterte Flat)" });
       g.push(band(rb, [0.382, 1.0], [0.236, 1.382]));
     }
     if (w["C"] && !pts[w["C"].b].dev) g.push(band(len(w["C"], pts) / len(w["A"], pts), [0.618, 1.618], [0.382, 2.618]));
+    if (w["C"] && w["C"].inner) g.push(stillRunning(Math.abs(pts[w["C"].e].p - pts[w["C"].a].p) / len(w["A"], pts), 0.618, 1.0));
     return { rules: rules, guide: g.length ? g.reduce(function (a, b) { return a + b; }, 0) / g.length : ws.length < 2 ? 0.4 : 0.6 };
   }
   /* Eine Welle von a nach b ist zulaessig, wenn a und b die Extreme des Abschnitts sind (EWP Kap. 1: Wellen zwischen Extremen). */
@@ -131,6 +145,16 @@
     var lo = Math.min(pts[a].p, pts[b].p), hi = Math.max(pts[a].p, pts[b].p);
     for (var k = a + 1; k < b; k++) if (pts[k].p < lo - 1e-12 || pts[k].p > hi + 1e-12) return false;
     return true;
+  }
+  /* Proportion (EWP Kap. 2 „Right Look“): kein Ruecklauf innerhalb einer Antriebswelle (auch der laufende Ruecklauf einer Welle in
+     eigener Korrektur) ist groesser als die groesste abgeschlossene Korrekturwelle desselben Grades. */
+  function proportional(c, pts) {
+    var L = function (k) { return Math.log(pts[k].p); }, corr = c.labels === CORR_SEQ;
+    var mot = function (l) { return corr ? l === "A" || l === "C" : /^[135]$/.test(l); };
+    var ref = 0, inner = 0;
+    c.waves.forEach(function (w) { if (!mot(w.label) && !pts[w.b].dev && (corr || !/^[AC]$/.test(w.label))) ref = Math.max(ref, Math.abs(L(w.b) - L(w.a))); });
+    c.waves.forEach(function (w) { if (mot(w.label) && w.legs > 1) for (var k = w.a + 1; k < w.b; k += 2) inner = Math.max(inner, Math.abs(L(k + 1) - L(k))); });
+    return !(ref > 0 && inner > ref);
   }
   /* Alle Lesarten ab Ursprung s bis zum letzten Punkt: Motivwellen 1 Abschnitt, Korrekturwellen 1 oder 3 Abschnitte. */
   function parse(pts, s, seq, out) {
@@ -140,12 +164,23 @@
       if (k === last) { out.push({ s: s, dir: sdir, labels: seq, waves: ws.slice() }); return; }
       if (li >= seq.length) return;
       var lab = seq[li];
-      var spans = /^[135]$/.test(lab) ? [1, 5] : lab === "C" ? [1, 5] : [1, 3];
+      var spans = /^[135]$/.test(lab) ? [1, 3, 5] : lab === "C" ? [1, 3, 5] : [1, 3];   // 1.2.0: auch 3 Abschnitte (Unterwelle 4 unter der Schwelle)
       spans.forEach(function (n) {
         var b = k + n; if (b > last) return;
         if (!extremal(pts, k, b)) return;
         ws.push({ label: lab, a: k, b: b, legs: n });
         step(b, li + 1, ws);
+        ws.pop();
+      });
+      /* Laufende Welle 3, 5 oder C in eigener Korrektur (Welle 1 nicht: dort ist „1 fertig, 2 läuft“ dieselbe Lesart): bisheriges Extrem e nach 1, 3 oder 5 Abschnitten, danach bis heute 1 bis 3
+         Abschnitte der inneren Korrektur, alle zwischen Anfang und Extrem der Welle. */
+      if (/^[35C]$/.test(lab)) [1, 3, 5].forEach(function (m) {
+        var e = k + m, tail = last - e; if (tail < 1 || tail > 3 || !extremal(pts, k, e)) return;
+        var pa = pts[k].p, pe = pts[e].p;
+        /* innere Korrektur hoechstens 61,8 % der bisherigen Welle (sonst ist die Welle beendet und die naechste laeuft) */
+        for (var q = e + 1; q <= last; q++) if (!((pe - pa) * (pts[q].p - pa) > 0 && Math.abs(pts[q].p - pe) <= 0.618 * Math.abs(pe - pa))) return;
+        ws.push({ label: lab, a: k, b: last, e: e, legs: m + tail, inner: true });
+        step(last, li + 1, ws);
         ws.pop();
       });
     })(s, 0, []);
@@ -182,7 +217,7 @@
           for (var q = 0; q <= pts[w1.b].i; q++) if (c.dir * (close[q] - pts[0].p) < 0) return;
         }
         var chk = corr ? checkCorrection(c.waves, pts, c.dir) : checkImpulse(c.waves, pts, c.dir, false);
-        if (!chk) return;
+        if (!chk || !proportional(c, pts)) return;
         var o = pts[s].p;
         /* Ursprung: Extrem der ganzen Reihe in Gegenrichtung zur ersten Welle (Allzeittief fuer einen Aufwaertsimpuls, Allzeithoch
            fuer eine Korrektur abwaerts) – so verankern Analysten den grossen Grad. */
@@ -201,8 +236,16 @@
   function waveOut(c) {
     return c.waves.map(function (w) {
       var a = c.pts[w.a], b = c.pts[w.b];
-      return { label: w.label, fromTime: a.t, fromPrice: a.p, toTime: b.t, toPrice: b.p, legs: w.legs, status: b.dev ? "DEVELOPING" : "CONFIRMED" };
+      var o = { label: w.label, fromTime: a.t, fromPrice: a.p, toTime: b.t, toPrice: b.p, legs: w.legs, status: b.dev ? "DEVELOPING" : "CONFIRMED" };
+      if (w.inner) { o.peakTime = c.pts[w.e].t; o.peakPrice = c.pts[w.e].p; }
+      return o;
     });
+  }
+  /* Grenze einer laufenden Welle B: hoechstens 138,2 % von Welle A (erweiterte Flat), Richtung von B = d (1.2.0; vorher Ende von
+     Welle 5 bzw. Ursprung der Korrektur, das eine erweiterte Flat schon ungueltig nannte). */
+  function bLimit(A, d) {
+    var p = A.toPrice + d * 1.382 * Math.abs(A.toPrice - A.fromPrice);
+    return p > 0 ? { price: p, direction: d > 0 ? "above" : "below", ruleId: "B_NOT_BEYOND_138", text: "Welle B läuft höchstens 138,2 % von Welle A zurück (erweiterte Flat)" } : null;
   }
   function countOut(c, degree) {
     if (!c) return null;
@@ -215,10 +258,12 @@
       else if (cur.label === "3") inv = { price: byLabel["2"].toPrice, direction: s > 0 ? "below" : "above", ruleId: "W3_START", text: "Unter dem Ende von Welle 2 wäre Welle 3 nicht im Gange" };
       else if (cur.label === "4") inv = { price: w1.toPrice, direction: s > 0 ? "below" : "above", ruleId: "W4_NOT_IN_W1_TERRITORY", text: "Welle 4 fällt nicht in das Kursgebiet von Welle 1" };
       else if (cur.label === "5") inv = { price: byLabel["4"].toPrice, direction: s > 0 ? "below" : "above", ruleId: "W5_START", text: "Unter dem Ende von Welle 4 wäre Welle 5 nicht im Gange" };
-      else if (cur.label === "A" || cur.label === "B") inv = { price: byLabel["5"].toPrice, direction: s > 0 ? "above" : "below", ruleId: "IMPULSE_END", text: "Über dem Ende von Welle 5 wäre der Impuls nicht abgeschlossen" };
+      else if (cur.label === "A") inv = { price: byLabel["5"].toPrice, direction: s > 0 ? "above" : "below", ruleId: "IMPULSE_END", text: "Über dem Ende von Welle 5 wäre der Impuls nicht abgeschlossen" };
+      else if (cur.label === "B") inv = bLimit(byLabel["A"], -s);
       else if (cur.label === "C") inv = { price: byLabel["B"].toPrice, direction: s > 0 ? "above" : "below", ruleId: "C_START", text: "Über dem Ende von Welle B wäre Welle C nicht im Gange" };
     } else {
-      if (cur.label === "A" || cur.label === "B") inv = { price: w1.fromPrice, direction: s > 0 ? "below" : "above", ruleId: "CORRECTION_ORIGIN", text: "Jenseits des Ursprungs der Korrektur wäre sie keine Korrektur" };
+      if (cur.label === "A") inv = { price: w1.fromPrice, direction: s > 0 ? "below" : "above", ruleId: "CORRECTION_ORIGIN", text: "Jenseits des Ursprungs der Korrektur wäre sie keine Korrektur" };
+      else if (cur.label === "B") inv = bLimit(byLabel["A"], -s);
       else inv = { price: byLabel["B"].toPrice, direction: s > 0 ? "below" : "above", ruleId: "C_START", text: "Jenseits des Endes von Welle B wäre Welle C nicht im Gange" };
     }
     var waveDir = function (lab) { return c.kind === "IMPULSE" ? (/^[135B]$/.test(lab) ? s : -s) : (lab === "B" ? -s : s); };
@@ -238,7 +283,8 @@
   RELATIONS.W5_NET13 = { source: EWP, locator: "Kap. 1, Truncation; Kap. 4, Ratio Analysis (Multiples)", text: "Welle 5 über das Ende von Welle 3 hinaus: 0,382–1,0 × Strecke Anfang Welle 1 bis Ende Welle 3 ab Ende Welle 4" };
   /* Skala (VU-Festlegung): Verhaeltnisse linear wie in der Literatur. Fuehrt ein Abwaertsschritt linear bis unter ein Zehntel des
      Ankers (lange Reihen mit vielfachem Kursanstieg), rechnet die Methode diesen Schritt auf der logarithmischen Skala (gleiche Prozent
-     statt gleicher Dollar). */
+     statt gleicher Dollar). Spiegelbildlich ein Aufwaertsschritt, der linear ueber das Zehnfache des Ankers fuehrt (z. B. Welle A nach
+     einem Absturz um 99 %), wenn die logarithmische Rechnung ihn verkleinert (1.2.0). */
   var LOG_FLOOR = 0.1;
   function nextLabels(kind, label, max, own) {
     var seq = kind === "IMPULSE" ? MOTIVE_SEQ : CORR_SEQ, i = seq.indexOf(label), out = [];
@@ -263,7 +309,7 @@
       var s = count.direction === "UP" ? 1 : -1, anchor = startAnchor;
       for (var q = 0; q < labels.length && !halt; q++) {
         var lab = labels[q], w = q === 0 && firstIsCurrent ? count.waves[count.waves.length - 1] : null, dev = !!(w && w.status === "DEVELOPING");
-        var a = w ? w.fromPrice : anchor, dir = stepDir(count.kind, lab, s), ext = dev ? w.toPrice : null, sp = "linear", key = lab, tiers = null, ref = null;
+        var linT = null, a = w ? w.fromPrice : anchor, dir = stepDir(count.kind, lab, s), ext = dev ? (isNum(w.peakPrice) ? w.peakPrice : w.toPrice) : null, sp = "linear", key = lab, tiers = null, ref = null;
         if (!isNum(a) || !(a > 0)) { halt = true; break; }
         for (var pass = 0; pass < 2; pass++) {
           sp = pass ? "log" : "linear"; key = lab;
@@ -272,14 +318,25 @@
           if (lab === "5" && isNum(ref) && isNum(lens.end3) && isNum(lens.net13) && dir * (T(a) + dir * 1.618 * ref - lens.end3) <= 0) { key = "5N"; ref = lens.net13; }
           if (!LADDER[key] || !isNum(ref) || !(ref > 0)) { tiers = null; continue; }
           tiers = tiersOf(LADDER[key], sp, a, dir, ref, ext);
-          if (dir > 0 || tiers.every(function (z) { return z.low > LOG_FLOOR * a; })) break;
+          if (dir > 0 ? pass || tiers.every(function (z) { return z.high < a / LOG_FLOOR; }) : tiers.every(function (z) { return z.low > LOG_FLOOR * a; })) break;
+          linT = { tiers: tiers, ref: ref, key: key };
         }
+        /* Aufwaerts: log nur, wenn es den Schritt verkleinert (nach einem Absturz); sonst bleibt es linear */
+        if (dir > 0 && sp === "log" && linT && (!tiers || Math.max.apply(null, tiers.map(function (z) { return z.high; })) >= Math.max.apply(null, linT.tiers.map(function (z) { return z.high; })))) { sp = "linear"; tiers = linT.tiers; ref = linT.ref; key = linT.key; }
         if (!tiers) { halt = true; break; }
         tiers = tiers.filter(function (z) { return z.low > 0 && z.high > z.low; });
         if (!tiers.length) { halt = true; break; }
+        /* Welle 5 endet ueber dem Ende von Welle 3 (1.2.0): Stufen darunter entfallen, die erste wird dort abgeschnitten (nach tiefer
+           Welle 4 lag die Basisstufe sonst unter dem Hoch von Welle 3) */
+        if (lab === "5" && isNum(L2[sp].end3)) {
+          var e3p = SP[sp][1](L2[sp].end3), cut5 = tiers.filter(function (z) { return dir > 0 ? z.high > e3p : z.low < e3p; }).map(function (z) {
+            return { tier: z.tier, low: dir > 0 ? round(Math.max(z.low, e3p), 4) : z.low, high: dir > 0 ? z.high : round(Math.min(z.high, e3p), 4), ratios: z.ratios, passed: z.passed }; });
+          if (cut5.length) tiers = cut5;
+        }
         var LL = LADDER[key], T0 = SP[sp][0], F0 = SP[sp][1], A0 = T0(a);
         var open = tiers.filter(function (z) { return !z.passed; }), kp = F0(A0 + dir * KEY[key] * ref);
         var point = !open.length ? ext : isNum(ext) && (dir > 0 ? ext >= kp : ext <= kp) ? (open[0].low + open[0].high) / 2 : kp;
+        if (open.length && (dir > 0 ? point < open[0].low : point > open[0].high)) point = (open[0].low + open[0].high) / 2;
         steps.push({ label: lab, display: degree === "SUB" ? "(" + lab + ")" : "[" + lab + "]", degree: degree, direction: dir > 0 ? "UP" : "DOWN", developing: dev, anchor: round(a, 4), scale: sp,
                      zone: { relation: LL.rel, statement: RELATIONS[LL.rel].text, source: RELATIONS[LL.rel].source + ", " + RELATIONS[LL.rel].locator, tiers: tiers }, point: round(point, 4), exhausted: !open.length });
         ["linear", "log"].forEach(function (k) { advance(L2[k], SP[k][0], lab, a, point); });
@@ -319,8 +376,15 @@
       run(big, nextLabels(big.kind, cur, 2), "BIG", false, end, lb);
     } else if (!steps.length) {
       halt = false;
-      end = run(big, [cur], "BIG", true, null, lb);
-      if (!halt) run(big, nextLabels(big.kind, cur, 2), "BIG", false, end, lb);
+      var cw1 = big.waves[big.waves.length - 1];
+      if (big.kind === "IMPULSE" && cur === "1" && cw1.status === "DEVELOPING") {
+        /* Laufende Welle 1 ohne Unterteilung (1.2.0): vorlaeufig endet sie am bisherigen Extrem; daraus Welle 2 und 3 */
+        ["linear", "log"].forEach(function (k) { var T = SP[k][0], l = Math.abs(T(cw1.toPrice) - T(cw1.fromPrice)); lb[k].prev = l; lb[k]["1"] = l; });
+        run(big, ["2", "3"], "BIG", false, cw1.toPrice, lb);
+      } else {
+        end = run(big, [cur], "BIG", true, null, lb);
+        if (!halt) run(big, nextLabels(big.kind, cur, 2), "BIG", false, end, lb);
+      }
     }
     return steps;
   }
@@ -345,6 +409,7 @@
           var wantDir = count.current.direction === "UP" ? 1 : -1;
           if (x.dir !== wantDir) return;
           if (want === "CORRECTION" && x.kind !== "CORRECTION" && !(x.kind === "IMPULSE" && /^[12]$/.test(x.current))) return;
+          if (want === "IMPULSE" && x.kind !== "IMPULSE") return;   // eine Antriebswelle unterteilt sich in fuenf (1.2.0; vorher auch A-B-C)
           if (x.kind === "IMPULSE" && x.waves.some(function (w) { return /^[ABC]$/.test(w.label); })) return;   // Unterwelle endet mit der grossen Welle
           subAll.push(x);
         });
