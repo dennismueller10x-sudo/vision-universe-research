@@ -1,11 +1,11 @@
 {
   "schemaVersion": "vu-realtime-browser-qa-1.1.0",
   "auftrag": "Owner 17.09.2026 §19/§20: Realtime auf der Aktienseite, im echten Browser",
-  "checkedAt": "2026-11-25T14:34:33.540Z",
+  "checkedAt": "2026-11-25T14:44:07.778Z",
   "origin": "https://research.visionuniverse.de",
   "session": {
     "phase": "REGULAR",
-    "localTime": "09:34:33",
+    "localTime": "09:44:07",
     "isOpen": true
   },
   "mode": "WORKTREE",
@@ -15,9 +15,9 @@
     {
       "symbol": "AAPL",
       "prices": {
-        "kopf": 313.89,
+        "kopf": 311.76,
         "chart": 343.6,
-        "kopfText": "313,89 €−1,90 % heute",
+        "kopfText": "311,76 €−1,90 % heute",
         "deviation": null
       },
       "connected": true,
@@ -25,8 +25,8 @@
       "subscribed": [
         "AAPL"
       ],
-      "ticks": 21,
-      "firstTickMs": 245,
+      "ticks": 22,
+      "firstTickMs": 249,
       "chartUpdatesAfterLoad": 0,
       "surface": {
         "letzteSitzung": true,
@@ -42,11 +42,11 @@
         "Letzter Handelstag · 2026-11-20 · heutige Kurse fehlen"
       ],
       "latencyMs": {
-        "samples": 21,
-        "providerToCloudflare": 107,
-        "cloudflareToClient": 478,
-        "endToEnd": 584,
-        "max": 1290
+        "samples": 22,
+        "providerToCloudflare": 145,
+        "cloudflareToClient": 477,
+        "endToEnd": 622,
+        "max": 1367
       },
       "consoleErrors": [
         "Failed to load resource: the server responded with a status of 404 (Not Found)"
@@ -56,9 +56,9 @@
     {
       "symbol": "NVDA",
       "prices": {
-        "kopf": 127.12,
+        "kopf": 127.1,
         "chart": 126.01,
-        "kopfText": "127,12 €−14,01 % heute",
+        "kopfText": "127,10 €−14,01 % heute",
         "deviation": null
       },
       "connected": true,
@@ -66,7 +66,7 @@
       "subscribed": [
         "NVDA"
       ],
-      "ticks": 21,
+      "ticks": 23,
       "firstTickMs": 250,
       "chartUpdatesAfterLoad": 0,
       "surface": {
@@ -83,11 +83,11 @@
         "Letzter Handelstag · 2026-11-20 · heutige Kurse fehlen"
       ],
       "latencyMs": {
-        "samples": 21,
-        "providerToCloudflare": 6374,
-        "cloudflareToClient": 429,
-        "endToEnd": 6803,
-        "max": 7601
+        "samples": 23,
+        "providerToCloudflare": 6570,
+        "cloudflareToClient": 634,
+        "endToEnd": 7204,
+        "max": 8061
       },
       "consoleErrors": [
         "Failed to load resource: the server responded with a status of 404 (Not Found)"
@@ -157,8 +157,8 @@
         "subscribes": 1,
         "unsubscribes": 0,
         "notifications": 18,
-        "lastMessageAt": "2026-11-25T14:38:00.560Z",
-        "lastTickAt": "2026-11-25T14:38:00.560Z",
+        "lastMessageAt": "2026-11-25T14:47:37.152Z",
+        "lastTickAt": "2026-11-25T14:47:37.152Z",
         "state": "OPEN",
         "reason": null,
         "symbols": 1,
@@ -197,8 +197,8 @@
       "question": "AAPL und NVDA liefern Kurse ohne Neuladen",
       "ok": true,
       "detail": [
-        "AAPL:21",
-        "NVDA:21"
+        "AAPL:22",
+        "NVDA:23"
       ]
     },
     {
@@ -226,8 +226,8 @@
       "question": "Kopf und Chart zeigen denselben Kurs",
       "ok": true,
       "detail": [
-        "AAPL: {\"kopf\":313.89,\"chart\":343.6,\"kopfText\":\"313,89 €−1,90 % heute\",\"deviation\":null}",
-        "NVDA: {\"kopf\":127.12,\"chart\":126.01,\"kopfText\":\"127,12 €−14,01 % heute\",\"deviation\":null}",
+        "AAPL: {\"kopf\":311.76,\"chart\":343.6,\"kopfText\":\"311,76 €−1,90 % heute\",\"deviation\":null}",
+        "NVDA: {\"kopf\":127.1,\"chart\":126.01,\"kopfText\":\"127,10 €−14,01 % heute\",\"deviation\":null}",
         "AFG: {\"kopf\":141.5,\"chart\":157.99,\"kopfText\":\"141,50 €+0,71 % zum Vortag\",\"deviation\":null}"
       ]
     },
@@ -304,8 +304,8 @@
           "subscribes": 1,
           "unsubscribes": 0,
           "notifications": 18,
-          "lastMessageAt": "2026-11-25T14:38:00.560Z",
-          "lastTickAt": "2026-11-25T14:38:00.560Z",
+          "lastMessageAt": "2026-11-25T14:47:37.152Z",
+          "lastTickAt": "2026-11-25T14:47:37.152Z",
           "state": "OPEN",
           "reason": null,
           "symbols": 1,
