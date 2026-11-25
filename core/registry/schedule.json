@@ -57,7 +57,7 @@
   {
    "id": "company-intelligence-refresh",
    "workflow": "company-intelligence-refresh.yml",
-   "cron": "17 */4 * * 0,6",
+   "cron": "17 */3 * * 0,6",
    "timer": "waker",
    "inputs": {
     "verification": false,
@@ -78,6 +78,16 @@
    "id": "company-intelligence-refresh-werktag-2",
    "workflow": "company-intelligence-refresh.yml",
    "cron": "10 3 * * 1-5",
+   "timer": "waker",
+   "inputs": {
+    "verification": false,
+    "universe": false
+   }
+  },
+  {
+   "id": "company-intelligence-refresh-werktag-7",
+   "workflow": "company-intelligence-refresh.yml",
+   "cron": "5 5 * * 1-5",
    "timer": "waker",
    "inputs": {
     "verification": false,
