@@ -1,14 +1,14 @@
 {
   "schemaVersion": "freshness-health-1.0.0",
   "contractVersion": "freshness-contract-1.0.0",
-  "checkedAt": "2026-11-24T22:37:35.554Z",
+  "checkedAt": "2026-11-25T06:20:45.130Z",
   "target": "repository",
   "market": {
-    "state": "AFTER_HOURS",
-    "localDate": "2026-11-24",
-    "localTime": "17:37:35",
+    "state": "CLOSED",
+    "localDate": "2026-11-25",
+    "localTime": "01:20:45",
     "lastCompletedSession": "2026-11-24",
-    "currentSession": "2026-11-24",
+    "currentSession": "2026-11-25",
     "expectedIntradaySession": "2026-11-24"
   },
   "intraday": {
@@ -33,7 +33,7 @@
     },
     "dataState": "LAST_SESSION",
     "dataReason": "sessionCompleteNoLateTrades",
-    "dataLabel": "Heute · Schluss · letzter Kurs 16:55",
+    "dataLabel": "Letzter Handelstag · Dienstag",
     "entries": 1391,
     "byState": {
       "LIVE": 0,
@@ -69,13 +69,13 @@
     "state": "OK"
   },
   "daily": {
-    "universeAsOf": "2026-11-23",
-    "generatedAt": "2026-11-24T07:14:48.222Z",
+    "universeAsOf": "2026-11-24",
+    "generatedAt": "2026-11-25T06:20:38.403Z",
     "state": "LAST_SESSION",
     "basis": "series",
     "summaryState": "LAST_SESSION",
-    "reason": "closePendingWithinGrace",
-    "label": "Schluss Mo., 23.11. · Dienstag folgt",
+    "reason": "lastCompletedSession",
+    "label": "Schluss Dienstag",
     "seriesState": "LAST_SESSION",
     "summaryContradictsSeries": false,
     "expectedSession": "2026-11-24",
@@ -88,7 +88,7 @@
         "UNAVAILABLE": 0
       },
       "byReason": {
-        "closePendingWithinGrace": 40
+        "lastCompletedSession": 40
       },
       "staleSample": [],
       "seriesIndexCount": 5998
