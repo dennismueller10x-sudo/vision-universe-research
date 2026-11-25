@@ -2,7 +2,7 @@
  "schemaVersion": "vu-ti-api-3.0.0",
  "resultSchema": "vu-technical-analysis-2.0.0",
  "bundle": "ti-bundle-2.0.0",
- "generatedAt": "2026-11-25T06:03:37.817Z",
+ "generatedAt": "2026-11-25T06:30:14.382Z",
  "methodology": "quant/methodology/technical-intelligence-v2.json",
  "elliott": {
   "engine": "v3",
@@ -45,7 +45,7 @@
   "markets": "/quant/data/technical-intelligence/v3/markets/index.json"
  },
  "migration": "docs/technical-intelligence/API_V3_MIGRATION.md",
- "runtimeSec": 1658,
+ "runtimeSec": 1376,
  "projection": {
   "version": "elliott-projection-1.3.0",
   "store": "vu-elliott-projection-theses-1.0.0",
@@ -180,17 +180,17 @@
    "reference": "2026-11-24",
    "titles": 4883,
    "states": {
-    "FRESH": 13,
-    "DELAYED": 4819,
+    "FRESH": 14,
+    "DELAYED": 4818,
     "STALE": 24,
     "NON_TRADING": 27
    },
    "reasons": {
-    "REFRESH_STOPPED": 4843,
+    "REFRESH_STOPPED": 4842,
     "SECURITY_INACTIVE": 27
    },
    "reasonsKnown": 27,
-   "delayedWithNotice": 4819,
+   "delayedWithNotice": 4818,
    "affected": {
     "titles": 51,
     "primary": 23,
@@ -234,8 +234,8 @@
     "GWH",
     "HR",
     "HYZN",
-    "INDV",
     "ITGR",
+    "INDV",
     "KPTI",
     "LNAI",
     "LXP-P-C",
@@ -244,8 +244,8 @@
     "NATH",
     "ODP",
     "ONCT",
-    "PHGE",
     "OXSQZ",
+    "PHGE",
     "PERF",
     "PLCE",
     "RVNC",
@@ -256,8 +256,8 @@
     "UBFO",
     "UUU",
     "VBNK",
-    "WEAV",
     "WALD",
+    "WEAV",
     "WPRT",
     "XTKG"
    ],
@@ -267,7 +267,7 @@
     "systemic": false
    }
   },
-  "lifecycleEvents": 1,
+  "lifecycleEvents": 0,
   "tracked": 514
  },
  "markets": {
