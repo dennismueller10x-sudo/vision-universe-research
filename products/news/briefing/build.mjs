@@ -130,7 +130,8 @@ export async function writeWww(briefing, landingDir, { pdf = false } = {}) {
   if (briefing.session === archive[0]) {
     const cards = peekIdx.map((i) => ({ file: 'karte-' + String(i + 1).padStart(2, '0') + '.png', anchor: ANCHOR[briefing.cards[i].id] || 'start',
       title: briefing.cards[i].title, kicker: briefing.cards[i].kicker })).filter((c) => has(c.file));
-    put('index.html', Www.productPage(briefing, { chrome, parts, archive, issues, pdf: havePdf ? pdfName : null,
+    const film = fs.existsSync(path.join(dir, 'film/marktbriefing-film.mp4')) ? { src: 'film/marktbriefing-film.mp4', poster: 'film/poster.jpg' } : null;
+    put('index.html', Www.productPage(briefing, { chrome, parts, archive, issues, film, pdf: havePdf ? pdfName : null,
       img: { share: has('teilen.png') ? 'teilen.png' : null, story0: has('vorschau.png') ? 'vorschau.png' : null, cover: has('titel.png') ? 'titel.png' : null, cards,
         pages: ['seite-02.png', 'seite-03.png', 'seite-04.png'].filter(has),
         screens: pick(['start', 'indizes', 'marktbreite', 'ausblick']) } }));
