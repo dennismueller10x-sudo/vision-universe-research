@@ -503,8 +503,13 @@ if (sitzung.phase === "REGULAR") {
   const mitLive = bericht.symbols.filter((s) => s.labels.some((l) => /Live/i.test(l)));
   const liveOhneTicks = bericht.symbols.filter(
     (s) => s.ticks === 0 && s.labels.some((l) => /Live/i.test(l)));
-  alleOk = pruefung("liveEtikett", "ein Titel mit frischen Kursen zeigt 'Markt geoeffnet · Live'",
-                    mitLive.length >= 2,
+  /* Seit dem 25.11.2026 kommen Kopf, Frische und Etikett nur aus bestaetigten Trades (Kursangebote aendern nichts, live-hub.js#istTrade; ticks
+     zaehlt deshalb nur Trades). 'Live' wird nur fuer Titel verlangt, fuer die nachweislich ein Trade kam; ohne Trade ist
+     'Letzter Handelstag ... heutige Kurse fehlen' richtig. */
+  const mitTrade = bericht.symbols.filter((s) => s.ticks > 0);
+  const ohneLiveTrotzTrade = mitTrade.filter((s) => !s.labels.some((l) => /Live/i.test(l)));
+  alleOk = pruefung("liveEtikett", "ein Titel mit bestaetigtem Trade zeigt 'Markt geoeffnet · Live' (ohne Trade: 'heutige Kurse fehlen')",
+                    ohneLiveTrotzTrade.length === 0,
                     bericht.symbols.map((s) => s.symbol + ": " + JSON.stringify(s.labels))) && alleOk;
   alleOk = pruefung("keinLiveOhneKurs", "kein Titel zeigt 'Live' ohne frische Kurse",
                     liveOhneTicks.length === 0,

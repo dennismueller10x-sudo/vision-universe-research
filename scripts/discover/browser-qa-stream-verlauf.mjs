@@ -53,7 +53,7 @@ for (const breite of [390, 1440]) {
   /* 14:36 bis 14:40 UTC: Ticks in zwei 5-Minuten-Faechern (10:35 und 10:40 waere falsch - 09:35 und 09:40 New York) */
   const senden = (ticks) => p.evaluate(({ t, ticks }) => {
     const ws = window.__ws;
-    ticks.forEach(([at, preis]) => ws.onmessage({ data: JSON.stringify({ op: "u", v: [[t, preis, at, preis, preis, preis, preis, at - 50]] }) }));
+    ticks.forEach(([at, preis]) => ws.onmessage({ data: JSON.stringify({ op: "u", schemaVersion: "vu-live-update-1.1.0", v: [[t, preis, at, preis, preis, preis, preis, at - 50]], semantics: [{ priceType: "TRADE", messageForm: "iexTyped", candlePriceType: "REALTIME_REFERENCE" }] }) }));
   }, { t: TICKER, ticks });
   /* Die Ticks liegen nahe am letzten Tagesschluss vor heute (aus dem Repository): ein Preis weit daneben gilt als unplausibel und wird nicht angezeigt. */
   const basis = await p.evaluate(async ([t, TAG]) => {
