@@ -153,7 +153,7 @@ test("LS-3 ein frischer Tick fuehrt die Zahl und die Beschriftung nach", async (
   const a = await aufAktienseite(h);
   h.sockets[0].oeffnen();
   h.sockets[0].sagt({ op: "hello", priceType: "REALTIME_REFERENCE", source: "TIINGO_IEX_LEVEL6" });
-  h.sockets[0].sagt({ op: "u", v: [["AAPL", 123.45, Date.parse(OFFEN), 120, 124, 119, 123.45]] });
+  h.sockets[0].sagt({ op: "u", schemaVersion: "vu-live-update-1.1.0", semantics: [SEM("TRADE")], v: [["AAPL", 123.45, Date.parse(OFFEN), 120, 124, 119, 123.45]] });
 
   const p = a.letzte();
   assert.equal(p.live.price, 123.45);
@@ -170,7 +170,7 @@ test("LS-4 ein alter Tick bestimmt die Beschriftung nicht", async () => {
   const h = welt(OFFEN, STROM);
   const a = await aufAktienseite(h);
   h.sockets[0].oeffnen();
-  h.sockets[0].sagt({ op: "u", v: [["AAPL", 123.45, Date.parse(OFFEN)]] });
+  h.sockets[0].sagt({ op: "u", schemaVersion: "vu-live-update-1.1.0", semantics: [SEM("TRADE")], v: [["AAPL", 123.45, Date.parse(OFFEN)]] });
   const vorher = a.letzte().label.label;
   assert.equal(vorher, "Markt geöffnet · Live",
     "bei frischem Strom ist das die Zusage, die der Nutzer liest");
@@ -234,7 +234,7 @@ test("LS-8 ein Abriss faellt auf den Snapshot zurueck und versucht es erneut", a
   const h = welt(OFFEN, STROM);
   const a = await aufAktienseite(h);
   h.sockets[0].oeffnen();
-  h.sockets[0].sagt({ op: "u", v: [["AAPL", 123.45, Date.parse(OFFEN)]] });
+  h.sockets[0].sagt({ op: "u", schemaVersion: "vu-live-update-1.1.0", semantics: [SEM("TRADE")], v: [["AAPL", 123.45, Date.parse(OFFEN)]] });
   assert.equal(a.letzte().freshness.freshnessState, "LIVE");
 
   h.sockets[0].abbruch();
@@ -316,7 +316,7 @@ test("LS-13 der Strom nennt nie einen Abschluss", async () => {
   const h = welt(OFFEN, STROM);
   const a = await aufAktienseite(h);
   h.sockets[0].oeffnen();
-  h.sockets[0].sagt({ op: "u", v: [["AAPL", 123.45, Date.parse(OFFEN), 120, 124, 119, 123.45]] });
+  h.sockets[0].sagt({ op: "u", schemaVersion: "vu-live-update-1.1.0", semantics: [SEM("TRADE")], v: [["AAPL", 123.45, Date.parse(OFFEN), 120, 124, 119, 123.45]] });
   const text = JSON.stringify(a.letzte());
   for (const verboten of ["Last Trade", "Last Sale", "Official", "Schlusskurs des Handels"]) {
     assert.equal(text.indexOf(verboten), -1, "gefunden: " + verboten);
@@ -328,8 +328,8 @@ test("LS-14 die Zaehlung stimmt und reset() laesst nichts offen", async () => {
   const h = welt(OFFEN, STROM);
   const a = await aufAktienseite(h);
   h.sockets[0].oeffnen();
-  h.sockets[0].sagt({ op: "u", v: [["AAPL", 1, Date.parse(OFFEN)]] });
-  h.sockets[0].sagt({ op: "u", v: [["AAPL", 2, Date.parse(OFFEN)]] });
+  h.sockets[0].sagt({ op: "u", schemaVersion: "vu-live-update-1.1.0", semantics: [SEM("TRADE")], v: [["AAPL", 1, Date.parse(OFFEN)]] });
+  h.sockets[0].sagt({ op: "u", schemaVersion: "vu-live-update-1.1.0", semantics: [SEM("TRADE")], v: [["AAPL", 2, Date.parse(OFFEN)]] });
   const s = h.Hub.liveStats();
   assert.equal(s.ticks, 2);
   assert.equal(s.opens, 1);
@@ -351,7 +351,7 @@ test("LS-15 die Kette steht im Befund: Anbieter, Cloudflare, Browser", () => {
     h.sockets[0].oeffnen();
     const providerAt = Date.parse(OFFEN) - 300;
     const cloudflareAt = Date.parse(OFFEN) - 120;
-    h.sockets[0].sagt({ op: "u", v: [["AAPL", 123.45, cloudflareAt, 120, 124, 119, 123.45, providerAt]] });
+    h.sockets[0].sagt({ op: "u", schemaVersion: "vu-live-update-1.1.0", semantics: [SEM("TRADE")], v: [["AAPL", 123.45, cloudflareAt, 120, 124, 119, 123.45, providerAt]] });
 
     const l = a.letzte().live;
     assert.equal(l.providerAt, new Date(providerAt).toISOString());
@@ -365,7 +365,7 @@ test("LS-16 ohne Anbieterzeitstempel wird nichts erfunden", () => {
   const h = welt(OFFEN, STROM);
   return aufAktienseite(h).then((a) => {
     h.sockets[0].oeffnen();
-    h.sockets[0].sagt({ op: "u", v: [["AAPL", 123.45, Date.parse(OFFEN)]] });
+    h.sockets[0].sagt({ op: "u", schemaVersion: "vu-live-update-1.1.0", semantics: [SEM("TRADE")], v: [["AAPL", 123.45, Date.parse(OFFEN)]] });
     const l = a.letzte().live;
     assert.equal(l.providerAt, null);
     assert.equal(l.providerLagMs, null, "keine Zahl ist besser als eine geratene");
@@ -385,7 +385,10 @@ function weltOhneHeute(now, stream, mitVortag) {
   antworten["/idx.json"] = idx(eintraege, { sessionDate: "2026-09-17", isComplete: false });
   return fenster(antworten, now, stream);
 }
-const tick = (sym, preis, ms) => ({ op: "u", v: [[sym, preis, ms, preis, preis, preis, preis]] });
+/* Ein bestaetigter Trade (Schema 1.1.0, wie quant/api/live-relay-client.js#decode ihn verlangt); quote() ist ein Kursangebot. */
+const SEM = (priceType) => ({ priceType, messageForm: "iexTyped", candlePriceType: "REALTIME_REFERENCE" });
+const tick = (sym, preis, ms) => ({ op: "u", schemaVersion: "vu-live-update-1.1.0", v: [[sym, preis, ms, preis, preis, preis, preis]], semantics: [SEM("TRADE")] });
+const quote = (sym, preis, ms) => ({ op: "u", schemaVersion: "vu-live-update-1.1.0", v: [[sym, preis, ms, preis, preis, preis, preis]], semantics: [SEM("QUOTE")] });
 const MIN = 60000;
 
 test("LS-17 ohne Snapshot der laufenden Sitzung baut der Strom den Verlauf (Minutentakt, ab dem zweiten Punkt; Vortag bleibt Original)", async () => {
@@ -447,6 +450,74 @@ test("LS-20 ein Tick von gestern oder geschlossene Boerse erzeugt keinen Verlauf
   const b = await aufAktienseite(g);
   assert.equal(g.protokoll.opens, 0);
   assert.equal(b.letzte().snapshot.fromStream, undefined);
+});
+
+test("LS-22 ein Kursangebot (QUOTE) aendert weder Kopfkurs noch Frische noch Linie, ein bestaetigter Trade alles (Steuerung 25.11.2026)", async () => {
+  const h = weltOhneHeute(OFFEN, STROM, true);
+  const a = await aufAktienseite(h);
+  h.sockets[0].oeffnen();
+  h.sockets[0].sagt(quote("AAPL", 9999, Date.parse(OFFEN) + 2 * MIN));       /* 10:02 Angebot */
+  h.sockets[0].sagt(quote("AAPL", 9999, Date.parse(OFFEN) + 7 * MIN));       /* 10:07 Angebot */
+  let p = a.letzte();
+  assert.equal(p.snapshot.fromStream, undefined, "Angebote bauen keinen Verlauf: der Vortag bleibt");
+  assert.equal(p.snapshot.sessionDate, "2026-09-16");
+  assert.notEqual(p.live && p.live.price, 9999, "das Angebot ist nicht der Kopfkurs");
+  assert.ok(!(p.live && p.live.fresh), "ein Angebot macht den Kurs nicht frisch");
+  h.sockets[0].sagt(tick("AAPL", 200.4, Date.parse(OFFEN) + 2 * MIN));       /* 10:02 Trade */
+  h.sockets[0].sagt(quote("AAPL", 9999, Date.parse(OFFEN) + 4 * MIN));
+  h.sockets[0].sagt(tick("AAPL", 201.0, Date.parse(OFFEN) + 7 * MIN));       /* 10:07 Trade */
+  p = a.letzte();
+  assert.equal(p.snapshot.fromStream, true);
+  assert.deepEqual(p.snapshot.points, [["10:02", 200.4], ["10:07", 201.0]], "nur die Trades stehen in der Linie");
+  assert.equal(p.live.price, 201.0, "der Kopfkurs ist der letzte Trade");
+  assert.equal(p.live.fresh, true);
+  /* Nachrichten ohne Semantik (aeltere Form) gelten nicht als Trade */
+  h.sockets[0].sagt({ op: "u", v: [["AAPL", 300, Date.parse(OFFEN) + 9 * MIN, 300, 300, 300, 300]] });
+  assert.deepEqual(a.letzte().snapshot.points, [["10:02", 200.4], ["10:07", 201.0]]);
+  assert.equal(a.letzte().live.price, 201.0);
+});
+
+test("LS-23 derselbe Nachrichtenablauf ergibt in Discover (Hub) und in Quant/Technical (Relay-Client) dieselben Trades und damit dieselbe Punktzahl", async () => {
+  const { createRequire } = await import("node:module");
+  const decode = createRequire(import.meta.url)(join(root, "quant/api/live-relay-client.js")).decode;
+  const t0 = Date.parse(OFFEN);
+  /* Zeilen mit 8 Spalten wie der Worker sie sendet (providerAt in Spalte 8, vor dem Empfang) */
+  const zeile = (preis, ms, art) => ({ op: "u", schemaVersion: "vu-live-update-1.1.0", v: [["AAPL", preis, ms, preis, preis, preis, preis, ms - 50]], semantics: [SEM(art)] });
+  const ablauf = [zeile(200.1, t0 + 2 * MIN, "TRADE"), zeile(9999, t0 + 3 * MIN, "QUOTE"), zeile(200.9, t0 + 7 * MIN, "TRADE"), zeile(9999, t0 + 8 * MIN, "QUOTE")];
+  const quant = ablauf.flatMap((m) => decode(m, "AAPL", m.v[0][2] + 100)); /* jede Nachricht im Moment ihres Eintreffens */
+  const h = weltOhneHeute(OFFEN, STROM, true);
+  const a = await aufAktienseite(h);
+  h.sockets[0].oeffnen();
+  ablauf.forEach((m) => h.sockets[0].sagt(m));
+  const discover = a.letzte().snapshot.points;
+  assert.equal(quant.length, 2);
+  assert.equal(discover.length, quant.length, "gleiche Punktzahl");
+  assert.deepEqual(discover.map((x) => x[1]), quant.map((x) => x.price), "gleiche Preise");
+});
+
+test("LS-24 dieselbe Regel in allen drei Welten: ein QUOTE aendert weder Kopf noch Etikett, ein TRADE aendert beides (Hub und Relay-Client)", async () => {
+  const { createRequire } = await import("node:module");
+  const decode = createRequire(import.meta.url)(join(root, "quant/api/live-relay-client.js")).decode;
+  const t0 = Date.parse(OFFEN);
+  const zeile = (preis, ms, art) => ({ op: "u", schemaVersion: "vu-live-update-1.1.0", v: [["AAPL", preis, ms, preis, preis, preis, preis, ms - 50]], semantics: [SEM(art)] });
+  const angebot = zeile(9999, t0 + 2 * MIN, "QUOTE"), handel = zeile(200.1, t0 + 3 * MIN, "TRADE");
+  /* Quant/Technical (Relay-Client): nur der Trade ergibt einen Kurs */
+  assert.equal(decode(angebot, "AAPL", t0 + 2 * MIN + 100).length, 0);
+  assert.equal(decode(handel, "AAPL", t0 + 3 * MIN + 100).length, 1);
+  /* Discover (Hub): Angebot -> kein Kurs, nicht frisch, Etikett des Vortags; Trade -> Kurs, frisch, Live-Etikett */
+  const h = weltOhneHeute(OFFEN, STROM, true);
+  const a = await aufAktienseite(h);
+  h.sockets[0].oeffnen();
+  h.sockets[0].sagt(angebot);
+  let p = a.letzte();
+  assert.ok(!(p.live && p.live.fresh) && !(p.live && p.live.price === 9999), "Angebot: Kopf unveraendert, nicht frisch");
+  const SS = createRequire(import.meta.url)(join(root, "quant/engines/realtime/source-state.js"));
+  const vorher = SS.bestimme({ resolution: p.resolution, snapshot: p.snapshot, live: p.live, now: new Date(t0 + 2 * MIN + 100) });
+  assert.match(vorher.label, /heutige Kurse fehlen/);
+  h.sockets[0].sagt(handel);
+  p = a.letzte();
+  assert.equal(p.live.price, 200.1);
+  assert.equal(p.live.fresh, true);
 });
 
 test("LS-21 die Detailseite beschriftet den Verlauf aus dem Strom ehrlich und holt die Startlinie aus der Tagesreihe", () => {

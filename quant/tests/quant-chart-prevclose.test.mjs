@@ -17,7 +17,7 @@ test("Reihe ohne die Sitzung oder ohne Bereinigung: Snapshot bleibt", () => {
   const snap = { sessionDate: "2026-10-02", previousClose: 8.16 };
   assert.equal(vortag(snap, reihe), snap);
   assert.equal(vortag(snap, null), snap);
-  assert.match(src, /vortagAusReihe\(withLive\(p, st\.trade\), o\.adjusted \? eod : null\)/);
+  assert.match(src, /snap = vortagAusReihe\(snap, o\.adjusted \? eod : null\)/);
 });
 
 test("Die Seite erkennt beide Schreibweisen der Split-Bereinigung", () => {

@@ -226,6 +226,9 @@ let alleOk = true;
 
 for (const sym of SYMBOLE) {
   const p = await seite();
+  /* Befund 25.11.2026 (Trade-Regel): die ersten Rahmen des Stroms im Bericht, damit sichtbar ist, ob die Zeilen als TRADE gekennzeichnet sind. */
+  p.__frames = [];
+  p.on("websocket", (ws) => ws.on("framereceived", (f) => { if (p.__frames.length < 8 && /"op":"u"/.test(String(f.payload))) p.__frames.push(String(f.payload).slice(0, 600)); }));
   await aktienseite(p, sym);
 
   const start = Date.now();
@@ -284,7 +287,10 @@ for (const sym of SYMBOLE) {
        ist ehrlicher, als ihn aus Texten zu erraten. */
     const rahmen = document.querySelector(".dx-intraday");
     const meta = document.querySelector(".dx-chart-hero-span");
+    const wort = document.querySelector(".dx-chart-hero-wort");
     return {
+      /* 1T zeigt die letzte volle Sitzung (core/chart-standard.js#intradayView): der Chart steht dann still, das ist richtig. */
+      letzteSitzung: !!(wort && /letzte Sitzung/.test(wort.textContent)),
       intradayChart: !!document.querySelector(".dx-intraday-chart"),
       aktiverZeitraum: knopf ? knopf.textContent.trim() : null,
       eintagVerfuegbar: gesperrt ? !gesperrt.disabled : null,
@@ -313,6 +319,7 @@ for (const sym of SYMBOLE) {
       endToEnd: mittel("gesamt"),
       max: Math.max(...latenzen.map((x) => x.gesamt))
     } : null,
+    frames: p.__frames,
     consoleErrors: p.__errors.slice(0, 5),
     /* Kein Kurs heisst nicht kaputt. Es heisst: kein Marktereignis. */
     verdict: ticks.length > 0 ? "TICKS" : (zustand.live.connected ? "CONNECTED_NO_TRADE" : "NO_STREAM")
@@ -464,9 +471,14 @@ if (sitzung.phase === "REGULAR") {
                     ohneTagesverlauf.map((s) => s.symbol + ": Zeitraum " + s.surface.aktiverZeitraum +
                                                 ", 1T " + (s.surface.eintagVerfuegbar ? "frei" : "gesperrt") +
                                                 (s.surface.eintagGrund ? " (" + s.surface.eintagGrund + ")" : ""))) && alleOk;
-  alleOk = pruefung("chartBewegt", "der Chart zeichnet sich neu, ohne Neuladen",
-                    mitChart.length >= 2,
-                    { charts: mitChart.map((s) => s.symbol),
+  /* Zeigt 1T die letzte Sitzung (Eroeffnung bis 10 Minuten Handel, duenne Titel), steht der Chart still - das wird dann erwartet. */
+  const stehend = bericht.symbols.filter((s) => s.surface.intradayChart && s.surface.letzteSitzung);
+  const beweglich = bericht.symbols.filter((s) => !(s.surface.intradayChart && s.surface.letzteSitzung));
+  const beweglichMitChart = mitChart.filter((s) => beweglich.includes(s));
+  alleOk = pruefung("chartBewegt", "der Chart zeichnet sich neu, ohne Neuladen (letzte Sitzung: er steht still)",
+                    beweglichMitChart.length >= Math.min(2, beweglich.length) && stehend.every((s) => s.chartUpdatesAfterLoad === 0),
+                    { charts: beweglichMitChart.map((s) => s.symbol),
+                      letzteSitzung: stehend.map((s) => s.symbol),
                       ohneTagesverlauf: ohneTagesverlauf.map((s) => s.symbol) }) && alleOk;
 }
 if (sitzung.phase === "REGULAR") {
@@ -495,8 +507,13 @@ if (sitzung.phase === "REGULAR") {
   const mitLive = bericht.symbols.filter((s) => s.labels.some((l) => /Live/i.test(l)));
   const liveOhneTicks = bericht.symbols.filter(
     (s) => s.ticks === 0 && s.labels.some((l) => /Live/i.test(l)));
-  alleOk = pruefung("liveEtikett", "ein Titel mit frischen Kursen zeigt 'Markt geoeffnet · Live'",
-                    mitLive.length >= 2,
+  /* Seit dem 25.11.2026 kommen Kopf, Frische und Etikett nur aus bestaetigten Trades (Kursangebote aendern nichts, live-hub.js#istTrade; ticks
+     zaehlt deshalb nur Trades). 'Live' wird nur fuer Titel verlangt, fuer die nachweislich ein Trade kam; ohne Trade ist
+     'Letzter Handelstag ... heutige Kurse fehlen' richtig. */
+  const mitTrade = bericht.symbols.filter((s) => s.ticks > 0);
+  const ohneLiveTrotzTrade = mitTrade.filter((s) => !s.labels.some((l) => /Live/i.test(l)));
+  alleOk = pruefung("liveEtikett", "ein Titel mit bestaetigtem Trade zeigt 'Markt geoeffnet · Live' (ohne Trade: 'heutige Kurse fehlen')",
+                    ohneLiveTrotzTrade.length === 0,
                     bericht.symbols.map((s) => s.symbol + ": " + JSON.stringify(s.labels))) && alleOk;
   alleOk = pruefung("keinLiveOhneKurs", "kein Titel zeigt 'Live' ohne frische Kurse",
                     liveOhneTicks.length === 0,

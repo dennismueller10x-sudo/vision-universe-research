@@ -596,13 +596,22 @@
     return true;
   }
 
+  /** Ist Zeile i der Nachricht ein bestaetigter Trade? Ohne Semantik (aeltere Nachricht) gilt sie nicht als Trade. */
+  function istTrade(n, i) {
+    var sem = Array.isArray(n.semantics) ? n.semantics[i] : null;
+    return n.schemaVersion === "vu-live-update-1.1.0" && !!sem && sem.priceType === "TRADE" && sem.messageForm === "iexTyped";
+  }
+
   function stromNachricht(n) {
     if (n.op === "u" && Array.isArray(n.v)) {
       var jetzt = st.now().getTime();
       var betroffen = [];
-      n.v.forEach(function (z) {
+      n.v.forEach(function (z, i) {
         if (!Array.isArray(z) || z.length < 2) return;
         var sym = String(z[0]).toUpperCase();
+        /* Nur bestaetigte Trades (Steuerung 25.11.2026, wie quant/api/live-relay-client.js#decode): Kopfkurs, Frische, Etikett und
+           Linie. Ein Kursangebot aendert nichts (01.10.2026: 354,67 $ wurde zu 9.999,00 $). */
+        if (!istTrade(n, i)) { lv.stats.angebote = (lv.stats.angebote || 0) + 1; return; }
         lv.werte[sym] = { price: z[1], at: z[2] || jetzt, open: z[3], high: z[4], low: z[5], close: z[6],
                           /* Wann der Anbieter den Kurs gesehen hat. Damit
                              laesst sich die Strecke auseinandernehmen:
