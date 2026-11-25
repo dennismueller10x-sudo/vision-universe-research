@@ -1,18 +1,18 @@
 {
- "generatedAt": "2026-11-22T13:55:38.549Z",
+ "generatedAt": "2026-11-25T07:53:30.460Z",
  "gate": "ELIGIBLE_US_EQUITY",
  "derivedFrom": "quant/data/market/scale/universe-FULL_UNIVERSE.json",
  "derivedFromSha256": "887f7b8b305652a8eec9fbd26666c6b46f3e66a7ac080b08a12285828d5cc0d3",
  "version": "us-security-master-1.3.0",
- "today": "2026-11-22",
+ "today": "2026-11-25",
  "method": "PRODUCT_ELIGIBILITY_LAYER",
  "provider": "tiingo",
- "actualSize": 6009,
+ "actualSize": 6001,
  "counts": {
-  "ELIGIBLE": 5205,
-  "SEPARATE_CLASS": 721,
-  "REVIEW": 83,
-  "EXCLUDED_NOT_LISTED_HERE": 1825
+  "ELIGIBLE": 5197,
+  "SEPARATE_CLASS": 720,
+  "REVIEW": 84,
+  "EXCLUDED_NOT_LISTED_HERE": 1833
  },
  "note": "Abgeleitet, nicht gepflegt. Die Mitgliedschaft steht in universe-FULL_UNIVERSE.json und bleibt dort vollstaendig. Verdachtsfaelle (REVIEW) sind enthalten und markiert.",
  "securities": [
@@ -23257,26 +23257,6 @@
    "productEligibility": "ELIGIBLE"
   },
   {
-   "securityId": "ref_ANSS",
-   "ticker": "ANSS",
-   "company": null,
-   "exchange": "NASDAQ",
-   "country": "US",
-   "currency": "USD",
-   "assetType": "Stock",
-   "instrumentType": "COMMON_STOCK",
-   "active": true,
-   "providerSymbol": "ANSS",
-   "provider": "tiingo",
-   "sector": null,
-   "sectorStatus": "SOURCE_MISSING",
-   "industry": null,
-   "industryStatus": "SOURCE_MISSING",
-   "startDate": "1996-06-21",
-   "selection": "inheritedFrom:GATE_2000",
-   "productEligibility": "REVIEW"
-  },
-  {
    "securityId": "ref_SKM",
    "ticker": "SKM",
    "company": null,
@@ -30693,26 +30673,6 @@
    "industry": null,
    "industryStatus": "SOURCE_MISSING",
    "startDate": "2000-09-28",
-   "selection": "inheritedFrom:GATE_2000",
-   "productEligibility": "ELIGIBLE"
-  },
-  {
-   "securityId": "ref_ITGR",
-   "ticker": "ITGR",
-   "company": null,
-   "exchange": "NYSE",
-   "country": "US",
-   "currency": "USD",
-   "assetType": "Stock",
-   "instrumentType": "COMMON_STOCK",
-   "active": true,
-   "providerSymbol": "ITGR",
-   "provider": "tiingo",
-   "sector": null,
-   "sectorStatus": "SOURCE_MISSING",
-   "industry": null,
-   "industryStatus": "SOURCE_MISSING",
-   "startDate": "2000-09-29",
    "selection": "inheritedFrom:GATE_2000",
    "productEligibility": "ELIGIBLE"
   },
@@ -42574,7 +42534,7 @@
    "industryStatus": "SOURCE_MISSING",
    "startDate": "2008-08-15",
    "selection": "ruleBased",
-   "productEligibility": "ELIGIBLE"
+   "productEligibility": "REVIEW"
   },
   {
    "securityId": "ref_IBIO",
@@ -43313,26 +43273,6 @@
    "industry": null,
    "industryStatus": "SOURCE_MISSING",
    "startDate": "2009-09-02",
-   "selection": "ruleBased",
-   "productEligibility": "ELIGIBLE"
-  },
-  {
-   "securityId": "ref_ARI",
-   "ticker": "ARI",
-   "company": null,
-   "exchange": "NYSE",
-   "country": "US",
-   "currency": "USD",
-   "assetType": "Stock",
-   "instrumentType": "COMMON_STOCK",
-   "active": true,
-   "providerSymbol": "ARI",
-   "provider": "tiingo",
-   "sector": null,
-   "sectorStatus": "SOURCE_MISSING",
-   "industry": null,
-   "industryStatus": "SOURCE_MISSING",
-   "startDate": "2009-09-24",
    "selection": "ruleBased",
    "productEligibility": "ELIGIBLE"
   },
@@ -48077,26 +48017,6 @@
    "productEligibility": "ELIGIBLE"
   },
   {
-   "securityId": "ref_LXFR",
-   "ticker": "LXFR",
-   "company": null,
-   "exchange": "NYSE",
-   "country": "US",
-   "currency": "USD",
-   "assetType": "Stock",
-   "instrumentType": "COMMON_STOCK",
-   "active": true,
-   "providerSymbol": "LXFR",
-   "provider": "tiingo",
-   "sector": null,
-   "sectorStatus": "SOURCE_MISSING",
-   "industry": null,
-   "industryStatus": "SOURCE_MISSING",
-   "startDate": "2012-10-03",
-   "selection": "ruleBased",
-   "productEligibility": "ELIGIBLE"
-  },
-  {
    "securityId": "ref_AMBA",
    "ticker": "AMBA",
    "company": null,
@@ -51533,26 +51453,6 @@
    "industry": null,
    "industryStatus": "SOURCE_MISSING",
    "startDate": "2014-03-12",
-   "selection": "ruleBased",
-   "productEligibility": "ELIGIBLE"
-  },
-  {
-   "securityId": "ref_GLMD",
-   "ticker": "GLMD",
-   "company": null,
-   "exchange": "NASDAQ",
-   "country": "US",
-   "currency": "USD",
-   "assetType": "Stock",
-   "instrumentType": "COMMON_STOCK",
-   "active": true,
-   "providerSymbol": "GLMD",
-   "provider": "tiingo",
-   "sector": null,
-   "sectorStatus": "SOURCE_MISSING",
-   "industry": null,
-   "industryStatus": "SOURCE_MISSING",
-   "startDate": "2014-03-13",
    "selection": "ruleBased",
    "productEligibility": "ELIGIBLE"
   },
@@ -55713,26 +55613,6 @@
    "industry": null,
    "industryStatus": "SOURCE_MISSING",
    "startDate": "2015-01-30",
-   "selection": "ruleBased",
-   "productEligibility": "ELIGIBLE"
-  },
-  {
-   "securityId": "ref_LNAI",
-   "ticker": "LNAI",
-   "company": null,
-   "exchange": "NASDAQ",
-   "country": "US",
-   "currency": "USD",
-   "assetType": "Stock",
-   "instrumentType": "COMMON_STOCK",
-   "active": true,
-   "providerSymbol": "LNAI",
-   "provider": "tiingo",
-   "sector": null,
-   "sectorStatus": "SOURCE_MISSING",
-   "industry": null,
-   "industryStatus": "SOURCE_MISSING",
-   "startDate": "2015-02-02",
    "selection": "ruleBased",
    "productEligibility": "ELIGIBLE"
   },
@@ -69994,7 +69874,7 @@
    "industryStatus": "SOURCE_MISSING",
    "startDate": "2018-10-30",
    "selection": "ruleBased",
-   "productEligibility": "ELIGIBLE"
+   "productEligibility": "REVIEW"
   },
   {
    "securityId": "ref_GDYN",
@@ -82974,7 +82854,7 @@
    "industryStatus": "SOURCE_MISSING",
    "startDate": "2021-03-01",
    "selection": "ruleBased",
-   "productEligibility": "ELIGIBLE"
+   "productEligibility": "REVIEW"
   },
   {
    "securityId": "ref_SES",
@@ -101477,26 +101357,6 @@
    "productEligibility": "ELIGIBLE"
   },
   {
-   "securityId": "ref_BNRG",
-   "ticker": "BNRG",
-   "company": null,
-   "exchange": "NASDAQ",
-   "country": "US",
-   "currency": "USD",
-   "assetType": "Stock",
-   "instrumentType": "COMMON_STOCK",
-   "active": true,
-   "providerSymbol": "BNRG",
-   "provider": "tiingo",
-   "sector": null,
-   "sectorStatus": "SOURCE_MISSING",
-   "industry": null,
-   "industryStatus": "SOURCE_MISSING",
-   "startDate": "2026-08-14",
-   "selection": "appendedFrom:US_SECURITY_MASTER",
-   "productEligibility": "REVIEW"
-  },
-  {
    "securityId": "ref_BNZI",
    "ticker": "BNZI",
    "company": null,
@@ -108015,26 +107875,6 @@
    "startDate": "2024-09-05",
    "selection": "appendedFrom:US_SECURITY_MASTER",
    "productEligibility": "ELIGIBLE"
-  },
-  {
-   "securityId": "ref_JAB",
-   "ticker": "JAB",
-   "company": null,
-   "exchange": "NASDAQ",
-   "country": "US",
-   "currency": "USD",
-   "assetType": "Stock",
-   "instrumentType": "COMMON_STOCK",
-   "active": true,
-   "providerSymbol": "JAB",
-   "provider": "tiingo",
-   "sector": null,
-   "sectorStatus": "SOURCE_MISSING",
-   "industry": null,
-   "industryStatus": "SOURCE_MISSING",
-   "startDate": "2026-08-31",
-   "selection": "appendedFrom:US_SECURITY_MASTER",
-   "productEligibility": "SEPARATE_CLASS"
   },
   {
    "securityId": "ref_JACS",

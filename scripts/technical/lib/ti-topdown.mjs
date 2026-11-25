@@ -18,6 +18,8 @@ function count(c) {
            inv: c.invalidation ? { p: sig(c.invalidation.price), d: c.invalidation.direction, rule: c.invalidation.ruleId, text: c.invalidation.text } : null,
            rules: c.rules.map((r) => r.id), fit: c.guidelineFit, anchor: c.anchor };
 }
+const step = (s) => ({ l: s.label, disp: s.display, deg: s.degree, dir: s.direction, dev: s.developing ? 1 : 0, from: sig(s.anchor), point: sig(s.point), ex: s.exhausted ? 1 : 0, scale: s.scale,
+  rel: s.zone.relation, tiers: s.zone.tiers.map((z) => ({ t: z.tier, lo: sig(z.low), hi: sig(z.high), r: z.ratios, done: z.passed ? 1 : 0 })) });
 /** Monatsschluesse (letzter Wochenschluss je Monat) seit Handelsbeginn. */
 export function monthly(times, close) {
   const out = [];
@@ -36,8 +38,9 @@ export function topDownFor(series) {
   return {
     v: TD.VERSION, status: "OK", asOf: r.asOf, close: sig(r.close),
     primary: count(r.primary), alternative: count(r.alternative), sub: count(r.sub),
-    path: r.path.map((s) => ({ l: s.label, disp: s.display, deg: s.degree, dir: s.direction, dev: s.developing ? 1 : 0, from: sig(s.anchor), point: sig(s.point), ex: s.exhausted ? 1 : 0, scale: s.scale,
-      rel: s.zone.relation, tiers: s.zone.tiers.map((z) => ({ t: z.tier, lo: sig(z.low), hi: sig(z.high), r: z.ratios, done: z.passed ? 1 : 0 })) })),
+    path: r.path.map(step),
+    altSub: count(r.alternativeSub), altPath: (r.alternativePath || []).map(step),
+    candidates: r.candidates || null,
     monthly: monthly(series.timestamps, series.close)
   };
 }

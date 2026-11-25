@@ -130,7 +130,8 @@ export async function writeWww(briefing, landingDir, { pdf = false } = {}) {
   if (briefing.session === archive[0]) {
     const cards = peekIdx.map((i) => ({ file: 'karte-' + String(i + 1).padStart(2, '0') + '.png', anchor: ANCHOR[briefing.cards[i].id] || 'start',
       title: briefing.cards[i].title, kicker: briefing.cards[i].kicker })).filter((c) => has(c.file));
-    put('index.html', Www.productPage(briefing, { chrome, parts, archive, issues, pdf: havePdf ? pdfName : null,
+    const film = fs.existsSync(path.join(dir, 'film/marktbriefing-film.mp4')) ? { src: 'film/marktbriefing-film.mp4', poster: 'film/poster.jpg' } : null;
+    put('index.html', Www.productPage(briefing, { chrome, parts, archive, issues, film, pdf: havePdf ? pdfName : null,
       img: { share: has('teilen.png') ? 'teilen.png' : null, story0: has('vorschau.png') ? 'vorschau.png' : null, cover: has('titel.png') ? 'titel.png' : null, cards,
         pages: ['seite-02.png', 'seite-03.png', 'seite-04.png'].filter(has),
         screens: pick(['start', 'indizes', 'marktbreite', 'ausblick']) } }));
@@ -157,6 +158,12 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   if (!briefing.fresh.ok) {
     console.error('Marktbriefing nicht frisch, nichts geschrieben: ' + briefing.fresh.problems.join('; '));
     process.exit(3);
+  }
+  // Zeitplan mit mehreren Versuchen: steht das Briefing dieser Sitzung schon im Datenzweig, nichts neu schreiben.
+  const current = process.argv.includes('--skip-if-current') ? readJson(path.join(outRoot, 'news/marktbriefing/data/latest.json')) : null;
+  if (current && current.session === briefing.session) {
+    console.log('Marktbriefing ' + briefing.session + ' steht schon im Datenzweig, nichts geschrieben.');
+    process.exit(0);
   }
   const files = writeBriefing(briefing, outRoot);
   if (arg('--www')) files.push(...await writeWww(briefing, path.resolve(arg('--www')), { pdf: process.argv.includes('--pdf') }));

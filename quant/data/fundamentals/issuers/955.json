@@ -735,9 +735,9 @@
       "cik": "0000719955",
       "name": "WILLIAMS SONOMA INC",
       "sic": "5700",
-      "rawFacts": 20353,
-      "mappedFacts": 7106,
-      "unmappedFacts": 13312,
+      "rawFacts": 20669,
+      "mappedFacts": 7231,
+      "unmappedFacts": 13681,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -747,28 +747,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 21,
-      "quarterlyPeriods": 72,
+      "quarterlyPeriods": 73,
       "firstPeriodEnd": "2008-02-03",
-      "lastPeriodEnd": "2026-08-02",
+      "lastPeriodEnd": "2026-11-01",
       "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 64,
-          "firstAvailablePeriod": "2009-02-01",
-          "lastAvailablePeriod": "2026-02-01",
-          "historyYears": 17.0
-        },
-        "eps_diluted": {
           "annualPeriods": 17,
           "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-02-01",
           "lastAvailablePeriod": "2026-02-01",
           "historyYears": 17.0
         },
+        "eps_diluted": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-02-01",
+          "lastAvailablePeriod": "2026-02-01",
+          "historyYears": 17.0
+        },
         "free_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2009-02-01",
           "lastAvailablePeriod": "2026-02-01",
           "historyYears": 17.0,
@@ -788,21 +788,21 @@
         },
         "net_income": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2009-02-01",
           "lastAvailablePeriod": "2026-02-01",
           "historyYears": 17.0
         },
         "operating_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-02-01",
           "lastAvailablePeriod": "2026-02-01",
           "historyYears": 17.0
         },
         "revenue": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2009-02-01",
           "lastAvailablePeriod": "2026-02-01",
           "historyYears": 17.0
@@ -816,14 +816,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 67,
+          "quarterlyPeriods": 68,
           "firstAvailablePeriod": "2008-02-03",
           "lastAvailablePeriod": "2026-02-01",
           "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2010-01-31",
           "lastAvailablePeriod": "2026-02-01",
           "historyYears": 16.08
@@ -846,50 +846,52 @@
         }
       },
       "quality": {
-        "HIGH": 637,
+        "HIGH": 644,
         "MEDIUM": 2
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 639,
-        "resolvedValues": 639
+        "datableValues": 646,
+        "resolvedValues": 646
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 13694,
+        "rules_version": "1.1.0",
+        "total": 14064,
         "by_severity": {
-          "INFO": 13312,
+          "INFO": 13681,
           "ERROR": 1,
-          "WARNING": 381
+          "WARNING": 382
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 230,
           "FISCAL_PERIOD_CONFLICT": 38,
           "FUTURE_DATA_LEAK": 1,
+          "FUTURE_PERIOD_END": 1,
           "PERIOD_MISMATCH": 5,
           "RESTATEMENT_CONFLICT": 103,
           "UNEXPECTED_DURATION": 5,
-          "UNKNOWN_CONCEPT": 13312
+          "UNKNOWN_CONCEPT": 13681
         }
       },
       "latestFiling": {
-        "accession": "0000719955-26-000208",
-        "filing_date": "2026-08-28",
+        "accession": "0000719955-26-000248",
+        "filing_date": "2026-11-24",
         "form": "10-Q",
-        "periodic_filings": 129
+        "periodic_filings": 130,
+        "acceptance_datetime": "2026-11-24T21:28:06.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
-        "formula": "1.2.0",
+        "normalization_logic": "1.15.0",
+        "formula": "1.3.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.8.0"
         }
       },
-      "sourceDigest": "d103645f58f00101aa9994d1ac79d07efe27fba59a2de50416544433bcce66ce",
+      "sourceDigest": "f0e18fd90445c4b1859ad2cac00668e5752477b535c09b5b61119e1e2eba32a0",
       "issuerId": "iss_cik_0000719955"
     },
     {

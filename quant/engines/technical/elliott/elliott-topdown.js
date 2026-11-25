@@ -24,7 +24,7 @@
    ========================================================================= */
 (function (global) {
   "use strict";
-  var VERSION = "elliott-topdown-1.0.0";
+  var VERSION = "elliott-topdown-1.1.0";   // 1.1.0: Alternative mit eigener Unterteilung und Pfad, Mehrdeutigkeit (Owner 23.11.2026)
   var EWP = "Frost & Prechter, Elliott Wave Principle";
   var THRESHOLDS = [1.0, 0.8, 0.65, 0.5];          // grosser Grad: log-Schwellen (≈ +172 %/−63 %, +123 %/−55 %, +92 %/−48 %, +65 %/−39 %)
   var SUB_THRESHOLDS = [0.4, 0.3, 0.22, 0.16, 0.11];
@@ -335,27 +335,35 @@
     if (!top) return { version: VERSION, status: "NO_COUNT", primary: null };
     var alt = best(all.filter(function (c) { return !sameReading(c, top) && (c.current !== top.current || c.dir !== top.dir || c.kind !== top.kind); }));
     var primary = countOut(top, "BIG"), alternative = countOut(alt, "BIG");
-    /* Unterteilung der laufenden grossen Welle */
-    var curW = primary.waves[primary.waves.length - 1], i0 = top.pts[top.waves[top.waves.length - 1].a].i;
-    var subAll = [], seg = close.slice(i0, asOf + 1), segT = times.slice(i0, asOf + 1);
-    if (seg.length >= 8) (input.subThresholds || SUB_THRESHOLDS).forEach(function (th) {
-      readCounts(seg, segT, th, seg.length - 1, 0).forEach(function (c) {
-        var want = /^[135]$/.test(curW.label) || (curW.label === "C" || curW.label === "A" && primary.kind === "CORRECTION") ? "IMPULSE" : "CORRECTION";
-        var wantDir = primary.current.direction === "UP" ? 1 : -1;
-        if (c.dir !== wantDir) return;
-        if (want === "CORRECTION" && c.kind !== "CORRECTION" && !(c.kind === "IMPULSE" && /^[12]$/.test(c.current))) return;
-        if (c.kind === "IMPULSE" && c.waves.some(function (w) { return /^[ABC]$/.test(w.label); })) return;   // Unterwelle endet mit der grossen Welle
-        subAll.push(c);
+    /* Unterteilung der laufenden grossen Welle (fuer Haupt- und Alternativzaehlung gleich) */
+    function subOf(c, count) {
+      var curW = count.waves[count.waves.length - 1], i0 = c.pts[c.waves[c.waves.length - 1].a].i;
+      var subAll = [], seg = close.slice(i0, asOf + 1), segT = times.slice(i0, asOf + 1);
+      if (seg.length >= 8) (input.subThresholds || SUB_THRESHOLDS).forEach(function (th) {
+        readCounts(seg, segT, th, seg.length - 1, 0).forEach(function (x) {
+          var want = /^[135]$/.test(curW.label) || (curW.label === "C" || curW.label === "A" && count.kind === "CORRECTION") ? "IMPULSE" : "CORRECTION";
+          var wantDir = count.current.direction === "UP" ? 1 : -1;
+          if (x.dir !== wantDir) return;
+          if (want === "CORRECTION" && x.kind !== "CORRECTION" && !(x.kind === "IMPULSE" && /^[12]$/.test(x.current))) return;
+          if (x.kind === "IMPULSE" && x.waves.some(function (w) { return /^[ABC]$/.test(w.label); })) return;   // Unterwelle endet mit der grossen Welle
+          subAll.push(x);
+        });
       });
-    });
-    var subTop = best(subAll.map(function (c) { c.score = round(0.6 * c.guide + 0.25 * c.cover + 0.15 * (c.waves.length >= 2 ? 1 : 0.5), 4); return c; }));
-    var sub = countOut(subTop, "SUB");
-    var path = buildPath(primary, sub, close[asOf]);
+      return countOut(best(subAll.map(function (x) { x.score = round(0.6 * x.guide + 0.25 * x.cover + 0.15 * (x.waves.length >= 2 ? 1 : 0.5), 4); return x; })), "SUB");
+    }
+    var sub = subOf(top, primary), path = buildPath(primary, sub, close[asOf]);
+    var altSub = alt ? subOf(alt, alternative) : null, altPath = alt ? buildPath(alternative, altSub, close[asOf]) : [];
+    /* Mehrdeutigkeit: wie viele verschiedene regelkonforme Lesarten des grossen Grades es gibt und wie viele nahe an der besten liegen */
+    var seen = {};
+    all.forEach(function (c) { var k = c.kind + c.dir + c.current + "|" + c.pts[c.s].t + "|" + c.waves.map(function (w) { return String(c.pts[w.b].t).slice(0, 7); }).join(","); if (!(k in seen) || seen[k] < c.score) seen[k] = c.score; });
+    var scores = Object.keys(seen).map(function (k) { return seen[k]; });
+    var candidates = { total: scores.length, near: scores.filter(function (v) { return v >= top.score - 0.1; }).length, gap: alt ? round(top.score - alt.score, 3) : null };
     return { version: VERSION, status: "OK", asOf: times[asOf], close: close[asOf], primary: primary, alternative: alternative, sub: sub, path: path,
+             alternativeSub: altSub, alternativePath: altPath, candidates: candidates,
              relations: RELATIONS, note: "Zählung von oben auf Wochenschlusskursen seit Handelsbeginn. Zonen ohne Zeitangabe; keine Wahrscheinlichkeit." };
   }
 
-  var api = { VERSION: VERSION, THRESHOLDS: THRESHOLDS, RELATIONS: RELATIONS, LADDER: LADDER, zigzag: zigzag, analyzeTopDown: analyzeTopDown };
+  var api = { VERSION: VERSION, THRESHOLDS: THRESHOLDS, RELATIONS: RELATIONS, LADDER: LADDER, zigzag: zigzag, analyzeTopDown: analyzeTopDown, _readAll: function (input) { var all = []; (input.thresholds || THRESHOLDS).forEach(function (th) { all = all.concat(readCounts(input.close, input.times, th, isNum(input.asOfIndex) ? input.asOfIndex : input.close.length - 1)); }); return all; } };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else { global.VUTechnical = global.VUTechnical || {}; global.VUTechnical.ElliottTopDown = api; }
 })(typeof globalThis !== "undefined" ? globalThis : this);

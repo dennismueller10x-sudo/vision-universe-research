@@ -46,7 +46,7 @@ test('Bericht nennt Routen und Alarme; ein Geheimnis in der Ausgabe bricht ab',(
 });
 test('Seiten, Routen und Profile: App hinter der Maske, www offen, CPU 4x und 2x',()=>{
  assert.equal(SITES.app.gate,true);assert.equal(SITES.www.gate,false);assert.deepEqual(CPUS,[4,2]);
- assert.deepEqual(SITES.app.routes,['/','/discover/','/quant/','/technical/','/mein-dashboard/','/quant/#/aktie/NVDA']);assert.deepEqual(SITES.www.routes,['/','/magazin/','/news/']);
+ assert.deepEqual(SITES.app.routes,['/','/discover/','/quant/','/technical/','/technical/#/screener','/technical/#/chart/NVDA','/mein-dashboard/','/quant/#/aktie/NVDA']);assert.deepEqual(SITES.www.routes,['/','/magazin/','/news/']);
  for(const s of Object.values(SITES))assert.match(s.base,/^https:\/\//);
 });
 test('measure.mjs: Zugangsmaske nur mit --gate und Umgebung, nur im Ursprung der Seite, kein Trace, Screenshot oder HAR; Standard unverändert',()=>{
@@ -71,7 +71,7 @@ test('Ungültige Läufe (Zugangsmaske oder Inhaltsmerkmal fehlt) sind ein Alarm,
 test('Bericht nennt LCP-Element, größte Verschiebung und Zugangshülle (nur Struktur, keine Inhalte)',async()=>{
  const {topShiftOf,lcpElementOf,gateOf}=await import('../live-ladezeit.mjs');
  const ss=[{lcp:1300,lcpElement:{tag:'H1',id:'hero',url:'https://x.example/img/a.jpg?v=1'},shifts:[{value:0.1,at:900,sources:[{node:'DIV#a.x'}]},{value:0.2,at:1500,sources:[{node:'SECTION#b.y'},{node:'P#.z'}]}],navigation:{responseEnd:400},resourceTimings:[{name:'https://h/__research/content/index.html?v=1',end:900}]}];
- assert.deepEqual(topShiftOf(ss),{value:0.2,atMs:1500,nodes:['SECTION#b.y','P#.z']});
+ assert.deepEqual(topShiftOf(ss),{value:0.2,atMs:1500,nodes:['SECTION#b.y','P#.z'],moves:[{from:null,to:null},{from:null,to:null}]});
  assert.deepEqual(lcpElementOf(ss),{tag:'H1',id:'hero',url:'/img/a.jpg'});
  assert.deepEqual(gateOf(ss),{shellMs:400,contentMs:900,extraMs:500});
  assert.equal(gateOf([{navigation:{responseEnd:1},resourceTimings:[]}]),null);
@@ -92,4 +92,74 @@ test('Dashboard wird abgemeldet gemessen: Merkmal Anmeldemaske, im Bericht besch
  const md=reportMarkdown({measuredAt:'t',commit:'c',runs:3,historyRuns:0,alarms:[],rows:[{key:'app/mein-dashboard/',label:'abgemeldet',cpu:4,lcp:200,cls:0,requests:1,bytes:1024,runs:3,invalidRuns:0,lcpRuns:[200]}]});
  assert.match(md,/\| app\/mein-dashboard\/ \(abgemeldet\) \| 4x \| 200 /);
  assert.match(readFileSync(new URL('../../../konto/anmelden/index.html',import.meta.url),'utf8'),/id="password"/,'Merkmal steht auf der Anmeldeseite');
+});
+
+test('Verschiebung mit Lage: von/nach (y) und Höhe je Knoten im Bericht, nur Zahlen',async()=>{
+ const {topShiftOf}=await import('../live-ladezeit.mjs');
+ const ss=[{shifts:[{value:0.18,at:1353,sources:[{node:'SECTION#.hm-blick',previous:{y:900.4,height:300},current:{y:1020.6,height:300}}]}]}];
+ const t=topShiftOf(ss);assert.deepEqual(t.moves,[{from:{y:900,h:300},to:{y:1021,h:300}}]);
+ const md=reportMarkdown({measuredAt:'t',commit:'c',runs:3,historyRuns:0,alarms:[],rows:[{key:'app/',cpu:4,lcp:1,cls:0.18,requests:1,bytes:1024,runs:3,invalidRuns:0,lcpRuns:[1],topShift:t}]});
+ assert.match(md,/SECTION#\.hm-blick \(y 900→1021, h 300→300\)/);
+});
+
+test('Technical-Unterseiten (Screener, Chart NVDA) mit Inhaltsmerkmal, ohne Ziel (Anfrage Technical K3)',()=>{
+ for(const k of ['app/technical/#/screener','app/technical/#/chart/NVDA']){
+  assert.ok(SITES.app.routes.includes(k.replace('app','')),k+' wird gemessen');
+  assert.ok(targets.routes[k].marker,k+' hat ein Inhaltsmerkmal');assert.equal(targets.routes[k].lcpMs,undefined,'kein Ziel vor dem ersten gültigen Lauf');
+ }
+});
+
+test('Details im Bericht für beide CPU-Stufen, je Zeile mit Stufe',()=>{
+ const mk=(cpu,v)=>({key:'app/',cpu,lcp:1,cls:v,requests:1,bytes:1024,runs:3,invalidRuns:0,lcpRuns:[1],topShift:{value:v,atMs:1300,nodes:['SECTION#.hm-blick'],moves:[{from:{y:10,h:5},to:{y:20,h:5}}]}});
+ const md=reportMarkdown({measuredAt:'t',commit:'c',runs:3,historyRuns:0,alarms:[],rows:[mk(4,0.001),mk(2,0.182)]});
+ assert.match(md,/## Details \(je CPU-Stufe\)/);
+ assert.match(md,/- app\/ \(4x\) groesste Verschiebung: 0.001/);assert.match(md,/- app\/ \(2x\) groesste Verschiebung: 0.182 bei 1300 ms, Knoten SECTION#.hm-blick \(y 10→20/);
+});
+
+/* Zugangsdiagnose bei "ungueltig, Maske sichtbar": im Bericht, nie ein Schluesselwert. */
+import {saubereDiagnose} from '../gate-diagnose.mjs';
+import {diagnoseText} from '../live-ladezeit.mjs';
+const diag={readyState:'complete',busy:null,ciState:null,gateShown:true,browserNow:2000,accessError:{text:'Zugang abgelaufen',hidden:false},storageKeyPresent:true,
+ gate:{settings:{version:3,verifier8:'deadbeef'},stored:{version:3,expiresAt:1000},accessJs:{status:200,lastModified:'Mon, 23 Nov 2026 10:00:00 GMT',etag:'"x"'}}};
+test('saubereDiagnose behält den Hüllen-Anfang (verifier8), lässt unbekannte Felder und den gespeicherten Schlüssel draußen',()=>{
+ const s=saubereDiagnose({...diag,extra:'x',gate:{...diag.gate,stored:{version:3,expiresAt:1000},settings:{version:3,verifier8:'deadbeefcafe'}}});
+ assert.equal(s.gate.settings.verifier8,'deadbeef');assert.equal('extra' in s,false);assert.equal(JSON.stringify(s).includes('cafe'),false);
+ assert.equal(s.gate.settings.version,3);assert.equal(s.storageKeyPresent,true);assert.equal(s.gate.stored.expiresAt,1000);
+ assert.equal(saubereDiagnose(null),null);
+});
+test('diagnoseText nennt Zustand, Ablauf gegen Browser-Zeit, Fehlertext und access.js',()=>{
+ const t=diagnoseText(saubereDiagnose(diag));
+ for(const w of ['readyState complete','Schluessel im Speicher: ja','gespeichert v3 (abgelaufen)','Maske v3 (Huelle deadbeef)','Fehlertext "Zugang abgelaufen"','access.js 200'])assert.match(t,new RegExp(w.replace(/[()"]/g,'\\$&')));
+ assert.match(diagnoseText(saubereDiagnose({...diag,gate:{...diag.gate,stored:{version:3,expiresAt:9000}}})),/gueltig bis 1970/);
+ assert.equal(diagnoseText(null),'keine Diagnose');
+});
+test('Bericht: ungültige Zeile mit Maske trägt die Diagnose in den Details',()=>{
+ const raw={rows:[{route:'/quant/',lcp:null,cls:null,requests:3,bytes:4000,incompleteRuns:0,failedRuns:0,invalidRuns:3}],
+  samples:[1,2,3].map(()=>({route:'/quant/',lcp:null,errors:[],gateDiagnostics:saubereDiagnose(diag)}))};
+ const [r]=rowsFromRaw(raw,'app',4);
+ assert.equal(r.invalidRuns,3);assert.ok(r.gateDiagnostics);
+ const md=reportMarkdown({schema:'vu-ladezeit-1',measuredAt:'2026-11-24T00:00:00Z',rows:[r],alarms:[],targets});
+ assert.match(md,/ungueltig, Maske sichtbar: readyState complete/);
+ assert.match(md,/Huelle deadbeef/);
+});
+
+test('Ausfall einer Messung: Fehlerende im Log und Alarm statt "Keine Alarme"', async () => {
+  const { readFileSync } = await import('node:fs');
+  const src = readFileSync(new URL('../live-ladezeit.mjs', import.meta.url), 'utf8');
+  assert.match(src, /Messung fehlgeschlagen \(Exit/);
+  assert.match(src, /r\.stderr/);
+  assert.match(src, /ausfaelle\.push\(/);
+  assert.match(src, /Messung ausgefallen: /);
+});
+
+test('Bericht nennt alle LCP-Kandidaten des mittleren Laufs mit Zeit, Struktur, Fläche und Textlänge (nie Text)',async()=>{
+ const {lcpKandidatenOf}=await import('../live-ladezeit.mjs');
+ const l=[{t:2756.4,tag:'H2',cls:'',par:'',size:6394,len:6,text:'Kymera'},{t:3588,tag:'P',cls:'',par:'dr-head dp-sh',size:11036,len:98,text:'GEHEIM'}];
+ const ss=[{lcp:3600,lcpList:l},{lcp:3588,lcpList:l},{lcp:3700,lcpList:l}];
+ const k=lcpKandidatenOf(ss);
+ assert.deepEqual(k,[{t:2756,tag:'H2',cls:'',par:'',size:6394,len:6},{t:3588,tag:'P',cls:'',par:'dr-head dp-sh',size:11036,len:98}]);
+ assert.doesNotMatch(JSON.stringify(k),/GEHEIM|Kymera/);
+ assert.equal(lcpKandidatenOf([{lcp:1}]),null);
+ const md=reportMarkdown({measuredAt:'t',commit:'c',runs:3,historyRuns:0,alarms:[],rows:[{key:'app/discover/',cpu:4,lcp:3588,cls:0,requests:1,bytes:1024,runs:3,lcpRuns:[3588],lcpKandidaten:k}]});
+ assert.match(md,/app\/discover\/ \(4x\) LCP-Kandidaten: 2756 ms H2 \(6394 px2, 6 Z\.\) -> 3588 ms P in \.dr-head\.dp-sh \(11036 px2, 98 Z\.\)/);
 });

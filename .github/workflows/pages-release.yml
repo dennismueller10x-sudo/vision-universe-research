@@ -165,7 +165,7 @@ on:
         type: boolean
         default: false
       notfall:
-        description: 'Voll-Release auch im Boersenfenster (Mo-Fr 14:00-21:00 UTC); sonst warten Nicht-Intraday-Aenderungen bis 21:00 UTC'
+        description: 'Voll-Release auch im Boersenfenster (Mo-Fr 13:30-21:30 UTC); sonst warten Nicht-Intraday-Aenderungen bis 21:30 UTC (Sammelrelease)'
         type: boolean
         default: false
 
@@ -553,12 +553,12 @@ jobs:
   # geaendert, bekommt das ausgelieferte Paket nur die neuen Dateien (kein Bau, kein Browser-Smoke, ~3 Minuten statt ~20).
   # Jede Unsicherheit (kein Basis-Paket, andere Dateien geaendert, Smoke rot) heisst: fertig=false, der Voll-Release laeuft wie bisher.
   # Gleiche Concurrency-Gruppe wie der Voll-Release; ein wartender Lauf nimmt immer den Kopf von main, geht also keinen Stand verloren.
-  # INTRADAY-VORRANG (19.11.2026): Mo-Fr 14:00-21:00 UTC (ab 14:00, weil ein Voll-Release bis 22 Min dauert; Befund 19.11.) startet kein Voll-Release wegen Nicht-Intraday-Dateien (AUFSCHUB); der Schnellweg
-  # liefert dann nur die Intraday-Dateien (--fenster=auto), der Rest geht ab 21:00 UTC in einem Voll-Release raus. Ausnahmen bleiben Voll:
+  # INTRADAY-VORRANG (19.11.2026): Mo-Fr 13:30-21:30 UTC (Ende seit 24.11.2026 21:30: ein Sammelrelease statt sieben Voll-Releases nach 21:00) (seit 23.11.2026 ab 13:30, vorher 14:00; ein Voll-Release dauert bis 26 Min) startet kein Voll-Release wegen Nicht-Intraday-Dateien (AUFSCHUB), auch nicht durch einen push auf main (23.11.2026: #2333/#2346/#2347 hielten die Gruppe 16-26 Min, die Takte fielen aus); der Schnellweg
+  # liefert dann nur die Intraday-Dateien (--fenster=auto), der Rest geht ab 21:30 UTC in einem Voll-Release raus (Wecker-Takt 21:30). Ausnahmen bleiben Voll:
   # Veroeffentlicher aktiv (Company Intelligence), kein Basis-Paket, notfall=true, Acceptance, Company-Intelligence-OFF.
   intraday-schnell:
     if: >-
-      github.event_name != 'pull_request' && github.event_name != 'push' &&
+      github.event_name != 'pull_request' &&
       !(github.event_name == 'workflow_dispatch' && (inputs.company_intelligence_acceptance || inputs.company_intelligence_off || inputs.notfall)) &&
       (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success')
     runs-on: ubuntu-latest
@@ -594,8 +594,12 @@ jobs:
           # Normale Dauer des Schritts 31-78 s; Download 200 s, Liste 60 s, zwei Versuche bleiben unter dem Job-Timeout.
           nett() { local n=0 t=$1; shift; until timeout "$t" bash -c "$1"; do n=$((n + 1)); [ "$n" -ge 2 ] && return 1; echo "::warning::Zeitlimit oder Fehler, zweiter Versuch"; sleep 5; done; }
           export REPO B
-          row=$(nett 60 'gh api "repos/$REPO/actions/artifacts?name=github-pages&per_page=10" \
-            --jq "[.artifacts[] | select(.expired==false)] | sort_by(.created_at) | reverse | .[0] | [.archive_download_url, .created_at] | @tsv"')
+          # 24.11.2026: NUR Artefakte von main. Pull-Request-Laeufe laden ebenfalls ein Artefakt "github-pages" hoch (mit wegwerfbarem
+          # Zugangspasswort und dem Stand des PRs); das neueste Artefakt war am 24.11. 01:35 UTC ein PR-Artefakt (ci-candidate-qa-diagnose),
+          # der Takt 01:36 nahm es als Basis (nur der geaenderte index.html rettete ihn in einen Voll-Release). Waere nur Intraday anders gewesen,
+          # haette der Schnellweg den PR-Stand mit unbekanntem Zugangsschluessel ausgeliefert: Maske ohne Inhalt bis zum naechsten Voll-Release.
+          row=$(nett 60 'gh api "repos/$REPO/actions/artifacts?name=github-pages&per_page=40" \
+            --jq "[.artifacts[] | select(.expired==false and .workflow_run.head_branch==\"main\")] | sort_by(.created_at) | reverse | .[0] | [.archive_download_url, .created_at] | @tsv"')
           url=${row%%$'\t'*}; at=${row##*$'\t'}
           test -n "$url" && [ "$url" != null ]
           echo "at=$at" >> "$GITHUB_OUTPUT"
@@ -657,7 +661,7 @@ jobs:
       - name: Aufschub im Boersenfenster
         if: steps.weiche.outputs.mode == 'AUFSCHUB'
         run: |
-          echo "::notice::Boersenfenster (Mo-Fr 14:00-21:00 UTC): kein Voll-Release (keine Aenderung oder nur Nicht-Intraday-Aenderungen offen, die bis 21:00 UTC warten; Notfall per workflow_dispatch mit notfall=true)."
+          echo "::notice::Boersenfenster (Mo-Fr 13:30-21:30 UTC): kein Voll-Release (keine Aenderung oder nur Nicht-Intraday-Aenderungen offen, die bis 21:30 UTC warten; Notfall per workflow_dispatch mit notfall=true)."
       - name: Voll-Release noetig
         if: steps.bereit.outputs.fertig != 'true' && steps.weiche.outputs.mode != 'AUFSCHUB'
         run: echo "::notice::Schnellweg nicht moeglich (Basis ${{ steps.basis.outcome }}, Veroeffentlicher-Pruefung ${{ steps.pub.outputs.frei }}, Weiche ${{ steps.weiche.outcome }}/${{ steps.weiche.outputs.mode }}, Smoke ${{ steps.bereit.outcome }}); Voll-Release folgt."

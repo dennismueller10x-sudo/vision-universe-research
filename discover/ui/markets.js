@@ -263,6 +263,31 @@
   /* Bewegung nur, wenn der Nutzer sie nicht abgeschaltet hat. */
   function sanft() { return global.matchMedia && global.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"; }
 
+  /**
+   * Zum Abschnitt scrollen und das Ziel nach dem Layout-Ende nachsetzen. Ein weicher Bildlauf rechnet sein Ziel
+   * einmal am Anfang; waechst die Seite oberhalb waehrend der Fahrt (Charts, Bilder, Schrift), bleibt er davor
+   * stehen (Monitor-Lauf 45319262430: Chip landete 783 bzw. 1441 px zu weit unten). Steht die Position still und
+   * liegt das Ziel nicht oben (> 8 px), wird einmal ohne Animation nachgesetzt - hoechstens dreimal, hoechstens ~3 s.
+   * `win` nur fuer Tests.
+   */
+  function zumZiel(z, win) {
+    win = win || global;
+    if (!z || !z.scrollIntoView) return;
+    z.scrollIntoView({ behavior: sanft(), block: "start" });
+    var letzte = null, ruhig = 0, korrekturen = 0, schritte = 0;
+    function schritt() {
+      schritte++;
+      var y = win.scrollY, oben = z.getBoundingClientRect().top;
+      ruhig = y === letzte ? ruhig + 1 : 0; letzte = y;
+      if (ruhig >= 2) {
+        if (Math.abs(oben) > 8 && korrekturen < 3) { korrekturen++; z.scrollIntoView({ behavior: "auto", block: "start" }); ruhig = 0; letzte = null; }
+        else return;
+      }
+      if (schritte < 25) win.setTimeout(schritt, 120);
+    }
+    win.setTimeout(schritt, 120);
+  }
+
   /* Mobil zuerst: eine Sprungleiste zu den Gruppen. Buttons statt
      Anker - der Hash gehoert dem Router (#/maerkte). */
   function sprungleiste(gruppen) {
@@ -271,7 +296,7 @@
       var b = el("button", { type: "button", class: "dx-maerkte-sprung", "data-ziel": "maerkte-" + g.id, text: g.titel });
       b.onclick = function () {
         var ziel = global.document && global.document.getElementById("maerkte-" + g.id);
-        if (ziel && ziel.scrollIntoView) ziel.scrollIntoView({ behavior: sanft(), block: "start" });
+        zumZiel(ziel);
       };
       return b;
     }));
@@ -314,7 +339,7 @@
       ]);
       b.onclick = function () {
         var z = global.document.getElementById(ziel);
-        if (z && z.scrollIntoView) z.scrollIntoView({ behavior: sanft(), block: "start" });
+        zumZiel(z);
       };
       return b;
     }
@@ -631,7 +656,7 @@
   }
 
   global.VUDiscover = global.VUDiscover || {};
-  global.VUDiscover.Markets = { render: render, ensureStyles: ensureStyles, renderEinordnung: renderEinordnung, renderDetails: renderDetails, gruppieren: gruppieren, wertText: wertText, kopfText: kopfText, semantikKurz: semantikKurz,
+  global.VUDiscover.Markets = { zumZiel: zumZiel, render: render, ensureStyles: ensureStyles, renderEinordnung: renderEinordnung, renderDetails: renderDetails, gruppieren: gruppieren, wertText: wertText, kopfText: kopfText, semantikKurz: semantikKurz,
                                 veraenderungText: veraenderungText, standText: standText, marktText: marktText,
                                 frischeText: frischeText, referenzText: referenzText,
                                 marktJetzt: marktJetzt, marktJetztItems: marktJetztItems, pulsBereich: pulsBereich, moversBereich: moversBereich, moversTitel: moversTitel, namen: namen,

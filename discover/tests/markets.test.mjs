@@ -185,3 +185,37 @@ test("Keine Gewinn-/Verlustfarbe fuer Zinsbewegungen", () => {
   assert.match(src, /is-neutral/);
   assert.match(src, /semantics === "PERCENT_OF_VALUE"/);
 });
+
+/* ---------------------------------------------------------------- Sprung zu einem Abschnitt */
+test("zumZiel setzt das Ziel nach dem Layout-Ende nach (Seite waechst waehrend des weichen Bildlaufs)", () => {
+  const timer = [];
+  const win = { scrollY: 0, setTimeout: (fn) => timer.push(fn) };
+  const aufrufe = [];
+  /* Das Ziel liegt 1400 px weiter unten; der weiche Bildlauf kommt nur 600 px weit, dann steht er. */
+  let oben = 1400;
+  const z = {
+    getBoundingClientRect: () => ({ top: oben }),
+    scrollIntoView: (o) => { aufrufe.push(o.behavior); if (o.behavior === "auto") { win.scrollY += oben; oben = 0; } else { win.scrollY = 600; oben = 800; } }
+  };
+  M.zumZiel(z, win);
+  assert.deepEqual(aufrufe, ["smooth"]);
+  for (let i = 0; i < 12 && timer.length; i++) timer.shift()();
+  assert.deepEqual(aufrufe, ["smooth", "auto"], "einmal ohne Animation nachgesetzt");
+  assert.ok(Math.abs(z.getBoundingClientRect().top) <= 8, "Ziel oben");
+});
+
+test("zumZiel laesst ein Ziel, das oben angekommen ist, in Ruhe und gibt nach hoechstens drei Korrekturen auf", () => {
+  const timer = [], aufrufe = [];
+  const win = { scrollY: 0, setTimeout: (fn) => timer.push(fn) };
+  const ok = { getBoundingClientRect: () => ({ top: 3 }), scrollIntoView: (o) => { aufrufe.push(o.behavior); win.scrollY = 500; } };
+  M.zumZiel(ok, win);
+  for (let i = 0; i < 12 && timer.length; i++) timer.shift()();
+  assert.deepEqual(aufrufe, ["smooth"], "keine Korrektur noetig");
+  const nie = { getBoundingClientRect: () => ({ top: 900 }), scrollIntoView: (o) => { aufrufe.push(o.behavior); } };
+  aufrufe.length = 0; win.scrollY = 0;
+  M.zumZiel(nie, win);
+  for (let i = 0; i < 60 && timer.length; i++) timer.shift()();
+  assert.equal(aufrufe.filter((b) => b === "auto").length, 3, "hoechstens drei Korrekturen");
+  assert.equal(timer.length, 0, "die Schleife endet");
+  assert.equal(M.zumZiel(null, win), undefined);
+});

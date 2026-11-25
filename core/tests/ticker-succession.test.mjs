@@ -141,3 +141,33 @@ test("TS-9 · relabel: Vorgaenger-Bars tragen die ID des Nachfolgers, die Nutzla
     () => ({ bars: [{ date: "2026-11-06", securityId: "ref_TCBI", close: 101 }] }));
   assert.equal(ohne.payload.bars[0].securityId, "ref_TCBI", "ohne relabel bleibt die Bar unveraendert");
 });
+
+test("TS-6 · Naht: Anpassungsniveau des Vorgaengers folgt dem Nachfolger, Schluesse bleiben (CASK/FCDH, 24.11.2026)", async () => {
+  const { rebaseAdjusted } = await import("../../scripts/market/lib/ticker-succession-bars.mjs");
+  const b = (d, c, a, v) => ({ date: d, close: c, adjustedClose: a, adjustedOpen: a, adjustedVolume: v });
+  const pred = [b("2026-10-22", 0.82, 0.82, 100), b("2026-10-23", 1.05, 1.05, 100)];
+  const succ = [b("2026-10-26", 0.7113, 3.5565, 20)];
+  const r = rebaseAdjusted(pred, succ, "2026-10-26");
+  assert.equal(r.factor, 5);
+  assert.deepEqual(r.bars.map((x) => x.close), [0.82, 1.05], "rohe Schluesse unveraendert");
+  assert.ok(Math.abs(r.bars[1].adjustedClose - 5.25) < 1e-9);
+  assert.ok(Math.abs(r.bars[1].adjustedVolume - 20) < 1e-9);
+  assert.equal(pred[1].adjustedClose, 1.05, "Eingabe bleibt unveraendert");
+  /* gleiches Niveau oder fehlendes Verhaeltnis: nichts aendert sich */
+  assert.equal(rebaseAdjusted(pred, [b("2026-10-26", 1, 1, 1)], "2026-10-26").factor, 1);
+  assert.equal(rebaseAdjusted(pred, [{ date: "2026-10-26", close: 1 }], "2026-10-26").factor, null);
+  /* withPredecessor nutzt es und meldet den Faktor */
+  const TSm = TS, map = TS.tickerSuccessions(REG);
+  const r2 = withPredecessor({ bars: [b("2026-11-11", 1, 2, 1)] }, { securityId: "ref_TXCP", ticker: "TXCP" }, { TS: TSm, map },
+    () => ({ bars: [b("2026-11-06", 1, 1, 1)] }));
+  assert.equal(r2.joined.adjustmentRebase, 2);
+  assert.equal(r2.payload.bars[0].adjustedClose, 2);
+});
+
+test("TS-7 · Vorgaenger ohne Bar vor dem Stichtag: Nachfolger behaelt seine eigene Historie (BRNX/BNRG, 25.11.2026)", () => {
+  const map = TS.tickerSuccessions(REG);
+  const eigen = { bars: [{ date: "2026-11-05", close: 1 }, { date: "2026-11-11", close: 2 }] };
+  const r = withPredecessor(eigen, { securityId: "ref_TXCP", ticker: "TXCP" }, { TS, map }, () => ({ bars: [{ date: "2026-11-09", close: 9 }] }));
+  assert.equal(r.payload, eigen, "dieselbe Nutzlast, nichts weggeworfen");
+  assert.equal(r.joined.predecessorBars, 0);
+});

@@ -180,7 +180,7 @@
     caption(isNum(daily) ? '12 Monate · heute' : '12 Monate', daily);
     if (!Hub || !MC || !MC.renderIntraday || !Hub.enabled || !Hub.enabled() || c.region === 'EUROPE') return;
     function stop() { off = true; if (abo) { abo(); abo = null; } }
-    abo = Hub.subscribe(c.symbol, function (p) {
+    function onSnapshot(p) {
       if (off) return;
       if (art.__heroOn && !art.isConnected) { stop(); return; }
       if (art.isConnected) art.__heroOn = true;
@@ -190,8 +190,14 @@
       var pct = isNum(base) && base > 0 && isNum(last) ? (last / base - 1) * 100 : daily;
       box.replaceChildren(svg); box.dataset.range = '1T';
       caption((p.label && p.label.label) || 'Tagesverlauf', pct);
-    });
-    if (off && abo) { abo(); abo = null; }
+    }
+    /* Das Abonnement hängt an der ganzen Reihe (billboard() ruft __heroBind mit dem Abschnitt), nicht an der Folie: im Karussell liegen
+       die anderen Folien seitlich ausserhalb des Scrollbereichs, ein IntersectionObserver je Folie sähe sie nie. Solange die Reihe im Bild
+       ist, abonnieren alle Folien; beim Verlassen der Startseite oder Wegscrollen der Reihe wird sofort gekündigt. */
+    art.__heroBind = function (host) {
+      if (abo || off) return;
+      abo = (Hub.subscribeVisible || function (n, sym, f) { return Hub.subscribe(sym, f); })(host, c.symbol, onSnapshot);
+    };
   }
   /** Thema der Aktie (Reihen-Zugehörigkeit aus dem Datenlauf, discover/data/membership) als zweites Etikett, wie im Prototyp. */
   function heroThemes(sec, ctx) {
@@ -221,6 +227,7 @@
       });
     }, { passive: true });
     sec.append(track, dots);
+    Array.prototype.forEach.call(track.children, function (slide) { if (slide.__heroBind) slide.__heroBind(sec); });
     setTimeout(function () { if (sec.isConnected) heroThemes(sec, ctx); }, 600);
     return sec;
   }
@@ -299,7 +306,7 @@
     var sec = h('section', 'dr-sec dr-sec--top10'); sec.dataset.row = 'im-blick';
     var cards = R().showcaseCards(row.cards, 10);
     /* Ein Satz zur Regel bleibt sichtbar (Rangliste, docs/legal/WORTWAHL.md): die Reihenfolge folgt der Regel, nicht einer Einschätzung. */
-    sec.innerHTML = protoHead({ title: 'Top 10 heute', more: 'Alle ' + cards.length, href: rowHref('im-blick'), label: 'Alle ' + cards.length + ' Aktien: Heute im Blick', sub: 'Rang nach der Regel „Heute im Blick“: Ereignisse des letzten Handelstags und Stärke über 12 Monate.' });
+    sec.innerHTML = R().top10Head(cards.length, rowHref('im-blick'));
     var track = rail('Top 10 heute'); sec.appendChild(track);
     cards.forEach(function (c, i) { track.appendChild(top10(c, i, ctx)); });
     if (!track.children.length) return null;
@@ -491,7 +498,7 @@
     var tag = page.querySelector('.dv3-asof');
     if (tag && ctx.asOf) { tag.textContent = 'Discover · ' + K().closeLabel(ctx.asOf); tag.dataset.base = tag.textContent; }
     var avail = R().available(ctx.meta, uid(ctx)), body = h('div', 'v2-journey dr-home dp-home'); page.appendChild(body);
-    var hero = null, imBlick = null, drawn = false, wait0 = ctx.heroWait || null;
+    var hero = null, imBlick = null, drawn = false, wait0 = ctx.heroWait || null, top0 = ctx.topWait || null;
     var entry = ((ctx.meta && ctx.meta.home) || []).filter(function (x) { return x.universeId === uid(ctx); })[0];
     var heroP = entry && entry.chunks && entry.chunks[0] ? K().load(entry.chunks[0]).then(function (c) { return (c.surfaces || []).filter(function (s) { return s.type === 'hero'; })[0] || null; }).catch(function () { return null; }) : Promise.resolve(null);
     var rowP = avail['im-blick'] ? loadRow(ctx, 'im-blick').catch(function () { return null; }) : Promise.resolve(null);
@@ -503,6 +510,7 @@
       body.replaceChildren();
       if (g) {
         if (wait0) { wait0.remove(); wait0 = null; }
+        if (top0) { (top0.parentNode !== page ? top0.parentNode : top0).remove(); top0 = null; }
         R().genrePlan(g, avail).forEach(function (slot) {
           if (slot.kind === 'themes') { var t = themesSection(ctx, true); if (t) body.appendChild(t); }
           else body.appendChild(railSection(slot, ctx, avail));
@@ -524,7 +532,10 @@
       var plan = R().homePlan(avail, { fresh: fresh, personal: { recent: recent.length > 0, more: !!more } });
       function has(kind, row) { return plan.filter(function (s) { return s.kind === kind && (!row || s.row === row); })[0] || null; }
       if (has('recent')) body.appendChild(recentSection(ctx, recent));
-      var topSlot = h('div', 'dr-slot'); body.appendChild(topSlot);
+      /* Release-Vorschau (index.html, data-static-top): der Kopf der Top 10 steht schon im HTML; hier wird er übernommen und später durch die Sektion ersetzt. */
+      var topBox = top0 && top0.parentNode !== page ? top0.parentNode : null;
+      var topSlot = top0 || h('div', 'dr-slot'); top0 = null; topSlot.removeAttribute('data-static-top'); body.appendChild(topSlot);
+      if (topBox) topBox.remove(); /* der leere statische Rahmen (dp-home) hat seinen Platz an body abgegeben */
       if (has('themes')) { var th = themesSection(ctx, false); if (th) body.appendChild(th); }
       var first = true;
       PROTO_ROWS.forEach(function (id) {
@@ -563,6 +574,7 @@
       }).catch(function () {
         if (!bb.isConnected) return;
         bb.innerHTML = '<div class="dp-hero__body">' + U().blank('Die Aktien konnten nicht geladen werden.') + '</div>';
+        topSlot.replaceChildren();
         var retry = h('button', 'vu-btn vu-btn--line vu-btn--sm v2-load-more', 'Erneut versuchen'); retry.type = 'button';
         retry.onclick = function () { draw(null); }; bb.querySelector('.dp-hero__body').appendChild(retry);
       });

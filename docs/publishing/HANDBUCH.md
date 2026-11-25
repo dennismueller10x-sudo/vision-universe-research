@@ -275,7 +275,20 @@ Stand 23.11.2026: alle 31 Artikel stehen. Bausteine neben den Grafiken (für les
 Einzelwörter bekommen in Kacheln eine kleinere Schrift. Die Kacheln folgen dem Startseiten-Layout (ganzes iPhone neben dem Text). Keine sichtbare Quellenliste mehr
 (Owner 23.11.2026): Datum und Datenherkunft stehen in der kleinen Zeile unter jeder Grafik, `quellen` im Artikel bleibt
 als interner Beleg. Indexverlauf (`index-chart`): Gesamtrendite der ETFs SPY, URTH, ACWI aus `vorsorge/data/series`,
-eingefroren in `daten.json` (`indizes`).
+eingefroren in `daten.json` (`indizes`). Vorschaubild zum Teilen je Seite: `assets/share/ratgeber*.jpg`, neu bauen mit
+`node landing/scripts/share-images.mjs --nur-ratgeber` (Playwright lokal) nach jedem neuen oder umbenannten Artikel (Test RG-9). Alle übrigen Seiten von www haben ebenfalls ein eigenes Bild: Story-Seiten
+über `share-images.mjs` (ohne Schalter), Rechtliches, Partner, Instagram und Newsletter über `--weitere` (Liste `WEITERE`),
+News-Artikel über ihr Artikelbild, das Marktbriefing über `teilen.png`. Test SEO-6 prüft jede gebaute Seite.
+Fotos im Ratgeber (Owner 24.11.2026, „visuell brutal stark“): `aufmacher` je Artikel sowie die Bausteine `foto` und `fotos`,
+Dateien unter `landing/web/img/ratgeber/` (1600 px, offizielles Pressematerial mit Bildnachweis `quelle`, keine Privatpersonen;
+Test RG-10). Junge Börsengänge zeigt `kursverlauf` aus `daten.json` (`serien`, `--serie SPCX`); weitere Aktien zum selben
+Stichtag mit `--ergaenzen T1,T2`. Alte Report-Adressen mit Suchnachfrage (SpaceX, KI) leiten auf `spacex-aktie` und `ki-aktien` um.
+
+**Alte Shop-Adressen** (24.11.2026): Der frühere Shopify-Shop lief unter derselben Domain. Seine Adressen (`/pages/*`,
+`/products/*`, `/collections/*`, `/blogs/*`, `/cart`, `/account`, `/search`) leitet `_redirects` dauerhaft (301) auf die
+neuen Seiten um (`ALTE_SHOP_ADRESSEN` in `landing/scripts/build.mjs`); alle anderen unbekannten Adressen bekommen
+`404.html` mit Status 404 statt still die Startseite. Sonst halten Bing und damit ChatGPT die alten Aktienreport-Seiten
+für lebendig. Test `SEO-5`.
 
 Stand 11.11.2026: nur `/insights/` ist öffentlich und indexierbar (Sitemap, Search Console, IndexNow). Die Freischaltung
 weiterer Bereiche entscheidet der Owner; dieser Plan sagt, was dafür technisch vorbereitet wird.
@@ -383,7 +396,7 @@ Wirtschaftskalender (FMP-Endpunkte geprüft in `scripts/market/probe-free-source
 - Engine `products/news/briefing/engine.js` (Kartenregeln, Frische, Prüfung der Themen Dritter), Darstellung
   `products/news/briefing/render.js` (jede Karte ein SVG 1080×1350), Build `products/news/briefing/build.mjs`, Tests
   `products/news/tests/marktbriefing.test.mjs`.
-- Lauf: `content.yml` Teil `marktbriefing`, Mo–Fr 23:50 UTC über den Wecker (`core/registry/schedule.json`), intern im
+- Lauf: `content.yml` Teil `marktbriefing`, Di–Sa in drei Versuchen um 02:20, 04:20 und 07:20 UTC über den Wecker (nach Market Pulse und Technical-Screener; 23:50 war zu früh, 24.11.2026). Der erste Versuch mit frischen Daten schreibt, spätere überspringen (`--skip-if-current`); fehlen die Daten, bleibt ein früher Versuch grün, erst der letzte wird rot und öffnet ein Issue `[marktbriefing]` (Label `pipeline-alarm`). Anlass 25.11.2026: der Kurs-Lauf hing im Abgleich der dauerhaften Ablage und veröffentlichte nichts; dieser Schritt hat seitdem 30 Minuten Zeitlimit und hält die Veröffentlichung nicht mehr auf (`core/registry/schedule.json`), intern im
   Datenzweig (`news/marktbriefing/`, Datenart `marktbriefing`; Research-Seite `/news/marktbriefing/` bleibt `noindex`).
 - Themen Dritter und Termine liest der Build aus `products/news/radar/<sitzung>.json` (im Code-Zweig, weil `news/marktbriefing/` dem Datenzweig gehört) (`items[]` mit title, publisher, source,
   published, url, optional sub, quote, columns, bars, stats; optional `editorial` mit eigenem Titel der Titelkarte).
@@ -429,7 +442,7 @@ Wirtschaftskalender (FMP-Endpunkte geprüft in `scripts/market/probe-free-source
   rund 1,5 MB je Ausgabe im Repo.
 - Veröffentlichung nur auf Auslösung (Owner 22.11.2026: ob täglich, ist noch offen): `content.yml` Teil `marktbriefing` mit
   `website=ja` baut Seite, PDF und Bilder und committet `landing/marktbriefing` und den Startseiten-Teaser nach `main`;
-  Cloudflare Pages baut www daraus. Der Zeitplan (Mo–Fr 23:50 UTC) rechnet das Briefing nur intern in den Datenzweig.
+  Cloudflare Pages baut www daraus. Der Zeitplan (Di–Sa 02:20, 04:20, 07:20 UTC) rechnet das Briefing nur intern in den Datenzweig.
   Seiten und PDF versprechen kein tägliches Erscheinen.
 - Startseiten-Teaser in der Region `<!--MB:teaser-->` (eigene Zeile über den Insights-Kacheln), verlinkt die Produktseite;
   Menüpunkt „Marktbriefing“ auf allen Seiten.

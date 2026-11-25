@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-17T13:39:08.958Z",
+  "generatedAt": "2026-11-23T16:01:00.878Z",
   "provider": "tiingo",
   "plan": "commercial",
   "scope": "realtimeStreamAndLiveCandle",
@@ -8,16 +8,16 @@
   "run": {
     "source": "github-actions",
     "repository": "dennismueller10x-sudo/vision-universe-research",
-    "runId": "35227916081",
-    "commit": "0a7a2a2c7651cf44abbe4c7e9345788bcfef7950",
-    "ref": "claude/vision-universe-discover-h93fmv",
+    "runId": "45210845142",
+    "commit": "78565db592b04949c5cb9449bb146c73a3a50211",
+    "ref": "main",
     "wsUrl": "wss://api.tiingo.com/iex",
     "secondsPerMeasurement": 90
   },
   "sessionAtRun": {
     "phase": "REGULAR",
-    "localDate": "2026-09-17",
-    "localTime": "09:35:58",
+    "localDate": "2026-11-23",
+    "localTime": "10:57:51",
     "closedReason": null,
     "note": "Ein Stromnachweis ausserhalb der regulaeren Sitzung kann nur UNKNOWN ergeben."
   },
@@ -33,7 +33,6 @@
     "classification": "PROVIDER_CONFIRMATION_REQUIRED",
     "probes": 24,
     "matchCountsByField": {
-      "tngoLastMatches": 7,
       "midMatches": 1
     },
     "fieldProbeCounts": {
@@ -46,9 +45,9 @@
     },
     "withinBidAsk": null,
     "leadingCandidate": {
-      "field": "tngoLast",
-      "type": "REFERENCE",
-      "matches": 7,
+      "field": "mid",
+      "type": "MID",
+      "matches": 1,
       "of": 24,
       "note": "Haeufigster Treffer, aber nicht eindeutig genug fuer einen Befund. Ein Indiz, keine Zuordnung."
     },
@@ -57,7 +56,7 @@
       "bidPrice",
       "askPrice"
     ],
-    "evidence": "Kein REST-Feld wurde vom Stromkurs eindeutig und wiederholt getroffen. Am haeufigsten traf tngoLast (7/24). Bemerkenswert: last, bidPrice, askPrice kommen in der Kursabfrage dieses Kontos gar nicht vor - ein Abschlusskurs steht also nicht einmal zum Vergleich zur Verfuegung.",
+    "evidence": "Kein REST-Feld wurde vom Stromkurs eindeutig und wiederholt getroffen. Am haeufigsten traf mid (1/24). Bemerkenswert: last, bidPrice, askPrice kommen in der Kursabfrage dieses Kontos gar nicht vor - ein Abschlusskurs steht also nicht einmal zum Vergleich zur Verfuegung.",
     "known": "Es kommen fortlaufend Kurse, und sie bauen eine bewegte Minutenkerze.",
     "unknown": "Was die Zahl bedeutet - Abschluss, Referenz, Mitte oder Quote - ist offen.",
     "safeForIntradayIntelligence": false,
@@ -103,7 +102,7 @@
     "tradeStreamAvailable": false,
     "quoteMessagesObserved": 0,
     "tradeMessagesObserved": 0,
-    "unparsedPriceMessages": 127,
+    "unparsedPriceMessages": 193,
     "observedMessageShape": [
       {
         "service": "iex",
@@ -191,17 +190,17 @@
       "sessionPhaseChanged": false,
       "connection": {
         "opened": true,
-        "openedAfterMs": 326,
+        "openedAfterMs": 291,
         "subscriptionAck": {
           "messageType": "H",
           "code": 200,
           "message": "HeartBeat",
           "hasSubscriptionId": false
         },
-        "messages": 129,
-        "adminMessages": 2,
+        "messages": 112,
+        "adminMessages": 3,
         "messageTypes": {
-          "noTypeField": 127
+          "noTypeField": 109
         },
         "messageShape": [
           {
@@ -232,7 +231,7 @@
             ]
           }
         ],
-        "unparsedPriceMessages": 127,
+        "unparsedPriceMessages": 109,
         "tradeMessages": 0,
         "quoteMessages": 0,
         "rejectedSubscription": null,
@@ -240,68 +239,68 @@
         "closeCode": null,
         "closeReason": null,
         "subscriptionForm": "tickers",
-        "payloadBytes": 12552,
-        "payloadBytesPerSecond": 139,
+        "payloadBytes": 10848,
+        "payloadBytesPerSecond": 121,
         "stableForFullDuration": true
       },
       "events": {
-        "count": 127,
-        "firstAfterMs": 645,
-        "lastAfterMs": 89777,
-        "perSecond": 1.42,
+        "count": 109,
+        "firstAfterMs": 569,
+        "lastAfterMs": 89735,
+        "perSecond": 1.22,
         "gapMs": {
-          "min": 440,
-          "median": 574,
-          "p90": 1180,
-          "max": 1848
+          "min": 116,
+          "median": 763,
+          "p90": 1281,
+          "max": 3587
         },
         "providerLagSeconds": {
-          "min": 0,
-          "median": 0,
-          "max": 0
+          "min": 6,
+          "median": 6,
+          "max": 7
         },
-        "withTimestamp": 127,
-        "withSymbol": 127,
+        "withTimestamp": 109,
+        "withSymbol": 109,
         "bySymbol": {
-          "NVDA": 127
+          "NVDA": 109
         },
         "consecutive": true
       },
       "candle": {
         "symbol": "NVDA",
-        "bucket": "2026-09-17T09:37",
-        "ticksInBucket": 40,
+        "bucket": "2026-11-23T10:59",
+        "ticksInBucket": 22,
         "perSymbol": {
           "NVDA": {
             "bars": 3,
-            "ticksInLastBar": 40,
-            "maxTicksInAnyBar": 86,
-            "rangeRelative": 0.000574
+            "ticksInLastBar": 22,
+            "maxTicksInAnyBar": 64,
+            "rangeRelative": 0.001426
           }
         },
-        "maxTicksInAnyBucket": 86,
+        "maxTicksInAnyBucket": 64,
         "barsFormed": 3,
         "hasOpen": true,
         "hasHigh": true,
         "hasLow": true,
         "hasClose": true,
         "hasTimestamp": true,
-        "rangeRelative": 0.000574,
-        "closeMovedFromOpen": 0.000023,
+        "rangeRelative": 0.001426,
+        "closeMovedFromOpen": -0.000713,
         "origin": "REALTIME_DEVELOPING",
         "confirmed": false,
         "priceTypes": {
-          "UNSPECIFIED": 127
+          "UNSPECIFIED": 109
         },
         "messageForms": {
-          "iexNoTypeField": 127
+          "iexNoTypeField": 109
         },
         "priceTypeVerified": false,
         "mergeStats": {
-          "ticks": 127,
+          "ticks": 95,
           "accepted": 3,
           "rejectedFuture": 0,
-          "rejectedConfirmed": 0,
+          "rejectedConfirmed": 14,
           "rejectedMalformed": 0
         },
         "multipleUpdatesInSameCandle": true
@@ -319,7 +318,7 @@
         "matchCountsByField": {},
         "withinBidAskOf": 0,
         "withinBidAsk": 0,
-        "medianStreamPriceAgeMs": 462,
+        "medianStreamPriceAgeMs": 789,
         "error": null,
         "note": "Verglichen wird auf exakte Gleichheit zwischen dem letzten Stromkurs und den Feldern der REST-Kursabfrage. Kein Wert wird aufgezeichnet."
       }
@@ -338,7 +337,7 @@
       "sessionPhaseChanged": false,
       "connection": {
         "opened": true,
-        "openedAfterMs": 244,
+        "openedAfterMs": 216,
         "subscriptionAck": {
           "messageType": "E",
           "code": 400,
@@ -430,7 +429,7 @@
       "sessionPhaseChanged": false,
       "connection": {
         "opened": true,
-        "openedAfterMs": 210,
+        "openedAfterMs": 204,
         "subscriptionAck": {
           "messageType": "E",
           "code": 400,
@@ -523,17 +522,17 @@
       "sessionPhaseChanged": false,
       "connection": {
         "opened": true,
-        "openedAfterMs": 208,
+        "openedAfterMs": 221,
         "subscriptionAck": {
           "messageType": "H",
           "code": 200,
           "message": "HeartBeat",
           "hasSubscriptionId": false
         },
-        "messages": 123,
-        "adminMessages": 2,
+        "messages": 196,
+        "adminMessages": 3,
         "messageTypes": {
-          "noTypeField": 121
+          "noTypeField": 193
         },
         "messageShape": [
           {
@@ -564,7 +563,7 @@
             ]
           }
         ],
-        "unparsedPriceMessages": 121,
+        "unparsedPriceMessages": 193,
         "tradeMessages": 0,
         "quoteMessages": 0,
         "rejectedSubscription": null,
@@ -572,72 +571,72 @@
         "closeCode": null,
         "closeReason": null,
         "subscriptionForm": "tickers",
-        "payloadBytes": 11942,
-        "payloadBytesPerSecond": 133,
+        "payloadBytes": 19049,
+        "payloadBytesPerSecond": 212,
         "stableForFullDuration": true
       },
       "events": {
-        "count": 121,
-        "firstAfterMs": 863,
-        "lastAfterMs": 89560,
-        "perSecond": 1.36,
+        "count": 193,
+        "firstAfterMs": 378,
+        "lastAfterMs": 89573,
+        "perSecond": 2.16,
         "gapMs": {
           "min": 2,
-          "median": 642,
-          "p90": 1411,
-          "max": 3043
+          "median": 432,
+          "p90": 865,
+          "max": 1955
         },
         "providerLagSeconds": {
           "min": 0,
           "median": 0,
-          "max": 0
+          "max": 8
         },
-        "withTimestamp": 121,
-        "withSymbol": 121,
+        "withTimestamp": 193,
+        "withSymbol": 193,
         "bySymbol": {
-          "MSFT": 42,
-          "AAPL": 79
+          "AAPL": 104,
+          "MSFT": 89
         },
         "consecutive": true
       },
       "candle": {
         "symbol": "AAPL",
-        "bucket": "2026-09-17T09:39",
-        "ticksInBucket": 9,
+        "bucket": "2026-11-23T11:01",
+        "ticksInBucket": 1,
         "perSymbol": {
-          "MSFT": {
-            "bars": 3,
-            "ticksInLastBar": 4,
-            "maxTicksInAnyBar": 26,
-            "rangeRelative": 0.000546
-          },
           "AAPL": {
             "bars": 3,
-            "ticksInLastBar": 9,
-            "maxTicksInAnyBar": 54,
-            "rangeRelative": 0.000301
+            "ticksInLastBar": 1,
+            "maxTicksInAnyBar": 68,
+            "rangeRelative": 0
+          },
+          "MSFT": {
+            "bars": 2,
+            "ticksInLastBar": 49,
+            "maxTicksInAnyBar": 49,
+            "rangeRelative": 0.001189
           }
         },
-        "maxTicksInAnyBucket": 54,
+        "maxTicksInAnyBucket": 68,
         "barsFormed": 3,
         "hasOpen": true,
         "hasHigh": true,
         "hasLow": true,
         "hasClose": true,
         "hasTimestamp": true,
-        "rangeRelative": 0.000301,
-        "closeMovedFromOpen": -0.000196,
+        "rangeRelative": 0,
+        "closeMovedFromOpen": 0,
         "origin": "REALTIME_DEVELOPING",
         "confirmed": false,
         "priceTypes": {
-          "UNSPECIFIED": 121
+          "UNSPECIFIED": 193
         },
         "messageForms": {
-          "iexNoTypeField": 121
+          "iexNoTypeField": 193
         },
         "priceTypeVerified": false,
         "mergeStats": {
-          "ticks": 79,
+          "ticks": 104,
           "accepted": 3,
           "rejectedFuture": 0,
           "rejectedConfirmed": 0,
@@ -656,12 +655,11 @@
           "lowProbes": 16
         },
         "matchCountsByField": {
-          "tngoLastMatches": 7,
           "midMatches": 1
         },
         "withinBidAskOf": 0,
         "withinBidAsk": 0,
-        "medianStreamPriceAgeMs": 1293,
+        "medianStreamPriceAgeMs": 831,
         "error": null,
         "note": "Verglichen wird auf exakte Gleichheit zwischen dem letzten Stromkurs und den Feldern der REST-Kursabfrage. Kein Wert wird aufgezeichnet."
       }

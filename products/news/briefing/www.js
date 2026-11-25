@@ -310,13 +310,17 @@
     var SRC = ["Notenbanken", "Börsenaufsicht SEC", "Nachrichtenagenturen", "Research großer Banken", "Hedgefonds-Meldungen", "Statistikämter", "Eigene Modelle"];
     var rail = cardsAll.length ? '<section class="full mbrailsec"><div class="mbhead"><h2>Ein Blick hinein</h2><span>Neueste Ausgabe · ' + dmy(b.session) + b.session.slice(0, 4) + '</span></div><div class="mbrail">' +
       [{ file: img.story0, anchor: "start", kicker: "Überblick" }].concat(cardsAll).filter(function (c) { return c.file; }).map(function (c) { return '<a class="mbcard" href="' + ed + "#" + c.anchor + '"><img src="' + ed + c.file + '" alt="' + esc(c.kicker) + '" loading="lazy"><span>' + esc(c.kicker) + "</span></a>"; }).join("") + "</div></section>" : "";
+    /* Produktfilm (zeitlos, 40 s): liegt fest unter /marktbriefing/film/, unabhaengig von der Ausgabe. */
+    var filmBlock = o.film ? '<section class="full mbpdf mbfilm"><div class="mbpdf-txt"><p class="mbkick">' + I('<rect x="3" y="5" width="14" height="14" rx="3"/><path d="M17 10l4-2v8l-4-2"/>') + "Kurz erklärt</p><h2>Das Marktbriefing in <mark>40 Sekunden.</mark></h2>" +
+      '<p class="t">Was drinsteht, wie es aussieht und wo du es findest: als Story, als PDF und bald in der App.</p></div>' +
+      '<div class="mbpdf-art mbfilm-art"><video class="mbvid" controls playsinline preload="none" poster="' + esc(o.film.poster) + '" aria-label="Das Marktbriefing in 40 Sekunden"><source src="' + esc(o.film.src) + '" type="video/mp4"></video></div></section>' : "";
     var main = '<main id="inhalt" class="w"><section class="ahero pvhero mbhero" data-hero><div>' +
       "<h1>Das <mark>Marktbriefing.</mark></h1>" +
       '<p class="t mblead">Der Börsentag als Story. Zum Durchwischen in App und Browser, als PDF zum Mitnehmen.</p>' +
       '<div class="pvcta mbctas">' + cta(ed, "Neueste Ausgabe ansehen") + (o.pdf ? '<a class="mbpdfbtn" href="' + ed + esc(o.pdf) + '" download><b>PDF</b> laden</a>' : "") + "</div>" +
       '<p class="mbnew"><span>Neueste Ausgabe · ' + dmy(b.session) + b.session.slice(0, 4) + '</span><a href="' + ed + '">' + esc(C.overview.title) + "</a></p>" +
       '</div><div class="pvcover"><a class="mbcov" href="' + ed + '" aria-label="Neueste Ausgabe ansehen">' + stage + "</a></div></section>" +
-      storyBlock + pdfBlock +
+      filmBlock + storyBlock + pdfBlock +
       '<section class="mbband"><div class="mbband-in"><h2>Aus Millionen Datenpunkten.<br><mark>Weltweit.</mark></h2><div class="mbstats">' +
       STATS.map(function (x) { return "<div><b>" + x[0] + "</b><span>" + x[1] + "</span></div>"; }).join("") + '</div><ul class="mbsrc">' + SRC.map(function (x) { return "<li>" + x + "</li>"; }).join("") + "</ul></div></section>" +
       rail +

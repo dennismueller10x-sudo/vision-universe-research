@@ -1014,23 +1014,23 @@
       "cik": "0001884046",
       "name": "Spark I Acquisition Corp",
       "sic": "3690",
-      "rawFacts": 1281,
-      "mappedFacts": 545,
-      "unmappedFacts": 784,
+      "rawFacts": 1509,
+      "mappedFacts": 637,
+      "unmappedFacts": 924,
       "calendarYears": 4,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
-        "SPKL",
-        "SPKLU",
-        "SPKLW"
+        "SPKLF",
+        "SPKUF",
+        "SPKWF"
       ],
       "status": "INGESTED",
       "annualPeriods": 5,
-      "quarterlyPeriods": 19,
+      "quarterlyPeriods": 20,
       "firstPeriodEnd": "2021-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 4.0,
       "metrics": {
         "capital_expenditures": {
@@ -1069,14 +1069,14 @@
         },
         "net_income": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 18,
+          "quarterlyPeriods": 19,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
         },
         "operating_cash_flow": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 15,
+          "quarterlyPeriods": 16,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
@@ -1097,14 +1097,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 19,
+          "quarterlyPeriods": 20,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
         },
         "total_assets": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 13,
+          "quarterlyPeriods": 14,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
@@ -1127,44 +1127,45 @@
         }
       },
       "quality": {
-        "HIGH": 86
+        "HIGH": 90
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 86,
-        "resolvedValues": 86
+        "datableValues": 90,
+        "resolvedValues": 90
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 788,
+        "rules_version": "1.1.0",
+        "total": 934,
         "by_severity": {
-          "INFO": 784,
-          "WARNING": 4
+          "INFO": 924,
+          "WARNING": 10
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 2,
-          "RESTATEMENT_CONFLICT": 2,
-          "UNKNOWN_CONCEPT": 784
+          "RESTATEMENT_CONFLICT": 8,
+          "UNKNOWN_CONCEPT": 924
         }
       },
       "latestFiling": {
-        "accession": "0001104659-26-097178",
-        "filing_date": "2026-08-14",
-        "form": "10-Q",
-        "periodic_filings": 13
+        "accession": "0001104659-26-130988",
+        "filing_date": "2026-11-23",
+        "form": "10-Q/A",
+        "periodic_filings": 15,
+        "acceptance_datetime": "2026-11-23T18:58:47.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
-        "formula": "1.2.0",
+        "normalization_logic": "1.15.0",
+        "formula": "1.3.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.8.0"
         }
       },
-      "sourceDigest": "040387afa545b113b5988a7c46ccaaaaa18d1356855d34f7c0e0758f85eb13c9",
+      "sourceDigest": "bfaa2b8926bffb14c6bfc6b27502f53a6131791bda997d2ce108f79247e2d04c",
       "issuerId": "iss_cik_0001884046"
     },
     {

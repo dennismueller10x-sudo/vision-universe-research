@@ -23,20 +23,40 @@
   var hero = document.querySelector(".ts-hero");
   if (hero) {
     var sl = $$(".ts-sl", hero), dots = $$(".ts-dots button", hero), cur = 0, timer = null;
-    var show = function (n) {
+    /* Folien laden erst kurz vor ihrem Wechsel (24.11.2026): frei() gibt eine Folie frei und startet ihr Bild sofort (loading=eager);
+       show() wartet beim Wechsel (Punkt, Wischen, Zeitgeber) auf das Bild, höchstens 1,5 s, damit nie eine leere Folie erscheint. */
+    var frei = function (n) {
+      var s = sl[(n + sl.length) % sl.length], im = $$("img", s)[0]; s.classList.add("nx");
+      if (im && !im.complete) { im.loading = "eager"; im.fetchPriority = "auto"; }
+      return im;
+    };
+    var swap = function (n) {
+      var alt = sl[cur]; alt.classList.add("was"); setTimeout(function () { alt.classList.remove("was"); }, 1100);
       sl[cur].classList.remove("on"); sl[cur].setAttribute("aria-hidden", "true"); $$("a", sl[cur]).forEach(function (a) { a.setAttribute("tabindex", "-1"); });
       cur = (n + sl.length) % sl.length;
       sl[cur].classList.add("on"); sl[cur].removeAttribute("aria-hidden"); $$("a", sl[cur]).forEach(function (a) { a.removeAttribute("tabindex"); });
       dots.forEach(function (d, k) { d.classList.remove("on", "done"); d.removeAttribute("aria-current"); if (k < cur) d.classList.add("done"); });
       void dots[cur].offsetWidth; dots[cur].classList.add("on"); dots[cur].setAttribute("aria-current", "true");
       clearTimeout(timer); if (!reduce) timer = setTimeout(function () { show(cur + 1); }, 6000);
+      setTimeout(function () { if (sl.length > 1) frei(cur + 1); }, 3000);
+    };
+    var show = function (n) {
+      n = (n + sl.length) % sl.length;
+      var im = frei(n);
+      if (!im || im.complete) { swap(n); return; }
+      var fertig = false, los = function () { if (fertig) return; fertig = true; swap(n); };
+      clearTimeout(timer); im.addEventListener("load", los, { once: true }); im.addEventListener("error", los, { once: true }); setTimeout(los, 1500);
     };
     dots.forEach(function (d, k) { d.addEventListener("click", function () { show(k); }); });
     var x0 = null;
     hero.addEventListener("touchstart", function (e) { x0 = e.touches[0].clientX; }, { passive: true });
     hero.addEventListener("touchend", function (e) { if (x0 === null) return; var dx = e.changedTouches[0].clientX - x0; if (Math.abs(dx) > 40) show(cur + (dx < 0 ? 1 : -1)); x0 = null; });
     hero.addEventListener("focusin", function () { clearTimeout(timer); hero.classList.add("still"); });
-    if (sl.length > 1) show(0);
+    if (sl.length > 1) {
+      swap(0);
+      var ersteFreigabe = function () { frei(1); };
+      if (document.readyState === "complete") ersteFreigabe(); else addEventListener("load", ersteFreigabe, { once: true });
+    }
   }
   $$(".ts-shelf").forEach(function (s) {
     var heads = $$(".ts-arr", s);

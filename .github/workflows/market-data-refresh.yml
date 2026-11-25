@@ -337,8 +337,14 @@ jobs:
           node scripts/market/preflight-zero-cost.mjs --operation DAILY_UPDATE --gate FULL_UNIVERSE
           --out "$RUNNER_TEMP/history-store-push-preflight.json"
 
+      # Haengt der Abgleich (Lauf 45501514352, 24.11.2026: nach 48 Minuten abgebrochen, sonst 13-16 Minuten), darf er die
+      # Veroeffentlichung nicht mitreissen: Kurse und Faktoren sind nach Gate B fertig und gehen trotzdem raus; die Ablage
+      # holt der naechste Lauf nach ("Stand der dauerhaften Ablage" meldet den Rueckstand, der Alarm sieht den Schritt).
       - name: Dauerhafte Ablage auf den frischen Stand bringen
+        id: history_push
         if: steps.history_store.outputs.ready == 'true'
+        timeout-minutes: 30
+        continue-on-error: true
         env:
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
           VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
@@ -357,7 +363,10 @@ jobs:
       # auffaellt, bevor ihn ein Leser auf der Aktienseite sieht.
       - name: Stand der dauerhaften Ablage
         if: always() && steps.history_store.outputs.ready == 'true'
+        env:
+          PUSH_OUTCOME: ${{ steps.history_push.outcome }}
         run: |
+          if [ "$PUSH_OUTCOME" = "failure" ]; then echo "::warning::Abgleich der dauerhaften Ablage abgebrochen oder zu langsam - Daten werden trotzdem veroeffentlicht, der naechste Lauf holt die Ablage nach."; fi
           node -e '
             const fs = require("fs");
             const path = process.env.RUNNER_TEMP + "/history-store-push.json";

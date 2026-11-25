@@ -216,3 +216,76 @@ test("LH9 · Nachfragen, wenn das Verzeichnis die letzte abgeschlossene Sitzung 
   Hub.subscribe("AAPL", () => {});
   assert.equal(Hub.shouldPoll(), true, "das Verzeichnis haengt hinter dem Kalender - nachfragen");
 });
+
+/* ---------------------------------------------------------------- Abonnement an das Bild gebunden */
+function beobachter() {
+  const beobachter = [];
+  class IO {
+    constructor(cb, opts) { this.cb = cb; this.opts = opts; this.ziele = []; this.getrennt = false; beobachter.push(this); }
+    observe(n) { this.ziele.push(n); }
+    disconnect() { this.getrennt = true; }
+    melde(imBild) { this.cb(this.ziele.map((t) => ({ target: t, isIntersecting: imBild }))); }
+  }
+  return { IO, beobachter };
+}
+
+test("LH-V1 · subscribeVisible: im Bild abonniert, ausserhalb (auch beim Abbau der Seite) sofort gekuendigt, beim Wiedereintritt neu", async () => {
+  const s = snap("AAPL", 4, false);
+  const { Hub, w } = fenster({ "/idx.json": idx({ AAPL: eintrag("AAPL", s) }, { sessionDate: s.sessionDate, isComplete: false }), "/snap/AAPL.json": s }, "2026-09-11T14:30:00Z");
+  const { IO, beobachter: liste } = beobachter(); w.IntersectionObserver = IO;
+  const knoten = {};
+  const stop = Hub.subscribeVisible(knoten, "AAPL", () => {});
+  assert.equal(liste.length, 1); assert.equal(liste[0].opts.rootMargin, "80px 0px"); assert.equal(liste[0].ziele[0], knoten);
+  assert.equal(Hub.stats().subscribers, 0, "vor dem ersten Bild kein Abonnement");
+  liste[0].melde(true); await tickMicro();
+  assert.equal(Hub.stats().subscribers, 1, "im Bild abonniert");
+  liste[0].melde(true); assert.equal(Hub.stats().subscribers, 1, "nicht doppelt");
+  liste[0].melde(false);
+  assert.equal(Hub.stats().subscribers, 0, "ausserhalb gekuendigt (Routenwechsel entfernt den Knoten)");
+  assert.equal(Hub.stats().unsubscriptions, 1);
+  liste[0].melde(true); assert.equal(Hub.stats().subscribers, 1, "Wiedereintritt abonniert neu");
+  stop();
+  assert.equal(Hub.stats().subscribers, 0, "endgueltige Kuendigung");
+  assert.equal(liste[0].getrennt, true);
+  liste[0].melde(true); assert.equal(Hub.stats().subscribers, 0, "nach der Kuendigung kein neues Abonnement");
+});
+
+test("LH-V2 · subscribeVisible ohne IntersectionObserver verhaelt sich wie subscribe", async () => {
+  const s = snap("AAPL", 4, false);
+  const { Hub } = fenster({ "/idx.json": idx({ AAPL: eintrag("AAPL", s) }, { sessionDate: s.sessionDate, isComplete: false }), "/snap/AAPL.json": s }, "2026-09-11T14:30:00Z");
+  const stop = Hub.subscribeVisible({}, "AAPL", () => {});
+  assert.equal(Hub.stats().subscribers, 1);
+  stop(); assert.equal(Hub.stats().subscribers, 0);
+});
+
+test("LH-V3 · Die Billboard-Folie der Startseite abonniert ueber subscribeVisible (reihen.js)", () => {
+  const r = src("discover/ui/reihen.js");
+  assert.match(r, /Hub\.subscribeVisible \|\| function/);
+  assert.doesNotMatch(r, /abo = Hub\.subscribe\(c\.symbol/);
+});
+
+test("LH-V4 · Die Billboard-Folien binden ihr Abonnement an den Abschnitt der Reihe (nicht an die Folie): alle Folien, solange die Reihe im Bild ist", () => {
+  const r = src("discover/ui/reihen.js");
+  assert.match(r, /art\.__heroBind = function \(host\)/);
+  assert.match(r, /\(host, c\.symbol, onSnapshot\)/);
+  assert.match(r, /slide\.__heroBind\(sec\)/);
+  assert.doesNotMatch(r, /rootMargin: "80px 600%"/, "ein weiter Rand hilft nicht: der Scrollbereich schneidet seitliche Folien ab");
+  assert.doesNotMatch(r, /abo = \(Hub\.subscribeVisible[^;]*\)\(art,/, "nicht mehr je Folie beobachten");
+});
+
+test("LH-V5 · Fuenf Abonnements an einen gemeinsamen Abschnitt: alle zugleich im Bild, alle zugleich gekuendigt", async () => {
+  const syms = ["AAA", "BBB", "CCC", "DDD", "EEE"];
+  const eintraege = Object.fromEntries(syms.map((x) => [x, eintrag(x, snap(x, 4, false))]));
+  const antworten = { "/idx.json": idx(eintraege, { sessionDate: "2026-09-11", isComplete: false }) };
+  syms.forEach((x) => { antworten["/snap/" + x + ".json"] = snap(x, 4, false); });
+  const { Hub, w } = fenster(antworten, "2026-09-11T14:30:00Z");
+  const { IO, beobachter: liste } = beobachter(); w.IntersectionObserver = IO;
+  const abschnitt = {};
+  syms.forEach((x) => Hub.subscribeVisible(abschnitt, x, () => {}));
+  assert.equal(liste.length, 5); assert.ok(liste.every((o) => o.ziele[0] === abschnitt));
+  liste.forEach((o) => o.melde(true));
+  assert.equal(Hub.stats().subscribers, 5, "alle fuenf im Bild");
+  liste.forEach((o) => o.melde(false));
+  assert.equal(Hub.stats().subscribers, 0, "Reihe verlassen: alle gekuendigt");
+  assert.equal(Hub.stats().unsubscriptions, 5);
+});

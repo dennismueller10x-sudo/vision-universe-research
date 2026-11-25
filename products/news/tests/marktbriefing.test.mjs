@@ -386,7 +386,12 @@ test('MB-18 Instagram-Karussell: sechs Slides ohne Kleingedrucktes, Hook je Them
   const b = Engine.buildBriefing(inp);
   const s = Social.slides(b, {});
   assert.ok(s.length >= 4 && s.length <= 6, s.length + ' Slides');
-  assert.match(s[0], /25 Aktien aus dem S&amp;P&nbsp;500 sind <mark>überverkauft\.<\/mark>/);
+  // großer Tag (Nasdaq −5,7 %, NVDA −14 %): Schlagzeile der Ausgabe als Hook
+  assert.match(s[0], new RegExp('<h1>' + b.cards[0].title.split(' ')[0]));
+  // ruhiger Tag: Hook des stärksten Themas
+  const calm = JSON.parse(JSON.stringify(b));
+  calm.cards.forEach((c) => { if (c.id === 'megacaps') c.bars.rows.forEach((r) => { r.value = 0.5; }); if (c.id === 'indices') c.bars.rows.forEach((r) => { r.value = 0.3; }); });
+  assert.match(Social.slides(calm, {})[0], /25 Aktien aus dem S&amp;P&nbsp;500 sind <mark>überverkauft\.<\/mark>/);
   const html = Social.html(b, { font: 'x' });
   assert.ok(!/class="hint"|Keine Anlageberatung|Eigene Auswertung aus|Stand /.test(html), 'kein Kleingedrucktes auf den Slides (Owner 23.11.2026)');
   assert.match(html, /visionuniverse\.de\/marktbriefing/);
@@ -394,4 +399,15 @@ test('MB-18 Instagram-Karussell: sechs Slides ohne Kleingedrucktes, Hook je Them
   assert.match(cap, /Keine Anlageberatung, keine Kauf- oder Verkaufsempfehlung\./);
   assert.ok(!/tiingo/i.test(cap + html));
   assert.equal(Social.valTitle('NVDA: KGV seit dem Kurshoch fast halbiert'), 'Nvidias KGV hat sich seit dem Hoch fast halbiert');
+});
+
+test('MB-19 Produktfilm oben auf /marktbriefing/: nur wenn die Datei da ist, selbst gehostet, ohne Autoplay', () => {
+  const b = Engine.buildBriefing(inputs());
+  const base = { chrome: Www.chromeFrom(CHROME), archive: [SESSION] };
+  assert.doesNotMatch(Www.productPage(b, base), /<video/);
+  const p = Www.productPage(b, { ...base, film: { src: 'film/marktbriefing-film.mp4', poster: 'film/poster.jpg' } });
+  assert.match(p, /<video class="mbvid" controls playsinline preload="none" poster="film\/poster\.jpg"[^>]*><source src="film\/marktbriefing-film\.mp4" type="video\/mp4">/);
+  assert.doesNotMatch(p, /autoplay/);
+  assert.ok(p.indexOf('mbfilm') < p.indexOf('mbstory'), 'Film steht vor dem Story-Block');
+  assert.ok(fs.existsSync(new URL('../../../landing/marktbriefing/film/marktbriefing-film.mp4', import.meta.url)));
 });

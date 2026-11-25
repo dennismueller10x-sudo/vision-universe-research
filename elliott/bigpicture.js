@@ -125,14 +125,40 @@
     if (inv) h.push('<li class="bp-row bp-row-inv"><span class="bp-k">' + esc(W0.invalid) + '</span><span class="bp-v num">' + esc((inv.d === "below" ? "unter " : "über ") + num(inv.p) + " $") + '</span><span class="bp-d num">' + esc(pct(inv.p, c)) + '</span><span class="bp-sub">' + esc(inv.text || "") + "</span></li>");
     return h.join("");
   }
-  function render(host, a) {
-    var td = a.elliottTopDown, rows = plan(td), W = Math.max(320, Math.min(1000, host.clientWidth || (global.innerWidth || 390) - 32));
-    var alt = td.alternative ? "Alternative: " + KIND[td.alternative.kind] + " " + (td.alternative.dir === "UP" ? "aufwärts" : "abwärts") + " seit " + year(td.alternative.waves[0].ft) + ", Welle [" + td.alternative.cur + "]" + (td.alternative.inv ? " · ungültig " + (td.alternative.inv.d === "below" ? "unter " : "über ") + num(td.alternative.inv.p) + " $" : "") : "";
-    host.innerHTML = '<p class="vu-ltag">' + esc("Großes Bild · " + WORDS[mode].tag) + '</p><h2 class="vu-mt bp-title">' + esc(titleOf(td)) + "</h2>" +
-      '<div class="bp-chart">' + svgOf(td, rows, W) + "</div>" +
+  /* Sicht auf eine Zaehlung: Haupt- oder Alternativzaehlung mit eigener Unterteilung und eigenem Pfad (elliott-topdown 1.1.0). */
+  function viewOf(td, which) {
+    if (which === "alt" && td.alternative && td.altPath && td.altPath.length) return { close: td.close, monthly: td.monthly, primary: td.alternative, sub: td.altSub, path: td.altPath, rw: td.rw };
+    return td;
+  }
+  /* Drei Sätze statt Fachsprache: wo stehen wir, was ist der Plan laut Methode, wann ist die Zählung falsch. */
+  var PHASE = { "1": "Welle 1 läuft – ein neuer Aufwärtsschub beginnt", "2": "Welle 2 läuft – Rücksetzer nach dem ersten Schub", "3": "Welle 3 läuft – meist der stärkste Abschnitt",
+    "4": "Welle 4 läuft – Verschnaufpause im Trend", "5": "Welle 5 läuft – der letzte Abschnitt des Trends", A: "Welle A läuft – die Korrektur beginnt", B: "Welle B läuft – Gegenbewegung in der Korrektur",
+    C: "Welle C läuft – der letzte Abschnitt der Korrektur" };
+  function story(td, rows) {
+    var W0 = WORDS[mode], cur = td.sub && td.sub.waves.length ? td.sub : td.primary, lab = cur.cur, deg = cur === td.sub ? "(" + lab + ")" : "[" + lab + "]";
+    var now = (PHASE[lab] || "Welle " + lab + " läuft").replace("Welle " + lab, "Welle " + deg);
+    if (cur.dir === "DOWN" && cur.kind === "IMPULSE") now = now.replace("Aufwärtsschub", "Abwärtsschub");
+    var entry = rows.filter(function (r) { return r.role === "entry"; })[0], t1 = rows.filter(function (r) { return r.role === "target"; })[0];
+    var plan = (entry ? "erst " + W0.entry.replace(" laut Methode", "") + " " + num(entry.lo) + "–" + num(entry.hi) + " $" : "") + (entry && t1 ? ", dann " : "") + (t1 ? (mode === "kursziele" ? W0.target + " 1" : W0.target) + " " + num(t1.lo) + "–" + num(t1.hi) + " $ (" + pct(t1.step.dir === "UP" ? t1.lo : t1.hi, td.close) + ")" : "");
+    var inv = td.primary.inv ? "Schluss " + (td.primary.inv.d === "below" ? "unter " : "über ") + num(td.primary.inv.p) + " $" : "keine feste Marke";
+    var rw = td.rw || null, R = rw ? [["Trend", rw.trend], ["Momentum", rw.mom], ["Relative Stärke", rw.rsT]].map(function (x) { return x[0] + " " + (x[1] > 0 ? "▲" : x[1] < 0 ? "▼" : "◆"); }).join(" · ") : null;
+    return '<dl class="bp-story"><div><dt>Jetzt</dt><dd>' + esc(now) + '</dd></div><div><dt>Plan laut Methode</dt><dd>' + esc(plan || "kein nächster Schritt") + '</dd></div><div><dt>Falsch, wenn</dt><dd>' + esc(inv) + "</dd></div>" +
+      (R ? '<div><dt>Rückenwind</dt><dd>' + esc(R + " – " + (rw.dir === "UP" ? "spricht für steigende Kurse" : rw.dir === "DOWN" ? "spricht für fallende Kurse" : "kein klares Bild")) + '<span class="bp-sub">Trend, Momentum und Relative Stärke tragen im Rückwärtstest mehr Richtungsinformation als die Zählung.</span></dd></div>' : "") + "</dl>";
+  }
+  var LEGEND = "[3] große Welle · (3) Unterwelle · gestrichelter Kreis = läuft noch · grün = Ziel in Trendrichtung · grau = Korrektur · gestrichelte Linie = Ungültig-Marke";
+  function countLine(c) { return KIND[c.kind] + " " + (c.dir === "UP" ? "aufwärts" : "abwärts") + " seit " + year(c.waves[0].ft) + ", Welle [" + c.cur + "]"; }
+  function render(host, a, which) {
+    var td0 = a.elliottTopDown, hasAlt = !!(td0.alternative && td0.altPath && td0.altPath.length), w = hasAlt && which === "alt" ? "alt" : "main", td = viewOf(td0, w);
+    var rows = plan(td), W = Math.max(320, Math.min(1000, host.clientWidth || (global.innerWidth || 390) - 32));
+    var seg = hasAlt ? '<div class="bp-seg" role="group" aria-label="Zählung wählen"><button type="button" data-w="main" aria-pressed="' + (w === "main") + '">Hauptzählung</button><button type="button" data-w="alt" aria-pressed="' + (w === "alt") + '">Alternative</button></div>' : "";
+    var other = w === "main" ? (td0.alternative ? "Alternative: " + countLine(td0.alternative) : "") : "Hauptzählung: " + countLine(td0.primary);
+    var C = td0.candidates, amb = C && C.total ? C.total.toLocaleString("de-DE") + " regelkonforme Zählungen des großen Grades, " + (C.near > 1 ? C.near + " davon nahe an der besten" : "die beste mit klarem Abstand") + "." : "";
+    host.innerHTML = '<p class="vu-ltag">' + esc("Großes Bild · " + WORDS[mode].tag) + '</p><h2 class="vu-mt bp-title">' + esc(titleOf(td)) + "</h2>" + seg + story(td, rows) +
+      '<div class="bp-chart">' + svgOf(td, rows, W) + "</div>" + '<p class="bp-legend">' + esc(LEGEND) + "</p>" +
       '<ol class="bp-plan">' + rowsHtml(td, rows) + "</ol>" +
-      (alt ? '<p class="bp-alt">' + esc(alt) + "</p>" : "") +
-      '<p class="bp-note">' + esc("Zählung von oben auf Wochenschlusskursen seit " + year((td.monthly[0] || [])[0]) + " (Frost & Prechter, Elliott Wave Principle). Zonen ohne Zeitangabe, keine Wahrscheinlichkeit. Analyse nach einer Methode, keine Anlageberatung.") + "</p>";
+      (other ? '<p class="bp-alt">' + esc(other + (amb ? " · " + amb : "")) + "</p>" : "") +
+      '<p class="bp-note">' + esc("Zählung von oben auf Wochenschlusskursen seit " + year((td0.monthly[0] || [])[0]) + " (Frost & Prechter, Elliott Wave Principle). Zonen ohne Zeitangabe, keine Wahrscheinlichkeit. Analyse nach einer Methode, keine Anlageberatung.") + "</p>";
+    Array.prototype.forEach.call(host.querySelectorAll(".bp-seg button"), function (b) { b.addEventListener("click", function () { host.dataset.w = b.getAttribute("data-w"); render(host, a, host.dataset.w); }); });
   }
   /** Abschnitt fuer das Aktienbild; null ohne Zaehlung von oben. */
   function section(a) {
@@ -140,12 +166,14 @@
     if (!td || td.status !== "OK" || !td.primary || !(td.path && td.path.length) || !(td.monthly && td.monthly.length >= 6)) return null;
     var host = document.createElement("section");
     host.className = "bp"; host.setAttribute("aria-label", "Großes Bild");
-    render(host, a);
-    load().then(function () { render(host, a); });
-    var t = null; global.addEventListener && global.addEventListener("resize", function () { clearTimeout(t); t = setTimeout(function () { if (host.isConnected) render(host, a); }, 200); });
+    var again = function () { render(host, a, host.dataset.w || "main"); };
+    again();
+    load().then(again);
+    var t = null; global.addEventListener && global.addEventListener("resize", function () { clearTimeout(t); t = setTimeout(function () { if (host.isConnected) again(); }, 200); });
     return host;
   }
-  var api = { section: section, plan: plan, titleOf: titleOf, WORDS: WORDS, load: load, _setMode: function (m) { if (WORDS[m]) mode = m; } };
+  var api = { section: section, plan: plan, titleOf: titleOf, viewOf: viewOf, WORDS: WORDS, load: load, mode: function () { return mode; }, _setMode: function (m) { if (WORDS[m]) mode = m; } };
+  if (global.document) load();   // Einstellung früh holen: Startseite (Radar) und Aktienbild nutzen dieselben Worte
   global.VUElliottBig = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;
 })(typeof globalThis !== "undefined" ? globalThis : this);

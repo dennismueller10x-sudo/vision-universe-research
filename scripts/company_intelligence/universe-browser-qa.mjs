@@ -10,6 +10,8 @@ import {accessStateFor,STORAGE_KEY} from '../access-gate/build.mjs';
 import {eligibilityRollout} from './eligibility-rollout.mjs';
 import {eligibilityValid} from './universe-approval.mjs';
 import {objectPool} from './bounded-objects.mjs';
+import {runCaseWithOneRetry,isRetriable,assertHostingStatuses} from './qa-retry.mjs';
+import {accessGateDiagnostics} from './browser-diagnostics.mjs';
 import {readLiveAsset,isTransientNetworkError,networkError,LIVE_SETTLE_MS,LIVE_READ_CONCURRENCY} from './live-asset-read.mjs';
 import {waitForHydratedConsumer} from './hydrated-consumer-review.mjs';
 import {expectsEstimatedWindow,mustShowEstimatedWindow} from './estimated-window-expectation.mjs';
@@ -36,7 +38,14 @@ const rollout=live?null:eligibilityRollout(readFileSync('company-intelligence/co
 const release=await(async()=>(await fetch(origin+'/release-delivery.json?qa='+Date.now())).json())().catch(transientExit);
 const tickers=sample.stocks,matrices=[...new Set([...sample.groups.HIGH_PROFILE,...sample.groups.SPARSE.slice(0,3),...sample.groups.INTERNATIONAL_ADR.slice(0,2),...(sample.groups.MASTER_DETAIL||[]).slice(0,2)])];
 const work=[...tickers.map(ticker=>({ticker,width:390,theme:'dark'})),...matrices.flatMap(ticker=>[390,430,768,1440].flatMap(width=>['dark','light'].filter(theme=>width!==390||theme!=='dark').map(theme=>({ticker,width,theme}))))];
-let failure=null;
+let failure=null;const retriedAfterTimeout=[];
+/* Befund bei einem Timeout: war die Zugangsschranke sichtbar (der Zugangsstatus der QA wurde nicht angenommen), wurde der gesetzte Status gelesen,
+   und hat sich die LIVE ausgelieferte Version (Seitenrahmen kommt live) waehrend der QA geaendert? Nur lesend, nie ein Passwort oder Statuswert im Bericht. */
+async function diagnose(page){
+ const dom=await accessGateDiagnostics(page,{storageKey:STORAGE_KEY});
+ const liveCommit=await fetch(origin+'/release-delivery.json?qa='+Date.now()).then(r=>r.json()).then(d=>d.sourceCommit||null).catch(()=>null);
+ return {url:page.url(),dom,startCommit:release?.sourceCommit||null,liveCommitNow:liveCommit,liveReleaseChangedDuringQa:Boolean(liveCommit&&release?.sourceCommit&&liveCommit!==release.sourceCommit)};
+}
 async function routes(page){
  if(live)return;
  await routeDeliveryBundles(page,{'company-intelligence/config/rollout.js':rollout,'company-intelligence/ui/stock-section.js':ui,'company-intelligence/api/contract.js':contract,'discover/ui/detail.js':detail},origin);
@@ -47,7 +56,10 @@ async function routes(page){
 try{
  const locked=await browser.newPage({serviceWorkers:'block'});let protectedRequests=0;locked.on('request',r=>{if(r.url().includes('/company-intelligence/data/'))protectedRequests++;});
  await locked.goto(origin+'/discover/#/s/US_REAL/AAPL');await locked.waitForSelector('#research-access-gate');assert.equal(protectedRequests,0);await locked.close();
- await objectPool(work,async ({ticker,width,theme})=>{
+ // 23.11.2026 (Refresh 45261750453): erster Fall TSLA/390/dark lief 90 s in den Timeout, die Seite zeigte die Zugangsschranke und es kam kein
+ // Datenrequest. Darum: (1) Diagnose im Fehlerbericht (Schranke sichtbar, Live-Commit vor/nach dem Fehler), (2) genau EINE Wiederholung mit frischer
+ // Seite, nur nach einem TimeoutError des Warte-Schritts; jede inhaltliche Pruefung (assert) bleibt unveraendert streng und wird nie wiederholt.
+ const runCase=async ({ticker,width,theme},attempt)=>{
   const cid=Object.keys(m.eligibility).find(c=>m.eligibility[c].tickers.includes(ticker));assert(cid,ticker);
   const expected=JSON.parse(payloads.get(`snapshots/${m.generation}/${cid}.json`)),flags=m.eligibility[cid].modules;
   const page=await browser.newPage({serviceWorkers:'block',viewport:{width,height:860},colorScheme:theme}),errors=[],requests=[],scriptFailures=[],stockResponses=[];
@@ -73,7 +85,7 @@ try{
    assert.equal(await chapter.locator('.ci-event').count()>0,flags.nextEvent,ticker+':events');
    assert.equal(await chapter.locator('.ci-missing-profile').count(),0);assert.equal(await page.locator('vu-navigation').count(),1);
    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,ticker+':overflow');assert.deepEqual(errors,[],ticker);
-   assert(requests.some(r=>r.path.includes(m.generation)));assert(requests.every(r=>r.status===200));
+   assert(requests.some(r=>r.path.includes(m.generation)));assertHostingStatuses(requests);
    if(expected.latestFinancials.stale&&flags.financials)assert(text.includes('Veraltete Geschäftszahlen'));
    // Expectation comes from the shipped view model (hidden past/superseded estimates are not defects);
    // the rendered event pills must match it in both directions.
@@ -92,13 +104,18 @@ try{
     await chapter.evaluate(e=>window.scrollTo({top:window.scrollY+e.getBoundingClientRect().top-88,behavior:'instant'}));
     await page.screenshot({path:out+'-viewport-'+ticker+'-'+width+'-'+theme+'.png'});
    }
-   cases.push({ticker,cid,width,theme,status:'PASS',modules:flags,consumerNews:expected.news.length,
+   cases.push({ticker,cid,width,theme,status:'PASS',attempt,modules:flags,consumerNews:expected.news.length,
     visibleIntelligenceItems:await chapter.locator('.ci-story[data-intelligence-type]:visible').count(),profileTextHash:expected.companyProfile?.profileTextHash||null,
     consumerReadyMilliseconds,issuerPayloadBytes:m.assets[`snapshots/${m.generation}/${cid}.json`].bytes,
     profileObjectBytes:expected.companyProfile?Buffer.byteLength(JSON.stringify(expected.companyProfile)):0,
     uniqueConsumerRequestedBytes:[...new Set(requests.map(r=>r.path.split('/company-intelligence/data/')[1]))].reduce((sum,path)=>sum+(m.assets[path]?.bytes||0),0)});
-  }catch(e){failure={ticker,cid,width,theme,message:String(e.message).slice(0,600),errors,requests,scriptFailures,stockResponses,visibleText:(await page.locator('#v2-main').innerText().catch(()=>'' )).slice(0,500)};await page.screenshot({path:out+'-failure.png'});throw e;}finally{await page.close();await new Promise(r=>setTimeout(r,750));}
- },1);
+  }catch(e){failure={ticker,cid,width,theme,attempt,message:String(e.message).slice(0,600),errors,requests,scriptFailures,stockResponses,visibleText:(await page.locator('#v2-main').innerText().catch(()=>'' )).slice(0,500),diagnosis:await diagnose(page)};await page.screenshot({path:out+(attempt>1?'-failure.png':'-failure-attempt1.png')}).catch(()=>{});throw e;}finally{await page.close();await new Promise(r=>setTimeout(r,750));}
+ };
+ await objectPool(work,c=>runCaseWithOneRetry(runCase,c,{retriable:isRetriable,onRetry:e=>{
+  retriedAfterTimeout.push({ticker:c.ticker,width:c.width,theme:c.theme,message:String(e.message).slice(0,200),diagnosis:failure?.diagnosis||null});
+  console.log(JSON.stringify({retriedAfterTimeout:{ticker:c.ticker,width:c.width,theme:c.theme,gateShown:failure?.diagnosis?.dom?.gateShown??null,liveReleaseChangedDuringQa:failure?.diagnosis?.liveReleaseChangedDuringQa??null}}));
+  failure=null;
+ }}),1);
  for(const ticker of sample.ineligible){
   const page=await browser.newPage({serviceWorkers:'block',viewport:{width:390,height:860}});await routes(page);await page.addInitScript(({key,state})=>localStorage.setItem(key,JSON.stringify(state)),{key:STORAGE_KEY,state});let requests=0;const errors=[];
   page.on('request',r=>{if(r.url().includes('/company-intelligence/data/'))requests++;});page.on('pageerror',e=>errors.push(e.message));
@@ -106,5 +123,5 @@ try{
   assert.equal(requests,0,ticker+':ineligible-request');assert.equal(await page.locator('.ci-company-intelligence').count(),0,ticker);assert.equal(await page.locator('vu-navigation').count(),1);assert.deepEqual(errors,[]);
   cases.push({ticker,status:'PASS',eligible:false,consumerRequests:0});await page.close();
  }
- writeFileSync(out,JSON.stringify({status:'PASS',mode:live?'ACTUAL_PRODUCTION':'REAL_DISCOVER_ROUTED_CANDIDATE',generation:m.generation,sourceCommit:release.sourceCommit,seed:sample.seed,verifiedAssets:payloads.size,protectedAccess:true,cases},null,2)+'\n');
-}catch(e){writeFileSync(out,JSON.stringify({status:'FAIL',mode:live?'ACTUAL_PRODUCTION':'REAL_DISCOVER_ROUTED_CANDIDATE',generation:m.generation,failure,completedCases:cases.length},null,2)+'\n');throw e;}finally{await browser.close();}
+ writeFileSync(out,JSON.stringify({status:'PASS',mode:live?'ACTUAL_PRODUCTION':'REAL_DISCOVER_ROUTED_CANDIDATE',generation:m.generation,sourceCommit:release.sourceCommit,seed:sample.seed,verifiedAssets:payloads.size,protectedAccess:true,retriedAfterTimeout,cases},null,2)+'\n');
+}catch(e){writeFileSync(out,JSON.stringify({status:'FAIL',mode:live?'ACTUAL_PRODUCTION':'REAL_DISCOVER_ROUTED_CANDIDATE',generation:m.generation,failure,retriedAfterTimeout,completedCases:cases.length},null,2)+'\n');throw e;}finally{await browser.close();}

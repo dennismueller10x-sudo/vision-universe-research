@@ -43,6 +43,9 @@ test('RG-3 · Beispielwerte: jede genannte Aktie liegt eingefroren vor, mit Stan
     for (const t of [].concat(g.ticker || [])) {
       const x = daten.aktien[t];
       assert.ok(x, `${a.slug}: ${t} fehlt in daten.json`);
+      // Kursgrafiken brauchen keinen Gewinn: Momentum die Zwölfmonatsveränderung, der Kursverlauf die Reihe seit dem Börsengang.
+      if (g.typ === 'momentum') { assert.ok(x.kurs > 0 && x.rendite12m != null, `${a.slug}: ${t} ohne Zwölfmonatswert`); continue; }
+      if (g.typ === 'kursverlauf') { assert.ok(daten.serien?.[t]?.length > 20 && daten.serien[t].at(-1)[0] <= daten.stand, `${a.slug}: ${t} ohne Kursreihe`); continue; }
       assert.ok(x.kurs > 0 && x.gewinnJeAktie > 0 && x.kgv > 0, `${a.slug}: ${t} unvollständig`);
       assert.ok(Math.abs(x.kurs / x.gewinnJeAktie - x.kgv) / x.kgv < 0.02, `${t}: KGV passt zu Kurs ÷ Gewinn je Aktie`);
     }
@@ -134,4 +137,24 @@ test('RG-8 · Indexverlauf: 10.000 $ Start, Endwert und Jahresrendite passen zur
   assert.match(html, /data-g="ichart"/);
   assert.doesNotMatch(html, /<h2>Quellen<\/h2>/);
   assert.match(html, /keine Anlage-, Steuer- oder Rechtsberatung/);
+});
+
+test('RG-9 · jede Ratgeber-Seite teilt ihr eigenes Vorschaubild (1200 × 630)', () => {
+  for (const s of ratgeberSeiten().seiten) {
+    const key = s.pfad.replace(/\/index\.html$/, '').replace(/\//g, '-');
+    const og = s.html.match(/<meta property="og:image" content="([^"]+)">/)?.[1];
+    assert.equal(og, `https://www.visionuniverse.de/assets/share/${key}.jpg`, s.pfad);
+    assert.ok(existsSync(resolve(root, `assets/share/${key}.jpg`)), `${key}.jpg fehlt: node landing/scripts/share-images.mjs --nur-ratgeber`);
+    assert.match(s.html, /<meta property="og:image:width" content="1200">/);
+  }
+});
+
+test('RG-10 · Fotos: jede Datei liegt unter web/img/ratgeber/, mit Bildnachweis und Alternativtext', () => {
+  for (const a of Object.values(artikel)) {
+    const bilder = [a.aufmacher, ...a.abschnitte.flatMap((s) => (s.grafiken || []).flatMap((g) => (g.typ === 'foto' ? [g] : g.typ === 'fotos' ? g.bilder : [])))].filter(Boolean);
+    for (const b of bilder) {
+      assert.ok(existsSync(resolve(root, `web/img/ratgeber/${b.src}`)), `${a.slug}: ${b.src} fehlt`);
+      assert.ok(b.quelle && b.alt && b.alt.length > 15, `${a.slug}: ${b.src} ohne Bildnachweis oder Alternativtext`);
+    }
+  }
 });

@@ -22,3 +22,19 @@ export async function ohneVorubergehende5xx({failed, errs, holen, versuche = 3, 
   }
   return {failed: bleibt, errs: fehler, erholt};
 }
+
+/* Eine Szene wird GENAU EINMAL neu geladen, und nur, wenn in derselben Szene vorher ein 5xx beobachtet wurde (Steuerung 23.11.2026,
+   Monitor technical 14:48 UTC: 503 auf /technical/engine/chart-explain.js, danach Selektor-Timeout 90 s). Ohne vorherigen 5xx bleibt ein
+   Timeout rot. Auch der zweite Lauf kann scheitern: dann bleibt es ein Befund (kein dritter Versuch).
+   lauf: die Szene (wirft bei Fehler). fuenfxx: liefert die in dieser Szene beobachteten 5xx-Eintraege ("503 /pfad"). neuLaden: Seite neu laden. */
+export async function szeneMitWiederholung({lauf, fuenfxx, neuLaden}) {
+  try { await lauf(); return {fehler: null, wiederholt: false, code: null}; }
+  catch (e) {
+    const beobachtet = fuenfxx().filter((f) => /^5\d\d /.test(f));
+    if (!beobachtet.length) return {fehler: e, wiederholt: false, code: null};
+    const code = beobachtet[0].slice(0, 3);
+    await neuLaden();
+    try { await lauf(); return {fehler: null, wiederholt: true, code, erster: e}; }
+    catch (e2) { return {fehler: e2, wiederholt: true, code, erster: e}; }
+  }
+}

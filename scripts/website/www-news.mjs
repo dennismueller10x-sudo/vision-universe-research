@@ -23,6 +23,8 @@ export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "
 const LANDING = path.join(ROOT, "landing");
 // Bühnenbild: ab 900 px Breite 66 % der Seite (web/sub.css .ts-art), sonst die volle Breite.
 const HERO_SIZES = "(min-width: 900px) 66vw, 100vw";
+// Karten in den Regalen: Handy ~75 % der Breite (Karte = Innenbreite - 44 px), ab 640 px zwei, ab 1000 px vier nebeneinander (web/sub.css .ts-c).
+const CARD_SIZES = "(min-width: 1000px) 25vw, (min-width: 640px) 50vw, 75vw";
 const IMG = path.join(LANDING, "web/img/news");
 const NEWS = path.join(LANDING, "news");
 const ARTIKEL = path.join(ROOT, "products/insights/artikel");
@@ -52,7 +54,15 @@ export function readState() {
     if (!a.img) continue;
     const from = files.get(a.img), hash = crypto.createHash("sha1").update(fs.readFileSync(path.join(ROOT, from))).digest("hex").slice(0, 8);
     a.img800 = a.img.replace(/\.[a-z]+$/i, "") + `-${hash}-800.jpg`;
-    variants.set(a.img800, from);
+    variants.set(a.img800, { from, width: 800 });
+  }
+  // Ladezeit (24.11.2026): Regal- und Listenbilder zeigen eine ~300 px breite Karte; die 1600-px-Originale (bis 344 KB) luden bei
+  // langsamer Leitung gleichzeitig mit dem Aufmacher und hielten ihn bis 2,9 s auf. 640 px reichen bis doppelte Pixeldichte.
+  for (const a of artikel) {
+    if (!a.img) continue;
+    const from = files.get(a.img), hash = crypto.createHash("sha1").update(fs.readFileSync(path.join(ROOT, from))).digest("hex").slice(0, 8);
+    a.img640 = a.img.replace(/\.[a-z]+$/i, "") + `-${hash}-640.jpg`;
+    variants.set(a.img640, { from, width: 640 });
   }
   // Volltext je Artikel für die eigenen Seiten unter /news/<slug>/ (Owner 23.11.2026) samt ihrer Bilder.
   const voll = artikel.map((a) => {
@@ -60,7 +70,7 @@ export function readState() {
     if (!fs.existsSync(datei)) throw new Error(`Artikeldatei fehlt: products/insights/artikel/${a.datum}-${a.slug}.json`);
     const d = JSON.parse(fs.readFileSync(datei, "utf8"));
     // Der Aufmacher liegt für die Übersicht schon als art-<slug>.jpg bereit, wenn es dasselbe Bild ist.
-    const auf = a.img && a.bildQuer === d.bild?.src ? a.img : null;
+    const auf = a.img && (a.bildQuer === d.bild?.src || d.bild?.typ === "app") ? a.img : null;
     for (const [name, from] of artikelDateien(d, auf)) files.set(name, from);
     return Object.assign(d, { _auf: auf });
   });
@@ -86,6 +96,9 @@ export function readState() {
 // Artikel öffnen auf www selbst (Owner 23.11.2026): /news/<slug>/ ist ohne App und ohne Konto lesbar.
 // Der Weg in die App steht in der Seite selbst (scripts/website/www-artikel.mjs), nicht mehr in jedem Link.
 const link = (href) => `/news/${slug(href)}/`;
+// Bilder, die nicht im ersten Bild liegen (Folien 2-5 der Buehne, Regale, Magazin/Report): weiter im HTML mit src (Suchmaschinen,
+// KI-Suche, Seite ohne JS), aber nach dem Aufmacher geladen. Der Aufmacher selbst bleibt fetchpriority=high mit Preload.
+const LAZY_NIEDRIG = ' loading="lazy" fetchpriority="low" decoding="async"';
 const img = (R, name, alt = "", extra = "") => name ? `<img src="${R}web/img/news/${name}" alt="${esc(alt)}"${extra}>` : "";
 
 
@@ -135,8 +148,9 @@ export function regions(state) {
   const lcpPreload = (R) => a0.img && a0.img800 ? `<link rel="preload" as="image" href="${R}web/img/news/${a0.img}" imagesrcset="${R}web/img/news/${a0.img800} 800w, ${R}web/img/news/${a0.img} 1600w" imagesizes="${HERO_SIZES}" fetchpriority="high">` : "";
   const topShelf = (R) => {
     const pic = (x, lazy = true, hero = false) => !x.img ? '<span class="ts-noimg"></span>'
-      : hero && x.img800 ? `<img src="${R}web/img/news/${x.img}" srcset="${R}web/img/news/${x.img800} 800w, ${R}web/img/news/${x.img} 1600w" sizes="${HERO_SIZES}" width="1600" height="900" alt=""${lazy ? ' loading="lazy"' : ' fetchpriority="high"'}>`
-      : `<img src="${R}web/img/news/${x.img}" alt=""${lazy ? ' loading="lazy"' : ""}>`;
+      : hero && x.img800 ? `<img src="${R}web/img/news/${x.img}" srcset="${R}web/img/news/${x.img800} 800w, ${R}web/img/news/${x.img} 1600w" sizes="${HERO_SIZES}" width="1600" height="900" alt=""${lazy ? LAZY_NIEDRIG : ' fetchpriority="high"'}>`
+      : x.img640 ? `<img src="${R}web/img/news/${x.img}" srcset="${R}web/img/news/${x.img640} 640w, ${R}web/img/news/${x.img} 1600w" sizes="${CARD_SIZES}" alt=""${lazy ? LAZY_NIEDRIG : ""}>`
+      : `<img src="${R}web/img/news/${x.img}" alt=""${lazy ? LAZY_NIEDRIG : ""}>`;
     const meta = (x) => `${dmy(x.datum)} · ${esc(x.rubrik)}`;
     const card = (x) => `<a class="ts-c" data-tk="${esc(x.firma?.ticker || "")}" data-th="${esc((x.themen || []).join("|"))}" href="${link(x.href)}"><span class="ts-im">${pic(x)}</span><small>${meta(x)}</small><b>${esc(x.titel)}</b></a>`;
     const arrows = '<span class="ts-arr"><button type="button" aria-label="Zurück">‹</button><button type="button" aria-label="Weiter">›</button></span>';
@@ -158,7 +172,7 @@ export function regions(state) {
     const all = artikel.map(card).join("");
     const pick = (kind, h, items, label) => `<section class="ts-shelf ts-pick" data-kind="${kind}"><div class="w ts-sh"><h2>${h} <span aria-hidden="true">›</span></h2></div>`
       + `<div class="ts-track ts-chips">${items}</div><div class="w ts-sh ts-ph"><h3>${label}</h3>${arrows}</div><div class="ts-track ts-res">${all}</div></section>`;
-    const pub = (href, cover, k, t) => cover ? `<a class="ts-p2" href="${R}${href}"><span class="ts-im">${img(R, cover, "", ' loading="lazy"')}</span><small>${k}</small><b>${esc(t)}</b></a>` : "";
+    const pub = (href, cover, k, t) => cover ? `<a class="ts-p2" href="${R}${href}"><span class="ts-im">${img(R, cover, "", LAZY_NIEDRIG)}</span><small>${k}</small><b>${esc(t)}</b></a>` : "";
     const pubs = pub("magazin/", heft.cover, `Aktienmagazin · KW ${esc(heft.kw)}`, heft.titel) + (report ? pub("report/", report.cover, "Aktienreport", report.titel) : "");
     return `<section class="ts-hero" aria-roledescription="Karussell" aria-label="Die neuesten Artikel">${slides}<div class="ts-dots"><div class="w">${dots}</div></div></section>`
       + shelf("neueste", "Neueste Artikel", rest.map(card).join(""))
@@ -220,11 +234,11 @@ export function syncWww({ check = false } = {}) {
     if (fs.existsSync(dest) && fs.readFileSync(dest).equals(src)) continue;
     stale.push(`landing/web/img/news/${to}`); if (!check) fs.writeFileSync(dest, src);
   }
-  for (const [to, from] of state.variants) {
+  for (const [to, { from, width }] of state.variants) {
     const dest = path.join(IMG, to);
     if (fs.existsSync(dest)) continue;
     stale.push(`landing/web/img/news/${to}`);
-    if (!check) try { execFileSync("convert", [path.join(ROOT, from), "-resize", "800x", "-strip", "-sampling-factor", "4:2:0", "-quality", "72", dest]); } catch (e) { throw new Error(`Verkleinerung ${to} nicht möglich (ImageMagick convert nötig): ${e.message}`); }
+    if (!check) try { execFileSync("convert", [path.join(ROOT, from), "-resize", `${width}x`, "-strip", "-sampling-factor", "4:2:0", "-quality", "72", dest]); } catch (e) { throw new Error(`Verkleinerung ${to} nicht möglich (ImageMagick convert nötig): ${e.message}`); }
   }
   return stale;
 }

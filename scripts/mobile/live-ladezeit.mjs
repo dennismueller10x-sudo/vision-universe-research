@@ -20,7 +20,7 @@ import {fileURLToPath} from 'node:url';
 
 export const SITES = Object.freeze({
  app: {base: 'https://research.visionuniverse.de', gate: true,
-  routes: ['/', '/discover/', '/quant/', '/technical/', '/mein-dashboard/', '/quant/#/aktie/NVDA']},
+  routes: ['/', '/discover/', '/quant/', '/technical/', '/technical/#/screener', '/technical/#/chart/NVDA', '/mein-dashboard/', '/quant/#/aktie/NVDA']},
  www: {base: 'https://www.visionuniverse.de', gate: false, routes: ['/', '/magazin/', '/news/']}
 });
 export const CPUS = Object.freeze([4, 2]);
@@ -42,11 +42,19 @@ export function lcpElementOf(ss) {
  let url = ''; try { url = e.url ? new URL(e.url, 'https://x.invalid').pathname : ''; } catch { url = ''; }
  return {tag: e.tag || '', id: e.id || '', url: url.slice(0, 120)};
 }
+/** Alle LCP-Kandidaten des mittleren Laufs (Zeit, Tag, Klasse, Elternklasse, Flaeche, Textlaenge): zeigt, WANN welches Element zaehlt. Nie Text. */
+export function lcpKandidatenOf(ss) {
+ const withLcp = ss.filter((s) => typeof s.lcp === 'number' && Array.isArray(s.lcpList)).sort((a, b) => a.lcp - b.lcp);
+ const l = (withLcp[Math.floor(withLcp.length / 2)] || {}).lcpList;
+ if (!l || !l.length) return null;
+ return l.slice(-8).map((k) => ({t: Math.round(k.t), tag: String(k.tag || '').slice(0, 20), cls: String(k.cls || '').slice(0, 40), par: String(k.par || '').slice(0, 40), size: Math.round(k.size || 0), len: Math.round(k.len || 0)}));
+}
 /** Groesste einzelne Verschiebung aller Laeufe (Wert, Zeitpunkt, Knoten): benennt, WAS springt. */
 export function topShiftOf(ss) {
  let best = null;
- for (const s of ss) for (const sh of s.shifts || []) if (!best || sh.value > best.value) best = {value: sh.value, at: sh.at, nodes: (sh.sources || []).map((x) => nodeName(x.node)).slice(0, 3)};
- return best ? {value: Math.round(best.value * 1000) / 1000, atMs: Math.round(best.at), nodes: best.nodes} : null;
+ const box = (r) => (r && typeof r.y === 'number' ? {y: Math.round(r.y), h: Math.round(r.height || 0)} : null);
+ for (const s of ss) for (const sh of s.shifts || []) if (!best || sh.value > best.value) best = {value: sh.value, at: sh.at, nodes: (sh.sources || []).map((x) => nodeName(x.node)).slice(0, 3), moves: (sh.sources || []).slice(0, 3).map((x) => ({from: box(x.previous), to: box(x.current)}))};
+ return best ? {value: Math.round(best.value * 1000) / 1000, atMs: Math.round(best.at), nodes: best.nodes, moves: best.moves} : null;
 }
 /** Zugangshuelle (nur Host mit Maske): Ende der Huelle und Ende der Inhalts-Antwort, Median je Lauf in ms. */
 export function gateOf(ss) {
@@ -60,6 +68,20 @@ export function gateOf(ss) {
  return sh == null || co == null ? null : {shellMs: Math.round(sh), contentMs: Math.round(co), extraMs: Math.round(co - sh)};
 }
 
+/** Eine Zeile Zugangsdiagnose (kein Schluesselwert): Ladezustand, gespeicherter Zustand gegen Browser-Zeit, Fehlertext, access.js. */
+export function diagnoseText(g) {
+ if (!g) return 'keine Diagnose';
+ const st = g.gate && g.gate.stored;
+ const abgelaufen = st && typeof st.expiresAt === 'number' && typeof g.browserNow === 'number' ? (st.expiresAt <= g.browserNow ? 'abgelaufen' : 'gueltig bis ' + new Date(st.expiresAt).toISOString()) : null;
+ const js = g.gate && g.gate.accessJs;
+ return ['readyState ' + g.readyState, 'busy ' + g.busy,
+  'Schluessel im Speicher: ' + (g.storageKeyPresent ? 'ja' : 'nein'),
+  st ? 'gespeichert v' + (st.version ?? '?') + (abgelaufen ? ' (' + abgelaufen + ')' : '') + (st.unreadable ? ' (unlesbar)' : '') : null,
+  g.gate && g.gate.settings ? 'Maske v' + (g.gate.settings.version ?? '?') + (g.gate.settings.verifier8 ? ' (Huelle ' + g.gate.settings.verifier8 + ')' : '') : null,
+  g.accessError ? 'Fehlertext "' + g.accessError.text + '"' + (g.accessError.hidden ? ' (verborgen)' : '') : 'kein Fehlertext',
+  js ? (js.error ? 'access.js ' + js.error : 'access.js ' + js.status + (js.lastModified ? ' ' + js.lastModified : '')) : null].filter(Boolean).join(', ');
+}
+
 /** Zeilen je Route aus der Rohdatei von measure.mjs (nur Kennzahlen; keine Adressen, keine Antworten). */
 export function rowsFromRaw(raw, site, cpu) {
  return (raw.rows || []).map((r) => {
@@ -69,7 +91,7 @@ export function rowsFromRaw(raw, site, cpu) {
    lcp: r.lcp ?? null, cls: r.cls ?? null, requests: r.requests ?? null, bytes: r.bytes ?? null,
    runs: ss.length, invalidRuns: r.invalidRuns ?? 0, incompleteRuns: r.incompleteRuns ?? 0, failedRuns: r.failedRuns ?? 0,
    lcpRuns: ss.map((s) => (typeof s.lcp === 'number' ? Math.round(s.lcp) : null)),
-   lcpElement: lcpElementOf(ss), topShift: topShiftOf(ss), gate: gateOf(ss),
+   lcpElement: lcpElementOf(ss), lcpKandidaten: lcpKandidatenOf(ss), topShift: topShiftOf(ss), gate: gateOf(ss), gateDiagnostics: (ss.find((x) => x.gateDiagnostics) || {}).gateDiagnostics || null,
    errors: [...new Set(ss.flatMap((s) => s.errors || []))].slice(0, 3)
   };
  });
@@ -123,14 +145,16 @@ export function reportMarkdown(report) {
  L.push('', report.alarms.length ? '## Alarme (' + report.alarms.length + ')' : '## Keine Alarme', '');
  for (const a of report.alarms) L.push('- ' + a.key + ' (' + a.cpu + 'x): ' + a.text);
  L.push('');
- const detail = report.rows.filter((r) => r.cpu === Math.max(...report.rows.map((x) => x.cpu)));
+ const detail = report.rows;
  const d = [];
  for (const r of detail) {
-  if (r.lcpElement) d.push('- ' + r.key + ' LCP-Element: ' + r.lcpElement.tag + (r.lcpElement.id ? '#' + r.lcpElement.id : '') + (r.lcpElement.url ? ' ' + r.lcpElement.url : ''));
-  if (r.topShift) d.push('- ' + r.key + ' groesste Verschiebung: ' + r.topShift.value + ' bei ' + r.topShift.atMs + ' ms, Knoten ' + r.topShift.nodes.join(' | '));
-  if (r.gate) d.push('- ' + r.key + ' Zugangshuelle: Huelle bis ' + r.gate.shellMs + ' ms, Inhalt bis ' + r.gate.contentMs + ' ms (+' + r.gate.extraMs + ' ms)');
+  if (r.lcpElement) d.push('- ' + r.key + ' (' + r.cpu + 'x)' + ' LCP-Element: ' + r.lcpElement.tag + (r.lcpElement.id ? '#' + r.lcpElement.id : '') + (r.lcpElement.url ? ' ' + r.lcpElement.url : ''));
+  if (r.lcpKandidaten) d.push('- ' + r.key + ' (' + r.cpu + 'x) LCP-Kandidaten: ' + r.lcpKandidaten.map((k) => k.t + ' ms ' + k.tag + (k.cls ? '.' + k.cls.split(' ')[0] : '') + (k.par ? ' in .' + k.par.split(' ').join('.') : '') + ' (' + k.size + ' px2, ' + k.len + ' Z.)').join(' -> '));
+  if (r.topShift) d.push('- ' + r.key + ' (' + r.cpu + 'x)' + ' groesste Verschiebung: ' + r.topShift.value + ' bei ' + r.topShift.atMs + ' ms, Knoten ' + r.topShift.nodes.map((n, i) => { const m = (r.topShift.moves || [])[i]; return m && m.from && m.to ? n + ' (y ' + m.from.y + '→' + m.to.y + ', h ' + m.from.h + '→' + m.to.h + ')' : n; }).join(' | '));
+  if (r.gateDiagnostics && (r.invalidRuns || 0) > r.runs / 2) d.push('- ' + r.key + ' (' + r.cpu + 'x) ungueltig, Maske sichtbar: ' + diagnoseText(r.gateDiagnostics));
+  if (r.gate) d.push('- ' + r.key + ' (' + r.cpu + 'x)' + ' Zugangshuelle: Huelle bis ' + r.gate.shellMs + ' ms, Inhalt bis ' + r.gate.contentMs + ' ms (+' + r.gate.extraMs + ' ms)');
  }
- if (d.length) L.push('## Details (CPU ' + Math.max(...report.rows.map((x) => x.cpu)) + 'x)', '', ...d, '');
+ if (d.length) L.push('## Details (je CPU-Stufe)', '', ...d, '');
  return L.join('\n') + '\n';
 }
 
@@ -150,7 +174,7 @@ async function main() {
  const secrets = [password];
  if (password) { const {accessStateFor} = await import(new URL('../access-gate/build.mjs', import.meta.url)); secrets.push(accessStateFor(password).key); }
  mkdirSync(out, {recursive: true});
- const rows = [];
+ const rows = [], ausfaelle = [];
  for (const [site, cfg] of Object.entries(SITES)) {
   if (which !== 'all' && which !== site) continue;
   if (cfg.gate && !password) { console.error('Kein RESEARCH_ACCESS_PASSWORD: ' + site + ' nicht gemessen'); rows.push(...cfg.routes.flatMap((route) => CPUS.map((cpu) => ({key: site + route, site, route, cpu, lcp: null, cls: null, requests: null, bytes: null, runs: 0, incompleteRuns: 1, failedRuns: 0, lcpRuns: [], errors: ['Zugang fehlt']})))); continue; }
@@ -164,11 +188,17 @@ async function main() {
    if (arg('--browser')) args.push('--browser', arg('--browser'));
    const r = spawnSync(process.execPath, args, {cwd: root, env: process.env, encoding: 'utf8', maxBuffer: 1 << 26});
    assertNoSecret((r.stdout || '') + (r.stderr || ''), secrets);
-   if (r.status !== 0) { console.error(site + ' CPU ' + cpu + 'x: Messung fehlgeschlagen (Exit ' + r.status + ')'); continue; }
+   if (r.status !== 0) {
+    const ende = ((r.stderr || '') + (r.error ? '\n' + r.error.message : '')).trim().split('\n').slice(-6).join(' | ').slice(0, 600);
+    console.error(site + ' CPU ' + cpu + 'x: Messung fehlgeschlagen (Exit ' + r.status + (r.signal ? ', Signal ' + r.signal : '') + ')' + (ende ? ': ' + ende : ''));
+    ausfaelle.push(site + ' CPU ' + cpu + 'x (Exit ' + r.status + ')');
+    continue;
+   }
    rows.push(...rowsFromRaw(JSON.parse(readFileSync(rawPath, 'utf8')), site, cpu).map((r) => { const l = (targets.routes[r.key] || {}).label; return l ? {...r, label: l} : r; }));
   }
  }
  const alarms = evaluate(rows, targets, history);
+ for (const a of ausfaelle) alarms.push({key: a, cpu: '-', art: 'ausfall', text: 'Messung ausgefallen: ' + a});
  let commit = ''; try { commit = process.env.GITHUB_SHA || ''; } catch { /* ohne */ }
  const report = {schema: 'vu-ladezeit-1', measuredAt: new Date().toISOString(), commit, runs, historyRuns: history.length, rows, alarms};
  const json = JSON.stringify(report, null, 2) + '\n', md = reportMarkdown(report);

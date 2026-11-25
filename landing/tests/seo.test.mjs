@@ -3,7 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile, readdir, rm} from 'node:fs/promises';
 import {resolve} from 'node:path';
-import {build, root, SITE_PAGES, publicationModeFor} from '../scripts/build.mjs';
+import {build, root, SITE_PAGES, publicationModeFor, ALTE_SHOP_ADRESSEN} from '../scripts/build.mjs';
 import {fragen, strukturierteDaten} from '../scripts/seo.mjs';
 
 const privacy = {mode:'closed', privacyReviewed:true, privacyHtmlPath:'legal-drafts/newsletter-public-2026-10-16.html'};
@@ -63,4 +63,37 @@ test('SEO-4 · Fragen nur aus dem FAQ-Block, ohne Plus-Zeichen; keine Daten ohne
   assert.deepEqual(fragen(html), [{frage:'Was ist das?', antwort:'Eine App.'}]);
   assert.deepEqual(strukturierteDaten('news/index.html', '<title>X</title>'), []);
   assert.deepEqual(strukturierteDaten('news/index.html', '<title>X</title><link rel="canonical" href="https://example.com/">'), []);
+});
+
+test('SEO-5 · alte Shop-Adressen leiten um, unbekannte Adressen bekommen eine echte 404-Seite', async () => {
+  const out = resolve(root,'tests/output/seo-404');
+  try {
+    await build({output:out, config:privacy, production:true});
+    const redirects = await readFile(resolve(out,'_redirects'),'utf8');
+    for (const alt of ['/pages/*', '/products/*', '/collections/*', '/blogs/*']) assert.match(redirects, new RegExp('^'+alt.replace(/[/*]/g,'\\$&')+' /[a-z/]* 301$','m'), alt);
+    // Echte Seiten werden nie umgeleitet (Cloudflare wendet _redirects vor den Dateien an).
+    for (const [von] of ALTE_SHOP_ADRESSEN) for (const p of SITE_PAGES) assert.ok(!('/'+p).startsWith(von.replace('*','')), `${von} trifft ${p}`);
+    assert.doesNotMatch(redirects, /^\/policies/m);
+    const fehler = await readFile(resolve(out,'404.html'),'utf8');
+    assert.match(fehler, /<meta name="robots" content="noindex, nofollow">/);
+    assert.doesNotMatch(fehler, /rel="canonical"/);
+    assert.doesNotMatch(fehler, /(href|src)="(?!https?:|\/|#|mailto:|data:)/, 'nur absolute Pfade');
+    assert.ok(!(await readFile(resolve(out,'sitemap.xml'),'utf8')).includes('404'));
+  } finally { await rm(out,{recursive:true, force:true}); }
+});
+
+test('SEO-6 · jede Seite nennt ein eigenes, vorhandenes Vorschaubild zum Teilen', async () => {
+  const out = resolve(root,'tests/output/seo-og');
+  const {existsSync} = await import('node:fs');
+  try {
+    await build({output:out, config:privacy, production:true});
+    const seiten = (await readdir(out,{recursive:true})).filter((f)=>f.endsWith('.html'));
+    assert.ok(seiten.length > 80, String(seiten.length));
+    for (const f of seiten) {
+      const html = await readFile(resolve(out,f),'utf8');
+      const og = html.match(/<meta property="og:image" content="https:\/\/www\.visionuniverse\.de\/([^"]+)"/)?.[1];
+      assert.ok(og, `${f}: kein og:image`);
+      assert.ok(existsSync(resolve(out,og)), `${f}: ${og} fehlt`);
+    }
+  } finally { await rm(out,{recursive:true, force:true}); }
 });

@@ -98,3 +98,16 @@ test("TD-8 · Großes Bild: dreht der Pfad, ist der erste Schritt Einstiegszone,
   td.path[0].tiers[0].done = 1;
   assert.equal(Big.plan(td)[0].lo, 100, "erreichte Stufe: Kernzone = nächste offene Stufe");
 });
+
+test("TD-9 · Alternative mit eigener Unterteilung und eigenem Pfad, Mehrdeutigkeit gezählt", () => {
+  const s = series(20, [[30, 70], [80, 6], [40, 25], [30, 9]]);
+  const r = TD.analyzeTopDown(s);
+  assert.ok(r.alternative, "zweitbeste Lesart vorhanden");
+  assert.ok(Array.isArray(r.alternativePath));
+  assert.ok(r.candidates.total >= 2 && r.candidates.near >= 1 && r.candidates.gap >= 0);
+  const p = topDownFor({ timeframe: "1W", close: s.close, timestamps: s.times });
+  assert.deepEqual(Object.keys(p.candidates).sort(), ["gap", "near", "total"]);
+  const v = Big.viewOf(Object.assign({ altPath: [{ dir: "UP", tiers: [] }] }, p), "alt");
+  assert.equal(v.primary, p.alternative, "Umschalter zeigt die Alternative");
+  assert.equal(Big.viewOf(p, "main"), p);
+});

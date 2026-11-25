@@ -519,3 +519,54 @@
 @media(max-width:420px){.rg-app{gap:14px;padding:18px}.rg-app-ph{width:80px;height:146px;border-radius:16px;border-width:3px}.rg-app b{font-size:17px}.rg-app p{font-size:14px}}
 .rg-fakten{grid-template-columns:repeat(2,minmax(0,1fr))}
 @media(max-width:479px){.rg-fakten{grid-template-columns:minmax(0,1fr)}.rg-fakten>div{display:grid;grid-template-columns:auto 1fr;column-gap:14px;align-items:center}.rg-fakten>div>*:not(.rg-fi){grid-column:2}.rg-fakten .rg-fi{grid-row:1/span 3}}
+/* 404-Seite */
+.rg-404 .fh-copy{max-width:760px}
+.rg-404 .rg-ctas{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+.rg-404-l{padding:10px 0 90px}
+.rg-404-l .rg-weiter-l{display:grid;gap:14px;margin-top:14px}
+@media(min-width:700px){.rg-404-l .rg-weiter-l{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(min-width:1000px){.rg-404-l .rg-weiter-l{grid-template-columns:repeat(4,minmax(0,1fr))}}
+/* Fotos (Pressematerial mit Bildnachweis) */
+.rg-foto{margin:26px 0 0;border-radius:24px;overflow:hidden;background:#0b0b0b;position:relative}
+.rg-foto img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover}
+.rg-foto figcaption{background:#f3f3f1;color:#333;font-size:14px;line-height:1.45;padding:12px 16px;font-weight:600}
+.rg-foto figcaption span{color:#777;font-weight:700;font-size:12.5px;white-space:nowrap}
+.rg-fotos{display:grid;gap:14px;margin-top:26px}
+.rg-fotos .rg-foto{margin:0}
+@media(min-width:700px){.rg-fotos{grid-template-columns:repeat(2,minmax(0,1fr))}.rg-fotos .rg-foto img{aspect-ratio:4/3}}
+.rg-aufmacher-w{margin-top:28px;margin-bottom:10px}
+.rg-foto.aufmacher{margin:0;border-radius:28px}
+.rg-foto.aufmacher img{aspect-ratio:21/9}
+@media(max-width:699px){.rg-foto.aufmacher img{aspect-ratio:16/10}.rg-foto.aufmacher{border-radius:22px}}
+/* Kursverlauf seit Börsengang */
+.rg-kv-s{display:block;width:100%;height:auto;margin-top:14px;overflow:visible}
+.rg-kv-s .fl{fill:url(#kvf)}
+.rg-kv-s .ln{fill:none;stroke:#000;stroke-width:2.5;stroke-linejoin:round}
+.rg-kv-s .basis{stroke:#bbb;stroke-width:1.5;stroke-dasharray:5 6}
+.rg-kv-s .pt circle{fill:#fff;stroke:#000;stroke-width:3}
+.rg-kv-s .pt.jetzt circle{fill:#c8f531}
+.rg-kv-s .pt text{font-size:17px;font-weight:900;fill:#000;paint-order:stroke;stroke:#fff;stroke-width:5px}
+.rg-kv-l{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
+@media(min-width:700px){.rg-kv-l{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.rg-kv-l div{background:#f3f3f1;border-radius:16px;padding:12px 14px;display:flex;flex-direction:column;gap:2px}
+.rg-kv-l div.lime{background:var(--rg-lime,#c8f531)}
+.rg-kv-l span{font-size:12.5px;font-weight:800;color:#555;text-transform:uppercase;letter-spacing:.04em}
+.rg-kv-l b{font-size:22px;font-weight:900;letter-spacing:-.02em}
+.rg-kv-l small{font-size:12.5px;font-weight:650;color:#444}
+/* Sparten */
+.rg-sp-sum{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-top:12px}
+.rg-sp-sum b{font-size:clamp(30px,6vw,42px);font-weight:900;letter-spacing:-.03em}
+.rg-sp-sum span{font-weight:700;color:#555}
+.rg-sp-bar{display:flex;height:22px;border-radius:11px;overflow:hidden;margin-top:12px;gap:3px}
+.rg-sp-bar i,.rg-sp-l li>i{display:block}
+.rg-sp-bar .t0,.rg-sp-l .t0>i{background:#9a9a9a}.rg-sp-bar .t1,.rg-sp-l .t1>i{background:#000}.rg-sp-bar .t2,.rg-sp-l .t2>i{background:var(--rg-lime,#c8f531);box-shadow:inset 0 0 0 1.5px #000}
+.rg-sp-l{list-style:none!important;padding:0!important;margin:16px 0 0!important;display:grid;gap:12px}
+.rg-sp-l li{margin:0!important;list-style:none;display:grid;grid-template-columns:14px 1fr auto;gap:12px;align-items:center}
+.rg-sp-l li>i{width:14px;height:14px;border-radius:4px}
+.rg-sp-l b{display:block;font-weight:900;font-size:16px}
+.rg-sp-l span small{display:block;font-size:13px;color:#555;font-weight:600;line-height:1.35}
+.rg-sp-l em{font-style:normal;font-weight:900;font-size:18px;text-align:right;white-space:nowrap}
+.rg-sp-l em small{display:block;font-size:12.5px;color:#666;font-weight:700}
+.rg-mom li b{white-space:nowrap}
+.rg-kv-s .pt text{font-size:22px}
+.rg-kv-s .pt.hoch circle{fill:#000}

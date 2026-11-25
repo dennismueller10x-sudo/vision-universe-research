@@ -222,6 +222,29 @@ export function applicableOf(rows, names) {
   };
 }
 
+/** Wochen-Radar (Owner 23.11.2026): Titel, deren Kurs in der Einstiegszone der Zählung von oben liegt (Indexzeile td, Rollen wie
+    elliott/bigpicture.js#plan). Reihenfolge: Rückenwind in Richtung des Kursziels zuerst, dann nach Abstand zum Kursziel. Nur Stammaktien ab 5 $. */
+export function radarOf(rows, names, markets) {
+  const pick = [];
+  const add = (r, n, kind) => {
+    const td = r && r.td; if (!td || !td.e || !td.t1 || num(r.close) === null) return;
+    if (!(r.close >= td.e.lo && r.close <= td.e.hi)) return;
+    const up = td.t1.dir === "UP", near = up ? td.t1.lo : td.t1.hi, dist = near / r.close - 1;
+    pick.push({ t: r.t, n, kind, close: num(r.close), cur: td.cur, e: [td.e.lo, td.e.hi], ew: td.e.l, t1: [td.t1.lo, td.t1.hi], tw: td.t1.l, dir: td.t1.dir,
+      dist: Math.round(dist * 1000) / 1000, inv: td.inv, rw: td.rw || null, rwOk: td.rw === td.t1.dir });
+  };
+  for (const r of rows || []) { if (!listable(r, names)) continue; const e = names && names.get(r.t); add(r, (e && e.n) || r.t, "stock"); }
+  for (const r of (markets && markets.rows) || []) if (!r.withheld) add(r, r.n || r.t, "market");
+  pick.sort((a, b) => (b.rwOk - a.rwOk) || Math.abs(b.dist) - Math.abs(a.dist) || (a.t < b.t ? -1 : 1));
+  return { count: pick.length, rows: pick.slice(0, 60) };
+}
+/** Elliott-Alarme der letzten Läufe (v3/elliott-events.json und Leitmärkte), neueste zuerst, höchstens 40. */
+export function eventsOf(doc, marketsDoc, names) {
+  const ev = [].concat((doc && doc.events) || [], ((marketsDoc && marketsDoc.events) || []).map((e) => ({ ...e, market: true })));
+  return ev.filter((e) => e.market || !names || !names.size || names.has(e.t)).map((e) => ({ ...e, n: e.market ? ((marketsDoc.rows || []).find((r) => r.t === e.t) || {}).n || e.t : ((names && names.get(e.t)) || {}).n || e.t }))
+    .sort((a, b) => (a.asOf < b.asOf ? 1 : a.asOf > b.asOf ? -1 : a.t < b.t ? -1 : 1)).slice(0, 40);
+}
+
 /** Klarheit A–D aus den Einstufungen der Engine (gleiche Regel wie quant/app/page-chartbild.js#ewGrade). */
 export function gradeOf(applicable, clarity) {
   const lv = applicable || "LOW";
@@ -256,7 +279,7 @@ export function bilanzOf({ report, head, since, config }) {
 }
 
 /** Index aus Karten + Metadaten. Deterministisch: gleiche Eingabe, gleiche Bytes. */
-export function assembleHome({ cards, meta, indexGeneratedAt, dataAsOf, applicable, markets, bilanz }) {
+export function assembleHome({ cards, meta, indexGeneratedAt, dataAsOf, applicable, markets, bilanz, radar, events }) {
   const sorted = cards.slice().sort(compareCards);
   const rows = [];
   const filters = { wave: {}, dir: {}, st: {}, role: {} };
@@ -291,6 +314,8 @@ export function assembleHome({ cards, meta, indexGeneratedAt, dataAsOf, applicab
     applicable: applicable || null,
     markets: markets || null,
     bilanz: bilanz || null,
+    radar: radar || null,
+    events: events || null,
     filters,
     rows,
     cards: sorted
@@ -331,5 +356,7 @@ export function buildHomeFromDir(root, dir = join(root, "quant/data/technical-in
   if (existsSync(lf)) { const first = readFileSync(lf, "utf8").split("\n", 1)[0]; try { since = JSON.parse(first).week || null; } catch { since = null; } }
   const cf = join(root, "elliott/config/bilanz.json");
   const bilanz = existsSync(rf) && existsSync(hf) ? bilanzOf({ report: readJson(rf), head: readJson(hf), since, config: existsSync(cf) ? readJson(cf) : null }) : null;
-  return assembleHome({ cards, meta, indexGeneratedAt: index.generatedAt, dataAsOf, applicable: applicableOf(index.rows, names), markets: existsSync(mf) ? marketsOf(readJson(mf)) : null, bilanz });
+  const mdoc = existsSync(mf) ? readJson(mf) : null, ef = join(dir, "elliott-events.json");
+  return assembleHome({ cards, meta, indexGeneratedAt: index.generatedAt, dataAsOf, applicable: applicableOf(index.rows, names), markets: mdoc ? marketsOf(mdoc) : null, bilanz,
+    radar: radarOf(index.rows, names, mdoc), events: eventsOf(existsSync(ef) ? readJson(ef) : null, mdoc, names) });
 }

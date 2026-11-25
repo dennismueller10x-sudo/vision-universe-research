@@ -184,9 +184,9 @@
   {
    "id": "content-marktbriefing",
    "workflow": "content.yml",
-   "cron": "50 23 * * 1-5",
+   "cron": "20 2,4,7 * * 2-6",
    "timer": "waker",
-   "note": "marktbriefing (nach US-Schluss; nach market-data-refresh 22:30 und dem Faktorlauf)"
+   "note": "marktbriefing (Di-Sa 02:20, 04:20 und 07:20 UTC: drei Versuche, der erste frische gewinnt, spaetere ueberspringen; Owner 25.11.2026: Briefing fehlte, weil der Kurs-Lauf haengen blieb. Ab 02:20 UTC fuer den US-Handelstag davor; nach Market Pulse ~00:25 und Technical-Screener ~01:15, Owner 24.11.2026: erster Lauf 23:50 rechnete noch mit Freitagsdaten)"
   },
   {
    "id": "core-ci",

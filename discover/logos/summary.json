@@ -1,13 +1,15 @@
 {
- "generatedAt": "2026-11-23T04:55:31.490Z",
- "universe": 5497,
- "withLogo": 4147,
- "pct": 75.4,
+ "generatedAt": "2026-11-25T04:26:30.677Z",
+ "universe": 5491,
+ "withLogo": 4144,
+ "pct": 75.5,
  "withoutExpected": 241,
  "pctOfLogoCapable": 78.9,
- "downloaded": 399,
- "unchanged": 3790,
+ "downloaded": 401,
+ "unchanged": 3788,
  "pending": [
+  "ADC",
+  "AIP",
   "ALLO",
   "APUS",
   "ARDT",
@@ -20,7 +22,6 @@
   "BXMT",
   "BZ",
   "CAE",
-  "CASK",
   "CHOW",
   "CMT",
   "CYTK",
@@ -33,7 +34,6 @@
   "ELMD",
   "ENS",
   "EPM",
-  "FCDH",
   "FFR",
   "FGC",
   "FRGT",
@@ -58,6 +58,7 @@
   "NVT",
   "OPNW",
   "OSTX",
+  "PASG",
   "PRTH",
   "PTHS",
   "QUIT",
@@ -72,6 +73,7 @@
   "SVIA",
   "SWKS",
   "TOST",
+  "TPG",
   "TRAD",
   "TX",
   "UMC",
@@ -80,14 +82,14 @@
   "XCUR"
  ],
  "bySource": {
-  "WIKIMEDIA_COMMONS": 981,
-  "WEBSITE": 2753,
-  "SEC_FILING": 413
+  "WIKIMEDIA_COMMONS": 980,
+  "WEBSITE": 2752,
+  "SEC_FILING": 412
  },
  "byVia": {
   "CIK": 714,
-  "TICKER": 243,
-  "WIKIDATA_CIK": 634,
+  "TICKER": 242,
+  "WIKIDATA_CIK": 633,
   "WIKIDATA_TICKER": 382,
   "SEC_10K": 1290,
   "NAME": 24,
@@ -100,12 +102,12 @@
   "SEC_8K": 2,
   "SEC_S1": 1,
   "SEC_424B4": 1,
-  "SEC_CIK": 407
+  "SEC_CIK": 406
  },
  "indexCoverage": {
   "SP500": {
-   "members": 496,
-   "withLogo": 490,
+   "members": 497,
+   "withLogo": 491,
    "missing": [
     "ESS:WEB_KEIN_ICON",
     "FDXF:WEB_KEIN_ICON",
@@ -133,9 +135,28 @@
    "missing": []
   }
  },
- "newTitleAlarms": [],
+ "newTitleAlarms": [
+  {
+   "symbol": "ANT",
+   "firstSeen": "2026-11-23",
+   "runs": 3,
+   "lastRun": "2026-11-25",
+   "reason": "NAME_ODER_CIK_WIDERSPRICHT",
+   "nameMissing": true,
+   "cikMissing": true
+  },
+  {
+   "symbol": "AXNX",
+   "firstSeen": "2026-11-23",
+   "runs": 3,
+   "lastRun": "2026-11-25",
+   "reason": "WARTET_AUF_SICHTPRUEFUNG",
+   "nameMissing": false,
+   "cikMissing": false
+  }
+ ],
  "byLicense": {
-  "pd": 902,
+  "pd": 901,
   "cc-by-sa-4.0": 51,
   "cc-by-sa-3.0": 9,
   "cc0": 10,
@@ -145,15 +166,15 @@
   "apache-2.0": 1
  },
  "excluded": {
+  "WARTET_AUF_SICHTPRUEFUNG": 72,
   "NAME_ODER_CIK_WIDERSPRICHT": 115,
-  "WARTET_AUF_SICHTPRUEFUNG": 70,
-  "KEINE_WEBSITE_BEKANNT": 477,
+  "KEINE_WEBSITE_BEKANNT": 475,
   "KEIN_LOGO_ERWARTET": 241,
-  "KEIN_WIKIDATA_LOGO": 2239,
-  "WEB_KEIN_ICON": 245,
-  "WEB_ICON_ZU_KLEIN": 168,
+  "KEIN_WIKIDATA_LOGO": 2238,
+  "WEB_KEIN_ICON": 244,
+  "WEB_ICON_ZU_KLEIN": 167,
   "WEB_ICON_GENERISCH": 17,
-  "WEB_KEIN_BILD": 105,
+  "WEB_KEIN_BILD": 104,
   "MEHRERE_ITEMS": 18,
   "WEB_ICON_FORMAT": 4,
   "EINSCHRAENKUNG": 1,

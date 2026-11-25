@@ -313,3 +313,7 @@ html:has(.mb){scroll-snap-type:y proximity;scroll-padding-top:var(--mb-head)}
 .mbarch-ph{aspect-ratio:1200/630;background:var(--mb-lime)}
 .mbarch-t{padding:14px 16px 16px;display:grid;gap:4px}.mbarch-t small{font-size:12px;font-weight:800;color:var(--mb-mute)}.mbarch-t b{font-size:17px;line-height:1.25}
 .mbarch-c:focus-visible{outline:3px solid #4f6b00;outline-offset:3px}
+/* Produktfilm (www.js filmBlock) */
+.mbfilm-art{display:flex;justify-content:center}
+.mbvid{display:block;width:min(300px,72vw);aspect-ratio:9/16;height:auto;border-radius:28px;background:#fff;box-shadow:0 30px 70px rgba(0,0,0,.18);object-fit:cover}
+.mbfilm .t{color:#333;font-size:clamp(17px,1.5vw,20px);line-height:1.45;margin:0}

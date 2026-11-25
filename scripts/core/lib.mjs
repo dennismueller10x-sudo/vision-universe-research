@@ -6,6 +6,7 @@ import { join, dirname, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { gunzipSync } from "node:zlib";
 import { createRequire } from "node:module";
+import { execFileSync } from "node:child_process";
 
 export const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 export const require = createRequire(import.meta.url);
@@ -38,6 +39,40 @@ export function jsonLinesArtifact(text) {
   return { schemaVersion: "jsonl-artifact-head-1.0.0", asOf: sessions.at(-1) || null,
     generatedAt: head.recordedAt || null, records: records.length, head,
     integrity: "NOT_ASSESSED_USE_EXISTING_PRODUCER_VERIFY" };
+}
+
+/** Pfad (Auslieferungspfad, "/quant/data/...") gehoert einer Datenart mit Phase BRANCH_ONLY (core/registry/data-branch.json):
+ * der Erzeuger schreibt nur auf den Datenzweig, die Kopie in main ist eingefroren. Gibt die Datenart oder null zurueck. */
+export function branchOnlyKind(dataBranch, artifact) {
+  const a = String(artifact).replace(/^\//, "");
+  for (const k of dataBranch.domains || []) {
+    if (k.phase !== "BRANCH_ONLY") continue;
+    if ((k.paths || []).includes(a) || (k.prefixes || []).some((p) => a.startsWith(p))) return k.id;
+  }
+  return null;
+}
+
+export const BRANCH_NOT_READABLE = "BRANCH_NOT_READABLE";
+
+/** Loader fuer den Repository-Stand, der BRANCH_ONLY-Pfade vom Datenzweig liest (git show <ref>:<pfad>, nichts wird geholt
+ * oder geschrieben). Ist keine Referenz lesbar, wirft er BRANCH_NOT_READABLE (kein Raten mit der alten main-Kopie).
+ * state.read[pfad] = gelesene Referenz. */
+export function makeBranchAwareLoader(load, dataBranch, { root = REPO_ROOT, refs = ["origin/" + (dataBranch.branch || "data/live"), dataBranch.branch || "data/live"], git = execFileSync } = {}) {
+  const state = { read: {}, notReadable: {} };
+  async function branchLoad(path) {
+    const kind = branchOnlyKind(dataBranch, path);
+    if (!kind) return load(path);
+    const rel = path.replace(/^\//, "");
+    for (const ref of refs) {
+      let bytes;
+      try { bytes = git("git", ["-C", root, "show", ref + ":" + rel], { maxBuffer: 512 * 1024 * 1024, stdio: ["ignore", "pipe", "ignore"] }); } catch { continue; }
+      state.read[path] = ref;
+      return path.endsWith(".jsonl") ? jsonLinesArtifact(bytes.toString("utf8")) : compressedJson(bytes);
+    }
+    state.notReadable[path] = kind;
+    throw new Error(BRANCH_NOT_READABLE + ": " + rel + " (Datenart " + kind + ", Datenzweig lokal nicht lesbar)");
+  }
+  return { load: branchLoad, state };
 }
 
 /** Loader fuer Auslieferungspfade ("/quant/data/..."). */

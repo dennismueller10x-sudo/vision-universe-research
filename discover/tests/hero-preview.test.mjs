@@ -80,3 +80,36 @@ test('Voll-Bau und Schnellweg benutzen dieselbe Funktion: die Vorschau altert ni
  assert.match(fast,/import \{refreshHeroPreview\} from '\.\/discover-hero-preview\.mjs'/);assert.match(fast,/await refreshHeroPreview\(site, liste\)/);
  assert.throws(()=>src('scripts/vu2/discover-hero-preview.mjs'),/ENOENT/,'Modul liegt außerhalb der Bau-Quellen von FP-6 (scripts/ci)');
 });
+
+/* Kopf der Top-10-Sektion (24.11.2026): Vorschau und Laufzeit teilen eine Funktion und einen Text. */
+import {top10PreviewHtml} from '../../scripts/ci/discover-hero-preview.mjs';
+test('Top-10-Kopf: Laufzeit und Vorschau bauen ihn aus derselben Engine-Funktion, wortgleich',()=>{
+ const ui=src('discover/ui/reihen.js');
+ assert.match(ui,/sec\.innerHTML = R\(\)\.top10Head\(cards\.length, rowHref\('im-blick'\)\);/,'top10Section nutzt die Engine-Funktion');
+ assert.doesNotMatch(ui,/Rang nach der Regel/,'der Satz steht nur noch in der Engine');
+ const gold='<div class="dr-head dp-sh"><div class="dr-head__t"><h2>Top 10 heute</h2><a href="#/c/US_REAL/im-blick" aria-label="Alle 10 Aktien: Heute im Blick">Alle 10 ›</a></div>'+
+  '<p>Rang nach der Regel „Heute im Blick“: Ereignisse des letzten Handelstags und Stärke über 12 Monate.</p></div>';
+ assert.equal(R.top10Head(10,'#/c/US_REAL/im-blick'),gold,'Markup wie vorher protoHead (Golden)');
+ const p=R.heroPreview({cards:[card('BBB')]},{cards:[card('CCC'),card('DDD')]});
+ assert.equal(p.top10,2,'Anzahl wie showcaseCards(row.cards, 10) der Laufzeit');
+ assert.equal(top10PreviewHtml(p),R.top10Head(2,R.TOP10.href));
+ assert.equal(top10PreviewHtml(null),'');assert.equal(top10PreviewHtml({...p,top10:0}),'');
+ const text=h=>h.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
+ assert.equal(text(top10PreviewHtml(p)),text(R.top10Head(2,'#/c/US_REAL/im-blick')));
+ assert.match(top10PreviewHtml(p),/Rang nach der Regel „Heute im Blick“: Ereignisse des letzten Handelstags und Stärke über 12 Monate\./);
+});
+test('Top-10-Kopf: Adresse der Vorschau gilt auch zur Laufzeit (keine Themenwelt "im-blick"), Platz im HTML',()=>{
+ assert.doesNotMatch(src('discover/themes.js'),/['"]im-blick['"]/,'rowHref("im-blick") bleibt #/c/US_REAL/im-blick');
+ const index=src('discover/index.html');
+ /* Der Platz steht in einem Rahmen mit den Klassen der echten Startseite: alle Kopfstile hängen an .dp-home (reihen.css), sonst ist der Absatz kleiner als der spätere echte. */
+ assert.match(index,/<div class="v2-journey dr-home dp-home"><section class="dr-sec dr-sec--top10 dr-slot" data-static-top aria-label="Top 10 heute"><!--top10-head--><!--\/top10-head--><\/section><\/div>/);
+ assert.match(src('discover/ui/reihen.css'),/\.dp-home \.dp-sh p\{margin:4px 0 0;font-size:12\.5px\}/,'die Stile des Kopfs hängen an .dp-home');
+ assert.match(src('discover/ui/reihen.js'),/body = h\('div', 'v2-journey dr-home dp-home'\)/,'derselbe Rahmen wie zur Laufzeit');
+ const p=R.heroPreview({cards:[card('BBB')]},{cards:[card('CCC')]});
+ const out=applyHeroPreview(index,p);
+ assert(out.includes('<!--top10-head-->'+R.top10Head(1,R.TOP10.href)+'<!--/top10-head-->'));
+ assert.equal(applyHeroPreview(out,null),index,'ohne Vorschau wieder der leere Platz, nie ein alter Kopf');
+ const home=src('discover/home.js'),ui=src('discover/ui/reihen.js');
+ assert.match(home,/n !== topBox\) n\.remove\(\)/);assert.match(home,/topWait: top/);assert.match(ui,/if \(topBox\) topBox\.remove\(\)/);
+ assert.match(ui,/var topSlot = top0 \|\| h\('div', 'dr-slot'\)/);
+});

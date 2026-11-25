@@ -125,7 +125,23 @@ test('Kopf-Grundstil im Kopf der Seite: wortgleich aus home.css (kein Sprung des
   const blocks = (text) => [...text.matchAll(/([^{}@]+)\{([^{}]*)\}/g)].map(x => [x[1].trim(), x[2].split(';').map(d => d.trim()).filter(Boolean)]);
   const real = blocks(css.replace(/\/\*[\s\S]*?\*\//g, ''));
   const declared = (sel, decl) => real.some(([s, ds]) => s === sel && ds.includes(decl));
-  const rules = blocks(m[1].replace(/@media\([^)]*\)\{/g, ''));
+  /* Ersatzschrift (Inter Fallback) und Schriftstapel sind NICHT aus home.css kopiert: eigener Block, eigener Test unten. */
+  const kopf = m[1].split('@font-face{font-family:"Inter Fallback"')[0];
+  const rules = blocks(kopf.replace(/@media\([^)]*\)\{/g, ''));
   assert.ok(rules.length >= 12);
   for (const [sel, decls] of rules) for (const d of decls) assert.ok(declared(sel, d), `home.css kennt ${sel}{${d}}`);
+});
+
+test('Ersatzschrift vor dem Laden von Inter: metrisch angepasst, vor ui-sans-serif im Stapel (Hero-Umbruch, CLS 0,18 bei CPU 2x)', () => {
+  const m = html.match(/@font-face\{font-family:"Inter Fallback";src:([^;]+);size-adjust:([\d.]+)%;ascent-override:([\d.]+)%;descent-override:([\d.]+)%;line-gap-override:0%\}html:root\{--vu-font:([^}]+)\}/);
+  assert.ok(m, 'Block steht in index.html');
+  assert.ok(template.includes(m[0]), 'steht in der Vorlage');
+  assert.match(m[1], /local\("Arial"\)/);
+  assert.ok(Number(m[2]) > 100 && Number(m[2]) < 115, 'size-adjust nahe den bekannten Inter-gegen-Arial-Werten (107,4 %)');
+  assert.ok(Number(m[3]) > 85 && Number(m[3]) < 95 && Number(m[4]) > 20 && Number(m[4]) < 25);
+  const stack = m[5].split(',').map(x => x.trim());
+  assert.deepEqual(stack.slice(0, 3), ['Inter', '"Inter Fallback"', 'ui-sans-serif'], 'Ersatzschrift steht direkt nach Inter');
+  /* Der Stapel ist der von assets/vu-ui.css plus die Ersatzschrift: sonst ändert sich nach dem Laden die Schrift der Seite. */
+  const basis = read('assets/vu-ui.css').match(/--vu-font:([^;]+);/)[1].split(',').map(x => x.trim());
+  assert.deepEqual(stack.filter(x => x !== '"Inter Fallback"'), basis);
 });

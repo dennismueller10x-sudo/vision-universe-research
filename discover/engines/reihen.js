@@ -131,6 +131,18 @@
     return isNum(k) ? out.slice(0, k) : out;
   }
 
+  /* Kopf der Top-10-Sektion der Startseite. Laufzeit (ui/reihen.js#top10Section) und Vorschau im Release (scripts/ci/discover-hero-preview.mjs)
+     bauen ihn aus dieser einen Funktion: Der Absatz steht schon im statischen HTML und ist wortgleich (LCP 24.11.2026: war er erst nach
+     dem Skriptstart da, wurde er bei kurzem Namen der ersten Folie zum LCP-Element). */
+  var TOP10 = { title: 'Top 10 heute', row: 'im-blick', href: '#/c/US_REAL/im-blick',
+    sub: 'Rang nach der Regel „Heute im Blick“: Ereignisse des letzten Handelstags und Stärke über 12 Monate.' };
+  function escHtml(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function top10Head(count, href) {
+    return '<div class="dr-head dp-sh"><div class="dr-head__t"><h2>' + escHtml(TOP10.title) + '</h2>' +
+      '<a href="' + escHtml(href || TOP10.href) + '" aria-label="Alle ' + count + ' Aktien: Heute im Blick">Alle ' + count + ' ›</a></div>' +
+      '<p>' + escHtml(TOP10.sub) + '</p></div>';
+  }
+
   /** Verfuegbare Reihen aus meta.json: { rowId: matched } fuer eine Universe-ID. */
   function available(meta, universeId) {
     var u = ((meta && meta.rows) || []).filter(function (r) { return r.universeId === (universeId || "US_REAL"); })[0];
@@ -235,11 +247,11 @@
     var c = billboardCards(hero, row)[0];
     if (!c) return null;
     var name = shortName(c);
-    return { symbol: c.symbol, name: name, long: name.length > 11, sub: what(c) || c.symbol };
+    return { symbol: c.symbol, name: name, long: name.length > 11, sub: what(c) || c.symbol, top10: showcaseCards(row && row.cards, 10).length };
   }
 
   return {
-    what: what, shortName: shortName, billboardCards: billboardCards, heroPreview: heroPreview,
+    what: what, shortName: shortName, billboardCards: billboardCards, heroPreview: heroPreview, top10Head: top10Head, TOP10: TOP10,
     isNew: isNew, freshRows: freshRows, moreFrom: moreFrom, moreLine: moreLine,
     MAX_HOME_ROWS: MAX_HOME_ROWS, SHOWCASE_MIN_RETURN_12M: SHOWCASE_MIN_RETURN_12M,
     TITLES: TITLES, GENRES: GENRES, ALL_GROUPS: ALL_GROUPS, HOME_PLAN: HOME_PLAN, STRATEGY_COPY: STRATEGY_COPY,

@@ -17,6 +17,7 @@ import { createRequire } from "node:module";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 /* Plan der Lesart wie im Elliott-Chart (Owner 23.11.2026): nur aus der Zaehlung, nie aus dem Szenario-Modell. */
 const { planOf } = createRequire(import.meta.url)(join(ROOT, "elliott/engine/plan.js"));
+const rolesLib = await import("../lib/ti-elliott-events.mjs");
 const V3 = join(ROOT, "quant/data/technical-intelligence/v3");
 const arg = (n, d) => { const i = process.argv.indexOf("--" + n); return i >= 0 ? process.argv[i + 1] : d; };
 const W = 1080, H = 1350, BG = "#08080a", INK = "#f4f5f1", MUTE = "#9a9b96", LIME = "#c8f531", RED = "#ff5a5f", PANEL = "#141416";
@@ -61,6 +62,58 @@ export function readingOf(p) {
     : plan.next && plan.next !== dir ? "Welle " + wave + " läuft – danach " + (plan.next === "UP" ? "aufwärts" : "abwärts") + "?"
     : "Welle " + wave + " " + dirWord + (short ? " – " + short : ""));
   return { name, what, dir, dirWord, inv, invTxt, zone: plan.zone || null, overtaken: !!plan.overtaken, grade, gradeTxt: GRADE_TXT[grade], hook, close: p.price && p.price.close, asOf: p.asOf };
+}
+
+/* Zählung von oben (Owner 23.11.2026): gibt es sie, erzählt die Karte das Große Bild – Pfeil in die nächste Zone, Pfeil zur Zielzone –
+   mit Prozentabstand. Rollen wie elliott/bigpicture.js#plan (ti-elliott-events.mjs#roles). Wortwahl der Karte neutral („Zielzone der
+   Methode“, docs/legal/WORTWAHL.md: die Kursziel-Ausnahme gilt nur im Aktienbild). */
+const pctDe = (v, base) => { const p = Math.round((v / base - 1) * 100); return (p > 0 ? "+" : p < 0 ? "−" : "±") + Math.abs(p) + " %"; };
+export function readingTD(p) {
+  const td = p.elliottTopDown; if (!td || td.status !== "OK" || !td.primary || !(td.path || []).length) return null;
+  const ro = rolesLib.roles(td.path), name = p.market ? p.market.name : p.symbol, c = td.close, P = td.primary;
+  const sub = td.sub && td.sub.waves.length ? "(" + td.sub.cur + ")" : "[" + P.cur + "]";
+  const tz = ro.target, ez = ro.entry;
+  const hook = name + ": " + (ez && tz ? "erst " + priceDe(ez.hi).replace(" $", "") + "–" + priceDe(ez.lo) + ", dann " + priceDe(tz.lo).replace(" $", "") + "–" + priceDe(tz.hi) + "?"
+    : tz ? "Welle " + sub + " läuft – Zielzone " + priceDe(tz.lo).replace(" $", "") + "–" + priceDe(tz.hi) + " (" + pctDe(tz.dir === "UP" ? tz.lo : tz.hi, c) + ")" : "Welle " + sub + " läuft");
+  const inv = P.inv ? { price: P.inv.p, direction: P.inv.d } : null;
+  return { name, td, ez, tz, hook, inv, invTxt: inv ? "ungültig bei Wochenschluss " + (inv.direction === "above" ? "über " : "unter ") + priceDe(inv.price) : null,
+           what: (P.kind === "IMPULSE" ? "Impuls " : "Korrektur ") + (P.dir === "UP" ? "aufwärts" : "abwärts") + " seit " + String(P.waves[0].ft).slice(0, 4) + " · Welle [" + P.cur + "]" + (td.sub ? " · darin " + sub : ""),
+           grade: null, gradeTxt: "Zählung von oben seit " + String((td.monthly[0] || [])[0]).slice(0, 4), close: c, asOf: p.asOf, fromTop: true };
+}
+export function cardSvgTD(p, r) {
+  const M = (r.td.monthly || []).slice(-72), X0 = 70, X1 = 760, XF = 1010, Y0 = 470, Y1 = 1060;
+  const steps = (r.td.path || []).slice(0, 3);
+  const vals = M.map((m) => m[1]).concat(steps.flatMap((s) => s.tiers.slice(0, 2).flatMap((z) => [z.lo, z.hi]))).filter((v) => v > 0);
+  let lo = Math.min(...vals) * 0.9, hi = Math.max(...vals) * 1.08;
+  const invIn = r.inv && r.inv.price >= lo / 1.5 && r.inv.price <= hi * 1.5;   // weit entfernte Marke nur im Text, sonst wird das Bild flach
+  if (invIn) { lo = Math.min(lo, r.inv.price * 0.95); hi = Math.max(hi, r.inv.price * 1.05); }
+  const L = Math.log, y = (v) => Y1 - (L(Math.max(v, lo)) - L(lo)) / (L(hi) - L(lo)) * (Y1 - Y0), x = (i) => X0 + (i / Math.max(1, M.length - 1)) * (X1 - X0);
+  let g = "";
+  if (invIn) g += `<line x1="${X0}" x2="${XF}" y1="${y(r.inv.price).toFixed(1)}" y2="${y(r.inv.price).toFixed(1)}" stroke="${RED}" stroke-width="3" stroke-dasharray="12 10"/><text x="${XF}" text-anchor="end" y="${(y(r.inv.price) + (r.inv.direction === "above" ? -14 : 36)).toFixed(1)}" font-size="26" fill="${RED}">Ungültig ${r.inv.direction === "above" ? "über" : "unter"} ${esc(priceDe(r.inv.price))}</text>`;
+  g += `<path d="${M.map((m, i) => (i ? "L" : "M") + x(i).toFixed(1) + " " + y(m[1]).toFixed(1)).join("")}" fill="none" stroke="${INK}" stroke-width="4" stroke-linejoin="round"/>`;
+  let px = X1, py = y(r.close);
+  steps.forEach((s, k) => {
+    const z = s.tiers.find((t) => !t.done) || s.tiers[s.tiers.length - 1], sx = X1 + (XF - X1) * ((k + 1) / (steps.length + 0.4)), sy = y(s.point), up = s.dir === "UP";
+    g += `<rect x="${(sx - 34).toFixed(1)}" y="${y(z.hi).toFixed(1)}" width="68" height="${Math.max(6, y(z.lo) - y(z.hi)).toFixed(1)}" rx="10" fill="${up ? LIME : MUTE}" opacity="${up ? 0.5 : 0.35}"/>`;
+    g += `<line x1="${px.toFixed(1)}" y1="${py.toFixed(1)}" x2="${sx.toFixed(1)}" y2="${sy.toFixed(1)}" stroke="${up ? LIME : MUTE}" stroke-width="6" stroke-linecap="round"${up ? "" : ' stroke-dasharray="14 10"'}/>`;
+    g += `<text x="${sx.toFixed(1)}" y="${(up ? y(z.hi) - 14 : y(z.lo) + 38).toFixed(1)}" text-anchor="middle" font-size="28" font-weight="800" fill="${INK}">${esc(s.disp)}</text>`;
+    px = sx; py = sy;
+  });
+  g += `<circle cx="${X1}" cy="${y(r.close).toFixed(1)}" r="10" fill="${LIME}"/>`;
+  const hook = wrap(r.hook, 27).slice(0, 3);
+  const tz = r.tz ? `Zielzone der Methode ${priceDe(r.tz.lo).replace(" $", "")}–${priceDe(r.tz.hi)} (${pctDe(r.tz.dir === "UP" ? r.tz.lo : r.tz.hi, r.close)})` : r.what;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" font-family="Inter, Helvetica, Arial, sans-serif">
+<style>text{paint-order:stroke;stroke:${BG};stroke-width:8px;stroke-linejoin:round}</style>
+<rect width="${W}" height="${H}" fill="${BG}"/>
+<text x="70" y="110" font-size="30" font-weight="700" fill="${LIME}">Elliott-Wochenausblick · ${esc(dateDe(r.asOf))}</text>
+${hook.map((h, i) => `<text x="70" y="${180 + i * 66}" font-size="58" font-weight="800" fill="${INK}">${esc(h)}</text>`).join("")}
+<text x="70" y="${180 + hook.length * 66 + 10}" font-size="32" fill="${MUTE}">${esc(r.what)}</text>
+${g}
+<rect x="70" y="1110" width="940" height="120" rx="24" fill="${PANEL}"/>
+<text x="104" y="1162" font-size="32" font-weight="700" fill="${INK}" style="stroke:${PANEL}">${esc(tz)}</text>
+<text x="104" y="1206" font-size="28" fill="${MUTE}" style="stroke:${PANEL}">${esc(r.invTxt ? "Zählung " + r.invTxt : "Zählung ohne feste Ungültig-Marke")}</text>
+<text x="70" y="1290" font-size="26" fill="${MUTE}">Vision Universe · Modell, keine Prognose</text>
+</svg>`;
 }
 
 /** Bildkarte als SVG (Kursverlauf der letzten 156 Wochen, Wellen der Hauptlesart, Elliott-Zone, Ungueltig-Marke). */
@@ -114,7 +167,7 @@ export function captionOf(p, r) {
   const src = p.market && p.market.via ? p.market.via + (p.market.source && p.market.source.attribution ? " · " + p.market.source.attribution : "") : p.symbol;
   return [r.hook, "",
     "Hauptlesart: " + r.what + ". " + (r.invTxt ? "Die Lesart ist " + r.invTxt + "." : ""),
-    r.gradeTxt + "." + (r.zone ? " Die Zone laut Elliott-Projektion hat keine Zeitangabe." : "") + (r.overtaken ? " Der Kurs ist über alle Zonen hinausgelaufen, die diese Zählung zulässt." : ""), "",
+    (r.fromTop ? "Zählung von oben auf Wochenschlusskursen (Frost & Prechter). Zonen ohne Zeitangabe" : r.gradeTxt) + "." + (r.zone ? " Die Zone laut Elliott-Projektion hat keine Zeitangabe." : "") + (r.overtaken ? " Der Kurs ist über alle Zonen hinausgelaufen, die diese Zählung zulässt." : ""), "",
     "Alle Märkte und Aktien mit Wellen, Zonen und Ungültig-Marken: Vision-Universe-App (bald verfügbar).", "",
     "Modell, keine Prognose, keine Anlageberatung. Quelle: " + src.replace(" · Daten: ", " · ") + ", Wochenschluss " + dateDe(r.asOf) + "."].join("\n").slice(0, 2200);
 }
@@ -129,8 +182,8 @@ async function main() {
   const made = [];
   for (const row of rows) {
     const doc = JSON.parse(gunzipSync(readFileSync(join(V3, "markets", row.t + ".json.gz"))).toString("utf8")), p = doc.instruments[row.t];
-    const r = p && readingOf(p); if (!r) continue;
-    writeFileSync(join(OUT, row.t + ".svg"), cardSvg(p, r));
+    const r = p && (readingTD(p) || readingOf(p)); if (!r) continue;
+    writeFileSync(join(OUT, row.t + ".svg"), r.fromTop ? cardSvgTD(p, r) : cardSvg(p, r));
     writeFileSync(join(OUT, row.t + ".txt"), captionOf(p, r) + "\n");
     made.push({ id: row.t, hook: r.hook, grade: r.grade, asOf: r.asOf });
   }
