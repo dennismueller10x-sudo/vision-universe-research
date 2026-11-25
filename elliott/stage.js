@@ -61,18 +61,22 @@
 
     function svgOf(V, W, H) {
       var td = V.td, rows = V.rows, S = V.S, close = td.close || S[S.length - 1].c, tm = V.tm || null;
-      var tEnd = S[S.length - 1].t, t0 = st.t0, vis = S.filter(function (p) { return p.t >= t0; });
+      /* Ausschnitt t0 … t1v; „live“ = rechter Rand ist heute (dann mit Plan der Methode), sonst ein gezoomtes Stück Geschichte */
+      var tEnd = S[S.length - 1].t, t0 = st.t0, t1v = tm || st.t1 == null ? tEnd : Math.min(st.t1, tEnd), live = !!tm || t1v >= tEnd - DAY;
+      var vis = S.filter(function (p) { return p.t >= t0 && p.t <= t1v + 8 * DAY; });
       if (vis.length < 4) vis = S.slice(-4);
       var narrow = W < 560, OV = 62, CT = 66, padT = narrow ? 162 : 150, padB = 26 + OV + CT, padR = narrow ? 54 : 64, plotR = W - padR, oy0 = H - CT - OV;
-      var tC = tm ? T(tm.a) : tEnd, xR = tm ? plotR - 6 : Math.round(plotR * (narrow ? 0.62 : 0.7)), xEnd = tm ? plotR - 6 : plotR - 10;
-      function x(t) { return 2 + (t - t0) / Math.max(DAY, tEnd - t0) * (xR - 2); }
+      var tC = tm ? T(tm.a) : tEnd, xR = tm || !live ? plotR - 6 : Math.round(plotR * (narrow ? 0.62 : 0.7)), xEnd = tm ? plotR - 6 : plotR - 10;
+      function x(t) { return 2 + (t - t0) / Math.max(DAY, t1v - t0) * (xR - 2); }
       var xNow = tm ? x(tC) : xR;
+      if (!live) rows = [];   // gezoomte Geschichte: ohne Plan
       var nS = rows.length; function px(k) { return xNow + (xEnd - xNow) * ((k + 1) / (nS + 0.15)); }
       var big = pivots(td.primary, close, tC, "BIG"), sub = pivots(td.sub, close, tC, "SUB");
       /* Wertebereich: sichtbarer Kurs, sichtbare Wendepunkte, Kernzonen der Schritte, Ungültig-Marke in Reichweite */
       var vals = vis.map(function (p) { return p.c; });
-      big.concat(sub).forEach(function (q) { if (q.t >= t0) vals.push(q.p); });
+      big.concat(sub).forEach(function (q) { if (q.t >= t0 && q.t <= t1v) vals.push(q.p); });
       rows.forEach(function (r) { vals.push(r.lo, r.hi, r.step.point); });
+      if (!vals.length) vals = [close];
       var vMin = Math.min.apply(null, vals), vMax = Math.max.apply(null, vals), inv = td.primary.inv, invIn = inv && inv.p > vMin / 2.5 && inv.p < vMax * 2.5;
       if (invIn) vals.push(inv.p);
       var lo = Math.min.apply(null, vals) / 1.1, hi = Math.max.apply(null, vals) * 1.1;
@@ -93,7 +97,7 @@
       for (var yr = y0; yr <= new Date(tEnd).getUTCFullYear(); yr++) if (yr % every === 0) { var xt = x(Date.UTC(yr, 0, 1)); if (xt > 14 && xt < (tm ? xR - 20 : xNow - 46) && xt - lastX > 44 && (!tm || Math.abs(xt - Math.min(xNow, plotR - 50)) > 66)) { lastX = xt; yrs.push('<text class="st-ax" x="' + f(xt) + '" y="' + (H - padB + 17) + '" text-anchor="middle">' + yr + "</text>"); } }
       g.push(yrs.join(""));
       /* Zukunft: eigener Raum ohne Zeitachse */
-      g.push('<line class="st-now" x1="' + xNow + '" x2="' + xNow + '" y1="' + (padT - 22) + '" y2="' + (H - padB + 4) + '"/>' +
+      if (live) g.push('<line class="st-now" x1="' + xNow + '" x2="' + xNow + '" y1="' + (padT - 22) + '" y2="' + (H - padB + 4) + '"/>' +
         (tm ? '<text class="st-ax st-ax-tm" x="' + f(Math.min(xNow, plotR - 50)) + '" y="' + (H - padB + 17) + '" text-anchor="middle">' + esc("Stand " + md(tC)) + "</text>"
             : '<text class="st-ax st-ax-r" x="' + (xNow + 7) + '" y="' + (H - padB + 17) + '">Plan der Methode →</text>' +
               '<text class="st-ax" x="' + (xNow - 5) + '" y="' + (H - padB + 17) + '" text-anchor="end">heute</text>'));
@@ -122,7 +126,7 @@
       function labels(P, isBig) {
         var out = [];
         P.forEach(function (q, i) {
-          if (!q.l || q.dev || q.t < t0) return;
+          if (!q.l || q.dev || q.t < t0 || q.t > t1v) return;
           var cx = x(q.t); if (cx < 16 || cx > xNow - 4) return;
           var prev = P[i - 1], up = !prev || q.p >= prev.p, off = isBig ? 19 : 14, cy = place(cx, y(q.p) + (up ? -off : off + (isBig ? 0 : 4)), up, isBig ? 26 : 16);
           if (isBig) { out.push('<g class="st-node"' + dim(st.focus && st.focus.indexOf("wave:" + q.l) >= 0 ? "wave:" + q.l : "big") + '><circle cx="' + f(cx) + '" cy="' + f(cy) + '" r="11.5"/><text x="' + f(cx) + '" y="' + f(cy + 4.2) + '" text-anchor="middle">' + esc(q.l) + "</text></g>"); nodes.push({ x: cx, y: cy, q: q, P: P, i: i }); }
@@ -158,7 +162,7 @@
       });
       /* Geisterpfad der Alternative (nur in der Hauptzählung): dünn, damit man sieht, wohin die zweite regelkonforme Lesart führt */
       var ghost = "";
-      if (!tm && st.which === "main" && td0.alternative && td0.altPath && td0.altPath.length && b.viewOf) {
+      if (!tm && live && st.which === "main" && td0.alternative && td0.altPath && td0.altPath.length && b.viewOf) {
         var rA = b.plan(b.viewOf(td0, "alt")), nA = rA.length, GP = [P0].concat(rA.map(function (r, k) { return [xNow + (xEnd - xNow) * ((k + 1) / (nA + 0.15)), y(r.step.point)]; }));
         ghost = '<g class="st-ghostpath"' + dim("alt") + '><path d="' + GP.map(function (q, i) { return (i ? "L" : "M") + f(q[0]) + " " + f(q[1]); }).join("") + '"/>' +
           '<text x="' + f(GP[GP.length - 1][0]) + '" y="' + f(GP[GP.length - 1][1] + 16) + '" text-anchor="middle">Alternative</text></g>';
@@ -183,9 +187,9 @@
         g.push('<text class="st-inv-t"' + dim("inv") + ' x="' + f(pick[0]) + '" y="' + f(pick[1]) + '">' + esc(itx) + "</text>");
       }
       /* heute: Punkt mit Puls */
-      g.push('<circle class="st-pulse" cx="' + xNow + '" cy="' + f(P0[1]) + '" r="5"/><circle class="st-dot" cx="' + xNow + '" cy="' + f(P0[1]) + '" r="4.5"/>');
+      if (live) g.push('<circle class="st-pulse" cx="' + xNow + '" cy="' + f(P0[1]) + '" r="5"/><circle class="st-dot" cx="' + xNow + '" cy="' + f(P0[1]) + '" r="4.5"/>');
       /* Achse rechts: Rasterzahlen, Kurs-Etikett, Ungültig-Etikett, ohne Überlappung */
-      tags.push({ y: P0[1], t: num(close), c: "st-tag-p" });
+      if (live) tags.push({ y: P0[1], t: num(close), c: "st-tag-p" });
       if (invIn) tags.push({ y: y(inv.p), t: num(inv.p), c: "st-tag-i" });
       tags.sort(function (p, q) { return p.y - q.y; }); for (var i2 = 1; i2 < tags.length; i2++) if (tags[i2].y - tags[i2 - 1].y < 22) tags[i2].y = tags[i2 - 1].y + 22;
       tk.forEach(function (v) { if (tags.every(function (t1) { return Math.abs(t1.y - y(v)) > 16; })) g.push('<text class="st-ax" x="' + (plotR + 6) + '" y="' + f(y(v) + 4) + '">' + esc(num(v)) + "</text>"); });
@@ -197,7 +201,7 @@
       var ostep = Math.max(1, Math.floor(S.length / 360)), od = "";
       for (var oi = 0; oi < S.length; oi += ostep) od += (od ? "L" : "M") + f(ox(S[oi].t)) + " " + f(oy(S[oi].c));
       od += "L" + f(ox(tEnd)) + " " + f(oy(S[S.length - 1].c));
-      var wx = ox(t0), bigO = pivots(td.primary, close, tC, "BIG");
+      var wx = ox(t0), wx2 = ox(t1v), bigO = pivots(td.primary, close, tC, "BIG");
       /* Zeitreise: jeder Stand ein Punkt (grün: Kursziel zuerst, grau: ungültig zuerst, weiß: offen), die grüne Linie ist der gewählte */
       var snapMarks = tm ? SN.snaps.map(function (q, i) { var v = verdict(q); return '<circle class="st-ov-s st-ov-' + v + '" cx="' + f(ox(T(q.a))) + '" cy="' + (oy0 + OV - 7) + '" r="' + (i === st.tm ? 4 : 2.4) + '"/>'; }).join("") +
         '<line class="st-ov-at" x1="' + f(ox(tC)) + '" x2="' + f(ox(tC)) + '" y1="' + (oy0 + 2) + '" y2="' + (oy0 + OV - 2) + '"/>' : "";
@@ -205,12 +209,14 @@
         '<path class="st-ov-p" d="' + od + '"/>' + (bigO.length > 1 ? '<path class="st-ov-sk" d="' + bigO.map(function (q, i) { return (i ? "L" : "M") + f(ox(q.t)) + " " + f(oy(q.p)); }).join("") + '"/>' : "") +
         bigO.filter(function (q) { return q.l && !q.dev; }).map(function (q) { return '<circle class="st-ov-n" cx="' + f(ox(q.t)) + '" cy="' + f(oy(q.p)) + '" r="2.6"/>'; }).join("") +
         '<rect class="st-ov-sh" x="0" y="' + oy0 + '" width="' + f(Math.max(0, wx)) + '" height="' + OV + '"/>' +
-        '<rect class="st-ov-w" x="' + f(wx) + '" y="' + (oy0 + 1) + '" width="' + f(Math.max(4, plotR - 3 - wx)) + '" height="' + (OV - 2) + '" rx="8"/>' +
+        (live ? "" : '<rect class="st-ov-sh" x="' + f(wx2) + '" y="' + oy0 + '" width="' + f(Math.max(0, plotR - wx2)) + '" height="' + OV + '"/>') +
+        '<rect class="st-ov-w" x="' + f(wx) + '" y="' + (oy0 + 1) + '" width="' + f(Math.max(4, (live ? plotR - 3 : wx2) - wx)) + '" height="' + (OV - 2) + '" rx="8"/>' +
         '<rect class="st-ov-grip" x="' + f(wx - 3) + '" y="' + (oy0 + OV / 2 - 12) + '" width="6" height="24" rx="3"/>' +
+        (live ? "" : '<rect class="st-ov-grip" x="' + f(wx2 - 3) + '" y="' + (oy0 + OV / 2 - 12) + '" width="6" height="24" rx="3"/>') +
         snapMarks + '<text class="st-ax" x="' + (plotR + 6) + '" y="' + (oy0 + OV / 2 - 2) + '">' + new Date(tA).getUTCFullYear() + '</text><text class="st-ax" x="' + (plotR + 6) + '" y="' + (oy0 + OV / 2 + 12) + '">bis heute</text></g>');
       g.push('<g class="st-scrub"></g>');
       return { svg: '<svg class="st-svg' + (st.intro ? " st-intro" : "") + (st.reveal ? " st-reveal" : "") + '" viewBox="0 0 ' + W + " " + H + '" width="' + W + '" height="' + H + '" role="img" aria-label="Elliott-Wellen seit Börsengang mit Plan der Methode">' + g.join("") + "</svg>",
-               geo: { tm: tm, tC: tC, xR: xR, P: { big: big, sub: sub }, oy0: oy0, OV: OV, tA: tA, ox0: 4, ow: plotR - 8, x: x, y: y, xNow: xNow, vis: vis, t0: t0, tEnd: tEnd, big: big, sub: sub, nodes: nodes, H: H, padT: padT, padB: padB, close: close } };
+               geo: { tV: t1v, live: live, plotR: plotR, tm: tm, tC: tC, xR: xR, P: { big: big, sub: sub }, oy0: oy0, OV: OV, tA: tA, ox0: 4, ow: plotR - 8, x: x, y: y, xNow: xNow, vis: vis, t0: t0, tEnd: tEnd, big: big, sub: sub, nodes: nodes, H: H, padT: padT, padB: padB, close: close } };
     }
 
     function verdict(q) { var o = q.o || {}; return o.t && (!o.x || o.t <= o.x) ? "t" : o.x ? "x" : "o"; }
@@ -226,7 +232,7 @@
       }
       var td = V.td, rows = V.rows, W0 = words(), e = rows.filter(function (r) { return r.role === "entry"; })[0], t = rows.filter(function (r) { return r.role === "target"; })[0], c = td.close;
       var sc = td0.score, scH = sc && isNum(sc.v) ? '<div class="st-score' + (sc.v >= 65 ? " st-score-up" : sc.v <= 35 ? " st-score-dn" : "") + '" title="Setup-Score"><b>' + sc.v + "</b><small>Score</small></div>" : "";
-      var kick = esc((a.name || a.ticker || "") + " · Wellen seit " + new Date(V.S[0].t).getUTCFullYear());
+      var asOf = td0.asOf ? String(td0.asOf).slice(0, 10).split("-").reverse().join(".") : "", kick = esc((a.name ? a.name + " · Wellen seit " : "Elliott-Wellen seit ") + new Date(V.S[0].t).getUTCFullYear() + (asOf ? " · Wochenschluss " + asOf : ""));
       if (!t) return '<div class="st-head"><div class="st-f1"><div class="st-kick">' + kick + '</div><div class="st-big">' + esc(waveName(td.primary.cur, "BIG") + " läuft") + "</div></div>" + scH + "</div>";
       var sub = e ? '<span>' + esc("nach " + (e.step.dir === "DOWN" ? "Rücksetzer" : "Anstieg") + " bis " + num(e.lo) + "–" + num(e.hi) + " $") + "</span>" : "";
       return '<div class="st-head"><div class="st-f1"><div class="st-kick">' + kick + '</div><div class="st-big">' + esc(num(t.lo) + "–" + num(t.hi) + " $") + '</div><div class="st-sub"><b>' +
@@ -248,7 +254,7 @@
 
     var tween = null;
     function setRange(r, V, done) {
-      var to = startFor(r, V.S), from = st.t0 == null ? to : st.t0, t1 = null; st.range = r;
+      var to = startFor(r, V.S), from = st.t0 == null ? to : st.t0, t1 = null; st.range = r; st.t1 = null; if (stage) stage.classList.remove("st-past");
       if (tween) cancelAnimationFrame(tween);
       var reduce = global.matchMedia && global.matchMedia("(prefers-reduced-motion: reduce)").matches;
       if (reduce || from === to) { st.t0 = to; paint(true); if (done) done(); return; }
@@ -258,7 +264,7 @@
 
     var geo = null, stage = null, svgBox = null, bub = null, timer = null;
     function paint(fast) {
-      var V = view(), W = Math.max(320, Math.round(root.clientWidth || 390)), H = Math.round(Math.max(560, Math.min(780, (global.innerHeight || 844) - 64)));
+      var V = view(), W = Math.max(320, Math.round(root.clientWidth || 390)), H = Math.round(Math.max(540, Math.min(780, (global.innerHeight || 844) - (opt.chrome || 64))));   // chrome: Höhe von Kopf- und Fußleiste der Seite
       if (st.t0 == null) st.t0 = startFor(st.range, V.S);
       var R = svgOf(V, W, H); geo = R.geo;
       if (!stage || !fast) build(V, W, H);
@@ -268,7 +274,7 @@
       var S = V.S, hasAlt = !!(td0.alternative && td0.altPath && td0.altPath.length);
       var seg = [["focus", "Aktuell"]].concat(startFor("focus", S) > S[0].t + YEAR ? [["all", "Seit " + new Date(S[0].t).getUTCFullYear()]] : []);
       var stories = story(V), on = st.story >= 0 ? stories[st.story] : null;
-      root.innerHTML = '<div class="st" style="height:' + H + 'px">' + head(V) + '<div class="st-svgbox"></div><div class="st-bub" hidden></div>' +
+      root.innerHTML = '<div class="st' + (st.t1 != null ? " st-past" : "") + '" style="height:' + H + 'px">' + head(V) + '<div class="st-svgbox"></div><div class="st-bub" hidden></div><button type="button" class="st-back">Zurück zu heute →</button>' +
         (on ? '<div class="st-story" role="button" tabindex="0" aria-label="Weiter"><div class="st-bars">' + stories.map(function (_, i) { return '<i class="' + (i < st.story ? "done" : i === st.story ? "on" : "") + '"><b></b></i>'; }).join("") +
           '</div><p class="st-cap">' + esc(on.s) + '</p><p class="st-tap">Tippen für weiter · <button type="button" class="st-x">Beenden</button></p></div>'
           : '<div class="st-ctl"><div class="st-seg" role="group" aria-label="Zeitraum">' + seg.map(function (s) { return '<button type="button" data-r="' + s[0] + '" aria-pressed="' + (st.range === s[0]) + '">' + s[1] + "</button>"; }).join("") +
@@ -289,10 +295,30 @@
         sb.addEventListener("keydown", function (ev) { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); go(st.story + 1); } if (ev.key === "Escape") stop(); });
       }
       root.querySelectorAll(".st-which button").forEach(function (bt) { bt.addEventListener("click", function () { st.which = bt.getAttribute("data-w"); st.intro = true; paint(); }); });
-      svgBox.addEventListener("pointerdown", function (ev) { if (inOv(ev)) { drag = true; try { svgBox.setPointerCapture(ev.pointerId); } catch (e) { } ov(ev); } else scrub(ev); });
-      svgBox.addEventListener("pointermove", function (ev) { if (drag) { ov(ev); return; } if (inOv(ev)) { unscrub(); return; } if (ev.buttons || ev.pointerType === "mouse") scrub(ev); });
-      svgBox.addEventListener("pointercancel", function () { drag = false; }); svgBox.addEventListener("lostpointercapture", function () { drag = false; });
-      svgBox.addEventListener("pointerleave", unscrub); svgBox.addEventListener("pointerup", function (ev) { if (drag) { drag = false; return; } if (ev.pointerType !== "mouse") setTimeout(unscrub, 1600); });
+      /* Gesten: ein Finger = Lupe (Datum, Kurs, Welle), zwei Finger = Zoom, Doppeltipp = hinein bzw. zurück, Mausrad = Zoom */
+      var ptr = {}, pinch = null, lastTap = 0;
+      var pts2 = function () { return Object.keys(ptr).map(function (k) { return ptr[k]; }); };
+      svgBox.addEventListener("pointerdown", function (ev) {
+        ptr[ev.pointerId] = { x: ev.clientX, y: ev.clientY };
+        if (inOv(ev)) { drag = true; try { svgBox.setPointerCapture(ev.pointerId); } catch (e) { } ov(ev, true); return; }
+        var P2 = pts2();
+        if (P2.length === 2 && geo && st.story < 0) { var r0 = svgBox.getBoundingClientRect(); pinch = { d: Math.abs(P2[0].x - P2[1].x) + 1, c: (P2[0].x + P2[1].x) / 2 - r0.left, a0: st.t0, a1: geo.tV }; unscrub(); return; }
+        var now0 = Date.now(); if (ev.pointerType !== "mouse" && now0 - lastTap < 300) { dbl(ev); lastTap = 0; return; } lastTap = now0;
+        scrub(ev);
+      });
+      svgBox.addEventListener("pointermove", function (ev) {
+        if (ptr[ev.pointerId]) ptr[ev.pointerId] = { x: ev.clientX, y: ev.clientY };
+        if (drag) { ov(ev); return; }
+        if (pinch) { var P2 = pts2(); if (P2.length < 2) return; var d = Math.abs(P2[0].x - P2[1].x) + 1, k = pinch.d / d, G = geo, f0 = Math.max(0, Math.min(1, (pinch.c - 2) / (G.xR - 2))), sp = (pinch.a1 - pinch.a0) * k, tc = pinch.a0 + f0 * (pinch.a1 - pinch.a0); zoomTo(tc - f0 * sp, tc - f0 * sp + sp); return; }
+        if (inOv(ev)) { unscrub(); return; } if (ev.buttons || ev.pointerType === "mouse") scrub(ev);
+      });
+      var lift = function (ev) { delete ptr[ev.pointerId]; if (pts2().length < 2) pinch = null; };
+      svgBox.addEventListener("pointercancel", function (ev) { drag = false; lift(ev); }); svgBox.addEventListener("lostpointercapture", function () { drag = false; });
+      svgBox.addEventListener("wheel", function (ev) { if (!geo || st.story >= 0) return; ev.preventDefault(); var r0 = svgBox.getBoundingClientRect(); zoomAt(ev.clientX - r0.left, Math.exp(ev.deltaY * 0.0015)); }, { passive: false });
+      svgBox.addEventListener("dblclick", function (ev) { dbl(ev); });
+      function dbl(ev) { if (!geo || st.story >= 0) return; var r0 = svgBox.getBoundingClientRect(), S = view().S, full = S[S.length - 1].t - S[0].t; if (st.t1 != null || geo.tV - st.t0 < 1.2 * YEAR) setRange("focus", view()); else zoomAt(ev.clientX - r0.left, 0.4); }
+      var back = root.querySelector(".st-back"); if (back) back.addEventListener("click", function () { setRange("focus", view()); });
+      svgBox.addEventListener("pointerleave", unscrub); svgBox.addEventListener("pointerup", function (ev) { lift(ev); if (drag) { drag = false; return; } if (ev.pointerType !== "mouse") setTimeout(unscrub, 1600); });
     }
     var runT = null;
     function halt() { if (runT) { clearInterval(runT); runT = null; var r0 = root.querySelector(".st-run"); if (r0) r0.textContent = "▶"; } }
@@ -315,12 +341,36 @@
     var drag = false;
     function inOv(ev) { if (!geo || st.story >= 0) return false; var r = svgBox.getBoundingClientRect(), my = ev.clientY - r.top; return my >= geo.oy0 - 6 && my <= geo.oy0 + geo.OV + 6; }
     /* Übersicht ziehen: der Finger setzt den Beginn des Ausschnitts (rechts bleibt immer heute) */
-    function ov(ev) {
-      var r = svgBox.getBoundingClientRect(), G = geo, u = Math.max(0, Math.min(1, (ev.clientX - r.left - G.ox0) / G.ow)), S = view().S, tEnd = S[S.length - 1].t;
-      if (G.tm) { var tt = G.tA + u * (tEnd - G.tA), kb = 0; SN.snaps.forEach(function (q, i) { if (Math.abs(T(q.a) - tt) < Math.abs(T(SN.snaps[kb].a) - tt)) kb = i; }); halt(); if (kb !== st.tm) snap(kb); return; }
-      st.t0 = Math.min(tEnd - 1.5 * YEAR, G.tA + u * (tEnd - G.tA)); st.range = "custom"; unscrub();
+    /* Übersicht: linke oder rechte Kante zieht den Ausschnitt auf, das Fenster selbst verschiebt ihn, ein Tipp daneben springt dorthin */
+    var ovMode = null, ovOff = 0;
+    function ov(ev, start) {
+      var r = svgBox.getBoundingClientRect(), G = geo, mx = ev.clientX - r.left, S = view().S, tEnd = S[S.length - 1].t;
+      var tAt = function (px0) { return G.tA + Math.max(0, Math.min(1, (px0 - G.ox0) / G.ow)) * (tEnd - G.tA); }, oxOf = function (t) { return G.ox0 + (t - G.tA) / (tEnd - G.tA) * G.ow; };
+      if (G.tm) { var tt = tAt(mx), kb = 0; SN.snaps.forEach(function (q, i) { if (Math.abs(T(q.a) - tt) < Math.abs(T(SN.snaps[kb].a) - tt)) kb = i; }); halt(); if (kb !== st.tm) snap(kb); return; }
+      var a0 = st.t0, a1 = st.t1 == null ? tEnd : st.t1, span = a1 - a0;
+      if (start) {
+        var xl = oxOf(a0), xr = oxOf(a1);
+        ovMode = Math.abs(mx - xl) < 16 ? "l" : st.t1 != null && Math.abs(mx - xr) < 16 ? "r" : mx > xl && mx < xr ? "pan" : "jump";
+        ovOff = tAt(mx) - a0;
+        if (ovMode === "jump") { ovMode = "pan"; ovOff = span / 2; }
+      }
+      if (ovMode === "l") zoomTo(Math.min(tAt(mx), a1 - 0.6 * YEAR), a1);
+      else if (ovMode === "r") zoomTo(a0, Math.max(tAt(mx), a0 + 0.6 * YEAR));
+      else { var n0 = Math.max(G.tA, Math.min(tEnd - span, tAt(mx) - ovOff)); zoomTo(n0, n0 + span); }
+    }
+    /* Zoom: Ausschnitt setzen; reicht er bis heute, gilt er als „live“ (mit Plan), sonst Geschichte mit „→ heute“ */
+    function zoomTo(n0, n1) {
+      var S = view().S, tA = S[0].t, tEnd = S[S.length - 1].t, span = Math.max(0.6 * YEAR, Math.min(tEnd - tA, n1 - n0));
+      if (n1 > tEnd - 0.04 * span) { n1 = tEnd; n0 = tEnd - span; }
+      n0 = Math.max(tA, n0); n1 = Math.min(tEnd, Math.max(n0 + 0.6 * YEAR, n1));
+      st.t0 = n0; st.t1 = n1 >= tEnd ? null : n1; st.range = "custom"; unscrub();
       root.querySelectorAll(".st-seg button").forEach(function (o) { o.setAttribute("aria-pressed", "false"); });
+      if (stage) stage.classList.toggle("st-past", st.t1 != null);
       paint(true);
+    }
+    function zoomAt(px0, k) {
+      var G = geo, a0 = st.t0, a1 = G.tV, f0 = Math.max(0, Math.min(1, (px0 - 2) / (G.xR - 2))), tc = a0 + f0 * (a1 - a0), sp = (a1 - a0) * k;
+      zoomTo(tc - f0 * sp, tc - f0 * sp + sp);
     }
     function unscrub() { if (!geo) return; var g = svgBox.querySelector(".st-scrub"); if (g) g.innerHTML = ""; bub.hidden = true; }
     var lastWave = null, lastPad = null;
@@ -360,7 +410,7 @@
           lx = best.x; ly = Math.min(best.y, G.y(R0.hi)) - 30; gl = measure(G, R0, best.x);
           if (best !== lastPad && global.navigator && navigator.vibrate) { try { navigator.vibrate(8); } catch (e) { } } lastPad = best; }
       } else {
-        var t = G.t0 + (mx - 2) / (G.xR - 2) * (G.tEnd - G.t0), p = G.vis[0];
+        var t = G.t0 + (mx - 2) / (G.xR - 2) * (G.tV - G.t0), p = G.vis[0];
         G.vis.forEach(function (q) { if (Math.abs(q.t - t) < Math.abs(p.t - t)) p = q; });
         var inW = function (P) { for (var i = 1; i < P.length; i++) if (p.t > P[i - 1].t && p.t <= P[i].t && P[i].l) return P[i]; return null; };
         var wb = inW(G.big), ws = inW(G.sub);

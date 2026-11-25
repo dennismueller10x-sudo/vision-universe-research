@@ -13,7 +13,7 @@
     zonen: { target: "Zielzone der Methode", entry: "Zone laut Methode", guard: null, guardText: null, invalid: "Ungültig-Marke laut Methode", tag: "Zonen nach der Elliott-Methode", tShort: "Ziel", eShort: "Zone" }
   };
   /* KURSMARKEN-END */
-  var mode = "zonen", ready = null;
+  var mode = "zonen", ready = null, HISTORY = "/quant/data/technical-intelligence/v3/elliott-history/";
   function load() {
     if (ready) return ready;
     ready = (global.fetch ? fetch(CONFIG, { credentials: "same-origin" }).then(function (r) { return r.ok ? r.json() : null; }) : Promise.resolve(null))
@@ -331,6 +331,18 @@
     if (!td || td.status !== "OK" || !td.primary || !(td.path && td.path.length) || !(td.monthly && td.monthly.length >= 6)) return null;
     var host = document.createElement("section");
     host.className = "bp"; host.setAttribute("aria-label", "Großes Bild");
+    /* Wellenbühne (Owner 25.11.2026) ist das Große Bild; das frühere Bild bleibt unter #/TICKER?bild=alt bzw. ?bild=a…d erreichbar */
+    var vq = variantOf(), alt = /[?&]bild=alt\b/.test(String((global.location && global.location.hash) || ""));
+    if (global.VUElliottStage && !vq && !alt) {
+      host.className = "bp bp-stage";
+      var hist = null, sym = String(a.ticker || a.symbol || "").toUpperCase();
+      var go = function () { host.replaceChildren(); global.VUElliottStage.mount(host, a, { history: hist, chrome: 150 }); };   /* chrome: App-Kopf 56 px, Dock 78 px, Luft */
+      go();
+      /* Zeitreise: Quartalsstände der Zählung, falls für diesen Wert gebaut (sonst ohne ⟲) */
+      var hp = global.fetch && sym ? fetch(HISTORY + encodeURIComponent(sym) + ".json", { credentials: "same-origin" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }) : Promise.resolve(null);
+      Promise.all([load(), hp]).then(function (x) { hist = x[1]; if (host.isConnected || !host.parentNode) go(); });
+      return host;
+    }
     var again = function () { render(host, a, host.dataset.w || "main"); };
     again();
     load().then(again);
