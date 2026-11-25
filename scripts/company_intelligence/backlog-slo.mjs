@@ -17,6 +17,10 @@ export function backlogSLO(ratio){
  if(!Number.isFinite(ratio))return 'CRITICAL';
  return ratio<=BACKLOG_LIMITS.healthy?'HEALTHY':ratio<=BACKLOG_LIMITS.warning?'WARNING':'CRITICAL';
 }
+/* Laufzeit-Fruehwarnung (Steuerung 25.11.2026): Der Python-Refresh hat in refresh-run.mjs (Belegdatei, gesperrt) einen festen Prozess-Timeout von 1200 s;
+   die Voll-Laeufe enden bei Median 1140 s, Maximum 1158 s (Abstand 42 s). Ueber 1180 s: WARNING im Health-Lauf, kein Abbruch, kein CRITICAL. */
+export const RUNTIME_WARN_SECONDS=1180,PROCESS_TIMEOUT_SECONDS=1200;
+export function runtimeSLO(seconds){return Number.isFinite(seconds)?(seconds>RUNTIME_WARN_SECONDS?'WARNING':'HEALTHY'):null;}
 export const isFullScope=r=>r?.scope==='PER_ISSUER_ELIGIBILITY'||r?.cohortIssuers>45;
 export function backlogRatio(r){
  const over=r?.scheduler?.dueOverSevenDays,total=r?.eligibleSources;
@@ -34,6 +38,8 @@ export function applyBacklog(verdict,report,now=Date.now()){
   dueOverSevenDays:report.scheduler.dueOverSevenDays??null,eligibleSources:report.eligibleSources??null,
   newsLaneSLO:news,secLaneSLO:sec,reportAsOf:report.asOf||null,refreshSLO};
  const all=[refreshSLO,out.buildSLO,out.publicationSLO];
+ const rt=runtimeSLO(report.runtimeSeconds);
+ if(rt){out.pythonRuntimeSeconds=report.runtimeSeconds;out.runtimeSLO=rt;if(rt==='WARNING')all.push('WARNING');}
  out.status=all.includes('CRITICAL')?'CRITICAL':all.includes('WARNING')?'WARNING':out.publicationSLO==='OFF'?'OFF':'HEALTHY';
  out.exitCode=out.status==='CRITICAL'?1:0;
  return out;
@@ -79,6 +85,7 @@ if(process.argv[1]&&import.meta.url===new URL('file://'+process.argv[1]).href){
   if(final===verdict)console.log('::notice::Refresh-SLO: Stempel gilt (kein Vollumfang-Bericht lesbar)');
  }catch(e){console.log('::warning::Rueckstandsquote nicht lesbar, Stempel-Urteil bleibt: '+String(e?.message||e).slice(0,120));}
  writeFileSync(file,JSON.stringify(final,null,2)+'\n');console.log(JSON.stringify(final));
+ if(final.runtimeSLO==='WARNING')console.log(`::warning::Company Intelligence Python-Laufzeit ${final.pythonRuntimeSeconds} s (Warnung ab ${RUNTIME_WARN_SECONDS} s, fester Prozess-Timeout ${PROCESS_TIMEOUT_SECONDS} s in refresh-run.mjs)`);
  if(final.status==='CRITICAL')console.log(`::error::Company Intelligence SLO CRITICAL (refresh ${final.refreshSLO}${final.backlogRatio!==undefined?' backlog '+final.backlogRatio:''}, build ${final.buildSLO}, publication ${final.publicationSLO}, production ${final.productionState})`);
  process.exitCode=final.exitCode;
 }
