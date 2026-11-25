@@ -10,7 +10,7 @@
     "blockMaxMs": 20700000,
     "branch": "main"
   },
-  "updatedAt": "2026-11-25T17:49:47.618Z",
+  "updatedAt": "2026-11-25T17:53:55.323Z",
   "cycles": [
     {
       "cycle": 18,
@@ -1983,10 +1983,10 @@
       "written": 1296,
       "requests": 1429,
       "notPublishable": 68,
-      "addAt": "2026-11-25T17:45:41.383Z",
-      "commitAt": "2026-11-25T17:45:41.621Z",
-      "pushAt": "2026-11-25T17:45:44.566Z",
-      "sha": "34c9d1e590",
+      "addAt": "2026-11-25T17:49:47.618Z",
+      "commitAt": "2026-11-25T17:49:47.864Z",
+      "pushAt": "2026-11-25T17:49:51.865Z",
+      "sha": "eb7397f98e",
       "changed": true,
       "ok": true,
       "reason": null,
@@ -2022,11 +2022,50 @@
           "fetchEndAt": "2026-11-25T17:49:47.617Z",
           "ok": true,
           "written": 437,
-          "requests": 476
+          "requests": 476,
+          "sha": "eb7397f98e",
+          "pushAt": "2026-11-25T17:49:51.865Z",
+          "changed": true
         }
       ],
       "snapshotAt": "2026-11-25T17:49:47.600Z",
-      "pushed": true
+      "pushed": true,
+      "watchdog": {
+        "verdict": "PASS",
+        "codes": []
+      }
+    },
+    {
+      "cycle": 17,
+      "runId": "45619169927",
+      "triggerAt": "2026-11-25T17:49:52.166Z",
+      "marketStateAtTrigger": "OPEN",
+      "localTimeAtTrigger": "12:49:52",
+      "fetchStartAt": "2026-11-25T17:49:52.167Z",
+      "fetchEndAt": "2026-11-25T17:53:55.322Z",
+      "session": "2026-11-25",
+      "written": 431,
+      "requests": 477,
+      "notPublishable": 23,
+      "addAt": null,
+      "commitAt": null,
+      "pushAt": null,
+      "sha": null,
+      "changed": false,
+      "ok": true,
+      "reason": null,
+      "parts": [
+        {
+          "part": 1,
+          "of": 3,
+          "fetchStartAt": "2026-11-25T17:49:52.167Z",
+          "fetchEndAt": "2026-11-25T17:53:55.322Z",
+          "ok": true,
+          "written": 431,
+          "requests": 477
+        }
+      ],
+      "snapshotAt": "2026-11-25T17:53:55.306Z"
     }
   ]
 }
