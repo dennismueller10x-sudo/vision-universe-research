@@ -302,14 +302,21 @@
     });
     return sec;
   }
-  function top10Section(row, ctx) {
-    var sec = h('section', 'dr-sec dr-sec--top10'); sec.dataset.row = 'im-blick';
+  function top10Section(row, ctx, slot) {
     var cards = R().showcaseCards(row.cards, 10);
+    /* Der statische Platz (index.html) trägt den Kopf schon: er bleibt als derselbe Knoten stehen und bekommt nur die Reihe. Ein neu gebauter Kopf wäre ein
+       neuer, etwas größerer LCP-Kandidat (Schrift getauscht): sein Zeitpunkt zählte dann statt des frühen statischen Absatzes. */
+    var keep = slot && slot.querySelector('.dr-head') ? slot : null;
+    var sec = keep || h('section', 'dr-sec dr-sec--top10'); sec.dataset.row = 'im-blick';
     /* Ein Satz zur Regel bleibt sichtbar (Rangliste, docs/legal/WORTWAHL.md): die Reihenfolge folgt der Regel, nicht einer Einschätzung. */
-    sec.innerHTML = R().top10Head(cards.length, rowHref('im-blick'));
-    var track = rail('Top 10 heute'); sec.appendChild(track);
-    cards.forEach(function (c, i) { track.appendChild(top10(c, i, ctx)); });
+    if (!keep) sec.innerHTML = R().top10Head(cards.length, rowHref('im-blick'));
+    else {
+      var all = sec.querySelector('.dr-head__t a'), txt = 'Alle ' + cards.length + ' ›';
+      if (all && all.textContent !== txt) { all.textContent = txt; all.setAttribute('aria-label', 'Alle ' + cards.length + ' Aktien: Heute im Blick'); }
+    }
+    var track = rail('Top 10 heute'); cards.forEach(function (c, i) { track.appendChild(top10(c, i, ctx)); });
     if (!track.children.length) return null;
+    sec.appendChild(track);
     return sec;
   }
   /** Was sich heute bewegt (Prototyp „dv“): bekannte Namen mit der Tagesveränderung als Balken nach links und rechts. */
@@ -569,7 +576,8 @@
           var view = D.Featured && D.Featured.live ? D.Featured.live(surface, ctx, billboard) : billboard(surface, ctx);
           bb.replaceWith(view);
         } else bb.innerHTML = '<div class="dp-hero__body"><p class="vu-ltag">Heute im Blick</p>' + U().blank('Heute steht keine Aktie im Blick.') + '</div>';
-        var t = imBlick && top10Section(imBlick, ctx); if (t) topSlot.replaceWith(t); else topSlot.remove();
+        var t = imBlick && top10Section(imBlick, ctx, topSlot);
+        if (t === topSlot) topSlot.classList.remove('dr-slot'); else if (t) topSlot.replaceWith(t); else topSlot.remove();
         if (!drawn) { drawn = true; document.dispatchEvent(new Event('vu-home-drawn')); }
       }).catch(function () {
         if (!bb.isConnected) return;

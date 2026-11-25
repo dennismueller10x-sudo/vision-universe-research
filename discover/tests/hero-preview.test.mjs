@@ -113,3 +113,14 @@ test('Top-10-Kopf: Adresse der Vorschau gilt auch zur Laufzeit (keine Themenwelt
  assert.match(home,/n !== topBox\) n\.remove\(\)/);assert.match(home,/topWait: top/);assert.match(ui,/if \(topBox\) topBox\.remove\(\)/);
  assert.match(ui,/var topSlot = top0 \|\| h\('div', 'dr-slot'\)/);
 });
+
+/* Der statische Kopf bleibt als Knoten stehen (25.11.2026): live gibt es genau eine echte Zeichnung (Monitor-Ereignisse: vu-fx-ready 3,7 s, danach vu-home-drawn);
+   ein neu gebauter Kopf ersetzte den früh gemalten Absatz (2,1 s) durch einen etwas größeren und zählte als späterer LCP-Kandidat (3,6 s). */
+test('Top-10-Sektion übernimmt den statischen Kopf als denselben Knoten statt ihn neu zu bauen',()=>{
+ const ui=src('discover/ui/reihen.js');
+ assert.match(ui,/function top10Section\(row, ctx, slot\)/);
+ assert.match(ui,/var keep = slot && slot\.querySelector\('\.dr-head'\) \? slot : null;/);
+ assert.match(ui,/if \(!keep\) sec\.innerHTML = R\(\)\.top10Head\(/,'ohne statischen Platz weiter die Engine-Funktion');
+ assert.match(ui,/var t = imBlick && top10Section\(imBlick, ctx, topSlot\);/);
+ assert.match(ui,/if \(t === topSlot\) topSlot\.classList\.remove\('dr-slot'\); else if \(t\) topSlot\.replaceWith\(t\); else topSlot\.remove\(\);/);
+});
