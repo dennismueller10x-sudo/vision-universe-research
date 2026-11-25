@@ -1,9 +1,9 @@
 {
  "schemaVersion": "backtest-readiness-2.0.0",
- "generatedAt": "2026-11-25T07:44:49.982Z",
+ "generatedAt": "2026-11-25T08:49:07.481Z",
  "signalStudy": {
   "asOf": "2026-11-27",
-  "generatedAt": "2026-11-25T07:41:37.639Z",
+  "generatedAt": "2026-11-25T08:46:33.012Z",
   "returnType": "TOTAL_RETURN",
   "studySchemaVersion": "signal-backtest-study-2.0.0",
   "studyEngineVersion": "signal-backtest-2.0.0",
@@ -17,8 +17,8 @@
    "contract": "canonical-total-return-1.0.0",
    "coverage": {
     "unit": "SECURITY_PRICE_SERIES",
-    "titles": 5760,
-    "withTotalReturn": 5638,
+    "titles": 5755,
+    "withTotalReturn": 5633,
     "share": 0.979,
     "minimumShare": 0.95
    }
@@ -90,14 +90,14 @@
    "id": "priceSplitAdjusted",
    "label": "Kurshistorie splitbereinigt",
    "weekly": {
-    "titles": 5760,
+    "titles": 5755,
     "from": "1990-01-05",
     "grain": "WEEKLY",
     "endedBeforeMarch2026": 0
    },
    "daily": {
     "titlesFullHistory": 5,
-    "titlesLastYear": 5998
+    "titlesLastYear": 5993
    }
   },
   {
@@ -105,14 +105,14 @@
    "label": "Kurshistorie Gesamtrendite",
    "weekly": {
     "unit": "SECURITY_PRICE_SERIES",
-    "titles": 5638,
-    "eligibleTitles": 5760,
+    "titles": 5633,
+    "eligibleTitles": 5755,
     "share": 0.979,
     "state": "AVAILABLE",
     "reason": null,
     "contract": "canonical-total-return-1.0.0",
     "asOf": "2026-11-27",
-    "generatedAt": "2026-11-25T07:41:37.639Z"
+    "generatedAt": "2026-11-25T08:46:33.012Z"
    },
    "daily": {
     "titles": 5,
@@ -139,8 +139,8 @@
    "id": "patternObservations",
    "label": "Muster-Beobachtungen",
    "studyFindings": 163,
-   "robust": 96,
-   "matchSnapshots": 28
+   "robust": 97,
+   "matchSnapshots": 29
   },
   {
    "id": "technicalStates",
@@ -186,8 +186,8 @@
   {
    "id": "pitFundamentals",
    "label": "Fundamentaldaten point-in-time",
-   "ready": 5002,
-   "of": 6009
+   "ready": 4998,
+   "of": 6001
   },
   {
    "id": "survivorship",
@@ -210,7 +210,7 @@
      "id": "history",
      "label": "Wochenhistorie",
      "state": "PASS",
-     "value": "5760 Titel seit 1990-01-05",
+     "value": "5755 Titel seit 1990-01-05",
      "reason": null
     },
     {
@@ -317,14 +317,14 @@
      "id": "history",
      "label": "Wochenhistorie",
      "state": "PASS",
-     "value": "5760 Titel seit 1990-01-05",
+     "value": "5755 Titel seit 1990-01-05",
      "reason": null
     },
     {
      "id": "totalReturn",
      "label": "Gesamtrendite",
      "state": "PASS",
-     "value": "5638 von 5760 Wertpapier-Zeitreihen (97.9 %), canonical-total-return-1.0.0",
+     "value": "5633 von 5755 Wertpapier-Zeitreihen (97.9 %), canonical-total-return-1.0.0",
      "reason": null
     },
     {
@@ -346,40 +346,40 @@
     {
      "id": "MOMENTUM_IMPROVED",
      "trust": "LIMITED",
-     "n": 87699,
-     "titles": 4947,
+     "n": 87597,
+     "titles": 4942,
      "displayAllowed": true,
      "returnType": "TOTAL_RETURN"
     },
     {
      "id": "MOMENTUM_DETERIORATED",
      "trust": "LIMITED",
-     "n": 87298,
-     "titles": 4937,
+     "n": 87191,
+     "titles": 4932,
      "displayAllowed": true,
      "returnType": "TOTAL_RETURN"
     },
     {
      "id": "TREND_UP",
      "trust": "LIMITED",
-     "n": 84899,
-     "titles": 4916,
+     "n": 84794,
+     "titles": 4911,
      "displayAllowed": true,
      "returnType": "TOTAL_RETURN"
     },
     {
      "id": "TREND_DOWN",
      "trust": "LIMITED",
-     "n": 84445,
-     "titles": 4908,
+     "n": 84342,
+     "titles": 4903,
      "displayAllowed": true,
      "returnType": "TOTAL_RETURN"
     },
     {
      "id": "NEW_52W_HIGH",
      "trust": "LIMITED",
-     "n": 55538,
-     "titles": 4702,
+     "n": 55468,
+     "titles": 4697,
      "displayAllowed": true,
      "returnType": "TOTAL_RETURN"
     }
@@ -463,7 +463,7 @@
      "id": "pitFundamentals",
      "label": "Fundamentaldaten datierbar",
      "state": "PASS",
-     "value": "5002 von 6009 Titeln",
+     "value": "4998 von 6001 Titeln",
      "reason": null
     },
     {
@@ -490,7 +490,7 @@
      "id": "study",
      "label": "Musterstudie mit Out-of-Sample",
      "state": "PASS",
-     "value": "163 Befunde, davon 96 robust",
+     "value": "163 Befunde, davon 97 robust",
      "reason": null
     },
     {
