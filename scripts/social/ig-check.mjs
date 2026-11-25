@@ -41,7 +41,7 @@ export function makeClient(base, key, fetchImpl = fetch, { retries = 3, waitMs =
         continue;
       }
       const body = await res.json().catch(() => ({}));
-      if (res.status === 429 || res.status >= 500) { last = new Error(`HTTP ${res.status} ${body.error || ""}`.trim()); continue; }
+      if (res.status === 429 || res.status >= 500) { last = new Error(`HTTP ${res.status} ${body.error || ""} ${JSON.stringify(body).slice(0, 600)}`.trim()); continue; }
       if (!res.ok) throw new Error(`HTTP ${res.status} ${body.error || ""}`.trim());
       return body;
     }
@@ -102,5 +102,5 @@ async function main() {
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  main().catch((e) => { console.error("Fehler: " + String(e.message).slice(0, 200)); process.exit(1); });
+  main().catch((e) => { console.error("Fehler: " + String(e.message).slice(0, 800)); process.exit(1); });
 }
