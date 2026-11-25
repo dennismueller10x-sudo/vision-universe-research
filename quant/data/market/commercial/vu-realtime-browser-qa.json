@@ -1,11 +1,11 @@
 {
   "schemaVersion": "vu-realtime-browser-qa-1.1.0",
   "auftrag": "Owner 17.09.2026 §19/§20: Realtime auf der Aktienseite, im echten Browser",
-  "checkedAt": "2026-11-25T14:44:07.778Z",
+  "checkedAt": "2026-11-25T14:55:56.548Z",
   "origin": "https://research.visionuniverse.de",
   "session": {
     "phase": "REGULAR",
-    "localTime": "09:44:07",
+    "localTime": "09:55:56",
     "isOpen": true
   },
   "mode": "WORKTREE",
@@ -15,9 +15,9 @@
     {
       "symbol": "AAPL",
       "prices": {
-        "kopf": 311.76,
+        "kopf": 306.82,
         "chart": 343.6,
-        "kopfText": "311,76 €−1,90 % heute",
+        "kopfText": "306,82 €−1,90 % zum Vortag",
         "deviation": null
       },
       "connected": true,
@@ -25,8 +25,8 @@
       "subscribed": [
         "AAPL"
       ],
-      "ticks": 22,
-      "firstTickMs": 249,
+      "ticks": 0,
+      "firstTickMs": null,
       "chartUpdatesAfterLoad": 0,
       "surface": {
         "letzteSitzung": true,
@@ -41,24 +41,18 @@
       "labels": [
         "Letzter Handelstag · 2026-11-20 · heutige Kurse fehlen"
       ],
-      "latencyMs": {
-        "samples": 22,
-        "providerToCloudflare": 145,
-        "cloudflareToClient": 477,
-        "endToEnd": 622,
-        "max": 1367
-      },
+      "latencyMs": null,
       "consoleErrors": [
         "Failed to load resource: the server responded with a status of 404 (Not Found)"
       ],
-      "verdict": "TICKS"
+      "verdict": "CONNECTED_NO_TRADE"
     },
     {
       "symbol": "NVDA",
       "prices": {
-        "kopf": 127.1,
+        "kopf": 112.43,
         "chart": 126.01,
-        "kopfText": "127,10 €−14,01 % heute",
+        "kopfText": "112,43 €−14,01 % zum Vortag",
         "deviation": null
       },
       "connected": true,
@@ -66,8 +60,8 @@
       "subscribed": [
         "NVDA"
       ],
-      "ticks": 23,
-      "firstTickMs": 250,
+      "ticks": 0,
+      "firstTickMs": null,
       "chartUpdatesAfterLoad": 0,
       "surface": {
         "letzteSitzung": true,
@@ -82,17 +76,11 @@
       "labels": [
         "Letzter Handelstag · 2026-11-20 · heutige Kurse fehlen"
       ],
-      "latencyMs": {
-        "samples": 23,
-        "providerToCloudflare": 6570,
-        "cloudflareToClient": 634,
-        "endToEnd": 7204,
-        "max": 8061
-      },
+      "latencyMs": null,
       "consoleErrors": [
         "Failed to load resource: the server responded with a status of 404 (Not Found)"
       ],
-      "verdict": "TICKS"
+      "verdict": "CONNECTED_NO_TRADE"
     },
     {
       "symbol": "AFG",
@@ -150,15 +138,16 @@
         "opens": 2,
         "closes": 1,
         "errors": 0,
-        "messages": 17,
-        "ticks": 13,
+        "messages": 15,
+        "ticks": 0,
         "denied": 0,
         "retries": 1,
         "subscribes": 1,
         "unsubscribes": 0,
-        "notifications": 18,
-        "lastMessageAt": "2026-11-25T14:47:37.152Z",
-        "lastTickAt": "2026-11-25T14:47:37.152Z",
+        "notifications": 5,
+        "lastMessageAt": "2026-11-25T14:59:27.246Z",
+        "lastTickAt": "2026-11-25T14:59:27.246Z",
+        "angebote": 11,
         "state": "OPEN",
         "reason": null,
         "symbols": 1,
@@ -170,7 +159,7 @@
     "freshSeconds": 90,
     "vorher": {
       "label": "Letzter Handelstag · 2026-11-20 · heutige Kurse fehlen",
-      "live": true
+      "live": false
     },
     "nachher": {
       "label": "Letzter Handelstag · 2026-11-20 · heutige Kurse fehlen",
@@ -195,10 +184,10 @@
     {
       "id": "ticksAAPLNVDA",
       "question": "AAPL und NVDA liefern Kurse ohne Neuladen",
-      "ok": true,
+      "ok": false,
       "detail": [
-        "AAPL:22",
-        "NVDA:23"
+        "AAPL:0",
+        "NVDA:0"
       ]
     },
     {
@@ -226,8 +215,8 @@
       "question": "Kopf und Chart zeigen denselben Kurs",
       "ok": true,
       "detail": [
-        "AAPL: {\"kopf\":311.76,\"chart\":343.6,\"kopfText\":\"311,76 €−1,90 % heute\",\"deviation\":null}",
-        "NVDA: {\"kopf\":127.1,\"chart\":126.01,\"kopfText\":\"127,10 €−14,01 % heute\",\"deviation\":null}",
+        "AAPL: {\"kopf\":306.82,\"chart\":343.6,\"kopfText\":\"306,82 €−1,90 % zum Vortag\",\"deviation\":null}",
+        "NVDA: {\"kopf\":112.43,\"chart\":126.01,\"kopfText\":\"112,43 €−14,01 % zum Vortag\",\"deviation\":null}",
         "AFG: {\"kopf\":141.5,\"chart\":157.99,\"kopfText\":\"141,50 €+0,71 % zum Vortag\",\"deviation\":null}"
       ]
     },
@@ -249,8 +238,8 @@
     },
     {
       "id": "liveEtikett",
-      "question": "ein Titel mit frischen Kursen zeigt 'Markt geoeffnet · Live'",
-      "ok": false,
+      "question": "ein Titel mit bestaetigtem Trade zeigt 'Markt geoeffnet · Live' (ohne Trade: 'heutige Kurse fehlen')",
+      "ok": true,
       "detail": [
         "AAPL: [\"Letzter Handelstag · 2026-11-20 · heutige Kurse fehlen\"]",
         "NVDA: [\"Letzter Handelstag · 2026-11-20 · heutige Kurse fehlen\"]",
@@ -297,15 +286,16 @@
           "opens": 2,
           "closes": 1,
           "errors": 0,
-          "messages": 17,
-          "ticks": 13,
+          "messages": 15,
+          "ticks": 0,
           "denied": 0,
           "retries": 1,
           "subscribes": 1,
           "unsubscribes": 0,
-          "notifications": 18,
-          "lastMessageAt": "2026-11-25T14:47:37.152Z",
-          "lastTickAt": "2026-11-25T14:47:37.152Z",
+          "notifications": 5,
+          "lastMessageAt": "2026-11-25T14:59:27.246Z",
+          "lastTickAt": "2026-11-25T14:59:27.246Z",
+          "angebote": 11,
           "state": "OPEN",
           "reason": null,
           "symbols": 1,
@@ -352,7 +342,7 @@
     }
   ],
   "result": "FAIL",
-  "reason": "keineFehler,liveEtikett",
+  "reason": "ticksAAPLNVDA,keineFehler",
   "dreiWelten": [
     {
       "symbol": "NVDA",
