@@ -2,7 +2,7 @@
  "schemaVersion": "vu-market-pulse-1.1.0",
  "methodVersion": "market-pulse-1.0.0",
  "configVersion": "vu-market-pulse-config-1.0.0",
- "generatedAt": "2026-11-25T06:23:33.699Z",
+ "generatedAt": "2026-11-25T06:42:28.385Z",
  "kind": "DESCRIPTIVE_MARKET_PULSE",
  "notes": {
   "quantMarketRegime": "FAIL_CLOSED - nicht verwendet, nicht imitiert",
@@ -11,9 +11,10 @@
   "forecast": "Beschreibung des beobachteten Zustands, keine Prognose, keine Anlageberatung."
  },
  "headline": {
-  "text": "Abwärtstrend bei den großen US-Markt-Trackern · Schwankungen hoch",
+  "text": "Abwärtstrend – die Mehrheit der Aktien ist schwach · Schwankungen hoch",
   "basis": [
    "TREND",
+   "BREADTH",
    "RISK"
   ],
   "state": "AVAILABLE"
@@ -45,8 +46,8 @@
     "label": "Breit konstruktiv"
    }
   ],
-  "statement": "Abwärtstrend, negative Dynamik, hohes Risiko.",
-  "explanation": "Die großen US-Märkte liegen im Abwärtstrend und die Dynamik ist negativ und das Risiko ist hoch. Die Marktbreite ist nicht aktuell – sie zählt deshalb weder dafür noch dagegen.",
+  "statement": "Abwärtstrend, negative Dynamik, schmale Beteiligung, hohes Risiko.",
+  "explanation": "Die großen US-Märkte liegen im Abwärtstrend und die Dynamik ist negativ und nur wenige Aktien tragen die Bewegung und das Risiko ist hoch.",
   "investor": "Das Marktbild spricht derzeit für erhöhte Vorsicht bei neuen Positionen.",
   "why": {
    "support": [],
@@ -64,6 +65,12 @@
      "text": "Die Märkte sind über drei und sechs Monate gefallen."
     },
     {
+     "dimension": "BREADTH",
+     "state": "NARROW",
+     "label": "Schmal",
+     "text": "Nur eine Minderheit der Aktien liegt über ihrem Trend – die Bewegung hängt an wenigen Titeln."
+    },
+    {
      "dimension": "RISK",
      "state": "HIGH",
      "label": "Hoch",
@@ -71,14 +78,7 @@
     }
    ],
    "neutral": [],
-   "open": [
-    {
-     "dimension": "BREADTH",
-     "state": "NOT_CURRENT",
-     "label": "Nicht aktuell",
-     "text": "Die Marktbreite ist nicht aktuell – sie zählt deshalb weder dafür noch dagegen."
-    }
-   ],
+   "open": [],
    "context": [
     {
      "dimension": "CROSS_ASSET",
@@ -91,21 +91,21 @@
   "counts": {
    "support": 0,
    "neutral": 0,
-   "headwind": 3,
-   "open": 1
+   "headwind": 4,
+   "open": 0
   },
   "states": {
    "TREND": "NEGATIVE",
    "MOMENTUM": "FALLING",
    "RISK": "HIGH",
-   "BREADTH": "NOT_CURRENT",
+   "BREADTH": "NARROW",
    "CROSS_ASSET": "OBSERVED"
   },
   "methodology": "Feste Entscheidungstabelle (market-environment-1.0.0): Trend und Momentum bilden gemeinsam die Basisstufe (sie überschneiden sich und zählen deshalb nicht doppelt). Das Risiko begrenzt nach oben (erhöht: höchstens „Selektiv“, hoch: höchstens „Vorsichtig“). Die Marktbreite bestätigt: „Breit konstruktiv“ nur mit aktueller breiter Beteiligung; schmale Breite begrenzt auf „Selektiv“. Fehlt die Marktbreite, zählt sie weder dafür noch dagegen. Der Cross-Asset-Kontext beschreibt Beziehungen und stimmt nicht mit ab. Kein Score, keine Gewichte, keine Prognose.",
   "disclaimer": "Einordnung des Marktumfelds aus festen Regeln – keine Anlageberatung, keine Kauf- oder Verkaufsempfehlung, keine Prognose."
  },
  "evaluation": {
-  "generatedAt": "2026-11-25T06:23:33.699Z",
+  "generatedAt": "2026-11-25T06:42:28.385Z",
   "dataAsOf": "2026-11-24",
   "previousDataAsOf": "2026-11-23",
   "schedule": {
@@ -142,11 +142,11 @@
     "key": "BREADTH",
     "label": "Marktbreite",
     "from": "Schmale Beteiligung",
-    "to": "Nicht aktuell",
-    "change": "UNKNOWN",
+    "to": "Schmale Beteiligung",
+    "change": "UNCHANGED",
     "fromValue": "28 % über 50 Tage",
-    "toValue": null,
-    "delta": null
+    "toValue": "30 % über 50 Tage",
+    "delta": 2.45
    },
    {
     "key": "MOMENTUM",
@@ -279,19 +279,6 @@
    "anchor": "puls-trend"
   },
   {
-   "dimension": "BREADTH",
-   "title": "Marktbreite",
-   "state": "NOT_CURRENT",
-   "stateLabel": "Nicht aktuell",
-   "why": "Aktuelle Breitendaten fehlen. Sie würden zeigen, ob viele Aktien die Bewegung mittragen – erst dann ist „Breit konstruktiv“ möglich.",
-   "watch": [
-    "Die Breitendaten stammen vom 2026-11-23 und sind älter als der letzte Handelstag (2026-11-24). Keine Einordnung."
-   ],
-   "symbols": [],
-   "near": false,
-   "anchor": "maerkte-breite"
-  },
-  {
    "dimension": "CROSS_ASSET",
    "title": "Kontext: Gold und Aktien fallen gleichzeitig",
    "state": "OBSERVED",
@@ -347,18 +334,18 @@
    "previousDate": "2026-11-23"
   },
   "BREADTH": {
-   "value": 27.91,
+   "value": 30.36,
    "min": 0,
    "max": 100,
    "unit": "PERCENT",
-   "current": false,
+   "current": true,
    "marks": [
     {
      "at": 50,
      "label": "Mehrheit"
     }
    ],
-   "valueText": "28 % über der 50-Tage-Linie (Stand 2026-11-23, nicht aktuell)",
+   "valueText": "30 % über der 50-Tage-Linie",
    "zones": [
     {
      "from": 0,
@@ -524,57 +511,71 @@
   },
   "BREADTH": {
    "id": "BREADTH",
-   "state": "NOT_CURRENT",
-   "label": "Nicht aktuell",
-   "summary": "Die Breitendaten stammen vom 2026-11-23 und sind älter als der letzte Handelstag (2026-11-24). Keine Einordnung.",
+   "state": "NARROW",
+   "label": "Schmal",
+   "summary": "30 % der beobachteten Aktien liegen über ihrem 50-Tage-Trend, 32 % über dem 200-Tage-Trend.",
    "evidence": [
     {
      "key": "above50",
      "label": "Über 50-Tage-Linie",
-     "text": "27,9 % (1463 von 5241)",
-     "value": 27.91,
-     "matched": 1463,
-     "evaluated": 5241,
-     "asOf": "2026-11-23",
-     "current": false
+     "text": "30,4 % (1590 von 5238)",
+     "value": 30.36,
+     "matched": 1590,
+     "evaluated": 5238,
+     "asOf": "2026-11-24",
+     "current": true
     },
     {
      "key": "above200",
      "label": "Über 200-Tage-Linie",
-     "text": "31,0 % (1543 von 4977)",
-     "value": 31,
-     "matched": 1543,
-     "evaluated": 4977,
-     "asOf": "2026-11-23",
-     "current": false
+     "text": "31,9 % (1586 von 4979)",
+     "value": 31.85,
+     "matched": 1586,
+     "evaluated": 4979,
+     "asOf": "2026-11-24",
+     "current": true
     },
     {
      "key": "newHighs",
      "label": "Schluss auf 52-Wochen-Hoch",
-     "text": "23 von 4907",
-     "value": 23,
-     "evaluated": 4907,
-     "asOf": "2026-11-23",
-     "current": false
+     "text": "21 von 4904",
+     "value": 21,
+     "evaluated": 4904,
+     "asOf": "2026-11-24",
+     "current": true
     },
     {
      "key": "newLows",
      "label": "Schluss auf 52-Wochen-Tief",
-     "text": "40 von 4907",
-     "value": 40,
-     "evaluated": 4907,
-     "asOf": "2026-11-23",
-     "current": false
+     "text": "45 von 4904",
+     "value": 45,
+     "evaluated": 4904,
+     "asOf": "2026-11-24",
+     "current": true
+    },
+    {
+     "key": "advDecl",
+     "label": "Gestiegen / gefallen",
+     "text": "2745 / 2191 von 5233 (52 % gestiegen)",
+     "advancers": 2745,
+     "decliners": 2191,
+     "unchanged": 297,
+     "evaluated": 5233,
+     "session": "2026-11-24",
+     "previousSession": "2026-11-23",
+     "complete": true,
+     "asOf": "2026-11-24",
+     "current": true
     }
    ],
    "explanation": "Eine Bewegung ist breiter getragen, wenn viele Aktien gleichzeitig mitziehen. Steigen die großen Indizes, während nur wenige Aktien zulegen, hängt der Anstieg an wenigen Titeln.",
    "methodology": "Grundlage: US-Aktienuniversum von Vision Universe (Stammaktien, ADR und REIT mit Faktorzeile). Anteil der Titel mit Schlusskurs über dem 50- bzw. 200-Tage-Durchschnitt (Nenner: Titel mit ausreichender Historie). Breit, wenn jeweils mehr als die Hälfte darüber liegt; schmal, wenn jeweils weniger als die Hälfte; sonst gemischt. Die 50-%-Schwelle ist die Mehrheit, keine optimierte Zahl. Neue 52-Wochen-Hochs/-Tiefs und steigende/fallende Titel werden gezeigt, fließen aber nicht in den Zustand ein; neue Hochs und Tiefs zählen beide den Schlusskurs am höchsten Tageshoch bzw. tiefsten Tagestief der letzten 252 Handelstage. Veraltete Daten ergeben keinen Zustand.",
    "raw": {
-    "above50Pct": 27.91,
-    "above200Pct": 31,
+    "above50Pct": 30.36,
+    "above200Pct": 31.85,
     "state": "NARROW"
    },
-   "asOf": "2026-11-23",
+   "asOf": "2026-11-24",
    "expectedAsOf": "2026-11-24"
   },
   "MOMENTUM": {
@@ -759,14 +760,79 @@
  },
  "dimensionStates": {
   "TREND": "NEGATIVE",
-  "BREADTH": "NOT_CURRENT",
+  "BREADTH": "NARROW",
   "MOMENTUM": "FALLING",
   "RISK": "HIGH",
   "CROSS_ASSET": "OBSERVED"
  },
  "movers": {
-  "state": "UNAVAILABLE",
-  "reason": "Keine Tagesreihe der Benchmark fuer die letzte Sitzung - ohne Sitzung und Vorsitzung keine Tagesaenderung."
+  "session": "2026-11-24",
+  "previousSession": "2026-11-23",
+  "complete": true,
+  "asOf": "2026-11-24",
+  "methodVersion": "movers-eod-1.0.0",
+  "basis": "EOD_PUBLISHED_SERIES",
+  "universe": "Discover-Aktienuniversum (stock-index US_REAL)",
+  "filter": {
+   "minAvgDollarVolume20d": 20000000,
+   "minPrice": 5
+  },
+  "eligible": 1943,
+  "gainers": [
+   {
+    "symbol": "AKAN",
+    "name": "Akanda",
+    "changePercent": 101.55
+   },
+   {
+    "symbol": "AMTM",
+    "name": "Amentum Holdings",
+    "changePercent": 20.1
+   },
+   {
+    "symbol": "ANF",
+    "name": "Abercrombie & Fitch Class A",
+    "changePercent": 19.69
+   },
+   {
+    "symbol": "KSS",
+    "name": "Kohl`s",
+    "changePercent": 19.48
+   },
+   {
+    "symbol": "CELC",
+    "name": "Celcuity",
+    "changePercent": 18.48
+   }
+  ],
+  "losers": [
+   {
+    "symbol": "AMBA",
+    "name": "Ambarella",
+    "changePercent": -19.96
+   },
+   {
+    "symbol": "DY",
+    "name": "Dycom Industries",
+    "changePercent": -18.02
+   },
+   {
+    "symbol": "ADI",
+    "name": "Analog Devices",
+    "changePercent": -17.37
+   },
+   {
+    "symbol": "SMTC",
+    "name": "Semtech",
+    "changePercent": -16.97
+   },
+   {
+    "symbol": "AXTI",
+    "name": "AXT Inc",
+    "changePercent": -16.94
+   }
+  ],
+  "method": "Tagesaenderung = Schluss der letzten Sitzung gegen Schluss der Vorsitzung aus der veroeffentlichten Tagesreihe (split-bereinigt, dieselbe Definition wie Discover-Karte und Aktienseite). Titel mit Luecke zaehlen nicht. Nur liquide Titel (Dollarumsatz 20 Tage >= 20 Mio., Kurs >= 5 USD). Vor movers-eod-1.0.0: letzter IEX-5-Minuten-Kurs zweier Sitzungen."
  },
  "sectors": {
   "state": "NOT_IMPLEMENTED",
@@ -1775,11 +1841,17 @@
    }
   },
   "breadth": {
-   "asOf": "2026-11-23",
+   "asOf": "2026-11-24",
    "expectedAsOf": "2026-11-24",
-   "universeSize": 5243,
+   "universeSize": 5240,
    "source": "quant/data/market/factors/factors-FULL_UNIVERSE.json"
   },
-  "eodMoves": null
+  "eodMoves": {
+   "session": "2026-11-24",
+   "previousSession": "2026-11-23",
+   "asOf": "2026-11-24",
+   "methodVersion": "movers-eod-1.0.0",
+   "source": "quant/data/market/discover-series"
+  }
  }
 }
