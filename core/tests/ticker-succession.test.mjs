@@ -163,3 +163,11 @@ test("TS-6 · Naht: Anpassungsniveau des Vorgaengers folgt dem Nachfolger, Schlu
   assert.equal(r2.joined.adjustmentRebase, 2);
   assert.equal(r2.payload.bars[0].adjustedClose, 2);
 });
+
+test("TS-7 · Vorgaenger ohne Bar vor dem Stichtag: Nachfolger behaelt seine eigene Historie (BRNX/BNRG, 25.11.2026)", () => {
+  const map = TS.tickerSuccessions(REG);
+  const eigen = { bars: [{ date: "2026-11-05", close: 1 }, { date: "2026-11-11", close: 2 }] };
+  const r = withPredecessor(eigen, { securityId: "ref_TXCP", ticker: "TXCP" }, { TS, map }, () => ({ bars: [{ date: "2026-11-09", close: 9 }] }));
+  assert.equal(r.payload, eigen, "dieselbe Nutzlast, nichts weggeworfen");
+  assert.equal(r.joined.predecessorBars, 0);
+});
