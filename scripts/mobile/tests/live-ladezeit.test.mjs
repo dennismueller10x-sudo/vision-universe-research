@@ -173,5 +173,5 @@ test('Bericht nennt die Ereignisse der Seite des mittleren Laufs mit Zeit (was l
  assert.equal(ereignisseOf([{lcp:1}]),null);
  const md=reportMarkdown({measuredAt:'t',commit:'c',runs:3,historyRuns:0,alarms:[],rows:[{key:'app/discover/',cpu:4,lcp:3588,cls:0,requests:1,bytes:1024,runs:3,lcpRuns:[3588],ereignisse:e}]});
  assert.match(md,/app\/discover\/ \(4x\) Ereignisse: vu-home-drawn 2150 ms, vu-fx-ready 3560 ms/);
- assert.match(readFileSync(new URL('../measure.mjs',import.meta.url),'utf8'),/\['vu-fx-ready','vu-currency-change','vu-home-drawn'\]\.forEach/);
+ assert.match(readFileSync(new URL('../measure.mjs',import.meta.url),'utf8'),/EventTarget\.prototype\.dispatchEvent = function/);
 });
