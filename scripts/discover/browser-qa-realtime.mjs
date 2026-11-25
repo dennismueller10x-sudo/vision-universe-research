@@ -226,6 +226,9 @@ let alleOk = true;
 
 for (const sym of SYMBOLE) {
   const p = await seite();
+  /* Befund 25.11.2026 (Trade-Regel): die ersten Rahmen des Stroms im Bericht, damit sichtbar ist, ob die Zeilen als TRADE gekennzeichnet sind. */
+  p.__frames = [];
+  p.on("websocket", (ws) => ws.on("framereceived", (f) => { if (p.__frames.length < 8 && /"op":"u"/.test(String(f.payload))) p.__frames.push(String(f.payload).slice(0, 600)); }));
   await aktienseite(p, sym);
 
   const start = Date.now();
@@ -316,6 +319,7 @@ for (const sym of SYMBOLE) {
       endToEnd: mittel("gesamt"),
       max: Math.max(...latenzen.map((x) => x.gesamt))
     } : null,
+    frames: p.__frames,
     consoleErrors: p.__errors.slice(0, 5),
     /* Kein Kurs heisst nicht kaputt. Es heisst: kein Marktereignis. */
     verdict: ticks.length > 0 ? "TICKS" : (zustand.live.connected ? "CONNECTED_NO_TRADE" : "NO_STREAM")
