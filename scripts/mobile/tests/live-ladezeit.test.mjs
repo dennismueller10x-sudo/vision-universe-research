@@ -163,3 +163,15 @@ test('Bericht nennt alle LCP-Kandidaten des mittleren Laufs mit Zeit, Struktur, 
  const md=reportMarkdown({measuredAt:'t',commit:'c',runs:3,historyRuns:0,alarms:[],rows:[{key:'app/discover/',cpu:4,lcp:3588,cls:0,requests:1,bytes:1024,runs:3,lcpRuns:[3588],lcpKandidaten:k}]});
  assert.match(md,/app\/discover\/ \(4x\) LCP-Kandidaten: 2756 ms H2 \(6394 px2, 6 Z\.\) -> 3588 ms P in \.dr-head\.dp-sh \(11036 px2, 98 Z\.\)/);
 });
+
+test('Bericht nennt die Ereignisse der Seite des mittleren Laufs mit Zeit (was löst eine zweite Zeichnung aus)',async()=>{
+ const {ereignisseOf}=await import('../live-ladezeit.mjs');
+ const ev=[{n:'vu-home-drawn',t:2150.4},{n:'vu-fx-ready',t:3560.2,geheim:'x'}];
+ const ss=[{lcp:3600,events:ev},{lcp:3588,events:ev},{lcp:3700,events:ev}];
+ const e=ereignisseOf(ss);
+ assert.deepEqual(e,[{n:'vu-home-drawn',t:2150},{n:'vu-fx-ready',t:3560}]);
+ assert.equal(ereignisseOf([{lcp:1}]),null);
+ const md=reportMarkdown({measuredAt:'t',commit:'c',runs:3,historyRuns:0,alarms:[],rows:[{key:'app/discover/',cpu:4,lcp:3588,cls:0,requests:1,bytes:1024,runs:3,lcpRuns:[3588],ereignisse:e}]});
+ assert.match(md,/app\/discover\/ \(4x\) Ereignisse: vu-home-drawn 2150 ms, vu-fx-ready 3560 ms/);
+ assert.match(readFileSync(new URL('../measure.mjs',import.meta.url),'utf8'),/\['vu-fx-ready','vu-currency-change','vu-home-drawn'\]\.forEach/);
+});
