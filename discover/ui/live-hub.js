@@ -596,13 +596,25 @@
     return true;
   }
 
+  /** Zaehlt Zeile i der Nachricht? Traegt die Nachricht Semantik (Schema 1.1.0, worker/src/vu-live.mjs), zaehlt nur ein bestaetigter
+   *  Trade (wie quant/api/live-relay-client.js#decode); eine Nachricht ganz ohne Semantik (aelterer ausgelieferter Worker) gilt wie
+   *  bisher - Status quo, keine Verschlechterung. Streng wird es von selbst, sobald der Worker die Semantik sendet (25.11.2026). */
+  function zeileZaehlt(n, i) {
+    if (!Array.isArray(n.semantics)) return true;
+    var sem = n.semantics[i];
+    return n.schemaVersion === "vu-live-update-1.1.0" && !!sem && sem.priceType === "TRADE" && sem.messageForm === "iexTyped";
+  }
+
   function stromNachricht(n) {
     if (n.op === "u" && Array.isArray(n.v)) {
       var jetzt = st.now().getTime();
       var betroffen = [];
-      n.v.forEach(function (z) {
+      n.v.forEach(function (z, i) {
         if (!Array.isArray(z) || z.length < 2) return;
         var sym = String(z[0]).toUpperCase();
+        /* Mit Semantik nur bestaetigte Trades (Steuerung 25.11.2026): Kopfkurs, Frische, Etikett und Linie. Ein Kursangebot aendert
+           nichts (01.10.2026: 354,67 $ wurde zu 9.999,00 $). Ohne Semantik wie bisher (siehe zeileZaehlt). */
+        if (!zeileZaehlt(n, i)) { lv.stats.angebote = (lv.stats.angebote || 0) + 1; return; }
         lv.werte[sym] = { price: z[1], at: z[2] || jetzt, open: z[3], high: z[4], low: z[5], close: z[6],
                           /* Wann der Anbieter den Kurs gesehen hat. Damit
                              laesst sich die Strecke auseinandernehmen:
