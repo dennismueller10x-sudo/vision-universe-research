@@ -317,3 +317,12 @@ html:has(.mb){scroll-snap-type:y proximity;scroll-padding-top:var(--mb-head)}
 .mbfilm-art{display:flex;justify-content:center}
 .mbvid{display:block;width:min(300px,72vw);aspect-ratio:9/16;height:auto;border-radius:28px;background:#fff;box-shadow:0 30px 70px rgba(0,0,0,.18);object-fit:cover}
 .mbfilm .t{color:#333;font-size:clamp(17px,1.5vw,20px);line-height:1.45;margin:0}
+/* Angaben Dritter (www.js thirdScene): Zitat, Makro-Linie, Balken */
+.mb-quote{margin:18px 0 10px;font-size:clamp(26px,3.4vw,44px);font-weight:800;line-height:1.18;letter-spacing:-.02em;max-width:24ch}
+.mb-who{margin:0 0 18px;font-weight:700;opacity:.75}
+.mb-line{margin:18px 0 0;max-width:640px;color:var(--mb-lime,#c8f531)}
+.mb-line svg{display:block;width:100%;height:clamp(150px,22vw,240px);background:#0b0b0c;border-radius:18px;padding:14px}
+.mb-line figcaption{display:flex;justify-content:space-between;gap:12px;margin-top:10px;font-size:15px;color:inherit}
+.mb-line figcaption span{opacity:.7;color:#555}.mb-line figcaption b{color:#000}
+.mb-xbars{display:grid;gap:12px;margin-top:18px;max-width:640px}
+.mb-xbars .mb-st{grid-template-columns:6.5em minmax(0,1fr) auto}
