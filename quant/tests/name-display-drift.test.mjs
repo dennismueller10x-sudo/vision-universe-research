@@ -22,9 +22,13 @@ test("listet jede abweichende Seite mit altem und neuem Namen, CIK-Wechsel eigen
   assert.equal(r.issuerChanged, 1);
 });
 
-test("Wochenlauf ruft den Bericht nach NM3 auf und behaelt SMW-2 (kein Discover-Neubau)", () => {
+test("Wochenlauf ruft den Bericht nach NM3 auf; Discover baut erst der Commit-Schritt neu (Vertrag NF)", () => {
   const wf = readFileSync(join(ROOT, ".github/workflows/security-master-weekly.yml"), "utf8");
   assert.match(wf, /report-name-display-drift\.mjs --next/);
-  assert.ok(wf.indexOf("discover/tests/names.test.mjs") < wf.indexOf("report-name-display-drift.mjs"));
-  assert.doesNotMatch(wf, /build-discover-data/);
+  const bericht = wf.indexOf("report-name-display-drift.mjs");
+  assert.ok(wf.indexOf("discover/tests/names.test.mjs") < bericht);
+  /* Der Bericht vergleicht die ausgelieferten Seiten mit dem neuen Namensstand: Discover darf erst danach,
+     im Commit-Schritt, neu gebaut werden (Steuerung 25.11.2026, core/tests/name-discover-follow.test.mjs). */
+  const bau = wf.indexOf("\n          node scripts/discover/build-discover-data.mjs\n");
+  assert.ok(bau > bericht && bau > wf.indexOf("- name: Commit (nur mit commit=true"), "Discover-Neubau erst im Commit-Schritt");
 });
