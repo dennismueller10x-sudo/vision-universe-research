@@ -213,3 +213,18 @@
 :root[data-theme=light] .st-tally{background:#f4f4f4;border-color:#e5e5e5}
 :root[data-theme=light] .st-v-x b{color:#6e6e6e} :root[data-theme=light] .st-v-o b{color:#000}
 :root[data-theme=light] .st-scrub circle{stroke:#000}
+/* Fernziel */
+.st-farbtn{all:unset;cursor:pointer;position:absolute;left:16px;top:160px;z-index:3;padding:9px 13px;border-radius:999px;background:var(--st-lime);color:#000;font-size:13px;font-weight:900;white-space:nowrap;box-shadow:0 6px 20px #0008}
+.st-farbtn[aria-pressed=true]{background:#151515;color:#fff;box-shadow:none}
+.st-farbtn:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.st-far-z{stroke-width:1.5}
+.st-far-a{stroke:var(--st-lime);stroke-width:2.4;stroke-dasharray:7 6;fill:none}
+.st-far-l{font-size:13px}
+.st-c-far{grid-column:1/-1}
+.st-c-far b{color:var(--st-lime);font-size:26px}
+.st-c-far small+small{margin-top:4px;font-size:11.5px;color:#6a6a6a;line-height:1.4}
+:root[data-theme=light] .st-farbtn{box-shadow:0 6px 20px #0002}
+:root[data-theme=light] .st-farbtn[aria-pressed=true]{background:#000;color:#fff}
+:root[data-theme=light] .st-far-a{stroke:#000}
+:root[data-theme=light] .st-c-far b{color:#000;text-decoration:underline;text-decoration-color:#c8f531;text-decoration-thickness:.42em;text-underline-offset:-.22em;text-decoration-skip-ink:none}
+:root[data-theme=light] .st-c-far small+small{color:#8c8c8c}

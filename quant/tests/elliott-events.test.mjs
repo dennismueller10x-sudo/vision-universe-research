@@ -73,3 +73,19 @@ test("EE-5 · Rollen im Pfad: Kursziel in Richtung des ersten Antriebsschritts, 
   const ro = E.roles([st("3", "UP", "BIG", 0, 0), st("4", "DOWN", "BIG"), st("5", "UP", "BIG")].map((s, i) => Object.assign(s, { tiers: z(100 + i, 120 + i) })));
   assert.equal(ro.entry, null); assert.equal(ro.target.l, "[3]");
 });
+
+test("EE-6 · Fernziel: Welle (III) nach dem großen Impuls, Ende von Welle 5 bei laufendem Impuls, keins im Abwärtstrend", async () => {
+  const { createRequire } = await import("node:module");
+  const F = createRequire(import.meta.url)(join(ROOT, "elliott/engine/far-target.js"));
+  const w = (l, fp, tp, dev) => ({ l, ft: "2010-01-01", fp, tt: "2012-01-01", tp, dev: dev ? 1 : 0 });
+  const st = (l, deg, dir, lo, hi) => ({ l, deg, dir, tiers: [{ t: "BASE", lo, hi, done: 0 }] });
+  // Impuls seit 10 $, Hoch 480 $ (Welle 3 über der Mitte der Zone 5): (I) = 10 → 480, (II) = 50 % = 245, (III) = 1,0–1,618 × 470 ab 245
+  const a = F.far({ primary: { kind: "IMPULSE", dir: "UP", cur: "4", waves: [w("1", 10, 100), w("2", 100, 50), w("3", 50, 480), w("4", 480, 350, 1)] }, path: [st("C", "SUB", "DOWN", 230, 290), st("5", "BIG", "UP", 400, 500), st("A", "BIG", "DOWN", 260, 320)] });
+  assert.equal(a.kind, "III");
+  assert.ok(Math.abs(a.lo - (245 + 470)) < 1 && Math.abs(a.hi - (245 + 1.618 * 470)) < 1, JSON.stringify(a));
+  assert.ok(a.lo >= a.top, "harte Regel: (III) über dem Ende von (I)");
+  // laufender Impuls in Welle 2, Welle 5 nicht im Pfad: Ende von Welle 5 über Welle 3 hinaus
+  const b = F.far({ primary: { kind: "IMPULSE", dir: "UP", cur: "2", waves: [w("1", 5, 10), w("2", 10, 7, 1)] }, path: [st("C", "SUB", "DOWN", 5, 6), st("3", "BIG", "UP", 12, 14), st("4", "BIG", "DOWN", 11, 12)] });
+  assert.equal(b.kind, "5"); assert.ok(b.lo >= 13 && b.hi > b.lo);
+  assert.deepEqual(F.far({ primary: { kind: "IMPULSE", dir: "DOWN", cur: "3", waves: [w("1", 50, 20)] }, path: [] }), { none: "DOWN" });
+});

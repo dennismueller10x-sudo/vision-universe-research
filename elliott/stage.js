@@ -37,7 +37,7 @@
     opt = opt || {};
     var td0 = a.elliottTopDown, b = Big();
     if (!td0 || !td0.primary || !(td0.path && td0.path.length) || !b) return null;
-    var S0 = null, SW = null, SN = opt.history || a.elliottHistory || null, st = { range: opt.range || "focus", which: "main", focus: null, t0: null, intro: true, story: -1, tm: null, reveal: false };
+    var S0 = null, SW = null, SN = opt.history || a.elliottHistory || null, st = { farK: 0, range: opt.range || "focus", which: "main", focus: null, t0: null, intro: true, story: -1, tm: null, reveal: false };
     var root = document.createElement("div"); root.className = "st-wrap";
     host.appendChild(root);
 
@@ -50,6 +50,8 @@
       var td = b.viewOf ? b.viewOf(td0, st.which) : td0, rows = b.plan(td), S = S0 || (S0 = seriesOf(a, td0));
       return { td: td, rows: rows, S: S };
     }
+    /* Fernziel (elliott/engine/far-target.js): nur in der Gegenwart, nicht in der Zeitreise */
+    function farOf(V) { var F = global.VUElliottFar || (typeof require === "function" ? null : null); var r = !V.tm && F ? F.far(V.td) : null; return r && !r.none && r.hi > 0 ? r : null; }
     /* „Aktuell“: ab dem Beginn der großen Welle vor der laufenden (z. B. ab Welle 3, wenn Welle 4 läuft), mindestens 3, höchstens 12 Jahre */
     function startFor(r, S) {
       var tEnd = S[S.length - 1].t, t;
@@ -65,7 +67,8 @@
       var tEnd = S[S.length - 1].t, t0 = st.t0, t1v = tm || st.t1 == null ? tEnd : Math.min(st.t1, tEnd), live = !!tm || t1v >= tEnd - DAY;
       var vis = S.filter(function (p) { return p.t >= t0 && p.t <= t1v + 8 * DAY; });
       if (vis.length < 4) vis = S.slice(-4);
-      var narrow = W < 560, OV = 62, CT = 66, padT = narrow ? 162 : 150, padB = 26 + OV + CT, padR = narrow ? 54 : 64, plotR = W - padR, oy0 = H - CT - OV;
+      var FT = live ? farOf(V) : null, narrow = W < 560, OV = 62, CT = 66, padT = (narrow ? 162 : 150) + (FT ? 40 : 0),   // eigene Zeile für den Fernziel-Knopf
+         padB = 26 + OV + CT, padR = narrow ? 54 : 64, plotR = W - padR, oy0 = H - CT - OV;
       var tC = tm ? T(tm.a) : tEnd, xR = tm || !live ? plotR - 6 : Math.round(plotR * (narrow ? 0.62 : 0.7)), xEnd = tm ? plotR - 6 : plotR - 10;
       function x(t) { return 2 + (t - t0) / Math.max(DAY, t1v - t0) * (xR - 2); }
       var xNow = tm ? x(tC) : xR;
@@ -80,6 +83,8 @@
       var vMin = Math.min.apply(null, vals), vMax = Math.max.apply(null, vals), inv = td.primary.inv, invIn = inv && inv.p > vMin / 2.5 && inv.p < vMax * 2.5;
       if (invIn) vals.push(inv.p);
       var lo = Math.min.apply(null, vals) / 1.1, hi = Math.max.apply(null, vals) * 1.1;
+      var fk = FT ? st.farK : 0;
+      if (fk > 0) { var hiF = FT.ext.hi * 1.08; if (hiF > hi) hi = Math.exp(Math.log(hi) + fk * (Math.log(hiF) - Math.log(hi))); }
       function y(v) { return padT + 16 + (Math.log(hi) - Math.log(Math.max(v, lo))) / (Math.log(hi) - Math.log(lo)) * (H - padT - padB - 44); }   // Luft für Kreise über Hochs und unter Tiefs
       var g = [];
       g.push('<defs><linearGradient id="st-area" x1="0" y1="0" x2="0" y2="1"><stop class="st-a0" offset="0"/><stop class="st-a1" offset="1"/></linearGradient>' +
@@ -168,6 +173,17 @@
           '<text x="' + f(GP[GP.length - 1][0]) + '" y="' + f(GP[GP.length - 1][1] + 16) + '" text-anchor="middle">Alternative</text></g>';
       }
       g.push('<g class="st-g3">' + ghost + pads.join("") + proj.join("") + "</g>");
+      /* Fernziel: Feld am rechten Rand, gestrichelt vom letzten Kursziel aus; blendet mit dem Aufzoomen ein */
+      if (fk > 0 && rows.length) {
+        var lastT = null; rows.forEach(function (r, k) { if (r.role === "target") lastT = k; }); var A1 = lastT != null ? pts[lastT] : P0;
+        var fx = xEnd - 2, fw = narrow ? 40 : 52, fyB = (y(FT.lo) + y(FT.hi)) / 2, ft = num(FT.lo) + "–" + num(FT.hi) + " $";
+        g.push('<g class="st-far"' + dim("far") + ' opacity="' + fk.toFixed(2) + '"><circle cx="' + f(fx - fw / 2) + '" cy="' + f(fyB) + '" r="110" fill="url(#st-glow)"/>' +
+          '<rect class="st-pad st-pad-target st-z2" x="' + f(fx - fw) + '" y="' + f(y(FT.ext.hi)) + '" width="' + fw + '" height="' + f(Math.max(4, y(FT.ext.lo) - y(FT.ext.hi))) + '" rx="8"/>' +
+          '<rect class="st-pad st-pad-target st-far-z" x="' + f(fx - fw) + '" y="' + f(y(FT.hi)) + '" width="' + fw + '" height="' + f(Math.max(6, y(FT.lo) - y(FT.hi))) + '" rx="8"/>' +
+          '<path class="st-arrow st-far-a" d="M' + f(A1[0]) + " " + f(A1[1]) + "L" + f(fx - fw / 2) + " " + f(fyB + 8) + '" marker-end="url(#st-ah)"/>' +
+          '<g class="st-node st-ghost"><circle cx="' + f(fx - fw / 2) + '" cy="' + f(y(FT.hi) - 17) + '" r="13"/><text x="' + f(fx - fw / 2) + '" y="' + f(y(FT.hi) - 12.5) + '" text-anchor="middle" class="st-far-l">' + esc(FT.label.replace(/[()]/g, "")) + "</text></g>" +
+          '<text class="st-zl st-zl-t" x="' + f(fx - fw - 6) + '" y="' + f(fyB + 4) + '" text-anchor="end">' + esc("Fernziel " + ft) + "</text></g>");
+      }
       /* Zeitreise: was danach geschah – Zone erreicht, Kursziel erreicht oder Zählung ungültig, am Kurs markiert */
       if (tm) {
         var at = function (dt) { var tt = T(dt), best = S[0]; S.forEach(function (q) { if (Math.abs(q.t - tt) < Math.abs(best.t - tt)) best = q; }); return best; };
@@ -216,7 +232,7 @@
         snapMarks + '<text class="st-ax" x="' + (plotR + 6) + '" y="' + (oy0 + OV / 2 - 2) + '">' + new Date(tA).getUTCFullYear() + '</text><text class="st-ax" x="' + (plotR + 6) + '" y="' + (oy0 + OV / 2 + 12) + '">bis heute</text></g>');
       g.push('<g class="st-scrub"></g>');
       return { svg: '<svg class="st-svg' + (st.intro ? " st-intro" : "") + (st.reveal ? " st-reveal" : "") + '" viewBox="0 0 ' + W + " " + H + '" width="' + W + '" height="' + H + '" role="img" aria-label="Elliott-Wellen seit Börsengang mit Plan der Methode">' + g.join("") + "</svg>",
-               geo: { tV: t1v, live: live, plotR: plotR, tm: tm, tC: tC, xR: xR, P: { big: big, sub: sub }, oy0: oy0, OV: OV, tA: tA, ox0: 4, ow: plotR - 8, x: x, y: y, xNow: xNow, vis: vis, t0: t0, tEnd: tEnd, big: big, sub: sub, nodes: nodes, H: H, padT: padT, padB: padB, close: close } };
+               geo: { far: FT, tV: t1v, live: live, plotR: plotR, tm: tm, tC: tC, xR: xR, P: { big: big, sub: sub }, oy0: oy0, OV: OV, tA: tA, ox0: 4, ow: plotR - 8, x: x, y: y, xNow: xNow, vis: vis, t0: t0, tEnd: tEnd, big: big, sub: sub, nodes: nodes, H: H, padT: padT, padB: padB, close: close } };
     }
 
     function verdict(q) { var o = q.o || {}; return o.t && (!o.x || o.t <= o.x) ? "t" : o.x ? "x" : "o"; }
@@ -247,7 +263,10 @@
       if (best) out.push({ r: "all", f: "wave:" + best.l + ",price", s: "Welle " + best.l + " war die stärkste: von " + num(best.fp) + " $ auf " + num(best.tp) + " $ (" + pct(best.tp, best.fp) + ")." });
       var e = rows.filter(function (r) { return r.role === "entry"; })[0], t = rows.filter(function (r) { return r.role === "target"; })[0];
       out.push({ r: "focus", f: "sub,price,entry,big", s: "Jetzt läuft " + waveName(p.cur, "BIG") + "." + (e ? " Laut Methode endet " + (e.step.dir === "DOWN" ? "der Rücksetzer" : "der Anstieg") + " bei " + num(e.lo) + "–" + num(e.hi) + " $ (" + pct(e.step.dir === "DOWN" ? e.hi : e.lo, c) + ")." : "") });
+      var FT = farOf(V), yrs = FT ? Math.max(1, Math.round((V.S[V.S.length - 1].t - T(FT.since + "-06-30")) / YEAR)) : 0;
       if (t) out.push({ r: "focus", f: "target,entry,price", s: "Danach " + waveName(t.step.l, t.step.deg) + ": " + W0.tShort + " " + num(t.lo) + "–" + num(t.hi) + " $ (" + pct(t.step.dir === "UP" ? t.lo : t.hi, c) + "). Eine Zeit nennt die Methode nicht." });
+      if (FT) out.push({ r: "focus", f: "far,target,price", far: 1, s: FT.kind === "III" ? "Und langfristig: Ist der Impuls seit " + FT.since + " erst Welle (I) eines noch größeren Trends, folgt nach der Korrektur Welle (III): Fernziel " + num(FT.lo) + "–" + num(FT.hi) + " $ (" + pct(FT.lo, c) + "), erweitert bis " + num(FT.ext.hi) + " $. Welle (I) dauerte rund " + yrs + " Jahre."
+        : "Und langfristig: Läuft der Impuls seit " + FT.since + " bis Welle 5 weiter, liegt ihr Ende laut Methode bei " + num(FT.lo) + "–" + num(FT.hi) + " $ (" + pct(FT.lo, c) + "), erweitert bis " + num(FT.ext.hi) + " $." });
       if (p.inv) out.push({ r: "all", f: "inv,price,big", s: "Falsch ist die Zählung, wenn ein Wochenschluss " + (p.inv.d === "below" ? "unter " : "über ") + num(p.inv.p) + " $ liegt. Dann zählt die Methode neu." });
       return out;
     }
@@ -275,6 +294,7 @@
       var seg = [["focus", "Aktuell"]].concat(startFor("focus", S) > S[0].t + YEAR ? [["all", "Seit " + new Date(S[0].t).getUTCFullYear()]] : []);
       var stories = story(V), on = st.story >= 0 ? stories[st.story] : null;
       root.innerHTML = '<div class="st' + (st.t1 != null ? " st-past" : "") + '" style="height:' + H + 'px">' + head(V) + '<div class="st-svgbox"></div><div class="st-bub" hidden></div><button type="button" class="st-back">Zurück zu heute →</button>' +
+        (farOf(V) && !V.tm && st.story < 0 ? '<button type="button" class="st-farbtn" style="top:' + ((W < 560 ? 162 : 150) - 2) + 'px" aria-pressed="' + (st.farK > 0) + '">' + (st.farK > 0 ? "Fernziel ausblenden" : "↑ Fernziel " + num(farOf(V).lo) + "–" + num(farOf(V).hi) + " $") + "</button>" : "") +
         (on ? '<div class="st-story" role="button" tabindex="0" aria-label="Weiter"><div class="st-bars">' + stories.map(function (_, i) { return '<i class="' + (i < st.story ? "done" : i === st.story ? "on" : "") + '"><b></b></i>'; }).join("") +
           '</div><p class="st-cap">' + esc(on.s) + '</p><p class="st-tap">Tippen für weiter · <button type="button" class="st-x">Beenden</button></p></div>'
           : '<div class="st-ctl"><div class="st-seg" role="group" aria-label="Zeitraum">' + seg.map(function (s) { return '<button type="button" data-r="' + s[0] + '" aria-pressed="' + (st.range === s[0]) + '">' + s[1] + "</button>"; }).join("") +
@@ -317,6 +337,14 @@
       svgBox.addEventListener("wheel", function (ev) { if (!geo || st.story >= 0) return; ev.preventDefault(); var r0 = svgBox.getBoundingClientRect(); zoomAt(ev.clientX - r0.left, Math.exp(ev.deltaY * 0.0015)); }, { passive: false });
       svgBox.addEventListener("dblclick", function (ev) { dbl(ev); });
       function dbl(ev) { if (!geo || st.story >= 0) return; var r0 = svgBox.getBoundingClientRect(), S = view().S, full = S[S.length - 1].t - S[0].t; if (st.t1 != null || geo.tV - st.t0 < 1.2 * YEAR) setRange("focus", view()); else zoomAt(ev.clientX - r0.left, 0.4); }
+      var fb = root.querySelector(".st-farbtn"); if (fb) fb.addEventListener("click", function () {
+        var to = st.farK > 0 ? 0 : 1, from = st.farK, t1 = null, reduce = global.matchMedia && global.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (st.t1 != null) { st.t1 = null; st.t0 = startFor("focus", view().S); stage.classList.remove("st-past"); }
+        fb.setAttribute("aria-pressed", String(to > 0)); fb.textContent = to > 0 ? "Fernziel ausblenden" : "↑ Fernziel " + num(farOf(view()).lo) + "–" + num(farOf(view()).hi) + " $";
+        if (reduce) { st.farK = to; paint(true); return; }
+        var stp = function (ts) { if (t1 == null) t1 = ts; var u = Math.min(1, (ts - t1) / 700), k = u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2; st.farK = from + (to - from) * k; paint(true); if (u < 1) requestAnimationFrame(stp); };
+        requestAnimationFrame(stp);
+      });
       var back = root.querySelector(".st-back"); if (back) back.addEventListener("click", function () { setRange("focus", view()); });
       svgBox.addEventListener("pointerleave", unscrub); svgBox.addEventListener("pointerup", function (ev) { lift(ev); if (drag) { drag = false; return; } if (ev.pointerType !== "mouse") setTimeout(unscrub, 1600); });
     }
@@ -333,11 +361,11 @@
     function go(i) {
       var V = view(), stories = story(V); clearTimeout(timer);
       if (i >= stories.length) { stop(); return; }
-      st.story = i; var s = stories[i]; st.focus = s.f.split(",");
+      st.story = i; var s = stories[i]; st.focus = s.f.split(","); st.farK = s.far ? 1 : 0;
       stage = null; setRange(s.r, V);
       timer = setTimeout(function () { go(st.story + 1); }, 5200);
     }
-    function stop() { clearTimeout(timer); st.story = -1; st.focus = null; stage = null; setRange("all", view()); }
+    function stop() { clearTimeout(timer); st.story = -1; st.focus = null; st.farK = 0; stage = null; setRange("all", view()); }
     var drag = false;
     function inOv(ev) { if (!geo || st.story >= 0) return false; var r = svgBox.getBoundingClientRect(), my = ev.clientY - r.top; return my >= geo.oy0 - 6 && my <= geo.oy0 + geo.OV + 6; }
     /* Übersicht ziehen: der Finger setzt den Beginn des Ausschnitts (rechts bleibt immer heute) */
@@ -431,7 +459,9 @@
       return '<div class="st-facts">' + cell("Jetzt", num(c) + " $", cur ? "Welle " + cur.l + " läuft" : "") +
         (t ? cell(W0.tShort, num(t.lo) + "–" + num(t.hi) + " $", pct(t.step.dir === "UP" ? t.lo : t.hi, c) + " · " + waveName(t.step.l, t.step.deg), "st-c-t") : "") +
         (e ? cell(W0.eShort, num(e.lo) + "–" + num(e.hi) + " $", pct(e.step.dir === "DOWN" ? e.hi : e.lo, c) + " · " + waveName(e.step.l, e.step.deg)) : "") +
-        (inv ? cell("Ungültig", (inv.d === "below" ? "unter " : "über ") + num(inv.p) + " $", "Wochenschluss") : "") + "</div>" +
+        (inv ? cell("Ungültig", (inv.d === "below" ? "unter " : "über ") + num(inv.p) + " $", "Wochenschluss") : "") +
+        (function () { var FT = farOf(V); return FT ? '<div class="st-c st-c-far"><span>Fernziel der Methode · ' + esc(FT.kind === "III" ? "Welle (III)" : "Ende Welle 5") + "</span><b>" + esc(num(FT.lo) + "–" + num(FT.hi) + " $") + "</b><small>" +
+          esc(pct(FT.lo, c) + " bis " + pct(FT.hi, c) + " · erweitert bis " + num(FT.ext.hi) + " $ (" + pct(FT.ext.hi, c) + ") · ohne Zeitangabe") + "</small><small>" + esc(FT.assume + ". " + FT.rule + ".") + "</small></div>" : ""; })() + "</div>" +
         (hasAlt ? '<div class="st-which" role="group" aria-label="Zählung"><button type="button" data-w="main" aria-pressed="' + (st.which === "main") + '">Hauptzählung</button><button type="button" data-w="alt" aria-pressed="' + (st.which === "alt") + '">Alternative</button></div>' : "") +
         '<div class="st-key"><span><i class="st-k-n">3</i>große Welle</span><span><i class="st-k-s">(c)</i>Unterwelle</span><span><i class="st-k-t"></i>' + esc(W0.tShort) + '</span><span><i class="st-k-e"></i>' + esc(W0.eShort) + '</span><span><i class="st-k-i"></i>ungültig</span></div>' +
         '<p class="st-note">Zählung von oben auf Wochen- und Monatsschlusskursen nach Frost &amp; Prechter, Elliott Wave Principle. Zonen ohne Zeitangabe, keine Wahrscheinlichkeit. Analyse nach einer Methode, keine Anlageberatung.</p>';
