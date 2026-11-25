@@ -139,3 +139,36 @@ Ausgangswerte (vor Neustart, offizielle Insights): Median Reichweite 12, Ø Wied
 - Bei Kursen immer „aktuell rund X" und im Zweifel den Bereich prüfen, über den die Aussage robust bleibt (Tesla: zwischen 355 und 374 $ blieb die Rendite über 1.200 %).
 - Bei Quellen mit Basis- und Bull-Fall die Zahlen nicht mischen. Im Tesla-Reel standen zunächst Basisfall-Zahlen zum Bull-Hook; korrigiert.
 - Gesperrte Quellen (ARK-Seite 403): Primärquelle vom Owner als PDF anfordern, statt Sekundärquellen zu mischen.
+
+## 9. Lehren aus den Meta-Daten 20.–25.11.2026 und Themen-Ampel
+
+Messung 25.11.2026, 19:01 Uhr (Meta-API, Konto 1.435 Follower):
+
+| Reel | Reichweite | Ø Sehdauer | Shares | Warum |
+|---|---|---|---|---|
+| Tesla FSD V15 („GTA in echt“) | 111.136 | 23,3 s | 2.723 | echtes, spektakuläres Produktvideo, Popkultur, heute neu |
+| Nvidia +30 %, Trend nicht gedreht | 20.217 | 20,0 s | 53 | Tagesthema Nr. 1, Spannung „Rally oder Falle“ |
+| GTA 6 sprengt alle Grenzen | 12.323 | 27,9 s | 361 | Popkultur, Überraschungszahlen als Geschichte |
+| Trump lässt Nvidia explodieren | 6.597 | 15,5 s | 29 | Politik plus Tagesthema |
+| Strohfeuer oder Boden | 2.213 | 16,0 s | 1 | Markt-Erklärung, kein neues Bild, Thema schon durch |
+| Amazon Black Friday | 520 nach 5 h | 10,2 s | 1 | Rechenzahl ohne Konflikt, kein Anlass heute, Business-Wissen |
+| Kymera +650 % | 327 | 10,2 s | 1 | unbekannte Firma, Fachthema |
+
+**Muster:** Unter 12 s Ø Sehdauer bleibt ein Reel unter 1.000 Reichweite. Abgebrochen wird in den ersten 10 Sekunden, also am Hook. Reels über 10.000 hatten alle drei: ein Thema, über das heute alle reden, einen bekannten Namen und echte Bilder oder einen echten Konflikt.
+
+### Themen-Ampel (vor dem Text, Pflicht)
+
+Je Frage 0, 1 oder 2 Punkte. **Unter 8 von 12 wird das Thema nicht produziert**, sondern ersetzt.
+
+1. **Heute:** Reden heute viele darüber (Nachricht, Kurs-Bewegung, Ereignis)? Ein Rechenbeispiel ohne Anlass bekommt 0.
+2. **Bekannt:** Kennt jeder den Namen ohne Erklärung (Nvidia, Tesla, GTA, Trump, Apple)? Unbekannte Firma 0.
+3. **Konflikt:** Gibt es Gewinner gegen Verlierer, Gefahr, Empörung oder einen Widerspruch? Reine Zahl 0.
+4. **Bild:** Gibt es echtes, starkes Material (Produktvideo, Ereignis) oder nur Grafik und Archivfoto?
+5. **Betroffen:** Betrifft es Geld, Job oder Alltag des Zuschauers („du“)?
+6. **Teilen:** Würde jemand, der sich nicht für Börse interessiert, es einem Freund schicken?
+
+Dazu gilt für den Hook: Der erste Satz enthält den Konflikt, nicht nur eine Zahl („150.000 $ pro Sekunde“ ist eine Zahl ohne Konflikt und wurde nach 10 s verlassen). Die Ampel und ihr Ergebnis stehen im Themenvorschlag an den Owner.
+
+### Ablauf nach dem Posten
+
+Nach 24 Stunden die Werte des Reels über `social-ig-check.yml` (backup) lesen und mit dieser Tabelle vergleichen. Ein Format mit zwei Reels unter 1.000 Reichweite in Folge wird pausiert.

@@ -1,7 +1,7 @@
 {
  "schemaVersion": "vu-ti-api-3.0.0",
  "version": "elliott-markets-1.0.0",
- "generatedAt": "2026-11-25T06:30:24.585Z",
+ "generatedAt": "2026-11-25T11:37:20.171Z",
  "reference": "2026-11-24",
  "rows": [
   {
@@ -1023,25 +1023,25 @@
    "t": "XAUUSD",
    "tf": "1W",
    "asOf": "2026-11-24",
-   "close": 3636.36,
+   "close": 3551.18,
    "outlook": "BEARISH",
    "structure": "DOWNTREND_ADVANCING",
    "confidence": "LOW",
-   "agreement": -0.8533,
+   "agreement": -0.8879,
    "template": "CONTINUATION",
    "status": "APPROACHING",
    "direction": "BEARISH",
    "entry": [
-    3750,
-    4015
+    3755,
+    4010
    ],
    "invalidation": 4070,
    "t1": [
     3485,
-    3570
+    3565
    ],
    "rr": 1.8995,
-   "distAtr": 0.87,
+   "distAtr": 1.63,
    "elliott": "FLAT:done",
    "elliottClarity": "LOW",
    "elliottApplicable": "LOW",
@@ -1061,24 +1061,24 @@
     "base": 0.3143
    },
    "alerts": {
-    "scenarioId": "tis_4c3b91ad5416",
+    "scenarioId": "tis_d1e9a96f5558",
     "outlook": "BEARISH",
     "confidence": "LOW",
     "direction": "BEARISH",
     "levels": {
-     "entryLow": 3750,
-     "entryHigh": 4015,
+     "entryLow": 3755,
+     "entryHigh": 4010,
      "invalidation": 4070,
      "confirmation": null,
      "target1": [
       3485,
-      3570
+      3565
      ]
     },
     "flags": {
      "inEntryZone": false,
      "invalidated": false,
-     "target1Reached": false,
+     "target1Reached": true,
      "confirmed": false
     }
    },
@@ -1092,14 +1092,14 @@
      "below"
     ],
     "e": {
-     "lo": 3033,
-     "hi": 3462,
+     "lo": 3343,
+     "hi": 3826,
      "dir": "DOWN",
-     "l": "[2]"
+     "l": "(C)"
     },
     "t1": {
-     "lo": 6668,
-     "hi": 8914,
+     "lo": 6978,
+     "hi": 9224,
      "dir": "UP",
      "l": "[3]"
     },
@@ -1116,7 +1116,7 @@
    "t": "XAGUSD",
    "tf": "1W",
    "asOf": "2026-11-24",
-   "close": 42.7285,
+   "close": 40.9295,
    "outlook": "NEUTRAL",
    "structure": "CORRECTION_IN_UPTREND",
    "confidence": "LOW",
@@ -1164,8 +1164,8 @@
      "l": "(C)"
     },
     "t1": {
-     "lo": 126.3,
-     "hi": 179,
+     "lo": 126.2,
+     "hi": 178.8,
      "dir": "UP",
      "l": "[3]"
     },
