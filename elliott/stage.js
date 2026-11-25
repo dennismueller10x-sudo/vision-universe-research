@@ -82,11 +82,11 @@
       var lo = Math.min.apply(null, vals) / 1.1, hi = Math.max.apply(null, vals) * 1.1;
       function y(v) { return padT + 16 + (Math.log(hi) - Math.log(Math.max(v, lo))) / (Math.log(hi) - Math.log(lo)) * (H - padT - padB - 44); }   // Luft für Kreise über Hochs und unter Tiefs
       var g = [];
-      g.push('<defs><linearGradient id="st-area" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".16"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>' +
-        '<radialGradient id="st-glow"><stop offset="0" stop-color="#c8f531" stop-opacity=".32"/><stop offset="1" stop-color="#c8f531" stop-opacity="0"/></radialGradient>' +
+      g.push('<defs><linearGradient id="st-area" x1="0" y1="0" x2="0" y2="1"><stop class="st-a0" offset="0"/><stop class="st-a1" offset="1"/></linearGradient>' +
+        '<radialGradient id="st-glow"><stop class="st-g0" offset="0"/><stop class="st-g1" offset="1"/></radialGradient>' +
         '<clipPath id="st-clip"><rect x="0" y="0" width="' + xNow + '" height="' + H + '"/></clipPath>' +
-        '<marker id="st-ah" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="4.2" markerHeight="4.2" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#c8f531"/></marker>' +
-        '<marker id="st-aw" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#fff"/></marker></defs>');
+        '<marker id="st-ah" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="4.2" markerHeight="4.2" orient="auto-start-reverse"><path class="st-hd-t" d="M0 0L10 5L0 10z"/></marker>' +
+        '<marker id="st-aw" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path class="st-hd-w" d="M0 0L10 5L0 10z"/></marker></defs>');
       /* Raster: wenige Preislinien (log 1-2-5), Jahre unten */
       var ticks = [], e0 = Math.floor(Math.log10(lo)), e1 = Math.ceil(Math.log10(hi));
       for (var e = e0; e <= e1; e++) [1, 2, 5].forEach(function (m) { var v = m * Math.pow(10, e); if (v > lo && v < hi) ticks.push(v); });

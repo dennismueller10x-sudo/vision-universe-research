@@ -1,4 +1,4 @@
-/* VISION UNIVERSE ELLIOTT — stage.css. Wellenbühne (elliott/stage.js): immer dunkel, Schwarz, Grautöne, ein Akzent #c8f531. */
+/* VISION UNIVERSE ELLIOTT — stage.css. Wellenbühne (elliott/stage.js): Schwarz, Grautöne, ein Akzent #c8f531; hell (data-theme=light) am Ende. */
 .st-wrap{--st-lime:#c8f531;--st-mut:#8c8c8c;color:#fff;font-family:inherit}
 .st{position:relative;background:#000;overflow:hidden;touch-action:pan-y;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
 .st-svgbox{position:absolute;inset:0}
@@ -138,3 +138,78 @@
 /* Im Aktienbild der Elliott-App: randlos über die volle Breite (hebt den Innenabstand von main.qx-main auf) */
 #el-detail .bp.bp-stage{padding:0;margin:0 -16px 18px;border-radius:0;background:#000}
 @media (min-width:761px){#el-detail .bp.bp-stage{margin:0 0 18px;border-radius:24px;overflow:hidden}}
+.st-a0{stop-color:#fff;stop-opacity:.16} .st-a1{stop-color:#fff;stop-opacity:0}
+.st-g0{stop-color:#c8f531;stop-opacity:.32} .st-g1{stop-color:#c8f531;stop-opacity:0}
+.st-hd-t{fill:#c8f531} .st-hd-w{fill:#fff}
+/* Hell (Owner 25.11.2026): weißer Grund, Kurs und Gerüst schwarz, Grün als Fläche (Kreise, Zielzonen, Markierung unter Zahlen), nie als dünne Linie oder Schrift auf Weiß */
+:root[data-theme=light] .st-wrap{--st-mut:#6e6e6e;color:#000}
+:root[data-theme=light] .st{background:#fff}
+:root[data-theme=light] #el-detail .bp.bp-stage{background:#fff}
+:root[data-theme=light] .st-sub b,:root[data-theme=light] .st-c-t b,:root[data-theme=light] .st-v-t b,:root[data-theme=light] .st-tally b:nth-of-type(1){color:#000;text-decoration:underline;text-decoration-color:#c8f531;text-decoration-thickness:.42em;text-underline-offset:-.22em;text-decoration-skip-ink:none}
+:root[data-theme=light] .st-score{border-color:#dcdcdc}
+:root[data-theme=light] .st-score-dn{background:#000;border-color:#000;color:#fff}
+:root[data-theme=light] .st-score-dn small{color:#fff}
+:root[data-theme=light] .st-grid line{stroke:#efefef}
+:root[data-theme=light] .st-ax,:root[data-theme=light] .st-ax-r{fill:#8c8c8c}
+:root[data-theme=light] .st-ax-tm{fill:#000}
+:root[data-theme=light] .st-now{stroke:#cfcfcf}
+:root[data-theme=light] .st-price{stroke:#1a1a1a}
+:root[data-theme=light] .st-a0{stop-color:#000;stop-opacity:.07} :root[data-theme=light] .st-a1{stop-color:#000;stop-opacity:0}
+:root[data-theme=light] .st-g0{stop-opacity:.55}
+:root[data-theme=light] .st-sk-sub path{stroke:#000;stroke-opacity:.35}
+:root[data-theme=light] .st-sk-big path{stroke:#000}
+:root[data-theme=light] .st-hl{stroke-width:9}
+:root[data-theme=light] .st-node circle{fill:#c8f531;stroke:#000}
+:root[data-theme=light] .st-node text{fill:#000}
+:root[data-theme=light] .st-ghost circle{fill:#fff}
+:root[data-theme=light] .st-sl,:root[data-theme=light] .st-zl,:root[data-theme=light] .st-zl-t,:root[data-theme=light] .st-ms text,:root[data-theme=light] .st-ms-r text{fill:#000;stroke:#fff}
+:root[data-theme=light] .st-inv line{stroke:#8c8c8c}
+:root[data-theme=light] .st-inv-t{fill:#6e6e6e;stroke:#fff}
+:root[data-theme=light] .st-pad-target{fill-opacity:.55;stroke:#000;stroke-opacity:.8}
+:root[data-theme=light] .st-pad-target.st-z2{fill-opacity:.2;stroke-opacity:.3}
+:root[data-theme=light] .st-pad-entry,:root[data-theme=light] .st-pad-step{fill:#000;fill-opacity:.07;stroke:#000;stroke-opacity:.35}
+:root[data-theme=light] .st-pad-entry.st-z2,:root[data-theme=light] .st-pad-step.st-z2{fill-opacity:.03;stroke-opacity:.15}
+:root[data-theme=light] .st-a-t{stroke:#000}
+:root[data-theme=light] .st-a-w{stroke:#8c8c8c}
+:root[data-theme=light] .st-hd-t{fill:#000} :root[data-theme=light] .st-hd-w{fill:#8c8c8c}
+:root[data-theme=light] .st-dot{fill:#000;stroke:#fff}
+:root[data-theme=light] .st-tag rect{fill:#000} :root[data-theme=light] .st-tag text{fill:#fff}
+:root[data-theme=light] .st-tag-i rect{fill:#fff;stroke:#8c8c8c} :root[data-theme=light] .st-tag-i text{fill:#444}
+:root[data-theme=light] .st-ov-bg{fill:#f6f6f6}
+:root[data-theme=light] .st-ov-p{stroke:#9b9b9b}
+:root[data-theme=light] .st-ov-sk{stroke:#000;stroke-opacity:.6}
+:root[data-theme=light] .st-ov-n{fill:#c8f531;stroke:#000;stroke-width:1}
+:root[data-theme=light] .st-ov-sh{fill:#fff;fill-opacity:.65}
+:root[data-theme=light] .st-ov-w{fill:#000;fill-opacity:.03;stroke:#000;stroke-opacity:.4}
+:root[data-theme=light] .st-ov-grip{fill:#000}
+:root[data-theme=light] .st-ov-at{stroke:#000}
+:root[data-theme=light] .st-ov-s{stroke:#fff} :root[data-theme=light] .st-ov-o{fill:#fff;stroke:#000} :root[data-theme=light] .st-ov-x{fill:#9b9b9b}
+:root[data-theme=light] .st-scrub line{stroke:#000;stroke-opacity:.35}
+:root[data-theme=light] .st-bub{background:#000;color:#fff;box-shadow:0 10px 30px #0004}
+:root[data-theme=light] .st-bub small{color:#bdbdbd}
+:root[data-theme=light] .st-seg,:root[data-theme=light] .st-which,:root[data-theme=light] .st-tmb,:root[data-theme=light] .st-nav{background:#f0f0f0;color:#000}
+:root[data-theme=light] .st-seg button,:root[data-theme=light] .st-which button{color:#6e6e6e}
+:root[data-theme=light] .st-seg button[aria-pressed=true],:root[data-theme=light] .st-which button[aria-pressed=true],:root[data-theme=light] .st-run,:root[data-theme=light] .st-exit,:root[data-theme=light] .st-back{background:#000;color:#fff}
+:root[data-theme=light] .st-back{box-shadow:0 8px 24px #0003}
+:root[data-theme=light] .st-story{background:linear-gradient(#fff0,#fff 38%)}
+:root[data-theme=light] .st-bars i{background:#ddd} :root[data-theme=light] .st-bars i b{background:#000}
+:root[data-theme=light] .st-x{color:#000}
+:root[data-theme=light] .st-facts{background:#e9e9e9;border-color:#e9e9e9}
+:root[data-theme=light] .st-c{background:#fff}
+:root[data-theme=light] .st-k-n{background:#c8f531;border-color:#000;color:#000}
+:root[data-theme=light] .st-k-s{color:#000}
+:root[data-theme=light] .st-k-t{background:#c8f5318c;border-color:#000}
+:root[data-theme=light] .st-k-e{background:#00000012;border-color:#00000059}
+:root[data-theme=light] .st-k-i{border-top-color:#8c8c8c}
+:root[data-theme=light] .st-note{color:#8c8c8c}
+:root[data-theme=light] .st-after{stroke:#000;stroke-opacity:.3}
+:root[data-theme=light] .st-mk text{stroke:#fff}
+:root[data-theme=light] .st-mk-t circle{fill:#c8f531;stroke:#000;stroke-width:1.5} :root[data-theme=light] .st-mk-t text{fill:#000} :root[data-theme=light] .st-mk-t .st-mk-r{stroke:#000}
+:root[data-theme=light] .st-mk-e circle{fill:#000} :root[data-theme=light] .st-mk-e text{fill:#000} :root[data-theme=light] .st-mk-e .st-mk-r{stroke:#000}
+:root[data-theme=light] .st-mk-x circle{fill:#9b9b9b} :root[data-theme=light] .st-mk-x text{fill:#6e6e6e}
+:root[data-theme=light] .st-ghostpath path{stroke:#9b9b9b} :root[data-theme=light] .st-ghostpath text{fill:#8c8c8c;stroke:#fff}
+:root[data-theme=light] .st-ms-leg{stroke-opacity:.8}
+:root[data-theme=light] .st-ms-b{stroke:#000} :root[data-theme=light] .st-ms-c{stroke:#000;stroke-opacity:.5}
+:root[data-theme=light] .st-tally{background:#f4f4f4;border-color:#e5e5e5}
+:root[data-theme=light] .st-v-x b{color:#6e6e6e} :root[data-theme=light] .st-v-o b{color:#000}
+:root[data-theme=light] .st-scrub circle{stroke:#000}
