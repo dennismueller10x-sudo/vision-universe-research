@@ -65,15 +65,21 @@ test("Vorabrechnung und Push haengen am Zugang, nicht an der Ereignisart", () =>
   }
 });
 
-test("der Push steht nach Gate B und vor dem Repo-Push", () => {
+test("der Push steht nach Gate B und nach dem Repo-Push, ohne die Veroeffentlichung zu blockieren", () => {
   const gateB = refresh.indexOf("--phase=integrity");
+  const zugang = step(refresh, "Ist ein Zugang zur dauerhaften Ablage hinterlegt?");
   const push = step(refresh, "Dauerhafte Ablage auf den frischen Stand bringen");
+  const vorab = step(refresh, "Vorabrechnung fuer den Abgleich der dauerhaften Ablage");
   const repoPush = step(refresh, "Commit und Push");
-  assert.ok(gateB > 0 && push && repoPush);
-  assert.ok(gateB < push.start,
-    "was Gate B nicht veroeffentlichen darf, darf auch nicht dauerhaft abgelegt werden");
-  assert.ok(push.start < repoPush.start,
-    "steht der Ablage-Push nach dem Repo-Push, nimmt ein abgewiesener Push ihn mit - Lauf 36078691085");
+  assert.ok(gateB > 0 && zugang && push && vorab && repoPush);
+  assert.ok(gateB < zugang.start,
+    "was Gate B nicht veroeffentlichen darf, darf auch nicht dauerhaft abgelegt werden (ready bleibt sonst leer)");
+  /* 25.11.2026 (Lauf 45501514352): ein haengender Nebenschritt darf Kurse und Faktoren nicht aufhalten. */
+  assert.ok(repoPush.start < vorab.start && vorab.start < push.start,
+    "Commit und Push der Kurse kommen vor dem Abgleich der Ablage");
+  assert.match(push.body, /!cancelled\(\)/, "der Abgleich laeuft auch nach einem abgewiesenen Repo-Push (Lauf 36078691085)");
+  assert.match(vorab.body, /continue-on-error: true/);
+  assert.match(push.body, /continue-on-error: true/);
 });
 
 test("der Push laeuft nur mit gerechnetem Budget", () => {
