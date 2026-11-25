@@ -234,3 +234,14 @@
 .st-far-w{stroke-dasharray:6 6}
 :root[data-theme=light] .st-deg rect{fill:#fff;stroke:#000}
 :root[data-theme=light] .st-deg text{fill:#000}
+.st-farseg{position:absolute;left:16px;z-index:3;display:flex;padding:3px;border-radius:999px;background:#151515;gap:2px}
+.st-farseg button{all:unset;cursor:pointer;padding:7px 12px;border-radius:999px;color:#bdbdbd;font-size:13px;font-weight:800;white-space:nowrap}
+.st-farseg button[data-far="1"]{color:var(--st-lime)}
+.st-farseg button[aria-pressed=true]{background:#fff;color:#000}
+.st-farseg button[data-far="1"][aria-pressed=true]{background:var(--st-lime)}
+.st-farseg button:focus-visible{outline:2px solid #fff;outline-offset:2px}
+:root[data-theme=light] .st-farseg{background:#f0f0f0}
+:root[data-theme=light] .st-farseg button{color:#444}
+:root[data-theme=light] .st-farseg button[data-far="1"]{color:#000}
+:root[data-theme=light] .st-farseg button[aria-pressed=true]{background:#000;color:#fff}
+:root[data-theme=light] .st-farseg button[data-far="1"][aria-pressed=true]{background:#c8f531;color:#000}
