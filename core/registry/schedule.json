@@ -291,6 +291,16 @@
    }
   },
   {
+   "id": "monitor-marktdaten-commit",
+   "workflow": "monitor.yml",
+   "cron": "35 0 * * 2-6",
+   "timer": "waker",
+   "inputs": {
+    "pruefung": "marktdaten-commit"
+   },
+   "note": "Fruehwarnung 25.11.2026: Hat der Marktdaten-Refresh (22:30 Mo-Fr) bis 00:35 UTC veroeffentlicht? scripts/ci/check-market-commit.mjs. Die Pruefung liest nur die GitHub-API."
+  },
+  {
    "id": "monitor-2",
    "workflow": "monitor.yml",
    "cron": "40 14 * * *",
