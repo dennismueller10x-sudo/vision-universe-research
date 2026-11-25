@@ -2,7 +2,7 @@
  "schemaVersion": "vu-market-pulse-1.1.0",
  "methodVersion": "market-pulse-1.0.0",
  "configVersion": "vu-market-pulse-config-1.0.0",
- "generatedAt": "2026-11-25T15:23:18.256Z",
+ "generatedAt": "2026-11-25T18:22:37.835Z",
  "kind": "DESCRIPTIVE_MARKET_PULSE",
  "notes": {
   "quantMarketRegime": "FAIL_CLOSED - nicht verwendet, nicht imitiert",
@@ -105,7 +105,7 @@
   "disclaimer": "Einordnung des Marktumfelds aus festen Regeln – keine Anlageberatung, keine Kauf- oder Verkaufsempfehlung, keine Prognose."
  },
  "evaluation": {
-  "generatedAt": "2026-11-25T15:23:18.256Z",
+  "generatedAt": "2026-11-25T18:22:37.835Z",
   "dataAsOf": "2026-11-24",
   "previousDataAsOf": "2026-11-23",
   "schedule": {
@@ -695,11 +695,11 @@
     {
      "key": "OIL",
      "label": "Öl (WTI)",
-     "text": "−17,3 % · 1,0-fach typisch (deutlich)",
-     "change": -17.263,
-     "ratio": -1.03,
+     "text": "−25,0 % · 1,5-fach typisch (deutlich)",
+     "change": -25.046,
+     "ratio": -1.5,
      "notable": true,
-     "asOf": "2026-11-17",
+     "asOf": "2026-11-24",
      "kind": "PERCENT"
     },
     {
@@ -715,11 +715,11 @@
     {
      "key": "EURUSD",
      "label": "EUR/USD",
-     "text": "−2,1 % · 1,0-fach typisch (deutlich)",
-     "change": -2.055,
-     "ratio": -1.04,
+     "text": "−2,3 % · 1,1-fach typisch (deutlich)",
+     "change": -2.261,
+     "ratio": -1.14,
      "notable": true,
-     "asOf": "2026-11-24",
+     "asOf": "2026-11-25",
      "kind": "PERCENT"
     }
    ],
@@ -1018,13 +1018,13 @@
   },
   "WTI": {
    "kind": "PRICE",
-   "asOf": "2026-11-17",
-   "last": 89.53,
-   "observations": 9546,
+   "asOf": "2026-11-24",
+   "last": 82.24,
+   "observations": 9551,
    "changes": {
-    "1M": -17.26,
-    "3M": 3.53,
-    "1Y": 47.59
+    "1M": -25.05,
+    "3M": -1.98,
+    "1Y": 39.13
    },
    "high52w": {
     "date": "2026-04-07",
@@ -1034,18 +1034,18 @@
     "date": "2025-12-16",
     "value": 55.44
    },
-   "rangePosition": 57.6,
-   "dist50": -9.35,
-   "dist200": -0.73,
+   "rangePosition": 45.3,
+   "dist50": -15.25,
+   "dist200": -9.35,
    "trend": "NEGATIVE",
-   "drawdown52w": -21.86,
-   "vol20": 53.91,
+   "drawdown52w": -28.22,
+   "vol20": 53.36,
    "volContext": {
-    "median": 36,
+    "median": 36.1,
     "p25": 26.6,
-    "p75": 45.5,
-    "samples": 1246,
-    "from": "2021-11-18",
+    "p75": 45.8,
+    "samples": 1247,
+    "from": "2021-11-25",
     "state": "HIGHER"
    },
    "roles": [
@@ -1053,19 +1053,19 @@
      "dimension": "CROSS_ASSET",
      "state": "OBSERVED",
      "stateLabel": "Auffällige Bewegungen",
-     "text": "Teil des Cross-Asset-Kontexts. Über einen Monat: −17,3 % – das 1,0-Fache einer typischen Monatsbewegung, also deutlich."
+     "text": "Teil des Cross-Asset-Kontexts. Über einen Monat: −25,0 % – das 1,5-Fache einer typischen Monatsbewegung, also deutlich."
     }
    ]
   },
   "BRENT": {
    "kind": "PRICE",
-   "asOf": "2026-11-17",
-   "last": 92.94,
-   "observations": 9132,
+   "asOf": "2026-11-24",
+   "last": 91.8,
+   "observations": 9137,
    "changes": {
-    "1M": -22.12,
-    "3M": -2.47,
-    "1Y": 47.15
+    "1M": -28.45,
+    "3M": 4.03,
+    "1Y": 41.6
    },
    "high52w": {
     "date": "2026-04-07",
@@ -1075,31 +1075,31 @@
     "date": "2025-12-16",
     "value": 59.93
    },
-   "rangePosition": 42.2,
-   "dist50": -19.64,
-   "dist200": -6.81,
+   "rangePosition": 40.7,
+   "dist50": -18.7,
+   "dist200": -8.46,
    "trend": "NEGATIVE",
-   "drawdown52w": -32.75,
-   "vol20": 86.31,
+   "drawdown52w": -33.58,
+   "vol20": 80.55,
    "volContext": {
-    "median": 33.2,
+    "median": 33.3,
     "p25": 26.3,
-    "p75": 46.2,
+    "p75": 46.4,
     "samples": 1262,
-    "from": "2021-11-18",
+    "from": "2021-11-25",
     "state": "HIGHER"
    },
    "roles": []
   },
   "NATGAS": {
    "kind": "PRICE",
-   "asOf": "2026-11-17",
-   "last": 3.1,
-   "observations": 5732,
+   "asOf": "2026-11-24",
+   "last": 3.3,
+   "observations": 5737,
    "changes": {
-    "1M": -3.73,
-    "3M": 9.93,
-    "1Y": -16.44
+    "1M": 18.71,
+    "3M": 22.22,
+    "1Y": -20.48
    },
    "high52w": {
     "date": "2026-01-23",
@@ -1109,18 +1109,18 @@
     "date": "2026-10-30",
     "value": 2.42
    },
-   "rangePosition": 2.4,
-   "dist50": 5.02,
-   "dist200": 3.6,
+   "rangePosition": 3.1,
+   "dist50": 10.07,
+   "dist200": 11.68,
    "trend": "POSITIVE",
-   "drawdown52w": -89.91,
-   "vol20": 91.47,
+   "drawdown52w": -89.26,
+   "vol20": 73.98,
    "volContext": {
-    "median": 88.4,
+    "median": 88.5,
     "p25": 67.6,
     "p75": 124.5,
-    "samples": 1246,
-    "from": "2021-11-18",
+    "samples": 1247,
+    "from": "2021-11-25",
     "state": "USUAL"
    },
    "roles": []
@@ -1270,34 +1270,34 @@
   },
   "EURUSD": {
    "kind": "PRICE",
-   "asOf": "2026-11-24",
-   "last": 1.0963,
-   "observations": 7143,
+   "asOf": "2026-11-25",
+   "last": 1.0935,
+   "observations": 7144,
    "changes": {
-    "1M": -2.05,
-    "3M": -5.99,
-    "1Y": -5.03
+    "1M": -2.26,
+    "3M": -6.29,
+    "1Y": -5.33
    },
    "high52w": {
     "date": "2026-01-28",
     "value": 1.1974
    },
    "low52w": {
-    "date": "2026-11-23",
-    "value": 1.0939
+    "date": "2026-11-25",
+    "value": 1.0935
    },
-   "rangePosition": 2.3,
-   "dist50": -2.24,
-   "dist200": -4.65,
+   "rangePosition": 0,
+   "dist50": -2.38,
+   "dist200": -4.85,
    "trend": "NEGATIVE",
-   "drawdown52w": -8.44,
-   "vol20": 6.08,
+   "drawdown52w": -8.68,
+   "vol20": 6.11,
    "volContext": {
     "median": 6.8,
     "p25": 5.3,
     "p75": 8.6,
     "samples": 1279,
-    "from": "2021-11-25",
+    "from": "2021-11-26",
     "state": "USUAL"
    },
    "roles": [
@@ -1305,7 +1305,7 @@
      "dimension": "CROSS_ASSET",
      "state": "OBSERVED",
      "stateLabel": "Auffällige Bewegungen",
-     "text": "Teil des Cross-Asset-Kontexts. Über einen Monat: −2,1 % – das 1,0-Fache einer typischen Monatsbewegung, also deutlich."
+     "text": "Teil des Cross-Asset-Kontexts. Über einen Monat: −2,3 % – das 1,1-Fache einer typischen Monatsbewegung, also deutlich."
     }
    ]
   },
@@ -1823,9 +1823,9 @@
    },
    "OIL": {
     "symbol": "WTI",
-    "asOf": "2026-11-17",
+    "asOf": "2026-11-24",
     "horizon": 22,
-    "samples": 2497
+    "samples": 2498
    },
    "BTC": {
     "symbol": "BTCUSD",
@@ -1835,9 +1835,9 @@
    },
    "EURUSD": {
     "symbol": "EURUSD",
-    "asOf": "2026-11-24",
+    "asOf": "2026-11-25",
     "horizon": 22,
-    "samples": 2557
+    "samples": 2558
    }
   },
   "breadth": {
