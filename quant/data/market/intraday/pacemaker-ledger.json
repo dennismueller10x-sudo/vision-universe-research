@@ -10,7 +10,7 @@
     "blockMaxMs": 20700000,
     "branch": "main"
   },
-  "updatedAt": "2026-11-25T15:45:03.168Z",
+  "updatedAt": "2026-11-25T15:49:48.239Z",
   "cycles": [
     {
       "cycle": 8,
@@ -1980,10 +1980,10 @@
       "written": 1277,
       "requests": 1429,
       "notPublishable": 104,
-      "addAt": "2026-11-25T15:40:57.199Z",
-      "commitAt": "2026-11-25T15:40:57.425Z",
-      "pushAt": "2026-11-25T15:41:00.026Z",
-      "sha": "04d7b8bbbe",
+      "addAt": "2026-11-25T15:45:03.169Z",
+      "commitAt": "2026-11-25T15:45:03.394Z",
+      "pushAt": "2026-11-25T15:45:44.873Z",
+      "sha": "5038b7e530",
       "changed": true,
       "ok": true,
       "reason": null,
@@ -2019,11 +2019,50 @@
           "fetchEndAt": "2026-11-25T15:45:03.168Z",
           "ok": true,
           "written": 423,
-          "requests": 476
+          "requests": 476,
+          "sha": "5038b7e530",
+          "pushAt": "2026-11-25T15:45:44.873Z",
+          "changed": true
         }
       ],
       "snapshotAt": "2026-11-25T15:45:03.152Z",
-      "pushed": true
+      "pushed": true,
+      "watchdog": {
+        "verdict": "PASS",
+        "codes": []
+      }
+    },
+    {
+      "cycle": 7,
+      "runId": "45619169927",
+      "triggerAt": "2026-11-25T15:45:45.159Z",
+      "marketStateAtTrigger": "OPEN",
+      "localTimeAtTrigger": "10:45:45",
+      "fetchStartAt": "2026-11-25T15:45:45.159Z",
+      "fetchEndAt": "2026-11-25T15:49:48.238Z",
+      "session": "2026-11-25",
+      "written": 429,
+      "requests": 477,
+      "notPublishable": 31,
+      "addAt": null,
+      "commitAt": null,
+      "pushAt": null,
+      "sha": null,
+      "changed": false,
+      "ok": true,
+      "reason": null,
+      "parts": [
+        {
+          "part": 1,
+          "of": 3,
+          "fetchStartAt": "2026-11-25T15:45:45.159Z",
+          "fetchEndAt": "2026-11-25T15:49:48.238Z",
+          "ok": true,
+          "written": 429,
+          "requests": 477
+        }
+      ],
+      "snapshotAt": "2026-11-25T15:49:48.223Z"
     }
   ]
 }
