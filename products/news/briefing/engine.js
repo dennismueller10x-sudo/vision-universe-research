@@ -399,16 +399,17 @@
   /* Themen Dritter aus dem Radar: Pflichtfelder, Quelle in der Liste, erschienen am Sitzungstag (oder am Morgen danach
      vor dem Lauf), höchstens zwei Karten je Quelle. Verworfenes steht mit Grund im Ergebnis. */
   function thirdCards(radar, session, now) {
-    var kept = [], dropped = [], per = {};
+    // Bei X zählt das Konto (source), nicht die Plattform: zwei Karten je Konto.
+    var kept = [], dropped = [], per = {}, key = function (it) { return it.publisher === "X" ? it.source : it.publisher; };
     (radar && radar.items || []).forEach(function (it, i) {
       var why = null;
       if (!it || !it.title || !it.source || !it.publisher || !isDate(it.published)) why = "Pflichtfeld fehlt";
       else if (THIRD_SOURCES.indexOf(it.publisher) < 0) why = "Herausgeber nicht in der Quellenliste: " + it.publisher;
       else if (it.published !== session && !(daysBetween(session, it.published) === 1 && now && now.slice(0, 10) === it.published)) why = "nicht vom Handelstag (" + it.published + ")";
-      else if ((per[it.publisher] || 0) >= MAX_PER_SOURCE) why = "mehr als " + MAX_PER_SOURCE + " Karten von " + it.publisher;
+      else if ((per[key(it)] || 0) >= MAX_PER_SOURCE) why = "mehr als " + MAX_PER_SOURCE + " Karten von " + key(it);
       else if (!it.url || !/^https:\/\//.test(it.url)) why = "keine Quell-URL";
       if (why) { dropped.push({ index: i, title: it && it.title, reason: why }); return; }
-      per[it.publisher] = (per[it.publisher] || 0) + 1;
+      per[key(it)] = (per[key(it)] || 0) + 1;
       kept.push({ id: "third-" + (kept.length + 1), type: "THIRD", kicker: it.kicker || "Thema des Tages", title: it.title, sub: it.sub || null,
         columns: it.columns || null, bars: it.bars || null, quote: it.quote || null, stats: it.stats || null,
         line: it.line && it.line.points && it.line.points.length > 1 ? it.line : null, speaker: it.speaker || null, lead: it.lead === true,
