@@ -3,7 +3,7 @@
  "method": "market-briefing-1.0.0",
  "kind": "CLOSE",
  "session": "2026-11-25",
- "generatedAt": "2026-11-26T02:21:37.417Z",
+ "generatedAt": "2026-11-26T05:08:44.883Z",
  "fresh": {
   "ok": true,
   "session": "2026-11-25",
@@ -14,8 +14,8 @@
    "id": "overview",
    "type": "MARKET",
    "kicker": "Wall Street am Mittwoch",
-   "title": "Wall Street kaum verändert",
-   "sub": null,
+   "title": "Erst minus 3 %, dann fast unverändert",
+   "sub": "Der S&P 500 lag am Mittwoch zeitweise mehr als 3 % im Minus und schloss nur 0,3 % tiefer, der Dow drehte sogar ins Plus. Starke US-Konjunkturdaten und zähe Inflation machen eine Zinserhöhung im Dezember wahrscheinlicher.",
    "stats": [
     {
      "label": "Nasdaq 100",
@@ -861,6 +861,41 @@
    "source": "Indizes über ETF-Proxies (QQQ, SPY) · Tagesverlauf in 5-Minuten-Schritten, verzögert"
   },
   {
+   "id": "third-1",
+   "type": "THIRD",
+   "kicker": "Makro",
+   "title": "US-Wirtschaft wächst so stark wie seit drei Jahren nicht",
+   "sub": "Die zweite Schätzung hebt das Wachstum im dritten Quartal deutlich an; der Arbeitsmarkt bleibt robust.",
+   "columns": null,
+   "bars": null,
+   "quote": null,
+   "stats": [
+    {
+     "label": "BIP 3. Quartal",
+     "value": 4.3,
+     "unit": "%",
+     "sub": "annualisiert, erwartet 3,5 %"
+    },
+    {
+     "label": "Konsum 3. Quartal",
+     "value": 4.2,
+     "unit": "%",
+     "sub": "erwartet 3,9 %"
+    },
+    {
+     "label": "Erstanträge",
+     "text": "189.000",
+     "sub": "erwartet 200.000"
+    }
+   ],
+   "line": null,
+   "speaker": null,
+   "lead": true,
+   "source": "X · @LizAnnSonders (Charles Schwab) · 25.11.2026",
+   "url": "https://x.com/LizAnnSonders/status/2125584767592890732",
+   "publisher": "X"
+  },
+  {
    "id": "indices",
    "type": "MARKET",
    "kicker": "Indizes",
@@ -1025,6 +1060,23 @@
     ]
    },
    "source": "SEC EDGAR (Gewinn je Aktie, verwässert) · eigene Rechnung"
+  },
+  {
+   "id": "third-2",
+   "type": "THIRD",
+   "kicker": "Stimme",
+   "title": "El-Erian: Zinserhöhung am 9. Dezember so gut wie sicher",
+   "sub": "Die Kern-PCE-Inflation stieg im Oktober auf 3,3 %, den höchsten Stand seit drei Jahren.",
+   "columns": null,
+   "bars": null,
+   "quote": "Das alles wird den Märkten das Gefühl geben, dass eine Zinserhöhung der Fed am 9. Dezember praktisch beschlossene Sache ist.",
+   "stats": null,
+   "line": null,
+   "speaker": "Mohamed El-Erian, Allianz (übersetzt)",
+   "lead": false,
+   "source": "X · @elerianm · 25.11.2026",
+   "url": "https://x.com/elerianm/status/2125588551660151197",
+   "publisher": "X"
   },
   {
    "id": "breadth",
@@ -1270,6 +1322,23 @@
    "source": "Vision Universe Technical (S&P 500, Tagesschluss 25.11.)"
   },
   {
+   "id": "third-3",
+   "type": "THIRD",
+   "kicker": "Rohstoffe",
+   "title": "Gold 38 % unter dem Januar-Hoch",
+   "sub": "Gold notiert so tief wie seit September 2025 nicht mehr – die größte Korrektur seit 2015.",
+   "columns": null,
+   "bars": null,
+   "quote": null,
+   "stats": null,
+   "line": null,
+   "speaker": null,
+   "lead": false,
+   "source": "X · @charliebilello · 25.11.2026",
+   "url": "https://x.com/charliebilello/status/2125589573514477838",
+   "publisher": "X"
+  },
+  {
    "kicker": "Thema · Chartsignale",
    "title": "4 Golden Cross, 5 Death Cross",
    "sub": "Golden Cross: Der 50-Tage-Durchschnitt steigt über den 200-Tage-Durchschnitt. Death Cross: Er fällt darunter. Beides beschreibt den Trend, es ist keine Empfehlung.",
@@ -1392,7 +1461,7 @@
      },
      {
       "label": "Bitcoin",
-      "value": 1.08,
+      "value": 1.07,
       "sub": "Woche +2,6 %"
      }
     ]
@@ -1452,6 +1521,23 @@
     }
    ],
    "source": "Liquide US-Aktien (≥ 20 Mio. USD Umsatz, ≥ 5 USD) · Tagesschluss"
+  },
+  {
+   "id": "third-4",
+   "type": "THIRD",
+   "kicker": "Handelsverlauf",
+   "title": "Dow-ETF dreht 2 % Minus erstmals seit Februar 2022 ins Plus",
+   "sub": "Trotz des Minus im S&P 500 stiegen mehr Aktien als fielen; zehn von elf Sektoren hatten eine positive Marktbreite.",
+   "columns": null,
+   "bars": null,
+   "quote": null,
+   "stats": null,
+   "line": null,
+   "speaker": null,
+   "lead": false,
+   "source": "X · @bespokeinvest · 25.11.2026",
+   "url": "https://x.com/bespokeinvest/status/2125734106382078029",
+   "publisher": "X"
   },
   {
    "id": "picture",
@@ -1639,11 +1725,12 @@
  "counts": {
   "MARKET": 5,
   "OWN": 5,
-  "THIRD": 0,
+  "THIRD": 4,
   "AGENDA": 1
  },
  "summary": [
   "Am Mittwoch, 25. November 2026 bewegten sich der Nasdaq 100 −0,7 %, der S&P 500 −0,3 % und der Dow Jones +0,3 % (Tagesschluss).",
+  "US-Wirtschaft wächst so stark wie seit drei Jahren nicht (X).",
   "Größte Bewegung unter den Schwergewichten: NVDA −3,9 %.",
   "34 % von 5.229 US-Aktien schlossen im Minus; 30 neuen 52-Wochen-Tiefs standen 27 Hochs gegenüber.",
   "18 Aktien auf neuem 52-Wochen-Hoch.",
