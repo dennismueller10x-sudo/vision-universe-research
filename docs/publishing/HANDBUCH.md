@@ -462,3 +462,30 @@ Wirtschaftskalender (FMP-Endpunkte geprüft in `scripts/market/probe-free-source
 3. Karussell und Reel jeden Abend ins Approval Center (Veröffentlichung nur nach Freigabe, wie bei Reels).
 4. Lücken schließen: Sektor-ETFs, VIX; Ausblick-Termine automatisch aus den Quellen (bisher von Hand recherchiert).
 
+
+### 10.1 Recherche-Lauf (Owner-Freigabe 25.11.2026, ab 26.11.2026)
+
+Ziel: Das Marktbriefing liegt Di–Sa spätestens um 06:00 Uhr deutscher Zeit (05:00 UTC, Winterzeit) fertig auf www, mit
+externen Inhalten und einem Aufbau, der sich nach dem Tag richtet. Der Lauf verbraucht je Werktag Claude-Guthaben (Owner-Freigabe).
+
+- **Takt:** Geplante Aufgabe Di–Sa 03:05 UTC (in der Marktbriefing-Sitzung). Vorher müssen Kurse, Market Pulse und das
+  interne Briefing der Sitzung stehen (Kurs-Lauf ~00:00, Neustart 00:35, Pulse 00:20/03:20, Briefing 02:20). Fehlt der
+  Pulse der Sitzung, `multi-asset-data.yml` einmal per Dispatch starten.
+- **Kein Handelstag** (Wochenende, US-Feiertag wie Thanksgiving): keine neue Ausgabe, nichts veröffentlichen.
+- **Quellen** (`engine.js#THIRD_SOURCES`): Nachrichtenhäuser (CNBC, Bloomberg, Reuters, AP, dpa, Handelsblatt, WSJ, FT,
+  Barron's, MarketWatch), Notenbanken und Statistikämter (Fed, EZB, Bundesbank, BEA, BLS, Census, Destatis, Eurostat,
+  Treasury, FRED, EIA, IEA, OPEC, ifo, ZEW, IWF, OECD), öffentliche Research-Notizen großer Banken und Häuser (Goldman Sachs,
+  JPMorgan, Morgan Stanley, Bank of America, Citi, UBS, Deutsche Bank, Commerzbank, Barclays, BlackRock, Apollo, Wells Fargo,
+  Bloomberg Economics) und X (Beitrag mit Link, Konto im Feld `source`). Jede Zahl gegen eine zweite Quelle oder die eigenen
+  Daten prüfen; was nur eine Quelle nennt, fällt weg.
+- **Formate je Angabe** in `products/news/radar/<sitzung>.json` → `items[]` (Pflicht: `title`, `publisher`, `source`,
+  `published`, `url`): `quote` + `speaker` (Bank-, Researchhaus- oder X-Stimme, höchstens zwei Sätze, wörtlich, übersetzt
+  gekennzeichnet), `line` (`{label, unit, digits, points:[[datum, wert]]}`, Makro-Reihe aus den Originaldaten, z. B. FRED),
+  `bars` (`{unit, rows:[{label, value}]}`), `stats` (`[{label, value, unit, sub}]`), sonst nur Text. Fremde Grafiken werden
+  nicht übernommen, sondern aus den Daten neu gezeichnet; Quelle steht im Etikett „Angabe Dritter · …“.
+- **Aufbau je Tag:** `lead: true` stellt eine Angabe direkt hinter den Überblick (Makro-Tag: Chart vorn; Bank-Tag: Zitat vorn;
+  großer Kurstag: Auslöser vorn). `editorial` setzt Schlagzeile und Unterzeile. Ziel: 3–5 externe Angaben, mindestens
+  zwei verschiedene Formate, kein Format zwei Tage hintereinander vorn.
+- **Ablauf:** Radar-Datei → PR → ci-gate grün → Squash-Merge → `content.yml` `teil=marktbriefing website=ja` → Seite prüfen →
+  Instagram-Slides (`social.mjs`) und Kurzbericht an den Owner. Owner-Regeln: keine Empfehlung, keine Kursprognose, kein
+  Kleingedrucktes auf Grafiken, X-Inhalte von Produkt-Neuigkeiten (z. B. FSD) gehören in News, nicht ins Marktbriefing.

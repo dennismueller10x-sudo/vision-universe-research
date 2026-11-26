@@ -38,7 +38,42 @@
   /* Icons aus render.js (eine Quelle für Karten und Seite). */
   function ic(name, cls) { return '<svg class="' + (cls || "mb-i") + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (Render.ICONS[name] || "") + "</svg>"; }
   function eye(name, t) { return '<p class="mb-eye mb-ei">' + ic(name) + esc(t) + "</p>"; }
-  /* Kurzfassung: Icon je Satz nach Inhalt. */
+
+  /* Angaben Dritter je Art eine eigene Szene (Recherche-Lauf, Owner 25.11.2026): Zitat (Bank, Researchhaus, X),
+     Linie (Makro-Reihe), Balken, große Zahlen; ohne Grafik eine Nachricht. Quelle steht im Etikett. */
+  function richThird(c) { return !!(c.quote || c.line || c.bars || c.stats); }
+  function lineSvg(pts, unit, digits) {
+    var v = pts.map(function (p) { return p[1]; }), lo = Math.min.apply(null, v), hi = Math.max.apply(null, v); if (hi === lo) hi = lo + 1;
+    var W = 600, H = 240, xy = pts.map(function (p, i) { return [(i / (pts.length - 1) * W).toFixed(1), (H - 12 - (p[1] - lo) / (hi - lo) * (H - 24)).toFixed(1)]; });
+    var d = (digits == null ? 1 : digits), f = function (x) { return (x < 0 ? "−" : "") + num(x, d) + (unit ? " " + unit : ""); };
+    var dt = function (t) { return String(t).slice(0, 10).split("-").reverse().join("."); };
+    return '<figure class="mb-line"><svg viewBox="0 0 ' + W + " " + H + '" preserveAspectRatio="none" aria-hidden="true"><polyline points="' + xy.map(function (q) { return q.join(","); }).join(" ") +
+      '" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg>' +
+      '<figcaption><span>' + esc(dt(pts[0][0])) + " · " + esc(f(pts[0][1])) + "</span><b>" + esc(dt(pts[pts.length - 1][0])) + " · " + esc(f(pts[pts.length - 1][1])) + "</b></figcaption></figure>";
+  }
+  function thirdScene(f, id) {
+    var head = tag("Angabe Dritter · " + f.publisher, f.quote ? "bank" : f.line ? "gauge" : "news"), body = "", bg = "w";
+    if (f.quote) {
+      bg = "k";
+      body = '<blockquote class="mb-quote">„' + esc(f.quote) + "“</blockquote>" + (f.speaker ? '<p class="mb-who">' + esc(f.speaker) + "</p>" : "") +
+        '<h2 class="mb-claim mb-m">' + esc(f.title) + "</h2>" + (f.sub ? '<p class="mb-say">' + esc(f.sub) + "</p>" : "");
+    } else if (f.line) {
+      body = '<h2 class="mb-claim mb-m">' + esc(f.title) + "</h2>" + (f.sub ? '<p class="mb-say">' + esc(f.sub) + "</p>" : "") +
+        (f.line.label ? '<p class="mb-sub">' + esc(f.line.label) + "</p>" : "") + lineSvg(f.line.points, f.line.unit, f.line.digits);
+    } else if (f.bars) {
+      var rows = f.bars.rows, mx = Math.max.apply(null, rows.map(function (r) { return Math.abs(r.value); })) || 1, u = f.bars.unit || "%";
+      var fv = function (x) { return u === "%" ? pct(x) : sg(x) + num(x, 1) + " " + u; };
+      body = '<h2 class="mb-claim mb-m">' + esc(f.title) + "</h2>" + (f.sub ? '<p class="mb-say">' + esc(f.sub) + "</p>" : "") + '<div class="mb-xbars">' +
+        rows.map(function (r) { return '<div class="mb-st"><b>' + esc(r.label) + '</b><div class="mb-tr"><i data-w="' + (Math.abs(r.value) / mx * 100).toFixed(1) + '"' + (r.value > 0 ? ' class="up"' : "") + '></i></div><span class="mb-v">' + fv(r.value) + "</span></div>"; }).join("") + "</div>";
+    } else if (f.stats) {
+      bg = "l";
+      body = '<h2 class="mb-claim mb-m">' + esc(f.title) + "</h2>" + (f.sub ? '<p class="mb-say">' + esc(f.sub) + "</p>" : "") + '<div class="mb-facts">' +
+        f.stats.map(function (x) { return "<div><b>" + esc(x.text != null ? x.text : (x.unit === "%" ? pct(x.value) : num(x.value, x.digits == null ? 1 : x.digits) + (x.unit ? " " + x.unit : ""))) + "</b>" + esc(x.label) + (x.sub ? ", " + esc(x.sub) : "") + "</div>"; }).join("") + "</div>";
+    } else {
+      body = '<h2 class="mb-claim mb-m">' + esc(f.title) + "</h2>" + (f.sub ? '<p class="mb-say">' + esc(f.sub) + "</p>" : "");
+    }
+    return { id: id, bg: bg, toc: f.title, html: '<div class="mb-in">' + head + body + "</div>" };
+  }  /* Kurzfassung: Icon je Satz nach Inhalt. */
   function sumIcon(t, i, b) {
     if (/^Als Nächstes/.test(t)) return "markt";
     if (/Schwergewicht/.test(t)) return "heavy";
@@ -73,6 +108,7 @@
 
     S.push({ id: "kurz", bg: "w", toc: "Das Wichtigste in Kürze", html:
       '<div class="mb-in">' + eye("news", "Das Wichtigste in Kürze") + '<ol class="mb-sum">' + (b.summary || []).map(function (t, i) { return "<li>" + ic(sumIcon(t, i, b), "mb-si") + "<span>" + esc(t) + "</span></li>"; }).join("") + "</ol></div>" });
+    third.filter(function (c) { return c.lead && !c.columns; }).forEach(function (f, n) { S.push(thirdScene(f, "vorn-" + (n + 1))); });
 
     if (ov.chart) {
       var q = IX["Nasdaq 100"];
@@ -93,7 +129,7 @@
           return '<div class="mb-st"><b>' + esc(r.label) + '</b><div class="mb-tr"><i data-w="' + (Math.abs(r.value) / mx * 100).toFixed(1) + '"' + (r.value > 0 ? ' class="up"' : "") + '></i></div><span class="mb-v">' + pct(r.value) + "</span></div>"; }).join("") + "</div></div>" });
     }
 
-    var sec = third.filter(function (c) { return !c.columns; })[0];
+    var sec = third.filter(function (c) { return !c.columns && !richThird(c) && !c.lead; })[0];
     if (topMc) {
       S.push({ id: "schwergewichte", bg: "w", toc: topMc.label + " " + pct(topMc.value, 0), html:
         '<div class="mb-in">' + (sec ? tag("Angabe Dritter · " + sec.publisher, "news") : tag("Die Schwergewichte", "heavy")) + '<div class="mb-huge" data-to="' + topMc.value + '" data-d="0">' + pct(topMc.value, 0) + "</div>" +
@@ -148,6 +184,8 @@
         '<div class="mb-in mb-duo"><div class="mb-col">' + tag("Angabe Dritter · " + f.publisher, "bank") + '<div class="mb-huge" data-to="' + last + '" data-d="0" data-plain="1">' + num(last, 0) + ' %</div><h2 class="mb-claim mb-m">' + esc(f.title) + ".</h2>" + (f.sub ? '<p class="mb-say">' + esc(f.sub) + "</p>" : "") + "</div>" +
         '<div class="mb-colb">' + r.map(function (x) { return '<div><span>' + num(x.values[0], 0) + ' %</span><i class="' + (x.highlight ? "on" : "") + '" data-h="' + x.values[0] + '"></i><small>' + esc(x.label) + "</small></div>"; }).join("") + "</div></div>" });
     });
+
+    third.filter(function (c) { return !c.columns && !c.lead && c !== sec; }).forEach(function (f, n) { S.push(thirdScene(f, "extern-" + (n + 1))); });
 
     if (C.movers) {
       S.push({ id: "bewegungen", bg: "w", toc: "Größte Bewegungen", html:

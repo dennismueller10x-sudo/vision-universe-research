@@ -304,78 +304,6 @@ jobs:
           done
           echo "ready=$ready" >> "$GITHUB_OUTPUT"
 
-      # DIE DAUERHAFTE ABLAGE NACHZIEHEN - der fehlende zweite Halbsatz.
-      #
-      # sync-history-store.mjs beschreibt seinen Vertrag selbst: "--pull
-      # Ablage -> .market-cache (vor Faktoren und Technical), --push
-      # .market-cache -> Ablage (nach dem Gate-Lauf)". Der Pull war in der
-      # Materialisierung verdrahtet, der Push nirgends. Folge, am 25.09.2026
-      # gemessen: die Produkt-Kursstruktur endet am 2026-09-10, der
-      # veroeffentlichte Kursstand am 2026-09-24 - bei 5.646 von 5.676
-      # Titeln dieselben ZEHN Handelstage Rueckstand. Der Abruf hielt seine
-      # frischen Bars nur im Actions-Cache; die Materialisierung liest die
-      # Ablage und sah sie nie.
-      #
-      # Steht bewusst NACH Gate B: was nicht veroeffentlicht werden darf,
-      # wird auch nicht dauerhaft abgelegt. Und vor dem Cache-Save, damit
-      # ein Abbruch hier nicht den frischen Stand verliert.
-      #
-      # Die Kosten rechnet die Vorpruefung, nicht dieser Schritt: ein
-      # DAILY_UPDATE schreibt ein Objekt je geaendertem Titel plus einen
-      # Index (~6.900 Class-A-Operationen, Decke 750.000 im Monat). Reicht
-      # das Budget nicht, bricht der Waechter mit "OWNER DECISION REQUIRED"
-      # ab - er rechnet sich seine Freigabe nicht selbst aus.
-      - name: Vorabrechnung fuer den Abgleich der dauerhaften Ablage
-        if: steps.history_store.outputs.ready == 'true'
-        env:
-          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
-          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
-          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
-          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
-          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
-        run: >-
-          node scripts/market/preflight-zero-cost.mjs --operation DAILY_UPDATE --gate FULL_UNIVERSE
-          --out "$RUNNER_TEMP/history-store-push-preflight.json"
-
-      # Haengt der Abgleich (Lauf 45501514352, 24.11.2026: nach 48 Minuten abgebrochen, sonst 13-16 Minuten), darf er die
-      # Veroeffentlichung nicht mitreissen: Kurse und Faktoren sind nach Gate B fertig und gehen trotzdem raus; die Ablage
-      # holt der naechste Lauf nach ("Stand der dauerhaften Ablage" meldet den Rueckstand, der Alarm sieht den Schritt).
-      - name: Dauerhafte Ablage auf den frischen Stand bringen
-        id: history_push
-        if: steps.history_store.outputs.ready == 'true'
-        timeout-minutes: 30
-        continue-on-error: true
-        env:
-          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
-          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
-          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
-          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
-          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
-        run: >-
-          node scripts/market/sync-history-store.mjs --push --gate FULL_UNIVERSE --concurrency 16
-          --operation DAILY_UPDATE
-          --preflight "$RUNNER_TEMP/history-store-push-preflight.json"
-          --report "$RUNNER_TEMP/history-store-push.json"
-
-      # Was angekommen ist, wird gezaehlt und nicht angenommen: der Index
-      # der Ablage traegt je Titel den Zeitpunkt des dauerhaften Schreibens.
-      # Diese Zeile ist die Gegenprobe, an der der naechste Rueckstand
-      # auffaellt, bevor ihn ein Leser auf der Aktienseite sieht.
-      - name: Stand der dauerhaften Ablage
-        if: always() && steps.history_store.outputs.ready == 'true'
-        env:
-          PUSH_OUTCOME: ${{ steps.history_push.outcome }}
-        run: |
-          if [ "$PUSH_OUTCOME" = "failure" ]; then echo "::warning::Abgleich der dauerhaften Ablage abgebrochen oder zu langsam - Daten werden trotzdem veroeffentlicht, der naechste Lauf holt die Ablage nach."; fi
-          node -e '
-            const fs = require("fs");
-            const path = process.env.RUNNER_TEMP + "/history-store-push.json";
-            if (!fs.existsSync(path)) { console.log("kein Abgleichsbericht - der Schritt lief nicht."); process.exit(0); }
-            const r = JSON.parse(fs.readFileSync(path, "utf8"));
-            console.log("Abgleich " + (r.direction || "?") + " · " + JSON.stringify(r.tally || {}));
-            console.log("Ablage: " + JSON.stringify(r.storage || {}));
-          '
-
       - name: Groesse der Arbeitsablage
         id: disk
         if: always()
@@ -455,6 +383,89 @@ jobs:
             git commit -m "Marktdaten-Refresh: Tageskurse, Faktoren und Discover-Daten fuer das Produktuniversum (Tiingo EOD)"
             scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
           fi
+
+      # REIHENFOLGE (Lauf 45501514352, 24.11.2026): Commit und Push der Kurse stehen VOR dem Abgleich der dauerhaften
+      # Ablage. Der Abgleich ist ein Nebenschritt (sonst 13-16 min, hing damals ueber 48 min) und darf die Veroeffentlichung
+      # weder verzoegern noch blockieren. Die Ablage zieht nach: .market-cache bleibt bis zum Sichern der Arbeitsablage
+      # unveraendert, der Abgleich haengt die Kerzen an (appendSeries), und ein ausgefallener Abgleich holt der naechste
+      # Lauf aus der gesicherten Arbeitsablage nach ("Stand der dauerhaften Ablage" meldet den Rueckstand).
+      # DIE DAUERHAFTE ABLAGE NACHZIEHEN - der fehlende zweite Halbsatz.
+      #
+      # sync-history-store.mjs beschreibt seinen Vertrag selbst: "--pull
+      # Ablage -> .market-cache (vor Faktoren und Technical), --push
+      # .market-cache -> Ablage (nach dem Gate-Lauf)". Der Pull war in der
+      # Materialisierung verdrahtet, der Push nirgends. Folge, am 25.09.2026
+      # gemessen: die Produkt-Kursstruktur endet am 2026-09-10, der
+      # veroeffentlichte Kursstand am 2026-09-24 - bei 5.646 von 5.676
+      # Titeln dieselben ZEHN Handelstage Rueckstand. Der Abruf hielt seine
+      # frischen Bars nur im Actions-Cache; die Materialisierung liest die
+      # Ablage und sah sie nie.
+      #
+      # Steht bewusst NACH Gate B: was nicht veroeffentlicht werden darf,
+      # wird auch nicht dauerhaft abgelegt. Und vor dem Cache-Save, damit
+      # ein Abbruch hier nicht den frischen Stand verliert.
+      #
+      # Die Kosten rechnet die Vorpruefung, nicht dieser Schritt: ein
+      # DAILY_UPDATE schreibt ein Objekt je geaendertem Titel plus einen
+      # Index (~6.900 Class-A-Operationen, Decke 750.000 im Monat). Reicht
+      # das Budget nicht, bricht der Waechter mit "OWNER DECISION REQUIRED"
+      # ab - er rechnet sich seine Freigabe nicht selbst aus.
+      - name: Vorabrechnung fuer den Abgleich der dauerhaften Ablage
+        id: history_preflight
+        # !cancelled(): auch nach einem abgewiesenen Repo-Push. Gate B war gruen (sonst ist `ready` leer), die Daten sind
+        # gueltig, die dauerhafte Ablage soll sie behalten. Kein Abbruch des Laufs durch den Nebenschritt.
+        if: ${{ !cancelled() && steps.history_store.outputs.ready == 'true' }}
+        continue-on-error: true
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: >-
+          node scripts/market/preflight-zero-cost.mjs --operation DAILY_UPDATE --gate FULL_UNIVERSE
+          --out "$RUNNER_TEMP/history-store-push-preflight.json"
+
+      # Haengt der Abgleich (Lauf 45501514352, 24.11.2026: nach 48 Minuten abgebrochen, sonst 13-16 Minuten), darf er die
+      # Veroeffentlichung nicht mitreissen: Kurse und Faktoren sind nach Gate B fertig und gehen trotzdem raus; die Ablage
+      # holt der naechste Lauf nach ("Stand der dauerhaften Ablage" meldet den Rueckstand, der Alarm sieht den Schritt).
+      - name: Dauerhafte Ablage auf den frischen Stand bringen
+        id: history_push
+        if: ${{ !cancelled() && steps.history_store.outputs.ready == 'true' && steps.history_preflight.outcome == 'success' }}
+        timeout-minutes: 30
+        continue-on-error: true
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: >-
+          node scripts/market/sync-history-store.mjs --push --gate FULL_UNIVERSE --concurrency 16
+          --operation DAILY_UPDATE
+          --preflight "$RUNNER_TEMP/history-store-push-preflight.json"
+          --report "$RUNNER_TEMP/history-store-push.json"
+
+      # Was angekommen ist, wird gezaehlt und nicht angenommen: der Index
+      # der Ablage traegt je Titel den Zeitpunkt des dauerhaften Schreibens.
+      # Diese Zeile ist die Gegenprobe, an der der naechste Rueckstand
+      # auffaellt, bevor ihn ein Leser auf der Aktienseite sieht.
+      - name: Stand der dauerhaften Ablage
+        if: always() && steps.history_store.outputs.ready == 'true'
+        env:
+          PUSH_OUTCOME: ${{ steps.history_push.outcome }}
+          PREFLIGHT_OUTCOME: ${{ steps.history_preflight.outcome }}
+        run: |
+          if [ "$PREFLIGHT_OUTCOME" = "failure" ]; then echo "::warning::Vorabrechnung fuer die dauerhafte Ablage gescheitert (Budget?) - kein Abgleich, die Daten sind trotzdem veroeffentlicht."; fi
+          if [ "$PUSH_OUTCOME" = "failure" ]; then echo "::warning::Abgleich der dauerhaften Ablage abgebrochen oder zu langsam - Daten werden trotzdem veroeffentlicht, der naechste Lauf holt die Ablage nach."; fi
+          node -e '
+            const fs = require("fs");
+            const path = process.env.RUNNER_TEMP + "/history-store-push.json";
+            if (!fs.existsSync(path)) { console.log("kein Abgleichsbericht - der Schritt lief nicht."); process.exit(0); }
+            const r = JSON.parse(fs.readFileSync(path, "utf8"));
+            console.log("Abgleich " + (r.direction || "?") + " · " + JSON.stringify(r.tally || {}));
+            console.log("Ablage: " + JSON.stringify(r.storage || {}));
+          '
 
       # Gate C: nach der Veroeffentlichung. Ein Test, der erst mit den neuen
       # Werten rot wird, wird als ::error gemeldet; der Lauf bleibt gruen,
