@@ -17,6 +17,7 @@
       Kante) und sieht keine Zukunft. Vergleiche, die erst nach dem Wissen um den späteren Einstieg entstehen, sind verzerrt und fehlen.
 
    Aufruf: node scripts/technical/elliott-topdown/backtest.mjs --out /tmp/td [--step 13] [--from 2010-01-01] [--horizon 78] [--every 1]
+           [--engine PFAD]   andere Fassung der Engine (Vergleich von Zaehlweisen)
    ========================================================================= */
 import { readdirSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { join, dirname } from "node:path";
@@ -24,7 +25,9 @@ import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
-const TD = createRequire(import.meta.url)(join(ROOT, "quant/engines/technical/elliott/elliott-topdown.js"));
+const arg0 = (n, d) => { const i = process.argv.indexOf("--" + n); return i >= 0 ? process.argv[i + 1] : d; };
+/* --engine PFAD: eine andere Fassung der Engine (Vergleich von Zaehlweisen, Forschung) */
+const TD = createRequire(import.meta.url)(arg0("engine", join(ROOT, "quant/engines/technical/elliott/elliott-topdown.js")));
 const SS = createRequire(import.meta.url)(join(ROOT, "quant/engines/technical/elliott/setup-score.js"));
 const arg = (n, d) => { const i = process.argv.indexOf("--" + n); return i >= 0 ? process.argv[i + 1] : d; };
 const OUT = arg("out", null); if (!OUT) { console.error("--out fehlt"); process.exit(2); }
