@@ -2,7 +2,7 @@
  "schemaVersion": "vu-market-pulse-1.1.0",
  "methodVersion": "market-pulse-1.0.0",
  "configVersion": "vu-market-pulse-config-1.0.0",
- "generatedAt": "2026-11-26T15:22:51.114Z",
+ "generatedAt": "2026-11-26T18:23:09.826Z",
  "kind": "DESCRIPTIVE_MARKET_PULSE",
  "notes": {
   "quantMarketRegime": "FAIL_CLOSED - nicht verwendet, nicht imitiert",
@@ -84,7 +84,7 @@
      "dimension": "CROSS_ASSET",
      "state": "OBSERVED",
      "label": "Auffällige Bewegungen",
-     "text": "Gold und Aktien fallen gleichzeitig. Bitcoin ist deutlich gefallen. Der Ölpreis ist deutlich gefallen. Der Euro ist zum Dollar deutlich schwächer."
+     "text": "Gold und Aktien fallen gleichzeitig. Bitcoin ist deutlich gefallen. Der Ölpreis ist deutlich gefallen."
     }
    ]
   },
@@ -105,7 +105,7 @@
   "disclaimer": "Einordnung des Marktumfelds aus festen Regeln – keine Anlageberatung, keine Kauf- oder Verkaufsempfehlung, keine Prognose."
  },
  "evaluation": {
-  "generatedAt": "2026-11-26T15:22:51.114Z",
+  "generatedAt": "2026-11-26T18:23:09.826Z",
   "dataAsOf": "2026-11-25",
   "previousDataAsOf": "2026-11-24",
   "schedule": {
@@ -430,13 +430,13 @@
    "previousDate": "2026-11-24"
   },
   "CROSS_ASSET": {
-   "value": 5,
+   "value": 4,
    "min": 0,
    "max": 6,
    "unit": "COUNT",
    "context": true,
    "marks": [],
-   "valueText": "5 von 6 Anlageklassen deutlich bewegt",
+   "valueText": "4 von 6 Anlageklassen deutlich bewegt",
    "zones": [
     {
      "from": 0,
@@ -660,7 +660,7 @@
    "id": "CROSS_ASSET",
    "state": "OBSERVED",
    "label": "Auffällige Bewegungen",
-   "summary": "Gold und Aktien fallen gleichzeitig. Bitcoin ist deutlich gefallen. Der Ölpreis ist deutlich gefallen. Der Euro ist zum Dollar deutlich schwächer.",
+   "summary": "Gold und Aktien fallen gleichzeitig. Bitcoin ist deutlich gefallen. Der Ölpreis ist deutlich gefallen.",
    "evidence": [
     {
      "key": "EQUITY",
@@ -715,11 +715,11 @@
     {
      "key": "EURUSD",
      "label": "EUR/USD",
-     "text": "−2,3 % · 1,1-fach typisch (deutlich)",
-     "change": -2.261,
-     "ratio": -1.14,
-     "notable": true,
-     "asOf": "2026-11-25",
+     "text": "−1,6 % · 0,8-fach typisch",
+     "change": -1.57,
+     "ratio": -0.79,
+     "notable": false,
+     "asOf": "2026-11-26",
      "kind": "PERCENT"
     }
    ],
@@ -746,13 +746,6 @@
      "text": "Der Ölpreis ist deutlich gefallen.",
      "symbols": [
       "WTI"
-     ]
-    },
-    {
-     "id": "EUR_DOWN",
-     "text": "Der Euro ist zum Dollar deutlich schwächer.",
-     "symbols": [
-      "EURUSD"
      ]
     }
    ]
@@ -1270,13 +1263,13 @@
   },
   "EURUSD": {
    "kind": "PRICE",
-   "asOf": "2026-11-25",
-   "last": 1.0935,
-   "observations": 7144,
+   "asOf": "2026-11-26",
+   "last": 1.0975,
+   "observations": 7145,
    "changes": {
-    "1M": -2.26,
-    "3M": -6.29,
-    "1Y": -5.33
+    "1M": -1.57,
+    "3M": -5.75,
+    "1Y": -5.2
    },
    "high52w": {
     "date": "2026-01-28",
@@ -1286,18 +1279,18 @@
     "date": "2026-11-25",
     "value": 1.0935
    },
-   "rangePosition": 0,
-   "dist50": -2.38,
-   "dist200": -4.85,
+   "rangePosition": 3.8,
+   "dist50": -1.94,
+   "dist200": -4.47,
    "trend": "NEGATIVE",
-   "drawdown52w": -8.68,
-   "vol20": 6.11,
+   "drawdown52w": -8.34,
+   "vol20": 6.32,
    "volContext": {
     "median": 6.8,
     "p25": 5.3,
     "p75": 8.6,
-    "samples": 1279,
-    "from": "2021-11-26",
+    "samples": 1280,
+    "from": "2021-11-27",
     "state": "USUAL"
    },
    "roles": [
@@ -1305,7 +1298,7 @@
      "dimension": "CROSS_ASSET",
      "state": "OBSERVED",
      "stateLabel": "Auffällige Bewegungen",
-     "text": "Teil des Cross-Asset-Kontexts. Über einen Monat: −2,3 % – das 1,1-Fache einer typischen Monatsbewegung, also deutlich."
+     "text": "Teil des Cross-Asset-Kontexts. Über einen Monat: −1,6 % – das 0,8-Fache einer typischen Monatsbewegung, also im üblichen Rahmen."
     }
    ]
   },
@@ -1835,7 +1828,7 @@
    },
    "EURUSD": {
     "symbol": "EURUSD",
-    "asOf": "2026-11-25",
+    "asOf": "2026-11-26",
     "horizon": 22,
     "samples": 2558
    }
