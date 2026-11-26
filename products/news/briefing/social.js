@@ -34,12 +34,16 @@
   /* Großer Tag (Schwergewicht ab 8 % oder Nasdaq 100 ab 3 %): die Schlagzeile der Ausgabe ist die Hook, die Einordnung die
      Unterzeile. Sonst die Hook des stärksten Themas. */
   /* Zahl der Inhaltsfolien zwischen Hook und Schluss: die Unterzeile verspricht nie mehr, als kommt. */
-  function things(C, t0) {
+  /* Angaben Dritter mit Zahlen oder Zitat (Recherche-Lauf) bekommen eigene Folien, höchstens zwei. */
+  function ext(b) { return b.cards.filter(function (c) { return c.type === "THIRD" && (c.stats || c.quote); }).slice(0, 2); }
+  function things(C, t0, b) {
     var a50 = C.picture && C.picture.textStats.filter(function (s) { return s.label === "Marktbreite"; })[0];
-    return (t0 ? 1 : 0) + (C.valuation ? 1 : 0) + (a50 ? 1 : 0) + (C.agenda ? 1 : 0);
+    return (t0 ? 1 : 0) + (C.valuation ? 1 : 0) + (a50 ? 1 : 0) + (C.agenda ? 1 : 0) + (b ? ext(b).length : 0);
   }
   function hook(b, C, t0) {
-    var D = things(C, t0);
+    var D = things(C, t0, b);
+    // Recherche-Tag: die Schlagzeile der Ausgabe (editorial) trägt die Hook, wenn eine Angabe Dritter vorn steht.
+    if (b.cards.some(function (c) { return c.type === "THIRD" && c.lead; })) return [C.overview.title, D + "\u00a0Dinge für deine Börsenwoche."];
     var mc = C.megacaps && C.megacaps.bars.rows[0], ix = {};
     (C.indices ? C.indices.bars.rows : []).forEach(function (r) { ix[r.label] = r.value; });
     if ((mc && Math.abs(mc.value) >= 8) || Math.abs(ix["Nasdaq 100"] || 0) >= 3) return [C.overview.title, (C.context ? C.context.title + ". " : "") + D + "\u00a0Dinge für deine Börsenwoche."];
@@ -64,6 +68,14 @@
     var hk = hook(b, C, t0);
     out.push({ bg: "l", html: '<div style="margin-top:120px"><h1>' + marked(hk[0]) + '</h1><p class="say" style="margin-top:44px;font-size:44px;font-weight:800">' +
       esc(o.sub || hk[1]) + '</p></div><div class="swipe"><b>→</b>Wischen</div>', label: "VISION UNIVERSE · MARKTBRIEFING" });
+    // Angaben Dritter: Zahlen (lime) und Zitat (schwarz)
+    ext(b).forEach(function (e) {
+      var lab = "ANGABE DRITTER · " + String(e.source || e.publisher).replace(/^X · /, "").replace(/ *\(.*\)/, "").toUpperCase();
+      if (e.stats) out.push({ bg: "l", label: lab, html: '<div style="margin-top:60px"><span class="kick">' + esc(e.kicker || "Makro") + "</span><h2>" + marked(e.title) + '</h2></div><div style="display:grid;gap:18px;margin-top:20px">' +
+        e.stats.map(function (x) { var v = x.text != null ? x.text : (x.unit === "%" ? num(x.value, 1) + "\u00a0%" : num(x.value, 1)); return '<div><div style="font-size:140px;font-weight:900;letter-spacing:-.06em;line-height:1;padding-bottom:.14em">' + esc(v) + '</div><div class="say" style="font-size:34px;font-weight:800">' + esc(x.label) + (x.sub ? " · " + esc(x.sub) : "") + "</div></div>"; }).join("") + "</div>" });
+      else out.push({ bg: "k", label: lab, html: '<div style="margin-top:80px"><span class="kick">' + esc(e.kicker || "Stimme") + '</span><div style="font-size:72px;font-weight:900;line-height:1.15;letter-spacing:-.03em">„' + esc(e.quote) + '“</div>' +
+        (e.speaker ? '<p class="say" style="margin-top:34px;font-weight:800">' + esc(e.speaker) + "</p>" : "") + "</div>" });
+    });
     // 2 Thema des Tages als Liste
     if (t0) {
       var rows = (t0.bars ? t0.bars.rows : (t0.groups[0] || { rows: [] }).rows).slice(0, 5);
