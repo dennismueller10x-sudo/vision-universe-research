@@ -596,9 +596,7 @@
     return true;
   }
 
-  /** Zaehlt Zeile i der Nachricht? Traegt die Nachricht Semantik (Schema 1.1.0, worker/src/vu-live.mjs), zaehlt nur ein bestaetigter
-   *  Trade (wie quant/api/live-relay-client.js#decode); eine Nachricht ganz ohne Semantik (aelterer ausgelieferter Worker) gilt wie
-   *  bisher - Status quo, keine Verschlechterung. Streng wird es von selbst, sobald der Worker die Semantik sendet (25.11.2026). */
+  /* Mit Semantik (Schema 1.1.0) zaehlt nur ein TRADE wie in quant/api/live-relay-client.js#decode; ohne Semantik (aelterer Worker) wie bisher. */
   function zeileZaehlt(n, i) {
     if (!Array.isArray(n.semantics)) return true;
     var sem = n.semantics[i];
@@ -612,8 +610,6 @@
       n.v.forEach(function (z, i) {
         if (!Array.isArray(z) || z.length < 2) return;
         var sym = String(z[0]).toUpperCase();
-        /* Mit Semantik nur bestaetigte Trades (Steuerung 25.11.2026): Kopfkurs, Frische, Etikett und Linie. Ein Kursangebot aendert
-           nichts (01.10.2026: 354,67 $ wurde zu 9.999,00 $). Ohne Semantik wie bisher (siehe zeileZaehlt). */
         if (!zeileZaehlt(n, i)) { lv.stats.angebote = (lv.stats.angebote || 0) + 1; return; }
         lv.werte[sym] = { price: z[1], at: z[2] || jetzt, open: z[3], high: z[4], low: z[5], close: z[6],
                           /* Wann der Anbieter den Kurs gesehen hat. Damit
