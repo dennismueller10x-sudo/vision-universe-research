@@ -240,3 +240,5 @@ Jeder Schritt: Vorher/Nachher-Bilder bei 390 und 1 280 px, hell und dunkel, Pari
 6. **Je Produktwelt die UI-Umsetzung M1–M6.**
 
 Gate-Audit (Bestandsaufnahme, Empfehlungen): `docs/archiv/audits/GATE_AUDIT_2026-10-23.md`.
+
+**Kopfkurs, Frische, Etikett und Linie nur aus bestätigten Trades (Steuerung 25.11.2026):** Trägt eine Strom-Nachricht Semantik (Schema 1.1.0), zählt in Discover (`discover/ui/live-hub.js#zeileZaehlt`) wie in Quant und Technical (`quant/api/live-relay-client.js#decode`) nur ein bestätigter Trade, nie ein Kursangebot; eine Nachricht ganz ohne Semantik (älterer ausgelieferter Worker) gilt bis zum Worker-Deploy wie bisher. Der Monitor-Check `liveEtikett` verlangt „Live“ nur für Titel mit bestätigtem Trade.
