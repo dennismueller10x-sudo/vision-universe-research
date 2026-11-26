@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-23T03:24:18.868Z",
+  "generatedAt": "2026-11-25T11:25:07.206Z",
   "status": "OK",
   "source": "sec.gov",
   "sources": [
@@ -8,28 +8,28 @@
       "id": "company_tickers",
       "url": "https://www.sec.gov/files/company_tickers.json",
       "status": "FETCHED",
-      "rows": 10399,
+      "rows": 10400,
       "error": null
     },
     {
       "id": "company_tickers_exchange",
       "url": "https://www.sec.gov/files/company_tickers_exchange.json",
       "status": "FETCHED",
-      "rows": 10399,
+      "rows": 10400,
       "error": null
     }
   ],
   "userAgent": "VisionUniverseResearch info@visionuniverse.de",
   "requests": 2,
   "totals": {
-    "tickers": 10399,
-    "resolved": 10392,
+    "tickers": 10400,
+    "resolved": 10393,
     "ambiguous": 0,
-    "distinctCiks": 7991,
+    "distinctCiks": 7987,
     "ciksWithMultipleTickers": 1435,
     "ciksWithMultipleTickersNote": "Kein Befund. Aktienklassen und Vorzuege desselben Emittenten teilen sich eine CIK - genau deshalb gehoeren Fundamentaldaten an den Emittenten und nicht an das Papier (§15).",
-    "withExchange": 10244,
-    "withName": 10399,
+    "withExchange": 10243,
+    "withName": 10400,
     "pendingSuccessionEvidence": 7
   },
   "ambiguous": [],
@@ -791,13 +791,6 @@
       "source": "company_tickers_exchange",
       "status": "RESOLVED"
     },
-    "ACHV": {
-      "cik": "0000949858",
-      "name": "ACHIEVE LIFE SCIENCES, INC.",
-      "exchange": "Nasdaq",
-      "source": "company_tickers_exchange",
-      "status": "RESOLVED"
-    },
     "ACI": {
       "cik": "0001646972",
       "name": "Albertsons Companies, Inc.",
@@ -1236,13 +1229,6 @@
       "cik": "0001368514",
       "name": "ADMA BIOLOGICS, INC.",
       "exchange": "Nasdaq",
-      "source": "company_tickers_exchange",
-      "status": "RESOLVED"
-    },
-    "ADMG": {
-      "cik": "0001171008",
-      "name": "ADAMANT DRI PROCESSING & MINERALS GROUP",
-      "exchange": "OTC",
       "source": "company_tickers_exchange",
       "status": "RESOLVED"
     },
@@ -3843,6 +3829,13 @@
       "source": "company_tickers_exchange",
       "status": "RESOLVED"
     },
+    "AMPM": {
+      "cik": "0002049323",
+      "name": "AM PM Group Ltd",
+      "exchange": null,
+      "source": "company_tickers_exchange",
+      "status": "RESOLVED"
+    },
     "AMPX": {
       "cik": "0001899287",
       "name": "Amprius Technologies, Inc.",
@@ -4218,6 +4211,13 @@
       "cik": "0001999480",
       "name": "Alto Neuroscience, Inc.",
       "exchange": "NYSE",
+      "source": "company_tickers_exchange",
+      "status": "RESOLVED"
+    },
+    "ANSS": {
+      "cik": "0001013462",
+      "name": "ANSYS INC",
+      "exchange": null,
       "source": "company_tickers_exchange",
       "status": "RESOLVED"
     },
@@ -6444,6 +6444,13 @@
       "cik": "0000008818",
       "name": "Avery Dennison Corp",
       "exchange": "NYSE",
+      "source": "company_tickers_exchange",
+      "status": "RESOLVED"
+    },
+    "AVZO": {
+      "cik": "0001739410",
+      "name": "Rallybio Corp",
+      "exchange": "Nasdaq",
       "source": "company_tickers_exchange",
       "status": "RESOLVED"
     },
@@ -8971,6 +8978,20 @@
       "source": "company_tickers_exchange",
       "status": "RESOLVED"
     },
+    "BIPF-PA": {
+      "cik": "0001406234",
+      "name": "Brookfield Infrastructure Partners L.P.",
+      "exchange": "NYSE",
+      "source": "company_tickers_exchange",
+      "status": "RESOLVED"
+    },
+    "BIPF-PB": {
+      "cik": "0001406234",
+      "name": "Brookfield Infrastructure Partners L.P.",
+      "exchange": "NYSE",
+      "source": "company_tickers_exchange",
+      "status": "RESOLVED"
+    },
     "BIPH": {
       "cik": "0001406234",
       "name": "Brookfield Infrastructure Partners L.P.",
@@ -9197,21 +9218,21 @@
     },
     "BKHA": {
       "cik": "0002000775",
-      "name": "Black Hawk Acquisition Corp",
+      "name": "Vesicor Therapeutics Holdings, Inc.",
       "exchange": "Nasdaq",
       "source": "company_tickers_exchange",
       "status": "RESOLVED"
     },
     "BKHAR": {
       "cik": "0002000775",
-      "name": "Black Hawk Acquisition Corp",
+      "name": "Vesicor Therapeutics Holdings, Inc.",
       "exchange": "Nasdaq",
       "source": "company_tickers_exchange",
       "status": "RESOLVED"
     },
     "BKHAU": {
       "cik": "0002000775",
-      "name": "Black Hawk Acquisition Corp",
+      "name": "Vesicor Therapeutics Holdings, Inc.",
       "exchange": "Nasdaq",
       "source": "company_tickers_exchange",
       "status": "RESOLVED"
@@ -10354,6 +10375,13 @@
       "cik": "0002058601",
       "name": "BRBI BR Partners S.A.",
       "exchange": "Nasdaq",
+      "source": "company_tickers_exchange",
+      "status": "RESOLVED"
+    },
+    "BRBM": {
+      "cik": "0001670747",
+      "name": "BirchBioMed Inc.",
+      "exchange": null,
       "source": "company_tickers_exchange",
       "status": "RESOLVED"
     },
@@ -13574,13 +13602,6 @@
       "source": "company_tickers_exchange",
       "status": "RESOLVED"
     },
-    "CHEV": {
-      "cik": "0001459188",
-      "name": "Charging Robotics Inc.",
-      "exchange": "OTC",
-      "source": "company_tickers_exchange",
-      "status": "RESOLVED"
-    },
     "CHGA": {
       "cik": "0001630212",
       "name": "Change Agents Corporation.",
@@ -14585,7 +14606,7 @@
     "CLYD": {
       "cik": "0002094256",
       "name": "BEACON TOPCO, INC.",
-      "exchange": null,
+      "exchange": "Nasdaq",
       "source": "company_tickers_exchange",
       "status": "RESOLVED"
     },
@@ -15814,6 +15835,13 @@
       "source": "company_tickers_exchange",
       "status": "RESOLVED"
     },
+    "CPCPD": {
+      "cik": "0001868050",
+      "name": "CopperCorp Resources Inc.",
+      "exchange": "OTC",
+      "source": "company_tickers_exchange",
+      "status": "RESOLVED"
+    },
     "CPCPF": {
       "cik": "0001868050",
       "name": "CopperCorp Resources Inc.",
@@ -16651,6 +16679,13 @@
       "cik": "0001113423",
       "name": "COSCIENS Biopharma Inc.",
       "exchange": "OTC",
+      "source": "company_tickers_exchange",
+      "status": "RESOLVED"
+    },
+    "CSCM": {
+      "cik": "0002136449",
+      "name": "Crestone Strategic Capital Acquisition Corp",
+      "exchange": null,
       "source": "company_tickers_exchange",
       "status": "RESOLVED"
     },
@@ -19996,7 +20031,7 @@
     "DVLT": {
       "cik": "0001682149",
       "name": "Datavault AI Inc.",
-      "exchange": "Nasdaq",
+      "exchange": "OTC",
       "source": "company_tickers_exchange",
       "status": "RESOLVED"
     },
@@ -22716,6 +22751,13 @@
       "source": "company_tickers_exchange",
       "status": "RESOLVED"
     },
+    "EVFMD": {
+      "cik": "0001618835",
+      "name": "Evofem Biosciences, Inc.",
+      "exchange": "OTC",
+      "source": "company_tickers_exchange",
+      "status": "RESOLVED"
+    },
     "EVG": {
       "cik": "0001287498",
       "name": "Eaton Vance Short Duration Diversified Income Fund",
@@ -22835,6 +22877,20 @@
       "source": "company_tickers_exchange",
       "status": "RESOLVED"
     },
+    "EVRL": {
+      "cik": "0002016221",
+      "name": "Melar Acquisition Corp. I/Cayman",
+      "exchange": "Nasdaq",
+      "source": "company_tickers_exchange",
+      "status": "RESOLVED"
+    },
+    "EVRLW": {
+      "cik": "0002016221",
+      "name": "Melar Acquisition Corp. I/Cayman",
+      "exchange": "Nasdaq",
+      "source": "company_tickers_exchange",
+      "status": "RESOLVED"
+    },
     "EVT": {
       "cik": "0001253327",
       "name": "Eaton Vance Tax-Advantaged Dividend Income Fund",
@@ -22846,13 +22902,6 @@
       "cik": "0001559865",
       "name": "EVERTEC, Inc.",
       "exchange": "NYSE",
-      "source": "company_tickers_exchange",
-      "status": "RESOLVED"
-    },
-    "EVTK": {
-      "cik": "0001816554",
-      "name": "EVENTIKO INC.",
-      "exchange": "OTC",
       "source": "company_tickers_exchange",
       "status": "RESOLVED"
     },
@@ -23143,13 +23192,6 @@
       "source": "company_tickers_exchange",
       "status": "RESOLVED"
     },
-    "EZRA": {
-      "cik": "0001812727",
-      "name": "Reliance Global Group, Inc.",
-      "exchange": "Nasdaq",
-      "source": "company_tickers_exchange",
-      "status": "RESOLVED"
-    },
     "F": {
       "cik": "0000037996",
       "name": "FORD MOTOR CO",
@@ -23364,13 +23406,6 @@
       "cik": "0002133939",
       "name": "Football Manager SPAC Inc.",
       "exchange": null,
-      "source": "company_tickers_exchange",
-      "status": "RESOLVED"
-    },
-    "FBLLU": {
-      "cik": "0002133939",
-      "name": "Football Manager SPAC Inc.",
-      "exchange": "Nasdaq",
       "source": "company_tickers_exchange",
       "status": "RESOLVED"
     },
@@ -28260,13 +28295,6 @@
       "source": "company_tickers_exchange",
       "status": "RESOLVED"
     },
-    "GLVT": {
-      "cik": "0001693687",
-      "name": "GREENLIT VENTURES INC.",
-      "exchange": "OTC",
-      "source": "company_tickers_exchange",
-      "status": "RESOLVED"
-    },
     "GLW": {
       "cik": "0000024741",
       "name": "CORNING INC /NY",
@@ -33139,13 +33167,6 @@
       "source": "company_tickers_exchange",
       "status": "RESOLVED"
     },
-    "IMAA": {
-      "cik": "0001980295",
-      "name": "IMA Tech",
-      "exchange": "OTC",
-      "source": "company_tickers_exchange",
-      "status": "RESOLVED"
-    },
     "IMAQ": {
       "cik": "0001846235",
       "name": "International Media Acquisition Corp.",
@@ -33552,13 +33573,6 @@
       "source": "company_tickers_exchange",
       "status": "RESOLVED"
     },
-    "INIKF": {
-      "cik": "0001928722",
-      "name": "PopReach Corp",
-      "exchange": "OTC",
-      "source": "company_tickers_exchange",
-      "status": "RESOLVED"
-    },
     "INIO": {
       "cik": "0002109150",
       "name": "INNIO N.V.",
@@ -33610,7 +33624,7 @@
     },
     "INMB": {
       "cik": "0001711754",
-      "name": "Inmune Bio, Inc.",
+      "name": "Inmune Bio Inc.",
       "exchange": "Nasdaq",
       "source": "company_tickers_exchange",
       "status": "RESOLVED"
@@ -34641,13 +34655,6 @@
       "cik": "0000049826",
       "name": "ILLINOIS TOOL WORKS INC",
       "exchange": "NYSE",
-      "source": "company_tickers_exchange",
-      "status": "RESOLVED"
-    },
-    "ITXP": {
-      "cik": "0002025878",
-      "name": "Independence Power Holdings, Inc.",
-      "exchange": "OTC",
       "source": "company_tickers_exchange",
       "status": "RESOLVED"
     },
@@ -35831,13 +35838,6 @@
       "source": "company_tickers_exchange",
       "status": "RESOLVED"
     },
-    "KAZR": {
-      "cik": "0002031009",
-      "name": "Skyline Builders Group Holding Ltd",
-      "exchange": "Nasdaq",
-      "source": "company_tickers_exchange",
-      "status": "RESOLVED"
-    },
     "KB": {
       "cik": "0001445930",
       "name": "KB Financial Group Inc.",
@@ -36622,13 +36622,6 @@
       "source": "company_tickers_exchange",
       "status": "RESOLVED"
     },
-    "KNRX": {
-      "cik": "0001982960",
-      "name": "KNOREX LTD.",
-      "exchange": "NYSE",
-      "source": "company_tickers_exchange",
-      "status": "RESOLVED"
-    },
     "KNRXF": {
       "cik": "0001982960",
       "name": "KNOREX LTD.",
@@ -36842,13 +36835,6 @@
     "KPRX": {
       "cik": "0001372514",
       "name": "KIORA PHARMACEUTICALS INC",
-      "exchange": "Nasdaq",
-      "source": "company_tickers_exchange",
-      "status": "RESOLVED"
-    },
-    "KPTI": {
-      "cik": "0001503802",
-      "name": "Karyopharm Therapeutics Inc.",
       "exchange": "Nasdaq",
       "source": "company_tickers_exchange",
       "status": "RESOLVED"
@@ -38484,13 +38470,6 @@
       "source": "company_tickers_exchange",
       "status": "RESOLVED"
     },
-    "LIVG": {
-      "cik": "0001593549",
-      "name": "Livento Group, Inc.",
-      "exchange": "OTC",
-      "source": "company_tickers_exchange",
-      "status": "RESOLVED"
-    },
     "LIVN": {
       "cik": "0001639691",
       "name": "LivaNova PLC",
@@ -38831,13 +38810,6 @@
       "cik": "0001840780",
       "name": "Local Bounti Corporation/DE",
       "exchange": "NYSE",
-      "source": "company_tickers_exchange",
-      "status": "RESOLVED"
-    },
-    "LOCLW": {
-      "cik": "0001840780",
-      "name": "Local Bounti Corporation/DE",
-      "exchange": "OTC",
       "source": "company_tickers_exchange",
       "status": "RESOLVED"
     },
@@ -39580,6 +39552,13 @@
       "cik": "0001898795",
       "name": "LiveWire Group, Inc.",
       "exchange": "NYSE",
+      "source": "company_tickers_exchange",
+      "status": "RESOLVED"
+    },
+    "LVWRW": {
+      "cik": "0001898795",
+      "name": "LiveWire Group, Inc.",
+      "exchange": "OTC",
       "source": "company_tickers_exchange",
       "status": "RESOLVED"
     },
@@ -40826,6 +40805,13 @@
       "cik": "0001333274",
       "name": "MERCER INTERNATIONAL INC.",
       "exchange": "Nasdaq",
+      "source": "company_tickers_exchange",
+      "status": "RESOLVED"
+    },
+    "MERCQ": {
+      "cik": "0001333274",
+      "name": "MERCER INTERNATIONAL INC.",
+      "exchange": "OTC",
       "source": "company_tickers_exchange",
       "status": "RESOLVED"
     },
@@ -43351,7 +43337,7 @@
     },
     "MTRI": {
       "cik": "0001728328",
-      "name": "InMed Pharmaceuticals Inc.",
+      "name": "Mentari Therapeutics, Inc.",
       "exchange": "Nasdaq",
       "source": "company_tickers_exchange",
       "status": "RESOLVED"
@@ -51252,7 +51238,7 @@
     "PLCEQ": {
       "cik": "0001041859",
       "name": "Childrens Place, Inc.",
-      "exchange": null,
+      "exchange": "OTC",
       "source": "company_tickers_exchange",
       "status": "RESOLVED"
     },
@@ -51288,13 +51274,6 @@
       "cik": "0001045609",
       "name": "Prologis, Inc.",
       "exchange": "NYSE",
-      "source": "company_tickers_exchange",
-      "status": "RESOLVED"
-    },
-    "PLDGP": {
-      "cik": "0001045609",
-      "name": "Prologis, Inc.",
-      "exchange": "OTC",
       "source": "company_tickers_exchange",
       "status": "RESOLVED"
     },
@@ -57741,7 +57720,7 @@
     "SCKT": {
       "cik": "0000944075",
       "name": "SOCKET MOBILE, INC.",
-      "exchange": "Nasdaq",
+      "exchange": "OTC",
       "source": "company_tickers_exchange",
       "status": "RESOLVED"
     },
@@ -57804,7 +57783,7 @@
     "SCNLF": {
       "cik": "0002141116",
       "name": "Scancell Holdings plc",
-      "exchange": null,
+      "exchange": "OTC",
       "source": "company_tickers_exchange",
       "status": "RESOLVED"
     },
@@ -58190,13 +58169,6 @@
       "cik": "0001031235",
       "name": "Global Self Storage, Inc.",
       "exchange": "Nasdaq",
-      "source": "company_tickers_exchange",
-      "status": "RESOLVED"
-    },
-    "SELXF": {
-      "cik": "0001990950",
-      "name": "Semilux International Ltd.",
-      "exchange": "OTC",
       "source": "company_tickers_exchange",
       "status": "RESOLVED"
     },
@@ -58742,14 +58714,14 @@
     "SHFS": {
       "cik": "0001854963",
       "name": "SHF Holdings, Inc.",
-      "exchange": "Nasdaq",
+      "exchange": "OTC",
       "source": "company_tickers_exchange",
       "status": "RESOLVED"
     },
     "SHFSW": {
       "cik": "0001854963",
       "name": "SHF Holdings, Inc.",
-      "exchange": "Nasdaq",
+      "exchange": "OTC",
       "source": "company_tickers_exchange",
       "status": "RESOLVED"
     },
@@ -58757,6 +58729,13 @@
       "cik": "0001263043",
       "name": "SHINHAN FINANCIAL GROUP CO LTD",
       "exchange": "NYSE",
+      "source": "company_tickers_exchange",
+      "status": "RESOLVED"
+    },
+    "SHGHF": {
+      "cik": "0002152230",
+      "name": "SHEIN Global Holdings Limited/ADR",
+      "exchange": "OTC",
       "source": "company_tickers_exchange",
       "status": "RESOLVED"
     },
@@ -65190,6 +65169,13 @@
       "source": "company_tickers_exchange",
       "status": "RESOLVED"
     },
+    "TPROF": {
+      "cik": "0001971172",
+      "name": "Technoprobe SpA/ADR",
+      "exchange": "OTC",
+      "source": "company_tickers_exchange",
+      "status": "RESOLVED"
+    },
     "TPST": {
       "cik": "0001544227",
       "name": "Tempest Therapeutics, Inc.",
@@ -66643,6 +66629,20 @@
       "cik": "0000729986",
       "name": "UNITED BANKSHARES INC/WV",
       "exchange": "Nasdaq",
+      "source": "company_tickers_exchange",
+      "status": "RESOLVED"
+    },
+    "UBTRF": {
+      "cik": "0002164826",
+      "name": "UBTECH ROBOTICS CORP LTD./ADR",
+      "exchange": "OTC",
+      "source": "company_tickers_exchange",
+      "status": "RESOLVED"
+    },
+    "UBTRY": {
+      "cik": "0002164826",
+      "name": "UBTECH ROBOTICS CORP LTD./ADR",
+      "exchange": "OTC",
       "source": "company_tickers_exchange",
       "status": "RESOLVED"
     },
@@ -68112,6 +68112,13 @@
     "VERX": {
       "cik": "0001806837",
       "name": "Vertex, Inc.",
+      "exchange": "Nasdaq",
+      "source": "company_tickers_exchange",
+      "status": "RESOLVED"
+    },
+    "VESI": {
+      "cik": "0002000775",
+      "name": "Vesicor Therapeutics Holdings, Inc.",
       "exchange": "Nasdaq",
       "source": "company_tickers_exchange",
       "status": "RESOLVED"
@@ -72422,6 +72429,13 @@
       "source": "company_tickers_exchange",
       "status": "RESOLVED"
     },
+    "ZENO": {
+      "cik": "0002136881",
+      "name": "Zeno42 Inc.",
+      "exchange": null,
+      "source": "company_tickers_exchange",
+      "status": "RESOLVED"
+    },
     "ZEO": {
       "cik": "0001865506",
       "name": "Zeo Energy Corp.",
@@ -72740,13 +72754,6 @@
     "ZPTAW": {
       "cik": "0001843714",
       "name": "Zapata Quantum, Inc.",
-      "exchange": "OTC",
-      "source": "company_tickers_exchange",
-      "status": "RESOLVED"
-    },
-    "ZRCN": {
-      "cik": "0001901297",
-      "name": "ZRCN Inc.",
       "exchange": "OTC",
       "source": "company_tickers_exchange",
       "status": "RESOLVED"

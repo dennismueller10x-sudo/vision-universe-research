@@ -102,3 +102,5 @@ Arbeitsweise:
 - Halte nur an, wenn etwas eine Owner-Freigabe nach CLAUDE.md braucht (Geld, Recht, neue Aussagen über Rendite oder frühere Kursverläufe, endgültiges Löschen von Daten). Das ist hier nicht zu erwarten.
 - Am Ende: eine kurze Zusammenfassung je PR (Link, was fertig ist, Abweichungen vom Mockup mit Grund, offene Punkte).
 ```
+
+**Reproduzierbarer Stamm (26.11.2026):** Die Duplikat-Hinweise des ETF-Stamms (`duplicateTickers`, `vorsorge/data/quality.json`) werden aus sortierten Listing-Schlüsseln gebaut (`vorsorge/engines/etf-master.js`), nicht aus der Reihenfolge der Eingabezeilen; sonst ergab der CI-Neubau (Gate „Build reproduzierbar“ in `ci.yml`, Job `vorsorge`) eine andere Reihenfolge als der Tiingo-Lauf (`research.yml`).

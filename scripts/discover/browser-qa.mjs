@@ -8,7 +8,10 @@ import {mkdir,readFile,writeFile} from 'node:fs/promises';
 import assert from 'node:assert/strict';
 import {SPECS,waitRendered} from './direct-link-lib.mjs';
 import {activeDefects, createRecorder} from './known-defects.mjs';
+import {istErlaubter404,ladeShards} from './qa-toleranz.mjs';
 const require=createRequire(import.meta.url);
+/* Shards des Supertrader-Kandidatenverzeichnisses: ein 404 fuer einen Titel ohne Shard ist kein Befund (scripts/discover/qa-toleranz.mjs). */
+const sfShards=await ladeShards(readFile,import.meta.url);
 const Reihen=require('../../discover/engines/reihen.js');
 /* Ueberschriften der Startseiten-Plaetze (discover/ui/reihen.js) fuer den n-home-Reihenfolgevergleich. */
 const NHOME_TITEL={'im-blick':'Top 10 heute','new-52-week-highs':'Neue Jahreshochs',themes:'Themenwelten',comeback:'Comeback?','langfristige-compounder':'Langfristige Compounder',ueberraschungen:'Kennt kaum jemand','bekannte-namen':'Bekannte Namen in Bewegung',strategies:'Strategien','breakout-watch':'Gerade in Bewegung'};
@@ -123,7 +126,7 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
     laufende Abrufe ab (WebKit meldet sie als Seitenfehler „access control checks“). Vor jedem reload erst ruhig werden lassen. */
  const inflight=new Set();page.on('request',r=>inflight.add(r));page.on('requestfinished',r=>inflight.delete(r));page.on('requestfailed',r=>inflight.delete(r));
  const quiet=async()=>{const end=Date.now()+15000;let since=0;while(Date.now()<end){if(inflight.size===0){if(!since)since=Date.now();else if(Date.now()-since>=400)return;}else since=0;await page.waitForTimeout(50);}};
- const bad=[];page.on('response',r=>{if(r.url().startsWith(base)&&r.status()>=400)bad.push({status:r.status(),url:r.url()});});
+ const bad=[];page.on('response',r=>{if(r.url().startsWith(base)&&r.status()>=400&&!(sfShards&&istErlaubter404({status:r.status(),url:r.url()},sfShards)))bad.push({status:r.status(),url:r.url()});});
  const entryStarted=Date.now();await navigate(page,base+'/discover/',{waitUntil:'domcontentloaded'});await page.locator('.v2-hero-track [data-symbol]').first().waitFor({state:'visible'});
  // Measure the cold Home entry before unrelated settings, theme and reload checks.
  await check(key+' five-second entry heuristic',async()=>{const text=await page.locator('body').innerText();assert(/Aktien/.test(text)&&/Nr\. 1 heute/i.test(text),'Entry does not explain the purpose');const viewport=page.viewportSize();/* App-Konzept 2: der erste Bildschirm ist die Aktie des Tages mit „Ansehen“ und den Reitern im Inhalt (die Suche steht im Kopf des Rahmens). */const targets=[['purpose',page.locator('.v2-hero-track .dp-hero__id h2').first()],['open',page.locator('.v2-hero-track .dp-btn').first()],['areas',page.locator('vu-navigation').locator('button.world')]];const bounds=[];for(const [label,target] of targets){const box=await target.boundingBox();assert(box&&box.width>0&&box.height>0,label+' missing');assert(box.x>=0&&box.y>=(label==='areas'?0:70)&&box.x+box.width<=viewport.width+1&&box.y+box.height<=viewport.height-75,label+' outside unobstructed first viewport');bounds.push({label,...box});}const milliseconds=Date.now()-entryStarted;firstScreenEvidence.push({key,milliseconds,bounds});assert(milliseconds<=5000,'First-screen content took '+milliseconds+' ms locally');});

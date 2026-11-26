@@ -68,6 +68,16 @@ test("Mehrere Listings: gleicher Ticker an zwei Boersen = zwei Listings, ein Dup
   assert.equal(m.counts.funds, 1, "derselbe Fonds wird nicht doppelt gezaehlt");
 });
 
+test("Duplikat-Hinweis haengt nicht an der Eingabereihenfolge (Neubau in der CI = eingecheckter Stand)", () => {
+  const a = row({ symbol: "CHAI", name: "iShares Example AI ETF", exchange: "NASDAQ" }), b = row({ symbol: "CHAI", name: "iShares Example AI ETF", exchange: "NYSE ARCA" });
+  const c = row({ symbol: "ZZZ", name: "Zeta Example ETF", exchange: "NYSE ARCA" }), d = row({ symbol: "ZZZ", name: "Zeta Example ETF", exchange: "NASDAQ" });
+  const m1 = M.buildMaster([a, b, c, d]), m2 = M.buildMaster([d, c, b, a]);
+  assert.deepEqual(m1.duplicateTickers, m2.duplicateTickers);
+  assert.deepEqual(m1.duplicateTickers.map((x) => x.symbol), ["CHAI", "ZZZ"]);
+  assert.deepEqual(m1.duplicateTickers[0].listings, ["CHAI@NASDAQ", "CHAI@NYSE ARCA"]);
+  assert.deepEqual(m1.multiListingFunds, m2.multiListingFunds);
+});
+
 test("Fund -> Share Class: ETF-Shares-Klasse wird erkannt und zum Fonds gruppiert", () => {
   const m = M.buildMaster([row({ symbol: "VTP", name: "Vanguard Total Inflation-protected Securities ETF ETF Shares" })]);
   assert.equal(m.etfs[0].shareClass, "ETF Shares");

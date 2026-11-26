@@ -24,6 +24,14 @@
    Ausfuehren (Materialisierung):
      node scripts/quant/build-survivorship-control.mjs --work-dir <kanonische Historie> \
        --bundle-out "$RUNNER_TEMP/delisted-weekly.json"
+
+   Stammfolge (--master-only, Steuerung 25.11.2026): Aendert ein Lauf den
+   Security Master (security-master-weekly.yml, Erweiterung im Eignungslauf),
+   baut er im selben Lauf nur den Abschnitt securityMaster neu - ohne R2 und
+   ohne Kurshistorie. Der private Abschnitt delisted bleibt der Stand der
+   letzten Materialisierung (delistedAsOf zeigt ihn). Sonst passte das
+   Inventar bis zur Nachtkette nicht zum Stamm und die Pruefung war nach 6 h
+   STALE (25.11.2026, 16-01 Uhr UTC rot auf jedem PR).
    ========================================================================= */
 import { readFileSync, writeFileSync, existsSync, readdirSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -207,8 +215,29 @@ function survivorKeyLookup() {
   };
 }
 
+/* Nur der Stammabschnitt, auf dem vorhandenen Inventar (--master-only). */
+export function rebuildMasterSection(previous, sm, now = new Date()) {
+  if (!previous || previous.schemaVersion !== "survivorship-control-1.0.0") throw new Error("MASTER_ONLY_NEEDS_INVENTORY");
+  const out = { ...previous, engineVersion: SC.VERSION, generatedAt: now.toISOString(), asOf: now.toISOString().slice(0, 10), securityMaster: sm };
+  out.masterFollow = { rebuiltAt: now.toISOString(), delistedAsOf: previous.delisted && previous.delisted.asOf || null,
+    note: "Nur der Stammabschnitt ist neu (Stammfolge); der Delisting-Abschnitt ist der Stand der letzten Materialisierung." };
+  const cov = previous.historicalSecurityMasterCoverage;
+  if (cov && Array.isArray(cov.sources)) {
+    out.historicalSecurityMasterCoverage = { ...cov, sources: cov.sources.map((x) => x.id === "SECURITY_MASTER_SNAPSHOT" ? { ...x, rows: sm.rowsTotal, inactive: sm.inactiveCommon } : x) };
+  }
+  return out;
+}
+
 async function main() {
   const sm = securityMasterInventory();
+  if (argv.includes("--master-only")) {
+    const before = JSON.parse(readFileSync(OUT, "utf8"));
+    const out = rebuildMasterSection(before, sm);
+    writeFileSync(OUT, JSON.stringify(out) + "\n");
+    const b = before.securityMaster || {};
+    log(`Stammfolge: rows ${b.rowsTotal}->${sm.rowsTotal}, inaktiv ${b.inactiveCommon}->${sm.inactiveCommon}, Klassen ${JSON.stringify(b.classes)}->${JSON.stringify(sm.classes)}, sha ${String(b.sourceSha256).slice(0, 12)}->${sm.sourceSha256.slice(0, 12)}`);
+    return;
+  }
   log(`Security Master: ${sm.inactiveCommon} inaktive Stammaktien, Klassen ${JSON.stringify(sm.classes)}`);
   let fetched;
   try { fetched = await delistedInventory(survivorKeyLookup()); } catch (e) { fetched = { available: false, reason: "R2_READ_FAILED: " + String(e.message || e).slice(0, 120) }; }
