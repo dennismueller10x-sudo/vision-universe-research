@@ -40,6 +40,9 @@ function firstHit(c, t0, up, dn) {   // up/dn: Schranken (null = keine); Ergebni
 }
 const acc = () => ({ n: 0, hit: 0, miss: 0, open: 0, mHit: 0, mMiss: 0 });
 const M1 = { all: acc(), SUB: acc(), BIG: acc(), UP: acc(), DOWN: acc(), anchored: acc() };
+const M5 = {};
+/* Zeitraum des Stichtags (moderne Märkte anders als früher?) */
+const eraOf = (d) => (d < "2000-01-01" ? "bis 1999" : d < "2015-01-01" ? "2000–2014" : "ab 2015");
 const CAP = 5;   // robuste Kennzahl: Gewinne hoechstens 5 R (einzelne sehr enge Absicherungen sollen das Mittel nicht tragen)
 const M2 = { n: 0, filled: 0, win: 0, loss: 0, open: 0, rSum: 0, cSum: 0, rr: [], byDeg: {}, pull: { n: 0, filled: 0, win: 0, loss: 0, rSum: 0, cSum: 0 } };
 /* Fairer Vergleich M2 („beliebiger Rücksetzer“): derselbe Titel, ein anderer Stichtag b (deterministisch versetzt), dieselbe
@@ -147,8 +150,23 @@ for (let k = 0; k < files.length; k += EVERY) {
     const mNear = 2 * now - near, mInv = 2 * now - inv;   // gespiegelt
     const mo = up ? firstHit(c, a, mInv > now ? mInv : null, mNear) : firstHit(c, a, mNear, mInv < now ? mInv : null);
     const mres = mo === 0 ? "open" : (up ? mo === -1 : mo === 1) ? "hit" : "miss";
-    for (const key of ["all", step.degree, step.direction].concat(r.primary.anchor === 1 ? ["anchored"] : [])) {
-      const m = M1[key]; m.n++; m[res]++; if (mres === "hit") m.mHit++; if (mres === "miss") m.mMiss++;
+    const era = eraOf(t[a]);
+    /* M5 Haupt- gegen Alternativzählung: zeigen ihre ersten offenen Schritte in verschiedene Richtungen, welche Zone wird zuerst
+       erreicht? Je Abstand der Bewertungen (gap) und Zeitraum: Grundlage für eine gemessene Häufigkeit statt einer behaupteten
+       Wahrscheinlichkeit. */
+    {
+      const aS = (r.alternativePath || []).find((x) => !x.exhausted), aZ = aS && aS.zone.tiers.find((z) => !z.passed);
+      if (aS && aZ && aS.direction !== step.direction) {
+        const aNear = aS.direction === "UP" ? aZ.low : aZ.high;
+        if (aS.direction === "UP" ? aNear > now : aNear < now) {
+          const U = up ? near : aNear, Dn = up ? aNear : near, o5 = firstHit(c, a, U, Dn);
+          const gp = r.candidates && r.candidates.gap !== null ? r.candidates.gap : null, gb = gp === null ? "?" : gp < 0.02 ? "gap <0,02" : gp < 0.05 ? "gap 0,02–0,05" : "gap ≥0,05";
+          for (const k5 of ["alle", era, gb]) { const m = (M5[k5] = M5[k5] || { n: 0, haupt: 0, alt: 0, offen: 0 }); m.n++; if (o5 === 0) m.offen++; else if ((o5 === 1) === up) m.haupt++; else m.alt++; }
+        }
+      }
+    }
+    for (const key of ["all", step.degree, step.direction, era].concat(r.primary.anchor === 1 ? ["anchored"] : [])) {
+      const m = (M1[key] = M1[key] || acc()); m.n++; m[res]++; if (mres === "hit") m.mHit++; if (mres === "miss") m.mMiss++;
     }
     {
       const dl = Math.abs(Math.log(near / now)), U = now * Math.exp(dl), Dn = now * Math.exp(-dl), o3 = firstHit(c, a, U, Dn);
@@ -156,7 +174,7 @@ for (let k = 0; k < files.length; k += EVERY) {
         const hit = up ? o3 === 1 : o3 === -1, upF = o3 === 1;
         const altStep = (r.alternativePath || []).find((x) => !x.exhausted), agree = !!(altStep && altStep.direction === step.direction);
         const gap = r.candidates && r.candidates.gap !== null ? r.candidates.gap : 1, fit = r.primary.guidelineFit;
-        m3("alle", hit, upF); m3("grad " + step.degree, hit, upF); m3(step.direction === "UP" ? "Richtung aufwärts" : "Richtung abwärts", hit, upF);
+        m3("alle", hit, upF); m3("Zeitraum " + era, hit, upF); m3("grad " + step.degree, hit, upF); m3(step.direction === "UP" ? "Richtung aufwärts" : "Richtung abwärts", hit, upF);
         m3(agree ? "Haupt+Alternative einig" : "Haupt+Alternative uneinig", hit, upF);
         if (gap >= 0.1) m3("klarer Abstand ≥ 0,1", hit, upF);
         if (fit >= 0.8) m3("Richtlinien ≥ 0,8", hit, upF);
@@ -196,7 +214,8 @@ for (let k = 0; k < files.length; k += EVERY) {
       const win = longT ? oo === 1 : oo === -1, loss = longT ? oo === -1 : oo === 1;
       for (const off of [-39, -26, 26, 39]) pullback(c, a + off, longT, Math.abs(zNear - now) / now, Math.abs(zNear - stop) / zNear, Math.abs(target - zNear) / zNear, M2.pull);
       const d = (M2.byDeg[step.degree] = M2.byDeg[step.degree] || { filled: 0, win: 0, loss: 0, rSum: 0 }); d.filled++;
-      if (win) { M2.win++; M2.rSum += R; M2.cSum += Math.min(CAP, R); d.win++; d.rSum += R; } else if (loss) { M2.loss++; M2.rSum -= 1; M2.cSum -= 1; d.loss++; d.rSum -= 1; } else M2.open++;
+      const de = (M2.byDeg[era] = M2.byDeg[era] || { filled: 0, win: 0, loss: 0, rSum: 0 }); de.filled++;
+      if (win) { M2.win++; M2.rSum += R; M2.cSum += Math.min(CAP, R); d.win++; d.rSum += R; de.win++; de.rSum += R; } else if (loss) { M2.loss++; M2.rSum -= 1; M2.cSum -= 1; d.loss++; d.rSum -= 1; de.loss++; de.rSum -= 1; } else M2.open++;
     }
   }
 }
@@ -209,6 +228,7 @@ const m2 = { kandidaten: M2.n, eingestiegen: M2.filled, ziel: M2.win, absicherun
 mkdirSync(OUT, { recursive: true });
 const m3o = Object.fromEntries(Object.entries(M3).map(([k, m]) => [k, { faelle: m.n, trefferQuote: pct(m.hit, m.n), immerAufwaerts: pct(m.up, m.n) }]));
 const out = { schema: "vu-elliott-topdown-backtest-1", label: "Forschung, nicht zertifiziert", engine: TD.VERSION, generatedAt: new Date().toISOString(), params: { step: STEP, from: FROM, horizonWeeks: H, every: EVERY }, titel: Math.ceil(files.length / EVERY), stichtage: cuts, M1: m1, M2: m2, M3: m3o,
+  M5: Object.fromEntries(Object.entries(M5).map(([k, m]) => [k, { faelle: m.n, hauptZuerst: pct(m.haupt, m.haupt + m.alt), alternativeZuerst: pct(m.alt, m.haupt + m.alt), offen: m.offen }])),
   M4: Object.fromEntries(Object.entries(M4).sort().map(([k, m]) => [k, Object.fromEntries(Object.entries(m).map(([f, x]) => [f, { faelle: x.n, quote: pct(x.h, x.n) }]))])) };
 writeFileSync(join(OUT, "backtest.json"), JSON.stringify(out, null, 1));
 console.log(JSON.stringify(out, null, 1));
