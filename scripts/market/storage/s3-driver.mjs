@@ -134,6 +134,13 @@ export function createS3Driver(cfg) {
   const secretAccessKey = cfg.secretAccessKey;
   const fetchImpl = cfg.fetchImpl || globalThis.fetch;
   const maxRetries = cfg.maxRetries === undefined ? 4 : cfg.maxRetries;
+  /* Zeitlimit je Anfrage (Lauf 45501514352, 24.11.2026): der Abgleich der Ablage
+     haengt sonst an einer Anfrage ohne Antwort, solange der Schritt laeuft (sonst
+     13-16 min, damals ueber 48 min bis zum Abbruch von aussen). Ohne Signal
+     wartet fetch auf eine stehende Verbindung bis zum undici-Standard von
+     5 min je Phase, und der Wiederholungsweg greift erst danach. Ein Zeitlimit
+     zaehlt wie ein Netzfehler und wird wiederholt. */
+  const requestTimeoutMs = cfg.requestTimeoutMs === undefined ? 60000 : cfg.requestTimeoutMs;
 
   /* Loeschen ist gesperrt - ausser unter einem Nachweis-Praefix.
 
@@ -240,7 +247,8 @@ export function createS3Driver(cfg) {
     let lastErr = null;
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       try {
-        const res = await fetchImpl(target, { method, headers, body: body || undefined });
+        const res = await fetchImpl(target, { method, headers, body: body || undefined,
+          signal: requestTimeoutMs > 0 ? AbortSignal.timeout(requestTimeoutMs) : undefined });
         if (res.status === 404) return { status: 404, buffer: null, headers: res.headers };
         if (res.status >= 500 || res.status === 429) {
           lastErr = new Error(`${method} ${key || "(bucket)"}: HTTP ${res.status}`);
@@ -250,12 +258,15 @@ export function createS3Driver(cfg) {
              Schluessel. Die Signatur und die Zugangsdaten nie. */
           throw new Error(`${method} ${key || "(bucket)"}: HTTP ${res.status} ${text.slice(0, 400)}`);
         } else {
+          /* Das Signal gilt auch fuer das Lesen des Koerpers (arrayBuffer). */
           const buffer = method === "HEAD" ? null : Buffer.from(await res.arrayBuffer());
           return { status: res.status, buffer, headers: res.headers };
         }
       } catch (err) {
         lastErr = err;
-        if (!/HTTP 5|HTTP 429|fetch failed|ECONN|ETIMEDOUT|socket/i.test(String(err.message))) throw err;
+        if (err && (err.name === "TimeoutError" || err.name === "AbortError")) {
+          lastErr = new Error(`${method} ${key || "(bucket)"}: Zeitlimit ${requestTimeoutMs} ms (Versuch ${attempt + 1})`);
+        } else if (!/HTTP 5|HTTP 429|fetch failed|ECONN|ETIMEDOUT|socket/i.test(String(err.message))) throw err;
       }
       if (attempt < maxRetries) {
         await new Promise((r) => setTimeout(r, Math.min(16000, 1000 * Math.pow(2, attempt))));

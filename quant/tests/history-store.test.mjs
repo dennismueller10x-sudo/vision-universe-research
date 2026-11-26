@@ -446,6 +446,34 @@ test("HS42 ein 500 des Dienstes wird wiederholt, ein 403 nicht", async () => {
   } finally { await mock.close(); }
 });
 
+test("HS42b eine Anfrage ohne Antwort bricht am Zeitlimit ab und wird wiederholt", async () => {
+  /* Lauf 45501514352 (24.11.2026): der Abgleich der Ablage hing an einer Anfrage ohne Antwort. */
+  /* AbortSignal.timeout haelt die Ereignisschleife nicht offen; im Lauf haelt das die Verbindung. */
+  const keepAlive = setInterval(() => {}, 1000);
+  try {
+    let calls = 0;
+    const fetchImpl = (url, init) => {
+      calls++;
+      if (calls === 1) {
+        return new Promise((_, reject) => init.signal.addEventListener("abort", () => reject(init.signal.reason)));
+      }
+      return Promise.resolve(new Response("ok", { status: 200 }));
+    };
+    const driver = createS3Driver({ endpoint: "http://127.0.0.1:1", bucket: "b", region: "auto",
+      accessKeyId: "a", secretAccessKey: "s", maxRetries: 2, requestTimeoutMs: 50, fetchImpl });
+    const res = await driver.get("v1/x.json.zst");
+    assert.equal(calls, 2, "ein Zeitlimit zaehlt wie ein Netzfehler: zweiter Versuch");
+    assert.equal(res.toString(), "ok");
+
+    calls = 0;
+    const hang = (url, init) => { calls++; return new Promise((_, reject) => init.signal.addEventListener("abort", () => reject(init.signal.reason))); };
+    const stuck = createS3Driver({ endpoint: "http://127.0.0.1:1", bucket: "b", region: "auto",
+      accessKeyId: "a", secretAccessKey: "s", maxRetries: 1, requestTimeoutMs: 20, fetchImpl: hang });
+    await assert.rejects(() => stuck.get("v1/y.json.zst"), /Zeitlimit 20 ms/);
+    assert.equal(calls, 2, "nach den Wiederholungen ein Fehler statt endlosem Warten");
+  } finally { clearInterval(keepAlive); }
+});
+
 test("HS43 der XML-Auszug liest Schluessel, Groesse und die Fortsetzung", () => {
   const xml = `<?xml version="1.0"?><ListBucketResult>
     <Contents><Key>v1/a.json.zst</Key><Size>123</Size>
