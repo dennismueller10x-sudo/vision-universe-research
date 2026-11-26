@@ -82,7 +82,7 @@ Die Grenzen sind ein Vorschlag und eine **Owner-Entscheidung**. Gemessen ist bis
 
 **Nicht beeinträchtigt:**
 - Der Nachtlauf schreibt nichts unter `security-master/` und teilt sich die Concurrency-Gruppe `market-data-<branch>`, deshalb läuft nichts parallel.
-- Gepusht werden genau die sechs Dateien (`PUSH_OWNED_PATHS`), nie `eligibility.json` und nie `discover/data`.
+- Gepusht werden die sechs Dateien (`PUSH_OWNED_PATHS`), nie `eligibility.json`. Seit 25.11.2026 baut der Lauf nach dem Namens-Commit Discover mit dem Erzeuger neu und pusht `discover/data` mit (Vertrag NF, `core/tests/name-discover-follow.test.mjs`).
 
 ## Owner-Entscheidungen P1–P6 (28.10.2026)
 

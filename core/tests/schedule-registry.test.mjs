@@ -217,3 +217,23 @@ test("SZ-12b · schedule-cutover fasst eine mit '!' beginnende if:-Bedingung in 
     assert.match(y, /^    if: \$\{\{ !\(github\.event_name == 'schedule' \|\| inputs\.zeitplan != ''\) \}\}$/m);
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
+
+test("SZ-CI-1 · Company Intelligence Takte (25.11.2026): Werktags-Slot 05:05, Wochenende alle 3 h, Wache 30 min, Abstand und Veroeffentlichungsfenster", () => {
+  const ci = REG.entries.filter((e) => e.workflow === "company-intelligence-refresh.yml");
+  const min = (e) => { const [m, h] = e.cron.split(" "); return Number(h) * 60 + Number(m); };
+  const werktag = ci.filter((e) => e.cron.endsWith(" * * 1-5")).map(min).sort((a, b) => a - b);
+  const wochenende = ci.filter((e) => e.cron.endsWith(" * * 0,6"));
+  assert.deepEqual(werktag, [17, 190, 305, 420, 575, 730, 1240], "00:17 03:10 05:05 07:00 09:35 12:10 20:40");
+  assert.equal(wochenende.length, 1);
+  assert.equal(wochenende[0].cron, "17 */3 * * 0,6", "Wochenende alle 3 h, 8 Slots");
+  // Lauf ca. 75-80 min (Pipeline + Auslieferung + Live-QA) plus Wache 30 min: Abstand mindestens 110 min, auch ueber Mitternacht.
+  const GUARD_MIN = 30, RUN_MIN = 80;
+  for (let i = 0; i < werktag.length; i++) {
+    const next = i + 1 < werktag.length ? werktag[i + 1] : werktag[0] + 1440;
+    assert.ok(next - werktag[i] >= RUN_MIN + GUARD_MIN, "Abstand " + werktag[i] + " -> " + next);
+  }
+  // Keine neue Veroeffentlichung im Boersenfenster (13:30-21:30) oder in 23-00 UTC: alle Werktags-Starts liegen vor 12:30 oder sind der bestehende 20:40-Slot.
+  for (const m of werktag) assert.ok(m <= 12 * 60 + 30 || m === 1240, "Start " + m);
+  assert.match(wf("company-intelligence-refresh.yml"), /CI_GATE_GUARD_HOURS: '0\.5'/);
+  assert.ok(ci.every((e) => e.timer === "waker"));
+});

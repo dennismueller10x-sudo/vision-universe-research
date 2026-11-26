@@ -40,7 +40,11 @@ test("SMW-2 · Workflow: ADR-005, keine Secrets, keine Eingabe im Shell-Text, nu
   for (const block of c.split(/\n\s+run: \|/).slice(1)) assert.doesNotMatch(block.split(/\n\s+- (name|uses):/)[0], /\$\{\{\s*(inputs|github\.event)\./, "Eingaben nur ueber env:");
   assert.doesNotMatch(c, /--tiingo\b/, "keine Tiingo-Metadatenabfragen");
   assert.doesNotMatch(c, /--include-new-tickers/, "neue Anbieter-Ticker bleiben zurueckgehalten (Lizenz)");
-  assert.doesNotMatch(c, /build-us-eligibility|apply-name-layer|apply-exchange-directory|build-discover-data/, "keine Universums- oder Discover-Aenderung");
+  assert.doesNotMatch(c, /build-us-eligibility|apply-name-layer|apply-exchange-directory/, "keine Universumsaenderung");
+  /* Discover folgt dem neuen Namensstand im selben Lauf (Steuerung 25.11.2026, Vertrag NF in
+     core/tests/name-discover-follow.test.mjs): nach dem Namens-Commit, vor dem Push. */
+  const bau = c.indexOf("\n          node scripts/discover/build-discover-data.mjs\n");
+  assert.ok(bau > c.indexOf("git add $PUSH_OWNED_PATHS") && bau < c.indexOf("scripts/ci/push-with-retry.sh \"", bau), "Discover-Neubau nach dem Namens-Add, vor dem Push");
   assert.match(c, /build-us-security-master\.mjs --require-provider/);
   assert.match(c, /--stamp "\$\{heute\}T00:00:00Z"/, "fester Zeitstempel je Lauftag (idempotent)");
   const gate = c.indexOf("security-master-refresh-gate.mjs"), commit = c.indexOf("push-with-retry.sh");
@@ -52,7 +56,8 @@ test("SMW-3 · Workflow: committet genau die sechs Dateien der beiden registrier
   const owned = (c.match(/PUSH_OWNED_PATHS: ([^\n]+)/) || [])[1].trim().split(/\s+/);
   assert.deepEqual(owned.sort(), [...SIX].sort());
   assert.match(c, /git add \$PUSH_OWNED_PATHS/);
-  assert.doesNotMatch(c, /git add (-A|\.|quant\/data\/market\/security-master\/?\s)/, "nie das ganze Verzeichnis (eligibility.json gehoert einem anderen Erzeuger)");
+  assert.doesNotMatch(c, /git add (-A(?! discover\/data\n)|\.|quant\/data\/market\/security-master\/?\s)/, "nie das ganze Verzeichnis (eligibility.json gehoert einem anderen Erzeuger)");
+  assert.match(c, /git add -A discover\/data\n/, "Discover-Neubau wird mitcommittet (NF)");
   const reg = JSON.parse(readFileSync(join(ROOT, "core", "registry", "domains.json"), "utf8")).domains;
   const sm = reg.find((d) => d.id === "usSecurityMaster"), cn = reg.find((d) => d.id === "companyNames");
   assert.ok(sm && /build-us-security-master\.mjs/.test(sm.producer) && /security-master-weekly\.yml/.test(sm.workflow));
