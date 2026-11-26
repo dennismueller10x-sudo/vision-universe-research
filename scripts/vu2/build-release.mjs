@@ -7,6 +7,7 @@ import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 import {gzipSync,gunzipSync} from 'node:zlib';
 import {writeStockHeadViews} from './stock-head-view.mjs';
+import {compactLogoIndex} from './logo-index-min.mjs';
 import {writeManifest} from './release-manifest.mjs';
 import {readQuantHomeRegime} from './quant-home-preview.mjs';
 import {createRequire} from 'node:module';
@@ -293,10 +294,9 @@ export async function buildRelease({root,output}){
     ist der Normalfall, Abweichungen stehen in x) plus dunkle Titel; die Seitenverhaeltnisse der breiten Fassung (nur Aktienseite)
     in wide.min.json. Die volle Datei bleibt daneben (assets/vu-ui.js und discover/ui/logos.js fallen darauf zurueck). */
  if(paths.includes('discover/logos/index.json')){
-  const src=await load('discover/logos/index.json'),files=src.files||{},t=[],x={};
-  for(const [sym,f] of Object.entries(files)){if(/[,\s]/.test(sym))throw Error('LOGO_INDEX_SYMBOL_INVALID');t.push(sym);if(f!=='files/'+sym+'.png')x[sym]=f;}
-  await writeFile(resolve(output,'discover/logos/index.min.json'),Buffer.from(JSON.stringify({v:1,t:t.join(','),x,d:src.dark||[]})));
-  await writeFile(resolve(output,'discover/logos/wide.min.json'),Buffer.from(JSON.stringify({v:1,w:src.wide||{}})));
+  const {index,wide}=compactLogoIndex(await load('discover/logos/index.json'));
+  await writeFile(resolve(output,'discover/logos/index.min.json'),Buffer.from(JSON.stringify(index)));
+  await writeFile(resolve(output,'discover/logos/wide.min.json'),Buffer.from(JSON.stringify(wide)));
  }
  /* Auslieferungsansichten der Aktienseite (siehe oben). Jeder Schritt liest
     nur Quelldateien des Repositories und schreibt nur in den Release. */

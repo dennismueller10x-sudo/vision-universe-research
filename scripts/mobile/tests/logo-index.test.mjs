@@ -30,3 +30,16 @@ test('wide ratios load lazily and only for wide marks',async()=>{
  context.VUDiscover.Logos.mark('NVDA',{wide:true});await new Promise(r=>setImmediate(r));await new Promise(r=>setImmediate(r));
  assert.equal(urls.includes('/discover/logos/wide.min.json'),true);
 });
+test('compact lists are derived from index.json (nothing hand-committed)',async()=>{
+ const {compactLogoIndex}=await import('../../vu2/logo-index-min.mjs');
+ const {existsSync}=await import('node:fs');
+ assert.equal(existsSync(new URL('../../../discover/logos/index.min.json',import.meta.url)),false);
+ assert.equal(existsSync(new URL('../../../discover/logos/wide.min.json',import.meta.url)),false);
+ const src=JSON.parse(readFileSync(new URL('../../../discover/logos/index.json',import.meta.url),'utf8'));
+ const {index,wide}=compactLogoIndex(src);
+ const {context}=mk({'/discover/logos/index.min.json':index});
+ vm.runInContext(ui,context);context.VUUI.logo('NVDA');
+ const d=await context.__vuLogoIndex;
+ assert.deepEqual(JSON.parse(JSON.stringify(d.files)),src.files);assert.deepEqual(JSON.parse(JSON.stringify(d.dark)),src.dark);
+ assert.deepEqual(wide.w,src.wide);
+});
