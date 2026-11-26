@@ -21,16 +21,33 @@
 
   function laden() {
     if (!global.fetch) { files = {}; return; }
-    var pending = global.__vuLogoIndex || (global.__vuLogoIndex = global.fetch(BASE + "index.json", { cache: "default", priority: "low" })
-      .then(function (r) { return r.ok ? r.json() : { files: {} }; })
-      .catch(function () { return { files: {} }; }));
+    /* Gleiche kompakte Liste wie assets/vu-ui.js (ein Abruf, geteilt ueber __vuLogoIndex); fehlt sie, die volle index.json. */
+    var pending = global.__vuLogoIndex || (global.__vuLogoIndex = global.fetch(BASE + "index.min.json", { cache: "default", priority: "low" })
+      .then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
+      .then(function (m) {
+        if (m && m.t != null) { var f = {}, x = m.x || {}; String(m.t).split(",").forEach(function (s) { if (s) f[s] = x[s] || "files/" + s + ".png"; }); return { files: f, dark: m.d || [] }; }
+        return global.fetch(BASE + "index.json", { cache: "default", priority: "low" }).then(function (r) { return r.ok ? r.json() : { files: {} }; }).catch(function () { return { files: {} }; });
+      }));
     pending.then(function (data) {
         files = (data && data.files) || {};
         ((data && data.dark) || []).forEach(function (s) { dunkel[s] = true; });
-        breit = (data && data.wide) || {};
+        if (data && data.wide) breit = data.wide;
         var offen = warten; warten = [];
         offen.forEach(function (fn) { fn(); });
       });
+  }
+
+  /* Seitenverhaeltnisse der breiten Fassungen: nur die Aktienseite braucht sie (wide.min.json, wenige KB), sonst index.json. */
+  var breitLaden = null;
+  function breitFuer() {
+    if (breitLaden) return breitLaden;
+    return (breitLaden = !global.fetch ? Promise.resolve() : global.fetch(BASE + "wide.min.json", { cache: "default" })
+      .then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
+      .then(function (d) {
+        if (d && d.w) { breit = d.w; return; }
+        return global.fetch(BASE + "index.json", { cache: "default" }).then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; })
+          .then(function (i) { breit = (i && i.wide) || {}; });
+      }));
   }
 
   function initial(name, symbol) {
@@ -83,8 +100,9 @@
     node.setAttribute("aria-hidden", "true");
     node.setAttribute("data-logo", symbol || "");
     if (!opts.onlyLogo) node.textContent = initial(opts.name, symbol);
-    if (files) fuellen(node, symbol, opts.onlyLogo, opts.wide);
-    else warten.push(function () { fuellen(node, symbol, opts.onlyLogo, opts.wide); });
+    var los = function () { fuellen(node, symbol, opts.onlyLogo, opts.wide); };
+    var bereit = function () { if (opts.wide && !Object.keys(breit).length) breitFuer().then(los); else los(); };
+    if (files) bereit(); else warten.push(bereit);
     return node;
   }
 

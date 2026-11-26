@@ -156,7 +156,13 @@
   function logoStart() {
     if (logoStarted || typeof document === "undefined" || typeof fetch !== "function") return;
     logoStarted = true;
-    var pending = root.__vuLogoIndex || (root.__vuLogoIndex = fetch(LOGO_BASE + "index.json", { cache: "default", priority: "low" }).then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; }));
+    var pending = root.__vuLogoIndex || (root.__vuLogoIndex = fetch(LOGO_BASE + "index.min.json", { cache: "default", priority: "low" })
+      .then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
+      .then(function (m) {
+        /* Kompakte Release-Fassung (scripts/vu2/build-release.mjs): Titelliste statt 4.139 Pfade. Fehlt sie (lokal, aelterer Stand), die volle Liste. */
+        if (m && m.t != null) { var f = {}, x = m.x || {}; String(m.t).split(",").forEach(function (s) { if (s) f[s] = x[s] || "files/" + s + ".png"; }); return { files: f, dark: m.d || [] }; }
+        return fetch(LOGO_BASE + "index.json", { cache: "default", priority: "low" }).then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; });
+      }));
     pending.then(function (d) {
       logoFiles = (d && d.files) || {};
       ((d && d.dark) || []).forEach(function (s) { logoDark[s] = true; });

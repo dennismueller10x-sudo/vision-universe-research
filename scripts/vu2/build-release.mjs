@@ -289,6 +289,15 @@ export async function buildRelease({root,output}){
   await mkdir(resolve(output,'discover/logos/credits'),{recursive:true});
   for(const [key,part] of Object.entries(parts)){const b=Buffer.from(JSON.stringify(part));if(b.length>CAPABILITY_SHARD_BUDGET*2)throw Error('CREDITS_SHARD_BUDGET_EXCEEDED');await writeFile(resolve(output,'discover/logos/credits/'+key+'.json'),b);}
  }
+ /* Logo-Liste (index.json, 120 KB): Kacheln brauchen nur "hat Logo" und "dunkel". Kompakt: Titelliste (Pfad files/<Titel>.png
+    ist der Normalfall, Abweichungen stehen in x) plus dunkle Titel; die Seitenverhaeltnisse der breiten Fassung (nur Aktienseite)
+    in wide.min.json. Die volle Datei bleibt daneben (assets/vu-ui.js und discover/ui/logos.js fallen darauf zurueck). */
+ if(paths.includes('discover/logos/index.json')){
+  const src=await load('discover/logos/index.json'),files=src.files||{},t=[],x={};
+  for(const [sym,f] of Object.entries(files)){if(/[,\s]/.test(sym))throw Error('LOGO_INDEX_SYMBOL_INVALID');t.push(sym);if(f!=='files/'+sym+'.png')x[sym]=f;}
+  await writeFile(resolve(output,'discover/logos/index.min.json'),Buffer.from(JSON.stringify({v:1,t:t.join(','),x,d:src.dark||[]})));
+  await writeFile(resolve(output,'discover/logos/wide.min.json'),Buffer.from(JSON.stringify({v:1,w:src.wide||{}})));
+ }
  /* Auslieferungsansichten der Aktienseite (siehe oben). Jeder Schritt liest
     nur Quelldateien des Repositories und schreibt nur in den Release. */
  for(const p of technicalShards){
