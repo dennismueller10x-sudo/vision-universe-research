@@ -1,8 +1,8 @@
 {
  "schemaVersion": "vu-multi-asset-snapshot-1.0.0",
  "contractVersion": "multi-asset-contract-1.1.0",
- "generatedAt": "2026-11-26T12:23:06.249Z",
- "asOfRun": "2026-11-26T12:22:35.276Z",
+ "generatedAt": "2026-11-26T15:22:39.301Z",
+ "asOfRun": "2026-11-26T15:22:04.284Z",
  "note": "Product Contract des Multi-Asset-Segments. Freshness ist zum Bauzeitpunkt bewertet; Consumer bewerten sie mit VUMultiAssetContract.refresh() zur Anzeigezeit neu.",
  "summary": {
   "INDEX:CAPABILITY_GAP": 12,
@@ -73,7 +73,7 @@
     "freshness": {
      "state": "UNAVAILABLE",
      "reason": "noObservation",
-     "checkedAt": "2026-11-26T12:22:35.276Z"
+     "checkedAt": "2026-11-26T15:22:04.284Z"
     },
     "sourceState": "UNAVAILABLE",
     "frequency": null,
@@ -215,7 +215,7 @@
     "freshness": {
      "state": "UNAVAILABLE",
      "reason": "noObservation",
-     "checkedAt": "2026-11-26T12:22:35.276Z"
+     "checkedAt": "2026-11-26T15:22:04.284Z"
     },
     "sourceState": "UNAVAILABLE",
     "frequency": null,
@@ -350,7 +350,7 @@
     "freshness": {
      "state": "UNAVAILABLE",
      "reason": "noObservation",
-     "checkedAt": "2026-11-26T12:22:35.276Z"
+     "checkedAt": "2026-11-26T15:22:04.284Z"
     },
     "sourceState": "UNAVAILABLE",
     "frequency": null,
@@ -490,7 +490,7 @@
     "freshness": {
      "state": "UNAVAILABLE",
      "reason": "noObservation",
-     "checkedAt": "2026-11-26T12:22:35.276Z"
+     "checkedAt": "2026-11-26T15:22:04.284Z"
     },
     "sourceState": "UNAVAILABLE",
     "frequency": null,
@@ -625,7 +625,7 @@
     "freshness": {
      "state": "UNAVAILABLE",
      "reason": "noObservation",
-     "checkedAt": "2026-11-26T12:22:35.276Z"
+     "checkedAt": "2026-11-26T15:22:04.284Z"
     },
     "sourceState": "UNAVAILABLE",
     "frequency": null,
@@ -765,7 +765,7 @@
     "freshness": {
      "state": "UNAVAILABLE",
      "reason": "noObservation",
-     "checkedAt": "2026-11-26T12:22:35.276Z"
+     "checkedAt": "2026-11-26T15:22:04.284Z"
     },
     "sourceState": "UNAVAILABLE",
     "frequency": null,
@@ -873,7 +873,7 @@
     "state": "AVAILABLE",
     "valueSemantics": "INDEX_LEVEL",
     "valueKind": "SCALAR",
-    "value": 57011.62,
+    "value": 57499.16,
     "range": null,
     "unit": "INDEX_POINTS",
     "unitId": "POINTS",
@@ -881,14 +881,14 @@
     "decimals": 2,
     "nativeCurrency": "JPY",
     "currencyContext": null,
-    "asOf": "2026-11-25",
-    "observationDate": "2026-11-25",
+    "asOf": "2026-11-26",
+    "observationDate": "2026-11-26",
     "change": {
      "semantics": "PERCENT_OF_VALUE",
-     "absolute": -1633.01,
-     "percent": -2.78
+     "absolute": 487.54,
+     "percent": 0.86
     },
-    "changeReferenceDate": "2026-11-24"
+    "changeReferenceDate": "2026-11-25"
    },
    "market": {
     "state": "CLOSED",
@@ -911,12 +911,12 @@
     },
     "freshness": {
      "state": "LAST_SESSION",
-     "reason": "closePendingWithinGrace",
-     "checkedAt": "2026-11-26T12:22:35.276Z"
+     "reason": "lastCompletedSession",
+     "checkedAt": "2026-11-26T15:22:04.284Z"
     },
     "sourceState": "LAST_SESSION",
     "frequency": "DAILY",
-    "checkedAt": "2026-11-26T12:22:35.322Z",
+    "checkedAt": "2026-11-26T15:22:04.470Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -928,14 +928,14 @@
      "publicDisplay": true,
      "attribution": "Quelle: Nikkei Inc., via FRED, Federal Reserve Bank of St. Louis",
      "priceSemantics": "INDEX_CLOSE_DAILY",
-     "fetchedAt": "2026-11-26T12:22:35.322Z"
+     "fetchedAt": "2026-11-26T15:22:04.470Z"
     }
    },
    "history": {
     "available": true,
     "availableFrom": "1949-05-16",
-    "availableTo": "2026-11-25",
-    "observations": 19246,
+    "availableTo": "2026-11-26",
+    "observations": 19247,
     "frequency": "DAILY",
     "representation": "OBSERVATIONS",
     "observedThrough": null,
@@ -951,10 +951,6 @@
      "MAX": true
     },
     "recent": [
-     [
-      "2026-08-18",
-      67460.73
-     ],
      [
       "2026-08-19",
       65326.42
@@ -1214,6 +1210,10 @@
      [
       "2026-11-25",
       57011.62
+     ],
+     [
+      "2026-11-26",
+      57499.16
      ]
     ],
     "path": "/quant/data/market/multi-asset/series/N225.json",
@@ -1222,44 +1222,44 @@
    "performance": {
     "1W": {
      "semantics": "PERCENT_OF_VALUE",
-     "absolute": -2012.66,
-     "percent": -3.41,
-     "fromDate": "2026-11-18"
+     "absolute": -1945.05,
+     "percent": -3.27,
+     "fromDate": "2026-11-19"
     },
     "1M": {
      "semantics": "PERCENT_OF_VALUE",
-     "absolute": -5178.03,
-     "percent": -8.33,
-     "fromDate": "2026-10-26"
+     "absolute": -5769.21,
+     "percent": -9.12,
+     "fromDate": "2026-10-27"
     },
     "3M": {
      "semantics": "PERCENT_OF_VALUE",
-     "absolute": -9250.54,
-     "percent": -13.96,
-     "fromDate": "2026-08-26"
+     "absolute": -8632.82,
+     "percent": -13.05,
+     "fromDate": "2026-08-27"
     },
     "1Y": {
      "semantics": "PERCENT_OF_VALUE",
-     "absolute": 8352.1,
-     "percent": 17.16,
-     "fromDate": "2025-11-25"
+     "absolute": 7940.09,
+     "percent": 16.02,
+     "fromDate": "2025-11-26"
     },
     "5Y": {
      "semantics": "PERCENT_OF_VALUE",
-     "absolute": 27512.34,
-     "percent": 93.26,
-     "fromDate": "2021-11-25"
+     "absolute": 28747.54,
+     "percent": 99.99,
+     "fromDate": "2021-11-26"
     },
     "10Y": {
      "semantics": "PERCENT_OF_VALUE",
-     "absolute": 38630.4,
-     "percent": 210.16,
+     "absolute": 39117.94,
+     "percent": 212.81,
      "fromDate": "2016-11-25"
     },
     "MAX": {
      "semantics": "PERCENT_OF_VALUE",
-     "absolute": 56835.41,
-     "percent": 32254.36,
+     "absolute": 57322.95,
+     "percent": 32531.04,
      "fromDate": "1949-05-16"
     }
    },
@@ -1349,7 +1349,7 @@
     "freshness": {
      "state": "UNAVAILABLE",
      "reason": "noObservation",
-     "checkedAt": "2026-11-26T12:22:35.276Z"
+     "checkedAt": "2026-11-26T15:22:04.284Z"
     },
     "sourceState": "UNAVAILABLE",
     "frequency": null,
@@ -1489,7 +1489,7 @@
     "freshness": {
      "state": "UNAVAILABLE",
      "reason": "noObservation",
-     "checkedAt": "2026-11-26T12:22:35.276Z"
+     "checkedAt": "2026-11-26T15:22:04.284Z"
     },
     "sourceState": "UNAVAILABLE",
     "frequency": null,
@@ -1622,7 +1622,7 @@
     "freshness": {
      "state": "UNAVAILABLE",
      "reason": "noObservation",
-     "checkedAt": "2026-11-26T12:22:35.276Z"
+     "checkedAt": "2026-11-26T15:22:04.284Z"
     },
     "sourceState": "UNAVAILABLE",
     "frequency": null,
@@ -1752,7 +1752,7 @@
     "freshness": {
      "state": "UNAVAILABLE",
      "reason": "noObservation",
-     "checkedAt": "2026-11-26T12:22:35.276Z"
+     "checkedAt": "2026-11-26T15:22:04.284Z"
     },
     "sourceState": "UNAVAILABLE",
     "frequency": null,
@@ -1882,7 +1882,7 @@
     "freshness": {
      "state": "UNAVAILABLE",
      "reason": "noObservation",
-     "checkedAt": "2026-11-26T12:22:35.276Z"
+     "checkedAt": "2026-11-26T15:22:04.284Z"
     },
     "sourceState": "UNAVAILABLE",
     "frequency": null,
@@ -2020,7 +2020,7 @@
     "freshness": {
      "state": "UNAVAILABLE",
      "reason": "noObservation",
-     "checkedAt": "2026-11-26T12:22:35.276Z"
+     "checkedAt": "2026-11-26T15:22:04.284Z"
     },
     "sourceState": "UNAVAILABLE",
     "frequency": null,
@@ -2118,7 +2118,7 @@
     "state": "AVAILABLE",
     "valueSemantics": "PRICE",
     "valueKind": "SCALAR",
-    "value": 3566.27,
+    "value": 3572.85,
     "range": null,
     "unit": "PRICE_PER_OUNCE",
     "unitId": "USD_PER_TROY_OUNCE",
@@ -2126,12 +2126,12 @@
     "decimals": 2,
     "nativeCurrency": "USD",
     "currencyContext": null,
-    "asOf": "2026-11-26T12:22:35.780000+00:00",
+    "asOf": "2026-11-26T15:22:06.151000+00:00",
     "observationDate": "2026-11-26",
     "change": {
      "semantics": "PERCENT_OF_VALUE",
-     "absolute": -10.09,
-     "percent": -0.28
+     "absolute": -3.51,
+     "percent": -0.1
     },
     "changeReferenceDate": "2026-11-25"
    },
@@ -2156,11 +2156,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "latestSnapshot",
-     "checkedAt": "2026-11-26T12:22:35.276Z"
+     "checkedAt": "2026-11-26T15:22:04.284Z"
     },
     "sourceState": "CURRENT",
     "frequency": "INTRADAY",
-    "checkedAt": "2026-11-26T12:22:36.496Z",
+    "checkedAt": "2026-11-26T15:22:06.055Z",
     "realtime": false,
     "delayed": true,
     "eod": false,
@@ -2172,7 +2172,7 @@
      "publicDisplay": true,
      "attribution": "Daten: Tiingo",
      "priceSemantics": "MID_QUOTE",
-     "fetchedAt": "2026-11-26T12:22:36.496Z"
+     "fetchedAt": "2026-11-26T15:22:06.055Z"
     }
    },
    "history": {
@@ -2553,7 +2553,7 @@
     "state": "AVAILABLE",
     "valueSemantics": "PRICE",
     "valueKind": "SCALAR",
-    "value": 41.5185,
+    "value": 41.5955,
     "range": null,
     "unit": "PRICE_PER_OUNCE",
     "unitId": "USD_PER_TROY_OUNCE",
@@ -2561,12 +2561,12 @@
     "decimals": 2,
     "nativeCurrency": "USD",
     "currencyContext": null,
-    "asOf": "2026-11-26T12:22:35.901000+00:00",
+    "asOf": "2026-11-26T15:22:05.109000+00:00",
     "observationDate": "2026-11-26",
     "change": {
      "semantics": "PERCENT_OF_VALUE",
-     "absolute": 0.083,
-     "percent": 0.2
+     "absolute": 0.16,
+     "percent": 0.39
     },
     "changeReferenceDate": "2026-11-25"
    },
@@ -2591,11 +2591,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "latestSnapshot",
-     "checkedAt": "2026-11-26T12:22:35.276Z"
+     "checkedAt": "2026-11-26T15:22:04.284Z"
     },
     "sourceState": "CURRENT",
     "frequency": "INTRADAY",
-    "checkedAt": "2026-11-26T12:22:36.813Z",
+    "checkedAt": "2026-11-26T15:22:06.423Z",
     "realtime": false,
     "delayed": true,
     "eod": false,
@@ -2607,7 +2607,7 @@
      "publicDisplay": true,
      "attribution": "Daten: Tiingo",
      "priceSemantics": "MID_QUOTE",
-     "fetchedAt": "2026-11-26T12:22:36.813Z"
+     "fetchedAt": "2026-11-26T15:22:06.423Z"
     }
    },
    "history": {
@@ -2987,7 +2987,7 @@
     "state": "AVAILABLE",
     "valueSemantics": "PRICE",
     "valueKind": "SCALAR",
-    "value": 1301.18,
+    "value": 1296.61,
     "range": null,
     "unit": "PRICE_PER_OUNCE",
     "unitId": "USD_PER_TROY_OUNCE",
@@ -2995,12 +2995,12 @@
     "decimals": 2,
     "nativeCurrency": "USD",
     "currencyContext": null,
-    "asOf": "2026-11-26T12:22:36.013000+00:00",
+    "asOf": "2026-11-26T15:22:06.811000+00:00",
     "observationDate": "2026-11-26",
     "change": {
      "semantics": "PERCENT_OF_VALUE",
-     "absolute": 9.92,
-     "percent": 0.77
+     "absolute": 5.35,
+     "percent": 0.41
     },
     "changeReferenceDate": "2026-11-25"
    },
@@ -3025,11 +3025,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "latestSnapshot",
-     "checkedAt": "2026-11-26T12:22:35.276Z"
+     "checkedAt": "2026-11-26T15:22:04.284Z"
     },
     "sourceState": "CURRENT",
     "frequency": "INTRADAY",
-    "checkedAt": "2026-11-26T12:22:37.064Z",
+    "checkedAt": "2026-11-26T15:22:06.811Z",
     "realtime": false,
     "delayed": true,
     "eod": false,
@@ -3041,7 +3041,7 @@
      "publicDisplay": true,
      "attribution": "Daten: Tiingo",
      "priceSemantics": "MID_QUOTE",
-     "fetchedAt": "2026-11-26T12:22:37.064Z"
+     "fetchedAt": "2026-11-26T15:22:06.811Z"
     }
    },
    "history": {
@@ -3420,7 +3420,7 @@
     "state": "AVAILABLE",
     "valueSemantics": "PRICE",
     "valueKind": "SCALAR",
-    "value": 876.34,
+    "value": 879.675,
     "range": null,
     "unit": "PRICE_PER_OUNCE",
     "unitId": "USD_PER_TROY_OUNCE",
@@ -3428,12 +3428,12 @@
     "decimals": 2,
     "nativeCurrency": "USD",
     "currencyContext": null,
-    "asOf": "2026-11-26T12:22:35.008000+00:00",
+    "asOf": "2026-11-26T15:22:04.507000+00:00",
     "observationDate": "2026-11-26",
     "change": {
      "semantics": "PERCENT_OF_VALUE",
-     "absolute": 10.46,
-     "percent": 1.21
+     "absolute": 13.795,
+     "percent": 1.59
     },
     "changeReferenceDate": "2026-11-25"
    },
@@ -3458,11 +3458,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "latestSnapshot",
-     "checkedAt": "2026-11-26T12:22:35.276Z"
+     "checkedAt": "2026-11-26T15:22:04.284Z"
     },
     "sourceState": "CURRENT",
     "frequency": "INTRADAY",
-    "checkedAt": "2026-11-26T12:22:37.337Z",
+    "checkedAt": "2026-11-26T15:22:07.165Z",
     "realtime": false,
     "delayed": true,
     "eod": false,
@@ -3474,7 +3474,7 @@
      "publicDisplay": true,
      "attribution": "Daten: Tiingo",
      "priceSemantics": "MID_QUOTE",
-     "fetchedAt": "2026-11-26T12:22:37.337Z"
+     "fetchedAt": "2026-11-26T15:22:07.165Z"
     }
    },
    "history": {
@@ -3891,11 +3891,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "publicationPendingWithinLag",
-     "checkedAt": "2026-11-26T12:22:35.276Z"
+     "checkedAt": "2026-11-26T15:22:04.284Z"
     },
     "sourceState": "CURRENT",
     "frequency": "DAILY",
-    "checkedAt": "2026-11-26T12:22:37.601Z",
+    "checkedAt": "2026-11-26T15:22:07.520Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -3907,7 +3907,7 @@
      "publicDisplay": true,
      "attribution": "Quelle: U.S. Energy Information Administration",
      "priceSemantics": "SPOT_FOB_DAILY",
-     "fetchedAt": "2026-11-26T12:22:37.601Z"
+     "fetchedAt": "2026-11-26T15:22:07.520Z"
     }
    },
    "history": {
@@ -4337,11 +4337,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "publicationPendingWithinLag",
-     "checkedAt": "2026-11-26T12:22:35.276Z"
+     "checkedAt": "2026-11-26T15:22:04.284Z"
     },
     "sourceState": "CURRENT",
     "frequency": "DAILY",
-    "checkedAt": "2026-11-26T12:22:37.624Z",
+    "checkedAt": "2026-11-26T15:22:07.539Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -4353,7 +4353,7 @@
      "publicDisplay": true,
      "attribution": "Quelle: U.S. Energy Information Administration",
      "priceSemantics": "SPOT_FOB_DAILY",
-     "fetchedAt": "2026-11-26T12:22:37.624Z"
+     "fetchedAt": "2026-11-26T15:22:07.539Z"
     }
    },
    "history": {
@@ -4776,7 +4776,7 @@
     "freshness": {
      "state": "UNAVAILABLE",
      "reason": "noObservation",
-     "checkedAt": "2026-11-26T12:22:35.276Z"
+     "checkedAt": "2026-11-26T15:22:04.284Z"
     },
     "sourceState": "UNAVAILABLE",
     "frequency": null,
@@ -4915,11 +4915,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "publicationPendingWithinLag",
-     "checkedAt": "2026-11-26T12:22:35.276Z"
+     "checkedAt": "2026-11-26T15:22:04.284Z"
     },
     "sourceState": "CURRENT",
     "frequency": "DAILY",
-    "checkedAt": "2026-11-26T12:22:37.638Z",
+    "checkedAt": "2026-11-26T15:22:07.551Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -4931,7 +4931,7 @@
      "publicDisplay": true,
      "attribution": "Quelle: U.S. Energy Information Administration",
      "priceSemantics": "SPOT_DAILY",
-     "fetchedAt": "2026-11-26T12:22:37.638Z"
+     "fetchedAt": "2026-11-26T15:22:07.551Z"
     }
    },
    "history": {
@@ -5323,7 +5323,7 @@
     "state": "AVAILABLE",
     "valueSemantics": "PRICE",
     "valueKind": "SCALAR",
-    "value": 60577.009524375084,
+    "value": 60188.38072178588,
     "range": null,
     "unit": "CRYPTO_QUOTE",
     "unitId": "USD_PER_BTC",
@@ -5331,12 +5331,12 @@
     "decimals": 2,
     "nativeCurrency": "USD",
     "currencyContext": null,
-    "asOf": "2026-11-26T12:20:00+00:00",
+    "asOf": "2026-11-26T15:20:00+00:00",
     "observationDate": "2026-11-26",
     "change": {
      "semantics": "PERCENT_OF_VALUE",
-     "absolute": 191.105359,
-     "percent": 0.32
+     "absolute": -197.523444,
+     "percent": -0.33
     },
     "changeReferenceDate": "2026-11-25"
    },
@@ -5361,11 +5361,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "latestSnapshot",
-     "checkedAt": "2026-11-26T12:22:35.276Z"
+     "checkedAt": "2026-11-26T15:22:04.284Z"
     },
     "sourceState": "CURRENT",
     "frequency": "INTRADAY",
-    "checkedAt": "2026-11-26T12:22:37.648Z",
+    "checkedAt": "2026-11-26T15:22:07.561Z",
     "realtime": false,
     "delayed": true,
     "eod": false,
@@ -5377,7 +5377,7 @@
      "publicDisplay": true,
      "attribution": "Daten: Tiingo",
      "priceSemantics": "AGGREGATED_LAST",
-     "fetchedAt": "2026-11-26T12:22:37.648Z"
+     "fetchedAt": "2026-11-26T15:22:07.561Z"
     }
    },
    "history": {
@@ -5770,7 +5770,7 @@
     "state": "AVAILABLE",
     "valueSemantics": "PRICE",
     "valueKind": "SCALAR",
-    "value": 1699.8743555176131,
+    "value": 1680.3211548297522,
     "range": null,
     "unit": "CRYPTO_QUOTE",
     "unitId": "USD_PER_ETH",
@@ -5778,12 +5778,12 @@
     "decimals": 2,
     "nativeCurrency": "USD",
     "currencyContext": null,
-    "asOf": "2026-11-26T12:20:00+00:00",
+    "asOf": "2026-11-26T15:20:00+00:00",
     "observationDate": "2026-11-26",
     "change": {
      "semantics": "PERCENT_OF_VALUE",
-     "absolute": 9.346315,
-     "percent": 0.55
+     "absolute": -10.206886,
+     "percent": -0.6
     },
     "changeReferenceDate": "2026-11-25"
    },
@@ -5808,11 +5808,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "latestSnapshot",
-     "checkedAt": "2026-11-26T12:22:35.276Z"
+     "checkedAt": "2026-11-26T15:22:04.284Z"
     },
     "sourceState": "CURRENT",
     "frequency": "INTRADAY",
-    "checkedAt": "2026-11-26T12:22:38.824Z",
+    "checkedAt": "2026-11-26T15:22:08.943Z",
     "realtime": false,
     "delayed": true,
     "eod": false,
@@ -5824,7 +5824,7 @@
      "publicDisplay": true,
      "attribution": "Daten: Tiingo",
      "priceSemantics": "AGGREGATED_LAST",
-     "fetchedAt": "2026-11-26T12:22:38.824Z"
+     "fetchedAt": "2026-11-26T15:22:08.943Z"
     }
    },
    "history": {
@@ -6215,7 +6215,7 @@
     "state": "AVAILABLE",
     "valueSemantics": "PRICE",
     "valueKind": "SCALAR",
-    "value": 70.69095756041408,
+    "value": 70.31972903306477,
     "range": null,
     "unit": "CRYPTO_QUOTE",
     "unitId": "USD_PER_SOL",
@@ -6223,12 +6223,12 @@
     "decimals": 2,
     "nativeCurrency": "USD",
     "currencyContext": null,
-    "asOf": "2026-11-26T12:20:00+00:00",
+    "asOf": "2026-11-26T15:20:00+00:00",
     "observationDate": "2026-11-26",
     "change": {
      "semantics": "PERCENT_OF_VALUE",
-     "absolute": 0.301511,
-     "percent": 0.43
+     "absolute": -0.069717,
+     "percent": -0.1
     },
     "changeReferenceDate": "2026-11-25"
    },
@@ -6253,11 +6253,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "latestSnapshot",
-     "checkedAt": "2026-11-26T12:22:35.276Z"
+     "checkedAt": "2026-11-26T15:22:04.284Z"
     },
     "sourceState": "CURRENT",
     "frequency": "INTRADAY",
-    "checkedAt": "2026-11-26T12:22:39.825Z",
+    "checkedAt": "2026-11-26T15:22:10.060Z",
     "realtime": false,
     "delayed": true,
     "eod": false,
@@ -6269,7 +6269,7 @@
      "publicDisplay": true,
      "attribution": "Daten: Tiingo",
      "priceSemantics": "AGGREGATED_LAST",
-     "fetchedAt": "2026-11-26T12:22:39.825Z"
+     "fetchedAt": "2026-11-26T15:22:10.060Z"
     }
    },
    "history": {
@@ -6652,7 +6652,7 @@
     "state": "AVAILABLE",
     "valueSemantics": "PRICE",
     "valueKind": "SCALAR",
-    "value": 0.9494084575849063,
+    "value": 0.9399424950953836,
     "range": null,
     "unit": "CRYPTO_QUOTE",
     "unitId": "USD_PER_XRP",
@@ -6660,12 +6660,12 @@
     "decimals": 2,
     "nativeCurrency": "USD",
     "currencyContext": null,
-    "asOf": "2026-11-26T12:20:00+00:00",
+    "asOf": "2026-11-26T15:20:00+00:00",
     "observationDate": "2026-11-26",
     "change": {
      "semantics": "PERCENT_OF_VALUE",
-     "absolute": 0.012743,
-     "percent": 1.36
+     "absolute": 0.003278,
+     "percent": 0.35
     },
     "changeReferenceDate": "2026-11-25"
    },
@@ -6690,11 +6690,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "latestSnapshot",
-     "checkedAt": "2026-11-26T12:22:35.276Z"
+     "checkedAt": "2026-11-26T15:22:04.284Z"
     },
     "sourceState": "CURRENT",
     "frequency": "INTRADAY",
-    "checkedAt": "2026-11-26T12:22:40.598Z",
+    "checkedAt": "2026-11-26T15:22:10.922Z",
     "realtime": false,
     "delayed": true,
     "eod": false,
@@ -6706,7 +6706,7 @@
      "publicDisplay": true,
      "attribution": "Daten: Tiingo",
      "priceSemantics": "AGGREGATED_LAST",
-     "fetchedAt": "2026-11-26T12:22:40.598Z"
+     "fetchedAt": "2026-11-26T15:22:10.922Z"
     }
    },
    "history": {
@@ -7133,7 +7133,7 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "withinFxLimit",
-     "checkedAt": "2026-11-26T12:22:35.276Z"
+     "checkedAt": "2026-11-26T15:22:04.284Z"
     },
     "sourceState": "CURRENT",
     "frequency": "DAILY",
@@ -7580,11 +7580,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "latestPublication",
-     "checkedAt": "2026-11-26T12:22:35.276Z"
+     "checkedAt": "2026-11-26T15:22:04.284Z"
     },
     "sourceState": "CURRENT",
     "frequency": "DAILY",
-    "checkedAt": "2026-11-26T12:22:41.534Z",
+    "checkedAt": "2026-11-26T15:22:12.092Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -7596,7 +7596,7 @@
      "publicDisplay": true,
      "attribution": "Quelle: U.S. Department of the Treasury",
      "priceSemantics": "PAR_YIELD_CMT",
-     "fetchedAt": "2026-11-26T12:22:41.534Z"
+     "fetchedAt": "2026-11-26T15:22:12.092Z"
     }
    },
    "history": {
@@ -8041,11 +8041,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "latestPublication",
-     "checkedAt": "2026-11-26T12:22:35.276Z"
+     "checkedAt": "2026-11-26T15:22:04.284Z"
     },
     "sourceState": "CURRENT",
     "frequency": "DAILY",
-    "checkedAt": "2026-11-26T12:22:58.791Z",
+    "checkedAt": "2026-11-26T15:22:32.328Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -8057,7 +8057,7 @@
      "publicDisplay": true,
      "attribution": "Quelle: U.S. Department of the Treasury",
      "priceSemantics": "PAR_YIELD_CMT",
-     "fetchedAt": "2026-11-26T12:22:58.791Z"
+     "fetchedAt": "2026-11-26T15:22:32.328Z"
     }
    },
    "history": {
@@ -8500,11 +8500,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "latestPublication",
-     "checkedAt": "2026-11-26T12:22:35.276Z"
+     "checkedAt": "2026-11-26T15:22:04.284Z"
     },
     "sourceState": "CURRENT",
     "frequency": "DAILY",
-    "checkedAt": "2026-11-26T12:22:58.806Z",
+    "checkedAt": "2026-11-26T15:22:32.341Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -8516,7 +8516,7 @@
      "publicDisplay": true,
      "attribution": "Quelle: U.S. Department of the Treasury",
      "priceSemantics": "PAR_YIELD_CMT",
-     "fetchedAt": "2026-11-26T12:22:58.806Z"
+     "fetchedAt": "2026-11-26T15:22:32.341Z"
     }
    },
    "history": {
@@ -8962,11 +8962,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "latestPublication",
-     "checkedAt": "2026-11-26T12:22:35.276Z"
+     "checkedAt": "2026-11-26T15:22:04.284Z"
     },
     "sourceState": "CURRENT",
     "frequency": "DAILY",
-    "checkedAt": "2026-11-26T12:22:58.820Z",
+    "checkedAt": "2026-11-26T15:22:32.353Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -8978,7 +8978,7 @@
      "publicDisplay": true,
      "attribution": "Quelle: U.S. Department of the Treasury",
      "priceSemantics": "PAR_YIELD_CMT",
-     "fetchedAt": "2026-11-26T12:22:58.820Z"
+     "fetchedAt": "2026-11-26T15:22:32.353Z"
     }
    },
    "history": {
@@ -9421,11 +9421,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "latestPublication",
-     "checkedAt": "2026-11-26T12:22:35.276Z"
+     "checkedAt": "2026-11-26T15:22:04.284Z"
     },
     "sourceState": "CURRENT",
     "frequency": "DAILY",
-    "checkedAt": "2026-11-26T12:22:58.832Z",
+    "checkedAt": "2026-11-26T15:22:32.363Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -9437,7 +9437,7 @@
      "publicDisplay": true,
      "attribution": "Quelle: Deutsche Bundesbank",
      "priceSemantics": "SVENSSON_TERM_STRUCTURE_YIELD",
-     "fetchedAt": "2026-11-26T12:22:58.832Z"
+     "fetchedAt": "2026-11-26T15:22:32.363Z"
     }
    },
    "history": {
@@ -9880,11 +9880,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "latestPublication",
-     "checkedAt": "2026-11-26T12:22:35.276Z"
+     "checkedAt": "2026-11-26T15:22:04.284Z"
     },
     "sourceState": "CURRENT",
     "frequency": "DAILY",
-    "checkedAt": "2026-11-26T12:23:00.234Z",
+    "checkedAt": "2026-11-26T15:22:33.791Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -9896,7 +9896,7 @@
      "publicDisplay": true,
      "attribution": "Quelle: Deutsche Bundesbank",
      "priceSemantics": "SVENSSON_TERM_STRUCTURE_YIELD",
-     "fetchedAt": "2026-11-26T12:23:00.234Z"
+     "fetchedAt": "2026-11-26T15:22:33.791Z"
     }
    },
    "history": {
@@ -10339,11 +10339,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "latestPublication",
-     "checkedAt": "2026-11-26T12:22:35.276Z"
+     "checkedAt": "2026-11-26T15:22:04.284Z"
     },
     "sourceState": "CURRENT",
     "frequency": "DAILY",
-    "checkedAt": "2026-11-26T12:23:01.167Z",
+    "checkedAt": "2026-11-26T15:22:34.710Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -10355,7 +10355,7 @@
      "publicDisplay": true,
      "attribution": "Quelle: Deutsche Bundesbank",
      "priceSemantics": "SVENSSON_TERM_STRUCTURE_YIELD",
-     "fetchedAt": "2026-11-26T12:23:01.167Z"
+     "fetchedAt": "2026-11-26T15:22:34.710Z"
     }
    },
    "history": {
@@ -10801,11 +10801,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "stepSeriesValidUntilNextDecision",
-     "checkedAt": "2026-11-26T12:22:35.276Z"
+     "checkedAt": "2026-11-26T15:22:04.284Z"
     },
     "sourceState": "CURRENT",
     "frequency": "EVENT",
-    "checkedAt": "2026-11-26T12:23:01.821Z",
+    "checkedAt": "2026-11-26T15:22:35.500Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -10817,7 +10817,7 @@
      "publicDisplay": true,
      "attribution": "Quelle: Federal Reserve Bank of New York",
      "priceSemantics": "POLICY_TARGET_RANGE",
-     "fetchedAt": "2026-11-26T12:23:01.821Z"
+     "fetchedAt": "2026-11-26T15:22:35.500Z"
     }
    },
    "history": {
@@ -11128,11 +11128,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "publicationPendingWithinLag",
-     "checkedAt": "2026-11-26T12:22:35.276Z"
+     "checkedAt": "2026-11-26T15:22:04.284Z"
     },
     "sourceState": "CURRENT",
     "frequency": "DAILY",
-    "checkedAt": "2026-11-26T12:23:02.696Z",
+    "checkedAt": "2026-11-26T15:22:36.134Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -11144,7 +11144,7 @@
      "publicDisplay": true,
      "attribution": "Quelle: Federal Reserve Bank of New York",
      "priceSemantics": "VOLUME_WEIGHTED_MEDIAN",
-     "fetchedAt": "2026-11-26T12:23:02.696Z"
+     "fetchedAt": "2026-11-26T15:22:36.134Z"
     }
    },
    "history": {
@@ -11556,7 +11556,7 @@
     "nativeCurrency": null,
     "currencyContext": "EUR",
     "asOf": "2026-09-16",
-    "observationDate": "2026-11-25",
+    "observationDate": "2026-11-26",
     "change": {
      "semantics": "BASIS_POINTS",
      "absolutePercentagePoints": 0.25,
@@ -11587,11 +11587,11 @@
     "freshness": {
      "state": "CURRENT",
      "reason": "stepSeriesValidUntilNextDecision",
-     "checkedAt": "2026-11-26T12:22:35.276Z"
+     "checkedAt": "2026-11-26T15:22:04.284Z"
     },
     "sourceState": "CURRENT",
     "frequency": "EVENT",
-    "checkedAt": "2026-11-26T12:23:02.704Z",
+    "checkedAt": "2026-11-26T15:22:36.139Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -11603,7 +11603,7 @@
      "publicDisplay": true,
      "attribution": "Quelle: Europaeische Zentralbank",
      "priceSemantics": "POLICY_RATE",
-     "fetchedAt": "2026-11-26T12:23:02.704Z"
+     "fetchedAt": "2026-11-26T15:22:36.139Z"
     }
    },
    "history": {
@@ -11613,7 +11613,7 @@
     "observations": 64,
     "frequency": "EVENT",
     "representation": "STEPS",
-    "observedThrough": "2026-11-25",
+    "observedThrough": "2026-11-26",
     "scheduledChange": null,
     "intervals": {
      "1D": false,
@@ -12036,11 +12036,11 @@
     "freshness": {
      "state": "LAST_SESSION",
      "reason": "lastCompletedSession",
-     "checkedAt": "2026-11-26T12:22:35.276Z"
+     "checkedAt": "2026-11-26T15:22:04.284Z"
     },
     "sourceState": "LAST_SESSION",
     "frequency": "DAILY",
-    "checkedAt": "2026-11-26T12:23:04.306Z",
+    "checkedAt": "2026-11-26T15:22:36.957Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -12052,7 +12052,7 @@
      "publicDisplay": true,
      "attribution": "Daten: Tiingo",
      "priceSemantics": "ETF_CLOSE_SPLIT_ADJUSTED; juengster Stand: Tiingo-Referenzkurs (tngoLast) ueber IEX",
-     "fetchedAt": "2026-11-26T12:23:04.306Z"
+     "fetchedAt": "2026-11-26T15:22:36.957Z"
     }
    },
    "history": {
@@ -12513,11 +12513,11 @@
     "freshness": {
      "state": "LAST_SESSION",
      "reason": "lastCompletedSession",
-     "checkedAt": "2026-11-26T12:22:35.276Z"
+     "checkedAt": "2026-11-26T15:22:04.284Z"
     },
     "sourceState": "LAST_SESSION",
     "frequency": "DAILY",
-    "checkedAt": "2026-11-26T12:23:04.612Z",
+    "checkedAt": "2026-11-26T15:22:37.333Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -12529,7 +12529,7 @@
      "publicDisplay": true,
      "attribution": "Daten: Tiingo",
      "priceSemantics": "ETF_CLOSE_SPLIT_ADJUSTED; juengster Stand: Tiingo-Referenzkurs (tngoLast) ueber IEX",
-     "fetchedAt": "2026-11-26T12:23:04.612Z"
+     "fetchedAt": "2026-11-26T15:22:37.333Z"
     }
    },
    "history": {
@@ -12990,11 +12990,11 @@
     "freshness": {
      "state": "LAST_SESSION",
      "reason": "lastCompletedSession",
-     "checkedAt": "2026-11-26T12:22:35.276Z"
+     "checkedAt": "2026-11-26T15:22:04.284Z"
     },
     "sourceState": "LAST_SESSION",
     "frequency": "DAILY",
-    "checkedAt": "2026-11-26T12:23:04.917Z",
+    "checkedAt": "2026-11-26T15:22:37.714Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -13006,7 +13006,7 @@
      "publicDisplay": true,
      "attribution": "Daten: Tiingo",
      "priceSemantics": "ETF_CLOSE_SPLIT_ADJUSTED; juengster Stand: Tiingo-Referenzkurs (tngoLast) ueber IEX",
-     "fetchedAt": "2026-11-26T12:23:04.917Z"
+     "fetchedAt": "2026-11-26T15:22:37.714Z"
     }
    },
    "history": {
@@ -13467,11 +13467,11 @@
     "freshness": {
      "state": "LAST_SESSION",
      "reason": "lastCompletedSession",
-     "checkedAt": "2026-11-26T12:22:35.276Z"
+     "checkedAt": "2026-11-26T15:22:04.284Z"
     },
     "sourceState": "LAST_SESSION",
     "frequency": "DAILY",
-    "checkedAt": "2026-11-26T12:23:05.206Z",
+    "checkedAt": "2026-11-26T15:22:38.050Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -13483,7 +13483,7 @@
      "publicDisplay": true,
      "attribution": "Daten: Tiingo",
      "priceSemantics": "ETF_CLOSE_SPLIT_ADJUSTED; juengster Stand: Tiingo-Referenzkurs (tngoLast) ueber IEX",
-     "fetchedAt": "2026-11-26T12:23:05.206Z"
+     "fetchedAt": "2026-11-26T15:22:38.050Z"
     }
    },
    "history": {
@@ -13944,11 +13944,11 @@
     "freshness": {
      "state": "LAST_SESSION",
      "reason": "lastCompletedSession",
-     "checkedAt": "2026-11-26T12:22:35.276Z"
+     "checkedAt": "2026-11-26T15:22:04.284Z"
     },
     "sourceState": "LAST_SESSION",
     "frequency": "DAILY",
-    "checkedAt": "2026-11-26T12:23:05.494Z",
+    "checkedAt": "2026-11-26T15:22:38.380Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -13960,7 +13960,7 @@
      "publicDisplay": true,
      "attribution": "Daten: Tiingo",
      "priceSemantics": "ETF_CLOSE_SPLIT_ADJUSTED; juengster Stand: Tiingo-Referenzkurs (tngoLast) ueber IEX",
-     "fetchedAt": "2026-11-26T12:23:05.494Z"
+     "fetchedAt": "2026-11-26T15:22:38.380Z"
     }
    },
    "history": {
@@ -14421,11 +14421,11 @@
     "freshness": {
      "state": "LAST_SESSION",
      "reason": "lastCompletedSession",
-     "checkedAt": "2026-11-26T12:22:35.276Z"
+     "checkedAt": "2026-11-26T15:22:04.284Z"
     },
     "sourceState": "LAST_SESSION",
     "frequency": "DAILY",
-    "checkedAt": "2026-11-26T12:23:05.778Z",
+    "checkedAt": "2026-11-26T15:22:38.707Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -14437,7 +14437,7 @@
      "publicDisplay": true,
      "attribution": "Daten: Tiingo",
      "priceSemantics": "ETF_CLOSE_SPLIT_ADJUSTED; juengster Stand: Tiingo-Referenzkurs (tngoLast) ueber IEX",
-     "fetchedAt": "2026-11-26T12:23:05.778Z"
+     "fetchedAt": "2026-11-26T15:22:38.707Z"
     }
    },
    "history": {
@@ -14898,11 +14898,11 @@
     "freshness": {
      "state": "LAST_SESSION",
      "reason": "lastCompletedSession",
-     "checkedAt": "2026-11-26T12:22:35.276Z"
+     "checkedAt": "2026-11-26T15:22:04.284Z"
     },
     "sourceState": "LAST_SESSION",
     "frequency": "DAILY",
-    "checkedAt": "2026-11-26T12:23:05.985Z",
+    "checkedAt": "2026-11-26T15:22:38.978Z",
     "realtime": false,
     "delayed": false,
     "eod": true,
@@ -14914,7 +14914,7 @@
      "publicDisplay": true,
      "attribution": "Daten: Tiingo",
      "priceSemantics": "ETF_CLOSE_SPLIT_ADJUSTED; juengster Stand: Tiingo-Referenzkurs (tngoLast) ueber IEX",
-     "fetchedAt": "2026-11-26T12:23:05.985Z"
+     "fetchedAt": "2026-11-26T15:22:38.978Z"
     }
    },
    "history": {
