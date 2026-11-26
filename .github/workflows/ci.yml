@@ -1,5 +1,8 @@
 name: CI (Pruefungen je Produkt)
 
+# Zeitplan: core/registry/schedule.json, Takt ueber den Cloudflare-Wecker (RUNBOOK §10); nur das Byte-Budget (vu2-browser-qa, Eintrag ci-budget).
+run-name: ${{ inputs.zeitplan && format('{0} · Takt {1}', github.workflow, inputs.zeitplan) || '' }}
+
 # Buendel `ci` (core/registry/workflow-bundles.json, Plan Neustart §3), Stufe 1: die kleinen Pruefungen.
 # Jede ist ein eigener Job mit unveraendertem Inhalt; der Job `auswahl` entscheidet mit
 # scripts/ci/select-checks.mjs nach scripts/ci/ci-checks.json (Pfade/Zweige wie die frueheren Filter):
@@ -245,6 +248,10 @@ on:
       - 'products/fundamental/producer/**'
   workflow_dispatch:
     inputs:
+      zeitplan:
+        description: 'Vom Cloudflare-Wecker gesetzt (Cron des Termins, core/registry/schedule.json); manuell leer lassen'
+        type: string
+        default: ''
       pruefung:
         description: 'Welche Pruefung (oder alle)'
         type: choice
@@ -329,7 +336,7 @@ jobs:
         id: wahl
         env:
           # Ereignisdaten nur ueber env: (ADR-005)
-          EVENT: ${{ github.event_name }}
+          EVENT: ${{ inputs.zeitplan && 'workflow_dispatch' || github.event_name }}
           REF: ${{ github.ref }}
           PRUEFUNG: ${{ inputs.pruefung }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
@@ -1801,11 +1808,39 @@ jobs:
           path: /tmp/vu2-screenshots
           retention-days: 14
 
+  # --- budget-alarm: taegliche Budget-Pruefung (Eintrag ci-budget in core/registry/schedule.json) --------------------------
+  # Das Byte-Budget (scripts/vu2/resource-budget.mjs) haengt am Datenstand (Logos der Schienen); der Job vu2-browser-qa laeuft nicht auf einem
+  # main-Push, ein Ueberschreiten fiel am 26.11.2026 erst auf PRs auf. Der Wecker startet ihn taeglich nach dem Marktdaten-Refresh; rot oeffnet
+  # ein Issue (Label pipeline-alarm), ein gruener Lauf schliesst es. Nur beim Takt (inputs.zeitplan), nie bei PRs oder manuellen Laeufen.
+  budget-alarm:
+    needs: [auswahl, vu2-browser-qa]
+    if: ${{ always() && inputs.zeitplan != '' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      issues: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: scripts/ci
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Alarm oeffnen, ergaenzen oder schliessen
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ALARM_SOURCE: vu2-budget
+          ALARM_TITLE: 'Byte-Budget der Startseite (home@1440) ueberschritten oder Pruefung gescheitert'
+          RESULT_VU2_BROWSER_QA: ${{ needs.vu2-browser-qa.result }}
+        run: node scripts/ci/pipeline-alarm.mjs
+
   # --- vu2-lifecycle-handoff: vormals vu2-lifecycle-handoff.yml
   vu2-lifecycle-handoff:
     needs: auswahl
     if: >-
-      needs.auswahl.outputs.vu2_lifecycle_handoff == 'true' && (github.event_name == 'workflow_dispatch' || (github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'workstream/vu2-operating-handoff'))
+      needs.auswahl.outputs.vu2_lifecycle_handoff == 'true' && ((github.event_name == 'workflow_dispatch' && !inputs.zeitplan) || (github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'workstream/vu2-operating-handoff'))
     # Die PR-Gruppe der Quelle deckt die Workflow-Gruppe von ci.yml ab (ueberholte PR-Laeufe brechen ab); die Job-Gruppe bleibt.
     runs-on: ubuntu-latest
     timeout-minutes: 10
