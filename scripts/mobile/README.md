@@ -116,3 +116,10 @@ Fokusfalle, Escape und Fokusrückgabe geprüft. Ein echter Browser-Service-Worke
 prüft Offline-Navigation, Logo-Cache und verweigerte neue Datenabrufe.
 Axe-`incomplete` bleibt im Bericht; automatische Kontrastprüfung ersetzt keine
 Geräte-/Screenreader-Abnahme.
+
+## Discover-Startseite: Ziel 3800 ms statt 2500 ms (Befund 26.11.2026)
+
+Gemessen live (Profil 390x844, 1,6 Mbit/s, 150 ms, CPU 4x, Median von 3): `app/discover/` LCP 3,57–3,60 s (2x: 3,46–3,50 s), CLS 0,003–0,006. Der Inhalt steht früh: das vorgerenderte Gerüst der Aktie des Tages und der Kopf der Top 10 sind bei etwa 2,1–2,2 s gemalt (LCP-Kandidat 1). Der Monitor zählt aber den **zweiten** Kandidaten: die echte Startseite (Daten über die langsame Leitung, `vu-fx-ready` ca. 3,7 s, danach `vu-home-drawn`) ersetzt die vorgerenderten Knoten durch neu gebaute, 1,9–2,6 % größere (Schrift Inter statt Ausweichschrift), und ein neuer, größerer Knoten gilt als neuer LCP-Kandidat. Aktuell ist das der Name der Aktie (`H2.dp-long`, 17.952 -> 18.291 px²), davor der Satz im Kopf der Top 10 (10.752 -> 11.036 px²).
+
+Versucht und gemessen: #2398/#2408 (Kopf als statischer Platz im Rahmen `dp-home`), #2421 (kein Neuaufbau bei `vu-fx-ready`, wenn nichts unumgerechnet blieb), #2427 (Kopf als derselbe Knoten): jeder Schritt ist für sich richtig, der LCP bleibt bei 3,6 s, weil dann der nächstgrößte vorgerenderte Knoten (Aktienname) dasselbe Muster zeigt. Eine Lösung wäre, den Namen der Aktie ebenfalls als denselben Knoten in die echte Ansicht zu übernehmen (Featured/Hero), also ein Umbau der Karte der Aktie des Tages, kein Zahlenwert. Bis dahin gilt: Ziel 3800 ms (gemessen 3,6 s plus rund 5 %), der Vergleich mit dem Median der letzten Läufe bleibt der Frühwarner. Ein Alarm blockiert keinen Code-PR.
+
