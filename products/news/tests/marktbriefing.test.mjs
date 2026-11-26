@@ -411,3 +411,24 @@ test('MB-19 Produktfilm oben auf /marktbriefing/: nur wenn die Datei da ist, sel
   assert.ok(p.indexOf('mbfilm') < p.indexOf('mbstory'), 'Film steht vor dem Story-Block');
   assert.ok(fs.existsSync(new URL('../../../landing/marktbriefing/film/marktbriefing-film.mp4', import.meta.url)));
 });
+
+test('MB-20 Recherche-Lauf: Angaben Dritter mit Zitat, Linie, Balken oder Zahlen bekommen je eine Szene; lead stellt sie nach vorn', () => {
+  const inp = inputs();
+  const base = { kicker: 'Test', source: 'Test', published: SESSION, url: 'https://example.com/a' };
+  inp.radar = { items: [
+    { ...base, publisher: 'FRED', title: 'Rendite fällt', lead: true, line: { label: 'Rendite 10 Jahre', unit: '%', digits: 2, points: [['2026-11-01', 4.6], ['2026-11-20', 4.4]] } },
+    { ...base, publisher: 'Goldman Sachs', title: 'Goldman bleibt vorsichtig', quote: 'Wir bleiben vorsichtig.', speaker: 'Strategieteam' },
+    { ...base, publisher: 'EIA', title: 'Ölvorräte', bars: { unit: 'Mio. Barrel', rows: [{ label: 'Rohöl', value: -3.2 }] } },
+    { ...base, publisher: 'Unbekannt AG', title: 'nicht in der Liste' }
+  ] };
+  const b = Engine.buildBriefing(inp);
+  assert.equal(b.cards[1].publisher, 'FRED', 'lead steht direkt hinter dem Überblick');
+  assert.ok(b.cards[1].line && b.cards[1].lead);
+  assert.ok(b.dropped.some((d) => /Quellenliste/.test(d.reason)));
+  const html = Www.page(b, { chrome: Www.chromeFrom(CHROME), archive: [SESSION], depth: 2 });
+  assert.match(html, /id="vorn-1"[\s\S]*class="mb-line"/);
+  assert.match(html, /class="mb-quote">„Wir bleiben vorsichtig\.“/);
+  assert.match(html, /class="mb-xbars"/);
+  assert.ok(html.indexOf('id="vorn-1"') < html.indexOf('id="indizes"'));
+  assert.match(Render.cardSvg(b.cards[1], 1, b.cards.length, b.session), /<polyline|<path/);
+});

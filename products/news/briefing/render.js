@@ -205,6 +205,12 @@
       var lp = card.line.points;
       s += lineChart(lp, PAD, y + 30, 860, bottom - y - 90, { col: C.lime, yfmt: function (v) { return num(v, 0) + " %"; },
         xl: [[0, lp[0][0].slice(8, 10) + "." + lp[0][0].slice(5, 7) + "."], [lp.length - 1, lp[lp.length - 1][0].slice(8, 10) + "." + lp[lp.length - 1][0].slice(5, 7) + ".: " + num(lp[lp.length - 1][1], 1) + " %"]] });
+    } else if (card.line && !card.pairs) {
+      var ln = card.line.points, u = card.line.unit || "";
+      s += '<text x="' + PAD + '" y="' + (y + 10) + '" font-size="24" fill="' + C.mut + '">' + esc(card.line.label || "") + "</text>";
+      s += lineChart(ln, PAD, y + 40, 860, (card.stats ? bottom - y - 330 : bottom - y - 120), { col: C.lime, yfmt: function (v) { return num(v, card.line.digits == null ? 1 : card.line.digits) + (u ? " " + u : ""); },
+        xl: [[0, ln[0][0].slice(0, 10).split("-").reverse().join(".")], [ln.length - 1, ln[ln.length - 1][0].slice(0, 10).split("-").reverse().join(".")]] });
+      if (card.stats) s += statBoxes(card.stats, bottom - 210, 180);
     } else if (card.columns) {
       var ch = card.stats ? bottom - y - 330 : bottom - y - 150;
       s += columnChart(card.columns.rows, y + 40, ch, { unit: card.columns.unit, legend: card.columns.legend });
