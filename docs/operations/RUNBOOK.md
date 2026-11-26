@@ -114,6 +114,7 @@ Alle Zeitpläne stehen in `core/registry/schedule.json` (Plan Neustart §3: ein 
 - Inventar und Abweichungen: `node scripts/core/schedule-registry.mjs` (Vertragstest SZ in `core/tests/schedule-registry.test.mjs`).
 - Wecker eingerichtet? `https://vu-intraday-waker.little-credit-15d3.workers.dev/status` (`schluesselHinterlegt: true`).
 - Wecker neu ausrollen: Workflow „Cloudflare — Intraday-Wecker ausrollen“ (`cloudflare-waker-deploy.yml`). Ein Registerwechsel braucht **kein** Ausrollen.
+- Gruppe `company-intelligence-continuous-production` (26.11.2026): Der tägliche profile-source-Takt (`company-intelligence-profile-source`, jetzt 16:47 UTC, dauert ca. 70–110 min, veröffentlicht nicht) und die Refresh-Takte teilen sich diese Concurrency-Gruppe. Um 03:47 hielt er sie bis 05:24–05:38 besetzt und verdrängte den Werktags-Slot 05:05 (Lauf 45759259394 startete erst 05:24, der 07:00-Takt wurde von der Wache übersprungen). Neue Taktzeiten dürfen nie in 16:47–18:40 UTC auf einen Refresh-Slot treffen (Test SZ-CI-2).
 - Umstellen eines Eintrags: Cron aus dem Workflow und `timer: "waker"` im selben Commit; der Workflow bekommt den Eingang `zeitplan`, `run-name` mit Marke und die Weiche `github.event.schedule || inputs.zeitplan` (SZ-2 prüft das).
 
 ## 11. Daten kommen aus dem Datenzweig (`data/live`)
