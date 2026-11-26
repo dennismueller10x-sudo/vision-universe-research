@@ -3,8 +3,8 @@
  "methodologyVersion": "vu-factor-evidence-2.0.0",
  "derivedFrom": "quant-v2.5.0",
  "changeMethodologyVersion": "vu-change-1.0.0",
- "generatedAt": "2026-11-25T08:28:01.000Z",
- "asOf": "2026-11-24",
+ "generatedAt": "2026-11-26T00:33:25.000Z",
+ "asOf": "2026-11-25",
  "publication": {
   "compositeAllowed": false,
   "rankingAllowed": false,
@@ -55,16 +55,16 @@
     "WEAK": 36.74
    },
    "momentum": {
-    "VERY_STRONG": 82.31,
-    "STRONG": 70.34,
-    "NEUTRAL": 49.58,
-    "WEAK": 31.39
+    "VERY_STRONG": 82.24,
+    "STRONG": 70.55,
+    "NEUTRAL": 49.79,
+    "WEAK": 31.55
    },
    "value": {
-    "VERY_STRONG": 76.68,
-    "STRONG": 66.01,
-    "NEUTRAL": 49.22,
-    "WEAK": 38.14
+    "VERY_STRONG": 76.97,
+    "STRONG": 65.95,
+    "NEUTRAL": 49.29,
+    "WEAK": 38.03
    },
    "profitability": {
     "VERY_STRONG": 81.59,
@@ -74,10 +74,10 @@
    },
    "revisions": null,
    "risk": {
-    "VERY_STRONG": 85.24,
-    "STRONG": 72.61,
-    "NEUTRAL": 48.49,
-    "WEAK": 30.18
+    "VERY_STRONG": 85.23,
+    "STRONG": 72.58,
+    "NEUTRAL": 48.47,
+    "WEAK": 30.21
    }
   },
   "minimumUniverse": 100,
@@ -798,36 +798,30 @@
    "2026-11-19",
    "2026-11-20",
    "2026-11-23",
-   "2026-11-24"
+   "2026-11-24",
+   "2026-11-25"
   ],
   "velocityWindowDays": 30,
   "velocityToleranceDays": 10,
   "scoreMomentumOpen": true,
-  "recomputationDrift": {
-   "asOf": "2026-11-24",
-   "publishedHash": "abfba863794d6477",
-   "recomputedHash": "5f110deff0714799",
-   "rowsDiffering": 4210,
-   "rowsTotal": 5927,
-   "note": "Die veroeffentlichte Beobachtung bleibt unveraendert. Sie wurde an diesem Stichtag veroeffentlicht und wird nicht durch eine heutige Neuberechnung ersetzt."
-  }
+  "recomputationDrift": null
  },
  "scope": "CANONICAL_PRODUCT_UNIVERSE",
  "source": {
   "priceFactors": {
    "engine": "market-factors-1.0.0",
-   "generatedAt": "2026-11-25T06:18:52.782Z",
+   "generatedAt": "2026-11-25T23:31:45.212Z",
    "securities": 5935,
    "benchmark": {
     "id": "SPY",
-    "bars": 8514,
-    "last": "2026-11-24",
+    "bars": 8515,
+    "last": "2026-11-25",
     "returnBasis": "SPLIT_ADJUSTED_PRICE",
     "priceSource": "RECONSTRUCTED_FROM_SPLIT_FACTOR",
     "adjustmentStatus": "adjusted",
     "adjustmentClaim": null,
     "maxLagSessions": 1,
-    "newestSecurityDate": "2026-11-24",
+    "newestSecurityDate": "2026-11-25",
     "lagBehindNewestSessions": 0,
     "securitiesWithoutRelativeStrength": 0,
     "state": "CURRENT"
@@ -839,12 +833,12 @@
   },
   "peerTaxonomy": {
    "version": "sic-peer-taxonomy-1.0.0",
-   "rows": 5477,
+   "rows": 5476,
    "snapshotMode": "CURRENT_ONLY"
   },
   "quotes": {
    "source": "technical-product-artifact-1.0.0",
-   "tickers": 5975
+   "tickers": 5976
   },
   "productUniverse": {
    "file": "quant/data/market/security-master/eligibility.json",
@@ -875,14 +869,14 @@
  "counts": {
   "productUniverse": 5985,
   "priceFactorSecurities": 5935,
-  "priceFactorRowsOutsideProductUniverse": 18,
+  "priceFactorRowsOutsideProductUniverse": 16,
   "notAnEquityListing": 8,
   "identityQuarantined": 16,
   "published": 5927,
   "withFundamentals": 5338,
   "withMarketCap": 3945,
-  "quotesFromPublishedSeries": 536,
-  "withMarketCapFromPublishedSeries": 199
+  "quotesFromPublishedSeries": 525,
+  "withMarketCapFromPublishedSeries": 190
  },
  "factorStates": {
   "quality": {
@@ -923,9 +917,9 @@
  },
  "reasonCounts": {
   "BLOCKED_EXTERNAL": 5927,
-  "INSUFFICIENT_COMPONENTS": 3339,
-  "INPUT_NOT_MATERIALIZED": 3516,
-  "INSUFFICIENT_WEIGHTED_COVERAGE": 1765,
+  "INSUFFICIENT_COMPONENTS": 3328,
+  "INPUT_NOT_MATERIALIZED": 3514,
+  "INSUFFICIENT_WEIGHTED_COVERAGE": 1778,
   "REPORTING_CURRENCY_NOT_LISTING_CURRENCY": 359,
   "NOT_IN_COMMON_STOCK_RANKING": 4320,
   "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING": 145,
@@ -945,10 +939,10 @@
   "growth:operatingMarginExpansion3y": 3385,
   "growth:revenueGrowthAcceleration": 4064,
   "momentum:priceReturn12m1m": 4864,
-  "momentum:priceReturn6m": 5061,
-  "momentum:priceReturn3m": 5177,
+  "momentum:priceReturn6m": 5074,
+  "momentum:priceReturn3m": 5178,
   "momentum:distanceTo52wHigh": 4864,
-  "momentum:distanceToSma200": 4939,
+  "momentum:distanceToSma200": 4952,
   "value:fcfYield": 2129,
   "value:earningsYield": 2724,
   "value:ebitdaYield": 965,
@@ -963,7 +957,7 @@
   "risk:realizedVolatility252d": 4864,
   "risk:downsideVolatility252d": 4866,
   "risk:maxDrawdown252d": 4864,
-  "risk:beta252d": 4875,
+  "risk:beta252d": 4876,
   "INDUSTRY:quality:equityToAssets": 730,
   "INDUSTRY:quality:roaStability5y": 684,
   "INDUSTRY:quality:positiveEarningsYears": 691,
@@ -1048,6 +1042,6 @@
   "SHARE_COUNT_SCALE_SUSPECT": 4,
   "NOT_AN_EQUITY_LISTING:PREFERRED": 8
  },
- "runtimeMs": 22516,
- "contentHash": "e16d309fe01f3f07"
+ "runtimeMs": 26909,
+ "contentHash": "b1c11aa5f5e21e74"
 }

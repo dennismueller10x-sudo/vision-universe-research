@@ -3,8 +3,8 @@
  "engineVersion": "vu-setup-1.0.0",
  "mappingVersion": "setup-mapping-1.0.0",
  "methodologyVersion": "setup-state-v1.0.0",
- "generatedAt": "2026-11-25T08:28:19.000Z",
- "asOf": "2026-11-24",
+ "generatedAt": "2026-11-26T00:33:46.000Z",
+ "asOf": "2026-11-25",
  "approval": {
   "state": "APPROVED",
   "approvedBy": "info@visionuniverse.de",
@@ -323,25 +323,25 @@
    "predicateHash": null
   }
  ],
- "universe": 5439,
- "observed": 5439,
+ "universe": 5451,
+ "observed": 5451,
  "unavailable": 0,
  "stateCounts": {
-  "NO_SETUP": 4539,
-  "WATCH": 440,
-  "SETUP_FORMING": 449,
-  "CONFIRMED": 11,
+  "NO_SETUP": 4512,
+  "WATCH": 457,
+  "SETUP_FORMING": 472,
+  "CONFIRMED": 10,
   "ACTIVE": 0,
   "RISK_RISING": 0,
   "INVALIDATED": 0,
   "EXIT": 0
  },
  "ruleCounts": {
-  "setup.forming.complete-setup-awaiting-trigger": 449,
-  "setup.none.fallback": 4539,
-  "setup.watch.bullish-trend": 309,
-  "setup.confirmed.structure-trend-volume": 11,
-  "setup.watch.confirmed-structure-near-high": 131
+  "setup.forming.complete-setup-awaiting-trigger": 472,
+  "setup.none.fallback": 4512,
+  "setup.watch.bullish-trend": 322,
+  "setup.watch.confirmed-structure-near-high": 135,
+  "setup.confirmed.structure-trend-volume": 10
  },
  "pathTier": {
   "states": [
@@ -400,14 +400,15 @@
    "2026-11-19",
    "2026-11-20",
    "2026-11-23",
-   "2026-11-24"
+   "2026-11-24",
+   "2026-11-25"
   ],
   "minimumRequired": 2
  },
  "inputs": {
   "technical": {
    "artifact": "technical-product-artifact-1.0.0",
-   "instruments": 5439
+   "instruments": 5451
   }
  },
  "shards": [
@@ -1042,25 +1043,15 @@
   "ZZ",
   "Z_"
  ],
- "observationDrift": {
-  "asOf": "2026-11-24",
-  "publishedHash": "ae46ff0e7ad4570618bdc1a209b95d89",
-  "recomputedHash": "297007ef49461d1dfd3987b29dd20930",
-  "rowsPublished": 5402,
-  "rowsToday": 5401,
-  "rowsAdded": 0,
-  "rowsChanged": 1,
-  "addedOnly": false,
-  "columnsDiffer": false,
-  "note": "Die veroeffentlichte Beobachtung bleibt unveraendert. Sie wurde an diesem Stichtag veroeffentlicht und wird nicht durch eine heutige Neuberechnung ersetzt - auch nicht durch eine, die nur Zeilen hinzufuegen wuerde."
- },
+ "observationDrift": null,
  "staleBundles": {
-  "count": 38,
-  "cutoff": "2026-11-24",
+  "count": 49,
+  "cutoff": "2026-11-25",
   "rule": "Bundles mit dataCutoff vor dem Stichtag gehen nicht in die Beobachtung dieses Stichtags ein.",
   "byDataCutoff": {
    "2026-10-23": 4,
    "2026-11-23": 2,
+   "2026-11-24": 11,
    "2026-10-22": 1,
    "2026-11-13": 2,
    "2026-11-20": 4,
@@ -1091,6 +1082,14 @@
     "dataCutoff": "2026-11-23"
    },
    {
+    "ticker": "AMZE",
+    "dataCutoff": "2026-11-24"
+   },
+   {
+    "ticker": "ATCH",
+    "dataCutoff": "2026-11-24"
+   },
+   {
     "ticker": "ATII",
     "dataCutoff": "2026-10-22"
    },
@@ -1111,6 +1110,10 @@
     "dataCutoff": "2026-11-17"
    },
    {
+    "ticker": "CNO-P-A",
+    "dataCutoff": "2026-11-24"
+   },
+   {
     "ticker": "CSAN",
     "dataCutoff": "2026-09-18"
    },
@@ -1123,8 +1126,24 @@
     "dataCutoff": "2026-10-23"
    },
    {
+    "ticker": "F-P-B",
+    "dataCutoff": "2026-11-24"
+   },
+   {
+    "ticker": "F-P-D",
+    "dataCutoff": "2026-11-24"
+   },
+   {
+    "ticker": "FNGR",
+    "dataCutoff": "2026-11-24"
+   },
+   {
     "ticker": "GETY",
     "dataCutoff": "2026-10-21"
+   },
+   {
+    "ticker": "GL-P-D",
+    "dataCutoff": "2026-11-24"
    },
    {
     "ticker": "GROM",
@@ -1169,6 +1188,10 @@
    {
     "ticker": "NWE",
     "dataCutoff": "2026-11-20"
+   },
+   {
+    "ticker": "PASG",
+    "dataCutoff": "2026-11-24"
    },
    {
     "ticker": "PERF",
@@ -1229,6 +1252,18 @@
    {
     "ticker": "WPRT",
     "dataCutoff": "2026-10-23"
+   },
+   {
+    "ticker": "WRB-P-F",
+    "dataCutoff": "2026-11-24"
+   },
+   {
+    "ticker": "WRB-P-G",
+    "dataCutoff": "2026-11-24"
+   },
+   {
+    "ticker": "WRB-P-H",
+    "dataCutoff": "2026-11-24"
    },
    {
     "ticker": "YHNA",
