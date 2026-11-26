@@ -177,6 +177,10 @@ jobs:
           node scripts/discover/verify-discover-data.mjs
           node --test discover/tests/names.test.mjs
           git add -A discover/data
+          # Stammfolge (Steuerung 25.11.2026, Vertrag MS): das Survivorship-Inventar zaehlt die inaktiven Zeilen dieses
+          # Stamms; nur der Stammabschnitt wird neu gebaut (ohne R2), sonst ist quant/tests/survivorship-control nach 6 h rot.
+          node scripts/quant/build-survivorship-control.mjs --master-only
+          git add quant/data/product/survivorship-control-v1.json
           stand=$(node -e 'const s=require("./quant/data/market/security-master/summary.json");console.log(s.today+" "+s.version)')
           git commit -q -m "Security Master + Firmennamen: Stand ${stand} (woechentliche Aktualisierung)"
           scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"

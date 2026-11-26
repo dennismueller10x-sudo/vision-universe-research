@@ -33,6 +33,7 @@ Geltende Vertragstests (alle in Core-CI, laufen auf jedem PR):
 | `core/tests/schedule-registry.test.mjs` (SZ) | ein Zeitgeber: jeder Zeitplan steht in `core/registry/schedule.json`; `timer: waker`-Einträge haben keinen Cron im Workflow, aber Eingang `zeitplan`, Marke im `run-name` und die Zeitplan-Weiche |
 | `core/tests/exchange-registry.test.mjs` (EX) | eine Quelle für US-Handelsplätze: `core/exchanges.js` (regulär, MIC, Familie/SEC-Schreibweise, OTC); Stamm, Company Master, Klassifikation, Frische, Expansion und Freigabeliste lesen daraus; keine neue Börsentabelle außerhalb (benannte Ausnahmen) |
 | `core/tests/name-discover-follow.test.mjs` (NF) | jeder Workflow-Job, der `company-names.json` committet, baut Discover mit dem Erzeuger neu (mit Nachprüfung) und committet `discover/data` mit |
+| `core/tests/master-survivorship-follow.test.mjs` (MS) | jeder Workflow-Job, der `us-security-master.json` committet, baut den Stammabschnitt des Survivorship-Inventars neu (`build-survivorship-control.mjs --master-only`) und committet ihn mit |
 
 Was von den Pfad-Gates bleibt:
 
