@@ -253,7 +253,8 @@
     });
 
     var bySymbol = {};
-    Object.keys(listings).forEach(function (k) { var s = listings[k].raw.symbol; (bySymbol[s] = bySymbol[s] || []).push(k); });
+    // Sortiert, damit die Ausgabe nicht an der Reihenfolge der Eingabezeilen haengt (Tiingo liefert sie je Abruf anders; der Neubau in der CI nicht).
+    Object.keys(listings).sort().forEach(function (k) { var s = listings[k].raw.symbol; (bySymbol[s] = bySymbol[s] || []).push(k); });
     Object.keys(bySymbol).forEach(function (s) { if (bySymbol[s].length > 1) dupTickers[s] = bySymbol[s]; });
 
     var funds = {}, out = [];

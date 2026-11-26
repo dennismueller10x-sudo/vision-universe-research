@@ -39,7 +39,10 @@
   // Themen Dritter: nur Herausgeber aus dieser Liste (Primärquellen, Agenturen, seriöse Medien, öffentliches Research).
   var THIRD_SOURCES = ["Reuters", "Bloomberg", "AP", "dpa", "CNBC", "Financial Times", "Wall Street Journal", "Handelsblatt",
     "Federal Reserve", "EZB", "BLS", "Census Bureau", "BEA", "Destatis", "Eurostat", "CME FedWatch", "SEC",
-    "Bank of America", "Goldman Sachs", "JPMorgan", "Morgan Stanley", "UBS", "FactSet", "Check Point", "Unternehmensmeldung"];
+    "Bank of America", "Goldman Sachs", "JPMorgan", "Morgan Stanley", "UBS", "FactSet", "Check Point", "Unternehmensmeldung",
+    // Recherche-Lauf (Owner 25.11.2026): Banken, Researchhäuser, Institutionen, X (Beitrag mit Link, Konto im Feld source)
+    "Citi", "Deutsche Bank", "Commerzbank", "Barclays", "BlackRock", "Wells Fargo", "Apollo", "Deutsche Bundesbank", "IWF", "OECD",
+    "EIA", "IEA", "OPEC", "ifo", "ZEW", "FRED", "Treasury", "Bloomberg Economics", "Barron's", "MarketWatch", "X"];
   var MAX_PER_SOURCE = 2;
   // Ausblick (Owner 22.11.2026): Termine der nächsten Handelstage. Arten mit Anzeigename; jede Angabe braucht Quelle und https-Link.
   var AGENDA_KINDS = { zahlen: "Quartalszahlen", daten: "Wirtschaftsdaten", notenbank: "Notenbank", dividende: "Dividende", markt: "Börsenkalender" };
@@ -408,6 +411,7 @@
       per[it.publisher] = (per[it.publisher] || 0) + 1;
       kept.push({ id: "third-" + (kept.length + 1), type: "THIRD", kicker: it.kicker || "Thema des Tages", title: it.title, sub: it.sub || null,
         columns: it.columns || null, bars: it.bars || null, quote: it.quote || null, stats: it.stats || null,
+        line: it.line && it.line.points && it.line.points.length > 1 ? it.line : null, speaker: it.speaker || null, lead: it.lead === true,
         source: it.source + " · " + deDateY(it.published), url: it.url, publisher: it.publisher });
     });
     return { kept: kept, dropped: dropped };
@@ -482,6 +486,9 @@
       cardPicture(inp)
     ].filter(Boolean);
     third.kept.slice(4).forEach(function (c) { cards.splice(cards.length - 1, 0, c); });
+    // Aufbau je Tag: Karten mit lead stehen direkt hinter dem Überblick (Makro-Tag, Bank-Tag ...).
+    var leads = cards.filter(function (c) { return c.lead; });
+    if (leads.length) { cards = cards.filter(function (c) { return !c.lead; }); cards.splice.apply(cards, [1, 0].concat(leads)); }
     var agenda = cardAgenda(inp.radar, session);
     if (agenda.card) cards.push(agenda.card);
     out.cards = cards;

@@ -222,6 +222,9 @@ jobs:
             # Erweiterung: Mitgliedschaft und Wertpapierstamm desselben Laufs (Stamm-Gate oben bestanden)
             for f in us-security-master.json summary.json reconciliation.json backfill-estimate.json; do cp "$RUNNER_TEMP/erw/next1/$f" quant/data/market/security-master/; done
             PUSH_OWNED_PATHS="$PUSH_OWNED_PATHS quant/data/market/scale/universe-FULL_UNIVERSE.json quant/data/market/security-master/us-security-master.json quant/data/market/security-master/summary.json quant/data/market/security-master/reconciliation.json quant/data/market/security-master/backfill-estimate.json"
+            # Stammfolge (Steuerung 25.11.2026, Vertrag MS): Survivorship-Inventar zum neuen Stamm, nur der Stammabschnitt
+            node scripts/quant/build-survivorship-control.mjs --master-only
+            PUSH_OWNED_PATHS="$PUSH_OWNED_PATHS quant/data/product/survivorship-control-v1.json"
           fi
           git config user.name "vision-universe-bot"
           git config user.email "actions@users.noreply.github.com"
