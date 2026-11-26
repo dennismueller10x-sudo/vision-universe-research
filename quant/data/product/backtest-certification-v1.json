@@ -1,7 +1,7 @@
 {
  "schemaVersion": "backtest-certification-1.0.0",
- "generatedAt": "2026-11-25T08:49:06.698Z",
- "asOf": "2026-11-25",
+ "generatedAt": "2026-11-26T00:58:26.101Z",
+ "asOf": "2026-11-26",
  "methodology": "backtest-certification-1.1.0",
  "kinds": [
   {
@@ -334,7 +334,7 @@
        "label": "Unabhängigkeit der Fälle",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "1845 Wochen, 142 Quartale, effektiv ≈ 20887 unabhängige Fälle",
+       "value": "1845 Wochen, 142 Quartale, effektiv ≈ 20876 unabhängige Fälle",
        "required": null,
        "reason": null
       },
@@ -401,8 +401,8 @@
       "uniquePeriods": 1845,
       "independentClusters": 142,
       "clusterUnit": "Quartal",
-      "effectiveN": 20887,
-      "designEffect": 4.19
+      "effectiveN": 20876,
+      "designEffect": 4.2
      },
      "returnType": "TOTAL_RETURN",
      "baseRate": {
@@ -522,7 +522,7 @@
        "label": "Unabhängigkeit der Fälle",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "1846 Wochen, 142 Quartale, effektiv ≈ 25257 unabhängige Fälle",
+       "value": "1846 Wochen, 142 Quartale, effektiv ≈ 25261 unabhängige Fälle",
        "required": null,
        "reason": null
       },
@@ -610,13 +610,13 @@
       "uniquePeriods": 1846,
       "independentClusters": 142,
       "clusterUnit": "Quartal",
-      "effectiveN": 25257,
+      "effectiveN": 25261,
       "designEffect": 3.45
      },
      "returnType": "TOTAL_RETURN",
      "baseRate": {
-      "positiveShare": 0.5682,
-      "base": 0.571,
+      "positiveShare": 0.5683,
+      "base": 0.5711,
       "delta": -0.0028,
       "ci": [
        -0.0085,
@@ -731,7 +731,7 @@
        "label": "Unabhängigkeit der Fälle",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "1845 Wochen, 142 Quartale, effektiv ≈ 27819 unabhängige Fälle",
+       "value": "1845 Wochen, 142 Quartale, effektiv ≈ 27744 unabhängige Fälle",
        "required": null,
        "reason": null
       },
@@ -805,8 +805,8 @@
       "uniquePeriods": 1845,
       "independentClusters": 142,
       "clusterUnit": "Quartal",
-      "effectiveN": 27819,
-      "designEffect": 3.05
+      "effectiveN": 27744,
+      "designEffect": 3.06
      },
      "returnType": "TOTAL_RETURN",
      "baseRate": {
@@ -814,8 +814,8 @@
       "base": 0.5693,
       "delta": -0.0117,
       "ci": [
-       -0.0172,
-       -0.0063
+       -0.0171,
+       -0.0062
       ]
      }
     },
@@ -926,7 +926,7 @@
        "label": "Unabhängigkeit der Fälle",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "1844 Wochen, 142 Quartale, effektiv ≈ 26919 unabhängige Fälle",
+       "value": "1844 Wochen, 142 Quartale, effektiv ≈ 26912 unabhängige Fälle",
        "required": null,
        "reason": null
       },
@@ -1021,7 +1021,7 @@
       "uniquePeriods": 1844,
       "independentClusters": 142,
       "clusterUnit": "Quartal",
-      "effectiveN": 26919,
+      "effectiveN": 26912,
       "designEffect": 3.13
      },
      "returnType": "TOTAL_RETURN",
@@ -1142,7 +1142,7 @@
        "label": "Unabhängigkeit der Fälle",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "1839 Wochen, 142 Quartale, effektiv ≈ 11447 unabhängige Fälle",
+       "value": "1839 Wochen, 142 Quartale, effektiv ≈ 11462 unabhängige Fälle",
        "required": null,
        "reason": null
       },
@@ -1230,13 +1230,13 @@
       "uniquePeriods": 1839,
       "independentClusters": 142,
       "clusterUnit": "Quartal",
-      "effectiveN": 11447,
-      "designEffect": 4.85
+      "effectiveN": 11462,
+      "designEffect": 4.84
      },
      "returnType": "TOTAL_RETURN",
      "baseRate": {
-      "positiveShare": 0.5818,
-      "base": 0.5681,
+      "positiveShare": 0.5817,
+      "base": 0.568,
       "delta": 0.0137,
       "ci": [
        0.0052,
@@ -1247,7 +1247,7 @@
    ],
    "source": {
     "asOf": "2026-11-27",
-    "generatedAt": "2026-11-25T08:46:33.012Z",
+    "generatedAt": "2026-11-26T00:55:18.663Z",
     "returnType": "TOTAL_RETURN",
     "studySchemaVersion": "signal-backtest-study-2.0.0",
     "studyEngineVersion": "signal-backtest-2.0.0",
@@ -1333,7 +1333,7 @@
      "label": "Stände unverändert (contentHash)",
      "category": "HARD",
      "state": "PASS",
-     "value": "41 von 41 geprüft",
+     "value": "42 von 42 geprüft",
      "required": null,
      "reason": null
     },
@@ -1351,7 +1351,7 @@
      "label": "veröffentlichte Stichtage",
      "category": "HISTORY",
      "state": "FAIL",
-     "value": 41,
+     "value": 42,
      "required": 120,
      "reason": "SETUP_HISTORY_TOO_SHORT"
     },
@@ -1360,7 +1360,7 @@
      "label": "Spanne der Historie",
      "category": "HISTORY",
      "state": "FAIL",
-     "value": "75 Tage",
+     "value": "76 Tage",
      "required": "180 Tage",
      "reason": "SETUP_HISTORY_SPAN_TOO_SHORT"
     },
@@ -1444,14 +1444,14 @@
      "id": "historyDates",
      "category": "HISTORY",
      "reason": "SETUP_HISTORY_TOO_SHORT",
-     "value": 41,
+     "value": 42,
      "required": 120
     },
     {
      "id": "historySpan",
      "category": "HISTORY",
      "reason": "SETUP_HISTORY_SPAN_TOO_SHORT",
-     "value": "75 Tage",
+     "value": "76 Tage",
      "required": "180 Tage"
     },
     {
@@ -1499,7 +1499,7 @@
    ],
    "eta": {
     "historyDates": {
-     "remaining": 79,
+     "remaining": 78,
      "date": "2027-03-15"
     },
     "firstCompletedM6": "2027-03-26"
@@ -1536,19 +1536,19 @@
     }
    },
    "progress": {
-    "historyDates": 41,
-    "spanDays": 75,
+    "historyDates": 42,
+    "spanDays": 76,
     "transitions": {
-     "SETUP_CONFIRMED": 275,
-     "SETUP_NEW": 3352,
-     "SETUP_WEAKENED": 3954
+     "SETUP_CONFIRMED": 277,
+     "SETUP_NEW": 3422,
+     "SETUP_WEAKENED": 4006
     },
     "completedM6": 0,
-    "contractTradesCompleted": 2797
+    "contractTradesCompleted": 2850
    },
    "replay": {
     "role": "PIT-Nachweis der Engine (rekonstruiert, keine Ergebnisquelle)",
-    "parity": "6231/6231",
+    "parity": "6381/6381",
     "mismatches": 0
    }
   },
@@ -1589,7 +1589,7 @@
      "label": "Monate mit Faktor-Snapshots",
      "category": "HISTORY",
      "state": "FAIL",
-     "value": "3 (41 Stände seit 2026-09-23)",
+     "value": "3 (42 Stände seit 2026-09-23)",
      "required": 24,
      "reason": "FACTOR_HISTORY_TOO_SHORT"
     },
@@ -1643,7 +1643,7 @@
      "id": "factorHistory",
      "category": "HISTORY",
      "reason": "FACTOR_HISTORY_TOO_SHORT",
-     "value": "3 (41 Stände seit 2026-09-23)",
+     "value": "3 (42 Stände seit 2026-09-23)",
      "required": 24
     }
    ],
@@ -1655,7 +1655,7 @@
      "latest": "2026-11-21",
      "maxGapDays": 11,
      "medianGapDays": 7,
-     "staleDays": 4
+     "staleDays": 5
     },
     "NDX": {
      "snapshots": 10,
@@ -1664,7 +1664,7 @@
      "latest": "2026-11-21",
      "maxGapDays": 11,
      "medianGapDays": 7,
-     "staleDays": 4
+     "staleDays": 5
     },
     "DJIA": {
      "snapshots": 10,
@@ -1673,15 +1673,15 @@
      "latest": "2026-11-21",
      "maxGapDays": 11,
      "medianGapDays": 7,
-     "staleDays": 4
+     "staleDays": 5
     }
    },
    "factor": {
     "version": "vu-factor-evidence-2.0.0",
-    "snapshots": 41,
+    "snapshots": 42,
     "months": 3,
     "earliest": "2026-09-23",
-    "latest": "2026-11-24",
+    "latest": "2026-11-25",
     "maxGapDays": 3,
     "medianGapDays": 1,
     "staleDays": 1
@@ -1693,7 +1693,7 @@
     },
     "factor": {
      "remaining": 21,
-     "date": "2028-08-24"
+     "date": "2028-08-25"
     }
    }
   },
@@ -1793,7 +1793,7 @@
    "eta": {
     "factor": {
      "remaining": 21,
-     "date": "2028-08-24"
+     "date": "2028-08-25"
     }
    }
   }
@@ -1818,15 +1818,15 @@
    "inMainStudy": false,
    "meaning": "Kontrolle: historische Nicht-Überlebende sind in der Studie enthalten. Nur dann ist der Überlebenden-Effekt kontrolliert."
   },
-  "DELISTED_IDENTIFIED": 4266,
-  "DELISTED_WITH_HISTORY": 3360,
+  "DELISTED_IDENTIFIED": 4272,
+  "DELISTED_WITH_HISTORY": 3364,
   "DELISTED_BACKTEST_ELIGIBLE": 3057,
-  "tickerReuseAmbiguous": 536,
+  "tickerReuseAmbiguous": 537,
   "securityMasterClasses": {
-   "A": 35,
+   "A": 39,
    "B": 0,
-   "C": 291,
-   "D": 198,
+   "C": 292,
+   "D": 199,
    "E": 0,
    "F": 14
   },

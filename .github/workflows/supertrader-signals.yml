@@ -93,9 +93,14 @@ jobs:
         env:
           SUPERTRADER_INTRADAY_CACHE: ${{ runner.temp }}/supertrader-intraday.json
         run: node scripts/supertrader/build.mjs
+      # Danach die Seitenhuellen aus dem Erzeuger neu schreiben (--pages-only: rechnet nichts, schreibt nichts unter data/):
+      # ein neu ausgewiesener Titel verliert den Preload auf seine Discover-Reihe, die Huelle supertrader/stock/<SYM>/index.html
+      # muss dazu passen (Test seitenhuellen-drift; Lauf 45604427498, 25.11.2026, LXFR: ohne diesen Schritt rot vor dem Commit).
       - name: Entfallene Titel ausweisen (fail closed, keine Marktdaten)
         if: env.MODE == 'prune-dead-refs'
-        run: node scripts/supertrader/prune-dead-refs.mjs
+        run: |
+          node scripts/supertrader/prune-dead-refs.mjs
+          node scripts/supertrader/build.mjs --pages-only
       - name: Integritaet vor dem Commit (Lifecycle, Gates, Historie)
         run: node --test "scripts/supertrader/tests/*.test.mjs"
       - name: Commit

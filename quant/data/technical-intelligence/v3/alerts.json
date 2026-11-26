@@ -1,19 +1,24 @@
 {
  "schemaVersion": "vu-ti-api-3.0.0",
- "generatedAt": "2026-11-25T06:30:14.382Z",
+ "generatedAt": "2026-11-25T11:37:05.422Z",
  "previousIndex": true,
  "suppressed": null,
- "skippedUnchanged": 4831,
+ "skippedUnchanged": 4826,
  "events": [
   {
-   "type": "ENTRY_ZONE_REACHED",
-   "text": "Kurs hat die Einstiegszone erreicht",
-   "symbol": "BRNX",
-   "asOf": "2026-11-23",
-   "levels": [
-    0.9,
-    1.25
-   ]
+   "type": "BREAKOUT_CONFIRMED",
+   "text": "Bestätigungsniveau per Schlusskurs überwunden",
+   "symbol": "AAPL",
+   "asOf": "2026-11-24",
+   "level": 351.73
+  },
+  {
+   "type": "SCENARIO_CHANGED",
+   "text": "Hauptszenario hat die Richtung gewechselt",
+   "symbol": "NVDA",
+   "asOf": "2026-11-24",
+   "from": "BULLISH",
+   "to": "BEARISH"
   }
  ]
 }

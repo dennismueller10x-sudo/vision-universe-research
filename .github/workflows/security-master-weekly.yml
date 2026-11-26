@@ -11,8 +11,10 @@ name: Security Master + Firmennamen (wöchentlich)
 # (normale Grenzen, KEIN Versionswechsel, KEINE Sonderfreigabe); jeder andere Ausgang ist rot und oeffnet den Alarm.
 # Grund: Die SF8-Eingangspruefung sperrt einen Stamm aelter als 60 Tage (input-gate.mjs, master: 60).
 #
-# Nicht Teil dieses Laufs: die Produkteignung (eligibility.json, Universumsentscheidung), neue Listings (Tiingo-2.0-
-# Veroeffentlichungspfad) und ein Discover-Neubau (macht der Nachtlauf).
+# Nicht Teil dieses Laufs: die Produkteignung (eligibility.json, Universumsentscheidung) und neue Listings (Tiingo-2.0-
+# Veroeffentlichungspfad). Discover baut dieser Lauf nach dem Namens-Commit mit dem Erzeuger neu (Steuerung 25.11.2026):
+# Lauf vom 25.11. (BKHA -> Vesicor) liess Suchindex und Seiten bis zum Nachtlauf beim alten Namen, NM3 war auf jedem PR rot.
+# Vertrag: core/tests/name-discover-follow.test.mjs (NF).
 #
 # Ablauf (fail closed): Engine-Tests → Stamm mit --require-provider (Exit 3 ohne Anbieterliste) → Namen (SEC) →
 # Uebernahme-Gate (Plausibilitaetsgrenzen, Identitaet, Versionssprung; Exit 4) → Artefakt-Tests → CI-Artefakt →
@@ -128,10 +130,10 @@ jobs:
             cp "$NEXT/$f" "quant/data/market/security-master/$f"
           done
           node --test quant/tests/us-security-master-artefacts.test.mjs quant/tests/company-name-coverage.test.mjs quant/tests/universe-source.test.mjs
-          # Namensanzeige (NM1-NM3): Dieser Lauf baut Discover nicht neu (macht der Marktdaten-Refresh). Die ausgelieferten
-          # Discover-Seiten werden deshalb gegen den COMMITTETEN Namensstand geprueft, zu dem sie gebaut wurden; gegen den
-          # neuen Stand scheitert der Vergleich bei jeder Umfirmierung (Lauf 41177449137: ATTT). Die neuen Namen pruefen
-          # company-name-coverage oben und das Gate (G9); der naechste Discover-Neubau prueft sie gegen die Seiten.
+          # Namensanzeige (NM1-NM3): Hier liegen noch die Discover-Seiten zum COMMITTETEN Namensstand; gegen den neuen Stand
+          # scheitert der Vergleich bei jeder Umfirmierung (Lauf 41177449137: ATTT). Deshalb hier gegen den alten Stand; die
+          # neuen Namen pruefen company-name-coverage oben und das Gate (G9), und der Commit-Schritt baut Discover mit dem
+          # neuen Stand neu und prueft NM1-NM3 dann gegen ihn.
           N=quant/data/market/security-master
           cp "$N/company-names.json" "$RUNNER_TEMP/names-next.json"
           git show "HEAD:$N/company-names.json" > "$N/company-names.json"
@@ -159,13 +161,22 @@ jobs:
         if: ((github.event_name == 'schedule' || inputs.zeitplan != '') || inputs.commit == true) && steps.gate.outputs.decision == 'COMMIT'
         env:
           PUSH_OWNED_PATHS: quant/data/market/security-master/us-security-master.json quant/data/market/security-master/summary.json quant/data/market/security-master/reconciliation.json quant/data/market/security-master/backfill-estimate.json quant/data/market/security-master/company-names.json quant/data/market/security-master/company-names-summary.json
+          # wie long-series.yml: nach jedem Neuaufsetzen baut push-with-retry.sh Discover aus dem zusammengefuehrten Baum neu
+          PUSH_REGENERATE_PATHS: "discover/data/ !discover/data/europe/ !discover/data/europe-esef/"
+          PUSH_REGENERATE: "node scripts/discover/build-discover-data.mjs && node scripts/discover/verify-discover-data.mjs"
         run: |
           set -euo pipefail
           git config user.name "vision-universe-bot"
           git config user.email "actions@users.noreply.github.com"
-          # genau die sechs Dateien der beiden Erzeuger; eligibility.json gehoert einem anderen Erzeuger
+          # die sechs Dateien der beiden Erzeuger; eligibility.json gehoert einem anderen Erzeuger
           git add $PUSH_OWNED_PATHS
           if git diff --cached --quiet; then echo "unveraendert"; exit 0; fi
+          # Discover folgt dem neuen Namensstand (Suchindex, Aktienseiten): derselbe Erzeuger und dieselbe Nachpruefung
+          # wie im Marktdatenlauf, dann NM1-NM3 gegen den neuen Stand. Europa hat einen eigenen Erzeuger.
+          node scripts/discover/build-discover-data.mjs
+          node scripts/discover/verify-discover-data.mjs
+          node --test discover/tests/names.test.mjs
+          git add -A discover/data
           stand=$(node -e 'const s=require("./quant/data/market/security-master/summary.json");console.log(s.today+" "+s.version)')
           git commit -q -m "Security Master + Firmennamen: Stand ${stand} (woechentliche Aktualisierung)"
           scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
