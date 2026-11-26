@@ -1741,6 +1741,14 @@ jobs:
           for pack in "$RUNNER_TEMP"/quant2-site/quant/app/pack-*.js; do
             /tmp/vu2-qa/node_modules/.bin/esbuild "$pack" --minify-whitespace --charset=utf8 --legal-comments=inline --tree-shaking=false --allow-overwrite --outfile="$pack"
           done
+      # Wie pages-release.yml ("Minify remaining release scripts and styles"): die Seite wird verkleinert ausgeliefert, also
+      # misst auch das Byte-Budget (scripts/vu2/resource-budget.mjs) die verkleinerten Dateien. Ohne diesen Schritt zaehlte die
+      # Pruefung ca. 70 KB Leerraum und Kommentare der Stile (home 1440: app.css, discover.css, quant.css, vu-ui.css,
+      # site-navigation.css) mit, die nie ausgeliefert werden. Die Grenzen selbst bleiben unveraendert.
+      - name: Minify remaining release scripts and styles (wie pages-release)
+        env:
+          ESBUILD_PATH: /tmp/vu2-qa/node_modules/esbuild
+        run: node scripts/vu2/minify-release.mjs "$RUNNER_TEMP/quant2-site"
       - name: Test desktop and mobile preview
         env:
           NODE_PATH: /tmp/vu2-qa/node_modules
