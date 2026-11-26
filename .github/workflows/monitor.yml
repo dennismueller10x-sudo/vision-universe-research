@@ -1,13 +1,14 @@
 name: Monitor (Live-Pruefungen gegen die veroeffentlichte Seite)
 
 # Buendel `monitor` (core/registry/workflow-bundles.json, Plan Neustart §3).
-# Fasst dreizehn Live-Pruefungen und Waechter zusammen; jede ist ein eigener Job mit unveraendertem Inhalt:
+# Fasst vierzehn Live-Pruefungen und Waechter zusammen; jede ist ein eigener Job mit unveraendertem Inhalt:
 #   cloudflare         vormals cloudflare-proof.yml
 #   cloudflare-wecker  vormals cloudflare-waker-proof.yml
 #   currency           vormals currency-production-proof.yml
 #   discover           vormals discover-live-smoke.yml
 #   discover-realtime  vormals discover-realtime-qa.yml
 #   europe-discover    vormals europe-discover-release-qa.yml
+#   marktdaten-commit  neu 25.11.2026: Fruehwarnung (00:35/01:30 UTC), ob der Marktdaten-Refresh der letzten Sitzung veroeffentlicht hat; einmaliger Neustart, sonst Issue pipeline-alarm
 #   ladezeit           neu 23.11.2026: taegliche Ladezeitmessung der veroeffentlichten Seiten (App hinter der Zugangsmaske, www offen)
 #   realtime           vormals realtime-production-smoke.yml
 #   sec-frische        vormals fundamental-sec-freshness.yml, Job check (Fundamental SEC-Aktualitaet)
@@ -48,6 +49,7 @@ on:
           - discover-realtime
           - europe-discover
           - ladezeit
+          - marktdaten-commit
           - realtime
           - sec-frische
           - supertrader
@@ -119,6 +121,7 @@ jobs:
       discover_realtime: ${{ steps.wahl.outputs.discover_realtime }}
       europe_discover: ${{ steps.wahl.outputs.europe_discover }}
       ladezeit: ${{ steps.wahl.outputs.ladezeit }}
+      marktdaten_commit: ${{ steps.wahl.outputs.marktdaten_commit }}
       realtime: ${{ steps.wahl.outputs.realtime }}
       sec_frische: ${{ steps.wahl.outputs.sec_frische }}
       sec_veroeffentlichung: ${{ steps.wahl.outputs.sec_veroeffentlichung }}
@@ -165,7 +168,7 @@ jobs:
           marke() { [[ "${MSG:-}" == *"$1"* ]]; }
           claude() { [[ "$REF" == refs/heads/claude/* ]]; }
           setze() { echo "$1=$2" >> "$GITHUB_OUTPUT"; echo "$1=$2"; }
-          for k in cloudflare cloudflare_wecker currency discover discover_realtime europe_discover ladezeit realtime sec_frische sec_veroeffentlichung supertrader technical vorsorge; do
+          for k in cloudflare cloudflare_wecker currency discover discover_realtime europe_discover ladezeit marktdaten_commit realtime sec_frische sec_veroeffentlichung supertrader technical vorsorge; do
             v=false
             case "$EVENT" in
               workflow_dispatch) [ "$PRUEFUNG" = "${k//_/-}" ] && v=true ;;
@@ -179,6 +182,7 @@ jobs:
                 case "$k" in
                   supertrader) [ "$SCHEDULE" = '43 13 * * 1-5' ] && v=true ;;
                   ladezeit) [ "$SCHEDULE" = '17 4 * * *' ] && v=true ;;
+                  marktdaten_commit) { [ "$SCHEDULE" = '35 0 * * 2-6' ] || [ "$SCHEDULE" = '30 1 * * 2-6' ]; } && v=true ;;
                   sec_frische) [ "$SCHEDULE" = '40 14 * * *' ] && v=true ;;
                   sec_veroeffentlichung) [ "$SCHEDULE" = '50 19 * * *' ] && v=true ;;
                 esac ;;
@@ -1615,6 +1619,45 @@ jobs:
           name: ladezeit
           path: ladezeit
           retention-days: 30
+
+  # --- marktdaten-commit: neu 25.11.2026 (Owner: "Dass Themen haengen, darf nicht vorkommen")
+  # Der Lauf vom 24.11. (45501514352) hing im Abgleich der Ablage, Kurse und Faktoren kamen nicht auf main, Briefing und Screener
+  # standen auf dem Vortag, und nichts meldete es. Ein haengender Lauf kann sich nicht selbst melden: dieser Job fragt von aussen
+  # (scripts/ci/check-market-commit.mjs). Rot (Lauf fehlt, beendet ohne success, oder laeuft ohne Marktdaten-Commit) oeffnet das Issue
+  # `[marktdaten-commit]` (Label pipeline-alarm); der naechste gruene Lauf schliesst es. Der Bote macht den Lauf nie rot.
+  # Zwei Termine (Wecker 00:35 und 01:30 UTC Di-Sa): 00:35 startet bei fehlendem oder rotem Lauf ohne Commit den Refresh EINMAL neu
+  # (Dispatch, Marke "Neustart" im run-name, actions: write); haengt der Lauf noch, wartet die Pruefung bis 01:30 und alarmiert dann.
+  marktdaten-commit:
+    needs: auswahl
+    if: needs.auswahl.outputs.marktdaten_commit == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: write
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            scripts/ci
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Hat der Marktdaten-Refresh der letzten Sitzung veroeffentlicht?
+        id: pruefung
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/ci/check-market-commit.mjs --out "$RUNNER_TEMP/marktdaten-commit.txt"
+      - name: Alarm oeffnen, ergaenzen oder schliessen
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          ALARM_SOURCE: marktdaten-commit
+          ALARM_TITLE: 'Marktdaten-Refresh hat nicht veroeffentlicht (Kurse und Faktoren der letzten Sitzung fehlen auf main)'
+          RESULT_PRUEFUNG: ${{ steps.pruefung.outputs.ergebnis }}
+          ALARM_DETAIL_FILE: ${{ runner.temp }}/marktdaten-commit.txt
+        run: node scripts/ci/pipeline-alarm.mjs
 
   # --- vorsorge: vormals vorsorge-live-smoke.yml (Vorsorge Live-Rauchtest)
   vorsorge:
