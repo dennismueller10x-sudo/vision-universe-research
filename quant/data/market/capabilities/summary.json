@@ -1,6 +1,6 @@
 {
   "version": "capability-matrix-1.0.0",
-  "generatedAt": "2026-11-26T23:35:04.334Z",
+  "generatedAt": "2026-11-27T18:00:53.845Z",
   "master": {
     "file": "quant/data/market/security-master/eligibility.json",
     "version": "us-security-master-1.3.0",
@@ -11,7 +11,7 @@
   "sources": {
     "ingestStatus": "2026-11-26T23:32:04.891Z",
     "factors": "2026-11-26T23:33:24.834Z",
-    "intradaySession": "2026-11-25",
+    "intradaySession": "2026-11-27",
     "discover": "2026-11-26T23:34:59.533Z"
   },
   "counts": {
@@ -23,8 +23,8 @@
     "marketDataFetched": 6001,
     "historicalAvailable": 5516,
     "historicalQualityAccepted": 6000,
-    "intradayAvailable": 4826,
-    "liveCapable": 1385,
+    "intradayAvailable": 1369,
+    "liveCapable": 1369,
     "factorEligible": 5951,
     "fundamentals": 5377,
     "fundamentals10y": 2315,
@@ -36,8 +36,7 @@
     "providerMappingsMissing": 2
   },
   "gapReasons": {
-    "NOT_IN_LIVE_SCOPE": 3441,
-    "NO_IEX_BARS": 1173,
+    "NO_INTRADAY_SNAPSHOT": 4604,
     "NO_FUNDAMENTALS:NO_CIK": 508,
     "NO_STOCK_PAGE": 500,
     "INSUFFICIENT_HISTORY": 476,
@@ -47,6 +46,7 @@
     "INACTIVE": 66,
     "NO_DISCOVER_CARD": 60,
     "NO_FACTOR_ROW:FAIL": 48,
+    "NO_IEX_BARS": 28,
     "NAME_MISSING": 20,
     "NO_COMPACT_SERIES": 8,
     "NOT_CONSUMER_INSTRUMENT:WARRANT": 6,
@@ -54,7 +54,6 @@
     "NOT_CONSUMER_INSTRUMENT:RIGHT": 4,
     "NOT_CONSUMER_INSTRUMENT:UNIT": 4,
     "NO_FACTOR_ROW:SOURCE_MISSING": 2,
-    "NO_INTRADAY_SNAPSHOT": 2,
     "PROVIDER_MAPPING_MISSING": 2,
     "QUALITY_REJECTED:adjustmentContradicted": 1
   },
@@ -266,7 +265,7 @@
         "HAS_PROVIDER_MAPPING": true,
         "HAS_MARKET_DATA": true,
         "HAS_HISTORICAL": true,
-        "HAS_INTRADAY": true,
+        "HAS_INTRADAY": false,
         "HAS_LIVE": false,
         "HAS_FACTORS": true,
         "HAS_FUNDAMENTALS": true,
@@ -278,7 +277,7 @@
         "HAS_STOCK_PAGE": true
       },
       "gaps": [
-        "NOT_IN_LIVE_SCOPE"
+        "NO_INTRADAY_SNAPSHOT"
       ]
     },
     {
