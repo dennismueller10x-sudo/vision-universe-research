@@ -875,8 +875,19 @@ export async function build(opts = {}) {
   });
 
   /* 13F: Quartal fuer Quartal, nur zwei Quartale im Speicher. */
+  /* Fristquartal (45 Tage) oder, solange die SEC dessen Datensatz noch nicht
+     veroeffentlicht hat, das juengste fruehere Quartal mit Daten. */
   const byPeriod = new Map();
-  dates.forEach((iso, di) => { const p = E.thirteenFPeriodAt(E.dayOf(iso)); (byPeriod.get(p) || byPeriod.set(p, []).get(p)).push(di); });
+  const filersOf = (p) => (filedDay.get(p) || new Map()).size;
+  const periodFallbacks = [];
+  let deadlinePeriodAsOf = null, effectivePeriodAsOf = null;
+  dates.forEach((iso, di) => {
+    const dl = E.thirteenFPeriodAt(E.dayOf(iso));
+    const p = E.thirteenFEffectivePeriod(dl, filersOf);
+    if (p !== dl) periodFallbacks.push({ date: iso, deadlinePeriod: dl, usedPeriod: p });
+    if (di === dates.length - 1) { deadlinePeriodAsOf = dl; effectivePeriodAsOf = p; }
+    (byPeriod.get(p) || byPeriod.set(p, []).get(p)).push(di);
+  });
   let prevPeriod = null, prevData = null;
   for (const period of [...byPeriod.keys()].sort()) {
     const pPrev = E.prevQuarterEnd(period);
@@ -901,7 +912,7 @@ export async function build(opts = {}) {
           const cur = current.get(t) || {};
           /* Wenige Vorquartals-Halter bei vielen heutigen: IPO, Abspaltung oder
              CUSIP-Wechsel ohne Zuordnung - "neue Positionen" sind dann kein Zufluss. */
-          cur.institutions = Object.assign({ period, previousPeriodLoaded: !!prevLoaded, previousHoldersLow: !!prevLoaded && s.fhp < s.fh / 2 }, s, { topNew: s.topNew.map((x) => ({ manager: managerNames[x.manager] || null, shares: x.shares, valueUsd: x.valueUsd })) });
+          cur.institutions = Object.assign({ period, deadlinePeriod: deadlinePeriodAsOf, previousPeriodLoaded: !!prevLoaded, previousHoldersLow: !!prevLoaded && s.fhp < s.fh / 2 }, s, { topNew: s.topNew.map((x) => ({ manager: managerNames[x.manager] || null, shares: x.shares, valueUsd: x.valueUsd })) });
           current.set(t, cur);
         }
       }
@@ -986,7 +997,9 @@ export async function build(opts = {}) {
       cusipMap: { cusips: cmap.map.size, tickers: cmap.tickersMapped, ambiguousSymbols: cmap.ambiguousSymbols, rejectedReusedSymbols: cmap.rejectedReuse, latestObservation: cmap.latestObservation, ftdFiles: stats.ftdFiles, ftdMissing: stats.ftdMissing },
       insider: { datasets: stats.insiderDatasets.length, missing: stats.insiderMissing, coverageEnd: insiderCoverageEnd, accessionsInUniverse: stats.insiderAccessions, transactionsInUniverse: stats.insiderTransactions, purchasesByInsiders: stats.insiderPurchases, implausibleValuesNulled: stats.implausibleValues, salesByInsiders: stats.insiderSales, issuersWithTransactions: txByCik.size, amendmentsSkipped: stats.insiderAmendmentsSkipped, planColumnSeen: stats.planColumnSeen, form4GapFill: stats.form4 },
       schedules: Object.assign({ indexQuarters: stats.indexQuarters.length, indexMissing: stats.indexMissing, issuersWithFilings: scheduleByCik.size }, stats.schedule),
-      thirteenF: Object.assign({}, stats.thirteenF, { datasets: stats.thirteenF.datasets.length, managers: managerIndex.size, periods: [...filedDay.keys()].sort() }),
+      thirteenF: Object.assign({}, stats.thirteenF, { datasets: stats.thirteenF.datasets.length, managers: managerIndex.size, periods: [...filedDay.keys()].sort(),
+        /* Quartal des aktuellen Stands; weicht es vom Fristquartal ab, ist dessen SEC-Datensatz noch nicht erschienen. */
+        currentPeriod: effectivePeriodAsOf, deadlinePeriod: deadlinePeriodAsOf, periodFallback: effectivePeriodAsOf !== deadlinePeriodAsOf, periodFallbacks }),
       sharesBaseIssuers: sharesBase.size
     }, counters),
     datasets: { insider: stats.insiderDatasets, thirteenF: stats.thirteenF.datasets, indexQuarters: stats.indexQuarters },
@@ -1021,7 +1034,7 @@ export const METHODOLOGY = {
   insider: "Nur nicht-derivative Transaktionen mit Code P (Kauf am offenen Markt) und S (Verkauf am offenen Markt) aus Form 4 und 5. Aenderungen (4/A, 5/A) werden nicht gezaehlt. Gemeinsame Meldungen mehrerer Eigner zaehlen den Wert einmal, jeden Eigner als Insider. Nur Eigner mit Rolle Officer, Director oder 10-%-Eigner.",
   plan10b5One: "Eine Transaktion gilt als 10b5-1-Plan, wenn die Einreichung das Kontrollkaestchen (AFF10B5ONE / aff10b5One, seit 2023) setzt oder eine an der Transaktion referenzierte Fussnote '10b5-1' nennt.",
   schedules: "Formulare SC 13D/13G (bis 2024) und SCHEDULE 13D/13G (ab 18.12.2024), je Accession einmal. Der Gegenstand wird aus den Indexzeilen bestimmt (quant/engines/ownership-signals.js#resolveScheduleSubject); Mehrdeutiges wird verworfen.",
-  thirteenF: "Je Verwalter und Quartal die erste Originalmeldung (13F-HR) plus Aenderungen vom Typ NEW HOLDINGS; nur Aktien (SSHPRNAMTTYPE=SH), keine Optionen (PUTCALL leer). VALUE bis 02.01.2023 in Tausend USD, ab 03.01.2023 in USD (nach Einreichungsdatum), mit Plausibilitaetspruefung je Einreichung (Median Wert je Aktie).",
+  thirteenF: "Je Verwalter und Quartal die erste Originalmeldung (13F-HR) plus Aenderungen vom Typ NEW HOLDINGS; nur Aktien (SSHPRNAMTTYPE=SH), keine Optionen (PUTCALL leer). VALUE bis 02.01.2023 in Tausend USD, ab 03.01.2023 in USD (nach Einreichungsdatum), mit Plausibilitaetspruefung je Einreichung (Median Wert je Aktie). Ein Stichtag benutzt das juengste Quartal mit abgelaufener 45-Tage-Frist; solange dessen SEC-Datensatz noch nicht erschienen ist, das juengste fruehere Quartal mit Daten (coverage.thirteenF.currentPeriod/deadlinePeriod).",
   cusipMapping: "CUSIP -> Ticker aus den Fails-to-Deliver-Daten der SEC: ein CUSIP gehoert dem Symbol, unter dem er zuletzt gefuehrt wurde; historische CUSIPs nur mit derselben Emittentennummer (CUSIP-6) wie ein aktueller.",
   sharesBase: "Aktienbasis = juengster eingereichter Jahreswert der verwaesserten gewichteten Aktienzahl (SEC companyfacts, quant/data/sec/consumer), nur fuer Emittenten mit genau einem Stammtitel im Universum und ohne ADR."
 };
