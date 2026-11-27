@@ -20,6 +20,9 @@
      C  Zone (HKCM-Stil): Score ≥ 65 aufwärts und der nächste Schritt ist ein Rücksetzer: Kaufauftrag an der nahen Kante der
         Rücksetzer-Zone, gültig bis zum nächsten Signaltag; Absicherung 1 % unter der äußeren Kante, Ziel = Zone des Folgeschritts.
      M  Nur Momentum (ohne Elliott): Score aus Relativer Stärke, Trend und Momentum allein, sonst wie A. Zeigt, was Elliott beiträgt.
+     D  Momentum mit Elliott als Bremse: wie M, aber kein Kauf bei Elliott-Plan abwärts, Verkauf, wenn die Zählung eine Korrektur meldet.
+     E  wie A, Gewinner laufen lassen: Verkauf erst unter der Ungültig-Marke, bei Score unter 50 oder nach 156 Wochen.
+     F  wie E, dazu Verkauf am Fernziel auf der log-Skala (Welle 3 = 1,618 × Welle 1 als Faktor, Welle 5 = 1,0 ×).
    Vergleich: SPY, QQQ, Gleichgewicht aller Universumsaktien (monatlich neu gewichtet).
 
    Aufruf: node scripts/technical/elliott-topdown/depot-backtest.mjs --out DIR [--from 2005-01-01] [--step 4] [--max 20]
@@ -57,7 +60,20 @@ if (!isMainThread) {
         const zb = s0.zone.tiers.find((z) => z.tier === "BASE"), ze = s0.zone.tiers.find((z) => z.tier === "EXTENDED") || zb, zt = s1.zone.tiers[0];
         if (zb && zt) zone = { near: zb.high, stop: ze.low * 0.99, tgt: zt.low };
       }
-      sig[d] = { plan, tgt: z1 ? z1.low : null, inv: inv && inv.direction === "below" ? inv.price : null, zone };
+      /* Fernziel auf der logarithmischen Skala (Praxis langfristiger Charts, z. B. HKCM): im grossen Aufwaertsimpuls ist Welle 3
+         1,618 × Welle 1 (als Faktor), Welle 5 1,0 × Welle 1 ab Ende Welle 4; laeuft Welle 1 oder 2, wird ab dem Kurs heute gerechnet. */
+      let farLog = null;
+      const pr = r.primary, W = pr.waves;
+      if (pr.kind === "IMPULSE" && pr.direction === "UP" && W.length) {
+        const f1 = W[0].status === "DEVELOPING" ? null : W[0].toPrice / W[0].fromPrice, cl = c[a], cur = pr.current.label, by = Object.fromEntries(W.map((w) => [w.label, w]));
+        if (f1 > 1) {
+          if (cur === "2") farLog = cl * Math.pow(f1, 1.618);
+          else if (cur === "3") farLog = by["2"].toPrice * Math.pow(f1, 1.618);
+          else if (cur === "4") farLog = cl * f1;
+          else if (cur === "5") farLog = by["4"].toPrice * f1;
+        }
+      }
+      sig[d] = { plan, tgt: z1 ? z1.low : null, inv: inv && inv.direction === "below" ? inv.price : null, zone, farLog: farLog && farLog > c[a] * 1.05 ? farLog : null, cur: pr.kind[0] + pr.current.label };
     }
     out[f] = sig;
   }
@@ -191,24 +207,28 @@ function simulate(kind) {
       if (T0 && k > px[p.f].endK) { cash += p.n * p.last * T0.recovery * (1 - COST); trades.push({ f: p.f, r: (p.last * T0.recovery) / p.in - 1, w: w - p.w0, why: "delisting" }); return false; }
       const pr = price(p.f, k); if (pr) p.last = pr; else return true;
       let why = null;
-      if ((kind === "B" || kind === "C") && p.tgt && pr >= p.tgt) why = "ziel";
-      else if ((kind === "B" || kind === "C") && p.stop && pr <= p.stop) why = "absicherung";
-      else if (w - p.w0 >= 52) why = "zeit";
-      else if (isSig.has(k) && kind !== "C") { const x = SC[k][p.f], sc = x && (kind === "M" ? x.m : x.e); if (!sc || sc.v < 65) why = "score"; }
+      const hold = kind === "E" || kind === "F" ? 156 : 52;
+      if ((kind === "B" || kind === "C" || kind === "F") && p.tgt && pr >= p.tgt) why = "ziel";
+      else if ((kind === "B" || kind === "C" || kind === "E" || kind === "F") && p.stop && pr <= p.stop) why = "absicherung";
+      else if (w - p.w0 >= hold) why = "zeit";
+      else if (isSig.has(k) && kind !== "C") { const x = SC[k][p.f], sc = x && (kind === "M" || kind === "D" ? x.m : x.e);
+        if (kind === "E" || kind === "F") { if (!sc || sc.v < 50) why = "score"; } else if (!sc || sc.v < 65) why = "score";
+        if (kind === "D" && x && x.s && x.s.plan === "DOWN" && x.s.cur && /^[IC][ABC4]$/.test(x.s.cur)) why = "elliott-korrektur"; }
       if (!why) return true;
       cash += p.n * pr * (1 - COST); trades.push({ f: p.f, r: pr / p.in - 1, w: w - p.w0, why }); return false;
     });
     /* 3. Neue Signale */
     if (isSig.has(k)) {
       const cand = Object.entries(SC[k]).map(([f, x]) => ({ f, x })).filter(({ x }) => {
-        const sc = kind === "M" ? x.m : x.e; if (!sc) return false;
+        const sc = kind === "M" || kind === "D" ? x.m : x.e; if (!sc) return false;
         if (kind === "C") return sc.v >= 65 && x.s && x.s.zone && x.s.plan === "UP";
+        if (kind === "D") return x.m && x.m.level === "STRONG_UP" && !(x.s && x.s.plan === "DOWN");
         return sc.level === "STRONG_UP";
-      }).sort((a, b) => ((kind === "M" ? b.x.m.v : b.x.e.v) - (kind === "M" ? a.x.m.v : a.x.e.v)) || a.f.localeCompare(b.f));
+      }).sort((a, b) => ((kind === "M" || kind === "D" ? b.x.m.v : b.x.e.v) - (kind === "M" || kind === "D" ? a.x.m.v : a.x.e.v)) || a.f.localeCompare(b.f));
       if (kind === "C") {
         const nextSig = sigKeys[sigKeys.indexOf(k) + 1]; const until = nextSig ? cal.indexOf(nextSig) : cal.length;
         pend = cand.map(({ f, x }) => ({ f, near: x.s.zone.near, stop: x.s.zone.stop, tgt: x.s.zone.tgt, until }));
-      } else pend = cand.map(({ f, x }) => ({ f, tgt: kind === "B" && x.s ? x.s.tgt : null, stop: kind === "B" && x.s ? x.s.inv : null }));
+      } else pend = cand.map(({ f, x }) => ({ f, tgt: kind === "B" && x.s ? x.s.tgt : kind === "F" && x.s ? x.s.farLog : null, stop: (kind === "B" || kind === "E" || kind === "F") && x.s ? x.s.inv : null }));
     }
     curve.push([k, value()]);
   }
@@ -240,6 +260,7 @@ function stats(curve, from, to) {
 }
 const periods = [["gesamt", cal[0], cal[cal.length - 1]], ["bis 2014", cal[0], "2014-12-31"], ["2015–2019", "2015-01-01", "2019-12-31"], ["ab 2020", "2020-01-01", cal[cal.length - 1]]];
 const runs = { "A Setup stark": simulate("A"), "B Setup stark + Elliott-Ziel/Absicherung": simulate("B"), "C Zone (HKCM-Stil)": simulate("C"), "M nur Momentum (ohne Elliott)": simulate("M"),
+  "D Momentum + Elliott als Bremse": simulate("D"), "E Setup stark, Gewinner laufen lassen (bis Ungültig)": simulate("E"), "F Setup stark, Fernziel log (HKCM-Art)": simulate("F"),
   "Vergleich: Gleichgewicht Universum": equalWeight(), "Vergleich: SPY": bench(spyBy), "Vergleich: QQQ": bench(qqqBy) };
 const result = { schema: "vu-elliott-depot-backtest-1", label: "Forschung, nicht zertifiziert", engine: TD.VERSION, setupScore: SS.VERSION,
   params: { pit: PIT ? pitStats : null, from: FROM, stepWeeks: STEP, maxPositionen: MAX, kosten: COST, index: INDEX, aktien: uniFiles.length, signaltage: sigKeys.length, signalSekunden: sigSec, signale: sigN, signaleMitPlan: sigPlan },
