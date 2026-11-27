@@ -180,7 +180,7 @@ for (const k of sigKeys) { SC[k] = {}; for (const f of uniFiles) { if (!isMember
 /* ---------------------------------------------------------- Depot-Simulation */
 const price = (f, k) => px[f].m.get(k);
 function simulate(kind) {
-  let cash = 1, pos = [], pend = [], curve = [], trades = [];
+  let cash = 1, pos = [], pend = [], curve = [], trades = [], inv = 0, zoneOrders = new Set(), zoneFilled = 0;
   const isSig = new Set(sigKeys);
   for (let w = 0; w < cal.length; w++) {
     const k = cal[w];
@@ -233,11 +233,12 @@ function simulate(kind) {
       if (kind === "C") {
         const nextSig = sigKeys[sigKeys.indexOf(k) + 1]; const until = nextSig ? cal.indexOf(nextSig) : cal.length;
         pend = cand.map(({ f, x }) => ({ f, near: x.s.zone.near, stop: x.s.zone.stop, tgt: x.s.zone.tgt, until }));
+        pend.forEach((o) => zoneOrders.add(o.f + "|" + o.near.toFixed(4)));
       } else pend = cand.map(({ f, x }) => ({ f, tgt: kind === "B" && x.s ? x.s.tgt : (kind === "F" || kind === "G") && x.s ? x.s.farLog : null, stop: (kind === "B" || kind === "E" || kind === "F" || kind === "G") && x.s ? x.s.inv : null }));
     }
-    curve.push([k, value()]);
+    { const v = value(); curve.push([k, v]); inv += v > 0 ? 1 - cash / v : 0; }
   }
-  return { curve, trades };
+  return { curve, trades, investiert: inv / cal.length, zonenAuftraege: zoneOrders.size };
 }
 /* Gleichgewicht aller Universumsaktien, alle 4 Wochen neu gewichtet */
 function equalWeight() {
@@ -274,7 +275,9 @@ const result = { schema: "vu-elliott-depot-backtest-1", label: "Forschung, nicht
   ergebnis: {} };
 for (const [name, r] of Object.entries(runs)) {
   const e = { zeitraeume: Object.fromEntries(periods.map(([n, a, b]) => [n, stats(r.curve, a, b)])) };
-  if (r.trades) { const T = r.trades; e.trades = T.length; e.gewinnQuote = T.length ? Math.round((T.filter((x) => x.r > 0).length / T.length) * 1000) / 10 : null; e.mittlereHaltedauerWochen = T.length ? Math.round(T.reduce((s, x) => s + x.w, 0) / T.length) : null;
+  if (r.trades) { const T = r.trades; const sr = T.map((x) => x.r).sort((a, b) => a - b);
+    e.investiertAnteil = Math.round(r.investiert * 1000) / 10; if (r.zonenAuftraege) e.zonenAuftraege = r.zonenAuftraege;
+    e.mittlererTrade = T.length ? Math.round((T.reduce((s, x) => s + x.r, 0) / T.length) * 1000) / 10 : null; e.medianTrade = T.length ? Math.round(sr[sr.length >> 1] * 1000) / 10 : null; e.trades = T.length; e.gewinnQuote = T.length ? Math.round((T.filter((x) => x.r > 0).length / T.length) * 1000) / 10 : null; e.mittlereHaltedauerWochen = T.length ? Math.round(T.reduce((s, x) => s + x.w, 0) / T.length) : null;
     e.ausstieg = T.reduce((o, x) => ((o[x.why] = (o[x.why] || 0) + 1), o), {}); }
   result.ergebnis[name] = e;
 }
