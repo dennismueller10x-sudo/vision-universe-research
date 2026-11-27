@@ -2,10 +2,10 @@ name: Company Intelligence (isolated preview)
 on:
   # Legacy isolated lanes are dispatch-only; production has one scoped scheduler.
   pull_request:
-    paths: ['company-intelligence/**', 'scripts/company_intelligence/**', 'docs/COMPANY_INTELLIGENCE.md', '.github/workflows/company-intelligence.yml']
+    paths: ['company-intelligence/**', 'scripts/company_intelligence/**', 'core/registry/schedule.json', 'docs/COMPANY_INTELLIGENCE.md', '.github/workflows/company-intelligence.yml']
   push:
     branches: [main]
-    paths: ['company-intelligence/**', 'scripts/company_intelligence/**', 'docs/COMPANY_INTELLIGENCE.md', '.github/workflows/company-intelligence.yml']
+    paths: ['company-intelligence/**', 'scripts/company_intelligence/**', 'core/registry/schedule.json', 'docs/COMPANY_INTELLIGENCE.md', '.github/workflows/company-intelligence.yml']
   workflow_dispatch:
     inputs:
       continuous_refresh:
