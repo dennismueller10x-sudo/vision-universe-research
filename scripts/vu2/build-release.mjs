@@ -7,6 +7,7 @@ import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 import {gzipSync,gunzipSync} from 'node:zlib';
 import {writeStockHeadViews} from './stock-head-view.mjs';
+import {compactLogoIndex} from './logo-index-min.mjs';
 import {writeManifest} from './release-manifest.mjs';
 import {readQuantHomeRegime} from './quant-home-preview.mjs';
 import {createRequire} from 'node:module';
@@ -288,6 +289,15 @@ export async function buildRelease({root,output}){
   for(const [sym,entry] of Object.entries(src.credits||{})){const key=Master.shardKey(sym);if(!/^[A-Z0-9_]{1,2}$/.test(key))continue;(parts[key]??={version:src.version,generatedAt:src.generatedAt,shard:key,credits:{}}).credits[sym]=entry;}
   await mkdir(resolve(output,'discover/logos/credits'),{recursive:true});
   for(const [key,part] of Object.entries(parts)){const b=Buffer.from(JSON.stringify(part));if(b.length>CAPABILITY_SHARD_BUDGET*2)throw Error('CREDITS_SHARD_BUDGET_EXCEEDED');await writeFile(resolve(output,'discover/logos/credits/'+key+'.json'),b);}
+ }
+ /* Logo-Liste (index.json, 120 KB): Kacheln brauchen nur "hat Logo" und "dunkel". Im Release steht unter demselben Pfad die kompakte
+    Form (Titelliste in t, Abweichungen vom Pfad files/<Titel>.png in x, dunkle Titel in d); die Clients (assets/vu-ui.js,
+    discover/ui/logos.js) erkennen sie an t und lesen sonst die volle Form (lokal, Quelle). Ein Abruf, eine Adresse wie bisher.
+    Die Seitenverhaeltnisse der breiten Fassung (nur Aktienseite) liegen in wide.min.json. */
+ if(paths.includes('discover/logos/index.json')){
+  const {index,wide}=compactLogoIndex(await load('discover/logos/index.json'));
+  await writeFile(resolve(output,'discover/logos/index.json'),Buffer.from(JSON.stringify(index)));
+  await writeFile(resolve(output,'discover/logos/wide.min.json'),Buffer.from(JSON.stringify(wide)));
  }
  /* Auslieferungsansichten der Aktienseite (siehe oben). Jeder Schritt liest
     nur Quelldateien des Repositories und schreibt nur in den Release. */

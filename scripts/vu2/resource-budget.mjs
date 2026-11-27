@@ -101,7 +101,7 @@
 //   Pfad                                   Bytes    Anfr.
 //   /discover/{discover,app,home,detail}.css 228.855    4
 //   /quant/ui/quant.css + technical-chart   37.709    2
-//   /discover/logos/index.json             115.814    1
+//   /discover/logos/index.json              ~20.000    1  (Release: kompakte Form; Quelle 120.059)
 //   Firmenlogos (je Karte, lazy)       ~2-12.000 je 1
 //
 //   Ansicht   gemessen    Anfr.   Grenze vorher

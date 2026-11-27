@@ -11,6 +11,9 @@ export async function equityRules({ load, now, expected, tickers = null }) {
   const index = tickers ? null : await opt('/discover/data/stock-index/US_REAL.json');
   const symbols = (tickers || index?.symbols || []).map(Identity.normalizeTicker).filter(Boolean);
   const logos = await opt('/discover/logos/index.json');
+  /* Die ausgelieferte Liste (Release, scripts/vu2/build-release.mjs) ist kompakt: Titelliste t, Abweichungen x; die Quelle hat files. */
+  const logoFiles = logos?.files || (logos && logos.t != null
+    ? Object.fromEntries(String(logos.t).split(',').filter(Boolean).map(t => [t, (logos.x || {})[t] || 'files/' + t + '.png'])) : {});
   const legacy = await opt('/dashboard/data/analyst_ratings.json');
   const depots = await opt('/quant/data/product/model-depots-v1.json');
   const trader = await opt('/supertrader/data/portfolio.json');
@@ -36,7 +39,7 @@ export async function equityRules({ load, now, expected, tickers = null }) {
       const evidence = capShards.get(key)?.[ticker];
       if (evidence?.securityId === id) marketCap = evidence.marketCap;
     }
-    if (stock) stocks.push({ ticker, name: stock.companyName, marketCap, logo: logos?.files?.[ticker] });
+    if (stock) stocks.push({ ticker, name: stock.companyName, marketCap, logo: logoFiles[ticker] });
     const series = await getSeries(ticker);
     if (series) {
       const weekly = await opt('/quant/data/market/discover-series-long/' + id + '.json');
