@@ -23,7 +23,7 @@
    Vergleich: SPY, QQQ, Gleichgewicht aller Universumsaktien (monatlich neu gewichtet).
 
    Aufruf: node scripts/technical/elliott-topdown/depot-backtest.mjs --out DIR [--from 2005-01-01] [--step 4] [--max 20]
-           [--cost 0.001] [--engine PFAD] [--workers 4] [--index SP500,NDX]
+           [--cost 0.001] [--engine PFAD] [--workers 4] [--index SP500,NDX] [--pit CSV ticker,start_date,end_date]
    ========================================================================= */
 import { readdirSync, readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
@@ -75,7 +75,22 @@ const TD = req(ENGINE), SS = req(join(ROOT, "quant/engines/technical/elliott/set
 /* Universum */
 const members = new Set();
 for (const id of INDEX) { const f = join(ROOT, "quant/data/market/index-membership", id + ".json"); if (existsSync(f)) JSON.parse(readFileSync(f, "utf8")).members.forEach((m) => members.add(m.symbol)); }
-const uniFiles = [...members].map((s) => "ref_" + s + ".json").filter((f) => existsSync(join(D, f)));
+/* --pit DATEI (CSV ticker,start_date,end_date): Mitgliedschaft zum jeweiligen Zeitpunkt statt heutiger Mitglieder. Aktien ohne
+   Kursreihe (meist übernommen oder insolvent) fehlen; ihr Anteil steht im Ergebnis. */
+const PIT = arg("pit", null), pitIv = {};
+let pitStats = null;
+if (PIT) {
+  const lines = readFileSync(PIT, "utf8").trim().split(/\r?\n/).slice(1);
+  let n = 0, withData = 0;
+  for (const ln of lines) {
+    const [tk, a, b] = ln.split(","); const end = b || "9999-12-31"; if (end < FROM) continue;
+    n++; const fn = ["ref_" + tk.replace(".", "-") + ".json", "ref_" + tk.replace(".", "") + ".json"].find((x) => existsSync(join(D, x)));
+    if (!fn) continue; withData++; (pitIv[fn] = pitIv[fn] || []).push([a, end]);
+  }
+  pitStats = { intervalle: n, mitKursreihe: withData };
+}
+const uniFiles = PIT ? Object.keys(pitIv) : [...members].map((s) => "ref_" + s + ".json").filter((f) => existsSync(join(D, f)));
+const isMember = (f, k) => !PIT || (pitIv[f] || []).some(([a, b]) => k >= weekKey(a) && k <= b);
 
 /* Wochenkalender aus SPY (letzter Handelstag je Woche, Freitag-Woche) und Vergleichsreihen */
 function weekly(points) {
@@ -130,7 +145,7 @@ function scoreAt(f, k, withElliott) {
   return { sc, s };
 }
 const SC = {};   // SC[k][f] = { e: score mit Elliott, m: ohne, s: Signal }
-for (const k of sigKeys) { SC[k] = {}; for (const f of uniFiles) { const e = scoreAt(f, k, true); if (!e) continue; const m = scoreAt(f, k, false); SC[k][f] = { e: e.sc, m: m && m.sc, s: e.s }; } }
+for (const k of sigKeys) { SC[k] = {}; for (const f of uniFiles) { if (!isMember(f, k)) continue; const e = scoreAt(f, k, true); if (!e) continue; const m = scoreAt(f, k, false); SC[k][f] = { e: e.sc, m: m && m.sc, s: e.s }; } }
 
 /* ---------------------------------------------------------- Depot-Simulation */
 const price = (f, k) => px[f].m.get(k);
@@ -193,7 +208,7 @@ function equalWeight() {
   for (let w = 0; w < cal.length; w++) {
     const k = cal[w];
     if (held) { const r = held.map((h) => { const p = price(h.f, k); return p > 0 ? p / h.p : 1; }); if (r.length) v = held.v * r.reduce((s, x) => s + x, 0) / r.length; }
-    const now = uniFiles.filter((f) => price(f, k) > 0);
+    const now = uniFiles.filter((f) => price(f, k) > 0 && isMember(f, k));
     if ((!held || w % 4 === 0) && now.length) held = Object.assign(now.map((f) => ({ f, p: price(f, k) })), { v });
     curve.push([k, v]);
   }
@@ -215,7 +230,7 @@ const periods = [["gesamt", cal[0], cal[cal.length - 1]], ["bis 2014", cal[0], "
 const runs = { "A Setup stark": simulate("A"), "B Setup stark + Elliott-Ziel/Absicherung": simulate("B"), "C Zone (HKCM-Stil)": simulate("C"), "M nur Momentum (ohne Elliott)": simulate("M"),
   "Vergleich: Gleichgewicht Universum": equalWeight(), "Vergleich: SPY": bench(spyBy), "Vergleich: QQQ": bench(qqqBy) };
 const result = { schema: "vu-elliott-depot-backtest-1", label: "Forschung, nicht zertifiziert", engine: TD.VERSION, setupScore: SS.VERSION,
-  params: { from: FROM, stepWeeks: STEP, maxPositionen: MAX, kosten: COST, index: INDEX, aktien: uniFiles.length, signaltage: sigKeys.length, signalSekunden: sigSec, signale: sigN, signaleMitPlan: sigPlan },
+  params: { pit: PIT ? pitStats : null, from: FROM, stepWeeks: STEP, maxPositionen: MAX, kosten: COST, index: INDEX, aktien: uniFiles.length, signaltage: sigKeys.length, signalSekunden: sigSec, signale: sigN, signaleMitPlan: sigPlan },
   hinweis: "Universum = heutige Indexmitglieder (Überlebende-Verzerrung); fairer Vergleich ist das Gleichgewicht derselben Aktien. Nur Kurs, ohne Dividenden.",
   ergebnis: {} };
 for (const [name, r] of Object.entries(runs)) {
