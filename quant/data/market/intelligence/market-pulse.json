@@ -2,7 +2,7 @@
  "schemaVersion": "vu-market-pulse-1.1.0",
  "methodVersion": "market-pulse-1.0.0",
  "configVersion": "vu-market-pulse-config-1.0.0",
- "generatedAt": "2026-11-27T18:23:50.115Z",
+ "generatedAt": "2026-11-27T21:23:48.681Z",
  "kind": "DESCRIPTIVE_MARKET_PULSE",
  "notes": {
   "quantMarketRegime": "FAIL_CLOSED - nicht verwendet, nicht imitiert",
@@ -105,7 +105,7 @@
   "disclaimer": "Einordnung des Marktumfelds aus festen Regeln – keine Anlageberatung, keine Kauf- oder Verkaufsempfehlung, keine Prognose."
  },
  "evaluation": {
-  "generatedAt": "2026-11-27T18:23:50.115Z",
+  "generatedAt": "2026-11-27T21:23:48.681Z",
   "dataAsOf": "2026-11-25",
   "previousDataAsOf": "2026-11-24",
   "schedule": {
@@ -172,10 +172,10 @@
     "key": "US10Y",
     "label": "US-Rendite 10 Jahre",
     "from": "4,91 %",
-    "to": "4,85 %",
+    "to": "4,94 %",
     "change": "CONTEXT",
-    "delta": -6,
-    "deltaText": "−6 bp",
+    "delta": 3,
+    "deltaText": "+3 bp",
     "symbol": "US10Y"
    }
   ],
@@ -675,11 +675,11 @@
     {
      "key": "US10Y",
      "label": "US-Rendite 10 Jahre",
-     "text": "−15 bp · 0,6-fach typisch",
-     "change": -15,
-     "ratio": -0.62,
+     "text": "−11 bp · 0,5-fach typisch",
+     "change": -11,
+     "ratio": -0.47,
      "notable": false,
-     "asOf": "2026-11-25",
+     "asOf": "2026-11-27",
      "kind": "BP"
     },
     {
@@ -1304,13 +1304,13 @@
   },
   "US2Y": {
    "kind": "YIELD",
-   "asOf": "2026-11-25",
-   "last": 4.61,
-   "observations": 9231,
+   "asOf": "2026-11-27",
+   "last": 4.69,
+   "observations": 9232,
    "changes": {
-    "1M": -7,
-    "3M": 42,
-    "1Y": 118
+    "1M": 2,
+    "3M": 35,
+    "1Y": 124
    },
    "high52w": {
     "date": "2026-09-28",
@@ -1320,20 +1320,20 @@
     "date": "2026-02-27",
     "value": 3.38
    },
-   "rangePosition": 79.9,
-   "vs200": 43.7,
-   "vs50": -12.2,
+   "rangePosition": 85.1,
+   "vs200": 51.1,
+   "vs50": -4.3,
    "roles": []
   },
   "US5Y": {
    "kind": "YIELD",
-   "asOf": "2026-11-25",
-   "last": 4.65,
-   "observations": 9231,
+   "asOf": "2026-11-27",
+   "last": 4.74,
+   "observations": 9232,
    "changes": {
-    "1M": -19,
-    "3M": 28,
-    "1Y": 110
+    "1M": -11,
+    "3M": 26,
+    "1Y": 118
    },
    "high52w": {
     "date": "2026-09-30",
@@ -1343,20 +1343,20 @@
     "date": "2026-02-27",
     "value": 3.51
    },
-   "rangePosition": 72.2,
-   "vs200": 33.7,
-   "vs50": -22.5,
+   "rangePosition": 77.8,
+   "vs200": 42.2,
+   "vs50": -13.4,
    "roles": []
   },
   "US10Y": {
    "kind": "YIELD",
-   "asOf": "2026-11-25",
-   "last": 4.85,
-   "observations": 9231,
+   "asOf": "2026-11-27",
+   "last": 4.94,
+   "observations": 9232,
    "changes": {
-    "1M": -15,
-    "3M": 19,
-    "1Y": 84
+    "1M": -11,
+    "3M": 21,
+    "1Y": 94
    },
    "high52w": {
     "date": "2026-10-05",
@@ -1366,27 +1366,27 @@
     "date": "2026-02-27",
     "value": 3.97
    },
-   "rangePosition": 65.7,
-   "vs200": 24.3,
-   "vs50": -21.8,
+   "rangePosition": 72.4,
+   "vs200": 32.9,
+   "vs50": -12.6,
    "roles": [
     {
      "dimension": "CROSS_ASSET",
      "state": "OBSERVED",
      "stateLabel": "Auffällige Bewegungen",
-     "text": "Teil des Cross-Asset-Kontexts. Über einen Monat: −15 bp – das 0,6-Fache einer typischen Monatsbewegung, also im üblichen Rahmen."
+     "text": "Teil des Cross-Asset-Kontexts. Über einen Monat: −11 bp – das 0,5-Fache einer typischen Monatsbewegung, also im üblichen Rahmen."
     }
    ]
   },
   "US30Y": {
    "kind": "YIELD",
-   "asOf": "2026-11-25",
-   "last": 5.24,
-   "observations": 8237,
+   "asOf": "2026-11-27",
+   "last": 5.33,
+   "observations": 8238,
    "changes": {
-    "1M": -7,
-    "3M": 6,
-    "1Y": 57
+    "1M": -4,
+    "3M": 11,
+    "1Y": 69
    },
    "high52w": {
     "date": "2026-10-07",
@@ -1396,9 +1396,9 @@
     "date": "2026-02-27",
     "value": 4.64
    },
-   "rangePosition": 58.3,
-   "vs200": 13.7,
-   "vs50": -17.5,
+   "rangePosition": 67,
+   "vs200": 22.4,
+   "vs50": -8.4,
    "roles": []
   },
   "DE2Y": {
@@ -1804,9 +1804,9 @@
    },
    "US10Y": {
     "symbol": "US10Y",
-    "asOf": "2026-11-25",
-    "horizon": 21,
-    "samples": 2499
+    "asOf": "2026-11-27",
+    "horizon": 20,
+    "samples": 2498
    },
    "GOLD": {
     "symbol": "XAUUSD",
