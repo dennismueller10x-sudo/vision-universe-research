@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| Stand der Messung | 2026-11-26T00:15:31.000Z |
+| Stand der Messung | 2026-11-27T00:01:53.000Z |
 | Bestand | `CANONICAL_HISTORY` |
 | Studienlogik | `1.0.0` · Reihen `vu-return-series-1.0.0` · Vergleich `vu-return-basis-comparison-1.0.0` |
 | Entscheidung | **PENDING_METHOD_DECISION** |
@@ -135,10 +135,10 @@ Ein Faktorwert ist im Produkt kein Prozentwert, sondern ein Perzentil. Deshalb i
 
 | Messgröße | `UNIVERSE_N` | ρ | Median Rang | P90 | P95 | Max | ≥1 Pz | ≥5 Pz | ≥10 Pz | Dezil ab/zu |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|
-| `3M` | 5.518 | 0,9931 | 27 | 98 | 133 | 5.464 | 1.719 | 62 | 13 | 16 / 16 |
-| `6M` | 5.518 | 0,9935 | 30 | 148,3 | 171 | 5.399 | 1.952 | 135 | 27 | 16 / 16 |
+| `3M` | 5.518 | 0,9931 | 27 | 98 | 133 | 5.464 | 1.718 | 62 | 13 | 16 / 16 |
+| `6M` | 5.518 | 0,9935 | 30 | 148 | 171 | 5.399 | 1.951 | 135 | 27 | 16 / 16 |
 | `12M` | 5.518 | 0,9917 | 50 | 204 | 267 | 5.162 | 2.650 | 258 | 40 | 23 / 23 |
-| `12M-1M` | 5.518 | 0,9942 | 49 | 211,2 | 278,3 | 4.854 | 2.624 | 280 | 44 | 19 / 19 |
+| `12M-1M` | 5.518 | 0,9942 | 49 | 211 | 278,3 | 4.854 | 2.622 | 281 | 44 | 19 / 19 |
 | `RELATIVE_STRENGTH` | 5.518 | 0,9917 | 50 | 204 | 267 | 5.162 | 2.650 | 258 | 40 | 23 / 23 |
 
 `ρ` ist die Spearman-Rangkorrelation zwischen beiden Basen, `Pz` Perzentilpunkte, `Dezil ab/zu` der Wechsel im obersten Zehntel. Aus einem Median allein folgt nichts: ein Median von null Rängen und ein P95 von mehreren hundert sind gleichzeitig wahr, und nur der zweite Wert entscheidet, ob ein Titel aus dem obersten Dezil fällt.
@@ -155,12 +155,12 @@ Ein Faktorwert ist im Produkt kein Prozentwert, sondern ein Perzentil. Deshalb i
 | YARW | D · Manufacturing | `HIGH_YIELD` | 10,2 % | 97,4 % | 65,1 | 95,4 | 30,3 | -1.672 |
 | NLOP | H · Finance, Insurance, And Real Estate | `HIGH_YIELD` | -67,6 % | -8,0 % | 10,4 | 40,5 | 30,1 | -1.660 |
 | TORO | E · Transportation, Communications, Electric, Gas, And Sanitary Services | `HIGH_YIELD` | 15,4 % | 132,5 % | 69,2 | 97,4 | 28,3 | -1.559 |
-| TLF | D · Manufacturing | `HIGH_YIELD` | -13,6 % | 13,9 % | 38,1 | 66,0 | 27,9 | -1.538 |
+| TLF | D · Manufacturing | `HIGH_YIELD` | -13,6 % | 13,9 % | 38,1 | 66,0 | 27,9 | -1.537 |
 | PDX | (unclassified) | `HIGH_YIELD` | -3,4 % | 20,4 % | 49,0 | 71,1 | 22,1 | -1.217 |
 | TDS | E · Transportation, Communications, Electric, Gas, And Sanitary Services | `HIGH_YIELD` | -6,1 % | 16,2 % | 46,0 | 67,9 | 21,9 | -1.207 |
 | MIDD | D · Manufacturing | `HIGH_YIELD` | -0,6 % | 24,4 % | 52,5 | 74,2 | 21,7 | -1.195 |
 | STRS | H · Finance, Insurance, And Real Estate | `HIGH_YIELD` | -16,3 % | 3,7 % | 35,1 | 55,2 | 20,1 | -1.109 |
-| ECAT | (unclassified) | `HIGH_YIELD` | -14,6 % | 4,3 % | 36,7 | 56,3 | 19,7 | -1.085 |
+| ECAT | (unclassified) | `HIGH_YIELD` | -14,6 % | 4,3 % | 36,7 | 56,3 | 19,7 | -1.084 |
 | BCAT | (unclassified) | `HIGH_YIELD` | -4,6 % | 15,3 % | 47,7 | 67,1 | 19,4 | -1.071 |
 
 ## 6 · Dividendenschieflage
@@ -193,7 +193,7 @@ Klassifikation: **SIC_DIVISION**, aus `quant/data/product/factor-evidence-v1 (pe
 
 | Sektor | Titel | Δ Rendite (Median) | Δ Rang (Median) | Δ Perzentil (Median) | Δ Perzentil (P95) |
 |---|---:|---:|---:|---:|---:|
-| (unclassified) | 532 | 6,00 % | -159 | 2,87 | 9,32 |
+| (unclassified) | 532 | 6,00 % | -159 | 2,88 | 9,32 |
 | REITs | 188 | 5,50 % | -124 | 2,24 | 9,16 |
 | Utilities | 143 | 2,56 % | 1 | -0,02 | 4,02 |
 | Energy | 147 | 2,35 % | 2 | -0,04 | 5,15 |
@@ -204,7 +204,7 @@ Klassifikation: **SIC_DIVISION**, aus `quant/data/product/factor-evidence-v1 (pe
 | (other) | 499 | 0,00 % | 20 | -0,36 | 3,81 |
 | Health Care | 926 | 0,00 % | 21 | -0,38 | 3,77 |
 | Consumer Discretionary | 432 | 0,00 % | 22 | -0,39 | 3,70 |
-| Materials | 296 | 0,00 % | 23 | -0,41 | 3,65 |
+| Materials | 296 | 0,00 % | 23 | -0,41 | 3,64 |
 | Industrials | 442 | 0,00 % | 24 | -0,43 | 3,70 |
 | Technology | 722 | 0,00 % | 29 | -0,53 | 3,79 |
 
@@ -214,7 +214,7 @@ Klassifikation: **SIC_DIVISION**, aus `quant/data/product/factor-evidence-v1 (pe
 
 | Sektor | Titel | Δ Rendite (Median) | Δ Rang (Median) | Δ Perzentil (Median) | Δ Perzentil (P95) |
 |---|---:|---:|---:|---:|---:|
-| (unclassified) | 532 | 6,00 % | -159 | 2,87 | 9,32 |
+| (unclassified) | 532 | 6,00 % | -159 | 2,88 | 9,32 |
 | H · Finance, Insurance, And Real Estate | 1.134 | 1,97 % | 2 | -0,04 | 6,25 |
 | E · Transportation, Communications, Electric, Gas, And Sanitary Services | 393 | 1,43 % | 6 | -0,11 | 4,02 |
 | F · Wholesale Trade | 101 | 0,00 % | 14 | -0,25 | 3,72 |
@@ -222,8 +222,8 @@ Klassifikation: **SIC_DIVISION**, aus `quant/data/product/factor-evidence-v1 (pe
 | G · Retail Trade | 221 | 0,00 % | 22 | -0,40 | 3,70 |
 | B · Mining | 240 | 0,00 % | 24 | -0,43 | 4,02 |
 | I · Services | 888 | 0,00 % | 26 | -0,47 | 3,82 |
-| A · Agriculture, Forestry, And Fishing | 19 | 0,00 % | 41 | -0,74 | 3,47 |
-| C · Construction | 62 | 0,00 % | 56 | -1,01 | 3,43 |
+| A · Agriculture, Forestry, And Fishing | 19 | 0,00 % | 41 | -0,74 | 3,49 |
+| C · Construction | 62 | 0,00 % | 55 | -1,00 | 3,43 |
 
 Sektoren mit weniger als zehn Titeln sind ausgelassen: aus vier Titeln einen Sektorbefund zu machen wäre eine Zahl ohne Aussage.
 
@@ -234,20 +234,20 @@ Die Momentumnote wird auf beiden Basen aus denselben sechs Komponenten und dense
 | | |
 |---|---:|
 | Grundlage | `EVIDENCE_AT_OR_BEFORE_CUTOFF` |
-| veröffentlichtes Evidence vom | 2026-11-24 (-1 Tage nach dem Stichtag) |
+| veröffentlichtes Evidence vom | 2026-11-25 (0 Tage nach dem Stichtag) |
 | ausgeschlossen, weil Fundamentaldaten erst nach dem Stichtag öffentlich | 0 |
-| ρ Simulation (Gesamtrendite) zur veröffentlichten Note | 0,9326 |
-| ρ Simulation (Kursrendite) zur veröffentlichten Note | 0,9404 |
+| ρ Simulation (Gesamtrendite) zur veröffentlichten Note | 0,9355 |
+| ρ Simulation (Kursrendite) zur veröffentlichten Note | 0,9433 |
 | bewertete Titel: veröffentlicht / Kurs / gesamt | 4.846 / 5.518 / 5.518 |
 
-**Die Momentumnote selbst, Kurs gegen gesamt:** ρ 0,9938 · Median 50,5 Ränge · P95 267,6 · Maximum 4.970 · 265 Titel bewegen sich um mindestens 5 Perzentilpunkte, 58 um mindestens 10.
+**Die Momentumnote selbst, Kurs gegen gesamt:** ρ 0,9938 · Median 50,5 Ränge · P95 268 · Maximum 4.970 · 264 Titel bewegen sich um mindestens 5 Perzentilpunkte, 58 um mindestens 10.
 
 | Strategie | Treffer auf Kursrendite | auf Gesamtrendite | fallen heraus | kommen hinzu | Wechselanteil |
 |---|---:|---:|---:|---:|---:|
-| Momentum Leader (`momentum-leader`) | 374 | 366 | 18 | 10 | 7,5 % |
+| Momentum Leader (`momentum-leader`) | 375 | 367 | 18 | 10 | 7,5 % |
 | Quality Momentum (`quality-momentum`) | 45 | 42 | 3 | 0 | 6,7 % |
 | Future Leader (`future-leader`) | 17 | 18 | 0 | 1 | 5,6 % |
-| Value Momentum (`value-momentum`) | 215 | 212 | 10 | 7 | 7,9 % |
+| Value Momentum (`value-momentum`) | 214 | 210 | 10 | 6 | 7,5 % |
 
 Keine Produktionsstrategie wurde dabei überschrieben. Die Simulation läuft neben der Produktion.
 
@@ -257,7 +257,7 @@ Derselbe Vergleich an mehreren Stichtagen. Jeder Stichtag sieht ausschließlich 
 
 | Stichtag | Handelstage zurück | Titel | ρ `12M-1M` | Median Rang | P95 | ≥5 Pz | Dezil ab/zu |
 |---|---:|---:|---:|---:|---:|---:|---|
-| 2026-11-25 | 0 | 5.518 | 0,9942 | 49 | 278,3 | 280 | 19 / 19 |
+| 2026-11-25 | 0 | 5.518 | 0,9942 | 49 | 278,3 | 281 | 19 / 19 |
 | 2025-11-24 | 252 | 5.157 | 0,9924 | 50 | 335 | 604 | 9 / 9 |
 | 2024-11-20 | 504 | 4.931 | 0,9918 | 49 | 303 | 478 | 12 / 12 |
 | 2023-11-20 | 756 | 4.739 | 0,9485 | 80 | 298,2 | 518 | 55 / 55 |
