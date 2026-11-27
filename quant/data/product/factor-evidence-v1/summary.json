@@ -3,7 +3,7 @@
  "methodologyVersion": "vu-factor-evidence-2.0.0",
  "derivedFrom": "quant-v2.5.0",
  "changeMethodologyVersion": "vu-change-1.0.0",
- "generatedAt": "2026-11-26T00:33:25.000Z",
+ "generatedAt": "2026-11-27T00:16:07.000Z",
  "asOf": "2026-11-25",
  "publication": {
   "compositeAllowed": false,
@@ -56,7 +56,7 @@
    },
    "momentum": {
     "VERY_STRONG": 82.24,
-    "STRONG": 70.55,
+    "STRONG": 70.57,
     "NEUTRAL": 49.79,
     "WEAK": 31.55
    },
@@ -804,13 +804,20 @@
   "velocityWindowDays": 30,
   "velocityToleranceDays": 10,
   "scoreMomentumOpen": true,
-  "recomputationDrift": null
+  "recomputationDrift": {
+   "asOf": "2026-11-25",
+   "publishedHash": "081547885eed026c",
+   "recomputedHash": "6e0f43722af89864",
+   "rowsDiffering": 96,
+   "rowsTotal": 5927,
+   "note": "Die veroeffentlichte Beobachtung bleibt unveraendert. Sie wurde an diesem Stichtag veroeffentlicht und wird nicht durch eine heutige Neuberechnung ersetzt."
+  }
  },
  "scope": "CANONICAL_PRODUCT_UNIVERSE",
  "source": {
   "priceFactors": {
    "engine": "market-factors-1.0.0",
-   "generatedAt": "2026-11-25T23:31:45.212Z",
+   "generatedAt": "2026-11-26T23:33:24.834Z",
    "securities": 5935,
    "benchmark": {
     "id": "SPY",
@@ -1042,6 +1049,6 @@
   "SHARE_COUNT_SCALE_SUSPECT": 4,
   "NOT_AN_EQUITY_LISTING:PREFERRED": 8
  },
- "runtimeMs": 26909,
- "contentHash": "b1c11aa5f5e21e74"
+ "runtimeMs": 22135,
+ "contentHash": "102a2b29cc933dca"
 }

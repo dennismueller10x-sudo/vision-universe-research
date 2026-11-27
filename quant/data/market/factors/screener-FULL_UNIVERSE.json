@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-25T23:31:45.212Z",
+  "generatedAt": "2026-11-26T23:33:24.834Z",
   "gate": "FULL_UNIVERSE",
   "universeSource": "SECURITY_MASTER",
   "universeFile": "quant/data/market/security-master/eligibility.json",
@@ -21,10 +21,10 @@
   },
   "run": {
     "source": "github-actions",
-    "runId": "45713755331",
-    "commit": "5b49116d7b46e46e2e9df061e56b67da76d22a77",
-    "runtimeMs": 13952,
-    "msPerSymbol": 2
+    "runId": "45905178084",
+    "commit": "a404e91fa819b1798feba945a6ac783f4edb233a",
+    "runtimeMs": 24228,
+    "msPerSymbol": 4
   },
   "redistribution": {
     "priceLevels": "WITHHELD",
@@ -39,8 +39,8 @@
       "id": "aboveSMA20",
       "label": "Alle Aktien ueber SMA20",
       "kind": "boolean",
-      "matched": 1880,
-      "notMatched": 4071,
+      "matched": 1881,
+      "notMatched": 4070,
       "notEvaluable": 0,
       "evaluatedOf": 5951,
       "tickers": [
@@ -103,8 +103,8 @@
       "id": "aboveSMA50",
       "label": "Alle Aktien ueber SMA50",
       "kind": "boolean",
-      "matched": 1936,
-      "notMatched": 4014,
+      "matched": 1937,
+      "notMatched": 4013,
       "notEvaluable": 1,
       "evaluatedOf": 5951,
       "tickers": [
@@ -619,8 +619,8 @@
       "id": "volumeBreakout",
       "label": "Volumen-Ausbruch (Tagesvolumen >= 2x 20-Tage-Mittel)",
       "kind": "boolean",
-      "matched": 304,
-      "notMatched": 5479,
+      "matched": 303,
+      "notMatched": 5480,
       "notEvaluable": 168,
       "evaluatedOf": 5951,
       "tickers": [

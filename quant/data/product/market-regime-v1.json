@@ -23,8 +23,8 @@
    "id": "above50",
    "label": "Anteil über der 50-Tage-Linie",
    "why": "Dieselbe Frage auf kürzerer Sicht. Weicht sie stark von above200 ab, ist die Lage im Umbruch - was hier beschrieben, aber nicht bewertet wird.",
-   "share": 0.30875068794716565,
-   "hits": 1683,
+   "share": 0.3089341405246744,
+   "hits": 1684,
    "observed": 5451,
    "coverage": 1
   },
@@ -78,7 +78,7 @@
  },
  "notAForecast": "Dies ist eine Zustandsbeschreibung der Gegenwart. Es ist kein Timing-Signal, keine Empfehlung, keine Prognose und keine Aussage darüber, ob ein Einstieg jetzt günstig ist. Wer daraus eine Handlung ableitet, tut das ohne Grundlage in dieser Methodik.",
  "schemaVersion": "market-regime-1.0.0",
- "generatedAt": "2026-11-26T00:42:09.000Z",
+ "generatedAt": "2026-11-27T00:23:29.000Z",
  "asOf": "2026-11-25",
  "scope": {
   "universe": "Die Titel der veröffentlichten technischen Materialisierung. Das ist NICHT der Gesamtmarkt und kein Index: es ist das gemessene Produktuniversum, und die Zahlen beziehen sich ausschließlich darauf.",
@@ -130,14 +130,16 @@
     "requires": "Belegtes Verhalten an den Schwellen, ohne Flattern"
    }
   ],
-  "observations": 41,
+  "observations": 42,
   "minimumRequired": 12
  },
  "publishedObservation": {
   "asOf": "2026-11-25",
   "rewritten": false,
-  "written": true,
-  "measuredNowOver": 5451
+  "publishedRegime": "BROAD_WEAKNESS",
+  "publishedUniverse": 5451,
+  "measuredNowOver": 5451,
+  "note": "Die veroeffentlichte Beobachtung dieses Stichtags bleibt unveraendert. Heute wuerde derselbe Tag ueber eine andere Grundgesamtheit gemessen - ein Anteil laesst sich nicht erweitern, und ein veroeffentlichter Vergangenheitswert wird nicht umgeschrieben."
  },
  "history": {
   "measure": "above200",

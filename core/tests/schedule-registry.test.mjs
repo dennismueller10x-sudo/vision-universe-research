@@ -237,3 +237,22 @@ test("SZ-CI-1 · Company Intelligence Takte (25.11.2026): Werktags-Slot 05:05, W
   assert.match(wf("company-intelligence-refresh.yml"), /CI_GATE_GUARD_HOURS: '0\.5'/);
   assert.ok(ci.every((e) => e.timer === "waker"));
 });
+
+test("SZ-CI-2 · profile-source-Takt 16:47 UTC: haelt die Refresh-Gruppe nicht in der Fruehe und trifft werktags keinen Refresh-Slot", () => {
+  const ps = REG.entries.find((e) => e.id === "company-intelligence-profile-source");
+  assert.equal(ps.cron, "47 16 * * *", "taeglich, auch am Wochenende");
+  const min = (cron) => { const [m, h] = cron.split(" "); return Number(h) * 60 + Number(m); };
+  const start = min(ps.cron), ende = start + 110; // ungefaehr 70-110 min
+  const refresh = REG.entries.filter((e) => e.workflow === "company-intelligence-refresh.yml");
+  // Werktags: kein Refresh-Start im Fenster 16:47-18:40 und kein Refresh-Start in der Fruehe, der auf profile-source wartet.
+  for (const e of refresh.filter((x) => x.cron.endsWith(" * * 1-5"))) {
+    const m = min(e.cron);
+    assert.ok(m < start - 90 || m > ende, e.id + " trifft profile-source (" + m + ")");
+  }
+  // Wochenende alle 3 h (":17"): hoechstens ein Slot (18:17) im Fenster, er wartet hoechstens bis ca. 18:40.
+  const imFenster = [];
+  for (let h = 0; h < 24; h += 3) { const m = h * 60 + 17; if (m >= start && m <= ende) imFenster.push(m); }
+  assert.deepEqual(imFenster, [18 * 60 + 17]);
+  // Vor 07:00 liegt kein profile-source-Takt mehr (Verdraengung des 05:05-Slots am 26.11.2026).
+  assert.ok(start >= 12 * 60 + 30, "nicht in der Fruehe");
+});
