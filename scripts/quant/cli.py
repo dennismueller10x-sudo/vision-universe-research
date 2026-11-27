@@ -1293,6 +1293,12 @@ def cmd_canonical(args):
     index, written = [], set()
     nur_vorhandene = bool(getattr(args, "only_existing", False))
     for document in documents:
+        if nur_vorhandene and not _ticker_of(document, declared):
+            # Ohne Kuerzel kein vorhandenes Buendel (Buendel heissen nach dem Kuerzel). Ein Emittent, der das
+            # Universum verlassen hat und dessen SEC-Eintrag kein Kuerzel mehr nennt (ANSS nach der Uebernahme,
+            # Tageslauf 26.11.2026), ist fuer die selektive Auffrischung kein Fehler.
+            print(f"  {document['cik']}: kein Kuerzel, kein vorhandenes Buendel - uebersprungen")
+            continue
         ticker = _canonical_ticker(document, declared)
         if nur_vorhandene and not (CANONICAL_DIR / f"{ticker}.json").exists():
             continue
