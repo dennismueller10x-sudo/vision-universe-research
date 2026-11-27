@@ -340,6 +340,16 @@
    "note": "pruefung ist Pflicht-Auswahl ohne passende Option; beim Takt waehlt die Weiche nach dem Cron (sec_veroeffentlichung)"
   },
   {
+   "id": "ci-budget",
+   "workflow": "ci.yml",
+   "cron": "10 5 * * 2-6",
+   "timer": "waker",
+   "inputs": {
+    "pruefung": "vu2-browser-qa"
+   },
+   "note": "Budget-Alarm 26.11.2026: taeglich nach dem Marktdaten-Refresh (22:30 Mo-Fr) und dem Voll-Release; der Job vu2-browser-qa misst home, screener und stock gegen scripts/vu2/resource-budget.mjs, rot oeffnet ein Issue (Label pipeline-alarm), gruen schliesst es (Job budget-alarm in ci.yml)."
+  },
+  {
    "id": "multi-asset-data",
    "workflow": "multi-asset-data.yml",
    "cron": "20 */3 * * *",

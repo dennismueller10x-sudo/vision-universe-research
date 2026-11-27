@@ -1,7 +1,7 @@
 {
  "schemaVersion": "vu-ti-api-3.0.0",
  "version": "elliott-markets-1.0.0",
- "generatedAt": "2026-11-26T06:13:42.445Z",
+ "generatedAt": "2026-11-27T06:02:10.915Z",
  "reference": "2026-11-25",
  "rows": [
   {
@@ -650,12 +650,12 @@
   {
    "t": "BTCUSD",
    "tf": "1W",
-   "asOf": "2026-11-25",
-   "close": 60385.9042,
+   "asOf": "2026-11-26",
+   "close": 60499.7717,
    "outlook": "BEARISH",
    "structure": "DOWNTREND_ADVANCING",
    "confidence": "LOW",
-   "agreement": -0.6201,
+   "agreement": -0.619,
    "template": "CONTINUATION",
    "status": "EXTENDED",
    "direction": "BEARISH",
@@ -665,11 +665,11 @@
    ],
    "invalidation": 84510,
    "t1": [
-    58835,
+    58830,
     60805
    ],
    "rr": 0.5742,
-   "distAtr": 2.28,
+   "distAtr": 2.24,
    "elliott": "FLAT:C",
    "elliottClarity": "MODERATE",
    "elliottApplicable": "LOW",
@@ -699,7 +699,7 @@
      "invalidation": 84510,
      "confirmation": 60012.093,
      "target1": [
-      58835,
+      58830,
       60805
      ]
     },
@@ -743,12 +743,12 @@
   {
    "t": "ETHUSD",
    "tf": "1W",
-   "asOf": "2026-11-25",
-   "close": 1690.528,
+   "asOf": "2026-11-26",
+   "close": 1687.627,
    "outlook": "BEARISH",
    "structure": "DOWNTREND_ADVANCING",
    "confidence": "LOW",
-   "agreement": -0.6177,
+   "agreement": -0.6185,
    "template": "CONTINUATION",
    "status": "EXTENDED",
    "direction": "BEARISH",
@@ -762,7 +762,7 @@
     1615
    ],
    "rr": 3.8466,
-   "distAtr": 3.3,
+   "distAtr": 3.33,
    "elliott": "ZIGZAG:C",
    "elliottClarity": "MODERATE",
    "elliottApplicable": "LOW",
@@ -836,12 +836,12 @@
   {
    "t": "SOLUSD",
    "tf": "1W",
-   "asOf": "2026-11-25",
-   "close": 70.3894,
+   "asOf": "2026-11-26",
+   "close": 70.9407,
    "outlook": "BEARISH",
    "structure": "DOWNTREND_ADVANCING",
    "confidence": "LOW",
-   "agreement": -0.8613,
+   "agreement": -0.8575,
    "template": "CONTINUATION",
    "status": "APPROACHING",
    "direction": "BEARISH",
@@ -855,7 +855,7 @@
     65.5
    ],
    "rr": 1.5748,
-   "distAtr": 1.72,
+   "distAtr": 1.62,
    "elliott": "FLAT:C",
    "elliottClarity": "MODERATE",
    "elliottApplicable": "LOW",
@@ -929,14 +929,14 @@
   {
    "t": "XRPUSD",
    "tf": "1W",
-   "asOf": "2026-11-25",
-   "close": 0.9367,
+   "asOf": "2026-11-26",
+   "close": 0.9429,
    "outlook": "BEARISH",
    "structure": "DOWNTREND_ADVANCING",
    "confidence": "LOW",
-   "agreement": -0.7918,
+   "agreement": -0.7903,
    "template": "CONTINUATION",
-   "status": "EXTENDED",
+   "status": "APPROACHING",
    "direction": "BEARISH",
    "entry": [
     1.1,
@@ -948,7 +948,7 @@
     0.94
    ],
    "rr": 1.2065,
-   "distAtr": 2.02,
+   "distAtr": 1.94,
    "elliott": "WXY:Y",
    "elliottClarity": "MODERATE",
    "elliottApplicable": "LOW",
@@ -985,7 +985,7 @@
     "flags": {
      "inEntryZone": false,
      "invalidated": false,
-     "target1Reached": true,
+     "target1Reached": false,
      "confirmed": true
     }
    },
@@ -1022,18 +1022,18 @@
   {
    "t": "XAUUSD",
    "tf": "1W",
-   "asOf": "2026-11-25",
-   "close": 3547.9,
+   "asOf": "2026-11-26",
+   "close": 3596.73,
    "outlook": "BEARISH",
    "structure": "DOWNTREND_ADVANCING",
    "confidence": "LOW",
-   "agreement": -0.8892,
+   "agreement": -0.8697,
    "template": "CONTINUATION",
    "status": "APPROACHING",
    "direction": "BEARISH",
    "entry": [
-    3755,
-    4010
+    3750,
+    4015
    ],
    "invalidation": 4070,
    "t1": [
@@ -1041,7 +1041,7 @@
     3565
    ],
    "rr": 1.8995,
-   "distAtr": 1.66,
+   "distAtr": 1.19,
    "elliott": "FLAT:done",
    "elliottClarity": "LOW",
    "elliottApplicable": "LOW",
@@ -1061,13 +1061,13 @@
     "base": 0.3143
    },
    "alerts": {
-    "scenarioId": "tis_d1e9a96f5558",
+    "scenarioId": "tis_4c3b91ad5416",
     "outlook": "BEARISH",
     "confidence": "LOW",
     "direction": "BEARISH",
     "levels": {
-     "entryLow": 3755,
-     "entryHigh": 4010,
+     "entryLow": 3750,
+     "entryHigh": 4015,
      "invalidation": 4070,
      "confirmation": null,
      "target1": [
@@ -1078,7 +1078,7 @@
     "flags": {
      "inEntryZone": false,
      "invalidated": false,
-     "target1Reached": true,
+     "target1Reached": false,
      "confirmed": false
     }
    },
@@ -1115,8 +1115,8 @@
   {
    "t": "XAGUSD",
    "tf": "1W",
-   "asOf": "2026-11-25",
-   "close": 40.7365,
+   "asOf": "2026-11-26",
+   "close": 41.9615,
    "outlook": "NEUTRAL",
    "structure": "CORRECTION_IN_UPTREND",
    "confidence": "LOW",
@@ -1164,8 +1164,8 @@
      "l": "(C)"
     },
     "t1": {
-     "lo": 126,
-     "hi": 178.6,
+     "lo": 126.3,
+     "hi": 179,
      "dir": "UP",
      "l": "[3]"
     },
@@ -1434,14 +1434,6 @@
   }
  ],
  "skipped": [],
- "events": [
-  {
-   "t": "NATGAS",
-   "asOf": "2026-11-24",
-   "close": 3.3,
-   "type": "RECOUNT",
-   "text": "Neue Lesart: Welle [C] statt [1]"
-  }
- ],
+ "events": [],
  "note": "Indizes über ETFs (kein lizenzierter Indexkurs), Krypto, Edelmetalle und Energie aus den Multi-Asset-Reihen; Wochenschluss, gleiche Analyse wie bei Aktien."
 }
