@@ -1,86 +1,91 @@
 {
   "schemaVersion": "freshness-health-1.0.0",
   "contractVersion": "freshness-contract-1.0.0",
-  "checkedAt": "2026-11-27T22:38:19.893Z",
+  "checkedAt": "2026-11-27T23:35:50.930Z",
   "target": "repository",
   "market": {
     "state": "AFTER_HOURS",
     "localDate": "2026-11-27",
-    "localTime": "17:38:19",
+    "localTime": "18:35:50",
     "lastCompletedSession": "2026-11-27",
     "currentSession": "2026-11-27",
     "expectedIntradaySession": "2026-11-27"
   },
   "intraday": {
-    "indexGeneratedAt": "2026-11-27T22:38:02.559Z",
+    "indexGeneratedAt": "2026-11-27T18:00:49.662Z",
     "indexSchema": "intraday-index-1.1.0",
     "displaySession": {
       "sessionDate": "2026-11-27",
       "kind": "current",
-      "isRunning": false,
-      "isComplete": true
+      "isRunning": true,
+      "isComplete": false
     },
     "dataSession": {
       "sessionDate": "2026-11-27",
-      "asOf": "2026-11-27T18:55:00.000Z",
-      "asOfLocal": "13:55",
+      "asOf": "2026-11-27T18:00:00.000Z",
+      "asOfLocal": "13:00",
       "regularComplete": false,
-      "snapshots": 4641,
-      "fetchedAfterClose": true,
-      "afterCloseSnapshots": 4641,
-      "finalSlotSnapshots": 4195,
-      "universe": true
+      "snapshots": 1369,
+      "fetchedAfterClose": false,
+      "afterCloseSnapshots": 0,
+      "finalSlotSnapshots": 0,
+      "universe": false
     },
-    "dataState": "LAST_SESSION",
-    "dataReason": "sessionCompleteNoLateTrades",
-    "dataLabel": "Heute · Schluss · letzter Kurs 13:55",
-    "entries": 1393,
+    "dataState": "STALE",
+    "dataReason": "closeMissing",
+    "dataLabel": "Heute · Stand 13:00 · nicht aktuell",
+    "entries": 1392,
     "byState": {
       "LIVE": 0,
-      "LAST_SESSION": 1375,
-      "STALE": 18,
+      "LAST_SESSION": 0,
+      "STALE": 1392,
       "UNAVAILABLE": 0
     },
     "byReason": {
-      "lastCompletedSession": 1350,
-      "sessionCompleteNoLateTrades": 25,
-      "lastSessionMissing": 18
+      "closeMissing": 1369,
+      "lastSessionMissing": 23
     },
     "staleSample": [
-      "AERT",
-      "AIFA",
-      "AIRT",
-      "AKA",
-      "CLIK",
-      "CPHC",
-      "CRE",
-      "DSS",
-      "GROV",
-      "ICG",
-      "JFIN",
-      "ONEG",
-      "SENEB",
-      "SGU",
-      "VAI",
-      "VCIG",
-      "WLKP",
-      "WSBK"
+      "A",
+      "AAMI",
+      "AAOI",
+      "AAON",
+      "AAPL",
+      "ABBV",
+      "ABG",
+      "ABLV",
+      "ABM",
+      "ABNB",
+      "ABT",
+      "ABTC",
+      "ABX",
+      "ACCO",
+      "ACEL",
+      "ACHC",
+      "ACHR",
+      "ACM",
+      "ACMR",
+      "ACN",
+      "ACNB",
+      "ACOG",
+      "ACTG",
+      "ACU",
+      "AD"
     ],
     "universeSessions": [
-      "2026-11-25",
-      "2026-11-27"
+      "2026-11-25"
     ],
-    "universeCoversLastSession": true,
-    "state": "OK"
+    "universeCoversLastSession": false,
+    "state": "STALE"
   },
   "daily": {
-    "universeAsOf": "2026-11-25",
-    "generatedAt": "2026-11-26T23:34:59.533Z",
+    "universeAsOf": "2026-11-27",
+    "generatedAt": "2026-11-27T23:35:44.264Z",
     "state": "LAST_SESSION",
     "basis": "series",
     "summaryState": "LAST_SESSION",
-    "reason": "closePendingWithinGrace",
-    "label": "Schluss Mi., 25.11. · Freitag folgt",
+    "reason": "lastCompletedSession",
+    "label": "Schluss Heute",
     "seriesState": "LAST_SESSION",
     "summaryContradictsSeries": false,
     "expectedSession": "2026-11-27",
@@ -93,13 +98,16 @@
         "UNAVAILABLE": 0
       },
       "byReason": {
-        "closePendingWithinGrace": 40
+        "lastCompletedSession": 40
       },
       "staleSample": [],
       "seriesIndexCount": 5993
     }
   },
-  "overall": "OK",
-  "findings": [],
+  "overall": "STALE",
+  "findings": [
+    "Intraday STALE: Datenstand 2026-11-27, erwartet 2026-11-27 (closeMissing)",
+    "Universumslauf fehlt: Sitzung 2026-11-27 liegt nur fuer den Discover-Umfang vor (5.6 h nach Schluss)"
+  ],
   "note": "Health-Check des Freshness-Vertrags (quant/engines/realtime/freshness.js). Keine Kurse - nur Zustaende, Zaehlungen, Gruende."
 }

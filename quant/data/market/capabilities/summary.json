@@ -1,6 +1,6 @@
 {
   "version": "capability-matrix-1.0.0",
-  "generatedAt": "2026-11-27T22:38:19.739Z",
+  "generatedAt": "2026-11-27T23:35:49.163Z",
   "master": {
     "file": "quant/data/market/security-master/eligibility.json",
     "version": "us-security-master-1.3.0",
@@ -9,10 +9,10 @@
     "productUniverse": 6001
   },
   "sources": {
-    "ingestStatus": "2026-11-26T23:32:04.891Z",
-    "factors": "2026-11-26T23:33:24.834Z",
+    "ingestStatus": "2026-11-27T23:32:28.265Z",
+    "factors": "2026-11-27T23:34:01.295Z",
     "intradaySession": "2026-11-27",
-    "discover": "2026-11-26T23:34:59.533Z"
+    "discover": "2026-11-27T23:35:44.264Z"
   },
   "counts": {
     "companyMasterTotal": 7834,
@@ -23,30 +23,31 @@
     "marketDataFetched": 6001,
     "historicalAvailable": 5516,
     "historicalQualityAccepted": 6000,
-    "intradayAvailable": 4640,
-    "liveCapable": 1375,
-    "factorEligible": 5951,
+    "intradayAvailable": 1369,
+    "liveCapable": 1326,
+    "factorEligible": 5949,
     "fundamentals": 5377,
     "fundamentals10y": 2315,
     "fundamentals5y": 3575,
     "fundamentalsTtm": 5363,
-    "discoverEligible": 5408,
-    "stockPages": 5501,
+    "discoverEligible": 5406,
+    "stockPages": 5499,
     "namesMissing": 20,
     "providerMappingsMissing": 2
   },
   "gapReasons": {
-    "NOT_IN_LIVE_SCOPE": 3265,
-    "NO_IEX_BARS": 1359,
+    "NO_INTRADAY_SNAPSHOT": 4604,
     "NO_FUNDAMENTALS:NO_CIK": 508,
-    "NO_STOCK_PAGE": 500,
+    "NO_STOCK_PAGE": 502,
     "INSUFFICIENT_HISTORY": 476,
     "NOT_CONSUMER_INSTRUMENT:PREFERRED": 426,
     "NO_FUNDAMENTALS:NOT_IN_COMPANYFACTS": 116,
     "NOT_TRADING:STALE_SERIES": 88,
     "INACTIVE": 66,
-    "NO_DISCOVER_CARD": 60,
-    "NO_FACTOR_ROW:FAIL": 48,
+    "NO_DISCOVER_CARD": 62,
+    "NO_FACTOR_ROW:FAIL": 50,
+    "NOT_IN_LIVE_SCOPE": 43,
+    "NO_IEX_BARS": 28,
     "NAME_MISSING": 20,
     "NO_COMPACT_SERIES": 8,
     "NOT_CONSUMER_INSTRUMENT:WARRANT": 6,
@@ -54,7 +55,6 @@
     "NOT_CONSUMER_INSTRUMENT:RIGHT": 4,
     "NOT_CONSUMER_INSTRUMENT:UNIT": 4,
     "NO_FACTOR_ROW:SOURCE_MISSING": 2,
-    "NO_INTRADAY_SNAPSHOT": 2,
     "PROVIDER_MAPPING_MISSING": 2,
     "QUALITY_REJECTED:adjustmentContradicted": 1
   },
@@ -266,7 +266,7 @@
         "HAS_PROVIDER_MAPPING": true,
         "HAS_MARKET_DATA": true,
         "HAS_HISTORICAL": true,
-        "HAS_INTRADAY": true,
+        "HAS_INTRADAY": false,
         "HAS_LIVE": false,
         "HAS_FACTORS": true,
         "HAS_FUNDAMENTALS": true,
@@ -278,7 +278,7 @@
         "HAS_STOCK_PAGE": true
       },
       "gaps": [
-        "NOT_IN_LIVE_SCOPE"
+        "NO_INTRADAY_SNAPSHOT"
       ]
     },
     {
