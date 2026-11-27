@@ -1,15 +1,15 @@
 {
  "schemaVersion": "ownership-signals-manifest-1.0.0",
  "engineVersion": "ownership-signals-1.0.0",
- "generatedAt": "2026-11-03T13:32:20.812Z",
- "asOf": "2026-11-03",
+ "generatedAt": "2026-11-27T13:01:26.379Z",
+ "asOf": "2026-11-27",
  "source": "SEC_EDGAR",
  "license": "SEC EDGAR-Daten sind gemeinfrei (public domain); abgeleitete Kennzahlen je Emittent.",
  "access": {
   "userAgent": "SEC_USER_AGENT (Kontaktadresse Pflicht)",
   "ratePerSecondMax": 9,
   "sourceMode": "network",
-  "requests": 9048
+  "requests": 9008
  },
  "sources": {
   "pages": {
@@ -70,37 +70,37 @@
   "months": 130
  },
  "coverage": {
-  "universeTickers": 6686,
-  "universeIssuersWithCik": 5178,
+  "universeTickers": 6001,
+  "universeIssuersWithCik": 5338,
   "cusipMap": {
-   "cusips": 7721,
-   "tickers": 6179,
-   "ambiguousSymbols": 6,
-   "rejectedReusedSymbols": 556,
-   "latestObservation": "2026-10-14",
-   "ftdFiles": 296,
-   "ftdMissing": 4
+   "cusips": 7091,
+   "tickers": 5587,
+   "ambiguousSymbols": 5,
+   "rejectedReusedSymbols": 423,
+   "latestObservation": "2026-10-30",
+   "ftdFiles": 297,
+   "ftdMissing": 3
   },
   "insider": {
    "datasets": 46,
    "missing": [],
    "coverageEnd": "2026-09-30",
-   "accessionsInUniverse": 434670,
-   "transactionsInUniverse": 962616,
-   "purchasesByInsiders": 174185,
+   "accessionsInUniverse": 442028,
+   "transactionsInUniverse": 978605,
+   "purchasesByInsiders": 183115,
    "implausibleValuesNulled": 73,
-   "salesByInsiders": 752603,
-   "issuersWithTransactions": 4264,
+   "salesByInsiders": 759511,
+   "issuersWithTransactions": 4408,
    "amendmentsSkipped": 41329,
    "planColumnSeen": true,
    "form4GapFill": {
-    "needed": 8594,
-    "cached": 0,
-    "fetched": 8594,
+    "needed": 18015,
+    "cached": 9461,
+    "fetched": 8554,
     "failed": 0,
     "cap": 25000,
     "from": "2026-10-01",
-    "to": "2026-11-03",
+    "to": "2026-11-27",
     "missingFilingDays": 0,
     "complete": true
    }
@@ -108,12 +108,12 @@
   "schedules": {
    "indexQuarters": 47,
    "indexMissing": [],
-   "issuersWithFilings": 5042,
-   "filings": 336411,
-   "resolved": 189078,
-   "ambiguous": 2693,
-   "filerOnly": 10746,
-   "notInUniverse": 133894
+   "issuersWithFilings": 5227,
+   "filings": 340587,
+   "resolved": 195278,
+   "ambiguous": 2850,
+   "filerOnly": 10793,
+   "notInUniverse": 131666
   },
   "thirteenF": {
    "datasets": 46,
@@ -138,7 +138,7 @@
    "duplicateOriginals": 22,
    "duplicateAccessions": 0,
    "infoRows": 107096270,
-   "positions": 43757981,
+   "positions": 43195054,
    "unitThousands": 165084,
    "unitDollars": 114969,
    "unitOverrides": 11821,
@@ -189,15 +189,25 @@
     "2025-12-31",
     "2026-03-31",
     "2026-06-30"
+   ],
+   "currentPeriod": "2026-06-30",
+   "deadlinePeriod": "2026-09-30",
+   "periodFallback": true,
+   "periodFallbacks": [
+    {
+     "date": "2026-11-27",
+     "deadlinePeriod": "2026-09-30",
+     "usedPeriod": "2026-06-30"
+    }
    ]
   },
-  "sharesBaseIssuers": 4406,
-  "tickersWithAnySignal": 6113,
-  "tickersWithInsiderTx": 4411,
-  "tickersWithSchedule": 5195,
-  "tickersWith13F": 5806,
-  "tickersWithSharesBase": 4406,
-  "historyRows": 542334
+  "sharesBaseIssuers": 4571,
+  "tickersWithAnySignal": 5603,
+  "tickersWithInsiderTx": 4553,
+  "tickersWithSchedule": 5374,
+  "tickersWith13F": 5371,
+  "tickersWithSharesBase": 4571,
+  "historyRows": 526551
  },
  "datasets": {
   "insider": [
@@ -205,7 +215,7 @@
     "name": "2015q2_form345.zip",
     "start": "2015-04-01",
     "end": "2015-06-30",
-    "accessions": 7570,
+    "accessions": 7640,
     "transactions": 28755,
     "planColumn": false
    },
@@ -213,7 +223,7 @@
     "name": "2015q3_form345.zip",
     "start": "2015-07-01",
     "end": "2015-09-30",
-    "accessions": 7150,
+    "accessions": 7251,
     "transactions": 29386,
     "planColumn": false
    },
@@ -221,7 +231,7 @@
     "name": "2015q4_form345.zip",
     "start": "2015-10-01",
     "end": "2015-12-31",
-    "accessions": 7220,
+    "accessions": 7293,
     "transactions": 29647,
     "planColumn": false
    },
@@ -229,7 +239,7 @@
     "name": "2016q1_form345.zip",
     "start": "2016-01-01",
     "end": "2016-03-31",
-    "accessions": 7078,
+    "accessions": 7119,
     "transactions": 27320,
     "planColumn": false
    },
@@ -237,7 +247,7 @@
     "name": "2016q2_form345.zip",
     "start": "2016-04-01",
     "end": "2016-06-30",
-    "accessions": 7146,
+    "accessions": 7193,
     "transactions": 24754,
     "planColumn": false
    },
@@ -245,7 +255,7 @@
     "name": "2016q3_form345.zip",
     "start": "2016-07-01",
     "end": "2016-09-30",
-    "accessions": 7653,
+    "accessions": 7718,
     "transactions": 25255,
     "planColumn": false
    },
@@ -253,7 +263,7 @@
     "name": "2016q4_form345.zip",
     "start": "2016-10-01",
     "end": "2016-12-31",
-    "accessions": 7942,
+    "accessions": 8091,
     "transactions": 26671,
     "planColumn": false
    },
@@ -261,7 +271,7 @@
     "name": "2017q1_form345.zip",
     "start": "2017-01-01",
     "end": "2017-03-31",
-    "accessions": 8799,
+    "accessions": 8889,
     "transactions": 28890,
     "planColumn": false
    },
@@ -269,7 +279,7 @@
     "name": "2017q2_form345.zip",
     "start": "2017-04-01",
     "end": "2017-06-30",
-    "accessions": 8050,
+    "accessions": 8092,
     "transactions": 27789,
     "planColumn": false
    },
@@ -277,7 +287,7 @@
     "name": "2017q3_form345.zip",
     "start": "2017-07-01",
     "end": "2017-09-30",
-    "accessions": 7299,
+    "accessions": 7363,
     "transactions": 22987,
     "planColumn": false
    },
@@ -285,7 +295,7 @@
     "name": "2017q4_form345.zip",
     "start": "2017-10-01",
     "end": "2017-12-31",
-    "accessions": 8076,
+    "accessions": 8210,
     "transactions": 25536,
     "planColumn": false
    },
@@ -293,7 +303,7 @@
     "name": "2018q1_form345.zip",
     "start": "2018-01-01",
     "end": "2018-03-31",
-    "accessions": 8606,
+    "accessions": 8673,
     "transactions": 28515,
     "planColumn": false
    },
@@ -301,7 +311,7 @@
     "name": "2018q2_form345.zip",
     "start": "2018-04-01",
     "end": "2018-06-30",
-    "accessions": 8170,
+    "accessions": 8227,
     "transactions": 26980,
     "planColumn": false
    },
@@ -309,7 +319,7 @@
     "name": "2018q3_form345.zip",
     "start": "2018-07-01",
     "end": "2018-09-30",
-    "accessions": 8463,
+    "accessions": 8495,
     "transactions": 26774,
     "planColumn": false
    },
@@ -317,7 +327,7 @@
     "name": "2018q4_form345.zip",
     "start": "2018-10-01",
     "end": "2018-12-31",
-    "accessions": 9409,
+    "accessions": 9517,
     "transactions": 38762,
     "planColumn": false
    },
@@ -325,7 +335,7 @@
     "name": "2019q1_form345.zip",
     "start": "2019-01-01",
     "end": "2019-03-31",
-    "accessions": 9432,
+    "accessions": 9474,
     "transactions": 31903,
     "planColumn": false
    },
@@ -333,7 +343,7 @@
     "name": "2019q2_form345.zip",
     "start": "2019-04-01",
     "end": "2019-06-30",
-    "accessions": 9044,
+    "accessions": 9089,
     "transactions": 29462,
     "planColumn": false
    },
@@ -341,7 +351,7 @@
     "name": "2019q3_form345.zip",
     "start": "2019-07-01",
     "end": "2019-09-30",
-    "accessions": 8412,
+    "accessions": 8491,
     "transactions": 26625,
     "planColumn": false
    },
@@ -349,7 +359,7 @@
     "name": "2019q4_form345.zip",
     "start": "2019-10-01",
     "end": "2019-12-31",
-    "accessions": 8289,
+    "accessions": 8313,
     "transactions": 24664,
     "planColumn": false
    },
@@ -357,7 +367,7 @@
     "name": "2020q1_form345.zip",
     "start": "2020-01-01",
     "end": "2020-03-31",
-    "accessions": 10661,
+    "accessions": 10764,
     "transactions": 30886,
     "planColumn": false
    },
@@ -365,7 +375,7 @@
     "name": "2020q2_form345.zip",
     "start": "2020-04-01",
     "end": "2020-06-30",
-    "accessions": 8669,
+    "accessions": 8752,
     "transactions": 27872,
     "planColumn": false
    },
@@ -373,7 +383,7 @@
     "name": "2020q3_form345.zip",
     "start": "2020-07-01",
     "end": "2020-09-30",
-    "accessions": 9137,
+    "accessions": 9195,
     "transactions": 29468,
     "planColumn": false
    },
@@ -381,7 +391,7 @@
     "name": "2020q4_form345.zip",
     "start": "2020-10-01",
     "end": "2020-12-31",
-    "accessions": 10679,
+    "accessions": 10725,
     "transactions": 35004,
     "planColumn": false
    },
@@ -389,7 +399,7 @@
     "name": "2021q1_form345.zip",
     "start": "2021-01-01",
     "end": "2021-03-31",
-    "accessions": 12178,
+    "accessions": 12222,
     "transactions": 42491,
     "planColumn": false
    },
@@ -397,7 +407,7 @@
     "name": "2021q2_form345.zip",
     "start": "2021-04-01",
     "end": "2021-06-30",
-    "accessions": 11647,
+    "accessions": 11688,
     "transactions": 38879,
     "planColumn": false
    },
@@ -405,7 +415,7 @@
     "name": "2021q3_form345.zip",
     "start": "2021-07-01",
     "end": "2021-09-30",
-    "accessions": 10730,
+    "accessions": 10779,
     "transactions": 38365,
     "planColumn": false
    },
@@ -413,7 +423,7 @@
     "name": "2021q4_form345.zip",
     "start": "2021-10-01",
     "end": "2021-12-31",
-    "accessions": 11068,
+    "accessions": 11154,
     "transactions": 39789,
     "planColumn": false
    },
@@ -421,7 +431,7 @@
     "name": "2022q1_form345.zip",
     "start": "2022-01-01",
     "end": "2022-03-31",
-    "accessions": 9405,
+    "accessions": 9439,
     "transactions": 29906,
     "planColumn": false
    },
@@ -429,7 +439,7 @@
     "name": "2022q2_form345.zip",
     "start": "2022-04-01",
     "end": "2022-06-30",
-    "accessions": 9091,
+    "accessions": 9151,
     "transactions": 25529,
     "planColumn": false
    },
@@ -437,7 +447,7 @@
     "name": "2022q3_form345.zip",
     "start": "2022-07-01",
     "end": "2022-09-30",
-    "accessions": 8155,
+    "accessions": 8254,
     "transactions": 23654,
     "planColumn": false
    },
@@ -445,7 +455,7 @@
     "name": "2022q4_form345.zip",
     "start": "2022-10-01",
     "end": "2022-12-31",
-    "accessions": 9246,
+    "accessions": 9324,
     "transactions": 26624,
     "planColumn": false
    },
@@ -453,7 +463,7 @@
     "name": "2023q1_form345.zip",
     "start": "2023-01-01",
     "end": "2023-03-31",
-    "accessions": 10415,
+    "accessions": 10440,
     "transactions": 26259,
     "planColumn": true
    },
@@ -461,7 +471,7 @@
     "name": "2023q2_form345.zip",
     "start": "2023-04-01",
     "end": "2023-06-30",
-    "accessions": 9935,
+    "accessions": 10027,
     "transactions": 23616,
     "planColumn": true
    },
@@ -469,7 +479,7 @@
     "name": "2023q3_form345.zip",
     "start": "2023-07-01",
     "end": "2023-09-30",
-    "accessions": 9297,
+    "accessions": 9366,
     "transactions": 23114,
     "planColumn": true
    },
@@ -477,7 +487,7 @@
     "name": "2023q4_form345.zip",
     "start": "2023-10-01",
     "end": "2023-12-31",
-    "accessions": 9455,
+    "accessions": 9541,
     "transactions": 24973,
     "planColumn": true
    },
@@ -485,7 +495,7 @@
     "name": "2024q1_form345.zip",
     "start": "2024-01-01",
     "end": "2024-03-31",
-    "accessions": 11696,
+    "accessions": 11723,
     "transactions": 32720,
     "planColumn": true
    },
@@ -493,7 +503,7 @@
     "name": "2024q2_form345.zip",
     "start": "2024-04-01",
     "end": "2024-06-30",
-    "accessions": 9902,
+    "accessions": 10001,
     "transactions": 25336,
     "planColumn": true
    },
@@ -501,7 +511,7 @@
     "name": "2024q3_form345.zip",
     "start": "2024-07-01",
     "end": "2024-09-30",
-    "accessions": 10091,
+    "accessions": 10124,
     "transactions": 25828,
     "planColumn": true
    },
@@ -509,7 +519,7 @@
     "name": "2024q4_form345.zip",
     "start": "2024-10-01",
     "end": "2024-12-31",
-    "accessions": 10936,
+    "accessions": 11004,
     "transactions": 30293,
     "planColumn": true
    },
@@ -517,7 +527,7 @@
     "name": "2025q1_form345.zip",
     "start": "2025-01-01",
     "end": "2025-03-31",
-    "accessions": 10702,
+    "accessions": 10697,
     "transactions": 27019,
     "planColumn": true
    },
@@ -525,7 +535,7 @@
     "name": "2025q2_form345.zip",
     "start": "2025-04-01",
     "end": "2025-06-30",
-    "accessions": 9704,
+    "accessions": 9837,
     "transactions": 23274,
     "planColumn": true
    },
@@ -533,7 +543,7 @@
     "name": "2025q3_form345.zip",
     "start": "2025-07-01",
     "end": "2025-09-30",
-    "accessions": 10104,
+    "accessions": 10179,
     "transactions": 26782,
     "planColumn": true
    },
@@ -541,7 +551,7 @@
     "name": "2025q4_form345.zip",
     "start": "2025-10-01",
     "end": "2025-12-31",
-    "accessions": 10268,
+    "accessions": 10386,
     "transactions": 27698,
     "planColumn": true
    },
@@ -549,7 +559,7 @@
     "name": "2026q1_form345.zip",
     "start": "2026-01-01",
     "end": "2026-03-31",
-    "accessions": 11525,
+    "accessions": 11588,
     "transactions": 28519,
     "planColumn": true
    },
@@ -557,7 +567,7 @@
     "name": "2026q2_form345.zip",
     "start": "2026-04-01",
     "end": "2026-06-30",
-    "accessions": 12407,
+    "accessions": 12510,
     "transactions": 32616,
     "planColumn": true
    },
@@ -565,7 +575,7 @@
     "name": "2026q3_form345.zip",
     "start": "2026-07-01",
     "end": "2026-09-30",
-    "accessions": 11433,
+    "accessions": 11560,
     "transactions": 30103,
     "planColumn": true
    }
@@ -581,271 +591,271 @@
     "name": "2015q3_form13f.zip",
     "start": "2015-07-01",
     "end": "2015-09-30",
-    "positions": 501974
+    "positions": 495495
    },
    {
     "name": "2015q4_form13f.zip",
     "start": "2015-10-01",
     "end": "2015-12-31",
-    "positions": 506146
+    "positions": 499802
    },
    {
     "name": "2016q1_form13f.zip",
     "start": "2016-01-01",
     "end": "2016-03-31",
-    "positions": 530519
+    "positions": 523532
    },
    {
     "name": "2016q2_form13f.zip",
     "start": "2016-04-01",
     "end": "2016-06-30",
-    "positions": 540919
+    "positions": 533865
    },
    {
     "name": "2016q3_form13f.zip",
     "start": "2016-07-01",
     "end": "2016-09-30",
-    "positions": 558677
+    "positions": 551199
    },
    {
     "name": "2016q4_form13f.zip",
     "start": "2016-10-01",
     "end": "2016-12-31",
-    "positions": 560915
+    "positions": 553270
    },
    {
     "name": "2017q1_form13f.zip",
     "start": "2017-01-01",
     "end": "2017-03-31",
-    "positions": 594580
+    "positions": 586309
    },
    {
     "name": "2017q2_form13f.zip",
     "start": "2017-04-01",
     "end": "2017-06-30",
-    "positions": 605153
+    "positions": 596837
    },
    {
     "name": "2017q3_form13f.zip",
     "start": "2017-07-01",
     "end": "2017-09-30",
-    "positions": 609811
+    "positions": 601431
    },
    {
     "name": "2017q4_form13f.zip",
     "start": "2017-10-01",
     "end": "2017-12-31",
-    "positions": 616926
+    "positions": 608413
    },
    {
     "name": "2018q1_form13f.zip",
     "start": "2018-01-01",
     "end": "2018-03-31",
-    "positions": 671146
+    "positions": 662008
    },
    {
     "name": "2018q2_form13f.zip",
     "start": "2018-04-01",
     "end": "2018-06-30",
-    "positions": 697069
+    "positions": 687545
    },
    {
     "name": "2018q3_form13f.zip",
     "start": "2018-07-01",
     "end": "2018-09-30",
-    "positions": 709906
+    "positions": 700753
    },
    {
     "name": "2018q4_form13f.zip",
     "start": "2018-10-01",
     "end": "2018-12-31",
-    "positions": 727257
+    "positions": 717606
    },
    {
     "name": "2019q1_form13f.zip",
     "start": "2019-01-01",
     "end": "2019-03-31",
-    "positions": 729930
+    "positions": 720163
    },
    {
     "name": "2019q2_form13f.zip",
     "start": "2019-04-01",
     "end": "2019-06-30",
-    "positions": 760670
+    "positions": 750401
    },
    {
     "name": "2019q3_form13f.zip",
     "start": "2019-07-01",
     "end": "2019-09-30",
-    "positions": 763176
+    "positions": 752964
    },
    {
     "name": "2019q4_form13f.zip",
     "start": "2019-10-01",
     "end": "2019-12-31",
-    "positions": 780320
+    "positions": 769833
    },
    {
     "name": "2020q1_form13f.zip",
     "start": "2020-01-01",
     "end": "2020-03-31",
-    "positions": 822670
+    "positions": 811580
    },
    {
     "name": "2020q2_form13f.zip",
     "start": "2020-04-01",
     "end": "2020-06-30",
-    "positions": 791566
+    "positions": 781098
    },
    {
     "name": "2020q3_form13f.zip",
     "start": "2020-07-01",
     "end": "2020-09-30",
-    "positions": 814266
+    "positions": 803676
    },
    {
     "name": "2020q4_form13f.zip",
     "start": "2020-10-01",
     "end": "2020-12-31",
-    "positions": 829442
+    "positions": 818745
    },
    {
     "name": "2021q1_form13f.zip",
     "start": "2021-01-01",
     "end": "2021-03-31",
-    "positions": 916404
+    "positions": 904542
    },
    {
     "name": "2021q2_form13f.zip",
     "start": "2021-04-01",
     "end": "2021-06-30",
-    "positions": 946332
+    "positions": 933962
    },
    {
     "name": "2021q3_form13f.zip",
     "start": "2021-07-01",
     "end": "2021-09-30",
-    "positions": 1014734
+    "positions": 1000982
    },
    {
     "name": "2021q4_form13f.zip",
     "start": "2021-10-01",
     "end": "2021-12-31",
-    "positions": 992380
+    "positions": 979189
    },
    {
     "name": "2022q1_form13f.zip",
     "start": "2022-01-01",
     "end": "2022-03-31",
-    "positions": 1076535
+    "positions": 1062150
    },
    {
     "name": "2022q2_form13f.zip",
     "start": "2022-04-01",
     "end": "2022-06-30",
-    "positions": 1075007
+    "positions": 1060124
    },
    {
     "name": "2022q3_form13f.zip",
     "start": "2022-07-01",
     "end": "2022-09-30",
-    "positions": 1063107
+    "positions": 1046936
    },
    {
     "name": "2022q4_form13f.zip",
     "start": "2022-10-01",
     "end": "2022-12-31",
-    "positions": 1056896
+    "positions": 1041034
    },
    {
     "name": "2023q1_form13f.zip",
     "start": "2023-01-01",
     "end": "2023-03-31",
-    "positions": 1135551
+    "positions": 1118713
    },
    {
     "name": "2023q2_form13f.zip",
     "start": "2023-04-01",
     "end": "2023-06-30",
-    "positions": 1112511
+    "positions": 1096433
    },
    {
     "name": "2023q3_form13f.zip",
     "start": "2023-07-01",
     "end": "2023-09-30",
-    "positions": 1139778
+    "positions": 1123572
    },
    {
     "name": "2023q4_form13f.zip",
     "start": "2023-10-01",
     "end": "2023-12-31",
-    "positions": 1203501
+    "positions": 1186058
    },
    {
     "name": "01jan2024-29feb2024_form13f.zip",
     "start": "2024-01-01",
     "end": "2024-02-29",
-    "positions": 1244334
+    "positions": 1226377
    },
    {
     "name": "01mar2024-31may2024_form13f.zip",
     "start": "2024-03-01",
     "end": "2024-05-31",
-    "positions": 1291064
+    "positions": 1272886
    },
    {
     "name": "01jun2024-31aug2024_form13f.zip",
     "start": "2024-06-01",
     "end": "2024-08-31",
-    "positions": 1397497
+    "positions": 1378450
    },
    {
     "name": "01sep2024-30nov2024_form13f.zip",
     "start": "2024-09-01",
     "end": "2024-11-30",
-    "positions": 1350120
+    "positions": 1331901
    },
    {
     "name": "01dec2024-28feb2025_form13f.zip",
     "start": "2024-12-01",
     "end": "2025-02-28",
-    "positions": 1442842
+    "positions": 1424124
    },
    {
     "name": "01mar2025-31may2025_form13f.zip",
     "start": "2025-03-01",
     "end": "2025-05-31",
-    "positions": 1441251
+    "positions": 1423633
    },
    {
     "name": "01jun2025-31aug2025_form13f.zip",
     "start": "2025-06-01",
     "end": "2025-08-31",
-    "positions": 1497070
+    "positions": 1480200
    },
    {
     "name": "01sep2025-30nov2025_form13f.zip",
     "start": "2025-09-01",
     "end": "2025-11-30",
-    "positions": 1514440
+    "positions": 1498957
    },
    {
     "name": "01dec2025-28feb2026_form13f.zip",
     "start": "2025-12-01",
     "end": "2026-02-28",
-    "positions": 1624271
+    "positions": 1609166
    },
    {
     "name": "01mar2026-31may2026_form13f.zip",
     "start": "2026-03-01",
     "end": "2026-05-31",
-    "positions": 1692895
+    "positions": 1678131
    },
    {
     "name": "01jun2026-31aug2026_form13f.zip",
     "start": "2026-06-01",
     "end": "2026-08-31",
-    "positions": 1806423
+    "positions": 1791009
    }
   ],
   "indexQuarters": [
@@ -903,7 +913,7 @@
   "insider": "Nur nicht-derivative Transaktionen mit Code P (Kauf am offenen Markt) und S (Verkauf am offenen Markt) aus Form 4 und 5. Aenderungen (4/A, 5/A) werden nicht gezaehlt. Gemeinsame Meldungen mehrerer Eigner zaehlen den Wert einmal, jeden Eigner als Insider. Nur Eigner mit Rolle Officer, Director oder 10-%-Eigner.",
   "plan10b5One": "Eine Transaktion gilt als 10b5-1-Plan, wenn die Einreichung das Kontrollkaestchen (AFF10B5ONE / aff10b5One, seit 2023) setzt oder eine an der Transaktion referenzierte Fussnote '10b5-1' nennt.",
   "schedules": "Formulare SC 13D/13G (bis 2024) und SCHEDULE 13D/13G (ab 18.12.2024), je Accession einmal. Der Gegenstand wird aus den Indexzeilen bestimmt (quant/engines/ownership-signals.js#resolveScheduleSubject); Mehrdeutiges wird verworfen.",
-  "thirteenF": "Je Verwalter und Quartal die erste Originalmeldung (13F-HR) plus Aenderungen vom Typ NEW HOLDINGS; nur Aktien (SSHPRNAMTTYPE=SH), keine Optionen (PUTCALL leer). VALUE bis 02.01.2023 in Tausend USD, ab 03.01.2023 in USD (nach Einreichungsdatum), mit Plausibilitaetspruefung je Einreichung (Median Wert je Aktie).",
+  "thirteenF": "Je Verwalter und Quartal die erste Originalmeldung (13F-HR) plus Aenderungen vom Typ NEW HOLDINGS; nur Aktien (SSHPRNAMTTYPE=SH), keine Optionen (PUTCALL leer). VALUE bis 02.01.2023 in Tausend USD, ab 03.01.2023 in USD (nach Einreichungsdatum), mit Plausibilitaetspruefung je Einreichung (Median Wert je Aktie). Ein Stichtag benutzt das juengste Quartal mit abgelaufener 45-Tage-Frist; solange dessen SEC-Datensatz noch nicht erschienen ist, das juengste fruehere Quartal mit Daten (coverage.thirteenF.currentPeriod/deadlinePeriod).",
   "cusipMapping": "CUSIP -> Ticker aus den Fails-to-Deliver-Daten der SEC: ein CUSIP gehoert dem Symbol, unter dem er zuletzt gefuehrt wurde; historische CUSIPs nur mit derselben Emittentennummer (CUSIP-6) wie ein aktueller.",
   "sharesBase": "Aktienbasis = juengster eingereichter Jahreswert der verwaesserten gewichteten Aktienzahl (SEC companyfacts, quant/data/sec/consumer), nur fuer Emittenten mit genau einem Stammtitel im Universum und ohne ADR."
  },
@@ -919,5 +929,5 @@
   "Aktuelle Insider-Daten nach dem letzten Quartalsdatensatz stammen aus einzeln geholten Form-4-Einreichungen; ist die Luecke nicht vollstaendig geholt (coverage.insider.form4GapFill.complete=false), sind betroffene Monatswerte null und der aktuelle Stand traegt insider.complete=false.",
   "Aktienbasis ist eine Jahreszahl (verwaessert, gewichtet), keine taggenaue ausstehende Aktienzahl."
  ],
- "runtimeSeconds": 2240
+ "runtimeSeconds": 2093
 }
