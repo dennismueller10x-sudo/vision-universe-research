@@ -23,7 +23,7 @@
    Vergleich: SPY, QQQ, Gleichgewicht aller Universumsaktien (monatlich neu gewichtet).
 
    Aufruf: node scripts/technical/elliott-topdown/depot-backtest.mjs --out DIR [--from 2005-01-01] [--step 4] [--max 20]
-           [--cost 0.001] [--engine PFAD] [--workers 4] [--index SP500,NDX] [--pit CSV ticker,start_date,end_date]
+           [--cost 0.001] [--engine PFAD] [--workers 4] [--index SP500,NDX] [--pit CSV ticker,start_date,end_date] [--extra-dir DIR]
    ========================================================================= */
 import { readdirSync, readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
@@ -38,11 +38,11 @@ const arg = (n, d) => { const i = process.argv.indexOf("--" + n); return i >= 0 
 
 /* ---------------------------------------------------------- Arbeiter: Signale je Aktie */
 if (!isMainThread) {
-  const { files, engine, cuts } = workerData;
+  const { files, engine, cuts, dirs } = workerData;
   const TD = req(engine), SS = req(join(ROOT, "quant/engines/technical/elliott/setup-score.js"));
   const out = {};
   for (const f of files) {
-    let j; try { j = JSON.parse(readFileSync(join(D, f), "utf8")); } catch { continue; }
+    let j; try { j = JSON.parse(readFileSync(join(dirs[f] || D, f), "utf8")); } catch { continue; }
     const pts = j.points || [], c = pts.map((p) => p[1]), t = pts.map((p) => p[0]), idx = new Map(t.map((d, i) => [d, i]));
     const sig = {};
     for (const d of cuts) {
@@ -77,17 +77,26 @@ const members = new Set();
 for (const id of INDEX) { const f = join(ROOT, "quant/data/market/index-membership", id + ".json"); if (existsSync(f)) JSON.parse(readFileSync(f, "utf8")).members.forEach((m) => members.add(m.symbol)); }
 /* --pit DATEI (CSV ticker,start_date,end_date): Mitgliedschaft zum jeweiligen Zeitpunkt statt heutiger Mitglieder. Aktien ohne
    Kursreihe (meist übernommen oder insolvent) fehlen; ihr Anteil steht im Ergebnis. */
-const PIT = arg("pit", null), pitIv = {};
-let pitStats = null;
+const PIT = arg("pit", null), pitIv = {}, EXTRA = arg("extra-dir", null), dirOf = {};
+/* --extra-dir DIR: zusätzliche Reihen ref_<T>__d.json (delistete Titel, depot-delisted-export.mjs) mit Endklasse */
+const extraFiles = EXTRA && existsSync(EXTRA) ? readdirSync(EXTRA).filter((f) => f.endsWith("__d.json")) : [];
+extraFiles.forEach((f) => (dirOf[f] = EXTRA));
+const spanOf = (() => { const memo = {}; return (f) => memo[f] || (memo[f] = (() => { try { const p = JSON.parse(readFileSync(join(dirOf[f] || D, f), "utf8")).points || []; return p.length ? [p[0][0], p[p.length - 1][0]] : null; } catch { return null; } })()); })();
+let pitStats = null, pitStats_d = 0;
 if (PIT) {
   const lines = readFileSync(PIT, "utf8").trim().split(/\r?\n/).slice(1);
   let n = 0, withData = 0;
   for (const ln of lines) {
     const [tk, a, b] = ln.split(","); const end = b || "9999-12-31"; if (end < FROM) continue;
-    n++; const fn = ["ref_" + tk.replace(".", "-") + ".json", "ref_" + tk.replace(".", "") + ".json"].find((x) => existsSync(join(D, x)));
-    if (!fn) continue; withData++; (pitIv[fn] = pitIv[fn] || []).push([a, end]);
+    n++;
+    /* Kandidaten: heutige Reihe und delistete Reihe; gewählt wird die, die das Mitgliedsintervall am weitesten abdeckt */
+    const base = [tk.replace(".", "-"), tk.replace(".", "")];
+    const cands = [...new Set(base.flatMap((b) => ["ref_" + b + ".json", "ref_" + b + "__d.json"]))].filter((x) => (dirOf[x] ? true : existsSync(join(D, x))));
+    const lo = a > FROM ? a : FROM; let fn = null, best = 0;
+    for (const x of cands) { const sp = spanOf(x); if (!sp) continue; const ov = Date.parse(sp[1] < end ? sp[1] : end) - Date.parse(sp[0] > lo ? sp[0] : lo); if (ov > best) { best = ov; fn = x; } }
+    if (!fn) continue; withData++; if (fn.endsWith("__d.json")) pitStats_d++; (pitIv[fn] = pitIv[fn] || []).push([a, end]);
   }
-  pitStats = { intervalle: n, mitKursreihe: withData };
+  pitStats = { intervalle: n, mitKursreihe: withData, davonDelistet: pitStats_d, delisteteReihen: extraFiles.length };
 }
 const uniFiles = PIT ? Object.keys(pitIv) : [...members].map((s) => "ref_" + s + ".json").filter((f) => existsSync(join(D, f)));
 const isMember = (f, k) => !PIT || (pitIv[f] || []).some(([a, b]) => k >= weekKey(a) && k <= b);
@@ -106,12 +115,13 @@ const spyBy = new Map(SPYw.map((p) => [weekKey(p[0]), p[1]])), qqqBy = new Map(Q
 
 /* Kurse je Aktie nach Wochenschlüssel; Relative Stärke (26 Wochen) im Querschnitt aller Titel */
 const px = {}, R26 = new Map();
-for (const f of readdirSync(D)) {
+const uniSet = new Set(uniFiles);
+for (const f of readdirSync(D).concat(extraFiles)) {
   if (!f.startsWith("ref_")) continue;
-  let j; try { j = JSON.parse(readFileSync(join(D, f), "utf8")); } catch { continue; }
+  let j; try { j = JSON.parse(readFileSync(join(dirOf[f] || D, f), "utf8")); } catch { continue; }
   const pts = j.points || []; if (pts.length < 30) continue;
   const m = new Map(); pts.forEach((p) => m.set(weekKey(p[0]), p[1]));
-  if (uniFiles.includes(f)) px[f] = { m, pts, c: pts.map((p) => p[1]), wk: new Map(pts.map((p, i) => [weekKey(p[0]), i])) };
+  if (uniSet.has(f)) px[f] = { m, pts, c: pts.map((p) => p[1]), wk: new Map(pts.map((p, i) => [weekKey(p[0]), i])), term: j.terminal || null, endK: weekKey(pts[pts.length - 1][0]) };
   for (let i = 26; i < pts.length; i++) { const k = weekKey(pts[i][0]); const v = pts[i][1] / pts[i - 26][1] - 1; if (!isFinite(v)) continue; if (!R26.has(k)) R26.set(k, []); R26.get(k).push(v); }
 }
 for (const [, a] of R26) a.sort((x, y) => x - y);
@@ -127,7 +137,7 @@ const chunks = Array.from({ length: WORKERS }, () => []); uniFiles.forEach((f, i
 const t0 = Date.now();
 const parts = await Promise.all(chunks.map((files) => new Promise((res, rej) => {
   const cuts = [...new Set(files.flatMap((f) => cutDates[f]))];
-  const w = new Worker(fileURLToPath(import.meta.url), { workerData: { files, engine: ENGINE, cuts }, argv: [] });
+  const w = new Worker(fileURLToPath(import.meta.url), { workerData: { files, engine: ENGINE, cuts, dirs: dirOf }, argv: [] });
   w.on("message", res); w.on("error", rej);
 })));
 const SIG = Object.assign({}, ...parts);
@@ -177,6 +187,8 @@ function simulate(kind) {
     }
     /* 2. Ausstieg */
     pos = pos.filter((p) => {
+      const T0 = px[p.f].term;
+      if (T0 && k > px[p.f].endK) { cash += p.n * p.last * T0.recovery * (1 - COST); trades.push({ f: p.f, r: (p.last * T0.recovery) / p.in - 1, w: w - p.w0, why: "delisting" }); return false; }
       const pr = price(p.f, k); if (pr) p.last = pr; else return true;
       let why = null;
       if ((kind === "B" || kind === "C") && p.tgt && pr >= p.tgt) why = "ziel";
@@ -207,7 +219,7 @@ function equalWeight() {
   let v = 1, curve = [], held = null;
   for (let w = 0; w < cal.length; w++) {
     const k = cal[w];
-    if (held) { const r = held.map((h) => { const p = price(h.f, k); return p > 0 ? p / h.p : 1; }); if (r.length) v = held.v * r.reduce((s, x) => s + x, 0) / r.length; }
+    if (held) { const r = held.map((h) => { const p = price(h.f, k), P = px[h.f]; if (!(p > 0) && P.term && k > P.endK) return (P.c[P.c.length - 1] * P.term.recovery) / h.p; return p > 0 ? p / h.p : 1; }); if (r.length) v = held.v * r.reduce((s, x) => s + x, 0) / r.length; }
     const now = uniFiles.filter((f) => price(f, k) > 0 && isMember(f, k));
     if ((!held || w % 4 === 0) && now.length) held = Object.assign(now.map((f) => ({ f, p: price(f, k) })), { v });
     curve.push([k, v]);
