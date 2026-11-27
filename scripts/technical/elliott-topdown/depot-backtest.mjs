@@ -22,6 +22,8 @@
      M  Nur Momentum (ohne Elliott): Score aus Relativer Stärke, Trend und Momentum allein, sonst wie A. Zeigt, was Elliott beiträgt.
      D  Momentum mit Elliott als Bremse: wie M, aber kein Kauf bei Elliott-Plan abwärts, Verkauf, wenn die Zählung eine Korrektur meldet.
      E  wie A, Gewinner laufen lassen: Verkauf erst unter der Ungültig-Marke, bei Score unter 50 oder nach 156 Wochen.
+     G  Nur Elliott (HKCM-Art): Kauf, wenn der Plan aufwärts zeigt und das Fernziel (log) mindestens 1,5 × Kurs ist; halten bis
+        Fernziel oder Ungültig-Marke, ohne Zeitgrenze und ohne Score. Kein Leerverkauf, freies Geld bleibt unverzinst.
      F  wie E, dazu Verkauf am Fernziel auf der log-Skala (Welle 3 = 1,618 × Welle 1 als Faktor, Welle 5 = 1,0 ×).
    Vergleich: SPY, QQQ, Gleichgewicht aller Universumsaktien (monatlich neu gewichtet).
 
@@ -114,7 +116,9 @@ if (PIT) {
   }
   pitStats = { intervalle: n, mitKursreihe: withData, davonDelistet: pitStats_d, delisteteReihen: extraFiles.length };
 }
-const uniFiles = PIT ? Object.keys(pitIv) : [...members].map((s) => "ref_" + s + ".json").filter((f) => existsSync(join(D, f)));
+/* --tickers A,B,C: festes Universum (z. B. die „Magnificent 7“); Vergleich dann mit „dieselben Aktien halten“ */
+const TICK = arg("tickers", null);
+const uniFiles = PIT ? Object.keys(pitIv) : (TICK ? TICK.split(",") : [...members]).map((s) => "ref_" + s + ".json").filter((f) => existsSync(join(D, f)));
 const isMember = (f, k) => !PIT || (pitIv[f] || []).some(([a, b]) => k >= weekKey(a) && k <= b);
 
 /* Wochenkalender aus SPY (letzter Handelstag je Woche, Freitag-Woche) und Vergleichsreihen */
@@ -207,28 +211,29 @@ function simulate(kind) {
       if (T0 && k > px[p.f].endK) { cash += p.n * p.last * T0.recovery * (1 - COST); trades.push({ f: p.f, r: (p.last * T0.recovery) / p.in - 1, w: w - p.w0, why: "delisting" }); return false; }
       const pr = price(p.f, k); if (pr) p.last = pr; else return true;
       let why = null;
-      const hold = kind === "E" || kind === "F" ? 156 : 52;
-      if ((kind === "B" || kind === "C" || kind === "F") && p.tgt && pr >= p.tgt) why = "ziel";
-      else if ((kind === "B" || kind === "C" || kind === "E" || kind === "F") && p.stop && pr <= p.stop) why = "absicherung";
+      const hold = kind === "E" || kind === "F" ? 156 : kind === "G" ? 1e9 : 52;
+      if ((kind === "B" || kind === "C" || kind === "F" || kind === "G") && p.tgt && pr >= p.tgt) why = "ziel";
+      else if ((kind === "B" || kind === "C" || kind === "E" || kind === "F" || kind === "G") && p.stop && pr <= p.stop) why = "absicherung";
       else if (w - p.w0 >= hold) why = "zeit";
       else if (isSig.has(k) && kind !== "C") { const x = SC[k][p.f], sc = x && (kind === "M" || kind === "D" ? x.m : x.e);
-        if (kind === "E" || kind === "F") { if (!sc || sc.v < 50) why = "score"; } else if (!sc || sc.v < 65) why = "score";
+        if (kind === "G") { /* nur Ziel oder Ungültig */ } else if (kind === "E" || kind === "F") { if (!sc || sc.v < 50) why = "score"; } else if (!sc || sc.v < 65) why = "score";
         if (kind === "D" && x && x.s && x.s.plan === "DOWN" && x.s.cur && /^[IC][ABC4]$/.test(x.s.cur)) why = "elliott-korrektur"; }
       if (!why) return true;
       cash += p.n * pr * (1 - COST); trades.push({ f: p.f, r: pr / p.in - 1, w: w - p.w0, why }); return false;
     });
     /* 3. Neue Signale */
     if (isSig.has(k)) {
-      const cand = Object.entries(SC[k]).map(([f, x]) => ({ f, x })).filter(({ x }) => {
+      const cand = Object.entries(SC[k]).map(([f, x]) => ({ f, x })).filter(({ f, x }) => {
         const sc = kind === "M" || kind === "D" ? x.m : x.e; if (!sc) return false;
         if (kind === "C") return sc.v >= 65 && x.s && x.s.zone && x.s.plan === "UP";
         if (kind === "D") return x.m && x.m.level === "STRONG_UP" && !(x.s && x.s.plan === "DOWN");
+        if (kind === "G") { const pk = price(f, k); return x.s && x.s.plan === "UP" && x.s.farLog && pk && x.s.farLog >= 1.5 * pk; }
         return sc.level === "STRONG_UP";
       }).sort((a, b) => ((kind === "M" || kind === "D" ? b.x.m.v : b.x.e.v) - (kind === "M" || kind === "D" ? a.x.m.v : a.x.e.v)) || a.f.localeCompare(b.f));
       if (kind === "C") {
         const nextSig = sigKeys[sigKeys.indexOf(k) + 1]; const until = nextSig ? cal.indexOf(nextSig) : cal.length;
         pend = cand.map(({ f, x }) => ({ f, near: x.s.zone.near, stop: x.s.zone.stop, tgt: x.s.zone.tgt, until }));
-      } else pend = cand.map(({ f, x }) => ({ f, tgt: kind === "B" && x.s ? x.s.tgt : kind === "F" && x.s ? x.s.farLog : null, stop: (kind === "B" || kind === "E" || kind === "F") && x.s ? x.s.inv : null }));
+      } else pend = cand.map(({ f, x }) => ({ f, tgt: kind === "B" && x.s ? x.s.tgt : (kind === "F" || kind === "G") && x.s ? x.s.farLog : null, stop: (kind === "B" || kind === "E" || kind === "F" || kind === "G") && x.s ? x.s.inv : null }));
     }
     curve.push([k, value()]);
   }
@@ -261,6 +266,7 @@ function stats(curve, from, to) {
 const periods = [["gesamt", cal[0], cal[cal.length - 1]], ["bis 2014", cal[0], "2014-12-31"], ["2015–2019", "2015-01-01", "2019-12-31"], ["ab 2020", "2020-01-01", cal[cal.length - 1]]];
 const runs = { "A Setup stark": simulate("A"), "B Setup stark + Elliott-Ziel/Absicherung": simulate("B"), "C Zone (HKCM-Stil)": simulate("C"), "M nur Momentum (ohne Elliott)": simulate("M"),
   "D Momentum + Elliott als Bremse": simulate("D"), "E Setup stark, Gewinner laufen lassen (bis Ungültig)": simulate("E"), "F Setup stark, Fernziel log (HKCM-Art)": simulate("F"),
+  "G Nur Elliott: Kauf bei Fernziel ≥ 1,5×, halten bis Fernziel oder Ungültig": simulate("G"),
   "Vergleich: Gleichgewicht Universum": equalWeight(), "Vergleich: SPY": bench(spyBy), "Vergleich: QQQ": bench(qqqBy) };
 const result = { schema: "vu-elliott-depot-backtest-1", label: "Forschung, nicht zertifiziert", engine: TD.VERSION, setupScore: SS.VERSION,
   params: { pit: PIT ? pitStats : null, from: FROM, stepWeeks: STEP, maxPositionen: MAX, kosten: COST, index: INDEX, aktien: uniFiles.length, signaltage: sigKeys.length, signalSekunden: sigSec, signale: sigN, signaleMitPlan: sigPlan },
