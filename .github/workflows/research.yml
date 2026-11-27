@@ -563,7 +563,7 @@ jobs:
           rm -rf "$RUNNER_TEMP/priv" "$RUNNER_TEMP/canonical-history"
 
       - name: E3-Phase rechnen (Protokoll eingefroren, Hash geprueft)
-        if: steps.m.outputs.mode != 'portfolios' && steps.m.outputs.mode != 'holdout-quant' && !startsWith(steps.m.outputs.mode, 'ema-cluster-') && !startsWith(steps.m.outputs.mode, 'edge2') && !startsWith(steps.m.outputs.mode, 'backtest2') && !startsWith(steps.m.outputs.mode, 'merkmale')
+        if: steps.m.outputs.mode != 'portfolios' && steps.m.outputs.mode != 'holdout-quant' && !startsWith(steps.m.outputs.mode, 'ema-cluster-') && !startsWith(steps.m.outputs.mode, 'edge2') && !startsWith(steps.m.outputs.mode, 'backtest2') && !startsWith(steps.m.outputs.mode, 'merkmale') && steps.m.outputs.mode != 'elliott-depot'
         env:
           PHASE: ${{ steps.m.outputs.mode }}
         run: |
@@ -589,7 +589,7 @@ jobs:
           fi
 
       - name: Ergebnis auf den aktuellen Zweig committen
-        if: steps.m.outputs.mode != 'holdout-quant' && !startsWith(steps.m.outputs.mode, 'ema-cluster-') && !startsWith(steps.m.outputs.mode, 'backtest2') && !startsWith(steps.m.outputs.mode, 'merkmale')
+        if: steps.m.outputs.mode != 'holdout-quant' && !startsWith(steps.m.outputs.mode, 'ema-cluster-') && !startsWith(steps.m.outputs.mode, 'backtest2') && !startsWith(steps.m.outputs.mode, 'merkmale') && steps.m.outputs.mode != 'elliott-depot'
         env:
           MODE: ${{ steps.m.outputs.mode }}
         run: |
