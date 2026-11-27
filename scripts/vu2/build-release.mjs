@@ -290,12 +290,13 @@ export async function buildRelease({root,output}){
   await mkdir(resolve(output,'discover/logos/credits'),{recursive:true});
   for(const [key,part] of Object.entries(parts)){const b=Buffer.from(JSON.stringify(part));if(b.length>CAPABILITY_SHARD_BUDGET*2)throw Error('CREDITS_SHARD_BUDGET_EXCEEDED');await writeFile(resolve(output,'discover/logos/credits/'+key+'.json'),b);}
  }
- /* Logo-Liste (index.json, 120 KB): Kacheln brauchen nur "hat Logo" und "dunkel". Kompakt: Titelliste (Pfad files/<Titel>.png
-    ist der Normalfall, Abweichungen stehen in x) plus dunkle Titel; die Seitenverhaeltnisse der breiten Fassung (nur Aktienseite)
-    in wide.min.json. Die volle Datei bleibt daneben (assets/vu-ui.js und discover/ui/logos.js fallen darauf zurueck). */
+ /* Logo-Liste (index.json, 120 KB): Kacheln brauchen nur "hat Logo" und "dunkel". Im Release steht unter demselben Pfad die kompakte
+    Form (Titelliste in t, Abweichungen vom Pfad files/<Titel>.png in x, dunkle Titel in d); die Clients (assets/vu-ui.js,
+    discover/ui/logos.js) erkennen sie an t und lesen sonst die volle Form (lokal, Quelle). Ein Abruf, eine Adresse wie bisher.
+    Die Seitenverhaeltnisse der breiten Fassung (nur Aktienseite) liegen in wide.min.json. */
  if(paths.includes('discover/logos/index.json')){
   const {index,wide}=compactLogoIndex(await load('discover/logos/index.json'));
-  await writeFile(resolve(output,'discover/logos/index.min.json'),Buffer.from(JSON.stringify(index)));
+  await writeFile(resolve(output,'discover/logos/index.json'),Buffer.from(JSON.stringify(index)));
   await writeFile(resolve(output,'discover/logos/wide.min.json'),Buffer.from(JSON.stringify(wide)));
  }
  /* Auslieferungsansichten der Aktienseite (siehe oben). Jeder Schritt liest

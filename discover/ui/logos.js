@@ -21,12 +21,12 @@
 
   function laden() {
     if (!global.fetch) { files = {}; return; }
-    /* Gleiche kompakte Liste wie assets/vu-ui.js (ein Abruf, geteilt ueber __vuLogoIndex); fehlt sie, die volle index.json. */
-    var pending = global.__vuLogoIndex || (global.__vuLogoIndex = global.fetch(BASE + "index.min.json", { cache: "default", priority: "low" })
-      .then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
+    /* Gleiche Liste wie assets/vu-ui.js (ein Abruf, geteilt ueber __vuLogoIndex); Release-Fassung mit Titelliste t, Quelle mit files. */
+    var pending = global.__vuLogoIndex || (global.__vuLogoIndex = global.fetch(BASE + "index.json", { cache: "default", priority: "low" })
+      .then(function (r) { return r.ok ? r.json() : { files: {} }; }).catch(function () { return { files: {} }; })
       .then(function (m) {
         if (m && m.t != null) { var f = {}, x = m.x || {}; String(m.t).split(",").forEach(function (s) { if (s) f[s] = x[s] || "files/" + s + ".png"; }); return { files: f, dark: m.d || [] }; }
-        return global.fetch(BASE + "index.json", { cache: "default", priority: "low" }).then(function (r) { return r.ok ? r.json() : { files: {} }; }).catch(function () { return { files: {} }; });
+        return m;
       }));
     pending.then(function (data) {
         files = (data && data.files) || {};
@@ -37,7 +37,7 @@
       });
   }
 
-  /* Seitenverhaeltnisse der breiten Fassungen: nur die Aktienseite braucht sie (wide.min.json, wenige KB), sonst index.json. */
+  /* Seitenverhaeltnisse der breiten Fassungen: nur die Aktienseite braucht sie (wide.min.json im Release); die Quelle hat sie in index.json (wide). */
   var breitLaden = null;
   function breitFuer() {
     if (breitLaden) return breitLaden;
