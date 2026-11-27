@@ -520,6 +520,31 @@ Forschung, nicht zertifiziert.
 - **Ziel erreicht und robust** nur, wenn: Rendite ≥ 20 % p. a., ohne größten Gewinner ≥ 17 %, beide Hälften vor SPY, größter
   Verlust nicht schlechter als −40 %. 72 Varianten nach Einsicht: ein Treffer ist ein Kandidat für den Vorwärtstest, kein Beleg.
 
+**Ergebnis Stufe 12 (Lauf 27.11.2026, Forschung, nicht zertifiziert): keine der 72 Varianten erreicht das Ziel robust.**
+
+- **Marktphase verschlechtert fast alles.** Faktoren ohne Muster: 18,8 % → 16,6 % (Käufe nur bei SPY über 200-Tage-Linie) →
+  11,7 % (zusätzlich alles verkaufen; 26 von 153 Monaten leer), Marktbreite 16,1 %. Trendvorlage + Faktoren 18,3 → 15,1 → 11,2 %;
+  Turtle + Faktoren 18,0 → 15,9 → 12,8 %; Darvas-Kasten allein 15,7 → 14,0 → 6,9 %. Einzige Ausnahme: Kullamägi allein mit
+  Kaufsperre 14,5 → 16,4 %. Der größte Verlust sinkt durch die Marktphase kaum (−34,2 → −36,6 %), weil der Wiedereinstieg
+  nach der Erholung zu spät kommt.
+- **Verlierer fressen die Rendite nicht.** Faktoren ohne Muster: 53 % der 451 Positionen sind Verlierer, Ø Verlust −11,7 %,
+  Ø Gewinn +49,3 %; Summe Gewinne 11,6 gegen Summe Verluste −3,6 (Vielfache des Startkapitals). Gleiches Bild bei allen sechs
+  Depots (Gewinne 2,5- bis 4-mal so groß wie Verluste).
+- **Stopps kosten Rendite.** Stopp 8 %: 18,8 → 17,4 % (Faktoren), 18,3 → 14,3 % (Trendvorlage), 15,7 → 11,2 % (Darvas-Kasten),
+  14,5 → 11,1 % (Kullamägi); der Anteil der Verlierer steigt auf 62 bis 73 %, weil spätere Gewinner ausgestoppt werden.
+  Nachlaufender Stopp 25 %: Faktoren 17,6 % bei größtem Verlust −24,0 % statt −34,2 % (die einzige Variante, die Risiko spürbar
+  senkt, ohne viel Rendite zu kosten).
+- **Nebenwerte (Rang 1.001–3.000) sind schlechter:** 10,5 % (Faktoren), 7,1 % (Trendvorlage), 13,0 % (Turtle).
+- **Darvas-Kasten:** mit Faktoren 11,1 % (schlechter als allein 15,7 %); keine Variante hebt ihn über 18 % außer Hebel (20,0 %,
+  erste Hälfte −2,6 Pp hinter SPY).
+- **Über 20 % kommen nur zwei Wege:** Hebel 1,5-fach (Faktoren 23,1 %, größter Verlust −51,4 %; Trendvorlage + Faktoren
+  23,3 %, ohne größten Gewinner 20,1 %, beide Hälften vor SPY, p 0,028, größter Verlust −41,7 % – verfehlt nur die
+  Verlustgrenze von −40 %) und Konzentration auf 10 Titel (Turtle + Faktoren 26,1 %, −44,8 %; in Stufe 10 aus den Lernjahren
+  nicht erkennbar). Beides ist mehr Risiko, keine bessere Auswahl.
+- Lesart: Die Rendite kommt aus wenigen großen Gewinnern (19 bis 24 Verdoppler je Depot); jede Regel, die früher verkauft oder
+  zeitweise draußen bleibt, schneidet diese ab. 20 % sind in der Rückrechnung nur mit Hebel oder starker Konzentration zu
+  haben, also mit Verlustphasen von 40 bis 50 %.
+
 ## 5. Ausführung und Veröffentlichung
 
 - Umsetzung: `scripts/research/backtest2/` (Markt, Signale, Depotführung, Suche, Lauf mit Workern). Workflow `research.yml`, Teil
