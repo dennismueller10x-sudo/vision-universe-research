@@ -131,3 +131,32 @@ test("Regel B · DELISTED nur mit sec.gov-Beleg; Reihe endet bis 7 Tage nach dem
   assert.equal(indexEvidence({ schemaVersion: "listing-ended-evidence-1.0.0", records: [ok] }).size, 1);
   assert.throws(() => indexEvidence({ schemaVersion: "listing-ended-evidence-1.0.0", records: [{ ...ok, sources: ["https://example.com/x"] }] }), /DELISTED/);
 });
+
+test("Regel A mit aktiver CIK: Umbenennung warnt, echte Abgaenge und bekannte Nachfolgen nicht (Steuerung 27.11.2026)", async () => {
+  const { renameWarnings } = await import("../../scripts/market/apply-ended-listings.mjs");
+  const A = "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE";
+  const changes = [
+    { ticker: "WPRT", securityId: "ref_WPRT", to: { reason: A } },   // Umbenennung: CIK lebt als AETR weiter
+    { ticker: "ACA", securityId: "ref_ACA", to: { reason: A } },     // Uebernahme: SEC fuehrt die CIK nicht mehr
+    { ticker: "GLMD", securityId: "ref_GLMD", to: { reason: A } },   // Nachfolge schon im Register
+    { ticker: "BRKB", securityId: "ref_BRKB", to: { reason: A } },   // andere Klasse desselben Emittenten im Produkt
+    { ticker: "OTCX", securityId: "ref_OTCX", to: { reason: A } },   // neues Kuerzel nur ausserboerslich
+    { ticker: "DLST", securityId: "ref_DLST", to: { reason: "CONFIRMED_LISTING_ENDED:DELISTED" } }  // nicht Regel A
+  ];
+  const o = {
+    cikByTicker: new Map([["WPRT", "1370416"], ["ACA", "0001739445"], ["GLMD", "0001595353"], ["BRKB", "0001067983"], ["OTCX", "0000000077"], ["DLST", "0000000088"]]),
+    cikMap: {
+      AETR: { cik: "0001370416", exchange: "Nasdaq", status: "RESOLVED" },
+      EOCN: { cik: "0001595353", exchange: "Nasdaq", status: "RESOLVED" },
+      BRKA: { cik: "0001067983", exchange: "NYSE", status: "RESOLVED" },
+      OTCY: { cik: "0000000077", exchange: "OTC", status: "RESOLVED" },
+      DLSX: { cik: "0000000088", exchange: "NYSE", status: "RESOLVED" }
+    },
+    productTickers: new Set(["BRKA"]),
+    succession: { ref_GLMD: { toTicker: "EOCN" } },
+    listedLabels: ["Nasdaq", "NYSE", "CBOE", "IEX", "TXSE"]
+  };
+  const w = renameWarnings(changes, o);
+  assert.deepEqual(w, [{ ticker: "WPRT", securityId: "ref_WPRT", cik: "0001370416", candidates: ["AETR"] }]);
+  assert.deepEqual(renameWarnings([], o), []);
+});
