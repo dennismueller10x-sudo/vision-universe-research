@@ -167,6 +167,33 @@ class TickerLabelTests(unittest.TestCase):
                                  company["ticker"])
 
 
+class OnlyExistingWithoutTickerTests(unittest.TestCase):
+    """Tageslauf 26.11.2026 (Lauf 45766903297): ANSS hatte nach der Uebernahme ein
+    neues Filing, aber weder SEC-Kuerzel noch einen Eintrag im Universum. Die
+    selektive Auffrischung (--only-existing) brach ab, obwohl ohne Kuerzel kein
+    Buendel existieren kann. Sie ueberspringt den Emittenten jetzt; der volle
+    Export bleibt streng (test_a_canonical_security_without_any_ticker_stops_the_export)."""
+
+    def test_an_entity_without_ticker_is_skipped_when_only_existing(self):
+        import tempfile
+        from types import SimpleNamespace
+        from unittest import mock
+        import quant.cli as cli
+        with tempfile.TemporaryDirectory() as tmp:
+            args = SimpleNamespace(universe=None, ciks="0001013462", only_existing=True,
+                                   annual_years=5, quarterly_years=2)
+            doc = {"cik": "0001013462", "profile": {"tickers": []}}
+            with mock.patch.object(cli, "MetricRegistry"), mock.patch.object(cli, "JsonFactStore"), \
+                 mock.patch.object(cli, "_ciks_from_universe", return_value=None), \
+                 mock.patch.object(cli, "_documents", return_value=[doc]), \
+                 mock.patch.object(cli, "_declared_tickers", return_value={}), \
+                 mock.patch.object(cli, "build_company_bundle") as build, \
+                 mock.patch.object(cli, "CANONICAL_DIR", Path(tmp)), redirect_stdout(io.StringIO()) as out:
+                self.assertEqual(cli.cmd_canonical(args), 0)
+            build.assert_not_called()
+            self.assertIn("uebersprungen", out.getvalue())
+
+
 class PruneTests(unittest.TestCase):
     """An export directory must contain exactly what this run produced."""
 
