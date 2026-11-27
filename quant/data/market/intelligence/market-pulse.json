@@ -2,7 +2,7 @@
  "schemaVersion": "vu-market-pulse-1.1.0",
  "methodVersion": "market-pulse-1.0.0",
  "configVersion": "vu-market-pulse-config-1.0.0",
- "generatedAt": "2026-11-27T15:23:37.843Z",
+ "generatedAt": "2026-11-27T18:23:50.115Z",
  "kind": "DESCRIPTIVE_MARKET_PULSE",
  "notes": {
   "quantMarketRegime": "FAIL_CLOSED - nicht verwendet, nicht imitiert",
@@ -105,7 +105,7 @@
   "disclaimer": "Einordnung des Marktumfelds aus festen Regeln – keine Anlageberatung, keine Kauf- oder Verkaufsempfehlung, keine Prognose."
  },
  "evaluation": {
-  "generatedAt": "2026-11-27T15:23:37.843Z",
+  "generatedAt": "2026-11-27T18:23:50.115Z",
   "dataAsOf": "2026-11-25",
   "previousDataAsOf": "2026-11-24",
   "schedule": {
@@ -716,10 +716,10 @@
      "key": "EURUSD",
      "label": "EUR/USD",
      "text": "−1,6 % · 0,8-fach typisch",
-     "change": -1.57,
-     "ratio": -0.79,
+     "change": -1.581,
+     "ratio": -0.8,
      "notable": false,
-     "asOf": "2026-11-26",
+     "asOf": "2026-11-27",
      "kind": "PERCENT"
     }
    ],
@@ -1263,13 +1263,13 @@
   },
   "EURUSD": {
    "kind": "PRICE",
-   "asOf": "2026-11-26",
-   "last": 1.0975,
-   "observations": 7145,
+   "asOf": "2026-11-27",
+   "last": 1.0957,
+   "observations": 7146,
    "changes": {
-    "1M": -1.57,
-    "3M": -5.75,
-    "1Y": -5.2
+    "1M": -1.58,
+    "3M": -5.89,
+    "1Y": -5.43
    },
    "high52w": {
     "date": "2026-01-28",
@@ -1279,18 +1279,18 @@
     "date": "2026-11-25",
     "value": 1.0935
    },
-   "rangePosition": 3.8,
-   "dist50": -1.94,
-   "dist200": -4.47,
+   "rangePosition": 2.1,
+   "dist50": -2.01,
+   "dist200": -4.59,
    "trend": "NEGATIVE",
-   "drawdown52w": -8.34,
-   "vol20": 6.32,
+   "drawdown52w": -8.49,
+   "vol20": 6.1,
    "volContext": {
     "median": 6.8,
-    "p25": 5.3,
+    "p25": 5.4,
     "p75": 8.6,
-    "samples": 1280,
-    "from": "2021-11-27",
+    "samples": 1281,
+    "from": "2021-11-28",
     "state": "USUAL"
    },
    "roles": [
@@ -1828,7 +1828,7 @@
    },
    "EURUSD": {
     "symbol": "EURUSD",
-    "asOf": "2026-11-26",
+    "asOf": "2026-11-27",
     "horizon": 22,
     "samples": 2558
    }
