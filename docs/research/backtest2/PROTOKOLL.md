@@ -503,6 +503,23 @@ Ereignis selbst. Code: `scripts/research/backtest2/ereignis-studie.mjs`. Forschu
 - Lesart: Der Vorsprung kommt aus den Faktoren, nicht aus dem Muster. Das bestätigt Stufe 4 bis 10 aus einer anderen
   Messrichtung. Offen bleibt nur der Einstieg am Ereignistag selbst (Minutendaten), den diese Stufe nicht abbildet.
 
+## 4n. Stufe 12: Ziel 20 % p. a. – Marktphase, Verlustbegrenzung, Nebenwerte, Hebel (27.11.2026, vor dem ersten Lauf festgelegt)
+
+Anlass (Owner 27.11.2026): Vermutung, dass viele schlechte Trades die Rendite auffressen, und Frage, ob nur in bestimmten
+Marktphasen investiert zu sein hilft; Zielvorgabe mindestens 20 % p. a. Code: `scripts/research/backtest2/ziel20.mjs`.
+Forschung, nicht zertifiziert.
+
+- **Sechs Grunddepots** (laufen lassen wie Stufe 9, 25 Plätze): Faktoren ohne Muster; Trendvorlage, 55-Tage-Ausbruch und
+  Darvas-Kasten je mit Faktoren; Darvas-Kasten allein; Kullamägi allein.
+- **Zwölf Varianten je Depot:** unverändert; Käufe nur bei SPY über 200-Tage-Linie; zusätzlich alles verkaufen, wenn SPY
+  darunter; Käufe nur bei Marktbreite ≥ 50 %; täglicher Stopp 8 % unter Einstand; täglicher Stopp 25 % unter Höchststand;
+  Marktphase raus + Stopp 8 %; Nebenwerte (Rang 1.001–3.000); 10 statt 25 Titel; Hebel 1,5-fach (Kredit 4 % p. a.); Hebel nur
+  in guter Marktphase; Marktphase raus + Hebel in guter Phase.
+- **Trade-Statistik** je Grunddepot (unverändert, Stopp 8 %, Marktphase raus): Anteil Verlierer, Ø Gewinn/Verlust, Summe der
+  Verluste gegen Summe der Gewinne, Zahl der Verdoppler.
+- **Ziel erreicht und robust** nur, wenn: Rendite ≥ 20 % p. a., ohne größten Gewinner ≥ 17 %, beide Hälften vor SPY, größter
+  Verlust nicht schlechter als −40 %. 72 Varianten nach Einsicht: ein Treffer ist ein Kandidat für den Vorwärtstest, kein Beleg.
+
 ## 5. Ausführung und Veröffentlichung
 
 - Umsetzung: `scripts/research/backtest2/` (Markt, Signale, Depotführung, Suche, Lauf mit Workern). Workflow `research.yml`, Teil
