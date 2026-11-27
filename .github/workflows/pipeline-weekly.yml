@@ -272,7 +272,9 @@ jobs:
         run: |
           git config user.name "vision-universe-bot"
           git config user.email "bot@visionuniverse.de"
-          git add -A discover/logos
+          # Folgekette (WWW-1): www zeigt Logos der Insights-Artikel; ein neues Logo zieht landing/ im selben Lauf nach.
+          node scripts/website/www-news.mjs
+          git add -A discover/logos landing
           if git diff --cached --quiet; then echo "Keine Aenderung."; exit 0; fi
           Z=$(node -e 'const s=require("./discover/logos/summary.json"); console.log(s.withLogo+"/"+s.universe+" ("+s.pct+" %)")')
           git commit -m "Firmenlogos: $Z Titel mit Logo (Wikimedia Commons und Firmen-Websites)"
