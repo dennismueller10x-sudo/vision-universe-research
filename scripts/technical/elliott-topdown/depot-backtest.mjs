@@ -60,7 +60,7 @@ if (!isMainThread) {
       let zone = null;
       if (s0 && s0.direction === "DOWN" && s1 && s1.direction === "UP") {
         const zb = s0.zone.tiers.find((z) => z.tier === "BASE"), ze = s0.zone.tiers.find((z) => z.tier === "EXTENDED") || zb, zt = s1.zone.tiers[0];
-        if (zb && zt) zone = { near: zb.high, stop: ze.low * 0.99, tgt: zt.low };
+        if (zb && zt) zone = { near: zb.high, stop: ze.low * 0.99, tgt: zt.low, at: c[a] };
       }
       /* Fernziel auf der logarithmischen Skala (Praxis langfristiger Charts, z. B. HKCM): im grossen Aufwaertsimpuls ist Welle 3
          1,618 × Welle 1 (als Faktor), Welle 5 1,0 × Welle 1 ab Ende Welle 4; laeuft Welle 1 oder 2, wird ab dem Kurs heute gerechnet. */
@@ -85,6 +85,8 @@ if (!isMainThread) {
 
 /* ---------------------------------------------------------- Hauptprozess */
 const OUT = arg("out", null); if (!OUT) { console.error("--out fehlt"); process.exit(2); }
+/* --zone-tiefe f (Forschung): Kaufauftrag in C nicht an der nahen Zonenkante, sondern bei Kurs − f × (Kurs − Kante); 1 = Kante */
+const ZT = Number(arg("zone-tiefe", 1));
 const FROM = arg("from", "2005-01-01"), STEP = Number(arg("step", 4)), MAX = Number(arg("max", 20)), COST = Number(arg("cost", 0.001));
 const ENGINE = arg("engine", join(ROOT, "quant/engines/technical/elliott/elliott-topdown.js")), WORKERS = Number(arg("workers", 4));
 const INDEX = arg("index", "SP500,NDX").split(",");
@@ -232,7 +234,7 @@ function simulate(kind) {
       }).sort((a, b) => ((kind === "M" || kind === "D" ? b.x.m.v : b.x.e.v) - (kind === "M" || kind === "D" ? a.x.m.v : a.x.e.v)) || a.f.localeCompare(b.f));
       if (kind === "C") {
         const nextSig = sigKeys[sigKeys.indexOf(k) + 1]; const until = nextSig ? cal.indexOf(nextSig) : cal.length;
-        pend = cand.map(({ f, x }) => ({ f, near: x.s.zone.near, stop: x.s.zone.stop, tgt: x.s.zone.tgt, until }));
+        pend = cand.map(({ f, x }) => ({ f, near: x.s.zone.at - ZT * (x.s.zone.at - x.s.zone.near), stop: x.s.zone.stop, tgt: x.s.zone.tgt, until }));
         pend.forEach((o) => zoneOrders.add(o.f + "|" + o.near.toFixed(4)));
       } else pend = cand.map(({ f, x }) => ({ f, tgt: kind === "B" && x.s ? x.s.tgt : (kind === "F" || kind === "G") && x.s ? x.s.farLog : null, stop: (kind === "B" || kind === "E" || kind === "F" || kind === "G") && x.s ? x.s.inv : null }));
     }
