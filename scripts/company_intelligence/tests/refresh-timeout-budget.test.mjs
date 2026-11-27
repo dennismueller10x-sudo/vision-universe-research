@@ -18,9 +18,9 @@ test('TB-2 publicMaxSeconds plus 120 s Reserve bleibt unter dem Prozess-Timeout 
  for(const [name,c] of [['universe-rollout',universe],['continuous-refresh',standard]])
   assert.ok(c.publicMaxSeconds*1000+RESERVE_MS<processTimeoutMs,name+': publicMaxSeconds '+c.publicMaxSeconds+' s gegen Timeout '+processTimeoutMs/1000+' s');
 });
-test('TB-3 Anfragebudget des Universums bleibt 320 (Entscheidung 24.11.2026), Zeitbudget 1020 s',()=>{
+test('TB-3 Anfragebudget des Universums bleibt 320 (Entscheidung 24.11.2026), Zeitbudget 980 s (27.11.2026)',()=>{
  assert.equal(universe.publicRequestBudget,320);
- assert.equal(universe.publicMaxSeconds,1020);
+ assert.equal(universe.publicMaxSeconds,980);
 });
 test('TB-4 Mutant: 1400 s haette den Timeout gerissen',()=>{
  assert.ok(1400*1000+RESERVE_MS>=processTimeoutMs);
