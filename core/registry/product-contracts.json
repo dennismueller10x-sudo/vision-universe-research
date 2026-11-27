@@ -17,7 +17,7 @@
       "replacesGate": "Discover 'veraendert keine bestehende Engine' (discover-ci.yml)"
     },
     "companyIntelligence": {
-      "paths": ["company-intelligence/**", "scripts/company_intelligence/**", "core/registry/schedule.json"],
+      "paths": ["company-intelligence/**", "scripts/company_intelligence/**", "core/registry/schedule.json", "scripts/market/storage/s3-driver.mjs"],
       "ci": "company-intelligence.yml",
       "contractTests": ["scripts/company_intelligence/tests/*.test.mjs"],
       "consumes": ["marketCapability"],

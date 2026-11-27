@@ -26,7 +26,7 @@ export function codeOf(e){
  const http=/\bHTTP (\d{3})\b/.exec(m);if(http)return 'HTTP_'+http[1];
  if(/^ZERO_COST_GUARD_BLOCKED\b/.test(m))return 'ZERO_COST_GUARD_BLOCKED';
  if(/^s3-driver: (?:keine Zugangsdaten|kein Bucket)/.test(m))return 'S3_CONFIG';
- if(e?.name==='TimeoutError'||e?.name==='AbortError'||/ETIMEDOUT|timed? ?out/i.test(m))return 'TIMEOUT';
+ if(e?.name==='TimeoutError'||e?.name==='AbortError'||/ETIMEDOUT|timed? ?out|Zeitlimit/i.test(m))return 'TIMEOUT';
  if(/fetch failed/i.test(m)){const c=e?.cause?.code;return typeof c==='string'&&/^[A-Z0-9_]{1,40}$/.test(c)?'FETCH_FAILED:'+c:'FETCH_FAILED';}
  const safe=v=>typeof v==='string'&&/^[A-Za-z0-9_]{1,40}$/.test(v)?v:null;
  return safe(e?.code)||safe(e?.name)||'UNKNOWN';
