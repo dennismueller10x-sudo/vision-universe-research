@@ -156,12 +156,16 @@
   /* Einordnung: jede Phase eine Zeile, jeder Tag ein Punkt (keine überlappenden Säulen). */
   var MS = ["Jan.", "Feb.", "März", "Apr.", "Mai", "Juni", "Juli", "Aug.", "Sep.", "Okt.", "Nov.", "Dez."];
   function timeline(tl, y, h) {
-    var eps = tl.episodes || [], s = "", n = Math.max(1, eps.length), rh = Math.min(64, h / n), r = Math.min(13, rh * 0.32);
+    // Höchstens die zehn jüngsten Phasen; Zeilenhöhe, Schrift und Punktabstand schrumpfen mit, damit nichts überlappt (Owner 28.11.2026).
+    var eps = (tl.episodes || []).slice(-10), s = "", n = Math.max(1, eps.length), rh = Math.min(64, h / n), r = Math.min(13, rh * 0.3),
+      fs = Math.min(26, rh * 0.7), maxD = Math.max.apply(null, eps.map(function (e) { return e.days.length; }).concat([1])),
+      x0 = PAD + 200, x1 = W - PAD - 170, step = Math.min(r * 2 + 10, (x1 - x0 - 2 * r) / Math.max(1, maxD - 1));
+    if (step < r * 2 + 2) r = Math.max(3, (step - 2) / 2);
     eps.forEach(function (e, i) {
       var yy = y + i * rh + rh / 2, lab = MS[+e.from.slice(5, 7) - 1] + " " + e.from.slice(0, 4);
-      s += '<text x="' + PAD + '" y="' + (yy + 9) + '" font-size="26" font-weight="800" fill="' + (e.current ? C.lime : C.fg) + '">' + esc(lab) + "</text>";
-      e.days.forEach(function (d, k) { s += '<circle cx="' + (PAD + 200 + r + k * (r * 2 + 10)) + '" cy="' + yy + '" r="' + r + '" fill="' + (e.current ? C.lime : C.fg) + '"/>'; });
-      s += '<text x="' + (W - PAD) + '" y="' + (yy + 9) + '" font-size="26" font-weight="800" fill="' + (e.current ? C.lime : C.mut) + '" text-anchor="end">' + esc(pct(e.extreme, 1)) + "</text>";
+      s += '<text x="' + PAD + '" y="' + (yy + fs * 0.35) + '" font-size="' + fs + '" font-weight="800" fill="' + (e.current ? C.lime : C.fg) + '">' + esc(lab) + "</text>";
+      e.days.forEach(function (d, k) { s += '<circle cx="' + (x0 + r + k * step) + '" cy="' + yy + '" r="' + r + '" fill="' + (e.current ? C.lime : C.fg) + '"/>'; });
+      s += '<text x="' + (W - PAD) + '" y="' + (yy + fs * 0.35) + '" font-size="' + fs + '" font-weight="800" fill="' + (e.current ? C.lime : C.mut) + '" text-anchor="end">' + esc(pct(e.extreme, 1)) + "</text>";
       s += '<line x1="' + PAD + '" x2="' + (W - PAD) + '" y1="' + (y + (i + 1) * rh) + '" y2="' + (y + (i + 1) * rh) + '" stroke="' + C.line + '"/>';
     });
     return s;

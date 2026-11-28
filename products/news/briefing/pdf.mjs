@@ -67,10 +67,10 @@ html,body{margin:0;font-family:Inter,sans-serif;-webkit-font-smoothing:antialias
 .sum{list-style:none;margin:6mm 0 0;padding:0;display:grid;gap:4mm;counter-reset:s}
 .sum li{counter-increment:s;display:grid;grid-template-columns:11mm 1fr;gap:4mm;font-size:13pt;font-weight:700;line-height:1.3}
 .sum li::before{content:counter(s);width:9mm;height:9mm;border-radius:50%;background:#c8f531;box-shadow:inset 0 0 0 .6mm #000;display:grid;place-items:center;font-size:10pt;font-weight:900}
-.toc{margin-top:9mm;display:grid;grid-template-columns:1fr 1fr;gap:0 8mm}
-.toc div{display:grid;grid-template-columns:10mm 1fr;gap:3mm;padding:2.6mm 0;border-bottom:1px solid #e6e6e6;font-size:9.5pt;font-weight:800;line-height:1.25}
+.toc{margin-top:7mm;display:grid;grid-template-columns:1fr 1fr;gap:0 8mm}
+.toc div{display:grid;grid-template-columns:10mm 1fr;gap:3mm;padding:1.7mm 0;border-bottom:1px solid #e6e6e6;font-size:8.6pt;font-weight:800;line-height:1.25}
 .toc div b{font-weight:900}
-.note{position:absolute;left:14mm;right:14mm;bottom:20mm;display:grid;grid-template-columns:1fr 1fr;gap:4mm}
+.note{margin-top:6mm;display:grid;grid-template-columns:1fr 1fr;gap:4mm}
 .note div{border-radius:3mm;padding:4mm;font-size:8pt;line-height:1.4}
 .note .k{background:#000;color:#fff}.note .l{background:#c8f531}
 .note small{display:block;font-size:6.5pt;font-weight:900;letter-spacing:.12em;text-transform:uppercase;margin-bottom:1.5mm}
