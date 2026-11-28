@@ -530,9 +530,30 @@
       "role": "Pressemitteilungen, Earnings, Praesentationen je Emittent (issuerId).",
       "producer": "scripts/company_intelligence/cli.py",
       "workflow": "company-intelligence.yml",
-      "schedule": "alle 6 Stunden (isolierte Vorschau)",
+      "schedule": "Takte aus core/registry/schedule.json (Werktage 00:17, 03:10, 05:05, 07:00, 09:35, 12:10, 20:40; am Wochenende alle 3 h; Refresh-Kette company-intelligence-refresh.yml)",
       "freshness": { "kind": "none" },
       "consumers": ["/company-intelligence/ (Vorschau)"]
+    },
+    {
+      "id": "companyIntelligenceRefresh",
+      "label": "Company Intelligence Refresh-SLO",
+      "layer": "CONTENT",
+      "group": "Content",
+      "critical": false,
+      "artifact": "/company-intelligence/data/refresh-slo.json",
+      "timestamp": ["asOf"],
+      "records": "history",
+      "minRecords": 1,
+      "role": "Urteil des Refresh-SLO (Rueckstandsquote dueOverSevenDays, Anteil der vom Betreiber blockierten Quellen, Python-Laufzeit, Lane-Stempel) als Zahlen mit Verlauf (60 Berichte). Keine Quellen-, Host- oder Inhaltszeilen; Alarm bei Rueckstand ueber 25 % (CRITICAL ab 25 %, WARNING ab 10 %) und bei blockiertem Anteil ueber 15 %.",
+      "producer": "scripts/company_intelligence/refresh-slo-aggregate.mjs (aus backlog-slo.mjs)",
+      "workflow": "company-intelligence-health.yml",
+      "schedule": "alle 4 Stunden (core/registry/schedule.json, company-intelligence-health), nur im Datenzweig data/live",
+      "freshness": { "kind": "hours", "warnAfter": 12, "staleAfter": 36 },
+      "consumers": ["/status/ (Company Intelligence Refresh)"],
+      "activation": {
+        "state": "ACTIVATING",
+        "decision": "Steuerung 28.11.2026: Schreibweg B (Datenzweig, keine zusaetzlichen Commits auf main); erster Lauf des Health-Workflows nach dem Merge, danach Feld entfernen."
+      }
     },
     {
       "id": "europeDiscoverDisplay",

@@ -163,6 +163,32 @@
     }
   }
 
+  /* Refresh-SLO der Company Intelligence: Zahlen aus dem Datenzweig (core/registry/domains.json, companyIntelligenceRefresh). Nur Anzeige. */
+  function pct(x) { return Number.isFinite(x) ? (Math.round(x * 1000) / 10).toLocaleString("de-DE") + " %" : "–"; }
+  async function refreshSlo() {
+    var stand = document.getElementById("cir-stand"), table = document.getElementById("cir-history");
+    try {
+      var r = await load("/company-intelligence/data/refresh-slo.json");
+      if (!r || r.schema !== 1 || !Array.isArray(r.history) || !Number.isFinite(Date.parse(r.asOf))) throw new Error("Bericht ungültig");
+      var b = r.blockedByOperator;
+      stand.textContent = "Stand: " + r.asOf.slice(0, 16).replace("T", " ") + " UTC · Zustand " + (r.status || "–") + " · " +
+        (Number.isFinite(r.dueOverSevenDays) && Number.isFinite(r.eligibleSources)
+          ? r.dueOverSevenDays.toLocaleString("de-DE") + " von " + r.eligibleSources.toLocaleString("de-DE") + " Quellen mehr als 7 Tage überfällig (" + pct(r.backlogRatio) + "; gesund bis 10 %, Warnung bis 25 %)" : "Rückstand nicht gemessen") +
+        (b ? " · vom Betreiber blockiert: " + b.sources.toLocaleString("de-DE") + " (" + pct(b.share) + " der aktiven Quellen, Alarm über 15 %)" : "") +
+        (Number.isFinite(r.pythonRuntimeSeconds) ? " · Laufzeit " + Math.round(r.pythonRuntimeSeconds) + " s" : "");
+      var body = table.querySelector("tbody"); body.textContent = "";
+      r.history.slice(-12).reverse().forEach(function (e) {
+        body.appendChild(el("tr", {}, [el("td", { text: String(e.asOf || "").slice(0, 16).replace("T", " ") }), el("td", { text: e.status || "–" }),
+          el("td", { text: Number.isFinite(e.dueOverSevenDays) ? e.dueOverSevenDays.toLocaleString("de-DE") + " (" + pct(e.backlogRatio) + ")" : "–" }),
+          el("td", { text: Number.isFinite(e.blockedByOperatorSources) ? e.blockedByOperatorSources.toLocaleString("de-DE") + " (" + pct(e.blockedByOperatorShare) + ")" : "–" })]));
+      });
+      table.hidden = !body.children.length;
+    } catch (e) {
+      table.hidden = true;
+      stand.textContent = "Refresh-Bericht nicht verfügbar (erscheint nach dem ersten Lauf des Health-Workflows).";
+    }
+  }
+
   async function diagnose(ticker) {
     var out = document.getElementById("diag-out");
     out.textContent = "Prüfe " + ticker + " …";
@@ -210,6 +236,7 @@
     return;
   }
   qualityReady = quality();
+  refreshSlo();
   health();
   fromHash();
 })();
