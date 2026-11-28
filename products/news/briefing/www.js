@@ -55,7 +55,7 @@
       '<polyline points="' + line(cp.series[1].points) + '" fill="none" stroke="#f4f5f1" stroke-width="4" stroke-dasharray="10 8" vector-effect="non-scaling-stroke"/>' +
       '<polyline points="' + line(cp.series[0].points) + '" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg>' +
       '<figcaption><span>' + esc(dt(cp.series[0].points[0][0])) + (cp.rebase ? " = 100" : "") + "</span><b>" + esc(dt(cp.series[0].points[cp.series[0].points.length - 1][0])) + "</b></figcaption>" +
-      '<p class="mb-leg"><i class="a"></i>' + esc(cp.series[0].label) + " · " + esc(f(last(cp.series[0]))) + ' <i class="b"></i>' + esc(cp.series[1].label) + " · " + esc(f(last(cp.series[1]))) + "</p></figure>";
+      '<p class="mb-leg"><span><i class="a"></i>' + esc(cp.series[0].label) + " · " + esc(f(last(cp.series[0]))) + '</span><span><i class="b"></i>' + esc(cp.series[1].label) + " · " + esc(f(last(cp.series[1]))) + "</span></p></figure>";
   }
   function lineSvg(pts, unit, digits) {
     var v = pts.map(function (p) { return p[1]; }), lo = Math.min.apply(null, v), hi = Math.max.apply(null, v); if (hi === lo) hi = lo + 1;
