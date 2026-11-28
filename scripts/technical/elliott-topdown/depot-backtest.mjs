@@ -89,6 +89,9 @@ if (!isMainThread) {
 const OUT = arg("out", null); if (!OUT) { console.error("--out fehlt"); process.exit(2); }
 /* --zone-tiefe f (Forschung): Kaufauftrag in C nicht an der nahen Zonenkante, sondern bei Kurs − f × (Kurs − Kante); 1 = Kante */
 const ZT = Number(arg("zone-tiefe", 1));
+/* --zone-regel "CC:0.05,I1:0.46": Tiefe je Wellenlage (aus der Zonen-Studie der Lernjahre), sonst --zone-tiefe */
+const ZMAP = Object.fromEntries((arg("zone-regel", "") || "").split(",").filter(Boolean).map((p) => { const [a, b] = p.split(":"); return [a, Number(b)]; }));
+const zt = (cur) => (cur in ZMAP ? ZMAP[cur] : ZT);
 const FROM = arg("from", "2005-01-01"), STEP = Number(arg("step", 4)), MAX = Number(arg("max", 20)), COST = Number(arg("cost", 0.001));
 const ENGINE = arg("engine", join(ROOT, "quant/engines/technical/elliott/elliott-topdown.js")), WORKERS = Number(arg("workers", 4));
 const INDEX = arg("index", "SP500,NDX").split(",");
@@ -236,7 +239,7 @@ function simulate(kind) {
       }).sort((a, b) => ((kind === "M" || kind === "D" ? b.x.m.v : b.x.e.v) - (kind === "M" || kind === "D" ? a.x.m.v : a.x.e.v)) || a.f.localeCompare(b.f));
       if (kind === "C") {
         const nextSig = sigKeys[sigKeys.indexOf(k) + 1]; const until = nextSig ? cal.indexOf(nextSig) : cal.length;
-        pend = cand.map(({ f, x }) => ({ f, near: x.s.zone.at - ZT * (x.s.zone.at - x.s.zone.near), stop: x.s.zone.stop, tgt: x.s.zone.tgt, until }));
+        pend = cand.map(({ f, x }) => ({ f, near: x.s.zone.at - zt(x.s.cur) * (x.s.zone.at - x.s.zone.near), stop: x.s.zone.stop, tgt: x.s.zone.tgt, until }));
         pend.forEach((o) => zoneOrders.add(o.f + "|" + o.near.toFixed(4)));
       } else pend = cand.map(({ f, x }) => ({ f, tgt: kind === "B" && x.s ? x.s.tgt : (kind === "F" || kind === "G") && x.s ? x.s.farLog : null, stop: (kind === "B" || kind === "E" || kind === "F" || kind === "G") && x.s ? x.s.inv : null }));
     }
@@ -286,7 +289,7 @@ function simulateZone(staggered) {
         .sort((a, b) => b[1].e.v - a[1].e.v || a[0].localeCompare(b[0]));
       for (const [f, x] of cand) {
         const z = x.s.zone, stop = x.s.inv && x.s.inv < z.near ? x.s.inv : z.stop;
-        const o = { near: z.near, stop, far: x.s.farLog || null, away: z.tgt };
+        const o = { near: z.at - zt(x.s.cur) * (z.at - z.near), stop, far: x.s.farLog || null, away: z.tgt };
         const hasZoneLot = lots.some((p) => p.f === f && p.lot === "zone");
         if (!hasZoneLot) { if (!orders.has(f)) created++; orders.set(f, o); }
         if (staggered && !lots.some((p) => p.f === f) && !market.some((m) => m.f === f)) market.push(Object.assign({ f }, o));
@@ -326,10 +329,24 @@ const runs = { "A Setup stark": simulate("A"), "B Setup stark + Elliott-Ziel/Abs
   "G Nur Elliott: Kauf bei Fernziel ≥ 1,5×, halten bis Fernziel oder Ungültig": simulate("G"),
   "H Zone ohne Zeitgrenze, halten bis Fernziel oder Ungültig": simulateZone(false), "I Gestaffelt: halb sofort, halb in der Zone, bis Fernziel oder Ungültig": simulateZone(true),
   "Vergleich: Gleichgewicht Universum": equalWeight(), "Vergleich: SPY": bench(spyBy), "Vergleich: QQQ": bench(qqqBy) };
+/* Zonen-Studie: wie tief setzt eine Aktie nach einem Setup (Score ≥ 65 aufwärts, Zone im Plan) wirklich zurück, bevor sie über die
+   Folgezone läuft oder die Zählung ungültig wird? Tiefe t = (Kurs am Signal − tiefster Schluss) ÷ (Kurs am Signal − nahe Zonenkante):
+   t ≥ 1 heißt, die Zone der Engine wurde erreicht. Je Zeitraum (Lernen bis 2014, Prüfen ab 2015) und Wellenlage. */
+const ZS = {};
+for (const k of sigKeys) for (const [f, x] of Object.entries(SC[k])) {
+  if (!(x.e && x.e.v >= 65 && x.s && x.s.zone && x.s.plan === "UP")) continue;
+  const z = x.s.zone, P = px[f], i0 = P.wk.get(k); if (i0 === undefined) continue;
+  let mn = z.at, end = "offen";
+  for (let i = i0 + 1; i < P.c.length; i++) { const c0 = P.c[i]; mn = Math.min(mn, c0); if (c0 >= z.tgt) { end = "weg"; break; } if (x.s.inv && c0 <= x.s.inv) { end = "ungültig"; break; } }
+  const t = (z.at - mn) / Math.max(1e-9, z.at - z.near), per = k <= "2014-12-31" ? "bis 2014" : "ab 2015";
+  for (const g of [per, per + " " + (x.s.cur || "?")]) (ZS[g] = ZS[g] || []).push(t);
+}
+const q = (a, p) => { const b = a.slice().sort((x, y) => x - y); return Math.round(b[Math.min(b.length - 1, Math.floor(p * b.length))] * 100) / 100; };
+const zonenStudie = Object.fromEntries(Object.entries(ZS).filter(([, a]) => a.length >= 30).sort().map(([g, a]) => [g, { faelle: a.length, zoneErreicht: Math.round((a.filter((t) => t >= 1).length / a.length) * 1000) / 10, tiefe25: q(a, 0.25), tiefe50: q(a, 0.5), tiefe75: q(a, 0.75) }]));
 const result = { schema: "vu-elliott-depot-backtest-1", label: "Forschung, nicht zertifiziert", engine: TD.VERSION, setupScore: SS.VERSION,
-  params: { pit: PIT ? pitStats : null, from: FROM, stepWeeks: STEP, maxPositionen: MAX, kosten: COST, index: INDEX, aktien: uniFiles.length, signaltage: sigKeys.length, signalSekunden: sigSec, signale: sigN, signaleMitPlan: sigPlan },
+  params: { zoneRegel: ZMAP, zoneTiefe: ZT, pit: PIT ? pitStats : null, from: FROM, stepWeeks: STEP, maxPositionen: MAX, kosten: COST, index: INDEX, aktien: uniFiles.length, signaltage: sigKeys.length, signalSekunden: sigSec, signale: sigN, signaleMitPlan: sigPlan },
   hinweis: "Universum = heutige Indexmitglieder (Überlebende-Verzerrung); fairer Vergleich ist das Gleichgewicht derselben Aktien. Nur Kurs, ohne Dividenden.",
-  ergebnis: {} };
+  zonenStudie, ergebnis: {} };
 for (const [name, r] of Object.entries(runs)) {
   const e = { zeitraeume: Object.fromEntries(periods.map(([n, a, b]) => [n, stats(r.curve, a, b)])) };
   if (r.trades) { const T = r.trades; const sr = T.map((x) => x.r).sort((a, b) => a - b);
