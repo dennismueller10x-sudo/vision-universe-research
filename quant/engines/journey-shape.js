@@ -275,6 +275,22 @@
       outlook: "Mit dem nächsten veröffentlichten Stand ist der Vergleich möglich."
     },
     {
+      /* Die Kursstruktur (scripts/technical/materialize-product-intelligence.mjs)
+         prüft die Kurshistorie vor der Auswertung: Zeitstempel, Herkunft,
+         einzelne Kurstage, aufbereitete Reihe. Fällt eine Prüfung durch,
+         wird nichts gezeigt, bis der nächste Lauf sie besteht. */
+      id: "HISTORY_CHECK_FAILED",
+      codes: ["INVALID_HISTORY_OBSERVED_AT", "INVALID_HISTORY_PROVENANCE", "INVALID_HISTORY_BAR",
+              "INVALID_CANONICAL_SERIES", "TECHNICAL_PARTIAL"],
+      headline: "Die Kurshistorie ist noch nicht geprüft",
+      sentence: function () {
+        return "Vor der Auswertung wird die Kurshistorie dieses Titels geprüft. " +
+          "Die letzte Prüfung ist nicht bestanden oder noch nicht abgeschlossen - " +
+          "bis zum nächsten bestandenen Lauf wird hier nichts ausgewertet.";
+      },
+      outlook: null
+    },
+    {
       id: "NOT_PERMITTED",
       codes: ["DISPLAY_NOT_PERMITTED", "INVALID_TECHNICAL_PROVENANCE", "INVALID_IDENTITY"],
       headline: "Diese Angaben dürfen hier nicht gezeigt werden",

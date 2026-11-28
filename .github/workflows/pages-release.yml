@@ -631,6 +631,12 @@ jobs:
             # und 20:20-21:10 UTC, Voll-Releases 17-30 min, Auslieferung bis 20 min hinter dem Repository).
             if [ "$wf" = company-intelligence-refresh ]; then
               filter="[.workflow_runs[] | select(.status == \"completed\" and .conclusion != \"success\" and .updated_at > \"$BASE_AT\")] | length"
+            elif [ "$wf" = company-intelligence-profile-source ]; then
+              # 27.11.2026 (Befund Intraday-Waechter 17:00-18:15 UTC): der taegliche profile-source-Lauf (16:47 UTC, 72 min) machte
+              # waehrend seiner Laufzeit jeden Takt zum Voll-Release (15-20 min statt ~4), die Auslieferung lag 15-25 min hinter dem
+              # Repository. Er veroeffentlicht erst am Ende und meldet keinen Marker: zaehlt deshalb nur, wenn er FERTIG ist und nach
+              # dem Basis-Paket endete (egal wie): dann folgt genau ein Voll-Release, der die Generation ausliefert.
+              filter="[.workflow_runs[] | select(.status == \"completed\" and .updated_at > \"$BASE_AT\")] | length"
             else
               filter="[.workflow_runs[] | select(.status != \"completed\" or .updated_at > \"$BASE_AT\")] | length"
             fi

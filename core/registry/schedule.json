@@ -45,7 +45,7 @@
   {
    "id": "company-intelligence-profile-source",
    "workflow": "company-intelligence-profile-source.yml",
-   "cron": "47 3 * * *",
+   "cron": "47 16 * * *",
    "timer": "waker"
   },
   {
@@ -57,7 +57,7 @@
   {
    "id": "company-intelligence-refresh",
    "workflow": "company-intelligence-refresh.yml",
-   "cron": "17 */4 * * 0,6",
+   "cron": "17 */3 * * 0,6",
    "timer": "waker",
    "inputs": {
     "verification": false,
@@ -78,6 +78,16 @@
    "id": "company-intelligence-refresh-werktag-2",
    "workflow": "company-intelligence-refresh.yml",
    "cron": "10 3 * * 1-5",
+   "timer": "waker",
+   "inputs": {
+    "verification": false,
+    "universe": false
+   }
+  },
+  {
+   "id": "company-intelligence-refresh-werktag-7",
+   "workflow": "company-intelligence-refresh.yml",
+   "cron": "5 5 * * 1-5",
    "timer": "waker",
    "inputs": {
     "verification": false,
@@ -184,9 +194,9 @@
   {
    "id": "content-marktbriefing",
    "workflow": "content.yml",
-   "cron": "20 2 * * 2-6",
+   "cron": "20 2,4,7 * * 2-6",
    "timer": "waker",
-   "note": "marktbriefing (Di-Sa 02:20 UTC fuer den US-Handelstag davor; nach Market Pulse ~00:25 und Technical-Screener ~01:15, Owner 24.11.2026: erster Lauf 23:50 rechnete noch mit Freitagsdaten)"
+   "note": "marktbriefing (Di-Sa 02:20, 04:20 und 07:20 UTC: drei Versuche, der erste frische gewinnt, spaetere ueberspringen; Owner 25.11.2026: Briefing fehlte, weil der Kurs-Lauf haengen blieb. Ab 02:20 UTC fuer den US-Handelstag davor; nach Market Pulse ~00:25 und Technical-Screener ~01:15, Owner 24.11.2026: erster Lauf 23:50 rechnete noch mit Freitagsdaten)"
   },
   {
    "id": "core-ci",
@@ -291,6 +301,26 @@
    }
   },
   {
+   "id": "monitor-marktdaten-commit",
+   "workflow": "monitor.yml",
+   "cron": "35 0 * * 2-6",
+   "timer": "waker",
+   "inputs": {
+    "pruefung": "marktdaten-commit"
+   },
+   "note": "Fruehwarnung 25.11.2026: 00:35 UTC startet die Pruefung den Marktdaten-Refresh (22:30 Mo-Fr) einmal neu, wenn der Lauf fehlt oder rot ohne Marktdaten-Commit endete (Marke Neustart im run-name); scripts/ci/check-market-commit.mjs. 01:30 UTC (monitor-marktdaten-commit-2): haengt er noch, Alarm."
+  },
+  {
+   "id": "monitor-marktdaten-commit-2",
+   "workflow": "monitor.yml",
+   "cron": "30 1 * * 2-6",
+   "timer": "waker",
+   "inputs": {
+    "pruefung": "marktdaten-commit"
+   },
+   "note": "Zweiter Termin der Fruehwarnung (siehe monitor-marktdaten-commit): ohne Marktdaten-Commit jetzt Alarm statt Neustart; ein laufender Neustart wird bis 150 min abgewartet."
+  },
+  {
    "id": "monitor-2",
    "workflow": "monitor.yml",
    "cron": "40 14 * * *",
@@ -308,6 +338,16 @@
     "pruefung": "sec-frische"
    },
    "note": "pruefung ist Pflicht-Auswahl ohne passende Option; beim Takt waehlt die Weiche nach dem Cron (sec_veroeffentlichung)"
+  },
+  {
+   "id": "ci-budget",
+   "workflow": "ci.yml",
+   "cron": "10 5 * * 2-6",
+   "timer": "waker",
+   "inputs": {
+    "pruefung": "vu2-browser-qa"
+   },
+   "note": "Budget-Alarm 26.11.2026: taeglich nach dem Marktdaten-Refresh (22:30 Mo-Fr) und dem Voll-Release; der Job vu2-browser-qa misst home, screener und stock gegen scripts/vu2/resource-budget.mjs, rot oeffnet ein Issue (Label pipeline-alarm), gruen schliesst es (Job budget-alarm in ci.yml)."
   },
   {
    "id": "multi-asset-data",

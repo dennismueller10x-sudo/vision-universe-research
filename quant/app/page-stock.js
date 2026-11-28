@@ -216,6 +216,12 @@
       '<p class="qk-mean-note">Durchschnitt der Profilwerte. Rückwärts geprüft: Aktien mit hohem Gesamtwert lagen früher nicht besser als der Markt – er beschreibt das Profil, er sagt nichts über künftige Kurse.</p></div>';
   }
   /* Das Profil (Entwurf): Netz und Balken nebeneinander (Balken nach Wert absteigend), darunter die Stufen als Pillen und die Erklärung. */
+  /* Profil-Hilfetext: als Hilfe-Knopf (Text steht nur im Knopf, bis er geöffnet wird); ohne Sheet-Unterstützung wie bisher sichtbar. */
+  function profileHelp(U, industry) {
+    var text = "Jede Zahl vergleicht vor allem mit Firmen derselben Branche" + (industry ? " (" + industry + ", 70 %)" : " (70 %)") + " und dem Gesamtmarkt (30 %). 0 bis 100, höher heißt besser als die Vergleichsfirmen. ▲ stark ab 75 · ● Mittelfeld · ▼ schwach unter 45.";
+    if (!(U.q && U.bindHelp)) return U.help(text);
+    return '<span class="qv3-profile-help-l">Profil lesen</span>' + U.q(text, "Wie das Profil gelesen wird");
+  }
   function profileCard(vm, ticker, displayName, industry) {
     var U = global.VUUI, rated = vm.factors.filter(function (f) { return f.state === "AVAILABLE"; });
     var total = Math.max.apply(null, [0].concat(rated.map(function (f) { return f.rank && f.rank.total; }).filter(function (n) { return typeof n === "number"; }))) || null;
@@ -237,7 +243,9 @@
         var v = val(k);
         return '<span class="qk-pill qk-pill--' + stageTone(v) + '" title="' + U.esc(U.PROFILE.stage(v)) + '"><span aria-hidden="true">' + stageMark(v) + "</span> " + U.esc(U.PROFILE.label[k]) + "</span>";
       }).join("") + "</div>" +
-      '<div class="qv3-profile-help">' + U.help("Jede Zahl vergleicht vor allem mit Firmen derselben Branche" + (industry ? " (" + industry + ", 70 %)" : " (70 %)") + " und dem Gesamtmarkt (30 %). 0 bis 100, höher heißt besser als die Vergleichsfirmen. ▲ stark ab 75 · ● Mittelfeld · ▼ schwach unter 45.") + "</div></div>" + profileMeanBlock(vm);
+      '<div class="qv3-profile-help">' + profileHelp(U, industry) + "</div></div>" + profileMeanBlock(vm);
+    /* Der Hilfetext ist zugeklappt (Owner 28.11.2026, Ladezeit Quant): erst der Hilfe-Knopf öffnet ihn im gemeinsamen Sheet. */
+    if (U.q && U.bindHelp) U.bindHelp(card);
     return card;
   }
   /* Stärken und Schwächen (Entwurf): eine Karte, Zahl groß links, „Eigenschaft: Wort“ und die Rohwerte darunter; Mittelfeld als

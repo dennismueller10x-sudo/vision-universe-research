@@ -12,7 +12,7 @@
 
   var W = 1080, H = 1350, PAD = 72, IN = W - 2 * PAD;
   var C = { bg: "#08080a", fg: "#f4f5f1", mut: "#8b8d86", dim: "#5b5d57", lime: "#c8f531", line: "#25262a", card: "#111114", soft: "#c9cbc4" };
-  var TYPE_TAG = { MARKET: null, OWN: "Eigene Auswertung", THIRD: "Angabe Dritter", AGENDA: "Termine" };
+  var TYPE_TAG = { MARKET: null, OWN: "Eigene Auswertung", THIRD: "Quelle", AGENDA: "Termine" };
   /* Linien-Icons (24er Raster, Strich): Ausblick-Arten und Szenen der Website (www.js nutzt dieselben). */
   var ICONS = {
     zahlen: '<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 17v-3M12 17v-7M15 17v-5"/>',
@@ -75,7 +75,7 @@
     var y = 180, s = "";
     var kick = String(card.kicker || "").toUpperCase();
     s += '<text x="' + PAD + '" y="' + y + '" font-size="26" font-weight="800" letter-spacing="3" fill="' + C.lime + '">' + esc(kick) + "</text>";
-    var tag = card.type === "THIRD" && card.publisher ? "Angabe Dritter · " + card.publisher : TYPE_TAG[card.type];
+    var tag = card.type === "THIRD" && card.publisher ? "Quelle: " + (card.publisher === "X" && card.source ? String(card.source).split(",")[0] : card.publisher) : TYPE_TAG[card.type];
     if (tag) {
       var x = PAD + kick.length * 26 * 0.8 + 24, w = tag.length * 19 * 0.55 + 32;
       var own = card.type === "OWN";
@@ -156,12 +156,16 @@
   /* Einordnung: jede Phase eine Zeile, jeder Tag ein Punkt (keine überlappenden Säulen). */
   var MS = ["Jan.", "Feb.", "März", "Apr.", "Mai", "Juni", "Juli", "Aug.", "Sep.", "Okt.", "Nov.", "Dez."];
   function timeline(tl, y, h) {
-    var eps = tl.episodes || [], s = "", n = Math.max(1, eps.length), rh = Math.min(64, h / n), r = Math.min(13, rh * 0.32);
+    // Höchstens die zehn jüngsten Phasen; Zeilenhöhe, Schrift und Punktabstand schrumpfen mit, damit nichts überlappt (Owner 28.11.2026).
+    var eps = (tl.episodes || []).slice(-10), s = "", n = Math.max(1, eps.length), rh = Math.min(64, h / n), r = Math.min(13, rh * 0.3),
+      fs = Math.min(26, rh * 0.7), maxD = Math.max.apply(null, eps.map(function (e) { return e.days.length; }).concat([1])),
+      x0 = PAD + 200, x1 = W - PAD - 170, step = Math.min(r * 2 + 10, (x1 - x0 - 2 * r) / Math.max(1, maxD - 1));
+    if (step < r * 2 + 2) r = Math.max(3, (step - 2) / 2);
     eps.forEach(function (e, i) {
       var yy = y + i * rh + rh / 2, lab = MS[+e.from.slice(5, 7) - 1] + " " + e.from.slice(0, 4);
-      s += '<text x="' + PAD + '" y="' + (yy + 9) + '" font-size="26" font-weight="800" fill="' + (e.current ? C.lime : C.fg) + '">' + esc(lab) + "</text>";
-      e.days.forEach(function (d, k) { s += '<circle cx="' + (PAD + 200 + r + k * (r * 2 + 10)) + '" cy="' + yy + '" r="' + r + '" fill="' + (e.current ? C.lime : C.fg) + '"/>'; });
-      s += '<text x="' + (W - PAD) + '" y="' + (yy + 9) + '" font-size="26" font-weight="800" fill="' + (e.current ? C.lime : C.mut) + '" text-anchor="end">' + esc(pct(e.extreme, 1)) + "</text>";
+      s += '<text x="' + PAD + '" y="' + (yy + fs * 0.35) + '" font-size="' + fs + '" font-weight="800" fill="' + (e.current ? C.lime : C.fg) + '">' + esc(lab) + "</text>";
+      e.days.forEach(function (d, k) { s += '<circle cx="' + (x0 + r + k * step) + '" cy="' + yy + '" r="' + r + '" fill="' + (e.current ? C.lime : C.fg) + '"/>'; });
+      s += '<text x="' + (W - PAD) + '" y="' + (yy + fs * 0.35) + '" font-size="' + fs + '" font-weight="800" fill="' + (e.current ? C.lime : C.mut) + '" text-anchor="end">' + esc(pct(e.extreme, 1)) + "</text>";
       s += '<line x1="' + PAD + '" x2="' + (W - PAD) + '" y1="' + (y + (i + 1) * rh) + '" y2="' + (y + (i + 1) * rh) + '" stroke="' + C.line + '"/>';
     });
     return s;
@@ -205,6 +209,22 @@
       var lp = card.line.points;
       s += lineChart(lp, PAD, y + 30, 860, bottom - y - 90, { col: C.lime, yfmt: function (v) { return num(v, 0) + " %"; },
         xl: [[0, lp[0][0].slice(8, 10) + "." + lp[0][0].slice(5, 7) + "."], [lp.length - 1, lp[lp.length - 1][0].slice(8, 10) + "." + lp[lp.length - 1][0].slice(5, 7) + ".: " + num(lp[lp.length - 1][1], 1) + " %"]] });
+    } else if (card.compare) {
+      var cp = card.compare, al = cp.series[0].points.concat(cp.series[1].points).map(function (p) { return p[1]; });
+      var clo = Math.min.apply(null, al), chi = Math.max.apply(null, al), pad = (chi - clo) * .08 || 1;
+      var cf = function (v) { return num(v, cp.digits) + (cp.unit ? " " + cp.unit : ""); };
+      s += '<text x="' + PAD + '" y="' + (y + 10) + '" font-size="24" fill="' + C.mut + '">' + esc((cp.label || "") + (cp.rebase ? " · Start = 100" : "")) + "</text>";
+      var ch2 = bottom - y - 170;
+      s += lineChart(cp.series[0].points, PAD, y + 40, 860, ch2, { y0: clo - pad, y1: chi + pad, col: C.lime, yfmt: cf, xl: [[0, cp.series[0].points[0][0].slice(0, 10).split("-").reverse().join(".")], [cp.series[0].points.length - 1, cp.series[0].points[cp.series[0].points.length - 1][0].slice(0, 10).split("-").reverse().join(".")]] });
+      var p2 = cp.series[1].points, xs2 = function (i) { return PAD + i / Math.max(1, p2.length - 1) * 860; }, ys2 = function (v) { return y + 40 + ch2 - (v - (clo - pad)) / ((chi + pad) - (clo - pad)) * ch2; };
+      s += '<path d="' + p2.map(function (p, i) { return (i ? "L" : "M") + xs2(i).toFixed(1) + "," + ys2(p[1]).toFixed(1); }).join("") + '" fill="none" stroke="' + C.fg + '" stroke-width="4" stroke-dasharray="10 8"/>';
+      s += '<text x="' + PAD + '" y="' + (bottom - 40) + '" font-size="24" font-weight="700"><tspan fill="' + C.lime + '">— ' + esc(cp.series[0].label) + " " + esc(cf(cp.series[0].points[cp.series[0].points.length - 1][1])) + '</tspan><tspan fill="' + C.fg + '">   - - ' + esc(cp.series[1].label) + " " + esc(cf(p2[p2.length - 1][1])) + "</tspan></text>";
+    } else if (card.line && !card.pairs) {
+      var ln = card.line.points, u = card.line.unit || "";
+      s += '<text x="' + PAD + '" y="' + (y + 10) + '" font-size="24" fill="' + C.mut + '">' + esc(card.line.label || "") + "</text>";
+      s += lineChart(ln, PAD, y + 40, 860, (card.stats ? bottom - y - 330 : bottom - y - 120), { col: C.lime, yfmt: function (v) { return num(v, card.line.digits == null ? 1 : card.line.digits) + (u ? " " + u : ""); },
+        xl: [[0, ln[0][0].slice(0, 10).split("-").reverse().join(".")], [ln.length - 1, ln[ln.length - 1][0].slice(0, 10).split("-").reverse().join(".")]] });
+      if (card.stats) s += statBoxes(card.stats, bottom - 210, 180);
     } else if (card.columns) {
       var ch = card.stats ? bottom - y - 330 : bottom - y - 150;
       s += columnChart(card.columns.rows, y + 40, ch, { unit: card.columns.unit, legend: card.columns.legend });
@@ -281,7 +301,7 @@
       '</head>\n<body data-view="news"><vu-navigation></vu-navigation><script src="/assets/site-navigation.js"><\/script>\n<main class="mb">\n' +
       '<p style="margin:0;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#c8f531;font-weight:700">Marktbriefing</p>\n' +
       "<h1>US-Handelstag " + deDate(b.session) + "</h1>\n" +
-      "<p>" + n + " Karten: " + b.counts.MARKET + " Marktdaten, " + b.counts.OWN + " eigene Auswertungen, " + b.counts.THIRD + " Angaben Dritter. Indizes über ETF-Proxies.</p>\n" +
+      "<p>" + n + " Karten: " + b.counts.MARKET + " Marktdaten, " + b.counts.OWN + " eigene Auswertungen, " + b.counts.THIRD + " Angaben aus externen Quellen. Indizes über ETF-Proxies.</p>\n" +
       cards + "\n" +
       (arch ? '<h2 style="font-size:18px">Frühere Ausgaben</h2><nav class="mb-arch">' + arch + "</nav>\n" : "") +
       '<details class="mb-legal"><summary>Quellen und Hinweise</summary><ul>' + b.cards.map(function (c) { return "<li>" + esc(c.title) + ": " + esc(c.source) + (c.url ? ' · <a href="' + esc(c.url) + '" rel="noopener">Quelle</a>' : "") + "</li>"; }).join("") + "</ul></details>\n" +

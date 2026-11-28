@@ -101,12 +101,26 @@ test('Top-10-Kopf: Laufzeit und Vorschau bauen ihn aus derselben Engine-Funktion
 test('Top-10-Kopf: Adresse der Vorschau gilt auch zur Laufzeit (keine Themenwelt "im-blick"), Platz im HTML',()=>{
  assert.doesNotMatch(src('discover/themes.js'),/['"]im-blick['"]/,'rowHref("im-blick") bleibt #/c/US_REAL/im-blick');
  const index=src('discover/index.html');
- assert.match(index,/<section class="dr-sec dr-sec--top10 dr-slot" data-static-top aria-label="Top 10 heute"><!--top10-head--><!--\/top10-head--><\/section>/);
+ /* Der Platz steht in einem Rahmen mit den Klassen der echten Startseite: alle Kopfstile hängen an .dp-home (reihen.css), sonst ist der Absatz kleiner als der spätere echte. */
+ assert.match(index,/<div class="v2-journey dr-home dp-home"><section class="dr-sec dr-sec--top10 dr-slot" data-static-top aria-label="Top 10 heute"><!--top10-head--><!--\/top10-head--><\/section><\/div>/);
+ assert.match(src('discover/ui/reihen.css'),/\.dp-home \.dp-sh p\{margin:4px 0 0;font-size:12\.5px\}/,'die Stile des Kopfs hängen an .dp-home');
+ assert.match(src('discover/ui/reihen.js'),/body = h\('div', 'v2-journey dr-home dp-home'\)/,'derselbe Rahmen wie zur Laufzeit');
  const p=R.heroPreview({cards:[card('BBB')]},{cards:[card('CCC')]});
  const out=applyHeroPreview(index,p);
  assert(out.includes('<!--top10-head-->'+R.top10Head(1,R.TOP10.href)+'<!--/top10-head-->'));
  assert.equal(applyHeroPreview(out,null),index,'ohne Vorschau wieder der leere Platz, nie ein alter Kopf');
  const home=src('discover/home.js'),ui=src('discover/ui/reihen.js');
- assert.match(home,/n !== top\) n\.remove\(\)/);assert.match(home,/topWait: top/);
+ assert.match(home,/n !== topBox\) n\.remove\(\)/);assert.match(home,/topWait: top/);assert.match(ui,/if \(topBox\) topBox\.remove\(\)/);
  assert.match(ui,/var topSlot = top0 \|\| h\('div', 'dr-slot'\)/);
+});
+
+/* Der statische Kopf bleibt als Knoten stehen (25.11.2026): live gibt es genau eine echte Zeichnung (Monitor-Ereignisse: vu-fx-ready 3,7 s, danach vu-home-drawn);
+   ein neu gebauter Kopf ersetzte den früh gemalten Absatz (2,1 s) durch einen etwas größeren und zählte als späterer LCP-Kandidat (3,6 s). */
+test('Top-10-Sektion übernimmt den statischen Kopf als denselben Knoten statt ihn neu zu bauen',()=>{
+ const ui=src('discover/ui/reihen.js');
+ assert.match(ui,/function top10Section\(row, ctx, slot\)/);
+ assert.match(ui,/var keep = slot && slot\.querySelector\('\.dr-head'\) \? slot : null;/);
+ assert.match(ui,/if \(!keep\) sec\.innerHTML = R\(\)\.top10Head\(/,'ohne statischen Platz weiter die Engine-Funktion');
+ assert.match(ui,/var t = imBlick && top10Section\(imBlick, ctx, topSlot\);/);
+ assert.match(ui,/if \(t === topSlot\) topSlot\.classList\.remove\('dr-slot'\); else if \(t\) topSlot\.replaceWith\(t\); else topSlot\.remove\(\);/);
 });

@@ -703,9 +703,9 @@
       "cik": "0001585521",
       "name": "Zoom Communications, Inc.",
       "sic": "7370",
-      "rawFacts": 11036,
-      "mappedFacts": 3156,
-      "unmappedFacts": 8016,
+      "rawFacts": 11393,
+      "mappedFacts": 3270,
+      "unmappedFacts": 8264,
       "calendarYears": 9,
       "industry": null,
       "industryMetrics": {},
@@ -715,28 +715,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 10,
-      "quarterlyPeriods": 36,
+      "quarterlyPeriods": 37,
       "firstPeriodEnd": "2017-01-31",
-      "lastPeriodEnd": "2026-07-31",
+      "lastPeriodEnd": "2026-10-31",
       "historyYears": 9.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 34,
+          "quarterlyPeriods": 35,
           "firstAvailablePeriod": "2018-01-31",
           "lastAvailablePeriod": "2026-01-31",
           "historyYears": 8.0
         },
         "eps_diluted": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 34,
+          "quarterlyPeriods": 35,
           "firstAvailablePeriod": "2018-01-31",
           "lastAvailablePeriod": "2026-01-31",
           "historyYears": 8.0
         },
         "free_cash_flow": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 34,
+          "quarterlyPeriods": 35,
           "firstAvailablePeriod": "2018-01-31",
           "lastAvailablePeriod": "2026-01-31",
           "historyYears": 8.0,
@@ -756,21 +756,21 @@
         },
         "net_income": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 34,
+          "quarterlyPeriods": 35,
           "firstAvailablePeriod": "2018-01-31",
           "lastAvailablePeriod": "2026-01-31",
           "historyYears": 8.0
         },
         "operating_cash_flow": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 34,
+          "quarterlyPeriods": 35,
           "firstAvailablePeriod": "2018-01-31",
           "lastAvailablePeriod": "2026-01-31",
           "historyYears": 8.0
         },
         "revenue": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 34,
+          "quarterlyPeriods": 35,
           "firstAvailablePeriod": "2018-01-31",
           "lastAvailablePeriod": "2026-01-31",
           "historyYears": 8.0
@@ -784,14 +784,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 36,
+          "quarterlyPeriods": 37,
           "firstAvailablePeriod": "2017-01-31",
           "lastAvailablePeriod": "2026-01-31",
           "historyYears": 9.0
         },
         "total_assets": {
           "annualPeriods": 8,
-          "quarterlyPeriods": 31,
+          "quarterlyPeriods": 32,
           "firstAvailablePeriod": "2019-01-31",
           "lastAvailablePeriod": "2026-01-31",
           "historyYears": 7.0
@@ -814,45 +814,46 @@
         }
       },
       "quality": {
-        "HIGH": 297,
+        "HIGH": 304,
         "MEDIUM": 3
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 300,
-        "resolvedValues": 300
+        "datableValues": 307,
+        "resolvedValues": 307
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 8218,
+        "rules_version": "1.1.0",
+        "total": 8472,
         "by_severity": {
-          "INFO": 8016,
-          "WARNING": 202
+          "INFO": 8264,
+          "WARNING": 208
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 194,
+          "CONCEPT_DISAGREEMENT": 200,
           "RESTATEMENT_CONFLICT": 8,
-          "UNKNOWN_CONCEPT": 8016
+          "UNKNOWN_CONCEPT": 8264
         }
       },
       "latestFiling": {
-        "accession": "0001585521-26-000121",
-        "filing_date": "2026-08-26",
+        "accession": "0001585521-26-000173",
+        "filing_date": "2026-11-24",
         "form": "10-Q",
-        "periodic_filings": 30
+        "periodic_filings": 31,
+        "acceptance_datetime": "2026-11-24T21:03:34.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
-        "formula": "1.2.0",
+        "normalization_logic": "1.15.0",
+        "formula": "1.3.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.8.0"
         }
       },
-      "sourceDigest": "403f166e470fa42c790c5449301922d6a85dea1a2107dab9f3cc979a5a132f2f",
+      "sourceDigest": "fbf54ddd50c3c763948d1d86fb7da954676fe54f5aeeb1f6d8e75dd6cd5da78b",
       "issuerId": "iss_cik_0001585521"
     },
     {

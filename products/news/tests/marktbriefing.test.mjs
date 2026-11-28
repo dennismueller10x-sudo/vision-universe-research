@@ -400,3 +400,52 @@ test('MB-18 Instagram-Karussell: sechs Slides ohne Kleingedrucktes, Hook je Them
   assert.ok(!/tiingo/i.test(cap + html));
   assert.equal(Social.valTitle('NVDA: KGV seit dem Kurshoch fast halbiert'), 'Nvidias KGV hat sich seit dem Hoch fast halbiert');
 });
+
+test('MB-19 Produktfilm oben auf /marktbriefing/: nur wenn die Datei da ist, selbst gehostet, ohne Autoplay', () => {
+  const b = Engine.buildBriefing(inputs());
+  const base = { chrome: Www.chromeFrom(CHROME), archive: [SESSION] };
+  assert.doesNotMatch(Www.productPage(b, base), /<video/);
+  const p = Www.productPage(b, { ...base, film: { src: 'film/marktbriefing-film.mp4', poster: 'film/poster.jpg' } });
+  assert.match(p, /<video class="mbvid" controls playsinline preload="none" poster="film\/poster\.jpg"[^>]*><source src="film\/marktbriefing-film\.mp4" type="video\/mp4">/);
+  assert.doesNotMatch(p, /autoplay/);
+  assert.ok(p.indexOf('mbfilm') < p.indexOf('mbstory'), 'Film steht vor dem Story-Block');
+  assert.ok(fs.existsSync(new URL('../../../landing/marktbriefing/film/marktbriefing-film.mp4', import.meta.url)));
+});
+
+test('MB-20 Recherche-Lauf: Angaben Dritter mit Zitat, Linie, Balken oder Zahlen bekommen je eine Szene; lead stellt sie nach vorn', () => {
+  const inp = inputs();
+  const base = { kicker: 'Test', source: 'Test', published: SESSION, url: 'https://example.com/a' };
+  inp.radar = { items: [
+    { ...base, publisher: 'FRED', title: 'Rendite fällt', lead: true, line: { label: 'Rendite 10 Jahre', unit: '%', digits: 2, points: [['2026-11-01', 4.6], ['2026-11-20', 4.4]] } },
+    { ...base, publisher: 'Goldman Sachs', title: 'Goldman bleibt vorsichtig', quote: 'Wir bleiben vorsichtig.', speaker: 'Strategieteam' },
+    { ...base, publisher: 'EIA', title: 'Ölvorräte', bars: { unit: 'Mio. Barrel', rows: [{ label: 'Rohöl', value: -3.2 }] } },
+    { ...base, publisher: 'Unbekannt AG', title: 'nicht in der Liste' }
+  ] };
+  const b = Engine.buildBriefing(inp);
+  assert.equal(b.cards[1].publisher, 'FRED', 'lead steht direkt hinter dem Überblick');
+  assert.ok(b.cards[1].line && b.cards[1].lead);
+  assert.ok(b.dropped.some((d) => /Quellenliste/.test(d.reason)));
+  const html = Www.page(b, { chrome: Www.chromeFrom(CHROME), archive: [SESSION], depth: 2 });
+  assert.match(html, /id="vorn-1"[\s\S]*class="mb-line"/);
+  assert.match(html, /class="mb-quote">„Wir bleiben vorsichtig\.“/);
+  assert.match(html, /class="mb-xbars"/);
+  assert.ok(html.indexOf('id="vorn-1"') < html.indexOf('id="indizes"'));
+  assert.match(Render.cardSvg(b.cards[1], 1, b.cards.length, b.session), /<polyline|<path/);
+});
+
+test('MB-21 Chartvergleich: zwei Reihen, auf Wunsch Start = 100, eigene Szene und Karte', () => {
+  const inp = inputs();
+  const pts = (a) => [['2026-11-01', a], ['2026-11-10', a * 1.1], ['2026-11-20', a * 0.9]];
+  inp.radar = { items: [{ kicker: 'Chartvergleich', title: 'A gegen B', publisher: 'FRED', source: 'FRED', published: SESSION, url: 'https://fred.stlouisfed.org/',
+    compare: { label: 'A und B', rebase: true, series: [{ label: 'A', points: pts(200) }, { label: 'B', points: pts(4) }] } }] };
+  const b = Engine.buildBriefing(inp);
+  const c = b.cards.find((x) => x.compare);
+  assert.ok(c, 'Vergleichskarte vorhanden');
+  assert.deepEqual(c.compare.series.map((s) => s.points[0][1]), [100, 100]);
+  assert.equal(c.compare.series[0].points[2][1], 90);
+  const html = Www.page(b, { chrome: Www.chromeFrom(CHROME), archive: [SESSION], depth: 2 });
+  assert.match(html, /class="mb-line mb-cmp"[\s\S]*= 100/);
+  assert.match(Render.cardSvg(c, 1, b.cards.length, b.session), /stroke-dasharray="10 8"/);
+  inp.radar.items[0].compare.series.pop();
+  assert.ok(!Engine.buildBriefing(inp).cards.some((x) => x.compare), 'eine Reihe allein ist kein Vergleich');
+});

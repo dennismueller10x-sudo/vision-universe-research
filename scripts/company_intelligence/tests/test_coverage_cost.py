@@ -74,10 +74,11 @@ class CoverageCostTests(unittest.TestCase):
         self.assertEqual(production.count('cron:'),0)
         entries=json.loads((root / 'core/registry/schedule.json').read_text())['entries']
         refresh=[e for e in entries if e['workflow']=='company-intelligence-refresh.yml']
-        # Seit 21.11.2026 (#2176): Wochenende Takt 4 h, Werktags sechs feste Slots (keine Veroeffentlichung im Boersenfenster
-        # 14-21 UTC). Weiter genau 6 Starts je Tag, kein Zusatz-Slot; alle ueber den Wecker.
+        # Seit 25.11.2026 (#2432, Entscheidung Steuerung): Wochenende Takt 3 h (8 Slots), Werktags sieben feste Slots
+        # (00:17 03:10 05:05 07:00 09:35 12:10 20:40; keine Veroeffentlichung im Boersenfenster 13:30-21:30 UTC), Wache 30 min;
+        # alle ueber den Wecker. Vorher (#2176, 21.11.2026): Wochenende 4 h, Werktags sechs Slots.
         self.assertEqual([(e['cron'],e['timer']) for e in refresh],
-            [('17 */4 * * 0,6','waker'),('17 0 * * 1-5','waker'),('10 3 * * 1-5','waker'),('0 7 * * 1-5','waker'),
+            [('17 */3 * * 0,6','waker'),('17 0 * * 1-5','waker'),('10 3 * * 1-5','waker'),('5 5 * * 1-5','waker'),('0 7 * * 1-5','waker'),
              ('35 9 * * 1-5','waker'),('10 12 * * 1-5','waker'),('40 20 * * 1-5','waker')])
         watchdog=(root / '.github/workflows/company-intelligence-refresh-watchdog.yml').read_text()
         self.assertEqual(watchdog.count('cron:'),0)

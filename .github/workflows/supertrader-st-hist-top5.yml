@@ -20,11 +20,16 @@ on:
         default: ''
         type: string
       mode:
-        description: 'backtest (Kennzahlen Top 5) oder rest8 (Strang H: C04-C07, C11, C13 wie die Top 5, dazu C09/C10 aus dem privaten IEX-Cache, 0 Anfragen) oder edge-export (Kurven, Fills, Terminale fuer die E3-Studie, kostenfrei, nur mit Pruefschluessel) oder golden-diagnose (C08: warum belegte Trades fehlen) oder minervini-golden (C06/C07 Referenz gegen belegte Trades); beide nur mit Pruefschluessel; holdout (Strang H: einmaliger vorregistrierter Holdout 2008-2015, Snapshot laut Protokoll, nur mit Pruefschluessel, Einmal-Ledger)'
+        description: 'backtest (Kennzahlen Top 5) oder rest8 (Strang H: C04-C07, C11, C13 wie die Top 5, dazu C09/C10 aus dem privaten IEX-Cache, 0 Anfragen) oder edge-export (Kurven, Fills, Terminale fuer die E3-Studie, kostenfrei, nur mit Pruefschluessel) oder golden-diagnose (C08: warum belegte Trades fehlen) oder minervini-golden (C06/C07 Referenz gegen belegte Trades); beide nur mit Pruefschluessel; holdout (Strang H: einmaliger vorregistrierter Holdout 2008-2015, Snapshot laut Protokoll, nur mit Pruefschluessel, Einmal-Ledger); diagnose (27.11.2026: Wasserfall je Methode REF -> guenstige Kosten -> Intrabar -> Auswahl nach Staerke -> TraderFox-Rechnung, DEV, nur mit Pruefschluessel)'
         required: false
         default: 'backtest'
         type: choice
-        options: [backtest, rest8, edge-export, golden-diagnose, minervini-golden, holdout]
+        options: [backtest, rest8, edge-export, golden-diagnose, minervini-golden, holdout, diagnose]
+      diagnose_methods:
+        description: 'Nur Modus diagnose: Methoden, durch Komma getrennt (leer = alle sieben)'
+        required: false
+        default: ''
+        type: string
       with_v13:
         description: 'Universum B mit V13-Delisting-Ketten zusaetzlich rechnen (Archiv 1.2.0)'
         required: false
@@ -109,6 +114,7 @@ jobs:
           SNAPSHOT_ID: ${{ inputs.snapshot_id }}
           WITH_V13: ${{ inputs.with_v13 }}
           MODE: ${{ inputs.mode }}
+          DIAG_METHODS: ${{ inputs.diagnose_methods }}
           NODE_OPTIONS: --max-old-space-size=12000
           ST_WINDOW: DEV
         run: |
@@ -116,13 +122,20 @@ jobs:
           W="$RUNNER_TEMP/sth"; OUT="$W/out"; mkdir -p "$OUT"
           args=(--snapshot "$SNAPSHOT_ID" --out "$OUT" --allow-code-version-change)
           [ -f "$W/reviewer.pem" ] && args+=(--reviewer-key "$W/reviewer.pem")
-          [[ "$MODE" == "backtest" || "$MODE" == "rest8" || "$MODE" == "edge-export" || "$MODE" == "golden-diagnose" || "$MODE" == "minervini-golden" || "$MODE" == "holdout" ]] || { echo "MODE_INVALID"; exit 2; }
+          [[ "$MODE" == "backtest" || "$MODE" == "rest8" || "$MODE" == "edge-export" || "$MODE" == "golden-diagnose" || "$MODE" == "minervini-golden" || "$MODE" == "holdout" || "$MODE" == "diagnose" ]] || { echo "MODE_INVALID"; exit 2; }
           [ "$WITH_V13" = "true" ] && { [ "$MODE" = "backtest" ] || [ "$MODE" = "rest8" ] || [ "$MODE" = "holdout" ]; } && args+=(--v13-series "$W/v13/v13-derived/series" --v13-raw "$W/v13/v13-raw/raw")
           set +e
           if [ "$MODE" = "holdout" ]; then
             # einmaliger Holdout 2008-2015: Fenster HOLDOUT, Snapshot und Kandidaten laut gepinntem Protokoll, Ledger im privaten Speicher
             [ -f "$W/reviewer.pem" ] || { echo "HOLDOUT_NEEDS_REVIEWER_KEY"; exit 2; }
             ST_WINDOW=HOLDOUT node scripts/supertrader/source-faithful/research/run-st-holdout.mjs "${args[@]}" > "$OUT/run.log" 2>&1
+          elif [ "$MODE" = "diagnose" ]; then
+            # Diagnose: unveraenderte Engines, nur Einstellungen und Signalauswahl; Fenster DEV, Ergebnis nur versiegelt
+            [ -f "$W/reviewer.pem" ] || { echo "DIAGNOSE_NEEDS_REVIEWER_KEY"; exit 2; }
+            [[ -z "$DIAG_METHODS" || "$DIAG_METHODS" =~ ^[A-Z0-9_,]+$ ]] || { echo "DIAG_METHODS_INVALID"; exit 2; }
+            dargs=(--snapshot "$SNAPSHOT_ID" --out "$OUT" --allow-code-version-change --reviewer-key "$W/reviewer.pem")
+            [ -n "$DIAG_METHODS" ] && dargs+=(--methods "$DIAG_METHODS")
+            node scripts/supertrader/source-faithful/research/run-st-diagnose.mjs "${dargs[@]}" > "$OUT/run.log" 2>&1
           else
             node scripts/supertrader/source-faithful/research/run-st-hist-top5.mjs "${args[@]}" --mode "$MODE" > "$OUT/run.log" 2>&1
           fi
@@ -130,7 +143,7 @@ jobs:
           set -e
           echo "rc=$rc" >> "$GITHUB_OUTPUT"
           # nur Zeilen ohne Kennzahlen: Fortschritt (Trades je Lauf) und Fehlercodes
-          grep -E '^\[st-hist-top5 \+[0-9]+s\] [A-Z_0-9]+ [A-Z0-9-]+: [0-9]+ trades$|universe|done' "$OUT/run.log" || true
+          grep -E '^\[st-hist-top5 \+[0-9]+s\] [A-Z_0-9]+ [A-Z0-9_-]+: [0-9]+ trades$|universe|done' "$OUT/run.log" || true
           [ "$rc" = 0 ] || tail -n 20 "$OUT/run.log" | grep -vE '[0-9]\.[0-9]{3,}' || true
       - name: Ausgabe verschluesseln, Klartext loeschen
         if: always()

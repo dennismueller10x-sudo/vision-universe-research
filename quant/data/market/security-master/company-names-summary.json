@@ -1,29 +1,29 @@
 {
   "version": "company-names-1.0.0",
-  "generatedAt": "2026-11-22T13:55:47.190Z",
+  "generatedAt": "2026-11-28T07:44:55.155Z",
   "master": {
     "file": "quant/data/market/security-master/eligibility.json",
     "version": "us-security-master-1.3.0",
-    "sha256": "9284ba47bdc131453a21d5d68c22b25456c13dc86ec9680e60090df12fbe8d2d",
-    "productUniverse": 6009
+    "sha256": "7fb5a038d68cd6ea0060cf472fa4c30d9f0ae222cb53d04400968e7ad4ff4b52",
+    "productUniverse": 5996
   },
   "coverage": {
     "companyMasterTotal": 7834,
-    "productUniverse": 6009,
-    "activeEquities": 5205,
-    "withName": 5987,
-    "withoutName": 22,
-    "pct": 99.63,
-    "activeWithName": 5197,
-    "activePct": 99.85,
+    "productUniverse": 5996,
+    "activeEquities": 5192,
+    "withName": 5976,
+    "withoutName": 20,
+    "pct": 99.67,
+    "activeWithName": 5185,
+    "activePct": 99.87,
     "bySource": {
-      "TIINGO_METADATA": 5769,
-      "SEC_COMPANY_TICKERS": 218
+      "TIINGO_METADATA": 5755,
+      "SEC_COMPANY_TICKERS": 221
     },
-    "conflicts": 176,
+    "conflicts": 180,
     "unresolvedReasons": {
-      "PROVIDER_NOT_QUERIED_YET": 10,
-      "PROVIDER_HAS_NO_NAME": 12
+      "PROVIDER_HAS_NO_NAME": 11,
+      "PROVIDER_NOT_QUERIED_YET": 9
     },
     "rejectedRules": {
       "VU_CURATED:TICKER_AS_NAME": 1,

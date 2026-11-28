@@ -39,7 +39,10 @@
   // Themen Dritter: nur Herausgeber aus dieser Liste (Primärquellen, Agenturen, seriöse Medien, öffentliches Research).
   var THIRD_SOURCES = ["Reuters", "Bloomberg", "AP", "dpa", "CNBC", "Financial Times", "Wall Street Journal", "Handelsblatt",
     "Federal Reserve", "EZB", "BLS", "Census Bureau", "BEA", "Destatis", "Eurostat", "CME FedWatch", "SEC",
-    "Bank of America", "Goldman Sachs", "JPMorgan", "Morgan Stanley", "UBS", "FactSet", "Check Point", "Unternehmensmeldung"];
+    "Bank of America", "Goldman Sachs", "JPMorgan", "Morgan Stanley", "UBS", "FactSet", "Check Point", "Unternehmensmeldung",
+    // Recherche-Lauf (Owner 25.11.2026): Banken, Researchhäuser, Institutionen, X (Beitrag mit Link, Konto im Feld source)
+    "Citi", "Deutsche Bank", "Commerzbank", "Barclays", "BlackRock", "Wells Fargo", "Apollo", "Deutsche Bundesbank", "IWF", "OECD",
+    "EIA", "IEA", "OPEC", "ifo", "ZEW", "FRED", "Treasury", "Bloomberg Economics", "Barron's", "MarketWatch", "X", "CFTC", "Cboe", "CNN"];
   var MAX_PER_SOURCE = 2;
   // Ausblick (Owner 22.11.2026): Termine der nächsten Handelstage. Arten mit Anzeigename; jede Angabe braucht Quelle und https-Link.
   var AGENDA_KINDS = { zahlen: "Quartalszahlen", daten: "Wirtschaftsdaten", notenbank: "Notenbank", dividende: "Dividende", markt: "Börsenkalender" };
@@ -395,19 +398,31 @@
 
   /* Themen Dritter aus dem Radar: Pflichtfelder, Quelle in der Liste, erschienen am Sitzungstag (oder am Morgen danach
      vor dem Lauf), höchstens zwei Karten je Quelle. Verworfenes steht mit Grund im Ergebnis. */
+  /* Chartvergleich (Owner 28.11.2026): zwei Reihen aus Originaldaten, auf Wunsch auf 100 am Start umgerechnet. */
+  function compareOf(c) {
+    if (!c || !c.series || c.series.length !== 2) return null;
+    if (c.series.some(function (r) { return !r.label || !r.points || r.points.length < 2; })) return null;
+    var series = c.series.map(function (r) {
+      var b = r.points[0][1];
+      return { label: r.label, points: c.rebase ? r.points.map(function (p) { return [p[0], Math.round(p[1] / b * 10000) / 100]; }) : r.points };
+    });
+    return { label: c.label || null, unit: c.rebase ? "" : (c.unit || ""), rebase: !!c.rebase, digits: c.digits == null ? 1 : c.digits, series: series };
+  }
   function thirdCards(radar, session, now) {
-    var kept = [], dropped = [], per = {};
+    // Bei X zählt das Konto (source), nicht die Plattform: zwei Karten je Konto.
+    var kept = [], dropped = [], per = {}, key = function (it) { return it.publisher === "X" ? it.source : it.publisher; };
     (radar && radar.items || []).forEach(function (it, i) {
       var why = null;
       if (!it || !it.title || !it.source || !it.publisher || !isDate(it.published)) why = "Pflichtfeld fehlt";
       else if (THIRD_SOURCES.indexOf(it.publisher) < 0) why = "Herausgeber nicht in der Quellenliste: " + it.publisher;
       else if (it.published !== session && !(daysBetween(session, it.published) === 1 && now && now.slice(0, 10) === it.published)) why = "nicht vom Handelstag (" + it.published + ")";
-      else if ((per[it.publisher] || 0) >= MAX_PER_SOURCE) why = "mehr als " + MAX_PER_SOURCE + " Karten von " + it.publisher;
+      else if ((per[key(it)] || 0) >= MAX_PER_SOURCE) why = "mehr als " + MAX_PER_SOURCE + " Karten von " + key(it);
       else if (!it.url || !/^https:\/\//.test(it.url)) why = "keine Quell-URL";
       if (why) { dropped.push({ index: i, title: it && it.title, reason: why }); return; }
-      per[it.publisher] = (per[it.publisher] || 0) + 1;
+      per[key(it)] = (per[key(it)] || 0) + 1;
       kept.push({ id: "third-" + (kept.length + 1), type: "THIRD", kicker: it.kicker || "Thema des Tages", title: it.title, sub: it.sub || null,
         columns: it.columns || null, bars: it.bars || null, quote: it.quote || null, stats: it.stats || null,
+        line: it.line && it.line.points && it.line.points.length > 1 ? it.line : null, compare: compareOf(it.compare), speaker: it.speaker || null, lead: it.lead === true,
         source: it.source + " · " + deDateY(it.published), url: it.url, publisher: it.publisher });
     });
     return { kept: kept, dropped: dropped };
@@ -482,6 +497,9 @@
       cardPicture(inp)
     ].filter(Boolean);
     third.kept.slice(4).forEach(function (c) { cards.splice(cards.length - 1, 0, c); });
+    // Aufbau je Tag: Karten mit lead stehen direkt hinter dem Überblick (Makro-Tag, Bank-Tag ...).
+    var leads = cards.filter(function (c) { return c.lead; });
+    if (leads.length) { cards = cards.filter(function (c) { return !c.lead; }); cards.splice.apply(cards, [1, 0].concat(leads)); }
     var agenda = cardAgenda(inp.radar, session);
     if (agenda.card) cards.push(agenda.card);
     out.cards = cards;

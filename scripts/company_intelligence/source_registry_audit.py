@@ -18,6 +18,7 @@ from company_intelligence.current_state_acceptance import database_proof
 from company_intelligence.model import timestamp
 from company_intelligence.store import Store, atomic_json
 from company_intelligence.top46_content import identities
+from company_intelligence.transport import blocked_by_operator
 from company_intelligence.universe_scheduler import source_queue, effective_interval_hours
 from company_intelligence.earnings import valid_date
 
@@ -99,7 +100,7 @@ def audit(state, identity_root, out, now=None, eligibility_path=None, registry_o
         region_backlog=defaultdict(lambda:{'rows':0,'active':0,'due':0,'statuses':Counter()})
         issuer_group_cache={}
         age_values=[];latencies=[];measured=Counter();validators=Counter()
-        policy_excluded=Counter();active=0;approved=0;proven=0;provisional=0;never_successful=0;due=0
+        policy_excluded=Counter();blocked_operator=0;active=0;approved=0;proven=0;provisional=0;never_successful=0;due=0
         ownership=Counter();pollability=Counter();active_rows=0
         for source in sources:
             cid=source.get('companyId');url=source.get('url','')
@@ -113,7 +114,7 @@ def audit(state, identity_root, out, now=None, eligibility_path=None, registry_o
                 status='OWNERSHIP_UNCLEAR';allowed=False
             if not allowed and status is None:status='POLICY_BLOCKED' if source.get('active') else 'INACTIVE'
             if allowed:
-                active+=1;approved+=1
+                active+=1;approved+=1;blocked_operator+=blocked_by_operator(source.get('lastError') or '')
                 if source.get('lastSuccess'):
                     is_proven=source.get('pollabilityStatus')!='PROVISIONAL'
                     proven+=is_proven
@@ -190,6 +191,7 @@ def audit(state, identity_root, out, now=None, eligibility_path=None, registry_o
             'sourceUsagePolicy':json.loads((ROOT/'company-intelligence/config/source-onboarding-review.json').read_text()).get('sourceUsagePolicy'),
             'eligibilityEvaluated':not registry_only,'publicEligibleIssuers':len(pub) if not registry_only else None,
             'publicEligibleIssuersWithoutProvenPollableSource':public_without_source if not registry_only else None,
+            'blockedByOperator':{'sources':blocked_operator,'activeApprovedSources':active,'share':round(blocked_operator/active,4) if active else None,'basis':'ROBOTS_TXT_HTTP_403_OR_401'},
             'activeApprovedSources':active,'provenPollableSources':proven,'provisionalFirstFetchSources':provisional,'dueSources':due,
             'ownershipEvidenceStates':dict(ownership),'pollabilityStates':dict(pollability),
             'registeredNotPollable':classes['REGISTERED_NOT_POLLABLE'],'statusCounts':dict(classes),

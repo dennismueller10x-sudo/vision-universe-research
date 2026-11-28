@@ -56,6 +56,7 @@ Worte dieser Seite zurück. Restrisiko (Anlageempfehlung nach Art. 3 Abs. 1 Nr. 
 | Konsens-Ranking (Analysten) | Übersicht der Analysten-Einstufungen (Angabe Dritter) | Bestenliste |
 | „Was Profis kaufen“ | „Was große Fonds gemeldet haben (13F)“ | lädt zum Nachmachen ein |
 | „🐂 oder 🐻?“, Meinung zu einer Einzelaktie (Reels) | Owner-Entscheidung 06.11.: Reels bleiben unverändert (Restrisiko: EINORDNUNG.md §0) | Social Media zählt (ESMA) |
+| „Gründe, (jetzt) Aktien zu kaufen“ (Reels) | Owner-Entscheidung 26.11.2026: in Reels erlaubt, wenn alle Gründe den Gesamtmarkt betreffen (Index, VIX, Saisonalität); nie zusammen mit einzelnen Aktien, und ein Gegenargument gehört dazu | Kaufaufforderung zu Einzelwerten wäre Anlageempfehlung (MAR) |
 
 **Erlaubt und erwünscht:** „keine Empfehlung“, „keine Anlageberatung“, „kein Kursziel“, „Rechenmodell“, „Musterdepot ohne
 echtes Geld“, „Forschung, nicht zertifiziert“, „Datenstand“, „Regelversion“, „erfüllt die Regel“.

@@ -99,10 +99,19 @@
     cssLoads[id]=new Promise(resolve=>{link.onload=()=>resolve(true);link.onerror=()=>{delete cssLoads[id];link.remove();resolve(false);};});
     tpl.before(link);return cssLoads[id];
   }
-  let fxReady=null;
+  let fxReady=null,fxStale=false;
+  /* Kurse kommen oft nach dem ersten Zeichnen (vu-fx-ready, ab 2,5 s Wartezeit). Neu gezeichnet werden muss nur, wenn beim Zeichnen ein Betrag ohne Umrechnung
+     herauskam (conversionAvailable === false); sonst wäre der Neuaufbau derselbe Text in neuen Knoten: doppelte Rechenzeit, Flackern, neuer LCP-Kandidat.
+     Der Zustand wird an den zwei Stellen des Vertrags abgegriffen, über die alle Beträge laufen (layer.money, layer.metric); die Werte selbst bleiben unverändert. */
+  function watchFx(){
+    const layer=global.VUFx&&global.VUFx.layer;if(!layer||layer.__vuFxWatch)return;
+    ['money','metric'].forEach(name=>{const original=layer[name];if(typeof original!=='function')return;
+      layer[name]=function(){const result=original.apply(layer,arguments);if(result&&result.conversionAvailable===false)fxStale=true;return result;};});
+    layer.__vuFxWatch=true;
+  }
   async function route(k) {
     if(!meta)return;const y=k===1?scrollY:0;
-    const id=++generation,active=()=>generation===id;
+    const id=++generation,active=()=>generation===id;fxStale=false;
     if(homeDispose){homeDispose();homeDispose=null;}
     if(marketDispose){marketDispose();marketDispose=null;}
     if(V.Detail&&V.Detail.dispose)V.Detail.dispose();
@@ -197,9 +206,10 @@
       global.VUUI.bindIntent(function(url){if(url.origin!==location.origin||url.pathname!=='/discover/')return null;const p=url.hash.replace(/^#\/?/,'').split('/');return p[0]==='s'&&p[1]===ctx.universeId&&/^[A-Z0-9.-]{1,24}$/.test(p[2]||'')?p[2]:null;},function(t){return S.loadJSON(BASE+'stocks/'+ctx.universeId+'/'+t+'.json');});
       if('scrollRestoration' in history)history.scrollRestoration='manual';
       document.addEventListener('vu-currency-change',()=>route(1));
-      document.addEventListener('vu-fx-ready',()=>route(1));
+      document.addEventListener('vu-fx-ready',()=>{if(fxStale)route(1);});
       if(global.VUFx&&global.VUFx.Bootstrap){
         fxReady=global.VUFx.Bootstrap.boot().catch(()=>{ /* ohne Kurse bleibt die Originalwaehrung */ });
+        watchFx();
       }
       await route();
     }catch(err){message(document.getElementById('v2-shell'),'Discover ist gerade nicht erreichbar','Bitte lade die Seite erneut.');}

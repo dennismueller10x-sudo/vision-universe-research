@@ -67,8 +67,8 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           INPUT_FINANCIAL: ${{ inputs.financial }}
           VU_EVENT: ${{ inputs.zeitplan && 'schedule' || github.event_name }}
-          # Ein Takt (4 h), serielle Concurrency-Gruppe: 1 h genuegt gegen Doppellast. Bei 2,5 h ueberspringt ein Lauf von mehr als 90 min den naechsten Takt (20.11.: 04:17-Lauf 80 min, 08:17 uebersprungen).
-          CI_GATE_GUARD_HOURS: '1'
+          # 25.11.2026: Wache 30 min (vorher 1 h). Werktags liegen Takte bis 115 min auseinander (05:05 neu), ein Lauf braucht ca. 75-80 min; bei 1 h wuerde ein Lauf, der spaet endet, den naechsten Slot ueberspringen (24.11. 12:10). Serielle Concurrency-Gruppe verhindert Doppellast.
+          CI_GATE_GUARD_HOURS: '0.5'
         run: node scripts/company_intelligence/scheduler-gate.mjs
   refresh:
     needs: gate
@@ -76,15 +76,16 @@ jobs:
     # ausdrueckliches run=false ueberspringt ihn.
     if: ${{ !cancelled() && vars.COMPANY_INTELLIGENCE_REFRESH_ENABLED != 'false' && needs.gate.outputs.run != 'false' }}
     runs-on: ubuntu-24.04
-    # Measured full pipeline is 25 min before Pages wait and live QA. Source/request budgets remain fixed.
-    # 100 min = 25 Pipeline + >= 50 Pages-Wartefrist (serielle Pages-Laeufe zu je 5-6 min, refresh-dispatch-wait.mjs)
+    # Gemessen (Laeufe 23./24.11.2026): Pipeline vor dem Pages-Schritt 41-49 min (nicht mehr 25), Pages-Schritt 20-25 min. Mit publicMaxSeconds 1400
+    # (universe-rollout.json, +380 s) rechnet pipelineMaxMs mit 56 min.
+    # 130 min = 56 Pipeline + >= 49 Pages-Wartefrist (refresh-dispatch-wait.mjs, Mindestwartezeit 40 min)
     # + 15 Live-QA-Budget + 10 Reserve fuer Rollback, disable, OFF-Dispatch und Upload (refresh-live-verify.mjs, LIMITS).
-    timeout-minutes: 100
+    timeout-minutes: 130
     steps:
       - uses: actions/checkout@v4
       - name: Record job start (hard deadline for bounded live re-verification)
         # Ueberschreitet ein Schritt das Job-Timeout, wird er cancelled statt failure und der Rollback liefe nicht.
-        # refresh-live-verify.mjs plant darum alle Wiederholungen gegen JOB_STARTED_AT + 100 min - 10 min Reserve (ebenso die Wartefrist in refresh-dispatch-wait.mjs).
+        # refresh-live-verify.mjs plant darum alle Wiederholungen gegen JOB_STARTED_AT + 130 min - 10 min Reserve (ebenso die Wartefrist in refresh-dispatch-wait.mjs).
         run: echo "JOB_STARTED_AT=$(date +%s)" >> "$GITHUB_ENV"
       - uses: actions/checkout@v4
         with:

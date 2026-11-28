@@ -3,6 +3,7 @@ import hashlib
 import ipaddress
 import json
 import socket
+import sys
 import time
 import urllib.error
 import urllib.request
@@ -21,6 +22,31 @@ class SourceError(RuntimeError):
 
 class BudgetExhausted(SourceError):
     pass
+
+
+def robots_diag_line(origin, error, cause=None):
+    """Eine Diagnosezeile je Origin und Lauf: nur Schema und Host (kein Pfad, keine
+    Query, keine Zugangsdaten) sowie die Fehlerklasse. Aendert kein Abrufverhalten."""
+    parts = urlsplit(origin)
+    host = (parts.scheme or '?') + '://' + (parts.hostname or '?')
+    kind = type(cause).__name__ if cause is not None else '-'
+    reason = getattr(cause, 'reason', None)
+    if reason is not None:
+        kind += '/' + type(reason).__name__
+    errno = getattr(reason if reason is not None else cause, 'errno', None)
+    if errno is not None:
+        kind += '/errno' + str(errno)
+    return 'ROBOTS_DIAG origin=%s error=%s cause=%s' % (host, str(error).split(':')[0][:40], kind[:80])
+
+
+BLOCKED_BY_OPERATOR_AFTER = 3
+
+
+def blocked_by_operator(error):
+    """Der Betreiber weist die robots.txt-Anfrage selbst ab (HTTP 403 oder 401). Nur diese beiden
+    Faelle; 5xx, Timeout, DNS und alles andere bleiben voruebergehende Fehler."""
+    text = str(error)
+    return 'ROBOTS_UNAVAILABLE:HTTP_403' in text or 'ROBOTS_UNAVAILABLE:HTTP_401' in text
 
 
 class NoRedirect(urllib.request.HTTPRedirectHandler):
@@ -118,6 +144,7 @@ class PublicHTTP:
                     self.robots[origin] = parser
                 else:
                     self.robots_failures[origin] = 'ROBOTS_UNAVAILABLE:' + str(exc)
+                    print(robots_diag_line(origin, exc, exc.__cause__), file=sys.stderr, flush=True)
                     raise SourceError(self.robots_failures[origin]) from exc
         parser = self.robots[origin]
         if not parser.can_fetch(self.user_agent, url):

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {backlogSLO,backlogRatio,applyBacklog,pickReport,isFullScope,fromMain,listRefreshArtifacts,REFRESH_WORKFLOW} from '../backlog-slo.mjs';
+import {backlogSLO,backlogRatio,applyBacklog,pickReport,isFullScope,fromMain,listRefreshArtifacts,REFRESH_WORKFLOW,runtimeSLO,RUNTIME_WARN_SECONDS,PROCESS_TIMEOUT_SECONDS,blockedSLO,BLOCKED_SHARE_WARN} from '../backlog-slo.mjs';
 import {evaluateHealth} from '../refresh-approval.mjs';
 
 const H=3600000,NOW=Date.parse('2026-11-20T05:00:00Z'),ago=h=>new Date(NOW-h*H).toISOString();
@@ -83,4 +83,35 @@ test('listRefreshArtifacts: Laeufe des Refresh-Workflows auf main, je Lauf desse
  assert.equal(pickReport(list.map(a=>({...a,workflow_run:{head_branch:'pr',head_repository_id:7,repository_id:7}})),a=>reports[a.id]),null);
  // Workflow-Liste unlesbar -> Ausnahme (backlog-slo faengt sie im CLI und lasst das Stempel-Urteil stehen)
  assert.throws(()=>listRefreshArtifacts('o/r',()=>{throw Error('gh down');}));
+});
+
+test('RT-1 Laufzeit-Fruehwarnung: ab 1180 s WARNING, darunter HEALTHY, unlesbar kein Urteil; nie CRITICAL, nie Abbruch',()=>{
+ assert.equal(RUNTIME_WARN_SECONDS,1180);assert.equal(PROCESS_TIMEOUT_SECONDS,1200);
+ assert.equal(runtimeSLO(1157.6),'HEALTHY');assert.equal(runtimeSLO(1180),'HEALTHY');assert.equal(runtimeSLO(1180.1),'WARNING');assert.equal(runtimeSLO(1199),'WARNING');
+ assert.equal(runtimeSLO(undefined),null);assert.equal(runtimeSLO(NaN),null);
+ const ok=applyBacklog(verdict(),report(400,{runtimeSeconds:1157.6}),NOW);
+ assert.equal(ok.runtimeSLO,'HEALTHY');assert.equal(ok.status,'HEALTHY');assert.equal(ok.exitCode,0);
+ const warn=applyBacklog(verdict(),report(400,{runtimeSeconds:1185}),NOW);
+ assert.equal(warn.runtimeSLO,'WARNING');assert.equal(warn.pythonRuntimeSeconds,1185);assert.equal(warn.status,'WARNING');assert.equal(warn.exitCode,0);
+ const none=applyBacklog(verdict(),report(400),NOW);
+ assert.equal(none.runtimeSLO,undefined);assert.equal(none.status,'HEALTHY');
+ // CRITICAL aus dem Rueckstand bleibt CRITICAL, die Laufzeit hebt nicht ab.
+ assert.equal(applyBacklog(verdict(),report(3082,{runtimeSeconds:1185}),NOW).status,'CRITICAL');
+});
+
+test('BO-1 blockiert vom Betreiber: eigene Zahl mit Anteil, Alarm nur ueber 15 %, nie CRITICAL, nichts still herausgerechnet',()=>{
+ assert.equal(BLOCKED_SHARE_WARN,0.15);
+ assert.equal(blockedSLO(0.15),'HEALTHY');assert.equal(blockedSLO(0.1501),'WARNING');assert.equal(blockedSLO(undefined),null);assert.equal(blockedSLO(null),null);
+ const withBlocked=(n,total=5300)=>({...report(400),sourceRegistryAudit:{blockedByOperator:{sources:n,activeApprovedSources:total,share:n/total,basis:'ROBOTS_TXT_HTTP_403_OR_401'}}});
+ const ok=applyBacklog(verdict(),withBlocked(400),NOW);
+ assert.deepEqual(ok.blockedByOperator,{sources:400,activeApprovedSources:5300,share:400/5300,basis:'ROBOTS_TXT_HTTP_403_OR_401'});
+ assert.equal(ok.blockedByOperatorSLO,'HEALTHY');assert.equal(ok.status,'HEALTHY');
+ const warn=applyBacklog(verdict(),withBlocked(900),NOW);
+ assert.equal(warn.blockedByOperatorSLO,'WARNING');assert.equal(warn.status,'WARNING');assert.equal(warn.exitCode,0);
+ // Der Rueckstand wird durch die blockierten Quellen nicht kleiner gerechnet.
+ assert.equal(warn.dueOverSevenDays,400);assert.equal(warn.backlogRatio,applyBacklog(verdict(),report(400),NOW).backlogRatio);
+ // Ohne Angabe im Bericht (alter Lauf) bleibt alles wie bisher.
+ const none=applyBacklog(verdict(),report(400),NOW);assert.equal(none.blockedByOperator,undefined);assert.equal(none.blockedByOperatorSLO,undefined);assert.equal(none.status,'HEALTHY');
+ // CRITICAL aus dem Rueckstand bleibt CRITICAL.
+ assert.equal(applyBacklog(verdict(),{...withBlocked(900),scheduler:{dueOverSevenDays:3082}},NOW).status,'CRITICAL');
 });

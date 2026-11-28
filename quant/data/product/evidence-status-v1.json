@@ -1,6 +1,6 @@
 {
  "schemaVersion": "evidence-status-1.0.0",
- "generatedAt": "2026-11-24T00:39:41.452Z",
+ "generatedAt": "2026-11-28T08:31:28.854Z",
  "kinds": [
   {
    "id": "HISTORICAL_REPLAY",
@@ -36,19 +36,19 @@
    },
    "coverage": {
     "universe": 5451,
-    "covered": 5135,
-    "available": 4181,
+    "covered": 5128,
+    "available": 4174,
     "sufficient": {
-     "m1": 1995,
-     "m3": 1932,
-     "m6": 1864,
-     "m12": 1786
+     "m1": 1990,
+     "m3": 1927,
+     "m6": 1859,
+     "m12": 1781
     },
     "broad": {
-     "m6": 671
+     "m6": 669
     },
     "reasons": {
-     "NOT_COVERED": 316,
+     "NOT_COVERED": 323,
      "NO_PRICE_CONDITION_TODAY": 856,
      "NO_COMPARABLE_CASE": 98
     }
@@ -71,17 +71,17 @@
     "rule": "Nur Befunde mit Urteil ROBUST (Out-of-Sample-Lift > 1, Benjamini-Hochberg, Mindest-Support) erreichen eine Aktie.",
     "verdicts": {
      "INSUFFICIENT_SUPPORT": 9,
-     "ROBUST": 96,
+     "ROBUST": 97,
      "PARAMETER_SENSITIVE": 1,
      "NOT_SIGNIFICANT": 11,
-     "IN_SAMPLE_ONLY": 46
+     "IN_SAMPLE_ONLY": 45
     }
    },
    "trust": {
-    "sample": 931839,
+    "sample": 930439,
     "period": [
      "1992-01-31",
-     "2026-11-20"
+     "2026-11-27"
     ],
     "costs": {
      "roundTripBps": 20,
@@ -116,7 +116,7 @@
      "id": "SURVIVORSHIP",
      "label": "Dekotierte Titel mit Kurshistorie, Überlebenden-Kontrolle",
      "required": "Kontrolle aktiv",
-     "measured": "556 Titel mit Historie, Kontrolle nicht aktiv",
+     "measured": "261 Titel mit Historie, Kontrolle nicht aktiv",
      "state": "FAIL"
     },
     {
@@ -130,7 +130,7 @@
      "id": "PIT_FUNDAMENTALS",
      "label": "Fundamentaldaten zeitpunktgenau",
      "required": "datierbar je Wert",
-     "measured": "5002 von 6009 Titeln",
+     "measured": "4994 von 5996 Titeln",
      "state": "PASS"
     },
     {
@@ -169,7 +169,7 @@
      "id": "PIT",
      "label": "Stände unverändert (contentHash)",
      "required": "bestanden",
-     "measured": "40 von 40 geprüft",
+     "measured": "43 von 43 geprüft",
      "state": "PASS"
     },
     {
@@ -183,14 +183,14 @@
      "id": "HISTORYDATES",
      "label": "veröffentlichte Stichtage",
      "required": "120",
-     "measured": "40",
+     "measured": "43",
      "state": "FAIL"
     },
     {
      "id": "HISTORYSPAN",
      "label": "Spanne der Historie",
      "required": "180 Tage",
-     "measured": "74 Tage",
+     "measured": "78 Tage",
      "state": "FAIL"
     },
     {
@@ -263,8 +263,8 @@
     {
      "id": "MOMENTUM_IMPROVED",
      "trust": "LIMITED",
-     "n": 87485,
-     "titles": 4938,
+     "n": 87573,
+     "titles": 4939,
      "displayAllowed": true,
      "failed": [
       "survivorship",
@@ -274,8 +274,8 @@
     {
      "id": "MOMENTUM_DETERIORATED",
      "trust": "LIMITED",
-     "n": 87207,
-     "titles": 4934,
+     "n": 87164,
+     "titles": 4929,
      "displayAllowed": true,
      "failed": [
       "oos",
@@ -287,7 +287,7 @@
     {
      "id": "TREND_UP",
      "trust": "LIMITED",
-     "n": 84747,
+     "n": 84766,
      "titles": 4908,
      "displayAllowed": true,
      "failed": [
@@ -298,8 +298,8 @@
     {
      "id": "TREND_DOWN",
      "trust": "LIMITED",
-     "n": 84355,
-     "titles": 4907,
+     "n": 84312,
+     "titles": 4900,
      "displayAllowed": true,
      "failed": [
       "oos",
@@ -312,8 +312,8 @@
     {
      "id": "NEW_52W_HIGH",
      "trust": "LIMITED",
-     "n": 55458,
-     "titles": 4700,
+     "n": 55451,
+     "titles": 4694,
      "displayAllowed": true,
      "failed": [
       "oos",
@@ -329,28 +329,28 @@
   }
  ],
  "measures": {
-  "BACKTEST_ELIGIBLE_RULES": 96,
-  "BACKTEST_WITHHELD_RULES": 84,
+  "BACKTEST_ELIGIBLE_RULES": 97,
+  "BACKTEST_WITHHELD_RULES": 83,
   "BACKTEST_WITHHELD_DETAIL": {
-   "patternFindingsNotRobust": 67,
+   "patternFindingsNotRobust": 66,
    "strategyProfiles": 8,
    "setupRules": 9
   },
   "HISTORICAL_REPLAY_COVERAGE": {
    "universe": 5451,
-   "covered": 5135,
-   "available": 4181,
+   "covered": 5128,
+   "available": 4174,
    "sufficient": {
-    "m1": 1995,
-    "m3": 1932,
-    "m6": 1864,
-    "m12": 1786
+    "m1": 1990,
+    "m3": 1927,
+    "m6": 1859,
+    "m12": 1781
    },
    "broad": {
-    "m6": 671
+    "m6": 669
    },
    "reasons": {
-    "NOT_COVERED": 316,
+    "NOT_COVERED": 323,
     "NO_PRICE_CONDITION_TODAY": 856,
     "NO_COMPARABLE_CASE": 98
    }

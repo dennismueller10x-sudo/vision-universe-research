@@ -91,6 +91,30 @@
     return end;
   }
 
+  /* Rueckfall: Die SEC veroeffentlicht den 13F-Datensatz mit den Meldungen
+     eines Quartals erst Wochen nach dessen 45-Tage-Frist (Q3: Datensatz
+     01sep-30nov erst im Dezember). Bis dahin hat das Fristquartal in den
+     geladenen Daten keine Meldungen; ohne Rueckfall traegt kein Titel 13F
+     (Laeufe 10.-24.11.2026: 0 Ticker). Dann gilt das juengste fruehere
+     Quartal mit Daten, hoechstens THIRTEEN_F_MAX_FALLBACK Quartale zurueck.
+     Als unvollstaendig gilt ein Quartal mit weniger als der Haelfte der
+     Melder des Vorquartals. */
+  var THIRTEEN_F_MAX_FALLBACK = 2;
+  var THIRTEEN_F_MIN_FILER_SHARE = 0.5;
+
+  /** Quartal, das ein Schnappschuss tatsaechlich benutzt: das Fristquartal,
+   *  wenn es Daten hat, sonst das juengste fruehere mit Daten.
+   *  filers(periodIso) -> Zahl der Verwalter mit Meldung (0 = keine Daten). */
+  function thirteenFEffectivePeriod(deadlinePeriod, filers) {
+    var p = deadlinePeriod;
+    for (var i = 0; i <= THIRTEEN_F_MAX_FALLBACK; i++) {
+      var n = filers(p) || 0, np = filers(prevQuarterEnd(p)) || 0;
+      if (n > 0 && !(np > 0 && n < np * THIRTEEN_F_MIN_FILER_SHARE)) return p;
+      p = prevQuarterEnd(p);
+    }
+    return deadlinePeriod;
+  }
+
   /** Monatsenden zwischen from und to (beide ISO, inklusive). */
   function monthEnds(fromIso, toIso) {
     var out = [];
@@ -583,7 +607,7 @@
     VERSION: VERSION, REL: REL, THIRTEEN_F_DOLLAR_SWITCH: THIRTEEN_F_DOLLAR_SWITCH, THIRTEEN_F_DEADLINE_DAYS: THIRTEEN_F_DEADLINE_DAYS,
     CLUSTER_MIN_INSIDERS: CLUSTER_MIN_INSIDERS, CLUSTER_SPAN_DAYS: CLUSTER_SPAN_DAYS, WINDOWS: WINDOWS,
     parseSecDate: parseSecDate, dayOf: dayOf, isoOf: isoOf, quarterOf: quarterOf, quarterEnd: quarterEnd, periodLabel: periodLabel,
-    prevQuarterEnd: prevQuarterEnd, nextQuarterEnd: nextQuarterEnd, thirteenFPeriodAt: thirteenFPeriodAt, monthEnds: monthEnds,
+    prevQuarterEnd: prevQuarterEnd, nextQuarterEnd: nextQuarterEnd, thirteenFPeriodAt: thirteenFPeriodAt, thirteenFEffectivePeriod: thirteenFEffectivePeriod, monthEnds: monthEnds,
     headerIndex: headerIndex, parseTsv: parseTsv, num: num,
     classifyRelationship: classifyRelationship, relationshipFromFlags: relationshipFromFlags, relationshipLabel: relationshipLabel, isInsider: isInsider,
     insiderDocType: insiderDocType, scheduleForm: scheduleForm,

@@ -276,7 +276,13 @@ Einzelwörter bekommen in Kacheln eine kleinere Schrift. Die Kacheln folgen dem 
 (Owner 23.11.2026): Datum und Datenherkunft stehen in der kleinen Zeile unter jeder Grafik, `quellen` im Artikel bleibt
 als interner Beleg. Indexverlauf (`index-chart`): Gesamtrendite der ETFs SPY, URTH, ACWI aus `vorsorge/data/series`,
 eingefroren in `daten.json` (`indizes`). Vorschaubild zum Teilen je Seite: `assets/share/ratgeber*.jpg`, neu bauen mit
-`node landing/scripts/share-images.mjs --nur-ratgeber` (Playwright lokal) nach jedem neuen oder umbenannten Artikel (Test RG-9).
+`node landing/scripts/share-images.mjs --nur-ratgeber` (Playwright lokal) nach jedem neuen oder umbenannten Artikel (Test RG-9). Alle übrigen Seiten von www haben ebenfalls ein eigenes Bild: Story-Seiten
+über `share-images.mjs` (ohne Schalter), Rechtliches, Partner, Instagram und Newsletter über `--weitere` (Liste `WEITERE`),
+News-Artikel über ihr Artikelbild, das Marktbriefing über `teilen.png`. Test SEO-6 prüft jede gebaute Seite.
+Fotos im Ratgeber (Owner 24.11.2026, „visuell brutal stark“): `aufmacher` je Artikel sowie die Bausteine `foto` und `fotos`,
+Dateien unter `landing/web/img/ratgeber/` (1600 px, offizielles Pressematerial mit Bildnachweis `quelle`, keine Privatpersonen;
+Test RG-10). Junge Börsengänge zeigt `kursverlauf` aus `daten.json` (`serien`, `--serie SPCX`); weitere Aktien zum selben
+Stichtag mit `--ergaenzen T1,T2`. Alte Report-Adressen mit Suchnachfrage (SpaceX, KI) leiten auf `spacex-aktie` und `ki-aktien` um.
 
 **Alte Shop-Adressen** (24.11.2026): Der frühere Shopify-Shop lief unter derselben Domain. Seine Adressen (`/pages/*`,
 `/products/*`, `/collections/*`, `/blogs/*`, `/cart`, `/account`, `/search`) leitet `_redirects` dauerhaft (301) auf die
@@ -390,7 +396,7 @@ Wirtschaftskalender (FMP-Endpunkte geprüft in `scripts/market/probe-free-source
 - Engine `products/news/briefing/engine.js` (Kartenregeln, Frische, Prüfung der Themen Dritter), Darstellung
   `products/news/briefing/render.js` (jede Karte ein SVG 1080×1350), Build `products/news/briefing/build.mjs`, Tests
   `products/news/tests/marktbriefing.test.mjs`.
-- Lauf: `content.yml` Teil `marktbriefing`, Di–Sa 02:20 UTC über den Wecker (nach Market Pulse und Technical-Screener; 23:50 war zu früh, 24.11.2026) (`core/registry/schedule.json`), intern im
+- Lauf: `content.yml` Teil `marktbriefing`, Di–Sa in drei Versuchen um 02:20, 04:20 und 07:20 UTC über den Wecker (nach Market Pulse und Technical-Screener; 23:50 war zu früh, 24.11.2026). Der erste Versuch mit frischen Daten schreibt, spätere überspringen (`--skip-if-current`); fehlen die Daten, bleibt ein früher Versuch grün, erst der letzte wird rot und öffnet ein Issue `[marktbriefing]` (Label `pipeline-alarm`). Anlass 25.11.2026: der Kurs-Lauf hing im Abgleich der dauerhaften Ablage und veröffentlichte nichts; dieser Schritt hat seitdem 30 Minuten Zeitlimit und hält die Veröffentlichung nicht mehr auf (`core/registry/schedule.json`), intern im
   Datenzweig (`news/marktbriefing/`, Datenart `marktbriefing`; Research-Seite `/news/marktbriefing/` bleibt `noindex`).
 - Themen Dritter und Termine liest der Build aus `products/news/radar/<sitzung>.json` (im Code-Zweig, weil `news/marktbriefing/` dem Datenzweig gehört) (`items[]` mit title, publisher, source,
   published, url, optional sub, quote, columns, bars, stats; optional `editorial` mit eigenem Titel der Titelkarte).
@@ -436,7 +442,7 @@ Wirtschaftskalender (FMP-Endpunkte geprüft in `scripts/market/probe-free-source
   rund 1,5 MB je Ausgabe im Repo.
 - Veröffentlichung nur auf Auslösung (Owner 22.11.2026: ob täglich, ist noch offen): `content.yml` Teil `marktbriefing` mit
   `website=ja` baut Seite, PDF und Bilder und committet `landing/marktbriefing` und den Startseiten-Teaser nach `main`;
-  Cloudflare Pages baut www daraus. Der Zeitplan (Di–Sa 02:20 UTC) rechnet das Briefing nur intern in den Datenzweig.
+  Cloudflare Pages baut www daraus. Der Zeitplan (Di–Sa 02:20, 04:20, 07:20 UTC) rechnet das Briefing nur intern in den Datenzweig.
   Seiten und PDF versprechen kein tägliches Erscheinen.
 - Startseiten-Teaser in der Region `<!--MB:teaser-->` (eigene Zeile über den Insights-Kacheln), verlinkt die Produktseite;
   Menüpunkt „Marktbriefing“ auf allen Seiten.
@@ -456,3 +462,36 @@ Wirtschaftskalender (FMP-Endpunkte geprüft in `scripts/market/probe-free-source
 3. Karussell und Reel jeden Abend ins Approval Center (Veröffentlichung nur nach Freigabe, wie bei Reels).
 4. Lücken schließen: Sektor-ETFs, VIX; Ausblick-Termine automatisch aus den Quellen (bisher von Hand recherchiert).
 
+
+### 10.1 Recherche-Lauf (Owner-Freigabe 25.11.2026, ab 26.11.2026)
+
+Ziel: Das Marktbriefing liegt Di–Sa spätestens um 06:00 Uhr deutscher Zeit (05:00 UTC, Winterzeit) fertig auf www, mit
+externen Inhalten und einem Aufbau, der sich nach dem Tag richtet. Der Lauf verbraucht je Werktag Claude-Guthaben (Owner-Freigabe).
+
+- **Takt:** Geplante Aufgabe Di–Sa 03:05 UTC (in der Marktbriefing-Sitzung). Vorher müssen Kurse, Market Pulse und das
+  interne Briefing der Sitzung stehen (Kurs-Lauf ~00:00, Neustart 00:35, Pulse 00:20/03:20, Briefing 02:20). Fehlt der
+  Pulse der Sitzung, `multi-asset-data.yml` einmal per Dispatch starten.
+- **Kein Handelstag** (Wochenende, US-Feiertag wie Thanksgiving): keine neue Ausgabe, nichts veröffentlichen.
+- **Quellen** (`engine.js#THIRD_SOURCES`): Nachrichtenhäuser (CNBC, Bloomberg, Reuters, AP, dpa, Handelsblatt, WSJ, FT,
+  Barron's, MarketWatch), Notenbanken und Statistikämter (Fed, EZB, Bundesbank, BEA, BLS, Census, Destatis, Eurostat,
+  Treasury, FRED, EIA, IEA, OPEC, ifo, ZEW, IWF, OECD), öffentliche Research-Notizen großer Banken und Häuser (Goldman Sachs,
+  JPMorgan, Morgan Stanley, Bank of America, Citi, UBS, Deutsche Bank, Commerzbank, Barclays, BlackRock, Apollo, Wells Fargo,
+  Bloomberg Economics) und X (Beitrag mit Link, Konto im Feld `source`). Jede Zahl gegen eine zweite Quelle oder die eigenen
+  Daten prüfen; was nur eine Quelle nennt, fällt weg.
+- **Formate je Angabe** in `products/news/radar/<sitzung>.json` → `items[]` (Pflicht: `title`, `publisher`, `source`,
+  `published`, `url`): `quote` + `speaker` (Bank-, Researchhaus- oder X-Stimme, höchstens zwei Sätze, wörtlich, übersetzt
+  gekennzeichnet), `line` (`{label, unit, digits, points:[[datum, wert]]}`, Makro-Reihe aus den Originaldaten, z. B. FRED),
+  `bars` (`{unit, rows:[{label, value}]}`), `compare` (`{label, rebase, series:[{label, points}, {label, points}]}`), `stats` (`[{label, value, unit, sub}]`), sonst nur Text. Fremde Grafiken werden
+  nicht übernommen, sondern aus den Daten neu gezeichnet; Quelle steht im Etikett „Angabe Dritter · …“.
+- **Mehr Einblicke (Owner 28.11.2026):** je Ausgabe mindestens ein
+  **Chartvergleich** (`compare`: zwei Reihen aus Originaldaten, z. B. FRED-CSV `fredgraph.csv?id=…`, `rebase: true` = Start 100;
+  etwa Nasdaq gegen Rendite, Öl gegen Inflationserwartung, heute gegen 2000/2008), mindestens eine Angabe von **Banken,
+  Researchhäusern oder Hedgefonds** (Strategen-Ziele, Positionierung, Fondsflüsse, eigene 13F-Daten aus dem Produkt Hedgefonds)
+  und Stimmen von X mit Zahlen. Bloomberg-, Bank- oder X-Grafiken werden nicht übernommen, sondern aus den genannten Daten
+  nachgezeichnet; die Quelle steht im Etikett.
+- **Aufbau je Tag:** `lead: true` stellt eine Angabe direkt hinter den Überblick (Makro-Tag: Chart vorn; Bank-Tag: Zitat vorn;
+  großer Kurstag: Auslöser vorn). `editorial` setzt Schlagzeile und Unterzeile. Ziel: 3–5 externe Angaben, mindestens
+  zwei verschiedene Formate, kein Format zwei Tage hintereinander vorn.
+- **Ablauf:** Radar-Datei → PR → ci-gate grün → Squash-Merge → `content.yml` `teil=marktbriefing website=ja` → Seite prüfen →
+  Instagram-Slides (`social.mjs`) und Kurzbericht an den Owner. Owner-Regeln: keine Empfehlung, keine Kursprognose, kein
+  Kleingedrucktes auf Grafiken, X-Inhalte von Produkt-Neuigkeiten (z. B. FSD) gehören in News, nicht ins Marktbriefing.

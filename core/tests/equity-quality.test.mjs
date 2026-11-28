@@ -104,6 +104,15 @@ test('CLI publishes E8 findings and yesterday deltas under --out without blockin
     assert.equal(report.rules.find(r=>r.id==='DQ-E8-2').severity,'WARN');
   } finally { rmSync(root,{recursive:true,force:true}); }
 });
+test('logo list: the compact release form (t, x) counts like the source form (files)', async () => {
+  const stock = {companyName:'Alpha',marketCap:{value:2e10}};
+  const run = async index => equityRules({load: async p => ({'/discover/logos/index.json':index,'/discover/data/stocks/US_REAL/A.json':stock})[p] ?? Promise.reject(Error('missing')),now,expected:'2026-11-05',tickers:['A']});
+  const without = await run({files:{}}), source = await run({files:{A:'files/A.png'}}), compact = await run({v:1,t:'A,B',x:{},d:[]});
+  assert.equal(without.rules[1].failed,1);
+  assert.equal(source.rules[1].failed,0);
+  assert.equal(compact.rules[1].failed,0);
+  assert.equal((await run({v:1,t:'B',x:{},d:[]})).rules[1].failed,1);
+});
 test('missing Discover market cap falls back to existing factor evidence with matching identity', async () => {
   const artifacts={
     '/discover/logos/index.json':{files:{}},

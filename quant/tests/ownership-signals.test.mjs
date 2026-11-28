@@ -319,6 +319,33 @@ test("OS14 · Unvollstaendige Form-4-Luecke wird ausgewiesen, nicht verschwiegen
   } finally { rmSync(tmp, { recursive: true, force: true }); }
 });
 
+test("OS14b · 13F-Rueckfall: Fristquartal ohne veroeffentlichten Datensatz -> juengstes Quartal mit Daten", async () => {
+  const counts = { "2026-03-31": 9000, "2026-06-30": 9100 };
+  const f = (p) => counts[p] || 0;
+  /* Lauf 24.11.2026: Frist fuer Q3 abgelaufen (14.11.), Datensatz 01sep-30nov fehlt. */
+  assert.equal(E.thirteenFPeriodAt(d("2026-11-24")), "2026-09-30");
+  assert.equal(E.thirteenFEffectivePeriod("2026-09-30", f), "2026-06-30");
+  assert.equal(E.thirteenFEffectivePeriod("2026-06-30", f), "2026-06-30", "mit Daten kein Rueckfall");
+  assert.equal(E.thirteenFEffectivePeriod("2026-09-30", (p) => (p === "2026-09-30" ? 300 : f(p))), "2026-06-30", "unter der Haelfte der Vorquartals-Melder: unvollstaendig");
+  assert.equal(E.thirteenFEffectivePeriod("2026-09-30", (p) => (p === "2026-09-30" ? 8800 : f(p))), "2026-09-30");
+  assert.equal(E.thirteenFEffectivePeriod("2027-06-30", f), "2027-06-30", "hoechstens zwei Quartale zurueck, sonst unveraendert");
+
+  /* Erzeuger: Fixtures haben 13F bis 2024-Q1; am 20.08.2024 ist die Q2-Frist (14.08.) vorbei. */
+  const { tmp, manifest, read } = await runFixtureBuild({ asOf: "2024-08-20", generatedAt: "2024-08-20T00:00:00Z" });
+  try {
+    const t = manifest.coverage.thirteenF;
+    assert.equal(t.deadlinePeriod, "2024-06-30");
+    assert.equal(t.currentPeriod, "2024-03-31");
+    assert.equal(t.periodFallback, true);
+    assert.ok(t.periodFallbacks.some((x) => x.date === "2024-08-20" && x.usedPeriod === "2024-03-31"));
+    assert.ok(manifest.coverage.tickersWith13F > 0, "vorher: 0 Ticker mit 13F");
+    const a = read("current/AA.json.gz").issuers.AAA;
+    assert.equal(a.institutions.period, "2024-03-31");
+    assert.equal(a.institutions.deadlinePeriod, "2024-06-30");
+    assert.equal(a.institutions.fh, 2);
+  } finally { rmSync(tmp, { recursive: true, force: true }); }
+});
+
 test("OS15 · Die Monatsreihe ist deterministisch (gleiche Eingaben, gleiche Bytes)", async () => {
   const r1 = await runFixtureBuild();
   const r2 = await runFixtureBuild();

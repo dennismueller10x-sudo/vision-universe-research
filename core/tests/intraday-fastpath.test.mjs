@@ -75,7 +75,9 @@ test('FP-5b Dauerlauf company-intelligence-refresh sperrt den Schnellweg nicht, 
   const job = wf.slice(wf.indexOf('\n  intraday-schnell:\n'), wf.indexOf('\n  deploy-schnell:\n'));
   assert.match(job, /if \[ "\$wf" = company-intelligence-refresh \]/);
   assert.match(job, /\.status == \\"completed\\" and \.conclusion != \\"success\\" and \.updated_at > /, 'refresh zaehlt nur fehlgeschlagen und nach dem Basis-Paket');
-  assert.match(job, /else\n\s+filter="\[\.workflow_runs\[\] \| select\(\.status != \\"completed\\" or /, 'alle anderen Veroeffentlicher bleiben bei laeuft-noch');
+  assert.match(job, /elif \[ "\$wf" = company-intelligence-profile-source \]/, 'profile-source: laeuft-noch zaehlt nicht (27.11.2026)');
+  assert.match(job, /\.status == \\"completed\\" and \.updated_at > /, 'profile-source zaehlt, wenn fertig und nach dem Basis-Paket');
+  assert.match(job, /else\n\s+filter="\[\.workflow_runs\[\] \| select\(\.status != \\"completed\\" or /, 'alle uebrigen Veroeffentlicher bleiben bei laeuft-noch');
   assert.ok(job.includes('pages-release-marker'), 'Marker meldet die Veroeffentlichung des refresh');
 });
 

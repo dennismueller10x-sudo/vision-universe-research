@@ -56,9 +56,13 @@ jobs:
   # Marktbriefing (docs/publishing/HANDBUCH.md §10): nach US-Schluss aus Market Pulse, Tagesschluessen und
   # SEC-Daten; Ergebnis nur im Datenzweig (BRANCH_ONLY). Nicht frisch -> Exit 3, nichts geschrieben (Alarm statt alter Zahlen).
   marktbriefing:
-    if: ((github.event_name == 'schedule' || inputs.zeitplan != '') && (github.event.schedule || inputs.zeitplan) == '20 2 * * 2-6') || ((github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && (inputs.teil == 'alle' || inputs.teil == 'marktbriefing'))
+    if: ((github.event_name == 'schedule' || inputs.zeitplan != '') && (github.event.schedule || inputs.zeitplan) == '20 2,4,7 * * 2-6') || ((github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && (inputs.teil == 'alle' || inputs.teil == 'marktbriefing'))
     # Ubuntu-Version fest: Playwright installiert Chromium nicht auf jedem neuen ubuntu-latest (Lauf 24.11.2026)
     runs-on: ubuntu-24.04
+    # issues: write fuer den Alarm (scripts/ci/pipeline-alarm.mjs), wenn auch der letzte Versuch ohne Briefing endet.
+    permissions:
+      contents: write
+      issues: write
     concurrency:
       group: content-marktbriefing-${{ github.ref_name }}
       cancel-in-progress: false
@@ -79,19 +83,47 @@ jobs:
         run: |
           npm install --prefix /tmp/mb-pw --no-audit --no-fund playwright@1.57.0
           node /tmp/mb-pw/node_modules/playwright/cli.js install --with-deps chromium
+      # Drei Versuche je Nacht (02:20, 04:20, 07:20 UTC, core/registry/schedule.json). Fehlen die Daten der letzten Sitzung
+      # noch (Exit 3), wartet ein frueher Versuch gruen auf den naechsten; erst der letzte (ab 07 UTC) und jeder Handlauf
+      # werden rot und oeffnen den Alarm. Steht das Briefing der Sitzung schon im Datenzweig, ueberspringt der Zeitplan.
       - name: Marktbriefing bauen
+        id: build
         env:
           PLAYWRIGHT_PREFIX: /tmp/mb-pw
           WEBSITE: ${{ inputs.website }}
+          ZEITPLAN: ${{ inputs.zeitplan }}
+        shell: bash
         run: |
+          set +e
           if [ "$WEBSITE" = "ja" ]; then
             node products/news/briefing/build.mjs --www landing --pdf
+          elif [ -n "$ZEITPLAN" ]; then
+            node products/news/briefing/build.mjs --skip-if-current
           else
             node products/news/briefing/build.mjs
           fi
+          rc=$?
+          set -e
+          if [ "$rc" -eq 3 ] && [ -n "$ZEITPLAN" ] && [ "$(date -u +%H)" -lt 7 ]; then
+            echo "::warning::Marktbriefing noch nicht frisch - naechster Versuch laut Zeitplan."
+            echo "frisch=nein" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          [ "$rc" -eq 0 ] && echo "frisch=ja" >> "$GITHUB_OUTPUT"
+          exit "$rc"
       - name: Marktbriefing in den Datenzweig (nur main)
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main' && steps.build.outputs.frisch == 'ja'
         run: scripts/ci/push-data-branch.sh data/live news/marktbriefing
+      # Rot oeffnet ein Issue (Label pipeline-alarm), ein frisches Briefing schliesst es. Ein frueher Versuch ohne Daten meldet nichts.
+      - name: Alarm oeffnen oder schliessen
+        if: always() && github.ref == 'refs/heads/main' && (steps.build.outcome == 'failure' || steps.build.outputs.frisch == 'ja')
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ALARM_SOURCE: marktbriefing
+          ALARM_TITLE: Marktbriefing fehlt fuer die letzte Sitzung
+          RESULT_MARKTBRIEFING: ${{ steps.build.outcome }}
+        run: node scripts/ci/pipeline-alarm.mjs
       # www.visionuniverse.de baut Cloudflare Pages aus main (landing/): Produktseite, Ausgabe mit PDF und Bildern, Startseiten-Teaser.
       # Dazu die App-Story auf Home (willkommen/config/marktbriefing.json, research.visionuniverse.de).
       - name: Marktbriefing auf die Website (nur main, nur website=ja)

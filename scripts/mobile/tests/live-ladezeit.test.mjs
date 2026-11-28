@@ -151,3 +151,27 @@ test('Ausfall einer Messung: Fehlerende im Log und Alarm statt "Keine Alarme"', 
   assert.match(src, /ausfaelle\.push\(/);
   assert.match(src, /Messung ausgefallen: /);
 });
+
+test('Bericht nennt alle LCP-Kandidaten des mittleren Laufs mit Zeit, Struktur, Fläche und Textlänge (nie Text)',async()=>{
+ const {lcpKandidatenOf}=await import('../live-ladezeit.mjs');
+ const l=[{t:2756.4,tag:'H2',cls:'',par:'',size:6394,len:6,text:'Kymera'},{t:3588,tag:'P',cls:'',par:'dr-head dp-sh',size:11036,len:98,text:'GEHEIM'}];
+ const ss=[{lcp:3600,lcpList:l},{lcp:3588,lcpList:l},{lcp:3700,lcpList:l}];
+ const k=lcpKandidatenOf(ss);
+ assert.deepEqual(k,[{t:2756,tag:'H2',cls:'',par:'',size:6394,len:6},{t:3588,tag:'P',cls:'',par:'dr-head dp-sh',size:11036,len:98}]);
+ assert.doesNotMatch(JSON.stringify(k),/GEHEIM|Kymera/);
+ assert.equal(lcpKandidatenOf([{lcp:1}]),null);
+ const md=reportMarkdown({measuredAt:'t',commit:'c',runs:3,historyRuns:0,alarms:[],rows:[{key:'app/discover/',cpu:4,lcp:3588,cls:0,requests:1,bytes:1024,runs:3,lcpRuns:[3588],lcpKandidaten:k}]});
+ assert.match(md,/app\/discover\/ \(4x\) LCP-Kandidaten: 2756 ms H2 \(6394 px2, 6 Z\.\) -> 3588 ms P in \.dr-head\.dp-sh \(11036 px2, 98 Z\.\)/);
+});
+
+test('Bericht nennt die Ereignisse der Seite des mittleren Laufs mit Zeit (was löst eine zweite Zeichnung aus)',async()=>{
+ const {ereignisseOf}=await import('../live-ladezeit.mjs');
+ const ev=[{n:'vu-home-drawn',t:2150.4},{n:'vu-fx-ready',t:3560.2,geheim:'x'}];
+ const ss=[{lcp:3600,events:ev},{lcp:3588,events:ev},{lcp:3700,events:ev}];
+ const e=ereignisseOf(ss);
+ assert.deepEqual(e,[{n:'vu-home-drawn',t:2150},{n:'vu-fx-ready',t:3560}]);
+ assert.equal(ereignisseOf([{lcp:1}]),null);
+ const md=reportMarkdown({measuredAt:'t',commit:'c',runs:3,historyRuns:0,alarms:[],rows:[{key:'app/discover/',cpu:4,lcp:3588,cls:0,requests:1,bytes:1024,runs:3,lcpRuns:[3588],ereignisse:e}]});
+ assert.match(md,/app\/discover\/ \(4x\) Ereignisse: vu-home-drawn 2150 ms, vu-fx-ready 3560 ms/);
+ assert.match(readFileSync(new URL('../measure.mjs',import.meta.url),'utf8'),/EventTarget\.prototype\.dispatchEvent = function/);
+});

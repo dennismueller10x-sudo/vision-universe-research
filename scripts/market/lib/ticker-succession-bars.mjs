@@ -38,6 +38,10 @@ export function withPredecessor(payload, security, succ, readPredecessor, opts =
   if (!entry) return { payload, joined: null };
   const pred = readPredecessor(entry);
   if (!pred || !Array.isArray(pred.bars) || !pred.bars.length) return { payload, joined: { from: entry.from, predecessorBars: 0 } };
+  /* Ohne Vorgaenger-Bar VOR dem Stichtag gibt es nichts zu verbinden (25.11.2026, BRNX: unter BNRG liegt nur ein Bar am
+     Stichtag). joinBars wuerfe sonst die eigene Historie des Nachfolgers vor dem Stichtag weg - BRNX schrumpfte von 1.129
+     Tagen auf die Bars ab 14.08.2026, die Wochenreihe wurde tooShort. Die Nutzlast bleibt dann unveraendert. */
+  if (!pred.bars.some((b) => String(b && b.date).slice(0, 10) < entry.effective)) return { payload, joined: { from: entry.from, predecessorBars: 0 } };
   const relabeled = opts.relabel ? pred.bars.map((b) => ("securityId" in b ? { ...b, securityId: security.securityId } : b)) : pred.bars;
   const r = rebaseAdjusted(relabeled, (payload && payload.bars) || [], entry.effective);
   const j = succ.TS.joinBars(r.bars, (payload && payload.bars) || [], entry.effective);

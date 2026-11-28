@@ -56,7 +56,7 @@ def main():
                 acc+=len(t['show'])+1
                 d=abs(acc-len(plain)/2)
                 if best is None or d<best[0]: best=(d,k)
-            k=best[1]; html=' '.join(words[:k+1])+'<br>'+' '.join(words[k+1:])
+            html=' '.join(words) if best is None else ' '.join(words[:best[1]+1])+'<br>'+' '.join(words[best[1]+1:])
         else: html=' '.join(words)
         s=g[0]['s']; e=g[-1]['e']+0.12
         if gi+1<len(groups): e=min(e,groups[gi+1][0]['s']-0.02)

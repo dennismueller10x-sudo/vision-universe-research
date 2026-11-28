@@ -1,22 +1,22 @@
 {
   "version": "company-master-1.0.0",
-  "generatedAt": "2026-11-24T06:29:37.808Z",
+  "generatedAt": "2026-11-28T07:44:57.574Z",
   "source": {
     "cikMap": "OK",
     "config": "quant/config/sec-universe.json"
   },
   "note": "Drei Zustaende, nicht zwei. AMBIGUOUS heisst: es gaebe eine Wahl, und sie wird nicht getroffen (§3). Keine geratene CIK.",
   "totals": {
-    "CIK_RESOLVED": 6495,
-    "CIK_UNRESOLVED": 1345,
+    "CIK_RESOLVED": 6496,
+    "CIK_UNRESOLVED": 1344,
     "CIK_AMBIGUOUS": 0,
     "instruments": 7840
   },
   "unresolvedByEligibility": {
-    "EXCLUDED": 867,
-    "REVIEW": 66,
+    "EXCLUDED": 869,
+    "REVIEW": 65,
     "SEPARATE_CLASS": 325,
-    "ELIGIBLE": 87
+    "ELIGIBLE": 85
   },
   "resolved": [
     {
@@ -3089,6 +3089,14 @@
       "symbol": "ANRO",
       "cik": "0001999480",
       "issuerId": "iss_cik_0001999480",
+      "source": "sec:company_tickers_exchange"
+    },
+    {
+      "member": "ref_ANSS",
+      "instrumentId": "vu_acc62c56a7d90d",
+      "symbol": "ANSS",
+      "cik": "0001013462",
+      "issuerId": "iss_cik_0001013462",
       "source": "sec:company_tickers_exchange"
     },
     {
@@ -16010,14 +16018,6 @@
       "cik": "0000717826",
       "issuerId": "iss_cik_0000717826",
       "source": "sec:company_tickers_exchange"
-    },
-    {
-      "member": "ref_ERIE",
-      "instrumentId": "vu_3af46e8e9031e8",
-      "symbol": "ERIE",
-      "cik": "0000922621",
-      "issuerId": "iss_cik_0000922621",
-      "source": "sec:company_tickers_exchange"
     }
   ],
   "resolvedTruncated": true,
@@ -16822,15 +16822,6 @@
       "exchange": "NASDAQ",
       "securityClass": "WARRANT",
       "productEligibility": "EXCLUDED",
-      "reason": "Kuerzel steht nicht in den SEC-Verzeichnissen."
-    },
-    {
-      "member": "ref_ANSS",
-      "instrumentId": "vu_acc62c56a7d90d",
-      "symbol": "ANSS",
-      "exchange": "NASDAQ",
-      "securityClass": "EQUITY_COMMON",
-      "productEligibility": "REVIEW",
       "reason": "Kuerzel steht nicht in den SEC-Verzeichnissen."
     },
     {
@@ -17820,6 +17811,15 @@
       "symbol": "BLEUU",
       "exchange": "NASDAQ",
       "securityClass": "UNIT",
+      "productEligibility": "EXCLUDED",
+      "reason": "Kuerzel steht nicht in den SEC-Verzeichnissen."
+    },
+    {
+      "member": "ref_BLEUW",
+      "instrumentId": "vu_a77a6c2a64b234",
+      "symbol": "BLEUW",
+      "exchange": "NASDAQ",
+      "securityClass": "WARRANT",
       "productEligibility": "EXCLUDED",
       "reason": "Kuerzel steht nicht in den SEC-Verzeichnissen."
     }

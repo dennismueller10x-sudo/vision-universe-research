@@ -1,6 +1,6 @@
 {
   "schema": "sec-concept-census-1.0.0",
-  "generated_at_utc": "2026-11-24T07:02:05+00:00",
+  "generated_at_utc": "2026-11-25T07:03:34+00:00",
   "versions": {
     "census_logic": "1.1.0",
     "metric_registry": {
@@ -57,12 +57,12 @@
       "issuers": 2410
     },
     {
-      "concept": "us-gaap:LongTermDebtMaturitiesRepaymentsOfPrincipalInNextTwelveMonths",
+      "concept": "us-gaap:GainsLossesOnExtinguishmentOfDebt",
       "issuers": 2408
     },
     {
-      "concept": "us-gaap:GainsLossesOnExtinguishmentOfDebt",
-      "issuers": 2407
+      "concept": "us-gaap:LongTermDebtMaturitiesRepaymentsOfPrincipalInNextTwelveMonths",
+      "issuers": 2408
     },
     {
       "concept": "us-gaap:LongTermDebtMaturitiesRepaymentsOfPrincipalInYearThree",
@@ -90,7 +90,7 @@
     },
     {
       "concept": "us-gaap:ProceedsFromIssuanceOfLongTermDebt",
-      "issuers": 2024
+      "issuers": 2025
     },
     {
       "concept": "us-gaap:DebtInstrumentCarryingAmount",
@@ -114,7 +114,7 @@
     },
     {
       "concept": "us-gaap:FinanceLeaseRightOfUseAssetAmortization",
-      "issuers": 1441
+      "issuers": 1442
     },
     {
       "concept": "us-gaap:FinanceLeaseWeightedAverageDiscountRatePercent",
@@ -153,12 +153,12 @@
       "issuers": 1379
     },
     {
-      "concept": "us-gaap:FinanceLeaseLiabilityNoncurrent",
-      "issuers": 1371
+      "concept": "us-gaap:FinanceLeaseLiabilityCurrent",
+      "issuers": 1372
     },
     {
-      "concept": "us-gaap:FinanceLeaseLiabilityCurrent",
-      "issuers": 1371
+      "concept": "us-gaap:FinanceLeaseLiabilityNoncurrent",
+      "issuers": 1372
     },
     {
       "concept": "us-gaap:FinanceLeaseLiabilityPaymentsDueYearFour",
@@ -201,7 +201,7 @@
         "us-gaap:FinanceLeaseLiabilityCurrent",
         "us-gaap:FinanceLeaseLiability"
       ],
-      "issuers": 1805
+      "issuers": 1806
     },
     {
       "slot": "COMBINED",
@@ -251,7 +251,7 @@
       "requires": [
         "COMBINED|LT+ST|FL"
       ],
-      "issuers": 3524,
+      "issuers": 3525,
       "semantics": "Wie heute, und wo das nicht traegt, ersatzweise Finanzierungsleasing allein. Zur Vollstaendigkeit gemessen; semantisch am wenigsten sauber."
     }
   ],

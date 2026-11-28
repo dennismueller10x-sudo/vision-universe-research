@@ -179,6 +179,45 @@ export function judgeSucceeded(decision, entry, productIds, ref) {
 }
 
 /** Neueste Sitzung des Datenbestands: die haeufigste letzte Bar unter allen Reihen, die nicht weiter zurueckliegt als die neueste. */
+/**
+ * Warnung "Regel A mit aktiver CIK" (Steuerung 27.11.2026): Geht ein Titel ueber MASTER_INACTIVE, obwohl die SEC
+ * seine CIK heute unter einem anderen Kuerzel an einer regulaeren US-Boerse fuehrt, ist es vermutlich eine
+ * Umbenennung (WPRT -> AETR, Westport -> Aetherion, 16.10.2026), kein Delisting. Nur eine Warnung, keine Sperre.
+ * Still bleibt sie, wenn das Nachfolge-Register den Abgang schon kennt oder das andere Kuerzel schon im Produkt ist
+ * (weitere Aktienklasse desselben Emittenten).
+ * @param {Array<object>} changes  Aenderungen dieses Laufs (ticker, securityId, to.reason)
+ * @param {object} o
+ * @param {Map<string,string>} o.cikByTicker  Kuerzel -> CIK (Stand vor dem Lauf, sec-universe.json)
+ * @param {object} o.cikMap                    cik-map.json#byTicker (heutige SEC-Tickerliste)
+ * @param {Set<string>} o.productTickers       Kuerzel des Produktuniversums vor dem Lauf
+ * @param {object} o.succession                Nachfolge-Register je Vorgaenger-securityId
+ * @param {string[]} o.listedLabels            SEC-Schreibweisen regulaerer US-Boersen (core/exchanges.js)
+ * @returns {Array<{ticker, securityId, cik, candidates: string[]}>}
+ */
+export function renameWarnings(changes, { cikByTicker, cikMap, productTickers, succession, listedLabels }) {
+  const labels = new Set((listedLabels || []).map((x) => String(x).toUpperCase()));
+  const byCik = new Map();
+  for (const [t, r] of Object.entries(cikMap || {})) {
+    if (!r || r.status !== "RESOLVED" || !r.cik || !labels.has(String(r.exchange || "").toUpperCase())) continue;
+    const c = String(r.cik).padStart(10, "0");
+    if (!byCik.has(c)) byCik.set(c, []);
+    byCik.get(c).push(t.toUpperCase());
+  }
+  const out = [];
+  for (const ch of changes || []) {
+    /* Nur Regel A dieses Laufs: uebernommene Abgaenge (Regel C, ENDED_LISTING:CARRIED) tragen denselben Grund und
+       stuenden sonst jeden Tag wieder in der Warnung (Lauf 46116121182, 28.11.2026: 7 Altfaelle). */
+    if (!ch || ch.rule !== "ENDED_LISTING:MASTER_INACTIVE" || !ch.to || ch.to.reason !== "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE") continue;
+    if (succession && succession[ch.securityId]) continue;
+    const t = String(ch.ticker || "").toUpperCase();
+    const cik = cikByTicker && cikByTicker.get(t);
+    if (!cik) continue;
+    const candidates = (byCik.get(String(cik).padStart(10, "0")) || []).filter((x) => x !== t && !(productTickers && productTickers.has(x))).sort();
+    if (candidates.length) out.push({ ticker: t, securityId: ch.securityId, cik: String(cik).padStart(10, "0"), candidates });
+  }
+  return out;
+}
+
 export function referenceSession(lastDates) {
   const m = new Map();
   for (const d of lastDates) if (d) m.set(d, (m.get(d) || 0) + 1);
@@ -231,6 +270,18 @@ function main() {
     return j.next;
   });
   const unusedEvidence = [...evidence.keys()].filter((id) => !usedEvidence.has(id));
+  /* Warnung "Regel A mit aktiver CIK": moeglicher Kuerzelwechsel statt Delisting (keine Sperre) */
+  let warnings = [];
+  try {
+    const UNI = join(root, "quant", "data", "universe");
+    const secU = existsSync(join(UNI, "sec-universe.json")) ? JSON.parse(readFileSync(join(UNI, "sec-universe.json"), "utf8")).companies || [] : [];
+    const cikMap = existsSync(join(UNI, "cik-map.json")) ? JSON.parse(readFileSync(join(UNI, "cik-map.json"), "utf8")).byTicker || {} : {};
+    const Exchanges = require(join(root, "core", "exchanges.js"));
+    const productTickers = new Set(JSON.parse(readFileSync(PRODUCT, "utf8")).securities.map((x) => String(x.ticker || "").toUpperCase()));
+    warnings = renameWarnings(changes, { cikByTicker: new Map(secU.filter((c) => c.ticker && c.cik).map((c) => [String(c.ticker).toUpperCase(), c.cik])),
+      cikMap, productTickers, succession, listedLabels: Exchanges.listedSecLabels() });
+  } catch (e) { console.log(`::warning::Regel-A-Pruefung auf aktive CIK nicht moeglich: ${String(e.message || e).slice(0, 160)}`); }
+  for (const w of warnings) console.log(`::warning::Regel A mit aktiver CIK: ${w.ticker} (CIK ${w.cik}) geht ueber MASTER_INACTIVE, die SEC fuehrt die CIK heute als ${w.candidates.join(", ")} - moeglicher Kuerzelwechsel ${w.ticker} -> ${w.candidates[0]}, Nachfolge-Register pruefen`);
   const after = countDecisions(elig.decisions), byRule = {};
   for (const c of changes) byRule[c.rule] = (byRule[c.rule] || 0) + 1;
   console.log(`Bezugssitzung ${ref} · Reihen ${series.size} · Register ${evidence.size} (ungenutzt: ${unusedEvidence.join(", ") || "keins"})`);
@@ -241,7 +292,7 @@ function main() {
 
   const at = new Date().toISOString();
   const applied = { at, ruleVersion: RULE_VERSION, referenceSession: ref, maxLag: MAX_LAG, graceDays: GRACE_DAYS, changed: changes.length, byRule,
-                    skippedTickerReuse: skippedReuse, unusedEvidence, countsBefore: before.counts, script: "scripts/market/apply-ended-listings.mjs" };
+                    skippedTickerReuse: skippedReuse, unusedEvidence, renameWarnings: warnings, countsBefore: before.counts, script: "scripts/market/apply-ended-listings.mjs" };
   Object.assign(elig, { counts: after.counts, excludedByClass: after.excludedByClass, separateByClass: after.separateByClass, endedListingsApplied: applied });
   writeFileSync(ELIG, JSON.stringify(elig, null, 1) + "\n");
   const recon = JSON.parse(readFileSync(RECON, "utf8"));

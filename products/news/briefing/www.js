@@ -38,7 +38,63 @@
   /* Icons aus render.js (eine Quelle für Karten und Seite). */
   function ic(name, cls) { return '<svg class="' + (cls || "mb-i") + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (Render.ICONS[name] || "") + "</svg>"; }
   function eye(name, t) { return '<p class="mb-eye mb-ei">' + ic(name) + esc(t) + "</p>"; }
-  /* Kurzfassung: Icon je Satz nach Inhalt. */
+
+  /* Angaben Dritter je Art eine eigene Szene (Recherche-Lauf, Owner 25.11.2026): Zitat (Bank, Researchhaus, X),
+     Linie (Makro-Reihe), Balken, große Zahlen; ohne Grafik eine Nachricht. Quelle steht im Etikett. */
+  /* Owner 28.11.2026: kein „Angabe Dritter“ im Etikett, die Quelle selbst kennzeichnet die fremde Angabe (WORTWAHL Regel 5). */
+  function srcLabel(c) { return "Quelle: " + (c.publisher === "X" && c.source ? c.source.replace(/^X · /, "X · ").split(",")[0] : c.publisher); }
+  function richThird(c) { return !!(c.quote || c.line || c.bars || c.stats || c.compare); }
+  function compareSvg(cp) {
+    var all = cp.series[0].points.concat(cp.series[1].points).map(function (p) { return p[1]; });
+    var lo = Math.min.apply(null, all), hi = Math.max.apply(null, all); if (hi === lo) hi = lo + 1;
+    var W = 600, H = 260, n = Math.max(cp.series[0].points.length, cp.series[1].points.length);
+    var line = function (pts) { return pts.map(function (p, i) { return (14 + i / (pts.length - 1) * (W - 40)).toFixed(1) + "," + (H - 14 - (p[1] - lo) / (hi - lo) * (H - 28)).toFixed(1); }).join(" "); };
+    var f = function (x) { return num(x, cp.digits) + (cp.unit ? " " + cp.unit : ""); }, last = function (r) { return r.points[r.points.length - 1][1]; };
+    var dt = function (t) { return String(t).slice(0, 10).split("-").reverse().join("."); };
+    return '<figure class="mb-line mb-cmp"><svg viewBox="0 0 ' + W + " " + H + '" preserveAspectRatio="none" aria-hidden="true">' +
+      '<polyline points="' + line(cp.series[1].points) + '" fill="none" stroke="#f4f5f1" stroke-width="4" stroke-dasharray="10 8" vector-effect="non-scaling-stroke"/>' +
+      '<polyline points="' + line(cp.series[0].points) + '" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg>' +
+      '<figcaption><span>' + esc(dt(cp.series[0].points[0][0])) + (cp.rebase ? " = 100" : "") + "</span><b>" + esc(dt(cp.series[0].points[cp.series[0].points.length - 1][0])) + "</b></figcaption>" +
+      '<p class="mb-leg"><span><i class="a"></i>' + esc(cp.series[0].label) + " · " + esc(f(last(cp.series[0]))) + '</span><span><i class="b"></i>' + esc(cp.series[1].label) + " · " + esc(f(last(cp.series[1]))) + "</span></p></figure>";
+  }
+  function lineSvg(pts, unit, digits) {
+    var v = pts.map(function (p) { return p[1]; }), lo = Math.min.apply(null, v), hi = Math.max.apply(null, v); if (hi === lo) hi = lo + 1;
+    var W = 600, H = 240, xy = pts.map(function (p, i) { return [(14 + i / (pts.length - 1) * (W - 40)).toFixed(1), (H - 12 - (p[1] - lo) / (hi - lo) * (H - 24)).toFixed(1)]; });
+    var d = (digits == null ? 1 : digits), f = function (x) { return (x < 0 ? "−" : "") + num(x, d) + (unit ? " " + unit : ""); };
+    var dt = function (t) { return String(t).slice(0, 10).split("-").reverse().join("."); };
+    var zero = lo < 0 && hi > 0 ? '<line x1="0" x2="' + W + '" y1="' + (H - 12 - (0 - lo) / (hi - lo) * (H - 24)).toFixed(1) + '" y2="' + (H - 12 - (0 - lo) / (hi - lo) * (H - 24)).toFixed(1) + '" stroke="#5b5d57" stroke-width="2" stroke-dasharray="8 8" vector-effect="non-scaling-stroke"/>' : "";
+    var lastP = xy[xy.length - 1];
+    return '<figure class="mb-line"><svg viewBox="0 0 ' + W + " " + H + '" preserveAspectRatio="none" aria-hidden="true">' + zero + '<polyline points="' + xy.map(function (q) { return q.join(","); }).join(" ") +
+      '" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>' +
+      '<line x1="' + lastP[0] + '" x2="' + lastP[0] + '" y1="' + lastP[1] + '" y2="' + lastP[1] + '" stroke="currentColor" stroke-width="16" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg>' +
+      '<figcaption><span>' + esc(dt(pts[0][0])) + " · " + esc(f(pts[0][1])) + "</span><b>" + esc(dt(pts[pts.length - 1][0])) + " · " + esc(f(pts[pts.length - 1][1])) + "</b></figcaption></figure>";
+  }
+  function thirdScene(f, id) {
+    var head = tag(srcLabel(f), f.quote ? "bank" : (f.line || f.compare) ? "gauge" : "news"), body = "", bg = "w";
+    if (f.quote) {
+      bg = "k";
+      body = '<blockquote class="mb-quote">„' + esc(f.quote) + "“</blockquote>" + (f.speaker ? '<p class="mb-who">' + esc(f.speaker) + "</p>" : "") +
+        '<h2 class="mb-claim mb-m">' + esc(f.title) + "</h2>" + (f.sub ? '<p class="mb-say">' + esc(f.sub) + "</p>" : "");
+    } else if (f.compare) {
+      body = '<h2 class="mb-claim mb-m">' + esc(f.title) + "</h2>" + (f.sub ? '<p class="mb-say">' + esc(f.sub) + "</p>" : "") +
+        (f.compare.label ? '<p class="mb-sub">' + esc(f.compare.label) + "</p>" : "") + compareSvg(f.compare);
+    } else if (f.line) {
+      body = '<h2 class="mb-claim mb-m">' + esc(f.title) + "</h2>" + (f.sub ? '<p class="mb-say">' + esc(f.sub) + "</p>" : "") +
+        (f.line.label ? '<p class="mb-sub">' + esc(f.line.label) + "</p>" : "") + lineSvg(f.line.points, f.line.unit, f.line.digits);
+    } else if (f.bars) {
+      var rows = f.bars.rows, mx = Math.max.apply(null, rows.map(function (r) { return Math.abs(r.value); })) || 1, u = f.bars.unit || "%";
+      var fv = function (x) { return u === "%" ? pct(x) : sg(x) + num(x, 1) + " " + u; };
+      body = '<h2 class="mb-claim mb-m">' + esc(f.title) + "</h2>" + (f.sub ? '<p class="mb-say">' + esc(f.sub) + "</p>" : "") + '<div class="mb-xbars">' +
+        rows.map(function (r) { return '<div class="mb-st"><b>' + esc(r.label) + '</b><div class="mb-tr"><i data-w="' + (Math.abs(r.value) / mx * 100).toFixed(1) + '"' + (r.value > 0 ? ' class="up"' : "") + '></i></div><span class="mb-v">' + fv(r.value) + "</span></div>"; }).join("") + "</div>";
+    } else if (f.stats) {
+      bg = "l";
+      body = '<h2 class="mb-claim mb-m">' + esc(f.title) + "</h2>" + (f.sub ? '<p class="mb-say">' + esc(f.sub) + "</p>" : "") + '<div class="mb-facts">' +
+        f.stats.map(function (x) { return "<div><b>" + esc(x.text != null ? x.text : (x.unit === "%" ? pct(x.value) : num(x.value, x.digits == null ? 1 : x.digits) + (x.unit ? " " + x.unit : ""))) + "</b>" + esc(x.label) + (x.sub ? ", " + esc(x.sub) : "") + "</div>"; }).join("") + "</div>";
+    } else {
+      body = '<h2 class="mb-claim mb-m">' + esc(f.title) + "</h2>" + (f.sub ? '<p class="mb-say">' + esc(f.sub) + "</p>" : "");
+    }
+    return { id: id, bg: bg, toc: f.title, html: '<div class="mb-in">' + head + body + "</div>" };
+  }  /* Kurzfassung: Icon je Satz nach Inhalt. */
   function sumIcon(t, i, b) {
     if (/^Als Nächstes/.test(t)) return "markt";
     if (/Schwergewicht/.test(t)) return "heavy";
@@ -73,6 +129,7 @@
 
     S.push({ id: "kurz", bg: "w", toc: "Das Wichtigste in Kürze", html:
       '<div class="mb-in">' + eye("news", "Das Wichtigste in Kürze") + '<ol class="mb-sum">' + (b.summary || []).map(function (t, i) { return "<li>" + ic(sumIcon(t, i, b), "mb-si") + "<span>" + esc(t) + "</span></li>"; }).join("") + "</ol></div>" });
+    third.filter(function (c) { return c.lead && !c.columns; }).forEach(function (f, n) { S.push(thirdScene(f, "vorn-" + (n + 1))); });
 
     if (ov.chart) {
       var q = IX["Nasdaq 100"];
@@ -93,10 +150,10 @@
           return '<div class="mb-st"><b>' + esc(r.label) + '</b><div class="mb-tr"><i data-w="' + (Math.abs(r.value) / mx * 100).toFixed(1) + '"' + (r.value > 0 ? ' class="up"' : "") + '></i></div><span class="mb-v">' + pct(r.value) + "</span></div>"; }).join("") + "</div></div>" });
     }
 
-    var sec = third.filter(function (c) { return !c.columns; })[0];
+    var sec = third.filter(function (c) { return !c.columns && !richThird(c) && !c.lead; })[0];
     if (topMc) {
       S.push({ id: "schwergewichte", bg: "w", toc: topMc.label + " " + pct(topMc.value, 0), html:
-        '<div class="mb-in">' + (sec ? tag("Angabe Dritter · " + sec.publisher, "news") : tag("Die Schwergewichte", "heavy")) + '<div class="mb-huge" data-to="' + topMc.value + '" data-d="0">' + pct(topMc.value, 0) + "</div>" +
+        '<div class="mb-in">' + (sec ? tag(srcLabel(sec), "news") : tag("Die Schwergewichte", "heavy")) + '<div class="mb-huge" data-to="' + topMc.value + '" data-d="0">' + pct(topMc.value, 0) + "</div>" +
         '<h2 class="mb-claim mb-m">' + esc(sec ? sec.title : C.megacaps.title) + "</h2>" + (sec && sec.sub ? '<p class="mb-say">' + esc(sec.sub) + "</p>" : "") +
         '<div class="mb-pills">' + C.megacaps.bars.rows.slice(1).map(function (r) { return '<span class="mb-pair"><b>' + esc(r.label) + "</b>" + pill(r.value) + "</span>"; }).join("") + "</div></div>" });
     }
@@ -145,9 +202,11 @@
     third.filter(function (c) { return c.columns; }).forEach(function (f, n) {
       var r = f.columns.rows, last = r[r.length - 1].values[0];
       S.push({ id: "dritte-" + (n + 1), bg: "l", toc: f.title, html:
-        '<div class="mb-in mb-duo"><div class="mb-col">' + tag("Angabe Dritter · " + f.publisher, "bank") + '<div class="mb-huge" data-to="' + last + '" data-d="0" data-plain="1">' + num(last, 0) + ' %</div><h2 class="mb-claim mb-m">' + esc(f.title) + ".</h2>" + (f.sub ? '<p class="mb-say">' + esc(f.sub) + "</p>" : "") + "</div>" +
+        '<div class="mb-in mb-duo"><div class="mb-col">' + tag(srcLabel(f), "bank") + '<div class="mb-huge" data-to="' + last + '" data-d="0" data-plain="1">' + num(last, 0) + ' %</div><h2 class="mb-claim mb-m">' + esc(f.title) + ".</h2>" + (f.sub ? '<p class="mb-say">' + esc(f.sub) + "</p>" : "") + "</div>" +
         '<div class="mb-colb">' + r.map(function (x) { return '<div><span>' + num(x.values[0], 0) + ' %</span><i class="' + (x.highlight ? "on" : "") + '" data-h="' + x.values[0] + '"></i><small>' + esc(x.label) + "</small></div>"; }).join("") + "</div></div>" });
     });
+
+    third.filter(function (c) { return !c.columns && !c.lead && c !== sec; }).forEach(function (f, n) { S.push(thirdScene(f, "extern-" + (n + 1))); });
 
     if (C.movers) {
       S.push({ id: "bewegungen", bg: "w", toc: "Größte Bewegungen", html:
@@ -193,7 +252,7 @@
       (o.archive && o.archive.length > 1 ? '<nav class="mb-arch" aria-label="Frühere Ausgaben"><p class="mb-sub">Frühere Ausgaben</p>' + o.archive.slice(0, 15).map(function (d) { return '<a href="' + o.base + "marktbriefing/" + d + "/" + '"' + (d === b.session ? ' aria-current="page"' : "") + ">" + dmy(d) + d.slice(0, 4) + "</a>"; }).join("") + "</nav>" : "") +
       '<details class="mb-src"><summary>Quellen und Hinweise</summary><ul>' + b.cards.map(function (c) { return "<li>" + esc(c.title) + ": " + esc(c.source) + (c.url ? ' · <a href="' + esc(c.url) + '" rel="noopener">Originalquelle</a>' : "") +
         (c.sources ? " · " + uniqSrc(c.sources).map(function (x) { return '<a href="' + esc(x.url) + '" rel="noopener">' + esc(x.source) + "</a>"; }).join(", ") : "") + "</li>"; }).join("") + "</ul>" +
-      "<p>Marktbriefing zum US-Handelstag " + esc(day) + ". Indizes über ETF-Proxies, Kurse zum Tagesschluss und im Tagesverlauf verzögert. Renditen: US Treasury und Bundesbank. Fundamentaldaten: SEC EDGAR. Marktbreite, Einordnung, Bewertung und Marktbild: eigene Auswertungen von Vision Universe. Angaben Dritter geben die genannte Quelle wieder.</p>" +
+      "<p>Marktbriefing zum US-Handelstag " + esc(day) + ". Indizes über ETF-Proxies, Kurse zum Tagesschluss und im Tagesverlauf verzögert. Renditen: US Treasury und Bundesbank. Fundamentaldaten: SEC EDGAR. Marktbreite, Einordnung, Bewertung und Marktbild: eigene Auswertungen von Vision Universe. Angaben aus externen Quellen geben die jeweils genannte Quelle wieder.</p>" +
       "<p>Redaktionelle Einordnung, keine Anlageberatung und keine Kauf- oder Verkaufsempfehlung. " + esc(b.notes.forecast) + "</p></details></div>" });
     return S;
   }
@@ -310,13 +369,17 @@
     var SRC = ["Notenbanken", "Börsenaufsicht SEC", "Nachrichtenagenturen", "Research großer Banken", "Hedgefonds-Meldungen", "Statistikämter", "Eigene Modelle"];
     var rail = cardsAll.length ? '<section class="full mbrailsec"><div class="mbhead"><h2>Ein Blick hinein</h2><span>Neueste Ausgabe · ' + dmy(b.session) + b.session.slice(0, 4) + '</span></div><div class="mbrail">' +
       [{ file: img.story0, anchor: "start", kicker: "Überblick" }].concat(cardsAll).filter(function (c) { return c.file; }).map(function (c) { return '<a class="mbcard" href="' + ed + "#" + c.anchor + '"><img src="' + ed + c.file + '" alt="' + esc(c.kicker) + '" loading="lazy"><span>' + esc(c.kicker) + "</span></a>"; }).join("") + "</div></section>" : "";
+    /* Produktfilm (zeitlos, 40 s): liegt fest unter /marktbriefing/film/, unabhaengig von der Ausgabe. */
+    var filmBlock = o.film ? '<section class="full mbpdf mbfilm"><div class="mbpdf-txt"><p class="mbkick">' + I('<rect x="3" y="5" width="14" height="14" rx="3"/><path d="M17 10l4-2v8l-4-2"/>') + "Kurz erklärt</p><h2>Das Marktbriefing in <mark>40 Sekunden.</mark></h2>" +
+      '<p class="t">Was drinsteht, wie es aussieht und wo du es findest: als Story, als PDF und bald in der App.</p></div>' +
+      '<div class="mbpdf-art mbfilm-art"><video class="mbvid" controls playsinline preload="none" poster="' + esc(o.film.poster) + '" aria-label="Das Marktbriefing in 40 Sekunden"><source src="' + esc(o.film.src) + '" type="video/mp4"></video></div></section>' : "";
     var main = '<main id="inhalt" class="w"><section class="ahero pvhero mbhero" data-hero><div>' +
       "<h1>Das <mark>Marktbriefing.</mark></h1>" +
       '<p class="t mblead">Der Börsentag als Story. Zum Durchwischen in App und Browser, als PDF zum Mitnehmen.</p>' +
       '<div class="pvcta mbctas">' + cta(ed, "Neueste Ausgabe ansehen") + (o.pdf ? '<a class="mbpdfbtn" href="' + ed + esc(o.pdf) + '" download><b>PDF</b> laden</a>' : "") + "</div>" +
       '<p class="mbnew"><span>Neueste Ausgabe · ' + dmy(b.session) + b.session.slice(0, 4) + '</span><a href="' + ed + '">' + esc(C.overview.title) + "</a></p>" +
       '</div><div class="pvcover"><a class="mbcov" href="' + ed + '" aria-label="Neueste Ausgabe ansehen">' + stage + "</a></div></section>" +
-      storyBlock + pdfBlock +
+      filmBlock + storyBlock + pdfBlock +
       '<section class="mbband"><div class="mbband-in"><h2>Aus Millionen Datenpunkten.<br><mark>Weltweit.</mark></h2><div class="mbstats">' +
       STATS.map(function (x) { return "<div><b>" + x[0] + "</b><span>" + x[1] + "</span></div>"; }).join("") + '</div><ul class="mbsrc">' + SRC.map(function (x) { return "<li>" + x + "</li>"; }).join("") + "</ul></div></section>" +
       rail +

@@ -42,6 +42,20 @@ export function lcpElementOf(ss) {
  let url = ''; try { url = e.url ? new URL(e.url, 'https://x.invalid').pathname : ''; } catch { url = ''; }
  return {tag: e.tag || '', id: e.id || '', url: url.slice(0, 120)};
 }
+/** Alle LCP-Kandidaten des mittleren Laufs (Zeit, Tag, Klasse, Elternklasse, Flaeche, Textlaenge): zeigt, WANN welches Element zaehlt. Nie Text. */
+export function lcpKandidatenOf(ss) {
+ const withLcp = ss.filter((s) => typeof s.lcp === 'number' && Array.isArray(s.lcpList)).sort((a, b) => a.lcp - b.lcp);
+ const l = (withLcp[Math.floor(withLcp.length / 2)] || {}).lcpList;
+ if (!l || !l.length) return null;
+ return l.slice(-8).map((k) => ({t: Math.round(k.t), tag: String(k.tag || '').slice(0, 20), cls: String(k.cls || '').slice(0, 40), par: String(k.par || '').slice(0, 40), size: Math.round(k.size || 0), len: Math.round(k.len || 0)}));
+}
+/** Ereignisse der Seite (vu-fx-ready, vu-currency-change, vu-home-drawn, hashchange) des mittleren Laufs mit Zeit: zeigt, was eine zweite Zeichnung ausloest. */
+export function ereignisseOf(ss) {
+ const withLcp = ss.filter((s) => typeof s.lcp === 'number' && Array.isArray(s.events)).sort((a, b) => a.lcp - b.lcp);
+ const l = (withLcp[Math.floor(withLcp.length / 2)] || {}).events;
+ if (!l || !l.length) return null;
+ return l.slice(0, 12).map((x) => ({n: String(x.n || '').slice(0, 24), t: Math.round(x.t || 0)}));
+}
 /** Groesste einzelne Verschiebung aller Laeufe (Wert, Zeitpunkt, Knoten): benennt, WAS springt. */
 export function topShiftOf(ss) {
  let best = null;
@@ -84,7 +98,7 @@ export function rowsFromRaw(raw, site, cpu) {
    lcp: r.lcp ?? null, cls: r.cls ?? null, requests: r.requests ?? null, bytes: r.bytes ?? null,
    runs: ss.length, invalidRuns: r.invalidRuns ?? 0, incompleteRuns: r.incompleteRuns ?? 0, failedRuns: r.failedRuns ?? 0,
    lcpRuns: ss.map((s) => (typeof s.lcp === 'number' ? Math.round(s.lcp) : null)),
-   lcpElement: lcpElementOf(ss), topShift: topShiftOf(ss), gate: gateOf(ss), gateDiagnostics: (ss.find((x) => x.gateDiagnostics) || {}).gateDiagnostics || null,
+   lcpElement: lcpElementOf(ss), lcpKandidaten: lcpKandidatenOf(ss), ereignisse: ereignisseOf(ss), topShift: topShiftOf(ss), gate: gateOf(ss), gateDiagnostics: (ss.find((x) => x.gateDiagnostics) || {}).gateDiagnostics || null,
    errors: [...new Set(ss.flatMap((s) => s.errors || []))].slice(0, 3)
   };
  });
@@ -142,6 +156,8 @@ export function reportMarkdown(report) {
  const d = [];
  for (const r of detail) {
   if (r.lcpElement) d.push('- ' + r.key + ' (' + r.cpu + 'x)' + ' LCP-Element: ' + r.lcpElement.tag + (r.lcpElement.id ? '#' + r.lcpElement.id : '') + (r.lcpElement.url ? ' ' + r.lcpElement.url : ''));
+  if (r.lcpKandidaten) d.push('- ' + r.key + ' (' + r.cpu + 'x) LCP-Kandidaten: ' + r.lcpKandidaten.map((k) => k.t + ' ms ' + k.tag + (k.cls ? '.' + k.cls.split(' ')[0] : '') + (k.par ? ' in .' + k.par.split(' ').join('.') : '') + ' (' + k.size + ' px2, ' + k.len + ' Z.)').join(' -> '));
+  if (r.ereignisse) d.push('- ' + r.key + ' (' + r.cpu + 'x) Ereignisse: ' + r.ereignisse.map((x) => x.n + ' ' + x.t + ' ms').join(', '));
   if (r.topShift) d.push('- ' + r.key + ' (' + r.cpu + 'x)' + ' groesste Verschiebung: ' + r.topShift.value + ' bei ' + r.topShift.atMs + ' ms, Knoten ' + r.topShift.nodes.map((n, i) => { const m = (r.topShift.moves || [])[i]; return m && m.from && m.to ? n + ' (y ' + m.from.y + '→' + m.to.y + ', h ' + m.from.h + '→' + m.to.h + ')' : n; }).join(' | '));
   if (r.gateDiagnostics && (r.invalidRuns || 0) > r.runs / 2) d.push('- ' + r.key + ' (' + r.cpu + 'x) ungueltig, Maske sichtbar: ' + diagnoseText(r.gateDiagnostics));
   if (r.gate) d.push('- ' + r.key + ' (' + r.cpu + 'x)' + ' Zugangshuelle: Huelle bis ' + r.gate.shellMs + ' ms, Inhalt bis ' + r.gate.contentMs + ' ms (+' + r.gate.extraMs + ' ms)');

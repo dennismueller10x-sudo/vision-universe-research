@@ -3,8 +3,8 @@
  "engineVersion": "vu-setup-1.0.0",
  "mappingVersion": "setup-mapping-1.0.0",
  "methodologyVersion": "setup-state-v1.0.0",
- "generatedAt": "2026-11-24T00:22:05.000Z",
- "asOf": "2026-11-23",
+ "generatedAt": "2026-11-28T08:16:31.000Z",
+ "asOf": "2026-11-27",
  "approval": {
   "state": "APPROVED",
   "approvedBy": "info@visionuniverse.de",
@@ -327,21 +327,21 @@
  "observed": 5451,
  "unavailable": 0,
  "stateCounts": {
-  "NO_SETUP": 4589,
-  "WATCH": 441,
-  "SETUP_FORMING": 412,
-  "CONFIRMED": 9,
+  "NO_SETUP": 4469,
+  "WATCH": 466,
+  "SETUP_FORMING": 510,
+  "CONFIRMED": 6,
   "ACTIVE": 0,
   "RISK_RISING": 0,
   "INVALIDATED": 0,
   "EXIT": 0
  },
  "ruleCounts": {
-  "setup.forming.complete-setup-awaiting-trigger": 412,
-  "setup.none.fallback": 4589,
-  "setup.watch.bullish-trend": 313,
-  "setup.watch.confirmed-structure-near-high": 128,
-  "setup.confirmed.structure-trend-volume": 9
+  "setup.forming.complete-setup-awaiting-trigger": 510,
+  "setup.none.fallback": 4469,
+  "setup.watch.bullish-trend": 330,
+  "setup.watch.confirmed-structure-near-high": 136,
+  "setup.confirmed.structure-trend-volume": 6
  },
  "pathTier": {
   "states": [
@@ -399,7 +399,10 @@
    "2026-11-18",
    "2026-11-19",
    "2026-11-20",
-   "2026-11-23"
+   "2026-11-23",
+   "2026-11-24",
+   "2026-11-25",
+   "2026-11-27"
   ],
   "minimumRequired": 2
  },
@@ -1043,44 +1046,37 @@
  ],
  "observationDrift": null,
  "staleBundles": {
-  "count": 49,
-  "cutoff": "2026-11-23",
+  "count": 44,
+  "cutoff": "2026-11-27",
   "rule": "Bundles mit dataCutoff vor dem Stichtag gehen nicht in die Beobachtung dieses Stichtags ein.",
   "byDataCutoff": {
-   "2026-10-23": 4,
-   "2026-11-06": 3,
-   "2026-10-22": 1,
+   "2026-11-24": 3,
    "2026-11-13": 2,
-   "2026-11-20": 13,
+   "2026-11-20": 4,
    "2026-11-04": 1,
    "2026-11-17": 2,
+   "2026-11-25": 8,
    "2026-09-18": 1,
    "2026-10-29": 3,
+   "2026-10-23": 1,
    "2026-10-21": 1,
+   "2026-11-23": 1,
    "2026-10-02": 2,
    "2026-11-02": 1,
-   "2026-11-16": 2,
    "2026-11-10": 1,
-   "2026-11-18": 1,
    "2026-10-30": 1,
    "2026-11-19": 2,
    "2026-10-26": 3,
    "2026-10-13": 3,
    "2026-09-10": 1,
-   "2026-10-16": 1
+   "2026-11-06": 1,
+   "2026-10-16": 1,
+   "2026-11-16": 1
   },
   "sample": [
    {
-    "ticker": "ACA",
-    "dataCutoff": "2026-10-23"
-   },
-   {
-    "ticker": "ARI",
-    "dataCutoff": "2026-11-06"
-   },
-   {
-    "ticker": "ATII",
-    "dataCutoff": "2026-10-22"
+    "ticker": "AMZE",
+    "dataCutoff": "2026-11-24"
    },
    {
     "ticker": "BKH",
@@ -1099,16 +1095,8 @@
     "dataCutoff": "2026-11-17"
    },
    {
-    "ticker": "CLRCU",
-    "dataCutoff": "2026-11-20"
-   },
-   {
     "ticker": "CNO-P-A",
-    "dataCutoff": "2026-11-20"
-   },
-   {
-    "ticker": "CPTAF",
-    "dataCutoff": "2026-11-20"
+    "dataCutoff": "2026-11-25"
    },
    {
     "ticker": "CSAN",
@@ -1124,11 +1112,15 @@
    },
    {
     "ticker": "F-P-B",
-    "dataCutoff": "2026-11-20"
+    "dataCutoff": "2026-11-25"
    },
    {
     "ticker": "F-P-D",
-    "dataCutoff": "2026-11-20"
+    "dataCutoff": "2026-11-25"
+   },
+   {
+    "ticker": "FNGR",
+    "dataCutoff": "2026-11-24"
    },
    {
     "ticker": "GETY",
@@ -1136,7 +1128,11 @@
    },
    {
     "ticker": "GL-P-D",
-    "dataCutoff": "2026-11-20"
+    "dataCutoff": "2026-11-25"
+   },
+   {
+    "ticker": "GROM",
+    "dataCutoff": "2026-11-23"
    },
    {
     "ticker": "GWH",
@@ -1147,20 +1143,8 @@
     "dataCutoff": "2026-11-02"
    },
    {
-    "ticker": "ITGR",
-    "dataCutoff": "2026-11-16"
-   },
-   {
     "ticker": "KPTI",
     "dataCutoff": "2026-11-10"
-   },
-   {
-    "ticker": "LNAI",
-    "dataCutoff": "2026-11-06"
-   },
-   {
-    "ticker": "LXFR",
-    "dataCutoff": "2026-11-18"
    },
    {
     "ticker": "LXP-P-C",
@@ -1191,8 +1175,12 @@
     "dataCutoff": "2026-11-20"
    },
    {
-    "ticker": "PERF",
-    "dataCutoff": "2026-10-23"
+    "ticker": "PASG",
+    "dataCutoff": "2026-11-24"
+   },
+   {
+    "ticker": "PCRX",
+    "dataCutoff": "2026-11-25"
    },
    {
     "ticker": "PHGE",
@@ -1247,20 +1235,16 @@
     "dataCutoff": "2026-10-26"
    },
    {
-    "ticker": "WPRT",
-    "dataCutoff": "2026-10-23"
-   },
-   {
     "ticker": "WRB-P-F",
-    "dataCutoff": "2026-11-20"
+    "dataCutoff": "2026-11-25"
    },
    {
     "ticker": "WRB-P-G",
-    "dataCutoff": "2026-11-20"
+    "dataCutoff": "2026-11-25"
    },
    {
     "ticker": "WRB-P-H",
-    "dataCutoff": "2026-11-20"
+    "dataCutoff": "2026-11-25"
    },
    {
     "ticker": "YHNA",
