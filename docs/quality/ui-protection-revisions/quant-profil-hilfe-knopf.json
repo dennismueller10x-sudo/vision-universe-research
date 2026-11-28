@@ -1,0 +1,9 @@
+{
+  "date": "2026-11-28",
+  "pr": 0,
+  "ownerApproval": "Owner 28.11.2026: „Freigabe UI-Schutz für Ladezeit Quant: quant/app/page-stock.js (Profil-Hilfetext zugeklappt als Hilfe-Knopf, Text erst beim Öffnen)“",
+  "file": "quant/app/page-stock.js",
+  "from": "895160c76edc8e580dfe391b992db265b19ffe0dd1e6923689d5b509ed2afa36",
+  "to": "3e6b1bf021608109816dc29ebe172f8cf8d42fba4283c4d9e9714bbbc2f3cdd7",
+  "scope": "Quant-Aktienseite, Karte „Das Profil“: Der erklärende Hilfetext („Jede Zahl vergleicht vor allem mit Firmen derselben Branche … ▲ stark ab 75 · ● Mittelfeld · ▼ schwach unter 45“) steht nicht mehr als sichtbarer Absatz unter dem Profil, sondern zugeklappt hinter dem Hilfe-Knopf „?“ (VUUI.q, gemeinsames Sheet VUUI.bindHelp); der Text erscheint erst beim Öffnen und ist wortgleich. Grund: Der Absatz war das größte Textelement der Seite und damit das LCP-Element (6636 ms bei 4x CPU, Monitor ladezeit 27.11.). Ohne Sheet-Unterstützung (VUUI.q/bindHelp fehlen) bleibt der Text wie bisher sichtbar. Keine Zahl, kein Score, keine Regel und keine Beschriftung der Kennzahlen geändert; nur Darstellung."
+}
