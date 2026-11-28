@@ -3,8 +3,8 @@
  "engineVersion": "vu-setup-1.0.0",
  "mappingVersion": "setup-mapping-1.0.0",
  "methodologyVersion": "setup-state-v1.0.0",
- "generatedAt": "2026-11-27T00:16:25.000Z",
- "asOf": "2026-11-25",
+ "generatedAt": "2026-11-28T00:30:30.000Z",
+ "asOf": "2026-11-27",
  "approval": {
   "state": "APPROVED",
   "approvedBy": "info@visionuniverse.de",
@@ -323,25 +323,25 @@
    "predicateHash": null
   }
  ],
- "universe": 5451,
- "observed": 5451,
+ "universe": 5455,
+ "observed": 5455,
  "unavailable": 0,
  "stateCounts": {
-  "NO_SETUP": 4512,
-  "WATCH": 457,
-  "SETUP_FORMING": 472,
-  "CONFIRMED": 10,
+  "NO_SETUP": 4471,
+  "WATCH": 467,
+  "SETUP_FORMING": 510,
+  "CONFIRMED": 7,
   "ACTIVE": 0,
   "RISK_RISING": 0,
   "INVALIDATED": 0,
   "EXIT": 0
  },
  "ruleCounts": {
-  "setup.forming.complete-setup-awaiting-trigger": 472,
-  "setup.none.fallback": 4512,
-  "setup.watch.bullish-trend": 322,
-  "setup.watch.confirmed-structure-near-high": 135,
-  "setup.confirmed.structure-trend-volume": 10
+  "setup.forming.complete-setup-awaiting-trigger": 510,
+  "setup.none.fallback": 4471,
+  "setup.watch.bullish-trend": 331,
+  "setup.watch.confirmed-structure-near-high": 136,
+  "setup.confirmed.structure-trend-volume": 7
  },
  "pathTier": {
   "states": [
@@ -401,14 +401,15 @@
    "2026-11-20",
    "2026-11-23",
    "2026-11-24",
-   "2026-11-25"
+   "2026-11-25",
+   "2026-11-27"
   ],
   "minimumRequired": 2
  },
  "inputs": {
   "technical": {
    "artifact": "technical-product-artifact-1.0.0",
-   "instruments": 5451
+   "instruments": 5455
   }
  },
  "shards": [
@@ -1043,34 +1044,24 @@
   "ZZ",
   "Z_"
  ],
- "observationDrift": {
-  "asOf": "2026-11-25",
-  "publishedHash": "f966d74849625f6ecc7f7e439518b5ba",
-  "recomputedHash": "f2e6e95b8f4c9fc73833064f5850f128",
-  "rowsPublished": 5402,
-  "rowsToday": 5410,
-  "rowsAdded": 8,
-  "rowsChanged": 0,
-  "addedOnly": true,
-  "columnsDiffer": false,
-  "note": "Die veroeffentlichte Beobachtung bleibt unveraendert. Sie wurde an diesem Stichtag veroeffentlicht und wird nicht durch eine heutige Neuberechnung ersetzt - auch nicht durch eine, die nur Zeilen hinzufuegen wuerde."
- },
+ "observationDrift": null,
  "staleBundles": {
-  "count": 41,
-  "cutoff": "2026-11-25",
+  "count": 48,
+  "cutoff": "2026-11-27",
   "rule": "Bundles mit dataCutoff vor dem Stichtag gehen nicht in die Beobachtung dieses Stichtags ein.",
   "byDataCutoff": {
    "2026-10-23": 4,
-   "2026-11-23": 2,
    "2026-11-24": 3,
    "2026-10-22": 1,
    "2026-11-13": 2,
    "2026-11-20": 4,
    "2026-11-04": 1,
    "2026-11-17": 2,
+   "2026-11-25": 8,
    "2026-09-18": 1,
    "2026-10-29": 3,
    "2026-10-21": 1,
+   "2026-11-23": 1,
    "2026-10-02": 2,
    "2026-11-02": 1,
    "2026-11-10": 1,
@@ -1087,10 +1078,6 @@
    {
     "ticker": "ACA",
     "dataCutoff": "2026-10-23"
-   },
-   {
-    "ticker": "ALCYF",
-    "dataCutoff": "2026-11-23"
    },
    {
     "ticker": "AMZE",
@@ -1117,6 +1104,10 @@
     "dataCutoff": "2026-11-17"
    },
    {
+    "ticker": "CNO-P-A",
+    "dataCutoff": "2026-11-25"
+   },
+   {
     "ticker": "CSAN",
     "dataCutoff": "2026-09-18"
    },
@@ -1129,12 +1120,24 @@
     "dataCutoff": "2026-10-23"
    },
    {
+    "ticker": "F-P-B",
+    "dataCutoff": "2026-11-25"
+   },
+   {
+    "ticker": "F-P-D",
+    "dataCutoff": "2026-11-25"
+   },
+   {
     "ticker": "FNGR",
     "dataCutoff": "2026-11-24"
    },
    {
     "ticker": "GETY",
     "dataCutoff": "2026-10-21"
+   },
+   {
+    "ticker": "GL-P-D",
+    "dataCutoff": "2026-11-25"
    },
    {
     "ticker": "GROM",
@@ -1183,6 +1186,10 @@
    {
     "ticker": "PASG",
     "dataCutoff": "2026-11-24"
+   },
+   {
+    "ticker": "PCRX",
+    "dataCutoff": "2026-11-25"
    },
    {
     "ticker": "PERF",
@@ -1243,6 +1250,18 @@
    {
     "ticker": "WPRT",
     "dataCutoff": "2026-10-23"
+   },
+   {
+    "ticker": "WRB-P-F",
+    "dataCutoff": "2026-11-25"
+   },
+   {
+    "ticker": "WRB-P-G",
+    "dataCutoff": "2026-11-25"
+   },
+   {
+    "ticker": "WRB-P-H",
+    "dataCutoff": "2026-11-25"
    },
    {
     "ticker": "YHNA",
