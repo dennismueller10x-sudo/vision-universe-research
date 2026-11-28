@@ -37,10 +37,12 @@ import { SF5_LIFECYCLES } from './sf5-lifecycles.mjs';
 import { runResearchLifecycle, prepareAll, PLATFORM_RESEARCH_PORTFOLIO_POLICY } from './lifecycle-engine.mjs';
 import { summarizeRun, LABEL } from './run-st-hist-top5.mjs';
 import * as S from './st9-v13-delisted-study.mjs';
+import { buildSetupIndex, runMinerviniLifecycle, EQUITY_RESEARCH_PORTFOLIO_POLICY } from './minervini-execution.mjs';
+import { REFERENCE_CONFIG as MIN_REFERENCE_CONFIG } from './minervini-lifecycle.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..', '..');
-export const ST_DIAGNOSE_VERSION = 'st-diagnose-1.0.0';
+export const ST_DIAGNOSE_VERSION = 'st-diagnose-1.1.0';
 export const DIAG_METHODS = Object.freeze(['TURTLE_S1', 'TURTLE_S2', 'DARVAS', 'KK_BREAKOUT', 'HOLY_GRAIL_W_RAS97', 'BUYABLE_GAP_UP', 'WEINSTEIN_INVESTOR']);
 export const COSTS = Object.freeze({ REF: Object.freeze({ slippageBps: 10, commissionBps: 1 }), LOW: Object.freeze({ slippageBps: 3, commissionBps: 1 }), ZERO: Object.freeze({ slippageBps: 0, commissionBps: 0 }) });
 export const SELECTION = Object.freeze({ topK: 5, lookback: 126, rule: 'je Handelstag nur die topK Signale mit der höchsten Rendite über lookback Sitzungen bis zum Signalschluss (kausal)' });
@@ -172,8 +174,35 @@ export function bestOf(all, base) {
   return { ...best[1], chosenVariant: best[0], tried: all.length + 1, variants: Object.fromEntries(all.map(([id, r]) => [id, r.skipped ? r : { cagr: r.cagr, maxDrawdown: r.maxDrawdown, trades: r.trades }])) };
 }
 
+/**
+ * TraderFox-Vergleich (28.11.2026): dieselben Regeln einmal auf alle damals handelbaren Titel (mit Delistings) und einmal nur
+ * auf die 1.000 heute umsatzstärksten, heute noch notierten Titel. Sonst identisch: günstige Kosten (LOW), Tageskerze
+ * optimistisch, Turtle-Einheit 0,25 % Risiko, KEINE Auswahl nach Stärke (die Methode bleibt unverändert).
+ */
+export const TOP1000_METHODS = Object.freeze(['TURTLE_S1', 'TURTLE_S2', 'DARVAS', 'WEINSTEIN_INVESTOR', 'WEINSTEIN_TRADER', 'MINERVINI_SEPA', 'MINERVINI_POWER_PLAY', 'KK_BREAKOUT', 'POCKET_PIVOT', 'BUYABLE_GAP_UP', 'HOLY_GRAIL_W_RAS97']);
+export function compareTop1000(ds, key, { window = L.WINDOW, log = () => {} } = {}) {
+  const top = topByDollarVolumeAtEnd(survivorsOnly(ds), { to: window.to });
+  const run = (d) => {
+    if (key === 'TURTLE_S1' || key === 'TURTLE_S2') return turtleRun(d, key === 'TURTLE_S1' ? 'S1' : 'S2', window, { costs: COSTS.LOW, entryBarOrder: 'OPTIMISTIC_CERTAIN_RULE', P: { ...TURTLE_PARAMS, unitRiskFraction: TURTLE_STOCK_RISK } });
+    if (key === 'MINERVINI_SEPA' || key === 'MINERVINI_POWER_PLAY') {
+      const strategy = key === 'MINERVINI_SEPA' ? 'SEPA' : 'POWER_PLAY', config = { ...MIN_REFERENCE_CONFIG, intrabarOrder: 'OPTIMISTIC' };
+      const r = runMinerviniLifecycle(d, { strategy, setupIndex: buildSetupIndex(d, strategy, { from: window.from }), config, policy: { ...EQUITY_RESEARCH_PORTFOLIO_POLICY, ...COSTS.LOW }, from: window.from, to: window.to });
+      return pick(summarizeRun({ run: r, trades: r.trades, metricTrades: r.trades.filter((t) => t.status === 'CLOSED') }, d), r);
+    }
+    const lc = SF5_LIFECYCLES.find((x) => x.key === key);
+    if (!lc) throw new Error(`UNKNOWN_METHOD ${key}`);
+    const cfg = { ...variantConfig(lc, { id: 'REF', changes: {} }), intrabarOrder: 'OPTIMISTIC' };
+    return lifecycleRun(d, lc, window, { costs: COSTS.LOW, config: cfg, prepared: prepareAll(d, lc.adapter, cfg) });
+  };
+  const honest = run(ds); log(`${key} ALL: ${honest.trades} trades`);
+  const top1000 = run(top); log(`${key} TOP1000: ${top1000.trades} trades`);
+  return { key, population: { all: ds.securities.length, top1000Now: top.securities.length }, honest, top1000 };
+}
+
 export function publicPart(result) {
-  return { schema: 'st-diagnose-public-1.0.0', ...LABEL, receipt: result.receipt, methods: Object.fromEntries(Object.entries(result.methods).map(([k, m]) => [k, { population: m.population, steps: Object.fromEntries(Object.entries(m.steps).map(([s, x]) => [s, { trades: x.trades ?? null }])) }])) };
+  return { schema: 'st-diagnose-public-1.0.0', ...LABEL, receipt: result.receipt, methods: Object.fromEntries(Object.entries(result.methods).map(([k, m]) => [k, m.steps
+    ? { population: m.population, steps: Object.fromEntries(Object.entries(m.steps).map(([s, x]) => [s, { trades: x.trades ?? null }])) }
+    : { population: m.population, tradesAll: m.honest?.trades ?? null, tradesTop1000: m.top1000?.trades ?? null }])) };
 }
 
 async function main() {
@@ -184,8 +213,11 @@ async function main() {
   const OUT = S.assertOutsideRepo(arg('--out'), ROOT);
   const reviewerPem = arg('--reviewer-key') ? fs.readFileSync(arg('--reviewer-key'), 'utf8') : null;
   if (!reviewerPem || !/BEGIN PUBLIC KEY/.test(reviewerPem)) die('REVIEWER_KEY_REQUIRED');
-  const methods = (arg('--methods') || DIAG_METHODS.join(',')).split(',').filter(Boolean);
-  for (const m of methods) if (!DIAG_METHODS.includes(m)) die(`METHOD_INVALID ${m}`);
+  const kind = arg('--kind') || 'waterfall';
+  if (!['waterfall', 'top1000'].includes(kind)) die('KIND_INVALID');
+  const allowed = kind === 'top1000' ? TOP1000_METHODS : DIAG_METHODS;
+  const methods = (arg('--methods') || allowed.join(',')).split(',').filter(Boolean);
+  for (const m of methods) if (!allowed.includes(m)) die(`METHOD_INVALID ${m}`);
   const t0 = Date.now(), log = (m) => console.log(`[st-hist-top5 +${Math.round((Date.now() - t0) / 1000)}s] ${m}`);
   const K = await import('../../snapshot/contract.mjs');
   const { LIVE_IO, loadPitData } = await import('../../validation/analyze-methods.mjs');
@@ -201,8 +233,9 @@ async function main() {
   const qa = S.applyQuarantine(ds0, { mode: 'DQ-K5-BOOK' });
   log(`universe A: ${ds0.securities.length} segments`);
   const result = { schema: 'st-diagnose-result-1.0.0', ...LABEL, window: { name: L.WINDOW_NAME, ...L.WINDOW }, costs: COSTS, steps: STEPS, quarantine: qa.census, methods: {} };
-  for (const key of methods) result.methods[key] = diagnoseMethod(qa.ds, key, { log });
-  result.receipt = { version: ST_DIAGNOSE_VERSION, snapshotId, datasetSha256: K.sha256(K.canonicalJson(v.dataset)), datasetVerified: v.datasetVerified, codeVersionChanged: !!v.codeVersionChanged, methods, runId: process.env.GITHUB_RUN_ID || 'local', commit: process.env.GITHUB_SHA || null };
+  result.kind = kind;
+  for (const key of methods) result.methods[key] = kind === 'top1000' ? compareTop1000(qa.ds, key, { log }) : diagnoseMethod(qa.ds, key, { log });
+  result.receipt = { version: ST_DIAGNOSE_VERSION, kind, snapshotId, datasetSha256: K.sha256(K.canonicalJson(v.dataset)), datasetVerified: v.datasetVerified, codeVersionChanged: !!v.codeVersionChanged, methods, runId: process.env.GITHUB_RUN_ID || 'local', commit: process.env.GITHUB_SHA || null };
   result.receipt.resultSha256 = sha(result.methods);
   fs.mkdirSync(OUT, { recursive: true });
   const plain = Buffer.from(JSON.stringify(result));

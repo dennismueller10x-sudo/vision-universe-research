@@ -30,6 +30,12 @@ on:
         required: false
         default: ''
         type: string
+      diagnose_kind:
+        description: 'Nur Modus diagnose: waterfall (Wasserfall je Methode) oder top1000 (dieselben Regeln auf alle Titel und auf die heute 1.000 groessten)'
+        required: false
+        default: 'waterfall'
+        type: choice
+        options: [waterfall, top1000]
       with_v13:
         description: 'Universum B mit V13-Delisting-Ketten zusaetzlich rechnen (Archiv 1.2.0)'
         required: false
@@ -115,6 +121,7 @@ jobs:
           WITH_V13: ${{ inputs.with_v13 }}
           MODE: ${{ inputs.mode }}
           DIAG_METHODS: ${{ inputs.diagnose_methods }}
+          DIAG_KIND: ${{ inputs.diagnose_kind }}
           NODE_OPTIONS: --max-old-space-size=12000
           ST_WINDOW: DEV
         run: |
@@ -133,7 +140,8 @@ jobs:
             # Diagnose: unveraenderte Engines, nur Einstellungen und Signalauswahl; Fenster DEV, Ergebnis nur versiegelt
             [ -f "$W/reviewer.pem" ] || { echo "DIAGNOSE_NEEDS_REVIEWER_KEY"; exit 2; }
             [[ -z "$DIAG_METHODS" || "$DIAG_METHODS" =~ ^[A-Z0-9_,]+$ ]] || { echo "DIAG_METHODS_INVALID"; exit 2; }
-            dargs=(--snapshot "$SNAPSHOT_ID" --out "$OUT" --allow-code-version-change --reviewer-key "$W/reviewer.pem")
+            [[ "$DIAG_KIND" == "waterfall" || "$DIAG_KIND" == "top1000" ]] || { echo "DIAG_KIND_INVALID"; exit 2; }
+            dargs=(--snapshot "$SNAPSHOT_ID" --out "$OUT" --allow-code-version-change --reviewer-key "$W/reviewer.pem" --kind "$DIAG_KIND")
             [ -n "$DIAG_METHODS" ] && dargs+=(--methods "$DIAG_METHODS")
             node scripts/supertrader/source-faithful/research/run-st-diagnose.mjs "${dargs[@]}" > "$OUT/run.log" 2>&1
           else

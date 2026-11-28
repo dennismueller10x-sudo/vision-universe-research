@@ -64,3 +64,13 @@ test('DIAG-4: öffentlicher Teil ohne Renditezahl; Workflow kennt den Modus nur 
   assert.match(w, /diagnose/);
   assert.match(w, /DIAGNOSE_NEEDS_REVIEWER_KEY/);
 });
+
+test('DIAG-5: TraderFox-Vergleich je Methode: dieselben Regeln auf alle Titel und auf die heute größten, ohne Auswahl nach Stärke', () => {
+  for (const key of D.TOP1000_METHODS) {
+    const a = D.compareTop1000(ds(), key, { window: WIN });
+    assert.ok('cagr' in a.honest && 'cagr' in a.top1000, key);
+    assert.ok(a.population.top1000Now <= a.population.all, key);
+  }
+  const pub = JSON.stringify(D.publicPart({ methods: { DARVAS: D.compareTop1000(ds(), 'DARVAS', { window: WIN }) }, receipt: {} }));
+  for (const f of ['cagr', 'totalReturn', 'maxDrawdown']) assert.ok(!pub.includes(`"${f}"`), f);
+});
