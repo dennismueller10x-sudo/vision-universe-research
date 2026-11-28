@@ -47,6 +47,8 @@ test('RA-4 Health-Workflow: schreibt das Aggregat nur in den Datenzweig, nie nac
  assert.match(w,/push-data-branch\.sh data\/live company-intelligence\/data\/refresh-slo\.json/);
  assert.doesNotMatch(w,/push-with-retry|commit-and-push|git push|git commit/,'kein Commit auf main');
  assert.match(w,/seed-data-branch\.sh companyIntelligenceRefresh/,'bisheriger Verlauf aus dem Datenzweig');
+ // Der Worktree von push-data-branch.sh erbt das Sparse-Checkout: liegt der Pfad ausserhalb, verweigert git add ihn (Lauf 46147166954).
+ assert.match(w,/sparse-checkout: \|[\s\S]*?\n            company-intelligence\/data\n/,'Pfad der Aggregat-Datei im Sparse-Checkout');
  assert.match(w,/if: always\(\) && github\.ref == 'refs\/heads\/main'/,'nur Laeufe auf main, auch bei SLO CRITICAL');
  // Workflow-Ebene bleibt lesend; Schreibrecht nur am Job.
  assert.match(w,/^permissions:\n  contents: read\n  actions: read\n/m);
