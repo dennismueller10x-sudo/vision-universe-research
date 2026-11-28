@@ -455,11 +455,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Validate isolated engine before a scheduled batch
-        if: github.event_name == 'schedule'
-        run: |
-          python3 -m unittest discover -s scripts/company_intelligence/tests
-          node --test scripts/company_intelligence/tests/*.test.mjs
+      # Die Python- und Node-Tests laufen im Job validate (needs: validate); ein eigener Schritt nur bei
+      # event 'schedule' lief seit der Umstellung auf den Wecker nie mehr und war ein Duplikat.
       - name: Strict durable-state restore (dedicated namespace)
         if: inputs.durable_state || github.event_name == 'schedule'
         env:
