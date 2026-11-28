@@ -1,18 +1,18 @@
 {
- "generatedAt": "2026-11-25T07:53:30.460Z",
+ "generatedAt": "2026-11-28T06:21:24.251Z",
  "gate": "ELIGIBLE_US_EQUITY",
  "derivedFrom": "quant/data/market/scale/universe-FULL_UNIVERSE.json",
  "derivedFromSha256": "887f7b8b305652a8eec9fbd26666c6b46f3e66a7ac080b08a12285828d5cc0d3",
  "version": "us-security-master-1.3.0",
- "today": "2026-11-25",
+ "today": "2026-11-28",
  "method": "PRODUCT_ELIGIBILITY_LAYER",
  "provider": "tiingo",
- "actualSize": 6001,
+ "actualSize": 5996,
  "counts": {
-  "ELIGIBLE": 5197,
-  "SEPARATE_CLASS": 720,
-  "REVIEW": 84,
-  "EXCLUDED_NOT_LISTED_HERE": 1833
+  "ELIGIBLE": 5192,
+  "SEPARATE_CLASS": 718,
+  "REVIEW": 86,
+  "EXCLUDED_NOT_LISTED_HERE": 1838
  },
  "note": "Abgeleitet, nicht gepflegt. Die Mitgliedschaft steht in universe-FULL_UNIVERSE.json und bleibt dort vollstaendig. Verdachtsfaelle (REVIEW) sind enthalten und markiert.",
  "securities": [
@@ -16594,7 +16594,7 @@
    "industryStatus": "SOURCE_MISSING",
    "startDate": "1993-02-26",
    "selection": "inheritedFrom:GATE_2000",
-   "productEligibility": "ELIGIBLE"
+   "productEligibility": "REVIEW"
   },
   {
    "securityId": "ref_EDUC",
@@ -42515,26 +42515,6 @@
    "startDate": "2008-08-15",
    "selection": "ruleBased",
    "productEligibility": "ELIGIBLE"
-  },
-  {
-   "securityId": "ref_WPRT",
-   "ticker": "WPRT",
-   "company": null,
-   "exchange": "NASDAQ",
-   "country": "US",
-   "currency": "USD",
-   "assetType": "Stock",
-   "instrumentType": "COMMON_STOCK",
-   "active": true,
-   "providerSymbol": "WPRT",
-   "provider": "tiingo",
-   "sector": null,
-   "sectorStatus": "SOURCE_MISSING",
-   "industry": null,
-   "industryStatus": "SOURCE_MISSING",
-   "startDate": "2008-08-15",
-   "selection": "ruleBased",
-   "productEligibility": "REVIEW"
   },
   {
    "securityId": "ref_IBIO",
@@ -69857,26 +69837,6 @@
    "productEligibility": "ELIGIBLE"
   },
   {
-   "securityId": "ref_ACA",
-   "ticker": "ACA",
-   "company": null,
-   "exchange": "NYSE",
-   "country": "US",
-   "currency": "USD",
-   "assetType": "Stock",
-   "instrumentType": "COMMON_STOCK",
-   "active": true,
-   "providerSymbol": "ACA",
-   "provider": "tiingo",
-   "sector": null,
-   "sectorStatus": "SOURCE_MISSING",
-   "industry": null,
-   "industryStatus": "SOURCE_MISSING",
-   "startDate": "2018-10-30",
-   "selection": "ruleBased",
-   "productEligibility": "REVIEW"
-  },
-  {
    "securityId": "ref_GDYN",
    "ticker": "GDYN",
    "company": null,
@@ -82837,26 +82797,6 @@
    "productEligibility": "ELIGIBLE"
   },
   {
-   "securityId": "ref_PERF",
-   "ticker": "PERF",
-   "company": null,
-   "exchange": "NYSE",
-   "country": "US",
-   "currency": "USD",
-   "assetType": "Stock",
-   "instrumentType": "COMMON_STOCK",
-   "active": true,
-   "providerSymbol": "PERF",
-   "provider": "tiingo",
-   "sector": null,
-   "sectorStatus": "SOURCE_MISSING",
-   "industry": null,
-   "industryStatus": "SOURCE_MISSING",
-   "startDate": "2021-03-01",
-   "selection": "ruleBased",
-   "productEligibility": "REVIEW"
-  },
-  {
    "securityId": "ref_SES",
    "ticker": "SES",
    "company": null,
@@ -87214,7 +87154,7 @@
    "industryStatus": "SOURCE_MISSING",
    "startDate": "2021-07-07",
    "selection": "ruleBased",
-   "productEligibility": "ELIGIBLE"
+   "productEligibility": "REVIEW"
   },
   {
    "securityId": "ref_SNCRL",
@@ -91634,7 +91574,7 @@
    "industryStatus": "SOURCE_MISSING",
    "startDate": "2021-11-11",
    "selection": "ruleBased",
-   "productEligibility": "ELIGIBLE"
+   "productEligibility": "REVIEW"
   },
   {
    "securityId": "ref_BMAC",
@@ -100237,26 +100177,6 @@
    "productEligibility": "ELIGIBLE"
   },
   {
-   "securityId": "ref_ATII",
-   "ticker": "ATII",
-   "company": null,
-   "exchange": "NASDAQ",
-   "country": "US",
-   "currency": "USD",
-   "assetType": "Stock",
-   "instrumentType": "COMMON_STOCK",
-   "active": true,
-   "providerSymbol": "ATII",
-   "provider": "tiingo",
-   "sector": null,
-   "sectorStatus": "SOURCE_MISSING",
-   "industry": null,
-   "industryStatus": "SOURCE_MISSING",
-   "startDate": "2025-04-03",
-   "selection": "appendedFrom:US_SECURITY_MASTER",
-   "productEligibility": "SEPARATE_CLASS"
-  },
-  {
    "securityId": "ref_ATLQ",
    "ticker": "ATLQ",
    "company": null,
@@ -100554,7 +100474,7 @@
    "industryStatus": "SOURCE_MISSING",
    "startDate": "2026-08-07",
    "selection": "appendedFrom:US_SECURITY_MASTER",
-   "productEligibility": "ELIGIBLE"
+   "productEligibility": "REVIEW"
   },
   {
    "securityId": "ref_AZI",
@@ -101074,7 +100994,7 @@
    "industryStatus": "SOURCE_MISSING",
    "startDate": "2024-05-13",
    "selection": "appendedFrom:US_SECURITY_MASTER",
-   "productEligibility": "SEPARATE_CLASS"
+   "productEligibility": "ELIGIBLE"
   },
   {
    "securityId": "ref_BKV",
@@ -103014,7 +102934,7 @@
    "industryStatus": "SOURCE_MISSING",
    "startDate": "2026-04-24",
    "selection": "appendedFrom:US_SECURITY_MASTER",
-   "productEligibility": "ELIGIBLE"
+   "productEligibility": "REVIEW"
   },
   {
    "securityId": "ref_CPTAF",
@@ -107015,26 +106935,6 @@
    "startDate": "2026-06-29",
    "selection": "appendedFrom:US_SECURITY_MASTER",
    "productEligibility": "ELIGIBLE"
-  },
-  {
-   "securityId": "ref_HONG",
-   "ticker": "HONG",
-   "company": null,
-   "exchange": "BATS",
-   "country": "US",
-   "currency": "USD",
-   "assetType": "Stock",
-   "instrumentType": "COMMON_STOCK",
-   "active": true,
-   "providerSymbol": "HONG",
-   "provider": "tiingo",
-   "sector": null,
-   "sectorStatus": "SOURCE_MISSING",
-   "industry": null,
-   "industryStatus": "SOURCE_MISSING",
-   "startDate": "2026-05-12",
-   "selection": "appendedFrom:US_SECURITY_MASTER",
-   "productEligibility": "REVIEW"
   },
   {
    "securityId": "ref_HOVR",
@@ -115434,7 +115334,7 @@
    "industryStatus": "SOURCE_MISSING",
    "startDate": "2026-02-11",
    "selection": "appendedFrom:US_SECURITY_MASTER",
-   "productEligibility": "ELIGIBLE"
+   "productEligibility": "REVIEW"
   },
   {
    "securityId": "ref_SNSC",
