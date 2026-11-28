@@ -31,7 +31,7 @@
 
    Aufruf: node scripts/technical/elliott-topdown/depot-backtest.mjs --out DIR [--from 2005-01-01] [--step 4] [--max 20]
            [--cost 0.001] [--engine PFAD] [--workers 4] [--index SP500,NDX] [--pit CSV ticker,start_date,end_date] [--extra-dir DIR]
-           [--lernrunde [--sperre 52]]   Lernmodell für Zonen und Ziele, walk-forward, letzte Wochen gesperrt (schreibt lernrunde.json)
+           [--lernrunde [--sperre 52] [--kalibrierung-out DATEI]]   Lernmodell für Zonen und Ziele, walk-forward, letzte Wochen gesperrt (schreibt lernrunde.json)
    ========================================================================= */
 import { readdirSync, readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
@@ -97,6 +97,8 @@ const FROM = arg("from", "2005-01-01"), STEP = Number(arg("step", 4)), MAX = Num
 const ENGINE = arg("engine", join(ROOT, "quant/engines/technical/elliott/elliott-topdown.js")), WORKERS = Number(arg("workers", 4));
 const INDEX = arg("index", "SP500,NDX").split(",");
 const TD = req(ENGINE), SS = req(join(ROOT, "quant/engines/technical/elliott/setup-score.js"));
+const ID = req(join(ROOT, "core/identity.js"));
+const fileOf = (tk, suffix = "") => { try { return ID.securityIdForTicker(tk) + suffix + ".json"; } catch { return null; } };   // ADR-001
 
 /* Universum */
 const members = new Set();
@@ -116,8 +118,8 @@ if (PIT) {
     const [tk, a, b] = ln.split(","); const end = b || "9999-12-31"; if (end < FROM) continue;
     n++;
     /* Kandidaten: heutige Reihe und delistete Reihe; gewählt wird die, die das Mitgliedsintervall am weitesten abdeckt */
-    const base = [tk.replace(".", "-"), tk.replace(".", "")];
-    const cands = [...new Set(base.flatMap((b) => ["ref_" + b + ".json", "ref_" + b + "__d.json"]))].filter((x) => (dirOf[x] ? true : existsSync(join(D, x))));
+    const base = [tk, tk.replace(".", "")];
+    const cands = [...new Set(base.flatMap((b) => [fileOf(b), fileOf(b, "__d")]))].filter((x) => x && (dirOf[x] ? true : existsSync(join(D, x))));
     const lo = a > FROM ? a : FROM; let fn = null, best = 0;
     for (const x of cands) { const sp = spanOf(x); if (!sp) continue; const ov = Date.parse(sp[1] < end ? sp[1] : end) - Date.parse(sp[0] > lo ? sp[0] : lo); if (ov > best) { best = ov; fn = x; } }
     if (!fn) continue; withData++; if (fn.endsWith("__d.json")) pitStats_d++; (pitIv[fn] = pitIv[fn] || []).push([a, end]);
@@ -126,7 +128,7 @@ if (PIT) {
 }
 /* --tickers A,B,C: festes Universum (z. B. die „Magnificent 7“); Vergleich dann mit „dieselben Aktien halten“ */
 const TICK = arg("tickers", null);
-const uniFiles = PIT ? Object.keys(pitIv) : (TICK ? TICK.split(",") : [...members]).map((s) => "ref_" + s + ".json").filter((f) => existsSync(join(D, f)));
+const uniFiles = PIT ? Object.keys(pitIv) : (TICK ? TICK.split(",") : [...members]).map((s) => fileOf(s)).filter((f) => f && existsSync(join(D, f)));
 const isMember = (f, k) => !PIT || (pitIv[f] || []).some(([a, b]) => k >= weekKey(a) && k <= b);
 
 /* Wochenkalender aus SPY (letzter Handelstag je Woche, Freitag-Woche) und Vergleichsreihen */
@@ -397,6 +399,17 @@ if (process.argv.includes("--lernrunde")) {
     jeJahr, jeLage: Object.fromEntries(Object.entries(jeLage).map(([k, v]) => [k, { engine: fin(v.engine), gelernt: fin(v.gelernt) }])) };
   mkdirSync(OUT, { recursive: true });
   writeFileSync(join(OUT, "lernrunde.json"), JSON.stringify(out, null, 1));
+  /* --kalibrierung-out DATEI: Vorschlag im Format von quant/engines/technical/elliott/calibration.json (nur gelernte Wellenlagen).
+     Übernommen wird er nur per PR mit Vorher/Nachher-Bericht (wöchentliche Lernrunde). */
+  const KO = arg("kalibrierung-out", null);
+  if (KO) {
+    const regeln = Object.fromEntries(Object.entries(ruleNow).filter(([, r]) => r.gelernt).sort().map(([k, r]) => [k, { einstiegsTiefe: r.fe, ausstieg: r.ex, signale: r.n }]));
+    writeFileSync(KO, JSON.stringify({ schema: "vu-elliott-calibration-1", version: "kal-" + new Date().toISOString().slice(0, 10), engine: TD.VERSION,
+      quelle: "Lernrunde (scripts/technical/elliott-topdown/depot-backtest.mjs --lernrunde), walk-forward, letzte " + SPERRE + " Wochen gesperrt; Universum " + (PIT ? "S&P 500 zum Zeitpunkt" : TICK || INDEX.join("+")),
+      label: "Forschung, nicht zertifiziert",
+      bedeutung: { einstiegsTiefe: "Anteil des Wegs vom Kurs am Signal zur nahen Kante der Rücksetzer-Zone: 1 = Zone der Engine, 0 = kein Warten auf den Rücksetzer", ausstieg: "kurz = nahe Kante der nächsten Zielzone; fern = großes Fernziel (log-Skala)" },
+      pruefjahre: out.pruefjahreGesamt, gesperrterZeitraum: { engine: out.gesperrterZeitraum.engine, gelernt: out.gesperrterZeitraum.gelernt }, regeln }, null, 1) + "\n");
+  }
   console.log(JSON.stringify({ params: out.params, regelAktuell: out.regelAktuell, pruefjahreGesamt: out.pruefjahreGesamt, gesperrterZeitraum: out.gesperrterZeitraum }, null, 1));
   process.exit(0);
 }

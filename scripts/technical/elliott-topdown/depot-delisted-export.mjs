@@ -15,6 +15,7 @@ const DIR = arg("delisted-dir", null), OUT = arg("out", null);
 if (!DIR || !OUT) { console.error("--delisted-dir und --out sind Pflicht"); process.exit(2); }
 const RECOVERY = { MERGER: 1, ACQUISITION: 1, MERGER_ACQUISITION_COMPLETED: 1, SERIES_END: 1, UNKNOWN: 0.7, DISTRESS: 0, BANKRUPTCY: 0 };
 const D = createRequire(import.meta.url)(join(ROOT, "quant/engines/research-delisted-series.cjs"));
+const ID = createRequire(import.meta.url)(join(ROOT, "core/identity.js"));   // ADR-001
 const { docs } = D.loadDelisted(ROOT, { dir: DIR });
 mkdirSync(OUT, { recursive: true });
 const seen = new Map(), kinds = {};
@@ -26,6 +27,7 @@ for (const doc of docs.values()) {
 for (const [t, doc] of seen) {
   const kind = String(doc.listingLifecycle.terminal?.kind || "UNKNOWN").toUpperCase();
   kinds[kind] = (kinds[kind] || 0) + 1;
-  writeFileSync(join(OUT, "ref_" + t.replace(/\./g, "-") + "__d.json"), JSON.stringify({ points: doc.points, lastTradeDate: doc.listingLifecycle.lastTradeDate, terminal: { kind, recovery: RECOVERY[kind] ?? RECOVERY.UNKNOWN } }));
+  let id; try { id = ID.securityIdForTicker(t); } catch { continue; }
+  writeFileSync(join(OUT, id + "__d.json"), JSON.stringify({ points: doc.points, lastTradeDate: doc.listingLifecycle.lastTradeDate, terminal: { kind, recovery: RECOVERY[kind] ?? RECOVERY.UNKNOWN } }));
 }
 console.log(JSON.stringify({ ketten: docs.size, ticker: seen.size, endklassen: kinds }));

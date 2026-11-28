@@ -7,6 +7,16 @@ import { createRequire } from "node:module";
 import { ROOT } from "./ti-data.mjs";
 
 const TD = createRequire(import.meta.url)(join(ROOT, "quant/engines/technical/elliott/elliott-topdown.js"));
+/* Kalibrierung aus der wöchentlichen Lernrunde (Owner 28.11.2026): je Wellenlage gelernte Einstiegstiefe und Ausstieg.
+   Ändert die Zählung nicht; geändert wird die Datei nur per PR mit Vorher/Nachher-Bericht. */
+const KAL = createRequire(import.meta.url)(join(ROOT, "quant/engines/technical/elliott/calibration.json"));
+export const CALIBRATION_VERSION = KAL.version;
+/** Gelernte Regel für die laufende Lage der Hauptzählung (Schlüssel Art + Welle, z. B. I3 = Impuls, Welle 3). */
+export function calibrationFor(primary) {
+  if (!primary) return null;
+  const key = String(primary.kind || "")[0] + primary.current.label, r = KAL.regeln[key];
+  return r ? { v: KAL.version, lage: key, tiefe: r.einstiegsTiefe, ausstieg: r.ausstieg } : { v: KAL.version, lage: key, tiefe: 1, ausstieg: "kurz", gelernt: 0 };
+}
 export const TOPDOWN_VERSION = TD.VERSION;
 
 /** Preis auf 4 signifikante Stellen (Anzeige, kein Rechenwert). */
@@ -42,6 +52,7 @@ export function topDownFor(series) {
     path: r.path.map(step),
     altSub: count(r.alternativeSub), altPath: (r.alternativePath || []).map(step),
     candidates: r.candidates || null,
+    kal: calibrationFor(r.primary),
     monthly: monthly(series.timestamps, series.close)
   };
 }

@@ -152,3 +152,11 @@ test("TD-12 · Laufende Welle B ist ungültig, sobald sie mehr als 138,2 % von W
     assert.equal(c.invalidation.ruleId, "B_NOT_BEYOND_138");
     assert.ok(Math.abs(c.invalidation.price - (A.toPrice + (c.current.direction === "UP" ? 1 : -1) * 1.382 * Math.abs(A.toPrice - A.fromPrice))) < 1e-6); });
 });
+
+test("TD-13 · Kalibrierung der Lernrunde: gültige Datei, je Wellenlage Tiefe 0–1 und Ausstieg kurz/fern; im Produkt als kal je Titel", async () => {
+  const K = JSON.parse(readFileSync(join(ROOT, "quant/engines/technical/elliott/calibration.json"), "utf8"));
+  assert.equal(K.schema, "vu-elliott-calibration-1"); assert.match(K.version, /^kal-\d{4}-\d{2}-\d{2}$/); assert.equal(K.label, "Forschung, nicht zertifiziert");
+  for (const [k, r] of Object.entries(K.regeln)) { assert.match(k, /^[IC][1-5ABC]$/); assert.ok(r.einstiegsTiefe >= 0 && r.einstiegsTiefe <= 1); assert.ok(["kurz", "fern"].includes(r.ausstieg)); }
+  const p = topDownFor({ timeframe: "1W", close: tslaLike().close, timestamps: tslaLike().times });
+  assert.equal(p.kal.v, K.version); assert.equal(p.kal.lage, "I" + p.primary.cur);
+});
