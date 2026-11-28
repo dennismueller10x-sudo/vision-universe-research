@@ -1,36 +1,36 @@
 {
  "schemaVersion": "vu-ti-api-3.0.0",
  "version": "elliott-markets-1.0.0",
- "generatedAt": "2026-11-27T06:02:10.915Z",
- "reference": "2026-11-25",
+ "generatedAt": "2026-11-28T06:09:19.079Z",
+ "reference": "2026-11-27",
  "rows": [
   {
    "t": "SPY",
    "tf": "1W",
-   "asOf": "2026-11-25",
-   "close": 716.7,
+   "asOf": "2026-11-27",
+   "close": 728.32,
    "outlook": "BULLISH",
    "structure": "UPTREND_ADVANCING",
    "confidence": "LOW",
-   "agreement": 0.6196,
+   "agreement": 0.6498,
    "template": "CONTINUATION",
    "status": "EXTENDED",
    "direction": "BULLISH",
    "entry": [
-    665,
-    677
+    670,
+    681
    ],
    "invalidation": 634,
    "t1": [
-    774,
-    783
+    773,
+    784
    ],
-   "rr": 2.9073,
-   "distAtr": 2.7,
-   "elliott": "FLAT:C",
+   "rr": 2.4836,
+   "distAtr": 3.05,
+   "elliott": "FLAT:done",
    "elliottClarity": "LOW",
    "elliottApplicable": "LOW",
-   "countQuality": "HIGH",
+   "countQuality": "MODERATE",
    "relabelRisk": "MEDIUM",
    "clarity": "CLEAR",
    "evidence": "NOT_ESTABLISHED",
@@ -46,18 +46,18 @@
     "base": 0.3937
    },
    "alerts": {
-    "scenarioId": "tis_2fe21256de15",
+    "scenarioId": "tis_0f541087f000",
     "outlook": "BULLISH",
     "confidence": "LOW",
     "direction": "BULLISH",
     "levels": {
-     "entryLow": 665,
-     "entryHigh": 677,
+     "entryLow": 670,
+     "entryHigh": 681,
      "invalidation": 634,
      "confirmation": 778.57,
      "target1": [
-      774,
-      783
+      773,
+      784
      ]
     },
     "flags": {
@@ -77,16 +77,16 @@
      "below"
     ],
     "e": {
-     "lo": 568.6,
-     "hi": 648.8,
-     "dir": "DOWN",
-     "l": "(4)"
+     "lo": 497.5,
+     "hi": 663.5,
+     "dir": "UP",
+     "l": "(C)"
     },
     "t1": {
-     "lo": 734.6,
-     "hi": 837.2,
-     "dir": "UP",
-     "l": "(5)"
+     "lo": 507.5,
+     "hi": 611.1,
+     "dir": "DOWN",
+     "l": "[4]"
     },
     "rw": "DOWN"
    },
@@ -100,32 +100,32 @@
   {
    "t": "QQQ",
    "tf": "1W",
-   "asOf": "2026-11-25",
-   "close": 633.93,
-   "outlook": "MIXED",
+   "asOf": "2026-11-27",
+   "close": 650.99,
+   "outlook": "BULLISH",
    "structure": "CORRECTION_IN_UPTREND",
    "confidence": "LOW",
-   "agreement": 0.3975,
+   "agreement": 0.4293,
    "template": "PULLBACK",
-   "status": "IN_ENTRY_ZONE",
+   "status": "APPROACHING",
    "direction": "BULLISH",
    "entry": [
     624,
     638
    ],
-   "invalidation": 552,
+   "invalidation": 551,
    "t1": [
-    678,
+    677,
     691
    ],
-   "rr": 0.6738,
-   "distAtr": -0.2,
-   "elliott": "FLAT:C",
-   "elliottClarity": "LOW",
+   "rr": 0.6654,
+   "distAtr": 0.6,
+   "elliott": "FLAT:done",
+   "elliottClarity": "MODERATE",
    "elliottApplicable": "LOW",
    "countQuality": "MODERATE",
-   "relabelRisk": "LOW",
-   "clarity": "AMBIGUOUS",
+   "relabelRisk": "MEDIUM",
+   "clarity": "MODERATE",
    "evidence": "NOT_ESTABLISHED",
    "higherAligned": false,
    "patterns": [
@@ -141,22 +141,22 @@
     "base": 0.355
    },
    "alerts": {
-    "scenarioId": "tis_86f376c294f1",
-    "outlook": "MIXED",
+    "scenarioId": "tis_ff80ac2f538c",
+    "outlook": "BULLISH",
     "confidence": "LOW",
     "direction": "BULLISH",
     "levels": {
      "entryLow": 624,
      "entryHigh": 638,
-     "invalidation": 552,
+     "invalidation": 551,
      "confirmation": 751.27,
      "target1": [
-      678,
+      677,
       691
      ]
     },
     "flags": {
-     "inEntryZone": true,
+     "inEntryZone": false,
      "invalidated": false,
      "target1Reached": false,
      "confirmed": false
@@ -172,16 +172,16 @@
      "below"
     ],
     "e": {
-     "lo": 679.9,
+     "lo": 663,
      "hi": 696.7,
      "dir": "UP",
-     "l": "(2)"
+     "l": "(B)"
     },
     "t1": {
-     "lo": 465.6,
-     "hi": 553.9,
+     "lo": 553.9,
+     "hi": 608.5,
      "dir": "DOWN",
-     "l": "(3)"
+     "l": "(C)"
     },
     "rw": "DOWN"
    },
@@ -195,26 +195,26 @@
   {
    "t": "DIA",
    "tf": "1W",
-   "asOf": "2026-11-25",
-   "close": 501.27,
+   "asOf": "2026-11-27",
+   "close": 507.6,
    "outlook": "BULLISH",
    "structure": "UPTREND_ADVANCING",
    "confidence": "LOW",
-   "agreement": 0.6388,
+   "agreement": 0.6651,
    "template": "CONTINUATION",
-   "status": "BEYOND_ENTRY",
+   "status": "IN_ENTRY_ZONE",
    "direction": "BULLISH",
    "entry": [
     502,
     509
    ],
-   "invalidation": 488,
+   "invalidation": 487,
    "t1": [
     536,
     543
    ],
-   "rr": 1.9497,
-   "distAtr": -0.87,
+   "rr": 1.8443,
+   "distAtr": -0.15,
    "elliott": "ZIGZAG:done",
    "elliottClarity": "MODERATE",
    "elliottApplicable": "LOW",
@@ -234,14 +234,14 @@
     "base": 0.3937
    },
    "alerts": {
-    "scenarioId": "tis_87fe1849cc5b",
+    "scenarioId": "tis_eece0b5813ed",
     "outlook": "BULLISH",
     "confidence": "LOW",
     "direction": "BULLISH",
     "levels": {
      "entryLow": 502,
      "entryHigh": 509,
-     "invalidation": 488,
+     "invalidation": 487,
      "confirmation": 539.62,
      "target1": [
       536,
@@ -249,7 +249,7 @@
      ]
     },
     "flags": {
-     "inEntryZone": false,
+     "inEntryZone": true,
      "invalidated": false,
      "target1Reached": false,
      "confirmed": false
@@ -276,7 +276,7 @@
      "dir": "DOWN",
      "l": "[2]"
     },
-    "rw": "DOWN"
+    "rw": "MIXED"
    },
    "proj": {
     "st": "ABSTAIN"
@@ -288,26 +288,26 @@
   {
    "t": "IWM",
    "tf": "1W",
-   "asOf": "2026-11-25",
-   "close": 268.87,
+   "asOf": "2026-11-27",
+   "close": 273.79,
    "outlook": "BULLISH",
    "structure": "CORRECTION_IN_UPTREND",
    "confidence": "LOW",
-   "agreement": 0.599,
+   "agreement": 0.6338,
    "template": "PULLBACK",
-   "status": "APPROACHING",
+   "status": "IN_ENTRY_ZONE",
    "direction": "BULLISH",
    "entry": [
-    255,
-    260
+    273,
+    278
    ],
-   "invalidation": 242,
+   "invalidation": 263,
    "t1": [
     303,
-    307
+    308
    ],
-   "rr": 3.0703,
-   "distAtr": 1.46,
+   "rr": 2.3672,
+   "distAtr": -0.65,
    "elliott": "TRIANGLE:D",
    "elliottClarity": "LOW",
    "elliottApplicable": "LOW",
@@ -327,47 +327,47 @@
     "base": 0.3587
    },
    "alerts": {
-    "scenarioId": "tis_11dc57ad0f89",
+    "scenarioId": "tis_0aefb46fe25a",
     "outlook": "BULLISH",
     "confidence": "LOW",
     "direction": "BULLISH",
     "levels": {
-     "entryLow": 255,
-     "entryHigh": 260,
-     "invalidation": 242,
+     "entryLow": 273,
+     "entryHigh": 278,
+     "invalidation": 263,
      "confirmation": 305.09,
      "target1": [
       303,
-      307
+      308
      ]
     },
     "flags": {
-     "inEntryZone": false,
+     "inEntryZone": true,
      "invalidated": false,
      "target1Reached": false,
      "confirmed": false
     }
    },
    "td": {
-    "k": "IMPULSE:UP:A:2002-10",
-    "cur": "A",
+    "k": "IMPULSE:UP:5:2002-10",
+    "cur": "5",
     "kind": "IMPULSE",
     "dir": "UP",
     "inv": [
-     305.1,
-     "above"
+     101.4,
+     "below"
     ],
     "e": {
-     "lo": 275.1,
-     "hi": 286.6,
-     "dir": "UP",
-     "l": "(B)"
+     "lo": 250.5,
+     "hi": 271.4,
+     "dir": "DOWN",
+     "l": "(4)"
     },
     "t1": {
-     "lo": 238.1,
-     "hi": 256.6,
-     "dir": "DOWN",
-     "l": "(C)"
+     "lo": 337.3,
+     "hi": 390.9,
+     "dir": "UP",
+     "l": "(5)"
     },
     "rw": "DOWN"
    },
@@ -381,26 +381,26 @@
   {
    "t": "FEZ",
    "tf": "1W",
-   "asOf": "2026-11-25",
-   "close": 62.79,
+   "asOf": "2026-11-27",
+   "close": 63.62,
    "outlook": "BULLISH",
    "structure": "CORRECTION_IN_UPTREND",
    "confidence": "LOW",
-   "agreement": 0.5505,
+   "agreement": 0.5747,
    "template": "PULLBACK",
-   "status": "APPROACHING",
+   "status": "IN_ENTRY_ZONE",
    "direction": "BULLISH",
    "entry": [
-    59,
-    60.5
+    63.5,
+    65
    ],
-   "invalidation": 52.5,
+   "invalidation": 59.5,
    "t1": [
     71.5,
     73
    ],
-   "rr": 1.7034,
-   "distAtr": 1.65,
+   "rr": 1.6526,
+   "distAtr": -0.95,
    "elliott": "FLAT:done",
    "elliottClarity": "MODERATE",
    "elliottApplicable": "LOW",
@@ -420,14 +420,14 @@
     "base": 0.3587
    },
    "alerts": {
-    "scenarioId": "tis_ab6bd4f0d0b3",
+    "scenarioId": "tis_1f1f8e4f7791",
     "outlook": "BULLISH",
     "confidence": "LOW",
     "direction": "BULLISH",
     "levels": {
-     "entryLow": 59,
-     "entryHigh": 60.5,
-     "invalidation": 52.5,
+     "entryLow": 63.5,
+     "entryHigh": 65,
+     "invalidation": 59.5,
      "confirmation": 72.1,
      "target1": [
       71.5,
@@ -435,7 +435,7 @@
      ]
     },
     "flags": {
-     "inEntryZone": false,
+     "inEntryZone": true,
      "invalidated": false,
      "target1Reached": false,
      "confirmed": false
@@ -464,28 +464,28 @@
   {
    "t": "URTH",
    "tf": "1W",
-   "asOf": "2026-11-25",
-   "close": 194.55,
+   "asOf": "2026-11-27",
+   "close": 197.66,
    "outlook": "BULLISH",
    "structure": "UPTREND_ADVANCING",
    "confidence": "LOW",
-   "agreement": 0.6159,
+   "agreement": 0.6468,
    "template": "CONTINUATION",
    "status": "EXTENDED",
    "direction": "BULLISH",
    "entry": [
     182.5,
-    185
+    185.5
    ],
    "invalidation": 175,
    "t1": [
     210,
     213
    ],
-   "rr": 3.1383,
-   "distAtr": 2.54,
+   "rr": 3.0233,
+   "distAtr": 3.05,
    "elliott": "WXY:done",
-   "elliottClarity": "LOW",
+   "elliottClarity": "MODERATE",
    "elliottApplicable": "LOW",
    "countQuality": "MODERATE",
    "relabelRisk": "MEDIUM",
@@ -503,13 +503,13 @@
     "base": 0.3937
    },
    "alerts": {
-    "scenarioId": "tis_f4fefeb5505d",
+    "scenarioId": "tis_fab3d8965a92",
     "outlook": "BULLISH",
     "confidence": "LOW",
     "direction": "BULLISH",
     "levels": {
      "entryLow": 182.5,
-     "entryHigh": 185,
+     "entryHigh": 185.5,
      "invalidation": 175,
      "confirmation": 211.21,
      "target1": [
@@ -534,16 +534,16 @@
      "below"
     ],
     "e": {
-     "lo": 156.7,
-     "hi": 177.6,
-     "dir": "DOWN",
-     "l": "(4)"
+     "lo": 186.2,
+     "hi": 239.4,
+     "dir": "UP",
+     "l": "(C)"
     },
     "t1": {
-     "lo": 188.7,
-     "hi": 208.5,
-     "dir": "UP",
-     "l": "(5)"
+     "lo": 112.3,
+     "hi": 131.5,
+     "dir": "DOWN",
+     "l": "[2]"
     },
     "rw": "DOWN"
    },
@@ -557,26 +557,26 @@
   {
    "t": "EEM",
    "tf": "1W",
-   "asOf": "2026-11-25",
-   "close": 56.4,
+   "asOf": "2026-11-27",
+   "close": 58.1,
    "outlook": "BULLISH",
    "structure": "CORRECTION_IN_UPTREND",
    "confidence": "LOW",
-   "agreement": 0.5384,
+   "agreement": 0.5772,
    "template": "PULLBACK",
-   "status": "APPROACHING",
+   "status": "EXTENDED",
    "direction": "BULLISH",
    "entry": [
     52,
     54
    ],
-   "invalidation": 46,
+   "invalidation": 45.9,
    "t1": [
     70,
     71.5
    ],
-   "rr": 2.5414,
-   "distAtr": 1.26,
+   "rr": 2.5056,
+   "distAtr": 2.03,
    "elliott": "WXY:done",
    "elliottClarity": "HIGH",
    "elliottApplicable": "LOW",
@@ -596,14 +596,14 @@
     "base": 0.3587
    },
    "alerts": {
-    "scenarioId": "tis_58335ed91b95",
+    "scenarioId": "tis_c7716ad1fbbc",
     "outlook": "BULLISH",
     "confidence": "LOW",
     "direction": "BULLISH",
     "levels": {
      "entryLow": 52,
      "entryHigh": 54,
-     "invalidation": 46,
+     "invalidation": 45.9,
      "confirmation": 70.79,
      "target1": [
       70,
@@ -627,16 +627,16 @@
      "below"
     ],
     "e": {
-     "lo": 51.32,
-     "hi": 58.76,
-     "dir": "DOWN",
-     "l": "[4]"
+     "lo": 60.31,
+     "hi": 64.32,
+     "dir": "UP",
+     "l": "(B)"
     },
     "t1": {
-     "lo": 78.05,
-     "hi": 94.58,
-     "dir": "UP",
-     "l": "[5]"
+     "lo": 47.37,
+     "hi": 53.84,
+     "dir": "DOWN",
+     "l": "(C)"
     },
     "rw": "DOWN"
    },
@@ -650,26 +650,26 @@
   {
    "t": "BTCUSD",
    "tf": "1W",
-   "asOf": "2026-11-26",
-   "close": 60499.7717,
+   "asOf": "2026-11-27",
+   "close": 59862.3675,
    "outlook": "BEARISH",
    "structure": "DOWNTREND_ADVANCING",
    "confidence": "LOW",
-   "agreement": -0.619,
+   "agreement": -0.8564,
    "template": "CONTINUATION",
    "status": "EXTENDED",
    "direction": "BEARISH",
    "entry": [
-    67840,
-    69810
+    67850,
+    69800
    ],
-   "invalidation": 84510,
+   "invalidation": 81805,
    "t1": [
-    58830,
-    60805
+    58845,
+    60790
    ],
-   "rr": 0.5742,
-   "distAtr": 2.24,
+   "rr": 0.6939,
+   "distAtr": 2.47,
    "elliott": "FLAT:C",
    "elliottClarity": "MODERATE",
    "elliottApplicable": "LOW",
@@ -689,25 +689,25 @@
     "base": 0.3143
    },
    "alerts": {
-    "scenarioId": "tis_234c2ce283fa",
+    "scenarioId": "tis_f1c456160ae0",
     "outlook": "BEARISH",
     "confidence": "LOW",
     "direction": "BEARISH",
     "levels": {
-     "entryLow": 67840,
-     "entryHigh": 69810,
-     "invalidation": 84510,
+     "entryLow": 67850,
+     "entryHigh": 69800,
+     "invalidation": 81805,
      "confirmation": 60012.093,
      "target1": [
-      58830,
-      60805
+      58845,
+      60790
      ]
     },
     "flags": {
      "inEntryZone": false,
      "invalidated": false,
      "target1Reached": true,
-     "confirmed": false
+     "confirmed": true
     }
    },
    "td": {
@@ -743,12 +743,12 @@
   {
    "t": "ETHUSD",
    "tf": "1W",
-   "asOf": "2026-11-26",
-   "close": 1687.627,
+   "asOf": "2026-11-27",
+   "close": 1661.0721,
    "outlook": "BEARISH",
    "structure": "DOWNTREND_ADVANCING",
    "confidence": "LOW",
-   "agreement": -0.6185,
+   "agreement": -0.6261,
    "template": "CONTINUATION",
    "status": "EXTENDED",
    "direction": "BEARISH",
@@ -758,11 +758,11 @@
    ],
    "invalidation": 2300,
    "t1": [
-    1530,
+    1535,
     1615
    ],
    "rr": 3.8466,
-   "distAtr": 3.33,
+   "distAtr": 3.59,
    "elliott": "ZIGZAG:C",
    "elliottClarity": "MODERATE",
    "elliottApplicable": "LOW",
@@ -792,7 +792,7 @@
      "invalidation": 2300,
      "confirmation": 1576.4441,
      "target1": [
-      1530,
+      1535,
       1615
      ]
     },
@@ -836,12 +836,12 @@
   {
    "t": "SOLUSD",
    "tf": "1W",
-   "asOf": "2026-11-26",
-   "close": 70.9407,
+   "asOf": "2026-11-27",
+   "close": 71.6037,
    "outlook": "BEARISH",
    "structure": "DOWNTREND_ADVANCING",
    "confidence": "LOW",
-   "agreement": -0.8575,
+   "agreement": -0.853,
    "template": "CONTINUATION",
    "status": "APPROACHING",
    "direction": "BEARISH",
@@ -855,7 +855,7 @@
     65.5
    ],
    "rr": 1.5748,
-   "distAtr": 1.62,
+   "distAtr": 1.5,
    "elliott": "FLAT:C",
    "elliottClarity": "MODERATE",
    "elliottApplicable": "LOW",
@@ -929,12 +929,12 @@
   {
    "t": "XRPUSD",
    "tf": "1W",
-   "asOf": "2026-11-26",
-   "close": 0.9429,
+   "asOf": "2026-11-27",
+   "close": 0.9481,
    "outlook": "BEARISH",
    "structure": "DOWNTREND_ADVANCING",
    "confidence": "LOW",
-   "agreement": -0.7903,
+   "agreement": -0.789,
    "template": "CONTINUATION",
    "status": "APPROACHING",
    "direction": "BEARISH",
@@ -948,7 +948,7 @@
     0.94
    ],
    "rr": 1.2065,
-   "distAtr": 1.94,
+   "distAtr": 1.86,
    "elliott": "WXY:Y",
    "elliottClarity": "MODERATE",
    "elliottApplicable": "LOW",
@@ -1022,12 +1022,12 @@
   {
    "t": "XAUUSD",
    "tf": "1W",
-   "asOf": "2026-11-26",
-   "close": 3596.73,
+   "asOf": "2026-11-27",
+   "close": 3637.44,
    "outlook": "BEARISH",
    "structure": "DOWNTREND_ADVANCING",
    "confidence": "LOW",
-   "agreement": -0.8697,
+   "agreement": -0.8529,
    "template": "CONTINUATION",
    "status": "APPROACHING",
    "direction": "BEARISH",
@@ -1038,10 +1038,10 @@
    "invalidation": 4070,
    "t1": [
     3485,
-    3565
+    3570
    ],
    "rr": 1.8995,
-   "distAtr": 1.19,
+   "distAtr": 0.86,
    "elliott": "FLAT:done",
    "elliottClarity": "LOW",
    "elliottApplicable": "LOW",
@@ -1072,7 +1072,7 @@
      "confirmation": null,
      "target1": [
       3485,
-      3565
+      3570
      ]
     },
     "flags": {
@@ -1092,14 +1092,14 @@
      "below"
     ],
     "e": {
-     "lo": 3343,
-     "hi": 3826,
+     "lo": 3033,
+     "hi": 3462,
      "dir": "DOWN",
-     "l": "(C)"
+     "l": "[2]"
     },
     "t1": {
-     "lo": 6978,
-     "hi": 9224,
+     "lo": 6668,
+     "hi": 8914,
      "dir": "UP",
      "l": "[3]"
     },
@@ -1115,12 +1115,12 @@
   {
    "t": "XAGUSD",
    "tf": "1W",
-   "asOf": "2026-11-26",
-   "close": 41.9615,
+   "asOf": "2026-11-27",
+   "close": 43.5365,
    "outlook": "NEUTRAL",
    "structure": "CORRECTION_IN_UPTREND",
    "confidence": "LOW",
-   "agreement": -0.0769,
+   "agreement": -0.064,
    "template": "RANGE",
    "status": "IN_RANGE",
    "direction": "NEUTRAL",
@@ -1140,7 +1140,7 @@
    "patterns": [],
    "wyckoff": null,
    "stage": 4,
-   "vol": "EXTREME",
+   "vol": "ELEVATED",
    "alignment": "UNAVAILABLE",
    "empirical": null,
    "alerts": {
@@ -1158,14 +1158,14 @@
      "below"
     ],
     "e": {
-     "lo": 52.1,
-     "hi": 68.02,
+     "lo": 36.3,
+     "hi": 50.62,
      "dir": "DOWN",
-     "l": "(C)"
+     "l": "[2]"
     },
     "t1": {
-     "lo": 126.3,
-     "hi": 179,
+     "lo": 128.7,
+     "hi": 181.3,
      "dir": "UP",
      "l": "[3]"
     },
@@ -1241,6 +1241,13 @@
    },
    "proj": {
     "st": "ABSTAIN"
+   },
+   "fr": {
+    "st": "DELAYED",
+    "age": 2,
+    "last": "2026-11-24",
+    "ref": "2026-11-27",
+    "rc": "REFRESH_STOPPED"
    },
    "n": "Öl WTI",
    "via": "WTI Spot in USD je Barrel (EIA)",
@@ -1335,6 +1342,13 @@
    "proj": {
     "st": "ABSTAIN"
    },
+   "fr": {
+    "st": "DELAYED",
+    "age": 2,
+    "last": "2026-11-24",
+    "ref": "2026-11-27",
+    "rc": "REFRESH_STOPPED"
+   },
    "n": "Öl Brent",
    "via": "Brent Spot in USD je Barrel (EIA)",
    "group": "energy"
@@ -1428,12 +1442,27 @@
    "proj": {
     "st": "DATA_INVALID"
    },
+   "fr": {
+    "st": "DELAYED",
+    "age": 2,
+    "last": "2026-11-24",
+    "ref": "2026-11-27",
+    "rc": "REFRESH_STOPPED"
+   },
    "n": "Erdgas",
    "via": "Henry Hub Spot in USD je MMBtu (EIA)",
    "group": "energy"
   }
  ],
  "skipped": [],
- "events": [],
+ "events": [
+  {
+   "t": "IWM",
+   "asOf": "2026-11-27",
+   "close": 273.8,
+   "type": "RECOUNT",
+   "text": "Neue Lesart: Welle [5] statt [A]"
+  }
+ ],
  "note": "Indizes über ETFs (kein lizenzierter Indexkurs), Krypto, Edelmetalle und Energie aus den Multi-Asset-Reihen; Wochenschluss, gleiche Analyse wie bei Aktien."
 }

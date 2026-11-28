@@ -2,7 +2,7 @@
  "schemaVersion": "vu-ti-api-3.0.0",
  "resultSchema": "vu-technical-analysis-2.0.0",
  "bundle": "ti-bundle-2.0.0",
- "generatedAt": "2026-11-27T06:02:01.724Z",
+ "generatedAt": "2026-11-28T06:09:07.029Z",
  "methodology": "quant/methodology/technical-intelligence-v2.json",
  "elliott": {
   "engine": "v3",
@@ -45,15 +45,15 @@
   "markets": "/quant/data/technical-intelligence/v3/markets/index.json"
  },
  "migration": "docs/technical-intelligence/API_V3_MIGRATION.md",
- "runtimeSec": 1444,
+ "runtimeSec": 1628,
  "projection": {
   "version": "elliott-projection-1.3.0",
   "store": "vu-elliott-projection-theses-1.0.0",
   "status": {
    "ABSTAIN": 4486,
    "NO_PROJECTION": 83,
-   "WITHHELD": 48,
-   "DATA_INVALID": 220,
+   "DATA_INVALID": 219,
+   "WITHHELD": 49,
    "AVAILABLE": 38,
    "UNAVAILABLE": 8
   },
@@ -135,8 +135,8 @@
      "6": 1246
     },
     "direction": {
-     "UP": 7972,
-     "DOWN": 7901
+     "DOWN": 7901,
+     "UP": 7972
     },
     "type": {
      "WAVE_C": 10487,
@@ -144,16 +144,16 @@
      "WAVE_5": 459
     },
     "failedSet": {
+     "G2+G3+G4": 4133,
      "G2+G3+G5": 809,
      "G2+G3+G4+G5": 1728,
-     "G2+G3+G4": 4133,
      "G2+G3": 1379,
      "G2+G4+G5": 484,
      "G3+G4": 3095,
      "G4": 501,
+     "G3+G4+G5": 1093,
      "G3": 994,
      "G3+G5": 557,
-     "G3+G4+G5": 1093,
      "G4+G5": 321,
      "G2+G4": 567,
      "G2": 64,
@@ -177,22 +177,23 @@
     "sessionCompleteUtcHour": 22,
     "calendar": "US_EQUITY"
    },
-   "reference": "2026-11-25",
+   "reference": "2026-11-27",
    "titles": 4878,
    "states": {
-    "FRESH": 10,
-    "DELAYED": 4820,
-    "STALE": 22,
+    "FRESH": 13,
+    "DELAYED": 4816,
+    "STALE": 23,
     "NON_TRADING": 26
    },
    "reasons": {
-    "REFRESH_STOPPED": 4842,
-    "SECURITY_INACTIVE": 26
+    "REFRESH_STOPPED": 4838,
+    "SECURITY_INACTIVE": 26,
+    "NO_NEWER_BARS": 1
    },
    "reasonsKnown": 26,
-   "delayedWithNotice": 4820,
+   "delayedWithNotice": 4816,
    "affected": {
-    "titles": 48,
+    "titles": 49,
     "primary": 21,
     "alternative": 20,
     "motiveAlternative": 0,
@@ -201,10 +202,10 @@
     "consumerVisibleProjections": 0
    },
    "ageBuckets": {
-    "0-3": 4844,
+    "0-3": 22,
+    "4-5": 4833,
     "21-40": 11,
-    "4-5": 12,
-    "6-10": 4,
+    "6-10": 5,
     ">40": 2,
     "11-20": 5
    },
@@ -230,6 +231,7 @@
     "FOSLL",
     "GETY",
     "GIFI",
+    "GROM",
     "GWH",
     "HR",
     "HYZN",
@@ -259,7 +261,7 @@
     "XTKG"
    ],
    "systemic": {
-    "share": 0.0098,
+    "share": 0.01,
     "maxShare": 0.2,
     "systemic": false
    }
