@@ -41,7 +41,20 @@
 
   /* Angaben Dritter je Art eine eigene Szene (Recherche-Lauf, Owner 25.11.2026): Zitat (Bank, Researchhaus, X),
      Linie (Makro-Reihe), Balken, große Zahlen; ohne Grafik eine Nachricht. Quelle steht im Etikett. */
-  function richThird(c) { return !!(c.quote || c.line || c.bars || c.stats); }
+  function richThird(c) { return !!(c.quote || c.line || c.bars || c.stats || c.compare); }
+  function compareSvg(cp) {
+    var all = cp.series[0].points.concat(cp.series[1].points).map(function (p) { return p[1]; });
+    var lo = Math.min.apply(null, all), hi = Math.max.apply(null, all); if (hi === lo) hi = lo + 1;
+    var W = 600, H = 260, n = Math.max(cp.series[0].points.length, cp.series[1].points.length);
+    var line = function (pts) { return pts.map(function (p, i) { return (i / (pts.length - 1) * W).toFixed(1) + "," + (H - 14 - (p[1] - lo) / (hi - lo) * (H - 28)).toFixed(1); }).join(" "); };
+    var f = function (x) { return num(x, cp.digits) + (cp.unit ? " " + cp.unit : ""); }, last = function (r) { return r.points[r.points.length - 1][1]; };
+    var dt = function (t) { return String(t).slice(0, 10).split("-").reverse().join("."); };
+    return '<figure class="mb-line mb-cmp"><svg viewBox="0 0 ' + W + " " + H + '" preserveAspectRatio="none" aria-hidden="true">' +
+      '<polyline points="' + line(cp.series[1].points) + '" fill="none" stroke="#f4f5f1" stroke-width="4" stroke-dasharray="10 8" vector-effect="non-scaling-stroke"/>' +
+      '<polyline points="' + line(cp.series[0].points) + '" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg>' +
+      '<figcaption><span>' + esc(dt(cp.series[0].points[0][0])) + (cp.rebase ? " = 100" : "") + "</span><b>" + esc(dt(cp.series[0].points[cp.series[0].points.length - 1][0])) + "</b></figcaption>" +
+      '<p class="mb-leg"><i class="a"></i>' + esc(cp.series[0].label) + " · " + esc(f(last(cp.series[0]))) + ' <i class="b"></i>' + esc(cp.series[1].label) + " · " + esc(f(last(cp.series[1]))) + "</p></figure>";
+  }
   function lineSvg(pts, unit, digits) {
     var v = pts.map(function (p) { return p[1]; }), lo = Math.min.apply(null, v), hi = Math.max.apply(null, v); if (hi === lo) hi = lo + 1;
     var W = 600, H = 240, xy = pts.map(function (p, i) { return [(i / (pts.length - 1) * W).toFixed(1), (H - 12 - (p[1] - lo) / (hi - lo) * (H - 24)).toFixed(1)]; });
@@ -52,11 +65,14 @@
       '<figcaption><span>' + esc(dt(pts[0][0])) + " · " + esc(f(pts[0][1])) + "</span><b>" + esc(dt(pts[pts.length - 1][0])) + " · " + esc(f(pts[pts.length - 1][1])) + "</b></figcaption></figure>";
   }
   function thirdScene(f, id) {
-    var head = tag("Angabe Dritter · " + f.publisher, f.quote ? "bank" : f.line ? "gauge" : "news"), body = "", bg = "w";
+    var head = tag("Angabe Dritter · " + f.publisher, f.quote ? "bank" : (f.line || f.compare) ? "gauge" : "news"), body = "", bg = "w";
     if (f.quote) {
       bg = "k";
       body = '<blockquote class="mb-quote">„' + esc(f.quote) + "“</blockquote>" + (f.speaker ? '<p class="mb-who">' + esc(f.speaker) + "</p>" : "") +
         '<h2 class="mb-claim mb-m">' + esc(f.title) + "</h2>" + (f.sub ? '<p class="mb-say">' + esc(f.sub) + "</p>" : "");
+    } else if (f.compare) {
+      body = '<h2 class="mb-claim mb-m">' + esc(f.title) + "</h2>" + (f.sub ? '<p class="mb-say">' + esc(f.sub) + "</p>" : "") +
+        (f.compare.label ? '<p class="mb-sub">' + esc(f.compare.label) + "</p>" : "") + compareSvg(f.compare);
     } else if (f.line) {
       body = '<h2 class="mb-claim mb-m">' + esc(f.title) + "</h2>" + (f.sub ? '<p class="mb-say">' + esc(f.sub) + "</p>" : "") +
         (f.line.label ? '<p class="mb-sub">' + esc(f.line.label) + "</p>" : "") + lineSvg(f.line.points, f.line.unit, f.line.digits);

@@ -432,3 +432,20 @@ test('MB-20 Recherche-Lauf: Angaben Dritter mit Zitat, Linie, Balken oder Zahlen
   assert.ok(html.indexOf('id="vorn-1"') < html.indexOf('id="indizes"'));
   assert.match(Render.cardSvg(b.cards[1], 1, b.cards.length, b.session), /<polyline|<path/);
 });
+
+test('MB-21 Chartvergleich: zwei Reihen, auf Wunsch Start = 100, eigene Szene und Karte', () => {
+  const inp = inputs();
+  const pts = (a) => [['2026-11-01', a], ['2026-11-10', a * 1.1], ['2026-11-20', a * 0.9]];
+  inp.radar = { items: [{ kicker: 'Chartvergleich', title: 'A gegen B', publisher: 'FRED', source: 'FRED', published: SESSION, url: 'https://fred.stlouisfed.org/',
+    compare: { label: 'A und B', rebase: true, series: [{ label: 'A', points: pts(200) }, { label: 'B', points: pts(4) }] } }] };
+  const b = Engine.buildBriefing(inp);
+  const c = b.cards.find((x) => x.compare);
+  assert.ok(c, 'Vergleichskarte vorhanden');
+  assert.deepEqual(c.compare.series.map((s) => s.points[0][1]), [100, 100]);
+  assert.equal(c.compare.series[0].points[2][1], 90);
+  const html = Www.page(b, { chrome: Www.chromeFrom(CHROME), archive: [SESSION], depth: 2 });
+  assert.match(html, /class="mb-line mb-cmp"[\s\S]*= 100/);
+  assert.match(Render.cardSvg(c, 1, b.cards.length, b.session), /stroke-dasharray="10 8"/);
+  inp.radar.items[0].compare.series.pop();
+  assert.ok(!Engine.buildBriefing(inp).cards.some((x) => x.compare), 'eine Reihe allein ist kein Vergleich');
+});

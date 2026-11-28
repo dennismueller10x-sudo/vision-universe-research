@@ -205,6 +205,16 @@
       var lp = card.line.points;
       s += lineChart(lp, PAD, y + 30, 860, bottom - y - 90, { col: C.lime, yfmt: function (v) { return num(v, 0) + " %"; },
         xl: [[0, lp[0][0].slice(8, 10) + "." + lp[0][0].slice(5, 7) + "."], [lp.length - 1, lp[lp.length - 1][0].slice(8, 10) + "." + lp[lp.length - 1][0].slice(5, 7) + ".: " + num(lp[lp.length - 1][1], 1) + " %"]] });
+    } else if (card.compare) {
+      var cp = card.compare, al = cp.series[0].points.concat(cp.series[1].points).map(function (p) { return p[1]; });
+      var clo = Math.min.apply(null, al), chi = Math.max.apply(null, al), pad = (chi - clo) * .08 || 1;
+      var cf = function (v) { return num(v, cp.digits) + (cp.unit ? " " + cp.unit : ""); };
+      s += '<text x="' + PAD + '" y="' + (y + 10) + '" font-size="24" fill="' + C.mut + '">' + esc((cp.label || "") + (cp.rebase ? " · Start = 100" : "")) + "</text>";
+      var ch2 = bottom - y - 170;
+      s += lineChart(cp.series[0].points, PAD, y + 40, 860, ch2, { y0: clo - pad, y1: chi + pad, col: C.lime, yfmt: cf, xl: [[0, cp.series[0].points[0][0].slice(0, 10).split("-").reverse().join(".")], [cp.series[0].points.length - 1, cp.series[0].points[cp.series[0].points.length - 1][0].slice(0, 10).split("-").reverse().join(".")]] });
+      var p2 = cp.series[1].points, xs2 = function (i) { return PAD + i / Math.max(1, p2.length - 1) * 860; }, ys2 = function (v) { return y + 40 + ch2 - (v - (clo - pad)) / ((chi + pad) - (clo - pad)) * ch2; };
+      s += '<path d="' + p2.map(function (p, i) { return (i ? "L" : "M") + xs2(i).toFixed(1) + "," + ys2(p[1]).toFixed(1); }).join("") + '" fill="none" stroke="' + C.fg + '" stroke-width="4" stroke-dasharray="10 8"/>';
+      s += '<text x="' + PAD + '" y="' + (bottom - 40) + '" font-size="24" font-weight="700"><tspan fill="' + C.lime + '">— ' + esc(cp.series[0].label) + " " + esc(cf(cp.series[0].points[cp.series[0].points.length - 1][1])) + '</tspan><tspan fill="' + C.fg + '">   - - ' + esc(cp.series[1].label) + " " + esc(cf(p2[p2.length - 1][1])) + "</tspan></text>";
     } else if (card.line && !card.pairs) {
       var ln = card.line.points, u = card.line.unit || "";
       s += '<text x="' + PAD + '" y="' + (y + 10) + '" font-size="24" fill="' + C.mut + '">' + esc(card.line.label || "") + "</text>";
