@@ -130,15 +130,15 @@
       .concat([h('li', null, [h('span', { class: 'sf-step', 'data-s': 'locked', text: String(LOCKED[2]) }), h('div', null, [h('span', { class: 'sf-stage', 'data-s': 'locked' }, [icon(IC.lock), LOCKED[0]]), h('span', { text: LOCKED[1] })])])]));
   }
   /* Grenzen der Methode (O-4): bei Chart-Modellen und übersetzten Quellen deutlich, sonst dezent */
-  var STRONG_LIMITS = { C06: true, C09: true, C10: true };
-  /* V1 = Top 5 (Neustart 04.11.2026): diese fünf werden zuerst gezeigt und historisch getestet, die übrigen acht sind „in Forschung“ */
-  var V1_TOP5 = { C01: true, C02: true, C03: true, C08: true, C12: true };
+  var STRONG_LIMITS = { C09: true, C10: true };
+  /* Live: alle 13 Methoden (Owner 28.11.2026); bis dahin V1 = Top 5, die übrigen „in Forschung“ */
+  var V1_TOP5 = { C01: true, C02: true, C03: true, C04: true, C05: true, C06: true, C07: true, C08: true, C09: true, C10: true, C11: true, C12: true, C13: true };
   /* Strang H: catalog.mjs kann historicalTest {status:'TESTED', label} je Methode liefern; dann „Getestet · <label>“, sonst wie bisher. */
   function tested(s) { var t = s && s.historicalTest; return t && t.status === 'TESTED' ? t : null; }
   function v1Tag(s) {
     var t = tested(s);
     if (t) return h('span', { class: 'st-tag', 'data-t': 'info', text: 'Getestet · ' + (t.label || 'Forschung, nicht zertifiziert') });
-    return V1_TOP5[s.candidateId] ? h('span', { class: 'st-tag', 'data-t': 'info', text: 'V1' }) : h('span', { class: 'st-tag', text: 'In Forschung' });
+    return V1_TOP5[s.candidateId] ? h('span', { class: 'st-tag', 'data-t': 'info', text: 'Live' }) : h('span', { class: 'st-tag', text: 'In Forschung' });
   }
   function v1First(list) { return list.slice().sort(function (a, b) { return (V1_TOP5[b.candidateId] ? 1 : 0) - (V1_TOP5[a.candidateId] ? 1 : 0); }); }
   function limitsLine(s, force) {
@@ -240,7 +240,7 @@
           var n = sum.strategies.filter(tested).length;
           return h('p', { class: 'st-hint', text: n
             ? n + ' von ' + sum.strategies.length + ' Methoden sind historisch getestet (Forschung, nicht zertifiziert)' + (n < sum.strategies.length ? '; die übrigen sind in Forschung.' : '.')
-            : 'V1: Turtle S1 und S2, Darvas, Kullamägi Breakout und Buyable Gap-Up werden zuerst historisch getestet (Forschung, nicht zertifiziert). Die übrigen acht Methoden sind in Forschung.' });
+            : 'Alle 13 Methoden erkennen täglich Kandidaten nach ihren Regeln (Forschung, nicht zertifiziert).' });
         })(),
         h('div', { class: 'st-list sf-strats' }, v1First(sum.strategies).map(function (s) { return stratCard(s); })),
         moreBox('Was bedeuten die Stufen?', [stagesLegend()]), provenance(sum), footnote(sum),
