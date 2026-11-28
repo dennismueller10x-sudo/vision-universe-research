@@ -223,7 +223,7 @@ export function applicableOf(rows, names) {
 }
 
 /** Wochen-Radar (Owner 23.11.2026): Titel, deren Kurs in der Einstiegszone der Zählung von oben liegt (Indexzeile td, Rollen wie
-    elliott/bigpicture.js#plan). Reihenfolge: Rückenwind in Richtung des Kursziels zuerst, dann nach Abstand zum Kursziel. Nur Stammaktien ab 5 $. */
+    elliott/bigpicture.js#plan). Reihenfolge: Setup-Score in Richtung des Kursziels zuerst, dann Rückenwind, dann Abstand zum Kursziel. Nur Stammaktien ab 5 $. */
 export function radarOf(rows, names, markets) {
   const pick = [];
   const add = (r, n, kind) => {
@@ -231,11 +231,14 @@ export function radarOf(rows, names, markets) {
     if (!(r.close >= td.e.lo && r.close <= td.e.hi)) return;
     const up = td.t1.dir === "UP", near = up ? td.t1.lo : td.t1.hi, dist = near / r.close - 1;
     pick.push({ t: r.t, n, kind, close: num(r.close), cur: td.cur, e: [td.e.lo, td.e.hi], ew: td.e.l, t1: [td.t1.lo, td.t1.hi], tw: td.t1.l, dir: td.t1.dir,
-      dist: Math.round(dist * 1000) / 1000, inv: td.inv, rw: td.rw || null, rwOk: td.rw === td.t1.dir });
+      dist: Math.round(dist * 1000) / 1000, inv: td.inv, rw: td.rw || null, rwOk: td.rw === td.t1.dir,
+      sc: td.sc ? td.sc[0] : null, scOk: !!(td.sc && (td.t1.dir === "UP" ? td.sc[0] >= 65 : td.sc[0] <= 35)) });
   };
   for (const r of rows || []) { if (!listable(r, names)) continue; const e = names && names.get(r.t); add(r, (e && e.n) || r.t, "stock"); }
   for (const r of (markets && markets.rows) || []) if (!r.withheld) add(r, r.n || r.t, "market");
-  pick.sort((a, b) => (b.rwOk - a.rwOk) || Math.abs(b.dist) - Math.abs(a.dist) || (a.t < b.t ? -1 : 1));
+  /* Setup-Score in Richtung des Kursziels zuerst (je weiter von 50, desto weiter vorn), dann Rückenwind, dann Abstand zum Ziel */
+  const str = (r) => (r.sc === null ? 0 : (r.dir === "UP" ? r.sc - 50 : 50 - r.sc));
+  pick.sort((a, b) => (b.scOk - a.scOk) || str(b) - str(a) || (b.rwOk - a.rwOk) || Math.abs(b.dist) - Math.abs(a.dist) || (a.t < b.t ? -1 : 1));
   return { count: pick.length, rows: pick.slice(0, 60) };
 }
 /** Elliott-Alarme der letzten Läufe (v3/elliott-events.json und Leitmärkte), neueste zuerst, höchstens 40. */

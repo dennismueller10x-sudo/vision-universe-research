@@ -1,0 +1,451 @@
+#!/usr/bin/env node
+/* =========================================================================
+   Elliott-Depot-Rückwärtstest (Forschung, nicht zertifiziert; Owner 27.11.2026). Schreibt nur mit --out.
+
+   Frage: Bringt ein Depot aus den Setups der Methode (Elliott von oben + Setup-Score) mehr als der Index?
+   Universum: heutige Mitglieder von S&P 500 und Nasdaq-100 (quant/data/market/index-membership). ACHTUNG Überlebende-Verzerrung:
+   heutige Mitglieder sind die Gewinner der Vergangenheit. Fairer Vergleich ist deshalb „Gleichgewicht derselben Aktien“
+   (dieselbe Verzerrung), SPY/QQQ stehen nur zur Einordnung daneben.
+
+   Ablauf (kausal): an jedem Signaltag (alle --step Wochen) rechnet die Engine je Aktie nur mit Kursen bis zu diesem Tag
+   (analyzeTopDown asOfIndex), dazu der Setup-Score (setup-score.js; Relative Stärke = Perzentil der 26-Wochen-Rendite im
+   Querschnitt aller Titel). Gekauft wird zum Wochenschluss der FOLGEWOCHE, verkauft zum Wochenschluss, an dem eine Ausstiegsregel
+   greift. Kosten je Kauf und Verkauf --cost (Anteil). Höchstens --max Positionen, gleich gewichtet beim Kauf, freies Geld unverzinst.
+   Kurse: Wochenschluss, nur Kurs (ohne Dividenden) – für Depot und Vergleiche gleich.
+
+   Strategien:
+     A  Setup stark (mit Elliott):    Kauf bei STRONG_UP; Verkauf, wenn der Score an einem Signaltag unter 65 fällt, nach 52 Wochen.
+     B  wie A, dazu Elliott-Ziel und -Absicherung: Verkauf am ersten Kursziel (nahe Kante der ersten Aufwärts-Zone) oder unter der
+        Ungültig-Marke.
+     C  Zone (HKCM-Stil): Score ≥ 65 aufwärts und der nächste Schritt ist ein Rücksetzer: Kaufauftrag an der nahen Kante der
+        Rücksetzer-Zone, gültig bis zum nächsten Signaltag; Absicherung 1 % unter der äußeren Kante, Ziel = Zone des Folgeschritts.
+     M  Nur Momentum (ohne Elliott): Score aus Relativer Stärke, Trend und Momentum allein, sonst wie A. Zeigt, was Elliott beiträgt.
+     D  Momentum mit Elliott als Bremse: wie M, aber kein Kauf bei Elliott-Plan abwärts, Verkauf, wenn die Zählung eine Korrektur meldet.
+     E  wie A, Gewinner laufen lassen: Verkauf erst unter der Ungültig-Marke, bei Score unter 50 oder nach 156 Wochen.
+     H  Zone ohne Zeitgrenze: Auftrag bleibt bis Ausführung, Ungültig oder Weglaufen über die Folgezone; halten bis Fernziel/Ungültig.
+     I  wie H, gestaffelt: halbe Position sofort, halbe in der Zone.
+     G  Nur Elliott (HKCM-Art): Kauf, wenn der Plan aufwärts zeigt und das Fernziel (log) mindestens 1,5 × Kurs ist; halten bis
+        Fernziel oder Ungültig-Marke, ohne Zeitgrenze und ohne Score. Kein Leerverkauf, freies Geld bleibt unverzinst.
+     F  wie E, dazu Verkauf am Fernziel auf der log-Skala (Welle 3 = 1,618 × Welle 1 als Faktor, Welle 5 = 1,0 ×).
+   Vergleich: SPY, QQQ, Gleichgewicht aller Universumsaktien (monatlich neu gewichtet).
+
+   Aufruf: node scripts/technical/elliott-topdown/depot-backtest.mjs --out DIR [--from 2005-01-01] [--step 4] [--max 20]
+           [--cost 0.001] [--engine PFAD] [--workers 4] [--index SP500,NDX] [--pit CSV ticker,start_date,end_date] [--extra-dir DIR]
+           [--lernrunde [--sperre 52] [--kalibrierung-out DATEI]]   Lernmodell für Zonen und Ziele, walk-forward, letzte Wochen gesperrt (schreibt lernrunde.json)
+   ========================================================================= */
+import { readdirSync, readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
+import { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
+import { Worker, isMainThread, parentPort, workerData } from "node:worker_threads";
+
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
+const req = createRequire(import.meta.url);
+const D = join(ROOT, "quant/data/market/discover-series-long");
+const arg = (n, d) => { const i = process.argv.indexOf("--" + n); return i >= 0 ? process.argv[i + 1] : d; };
+
+/* ---------------------------------------------------------- Arbeiter: Signale je Aktie */
+if (!isMainThread) {
+  const { files, engine, cuts, dirs } = workerData;
+  const TD = req(engine), SS = req(join(ROOT, "quant/engines/technical/elliott/setup-score.js"));
+  const out = {};
+  for (const f of files) {
+    let j; try { j = JSON.parse(readFileSync(join(dirs[f] || D, f), "utf8")); } catch { continue; }
+    const pts = j.points || [], c = pts.map((p) => p[1]), t = pts.map((p) => p[0]), idx = new Map(t.map((d, i) => [d, i]));
+    const sig = {};
+    for (const d of cuts) {
+      const a = idx.get(d); if (a === undefined || a < 104) continue;
+      let r; try { r = TD.analyzeTopDown({ close: c, times: t, asOfIndex: a }); } catch { continue; }
+      if (!r || r.status !== "OK" || !r.path || !r.path.length) { sig[d] = { plan: null }; continue; }
+      const P = r.path, plan = SS.planDir(P), inv = r.primary.invalidation;
+      const up1 = P.find((s) => s.direction === "UP" && !s.exhausted), z1 = up1 && up1.zone.tiers.find((z) => !z.passed);
+      const s0 = P[0], s1 = P[1];
+      let zone = null;
+      if (s0 && s0.direction === "DOWN" && s1 && s1.direction === "UP") {
+        const zb = s0.zone.tiers.find((z) => z.tier === "BASE"), ze = s0.zone.tiers.find((z) => z.tier === "EXTENDED") || zb, zt = s1.zone.tiers[0];
+        if (zb && zt) zone = { near: zb.high, stop: ze.low * 0.99, tgt: zt.low, at: c[a] };
+      }
+      /* Fernziel auf der logarithmischen Skala (Praxis langfristiger Charts, z. B. HKCM): im grossen Aufwaertsimpuls ist Welle 3
+         1,618 × Welle 1 (als Faktor), Welle 5 1,0 × Welle 1 ab Ende Welle 4; laeuft Welle 1 oder 2, wird ab dem Kurs heute gerechnet. */
+      let farLog = null;
+      const pr = r.primary, W = pr.waves;
+      if (pr.kind === "IMPULSE" && pr.direction === "UP" && W.length) {
+        const f1 = W[0].status === "DEVELOPING" ? null : W[0].toPrice / W[0].fromPrice, cl = c[a], cur = pr.current.label, by = Object.fromEntries(W.map((w) => [w.label, w]));
+        if (f1 > 1) {
+          if (cur === "2") farLog = cl * Math.pow(f1, 1.618);
+          else if (cur === "3") farLog = by["2"].toPrice * Math.pow(f1, 1.618);
+          else if (cur === "4") farLog = cl * f1;
+          else if (cur === "5") farLog = by["4"].toPrice * f1;
+        }
+      }
+      sig[d] = { plan, tgt: z1 ? z1.low : null, inv: inv && inv.direction === "below" ? inv.price : null, zone, farLog: farLog && farLog > c[a] * 1.05 ? farLog : null, cur: pr.kind[0] + pr.current.label };
+    }
+    out[f] = sig;
+  }
+  parentPort.postMessage(out);
+  process.exit(0);
+}
+
+/* ---------------------------------------------------------- Hauptprozess */
+const OUT = arg("out", null); if (!OUT) { console.error("--out fehlt"); process.exit(2); }
+/* --zone-tiefe f (Forschung): Kaufauftrag in C nicht an der nahen Zonenkante, sondern bei Kurs − f × (Kurs − Kante); 1 = Kante */
+const ZT = Number(arg("zone-tiefe", 1));
+/* --zone-regel "CC:0.05,I1:0.46": Tiefe je Wellenlage (aus der Zonen-Studie der Lernjahre), sonst --zone-tiefe */
+const ZMAP = Object.fromEntries((arg("zone-regel", "") || "").split(",").filter(Boolean).map((p) => { const [a, b] = p.split(":"); return [a, Number(b)]; }));
+const zt = (cur) => (cur in ZMAP ? ZMAP[cur] : ZT);
+const FROM = arg("from", "2005-01-01"), STEP = Number(arg("step", 4)), MAX = Number(arg("max", 20)), COST = Number(arg("cost", 0.001));
+const ENGINE = arg("engine", join(ROOT, "quant/engines/technical/elliott/elliott-topdown.js")), WORKERS = Number(arg("workers", 4));
+const INDEX = arg("index", "SP500,NDX").split(",");
+const TD = req(ENGINE), SS = req(join(ROOT, "quant/engines/technical/elliott/setup-score.js"));
+const ID = req(join(ROOT, "core/identity.js"));
+const fileOf = (tk, suffix = "") => { try { return ID.securityIdForTicker(tk) + suffix + ".json"; } catch { return null; } };   // ADR-001
+
+/* Universum */
+const members = new Set();
+for (const id of INDEX) { const f = join(ROOT, "quant/data/market/index-membership", id + ".json"); if (existsSync(f)) JSON.parse(readFileSync(f, "utf8")).members.forEach((m) => members.add(m.symbol)); }
+/* --pit DATEI (CSV ticker,start_date,end_date): Mitgliedschaft zum jeweiligen Zeitpunkt statt heutiger Mitglieder. Aktien ohne
+   Kursreihe (meist übernommen oder insolvent) fehlen; ihr Anteil steht im Ergebnis. */
+const PIT = arg("pit", null), pitIv = {}, EXTRA = arg("extra-dir", null), dirOf = {};
+/* --extra-dir DIR: zusätzliche Reihen ref_<T>__d.json (delistete Titel, depot-delisted-export.mjs) mit Endklasse */
+const extraFiles = EXTRA && existsSync(EXTRA) ? readdirSync(EXTRA).filter((f) => f.endsWith("__d.json")) : [];
+extraFiles.forEach((f) => (dirOf[f] = EXTRA));
+const spanOf = (() => { const memo = {}; return (f) => memo[f] || (memo[f] = (() => { try { const p = JSON.parse(readFileSync(join(dirOf[f] || D, f), "utf8")).points || []; return p.length ? [p[0][0], p[p.length - 1][0]] : null; } catch { return null; } })()); })();
+let pitStats = null, pitStats_d = 0;
+if (PIT) {
+  const lines = readFileSync(PIT, "utf8").trim().split(/\r?\n/).slice(1);
+  let n = 0, withData = 0;
+  for (const ln of lines) {
+    const [tk, a, b] = ln.split(","); const end = b || "9999-12-31"; if (end < FROM) continue;
+    n++;
+    /* Kandidaten: heutige Reihe und delistete Reihe; gewählt wird die, die das Mitgliedsintervall am weitesten abdeckt */
+    const base = [tk, tk.replace(".", "")];
+    const cands = [...new Set(base.flatMap((b) => [fileOf(b), fileOf(b, "__d")]))].filter((x) => x && (dirOf[x] ? true : existsSync(join(D, x))));
+    const lo = a > FROM ? a : FROM; let fn = null, best = 0;
+    for (const x of cands) { const sp = spanOf(x); if (!sp) continue; const ov = Date.parse(sp[1] < end ? sp[1] : end) - Date.parse(sp[0] > lo ? sp[0] : lo); if (ov > best) { best = ov; fn = x; } }
+    if (!fn) continue; withData++; if (fn.endsWith("__d.json")) pitStats_d++; (pitIv[fn] = pitIv[fn] || []).push([a, end]);
+  }
+  pitStats = { intervalle: n, mitKursreihe: withData, davonDelistet: pitStats_d, delisteteReihen: extraFiles.length };
+}
+/* --tickers A,B,C: festes Universum (z. B. die „Magnificent 7“); Vergleich dann mit „dieselben Aktien halten“ */
+const TICK = arg("tickers", null);
+const uniFiles = PIT ? Object.keys(pitIv) : (TICK ? TICK.split(",") : [...members]).map((s) => fileOf(s)).filter((f) => f && existsSync(join(D, f)));
+const isMember = (f, k) => !PIT || (pitIv[f] || []).some(([a, b]) => k >= weekKey(a) && k <= b);
+
+/* Wochenkalender aus SPY (letzter Handelstag je Woche, Freitag-Woche) und Vergleichsreihen */
+function weekly(points) {
+  const out = []; let key = null;
+  for (const [d, v] of points) { const k = weekKey(d); if (k === key) out[out.length - 1] = [d, v]; else { out.push([d, v]); key = k; } }
+  return out;
+}
+function weekKey(d) { const t = Date.parse(d + "T00:00:00Z"), day = (new Date(t).getUTCDay() + 2) % 7; return new Date(t - day * 864e5).toISOString().slice(0, 10); }   // Woche Samstag–Freitag
+const ser = (s) => JSON.parse(readFileSync(join(ROOT, "quant/data/market/multi-asset/series", s + ".json"), "utf8")).points;
+const SPYw = weekly(ser("SPY")), QQQw = weekly(ser("QQQ"));
+const cal = SPYw.map((p) => weekKey(p[0])).filter((k) => k >= weekKey(FROM));
+const spyBy = new Map(SPYw.map((p) => [weekKey(p[0]), p[1]])), qqqBy = new Map(QQQw.map((p) => [weekKey(p[0]), p[1]]));
+
+/* Kurse je Aktie nach Wochenschlüssel; Relative Stärke (26 Wochen) im Querschnitt aller Titel */
+const px = {}, R26 = new Map();
+const uniSet = new Set(uniFiles);
+for (const f of readdirSync(D).concat(extraFiles)) {
+  if (!f.startsWith("ref_")) continue;
+  let j; try { j = JSON.parse(readFileSync(join(dirOf[f] || D, f), "utf8")); } catch { continue; }
+  const pts = j.points || []; if (pts.length < 30) continue;
+  const m = new Map(); pts.forEach((p) => m.set(weekKey(p[0]), p[1]));
+  if (uniSet.has(f)) px[f] = { m, pts, c: pts.map((p) => p[1]), wk: new Map(pts.map((p, i) => [weekKey(p[0]), i])), term: j.terminal || null, endK: weekKey(pts[pts.length - 1][0]) };
+  for (let i = 26; i < pts.length; i++) { const k = weekKey(pts[i][0]); const v = pts[i][1] / pts[i - 26][1] - 1; if (!isFinite(v)) continue; if (!R26.has(k)) R26.set(k, []); R26.get(k).push(v); }
+}
+for (const [, a] of R26) a.sort((x, y) => x - y);
+const rsPct = (k, v) => { const a = R26.get(k); if (!a || a.length < 50) return null; let lo = 0, hi = a.length; while (lo < hi) { const m = (lo + hi) >> 1; if (a[m] < v) lo = m + 1; else hi = m; } return lo / a.length; };
+
+/* Signaltage (Wochenschlüssel) → je Aktie das Datum ihres Wochenschlusses */
+const sigKeys = cal.filter((_, i) => i % STEP === 0);
+const cutDates = {};
+for (const f of uniFiles) { const s = new Set(sigKeys); cutDates[f] = px[f].pts.filter((p) => s.has(weekKey(p[0]))).map((p) => p[0]); }
+
+/* Signale parallel rechnen */
+const chunks = Array.from({ length: WORKERS }, () => []); uniFiles.forEach((f, i) => chunks[i % WORKERS].push(f));
+const t0 = Date.now();
+const parts = await Promise.all(chunks.map((files) => new Promise((res, rej) => {
+  const cuts = [...new Set(files.flatMap((f) => cutDates[f]))];
+  const w = new Worker(fileURLToPath(import.meta.url), { workerData: { files, engine: ENGINE, cuts, dirs: dirOf }, argv: [] });
+  w.on("message", res); w.on("error", rej);
+})));
+const SIG = Object.assign({}, ...parts);
+const sigN = Object.values(SIG).reduce((s, x) => s + Object.keys(x).length, 0), sigPlan = Object.values(SIG).reduce((s, x) => s + Object.values(x).filter((y) => y.plan).length, 0);
+const sigSec = Math.round((Date.now() - t0) / 1000);
+
+/* Score je Aktie und Signaltag (mit und ohne Elliott) */
+function scoreAt(f, k, withElliott) {
+  const P = px[f]; const pts = P.pts, a = P.wk.get(k);
+  if (a === undefined || a < 104) return null;
+  const c = P.c, pp = SS.priceParts(c, a); if (!pp) return null;
+  const s = SIG[f] && SIG[f][pts[a][0]];
+  const rs = rsPct(k, c[a] / c[a - 26] - 1);
+  const sc = SS.score({ rs, trend: pp.trend, mom: pp.mom, elliott: withElliott ? (s ? s.plan : null) : null });
+  return { sc, s };
+}
+const SC = {};   // SC[k][f] = { e: score mit Elliott, m: ohne, s: Signal }
+for (const k of sigKeys) { SC[k] = {}; for (const f of uniFiles) { if (!isMember(f, k)) continue; const e = scoreAt(f, k, true); if (!e) continue; const m = scoreAt(f, k, false); SC[k][f] = { e: e.sc, m: m && m.sc, s: e.s }; } }
+
+/* ---------------------------------------------------------- Depot-Simulation */
+const price = (f, k) => px[f].m.get(k);
+function simulate(kind) {
+  let cash = 1, pos = [], pend = [], curve = [], trades = [], inv = 0, zoneOrders = new Set(), zoneFilled = 0;
+  const isSig = new Set(sigKeys);
+  for (let w = 0; w < cal.length; w++) {
+    const k = cal[w];
+    /* 1. Ausführen: Käufe aus der Vorwoche (A, B, M) zum heutigen Schluss; Zonen-Aufträge (C) bei Erreichen */
+    const value = () => cash + pos.reduce((s, p) => s + p.n * (price(p.f, k) ?? p.last), 0);
+    if (kind !== "C") {
+      for (const o of pend) {
+        if (pos.length >= MAX || pos.some((p) => p.f === o.f)) continue;
+        const pr = price(o.f, k); if (!pr) continue;
+        const amt = Math.min(cash, value() / MAX); if (amt < 1e-6) continue;
+        cash -= amt; pos.push({ f: o.f, n: (amt * (1 - COST)) / pr, in: pr, w0: w, last: pr, tgt: o.tgt, stop: o.stop });
+      }
+      pend = [];
+    } else {
+      pend = pend.filter((o) => o.until >= w);
+      for (const o of pend.slice()) {
+        if (pos.length >= MAX || pos.some((p) => p.f === o.f)) continue;
+        const pr = price(o.f, k); if (!pr || pr > o.near) continue;
+        if (pr <= o.stop) { pend.splice(pend.indexOf(o), 1); continue; }
+        const amt = Math.min(cash, value() / MAX); if (amt < 1e-6) continue;
+        cash -= amt; pos.push({ f: o.f, n: (amt * (1 - COST)) / pr, in: pr, w0: w, last: pr, tgt: o.tgt, stop: o.stop });
+        pend.splice(pend.indexOf(o), 1);
+      }
+    }
+    /* 2. Ausstieg */
+    pos = pos.filter((p) => {
+      const T0 = px[p.f].term;
+      if (T0 && k > px[p.f].endK) { cash += p.n * p.last * T0.recovery * (1 - COST); trades.push({ f: p.f, r: (p.last * T0.recovery) / p.in - 1, w: w - p.w0, why: "delisting" }); return false; }
+      const pr = price(p.f, k); if (pr) p.last = pr; else return true;
+      let why = null;
+      const hold = kind === "E" || kind === "F" ? 156 : kind === "G" ? 1e9 : 52;
+      if ((kind === "B" || kind === "C" || kind === "F" || kind === "G") && p.tgt && pr >= p.tgt) why = "ziel";
+      else if ((kind === "B" || kind === "C" || kind === "E" || kind === "F" || kind === "G") && p.stop && pr <= p.stop) why = "absicherung";
+      else if (w - p.w0 >= hold) why = "zeit";
+      else if (isSig.has(k) && kind !== "C") { const x = SC[k][p.f], sc = x && (kind === "M" || kind === "D" ? x.m : x.e);
+        if (kind === "G") { /* nur Ziel oder Ungültig */ } else if (kind === "E" || kind === "F") { if (!sc || sc.v < 50) why = "score"; } else if (!sc || sc.v < 65) why = "score";
+        if (kind === "D" && x && x.s && x.s.plan === "DOWN" && x.s.cur && /^[IC][ABC4]$/.test(x.s.cur)) why = "elliott-korrektur"; }
+      if (!why) return true;
+      cash += p.n * pr * (1 - COST); trades.push({ f: p.f, r: pr / p.in - 1, w: w - p.w0, why }); return false;
+    });
+    /* 3. Neue Signale */
+    if (isSig.has(k)) {
+      const cand = Object.entries(SC[k]).map(([f, x]) => ({ f, x })).filter(({ f, x }) => {
+        const sc = kind === "M" || kind === "D" ? x.m : x.e; if (!sc) return false;
+        if (kind === "C") return sc.v >= 65 && x.s && x.s.zone && x.s.plan === "UP";
+        if (kind === "D") return x.m && x.m.level === "STRONG_UP" && !(x.s && x.s.plan === "DOWN");
+        if (kind === "G") { const pk = price(f, k); return x.s && x.s.plan === "UP" && x.s.farLog && pk && x.s.farLog >= 1.5 * pk; }
+        return sc.level === "STRONG_UP";
+      }).sort((a, b) => ((kind === "M" || kind === "D" ? b.x.m.v : b.x.e.v) - (kind === "M" || kind === "D" ? a.x.m.v : a.x.e.v)) || a.f.localeCompare(b.f));
+      if (kind === "C") {
+        const nextSig = sigKeys[sigKeys.indexOf(k) + 1]; const until = nextSig ? cal.indexOf(nextSig) : cal.length;
+        pend = cand.map(({ f, x }) => ({ f, near: x.s.zone.at - zt(x.s.cur) * (x.s.zone.at - x.s.zone.near), stop: x.s.zone.stop, tgt: x.s.zone.tgt, until }));
+        pend.forEach((o) => zoneOrders.add(o.f + "|" + o.near.toFixed(4)));
+      } else pend = cand.map(({ f, x }) => ({ f, tgt: kind === "B" && x.s ? x.s.tgt : (kind === "F" || kind === "G") && x.s ? x.s.farLog : null, stop: (kind === "B" || kind === "E" || kind === "F" || kind === "G") && x.s ? x.s.inv : null }));
+    }
+    { const v = value(); curve.push([k, v]); inv += v > 0 ? 1 - cash / v : 0; }
+  }
+  return { curve, trades, investiert: inv / cal.length, zonenAuftraege: zoneOrders.size };
+}
+/* H und I (Owner 28.11.2026: Elliott ist ein Zonen-, kein Zeitinstrument): Kaufauftrag in der Rücksetzer-Zone bleibt stehen, bis er
+   ausgeführt wird, die Zählung ungültig wird (Kurs unter der Ungültig-Marke) oder der Kurs ohne Rücksetzer über die Zone des
+   Folgeschritts läuft (Setup ohne uns gelaufen); an jedem Signaltag mit Zone wird der Auftrag auf die aktuelle Zählung gesetzt.
+   Halten bis zum großen Fernziel (log) oder bis unter die Ungültig-Marke, ohne Zeitgrenze.
+   H: ganze Position in der Zone. I: gestaffelt – halbe Position zum nächsten Wochenschluss, halbe Position in der Zone. */
+function simulateZone(staggered) {
+  let cash = 1, lots = [], orders = new Map(), market = [], curve = [], trades = [], inv = 0, filled = 0, created = 0, ranAway = 0, invalid = 0;
+  const isSig = new Set(sigKeys);
+  for (let w = 0; w < cal.length; w++) {
+    const k = cal[w];
+    const value = () => cash + lots.reduce((s, p) => s + p.n * (price(p.f, k) ?? p.last), 0);
+    const held = () => new Set(lots.map((p) => p.f));
+    const buy = (f, pr, share, o, why) => { const amt = Math.min(cash, (value() / MAX) * share); if (amt < 1e-6) return false; cash -= amt; lots.push({ f, n: (amt * (1 - COST)) / pr, in: pr, w0: w, last: pr, far: o.far, stop: o.stop, lot: why }); return true; };
+    /* 1. Kauf zum Wochenschluss (halbe Position, I) */
+    for (const o of market) { const pr = price(o.f, k); if (!pr) continue; const h = held(); if (h.has(o.f) || h.size >= MAX) continue; buy(o.f, pr, 0.5, o, "sofort"); }
+    market = [];
+    /* 2. Zonen-Aufträge */
+    for (const [f, o] of [...orders]) {
+      const pr = price(f, k); if (!pr) continue;
+      if (pr <= o.stop) { orders.delete(f); invalid++; continue; }
+      if (o.away && pr >= o.away) { orders.delete(f); ranAway++; continue; }
+      if (pr <= o.near) {
+        const h = held(); if (!h.has(f) && h.size >= MAX) continue;
+        if (lots.some((p) => p.f === f && p.lot === "zone")) { orders.delete(f); continue; }
+        if (buy(f, pr, staggered ? 0.5 : 1, o, "zone")) { filled++; orders.delete(f); }
+      }
+    }
+    /* 3. Ausstieg je Teilposition */
+    lots = lots.filter((p) => {
+      const T0 = px[p.f].term;
+      if (T0 && k > px[p.f].endK) { cash += p.n * p.last * T0.recovery * (1 - COST); trades.push({ f: p.f, r: (p.last * T0.recovery) / p.in - 1, w: w - p.w0, why: "delisting" }); return false; }
+      const pr = price(p.f, k); if (pr) p.last = pr; else return true;
+      const why = p.far && pr >= p.far ? "fernziel" : p.stop && pr <= p.stop ? "ungültig" : null;
+      if (!why) return true;
+      cash += p.n * pr * (1 - COST); trades.push({ f: p.f, r: pr / p.in - 1, w: w - p.w0, why, lot: p.lot }); return false;
+    });
+    /* 4. Signale: Auftrag setzen oder auf die aktuelle Zählung nachziehen */
+    if (isSig.has(k)) {
+      const cand = Object.entries(SC[k]).filter(([, x]) => x.e && x.e.v >= 65 && x.s && x.s.zone && x.s.plan === "UP")
+        .sort((a, b) => b[1].e.v - a[1].e.v || a[0].localeCompare(b[0]));
+      for (const [f, x] of cand) {
+        const z = x.s.zone, stop = x.s.inv && x.s.inv < z.near ? x.s.inv : z.stop;
+        const o = { near: z.at - zt(x.s.cur) * (z.at - z.near), stop, far: x.s.farLog || null, away: z.tgt };
+        const hasZoneLot = lots.some((p) => p.f === f && p.lot === "zone");
+        if (!hasZoneLot) { if (!orders.has(f)) created++; orders.set(f, o); }
+        if (staggered && !lots.some((p) => p.f === f) && !market.some((m) => m.f === f)) market.push(Object.assign({ f }, o));
+      }
+    }
+    { const v = value(); curve.push([k, v]); inv += v > 0 ? 1 - cash / v : 0; }
+  }
+  return { curve, trades, investiert: inv / cal.length, zonenAuftraege: created, zonenAusgefuehrt: filled, zonenOhneUns: ranAway, zonenUngueltig: invalid };
+}
+/* Gleichgewicht aller Universumsaktien, alle 4 Wochen neu gewichtet */
+function equalWeight() {
+  let v = 1, curve = [], held = null;
+  for (let w = 0; w < cal.length; w++) {
+    const k = cal[w];
+    if (held) { const r = held.map((h) => { const p = price(h.f, k), P = px[h.f]; if (!(p > 0) && P.term && k > P.endK) return (P.c[P.c.length - 1] * P.term.recovery) / h.p; return p > 0 ? p / h.p : 1; }); if (r.length) v = held.v * r.reduce((s, x) => s + x, 0) / r.length; }
+    const now = uniFiles.filter((f) => price(f, k) > 0 && isMember(f, k));
+    if ((!held || w % 4 === 0) && now.length) held = Object.assign(now.map((f) => ({ f, p: price(f, k) })), { v });
+    curve.push([k, v]);
+  }
+  return { curve };
+}
+const bench = (by) => { const b0 = by.get(cal[0]); return { curve: cal.map((k) => [k, (by.get(k) ?? null) / b0]) }; };
+
+function stats(curve, from, to) {
+  const c = curve.filter(([k, v]) => k >= from && k <= to && v);
+  if (c.length < 10) return null;
+  const yrs = (Date.parse(c[c.length - 1][0]) - Date.parse(c[0][0])) / 3.156e10, tot = c[c.length - 1][1] / c[0][1];
+  let peak = 0, dd = 0; const r = [];
+  c.forEach(([, v], i) => { peak = Math.max(peak, v); dd = Math.min(dd, v / peak - 1); if (i) r.push(v / c[i - 1][1] - 1); });
+  const m = r.reduce((s, x) => s + x, 0) / r.length, sd = Math.sqrt(r.reduce((s, x) => s + (x - m) ** 2, 0) / r.length);
+  const rd = (x, d = 1) => Math.round(x * 10 ** d) / 10 ** d;
+  return { renditeProJahr: rd((tot ** (1 / yrs) - 1) * 100), gesamt: rd((tot - 1) * 100, 0), maxVerlust: rd(dd * 100), schwankungProJahr: rd(sd * Math.sqrt(52) * 100), sharpe0: rd((m / sd) * Math.sqrt(52), 2) };
+}
+const periods = [["gesamt", cal[0], cal[cal.length - 1]], ["bis 2014", cal[0], "2014-12-31"], ["2015–2019", "2015-01-01", "2019-12-31"], ["ab 2020", "2020-01-01", cal[cal.length - 1]]];
+/* ---------------------------------------------------------- Lernrunde (--lernrunde; Owner 28.11.2026)
+   Lernmodell für Zonen und Ziele, walk-forward: für jedes Prüfjahr Y wird je Wellenlage nur aus Signalen VOR Y gelernt,
+   wie tief der Kaufauftrag liegen soll (Anteil f des Wegs vom Kurs zur nahen Zonenkante; 1 = Zone der Engine) und ob am kurzen
+   Ziel oder am großen Fernziel verkauft wird. Bewertet wird nur auf dem Prüfjahr. Die letzten --sperre Wochen (Standard 52) sind
+   gesperrt: nie zum Lernen, nur als Endkontrolle. Signal = Setup-Score ≥ 65 aufwärts, Plan aufwärts, Zone im Plan.
+   Kennzahl je Signal: Zone erreicht? Ziel erreicht? Rendite des Trades (log) und Haltedauer; Wert = Anteil ausgeführt ×
+   mittlere log-Rendite je Jahr gehalten. */
+if (process.argv.includes("--lernrunde")) {
+  const SPERRE = Number(arg("sperre", 52)), F = [1, 0.75, 0.5, 0.33, 0.15, 0], lockFrom = cal[Math.max(0, cal.length - SPERRE)];
+  const S = [];
+  for (const k of sigKeys) for (const [f, x] of Object.entries(SC[k])) {
+    if (!(x.e && x.e.v >= 65 && x.s && x.s.zone && x.s.plan === "UP")) continue;
+    const P = px[f], i0 = P.wk.get(k); if (i0 === undefined) continue;
+    S.push({ f, k, yr: k.slice(0, 4), cur: x.s.cur || "?", i0, at: x.s.zone.at, near: x.s.zone.near, tgt: x.s.zone.tgt, far: x.s.farLog || null, inv: x.s.inv && x.s.inv < x.s.zone.near ? x.s.inv : x.s.zone.stop });
+  }
+  /* Ergebnis eines Signals für Einstiegstiefe fe und Ausstieg ex ("kurz" | "fern") */
+  function outcome(sg, fe, ex) {
+    const c = px[sg.f].c, e = sg.at - fe * (sg.at - sg.near);
+    let fill = -1;
+    for (let i = sg.i0 + 1; i < c.length; i++) { if (c[i] <= sg.inv) return { fill: false, why: "ungültig" }; if (c[i] <= e) { fill = i; break; } if (c[i] >= sg.tgt) return { fill: false, why: "weg" }; }
+    if (fill < 0) return { fill: false, why: "offen" };
+    const ep = Math.max(c[fill], 1e-9), T = ex === "fern" && sg.far ? sg.far : sg.tgt;
+    for (let i = fill + 1; i < c.length; i++) {
+      if (c[i] >= T) return { fill: true, hit: true, r: Math.log(c[i] / ep), w: i - fill };
+      if (c[i] <= sg.inv) return { fill: true, hit: false, r: Math.log(c[i] / ep), w: i - fill };
+    }
+    return { fill: true, hit: null, r: Math.log(c[c.length - 1] / ep), w: Math.max(1, c.length - 1 - fill) };
+  }
+  function score(list, fe, ex) {
+    let n = 0, fl = 0, hit = 0, dec = 0, r = 0, w = 0;
+    for (const sg of list) { const o = outcome(sg, fe, ex); n++; if (!o.fill) continue; fl++; r += o.r; w += o.w; if (o.hit !== null) { dec++; if (o.hit) hit++; } }
+    const wert = fl ? (fl / n) * (r / fl) / Math.max(1, w / fl) * 52 : 0;
+    return { n, ausgefuehrt: fl, zoneQuote: n ? fl / n : 0, zielQuote: dec ? hit / dec : null, mittelRendite: fl ? Math.exp(r / fl) - 1 : null, mittelWochen: fl ? w / fl : null, wert };
+  }
+  const STATES = [...new Set(S.map((x) => x.cur))];
+  function learn(train) {
+    const rule = {};
+    for (const st of STATES) {
+      const L = train.filter((x) => x.cur === st); if (L.length < 30) { rule[st] = { fe: 1, ex: "kurz", n: L.length, gelernt: false }; continue; }
+      let best = null; for (const fe of F) for (const ex of ["kurz", "fern"]) { const sc = score(L, fe, ex); if (!best || sc.wert > best.wert) best = { fe, ex, wert: sc.wert }; }
+      rule[st] = { fe: best.fe, ex: best.ex, n: L.length, gelernt: true };
+    }
+    return rule;
+  }
+  const agg = () => ({ n: 0, fl: 0, hit: 0, dec: 0, r: 0, w: 0 });
+  const add = (A, o) => { A.n++; if (!o.fill) return; A.fl++; A.r += o.r; A.w += o.w; if (o.hit !== null) { A.dec++; if (o.hit) A.hit++; } };
+  const fin = (A) => ({ signale: A.n, zoneErreicht: A.n ? Math.round((A.fl / A.n) * 1000) / 10 : null, zielErreicht: A.dec ? Math.round((A.hit / A.dec) * 1000) / 10 : null,
+    renditeJeTrade: A.fl ? Math.round((Math.exp(A.r / A.fl) - 1) * 1000) / 10 : null, wochenJeTrade: A.fl ? Math.round(A.w / A.fl) : null,
+    wertJeSignalProJahr: A.fl ? Math.round(((A.fl / A.n) * (A.r / A.fl) / Math.max(1, A.w / A.fl) * 52) * 1000) / 10 : 0 });
+  const years = [...new Set(S.filter((x) => x.k < lockFrom).map((x) => x.yr))].sort().filter((y) => y >= "2010");
+  const oos = { engine: agg(), gelernt: agg() }, jeJahr = {}, jeLage = {};
+  for (const y of years) {
+    const rule = learn(S.filter((x) => x.yr < y));
+    const test = S.filter((x) => x.yr === y && x.k < lockFrom), E = agg(), G = agg();
+    for (const sg of test) {
+      const oe = outcome(sg, 1, "kurz"), r = rule[sg.cur] || { fe: 1, ex: "kurz" }, og = outcome(sg, r.fe, r.ex);
+      add(oos.engine, oe); add(oos.gelernt, og); add(E, oe); add(G, og);
+      const L = (jeLage[sg.cur] = jeLage[sg.cur] || { engine: agg(), gelernt: agg() }); add(L.engine, oe); add(L.gelernt, og);
+    }
+    jeJahr[y] = { engine: fin(E), gelernt: fin(G) };
+  }
+  /* Gesperrter Zeitraum: Regel aus allen Signalen davor */
+  const ruleNow = learn(S.filter((x) => x.k < lockFrom)), lock = { engine: agg(), gelernt: agg() };
+  for (const sg of S.filter((x) => x.k >= lockFrom)) { add(lock.engine, outcome(sg, 1, "kurz")); const r = ruleNow[sg.cur] || { fe: 1, ex: "kurz" }; add(lock.gelernt, outcome(sg, r.fe, r.ex)); }
+  const out = { schema: "vu-elliott-lernrunde-1", label: "Forschung, nicht zertifiziert", engine: TD.VERSION, setupScore: SS.VERSION, generatedAt: new Date().toISOString(),
+    params: { index: INDEX, pit: PIT ? pitStats : null, tickers: TICK, from: FROM, sperreWochen: SPERRE, gesperrtAb: lockFrom, einstiegsTiefen: F, signale: S.length },
+    regelAktuell: ruleNow,
+    pruefjahreGesamt: { engine: fin(oos.engine), gelernt: fin(oos.gelernt) },
+    gesperrterZeitraum: { engine: fin(lock.engine), gelernt: fin(lock.gelernt), hinweis: "nie zum Lernen benutzt; viele Trades noch offen" },
+    jeJahr, jeLage: Object.fromEntries(Object.entries(jeLage).map(([k, v]) => [k, { engine: fin(v.engine), gelernt: fin(v.gelernt) }])) };
+  mkdirSync(OUT, { recursive: true });
+  writeFileSync(join(OUT, "lernrunde.json"), JSON.stringify(out, null, 1));
+  /* --kalibrierung-out DATEI: Vorschlag im Format von quant/engines/technical/elliott/calibration.json (nur gelernte Wellenlagen).
+     Übernommen wird er nur per PR mit Vorher/Nachher-Bericht (wöchentliche Lernrunde). */
+  const KO = arg("kalibrierung-out", null);
+  if (KO) {
+    const regeln = Object.fromEntries(Object.entries(ruleNow).filter(([, r]) => r.gelernt).sort().map(([k, r]) => [k, { einstiegsTiefe: r.fe, ausstieg: r.ex, signale: r.n }]));
+    writeFileSync(KO, JSON.stringify({ schema: "vu-elliott-calibration-1", version: "kal-" + new Date().toISOString().slice(0, 10), engine: TD.VERSION,
+      quelle: "Lernrunde (scripts/technical/elliott-topdown/depot-backtest.mjs --lernrunde), walk-forward, letzte " + SPERRE + " Wochen gesperrt; Universum " + (PIT ? "S&P 500 zum Zeitpunkt" : TICK || INDEX.join("+")),
+      label: "Forschung, nicht zertifiziert",
+      bedeutung: { einstiegsTiefe: "Anteil des Wegs vom Kurs am Signal zur nahen Kante der Rücksetzer-Zone: 1 = Zone der Engine, 0 = kein Warten auf den Rücksetzer", ausstieg: "kurz = nahe Kante der nächsten Zielzone; fern = großes Fernziel (log-Skala)" },
+      pruefjahre: out.pruefjahreGesamt, gesperrterZeitraum: { engine: out.gesperrterZeitraum.engine, gelernt: out.gesperrterZeitraum.gelernt }, regeln }, null, 1) + "\n");
+  }
+  console.log(JSON.stringify({ params: out.params, regelAktuell: out.regelAktuell, pruefjahreGesamt: out.pruefjahreGesamt, gesperrterZeitraum: out.gesperrterZeitraum }, null, 1));
+  process.exit(0);
+}
+const runs = { "A Setup stark": simulate("A"), "B Setup stark + Elliott-Ziel/Absicherung": simulate("B"), "C Zone (HKCM-Stil)": simulate("C"), "M nur Momentum (ohne Elliott)": simulate("M"),
+  "D Momentum + Elliott als Bremse": simulate("D"), "E Setup stark, Gewinner laufen lassen (bis Ungültig)": simulate("E"), "F Setup stark, Fernziel log (HKCM-Art)": simulate("F"),
+  "G Nur Elliott: Kauf bei Fernziel ≥ 1,5×, halten bis Fernziel oder Ungültig": simulate("G"),
+  "H Zone ohne Zeitgrenze, halten bis Fernziel oder Ungültig": simulateZone(false), "I Gestaffelt: halb sofort, halb in der Zone, bis Fernziel oder Ungültig": simulateZone(true),
+  "Vergleich: Gleichgewicht Universum": equalWeight(), "Vergleich: SPY": bench(spyBy), "Vergleich: QQQ": bench(qqqBy) };
+/* Zonen-Studie: wie tief setzt eine Aktie nach einem Setup (Score ≥ 65 aufwärts, Zone im Plan) wirklich zurück, bevor sie über die
+   Folgezone läuft oder die Zählung ungültig wird? Tiefe t = (Kurs am Signal − tiefster Schluss) ÷ (Kurs am Signal − nahe Zonenkante):
+   t ≥ 1 heißt, die Zone der Engine wurde erreicht. Je Zeitraum (Lernen bis 2014, Prüfen ab 2015) und Wellenlage. */
+const ZS = {};
+for (const k of sigKeys) for (const [f, x] of Object.entries(SC[k])) {
+  if (!(x.e && x.e.v >= 65 && x.s && x.s.zone && x.s.plan === "UP")) continue;
+  const z = x.s.zone, P = px[f], i0 = P.wk.get(k); if (i0 === undefined) continue;
+  let mn = z.at, end = "offen";
+  for (let i = i0 + 1; i < P.c.length; i++) { const c0 = P.c[i]; mn = Math.min(mn, c0); if (c0 >= z.tgt) { end = "weg"; break; } if (x.s.inv && c0 <= x.s.inv) { end = "ungültig"; break; } }
+  const t = (z.at - mn) / Math.max(1e-9, z.at - z.near), per = k <= "2014-12-31" ? "bis 2014" : "ab 2015";
+  for (const g of [per, per + " " + (x.s.cur || "?")]) (ZS[g] = ZS[g] || []).push(t);
+}
+const q = (a, p) => { const b = a.slice().sort((x, y) => x - y); return Math.round(b[Math.min(b.length - 1, Math.floor(p * b.length))] * 100) / 100; };
+const zonenStudie = Object.fromEntries(Object.entries(ZS).filter(([, a]) => a.length >= 30).sort().map(([g, a]) => [g, { faelle: a.length, zoneErreicht: Math.round((a.filter((t) => t >= 1).length / a.length) * 1000) / 10, tiefe25: q(a, 0.25), tiefe50: q(a, 0.5), tiefe75: q(a, 0.75) }]));
+const result = { schema: "vu-elliott-depot-backtest-1", label: "Forschung, nicht zertifiziert", engine: TD.VERSION, setupScore: SS.VERSION,
+  params: { zoneRegel: ZMAP, zoneTiefe: ZT, pit: PIT ? pitStats : null, from: FROM, stepWeeks: STEP, maxPositionen: MAX, kosten: COST, index: INDEX, aktien: uniFiles.length, signaltage: sigKeys.length, signalSekunden: sigSec, signale: sigN, signaleMitPlan: sigPlan },
+  hinweis: "Universum = heutige Indexmitglieder (Überlebende-Verzerrung); fairer Vergleich ist das Gleichgewicht derselben Aktien. Nur Kurs, ohne Dividenden.",
+  zonenStudie, ergebnis: {} };
+for (const [name, r] of Object.entries(runs)) {
+  const e = { zeitraeume: Object.fromEntries(periods.map(([n, a, b]) => [n, stats(r.curve, a, b)])) };
+  if (r.trades) { const T = r.trades; const sr = T.map((x) => x.r).sort((a, b) => a - b);
+    e.investiertAnteil = Math.round(r.investiert * 1000) / 10; if (r.zonenAuftraege) e.zonenAuftraege = r.zonenAuftraege;
+    if (r.zonenAusgefuehrt !== undefined) Object.assign(e, { zonenAusgefuehrt: r.zonenAusgefuehrt, zonenOhneUns: r.zonenOhneUns, zonenUngueltig: r.zonenUngueltig });
+    e.mittlererTrade = T.length ? Math.round((T.reduce((s, x) => s + x.r, 0) / T.length) * 1000) / 10 : null; e.medianTrade = T.length ? Math.round(sr[sr.length >> 1] * 1000) / 10 : null; e.trades = T.length; e.gewinnQuote = T.length ? Math.round((T.filter((x) => x.r > 0).length / T.length) * 1000) / 10 : null; e.mittlereHaltedauerWochen = T.length ? Math.round(T.reduce((s, x) => s + x.w, 0) / T.length) : null;
+    e.ausstieg = T.reduce((o, x) => ((o[x.why] = (o[x.why] || 0) + 1), o), {}); }
+  result.ergebnis[name] = e;
+}
+mkdirSync(OUT, { recursive: true });
+writeFileSync(join(OUT, "depot.json"), JSON.stringify(result, null, 1));
+writeFileSync(join(OUT, "kurven.json"), JSON.stringify(Object.fromEntries(Object.entries(runs).map(([n, r]) => [n, r.curve.filter((_, i) => i % 4 === 0)]))));
+console.log(JSON.stringify(result, null, 1));

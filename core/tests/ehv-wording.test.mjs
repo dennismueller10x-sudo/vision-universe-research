@@ -62,7 +62,8 @@ test("Elliott: kein wording[].avoid-Begriff im sichtbaren Text", () => {
   assert.deepEqual(avoidHits(ELLIOTT), []);
 });
 test("Elliott: keine Ziele, keine Handlungssätze, kein zweiter technischer Ausblick (Entscheidung 4)", () => {
-  assert.deepEqual(hitsOf(ELLIOTT, /Zielbereich|Ziel\s*[12]\b|Zone\s*[12]\b|abwarten|Technischer Ausblick|Welche Wellen laufen gerade/iu), []);
+  /* Ausnahme (Owner-Entscheidung 24.11.2026, docs/legal/WORTWAHL.md): das Große Bild nennt die Zonen 1–3 einer Kursziel-Stufe. */
+  assert.deepEqual(hitsOf(ELLIOTT, /Zielbereich|Ziel\s*[12]\b|Zone\s*[12]\b|abwarten|Technischer Ausblick|Welche Wellen laufen gerade/iu).filter((h) => !(/^elliott\/bigpicture\.js: „Zone [12]“/.test(h))), []);
 });
 
 const HEDGE = walk("hedgefonds");

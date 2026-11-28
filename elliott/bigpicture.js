@@ -9,11 +9,11 @@
   var CONFIG = "/elliott/config/kursmarken.json";
   /* KURSMARKEN-BEGIN (Owner-Entscheidung 23.11.2026: Kursziele und Einstiege im Elliott-Bild; Restrisiko docs/legal/EINORDNUNG.md §0) */
   var WORDS = {
-    kursziele: { target: "Kursziel", entry: "Einstiegszone laut Methode", guard: "Absicherung laut Methode", guardText: "1 % jenseits der Einstiegszone", invalid: "Ungültig laut Methode", tag: "Kursziele und Einstieg nach der Elliott-Methode" },
-    zonen: { target: "Zielzone der Methode", entry: "Zone laut Methode", guard: null, guardText: null, invalid: "Ungültig-Marke laut Methode", tag: "Zonen nach der Elliott-Methode" }
+    kursziele: { target: "Kursziel", entry: "Einstiegszone laut Methode", guard: "Absicherung laut Methode", guardText: "1 % jenseits der Einstiegszone", invalid: "Ungültig laut Methode", tag: "Kursziele und Einstieg nach der Elliott-Methode", tShort: "Kursziel", eShort: "Einstieg" },
+    zonen: { target: "Zielzone der Methode", entry: "Zone laut Methode", guard: null, guardText: null, invalid: "Ungültig-Marke laut Methode", tag: "Zonen nach der Elliott-Methode", tShort: "Ziel", eShort: "Zone" }
   };
   /* KURSMARKEN-END */
-  var mode = "zonen", ready = null;
+  var mode = "zonen", ready = null, HISTORY = "/quant/data/technical-intelligence/v3/elliott-history/";
   function load() {
     if (ready) return ready;
     ready = (global.fetch ? fetch(CONFIG, { credentials: "same-origin" }).then(function (r) { return r.ok ? r.json() : null; }) : Promise.resolve(null))
@@ -30,7 +30,7 @@
   function num(v) { if (typeof v !== "number" || !isFinite(v)) return "–"; var d = v >= 1000 ? 0 : v >= 100 ? 0 : v >= 10 ? 2 : 2; return v.toLocaleString("de-DE", { minimumFractionDigits: d, maximumFractionDigits: d }); }
   function pct(v, base) { var p = (v / base - 1) * 100; return (p > 0 ? "+" : p < 0 ? "−" : "±") + Math.abs(Math.round(p)).toLocaleString("de-DE") + " %"; }
   /* Kernzone = erste noch offene Stufe; die naechste Stufe steht als „erweitert“ daneben. */
-  function core(step) { var t = step.tiers.filter(function (z) { return !z.done; }); if (!t.length) t = step.tiers.slice(-1); return { lo: t[0].lo, hi: t[0].hi, ext: t[1] || null }; }
+  function core(step) { var t = step.tiers.filter(function (z) { return !z.done; }); if (!t.length) t = step.tiers.slice(-1); return { lo: t[0].lo, hi: t[0].hi, ext: t[1] || null, zones: t.slice(0, 3) }; }
   function year(t) { return String(t || "").slice(0, 4); }
 
   /* Rolle eines Schritts (wie in der Praxis gelesen): dreht der Pfad nach dem ersten Schritt, ist dessen Zone die Einstiegszone und die
@@ -38,12 +38,12 @@
      Richtung des zweiten, ist er selbst Kursziel. */
   function plan(td) {
     var P = td.path || [], out = [], nT = 0, entry = null;
-    var turn = P.length > 1 && P[0].dir !== P[1].dir, dirT = turn ? P[1].dir : P[0] && P[0].dir;
+    var RO = global.VUElliottRoles || (typeof require === "function" ? require("./engine/roles.js") : null), RR = RO.roles(P, td.primary && td.primary.cur);   // elliott/engine/roles.js
     P.forEach(function (s, k) {
       var c = core(s);
-      var role = k === 0 && turn ? "entry" : s.dir === dirT ? "target" : "step";
+      var role = RR.roles[k];
       if (role === "target") nT++;
-      var row = { step: s, role: role, n: role === "target" ? nT : null, lo: c.lo, hi: c.hi, ext: c.ext };
+      var row = { step: s, role: role, n: role === "target" ? nT : null, lo: c.lo, hi: c.hi, ext: c.ext, zones: c.zones };
       if (role === "entry") entry = row;
       out.push(row);
     });
@@ -56,7 +56,7 @@
     if (M.length < 6) return "";
     var fut = W < 520 ? 0.36 : 0.32, plotW = W - padL - padR, histW = plotW * (1 - fut), x0 = padL, xNow = x0 + histW;
     var vals = M.map(function (m) { return m[1]; }).filter(function (v) { return v > 0; });
-    rows.forEach(function (r) { vals.push(r.lo, r.hi); });
+    rows.forEach(function (r) { vals.push(r.lo, r.hi); (r.zones || []).forEach(function (z) { vals.push(z.lo, z.hi); }); });
     if (td.primary.inv && td.primary.inv.p > 0) vals.push(td.primary.inv.p);
     var lo = Math.min.apply(null, vals) * 0.85, hi = Math.max.apply(null, vals) * 1.12, L = Math.log;
     function y(v) { return padT + (L(hi) - L(Math.max(v, lo))) / (L(hi) - L(lo)) * (H - padT - padB); }
@@ -96,7 +96,11 @@
     rows.forEach(function (r, k) {
       var x = xNow + fw * ((k + 1) / (n + 0.4)), yp = y(r.step.point), up = r.step.dir === "UP";
       var bw = Math.min(46, fw / (n + 1) * 0.8);
-      g.push('<rect class="bp-zone bp-zone-' + r.role + '" x="' + (x - bw / 2).toFixed(1) + '" y="' + y(r.hi).toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + Math.max(3, y(r.lo) - y(r.hi)).toFixed(1) + '" rx="4"/>');
+      /* Zonen 1–3 (Basis, Erweitert, Extrem) als gestufte Kästen: Zone 1 kräftig, 2 und 3 blasser */
+      (r.zones && r.zones.length ? r.zones : [{ lo: r.lo, hi: r.hi }]).forEach(function (z, q) {
+        g.push('<rect class="bp-zone bp-zone-' + r.role + ' bp-zone-z' + (q + 1) + '" x="' + (x - bw / 2).toFixed(1) + '" y="' + y(z.hi).toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + Math.max(3, y(z.lo) - y(z.hi)).toFixed(1) + '" rx="4"/>');
+        if (q && W >= 360) g.push('<text class="bp-zt" x="' + (x + bw / 2 + 3).toFixed(1) + '" y="' + ((y(z.hi) + y(z.lo)) / 2 + 4).toFixed(1) + '">' + (q + 1) + "</text>");
+      });
       g.push('<line class="bp-arrow ' + (up ? "is-up" : "is-down") + '" x1="' + px.toFixed(1) + '" y1="' + py.toFixed(1) + '" x2="' + x.toFixed(1) + '" y2="' + yp.toFixed(1) + '" marker-end="url(#bp-head-' + (up ? "up" : "down") + ')"/>');
       g.push('<text class="bp-step" x="' + x.toFixed(1) + '" y="' + (up ? y(r.hi) - 6 : y(r.lo) + 14).toFixed(1) + '" text-anchor="middle">' + esc(r.step.disp) + "</text>");
       px = x; py = yp;
@@ -106,6 +110,100 @@
     return '<svg class="bp-svg" viewBox="0 0 ' + W + " " + H + '" width="100%" role="img" aria-label="Großes Bild seit ' + esc(year(M[0][0])) + ' mit Wellen und Pfad der Methode">' + defs + g.join("") + "</svg>";
   }
 
+  /* ---------------------------------------------------------- Bild im Analysten-Stil (Owner 24.11.2026: „mehr wie HKCM, hochkant nicht gequetscht“)
+     Hochformat: hohes Bild über die volle Breite, Zukunft rechts mit Zonen als Bänder bis zum Rand, dicker Pfeil-Pfad, Preis-Etiketten an
+     der Achse (Kurs, Einstiegszone, Kursziel, Ungültig-Marke). Zeitraum „3 Jahre“ (Wochenkerzen) oder „seit Börsengang“ (Monatslinie). */
+  function seriesOf(a, td, range) {
+    var ch = a && a.chart, out = { t: [], o: [], h: [], l: [], c: [], candles: false };
+    if (range !== "all" && ch && ch.timeframe === "1W" && ch.timestamps && ch.timestamps.length > 30) {
+      var n = ch.timestamps.length, from = Math.max(0, n - 156), hasC = !ch.closeOnly && ch.open && ch.high && ch.low;
+      for (var i = from; i < n; i++) { out.t.push(ch.timestamps[i]); out.c.push(ch.close[i]); out.o.push(hasC ? ch.open[i] : ch.close[i]); out.h.push(hasC ? ch.high[i] : ch.close[i]); out.l.push(hasC ? ch.low[i] : ch.close[i]); }
+      out.candles = !!hasC; return out;
+    }
+    var M = td.monthly || [], m0 = range === "all" ? 0 : Math.max(0, M.length - 36);
+    for (var k = m0; k < M.length; k++) { out.t.push(M[k][0]); out.c.push(M[k][1]); out.o.push(M[k][1]); out.h.push(M[k][1]); out.l.push(M[k][1]); }
+    return out;
+  }
+  function svgHK(td, rows, W, a, range, opt) {
+    opt = opt || {};
+    var narrow = W < 560, H = Math.round(narrow ? W * (opt.tall ? 1.3 : opt.short ? 0.82 : 1.04) : Math.min(560, W * 0.62)), padL = 6, padR = narrow ? 62 : 74, padT = 16, padB = 24;
+    var S = seriesOf(a, td, range); if (S.c.length < 6) return "";
+    var plotW = W - padL - padR, fut = narrow ? 0.4 : 0.34, histW = plotW * (1 - fut), x0 = padL, xNow = x0 + histW, xEnd = padL + plotW;
+    var vals = S.l.concat(S.h).filter(function (v) { return v > 0; });
+    rows.forEach(function (r) { (r.zones || [{ lo: r.lo, hi: r.hi }]).forEach(function (z) { vals.push(z.lo, z.hi); }); });
+    var inv = td.primary.inv, hiD = Math.max.apply(null, S.h), loD = Math.min.apply(null, S.l);
+    if (inv && inv.p > 0 && inv.p > loD / 3 && inv.p < hiD * 3) vals.push(inv.p);
+    var lo = Math.min.apply(null, vals), hi = Math.max.apply(null, vals), LOG = hi / lo > 3;
+    if (LOG) { lo /= 1.08; hi *= 1.08; } else { var pd = (hi - lo) * 0.06; lo = Math.max(lo - pd, lo * 0.5); hi += pd; }
+    function y(v) { var t = LOG ? (Math.log(hi) - Math.log(Math.max(v, lo))) / (Math.log(hi) - Math.log(lo)) : (hi - v) / (hi - lo); return padT + t * (H - padT - padB); }
+    var n = S.c.length, step = histW / n; function x(i) { return x0 + step * (i + 0.5); }
+    var g = [], tags = [];
+    /* Gitter und Achse */
+    var ticks = [];
+    if (LOG) { for (var e = Math.floor(Math.log10(lo)); e <= Math.ceil(Math.log10(hi)); e++) [1, 2, 5].forEach(function (m) { var tv = m * Math.pow(10, e); if (tv >= lo && tv <= hi) ticks.push(tv); }); }
+    else { var rg = hi - lo, st = Math.pow(10, Math.floor(Math.log10(rg / 5))); [1, 2, 5, 10].some(function (m) { if (rg / (st * m) <= 6) { st *= m; return true; } return false; }); for (var tv = Math.ceil(lo / st) * st; tv <= hi; tv += st) ticks.push(tv); }
+    while (ticks.length > 7) ticks = ticks.filter(function (_, i) { return i % 2 === 0; });
+    ticks.forEach(function (tv) { g.push('<line class="hk-grid" x1="' + x0 + '" x2="' + xEnd + '" y1="' + y(tv).toFixed(1) + '" y2="' + y(tv).toFixed(1) + '"/>'); });
+    var lastY = "", lastX = -1e9;
+    S.t.forEach(function (t0, i) { var yr = String(t0).slice(0, 4); if (yr !== lastY && i > 0 && x(i) - lastX > 46) { lastX = x(i); g.push('<text class="hk-ax" x="' + x(i).toFixed(1) + '" y="' + (H - 6) + '" text-anchor="middle">' + yr + "</text>"); } lastY = yr; });
+    g.push('<rect class="hk-future" x="' + xNow.toFixed(1) + '" y="' + padT + '" width="' + (xEnd - xNow).toFixed(1) + '" height="' + (H - padT - padB) + '"/>');
+    /* Zonen als Bänder bis zum rechten Rand (Einstiegszone grau, Kursziele grün, Zone 2/3 blasser) */
+    var nS = rows.length, px = function (k) { return xNow + (xEnd - xNow) * ((k + 1) / (nS + 0.35)); };
+    rows.forEach(function (r, k) {
+      var zs = r.zones && r.zones.length ? r.zones : [{ lo: r.lo, hi: r.hi }], x1 = Math.max(xNow - histW * 0.1, px(k - 1) - 6);
+      zs.forEach(function (z, q) {
+        g.push('<rect class="hk-zone hk-' + r.role + ' hk-z' + (q + 1) + '" x="' + x1.toFixed(1) + '" y="' + y(z.hi).toFixed(1) + '" width="' + (xEnd - x1).toFixed(1) + '" height="' + Math.max(3, y(z.lo) - y(z.hi)).toFixed(1) + '"/>');
+      });
+      var z1 = zs[0], lbl = (r.role === "entry" ? "Einstieg" : r.role === "target" ? "Ziel " + r.n : r.step.disp) + " · " + num(z1.lo) + "–" + num(z1.hi);
+      /* Beschriftung links oben im Band (die Pfeile laufen nach rechts zu den Punkten), bei schmalen Bändern darüber */
+      var bandH = y(z1.lo) - y(z1.hi), ly = bandH >= 18 ? y(z1.hi) + 13 : y(z1.hi) - 4;
+      if (r.role !== "step" && (!narrow || opt.labels)) g.push('<text class="hk-zl" x="' + (x1 + 5).toFixed(1) + '" y="' + ly.toFixed(1) + '">' + esc(lbl) + "</text>");
+      if (r.role === "target") tags.push({ y: y((z1.lo + z1.hi) / 2), t: num(r.step.dir === "UP" ? z1.lo : z1.hi), c: "hk-tag-t" });
+      if (r.role === "entry") tags.push({ y: y((z1.lo + z1.hi) / 2), t: num(r.step.dir === "DOWN" ? z1.hi : z1.lo), c: "hk-tag-e" });
+    });
+    /* Ungültig-Marke */
+    if (inv && inv.p >= lo && inv.p <= hi) { g.push('<line class="hk-inv" x1="' + x0 + '" x2="' + xEnd + '" y1="' + y(inv.p).toFixed(1) + '" y2="' + y(inv.p).toFixed(1) + '"/>'); tags.push({ y: y(inv.p), t: num(inv.p), c: "hk-tag-i" }); }
+    /* Kurs */
+    if (S.candles) {
+      var bw = Math.max(1, Math.min(7, step * 0.6));
+      for (var i2 = 0; i2 < n; i2++) { var up = S.c[i2] >= S.o[i2]; g.push('<g class="hk-c ' + (up ? "hk-up" : "hk-dn") + '"><line x1="' + x(i2).toFixed(1) + '" x2="' + x(i2).toFixed(1) + '" y1="' + y(S.h[i2]).toFixed(1) + '" y2="' + y(S.l[i2]).toFixed(1) + '"/><rect x="' + (x(i2) - bw / 2).toFixed(1) + '" y="' + y(Math.max(S.o[i2], S.c[i2])).toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + Math.max(1, Math.abs(y(S.o[i2]) - y(S.c[i2]))).toFixed(1) + '"/></g>'); }
+    } else g.push('<path class="hk-line" d="' + S.c.map(function (v, i) { return (i ? "L" : "M") + x(i).toFixed(1) + " " + y(v).toFixed(1); }).join("") + '"/>');
+    /* Wellenmarken: grosser Grad [x] in Grün, Unterteilung (x) weiß; nur, was im Zeitraum liegt */
+    var idx = {}; S.t.forEach(function (t0, i) { idx[String(t0).slice(0, 10)] = i; });
+    function at(t0) { t0 = String(t0).slice(0, 10); if (t0 in idx) return idx[t0]; for (var i = S.t.length - 1; i >= 0; i--) if (S.t[i] <= t0) return S.t[i].slice(0, 7) === t0.slice(0, 7) || !S.candles ? i : null; return null; }
+    var used = [];
+    function mark(c, big) {
+      if (!c) return;
+      c.waves.forEach(function (w) {
+        var i = at(w.tt); if (i === null || i === undefined) return;
+        if (w.dev) return;   // laufende Welle: der Pfad zeigt, wo sie endet (sonst steht dieselbe Marke doppelt am letzten Kurs)
+        var upE = w.tp >= w.fp, yy = (upE ? y(S.candles ? S.h[i] : w.tp) - 14 : y(S.candles ? S.l[i] : w.tp) + 24);
+        for (var tries = 0; tries < 6 && used.some(function (u) { return Math.abs(u[0] - x(i)) < 26 && Math.abs(u[1] - yy) < 20; }); tries++) yy += upE ? -20 : 20;
+        used.push([x(i), yy]);
+        g.push('<text class="hk-w ' + (big ? "hk-w-big" : "hk-w-sub") + (w.dev ? " hk-w-dev" : "") + '" x="' + x(i).toFixed(1) + '" y="' + yy.toFixed(1) + '" text-anchor="middle">' + esc(big ? "[" + w.l + "]" : "(" + w.l + ")") + "</text>");
+      });
+    }
+    mark(td.sub, false); mark(td.primary, true);
+    /* Pfad: dicker Pfeil von heute über die Punkte der Schritte */
+    var P = [[x(n - 1), y(S.c[n - 1])]].concat(rows.map(function (r, k) { return [px(k), y(r.step.point)]; }));
+    for (var s2 = 1; s2 < P.length; s2++) {
+      var upS = rows[s2 - 1].step.dir === "UP";
+      g.push('<line class="hk-arrow ' + (upS ? "hk-a-up" : "hk-a-dn") + '" x1="' + P[s2 - 1][0].toFixed(1) + '" y1="' + P[s2 - 1][1].toFixed(1) + '" x2="' + P[s2][0].toFixed(1) + '" y2="' + P[s2][1].toFixed(1) + '" marker-end="url(#hk-h-' + (upS ? "up" : "dn") + ')"/>');
+      g.push('<text class="hk-w ' + (rows[s2 - 1].step.deg === "BIG" ? "hk-w-big" : "hk-w-sub") + '" x="' + P[s2][0].toFixed(1) + '" y="' + (P[s2][1] + (upS ? -12 : 22)).toFixed(1) + '" text-anchor="middle">' + esc(rows[s2 - 1].step.disp) + "</text>");
+    }
+    /* Variante „Schritte“: nummerierte Punkte 1 (heute), 2 (Einstieg), 3 (Kursziel) auf dem Pfad */
+    if (opt.numbered) { var NP = [P[0]]; rows.forEach(function (r, k) { if (r.role === "entry" || (r.role === "target" && r.n === 1)) NP.push(P[k + 1]); });
+      NP.slice(0, 3).forEach(function (pt, k) { g.push('<g class="hk-num hk-num' + (k + 1) + '"><circle cx="' + pt[0].toFixed(1) + '" cy="' + pt[1].toFixed(1) + '" r="12"/><text x="' + pt[0].toFixed(1) + '" y="' + (pt[1] + 5).toFixed(1) + '" text-anchor="middle">' + (k + 1) + "</text></g>"); }); }
+    /* Preis-Etiketten an der Achse, ohne Überlappung */
+    tags.push({ y: y(S.c[n - 1]), t: num(S.c[n - 1]), c: "hk-tag-p" });
+    tags.sort(function (p, q) { return p.y - q.y; });
+    for (var k2 = 1; k2 < tags.length; k2++) if (tags[k2].y - tags[k2 - 1].y < 20) tags[k2].y = tags[k2 - 1].y + 20;
+    /* Achsenzahlen nur, wo kein Preis-Etikett steht */
+    ticks.forEach(function (tv) { if (tags.every(function (tg) { return Math.abs(tg.y - y(tv)) > 16; })) g.push('<text class="hk-ax" x="' + (xEnd + 6) + '" y="' + (y(tv) + 4).toFixed(1) + '">' + esc(num(tv)) + "</text>"); });
+    tags.forEach(function (tg) { g.push('<g class="hk-tag ' + tg.c + '"><rect x="' + (xEnd + 2) + '" y="' + (tg.y - 10).toFixed(1) + '" width="' + (padR - 4) + '" height="20" rx="6"/><text x="' + (xEnd + 2 + (padR - 4) / 2).toFixed(1) + '" y="' + (tg.y + 4).toFixed(1) + '" text-anchor="middle">' + esc(tg.t) + "</text></g>"); });
+    var defs = '<defs><marker id="hk-h-up" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="hk-hd-up"/></marker><marker id="hk-h-dn" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="hk-hd-dn"/></marker></defs>';
+    return '<svg class="hk-svg' + (opt.light ? " hk-light" : "") + '" viewBox="0 0 ' + W + " " + H + '" width="100%" role="img" aria-label="Großes Bild mit Wellen, Zonen und Pfad der Methode">' + defs + g.join("") + "</svg>";
+  }
   /* ---------------------------------------------------------- Abschnitt */
   function titleOf(td) {
     var p = td.primary, cur = p.cur, w = p.waves[p.waves.length - 1];
@@ -119,7 +217,7 @@
       var dist = inside ? "Kurs liegt in der Zone" : pct(s.dir === "UP" ? r.lo : r.hi, c) + " bis " + pct(s.dir === "UP" ? r.hi : r.lo, c);
       var k = r.role === "entry" ? W0.entry : r.role === "target" ? (mode === "kursziele" ? W0.target + " " + r.n : W0.target) : "Zwischenschritt";
       var extra = r.role === "entry" && W0.guard ? '<span class="bp-sub">' + esc(W0.guard + ": " + W0.guardText + " (" + num(s.dir === "UP" ? r.hi * 1.01 : r.lo * 0.99) + " $)") + "</span>" : "";
-      h.push('<li class="bp-row bp-row-' + r.role + '"><span class="bp-k">' + esc(k) + ' <b>' + esc(s.disp) + "</b></span><span class=\"bp-v num\">" + esc(range) + '</span><span class="bp-d num">' + esc(dist) + '</span><span class="bp-sub">' + esc((REL[s.rel] || "") + (s.dev ? " · Welle läuft" : "") + (r.ext ? " · erweitert " + num(r.ext.lo) + "–" + num(r.ext.hi) + " $" : "")) + "</span>" + extra + "</li>");
+      h.push('<li class="bp-row bp-row-' + r.role + '"><span class="bp-k">' + esc(k) + ' <b>' + esc(s.disp) + "</b></span><span class=\"bp-v num\">" + esc(range) + '</span><span class="bp-d num">' + esc(dist) + '</span><span class="bp-sub">' + esc((REL[s.rel] || "") + (s.dev ? " · Welle läuft" : "") + (r.zones && r.zones.length > 1 ? " · " + r.zones.map(function (z, q) { return "Zone " + (q + 1) + ": " + num(z.lo) + "–" + num(z.hi) + " $ (" + pct(s.dir === "UP" ? z.lo : z.hi, c) + ")"; }).join(" · ") : "")) + "</span>" + extra + "</li>");
     });
     var inv = td.primary.inv;
     if (inv) h.push('<li class="bp-row bp-row-inv"><span class="bp-k">' + esc(W0.invalid) + '</span><span class="bp-v num">' + esc((inv.d === "below" ? "unter " : "über ") + num(inv.p) + " $") + '</span><span class="bp-d num">' + esc(pct(inv.p, c)) + '</span><span class="bp-sub">' + esc(inv.text || "") + "</span></li>");
@@ -141,24 +239,91 @@
     var entry = rows.filter(function (r) { return r.role === "entry"; })[0], t1 = rows.filter(function (r) { return r.role === "target"; })[0];
     var plan = (entry ? "erst " + W0.entry.replace(" laut Methode", "") + " " + num(entry.lo) + "–" + num(entry.hi) + " $" : "") + (entry && t1 ? ", dann " : "") + (t1 ? (mode === "kursziele" ? W0.target + " 1" : W0.target) + " " + num(t1.lo) + "–" + num(t1.hi) + " $ (" + pct(t1.step.dir === "UP" ? t1.lo : t1.hi, td.close) + ")" : "");
     var inv = td.primary.inv ? "Schluss " + (td.primary.inv.d === "below" ? "unter " : "über ") + num(td.primary.inv.p) + " $" : "keine feste Marke";
-    var rw = td.rw || null, R = rw ? [["Trend", rw.trend], ["Momentum", rw.mom], ["Relative Stärke", rw.rsT]].map(function (x) { return x[0] + " " + (x[1] > 0 ? "▲" : x[1] < 0 ? "▼" : "◆"); }).join(" · ") : null;
+    var rw = td.rw || null, S = td.score || null, ar = function (v) { return v > 0.15 ? "▲" : v < -0.15 ? "▼" : "◆"; };
+    var R = S ? [["Relative Stärke", S.parts.rs], ["Trend", S.parts.trend], ["Momentum", S.parts.mom], ["Elliott-Plan", S.parts.elliott]].map(function (x) { return x[0] + " " + ar(x[1]); }).join(" · ")
+      : rw ? [["Trend", rw.trend], ["Momentum", rw.mom], ["Relative Stärke", rw.rsT]].map(function (x) { return x[0] + " " + ar(x[1]); }).join(" · ") : null;
     return '<dl class="bp-story"><div><dt>Jetzt</dt><dd>' + esc(now) + '</dd></div><div><dt>Plan laut Methode</dt><dd>' + esc(plan || "kein nächster Schritt") + '</dd></div><div><dt>Falsch, wenn</dt><dd>' + esc(inv) + "</dd></div>" +
-      (R ? '<div><dt>Rückenwind</dt><dd>' + esc(R + " – " + (rw.dir === "UP" ? "spricht für steigende Kurse" : rw.dir === "DOWN" ? "spricht für fallende Kurse" : "kein klares Bild")) + '<span class="bp-sub">Trend, Momentum und Relative Stärke tragen im Rückwärtstest mehr Richtungsinformation als die Zählung.</span></dd></div>' : "") + "</dl>";
+      (S ? '<div class="bp-score bp-score-' + S.level.toLowerCase() + '"><dt>Setup-Score</dt><dd><span class="bp-score-v num">' + S.v + "</span> " + esc(LEVEL[S.level] || "") + '<span class="bp-sub">' + esc(R + ". 50 = kein klares Bild, darüber aufwärts, darunter abwärts.") + "</span></dd></div>"
+        : R ? '<div><dt>Rückenwind</dt><dd>' + esc(R + " – " + (rw.dir === "UP" ? "spricht für steigende Kurse" : rw.dir === "DOWN" ? "spricht für fallende Kurse" : "kein klares Bild")) + "</dd></div>" : "") + "</dl>";
   }
-  var LEGEND = "[3] große Welle · (3) Unterwelle · gestrichelter Kreis = läuft noch · grün = Ziel in Trendrichtung · grau = Korrektur · gestrichelte Linie = Ungültig-Marke";
+  var LEVEL = { STRONG_UP: "stark aufwärts", UP: "aufwärts", MIXED: "gemischt", DOWN: "abwärts", STRONG_DOWN: "stark abwärts" };
+  var LEGEND = "[3] große Welle · (3) Unterwelle · grüne Bänder = Ziele (Zone 1 kräftig, 2 und 3 blasser) · graues Band = Einstieg · gestrichelt = Ungültig-Marke · Etiketten rechts = Preise";
   function countLine(c) { return KIND[c.kind] + " " + (c.dir === "UP" ? "aufwärts" : "abwärts") + " seit " + year(c.waves[0].ft) + ", Welle [" + c.cur + "]"; }
+  /* ---------------------------------------------------------- Ansichten im Vergleich (Owner 24.11.2026, Prototyp: #/<T>?bild=a|b|c|d)
+     Alle Ansichten zeigen nur das Ergebnis der Zählung von oben, mit festem Bild (keine Umschalter für Zeitraum oder Kerzen), wenig Text;
+     die Fachangaben stehen eingeklappt unter „Mehr zur Zählung“. */
+  var VARIANTS = { a: "Poster", b: "Drei Zahlen", c: "Schritte", d: "Analyst" };
+  function variantOf() { var m = /[?&]bild=([a-d])/.exec(String(global.location && global.location.hash || "")); return m ? m[1] : null; }
+  function headline(td, rows) {
+    var e = rows.filter(function (r) { return r.role === "entry"; })[0], t = rows.filter(function (r) { return r.role === "target"; })[0], W0 = WORDS[mode];
+    var tw = W0.tShort;
+    if (e && t) return (e.step.dir === "DOWN" ? "Erst runter bis " : "Erst hoch bis ") + num(e.lo) + "–" + num(e.hi) + " $, dann " + tw + " " + num(t.lo) + "–" + num(t.hi) + " $";
+    if (t) return "Welle " + t.step.disp + " – " + tw + " " + num(t.lo) + "–" + num(t.hi) + " $";
+    return titleOf(td);
+  }
+  function facts(td, rows) {
+    var e = rows.filter(function (r) { return r.role === "entry"; })[0], t = rows.filter(function (r) { return r.role === "target"; })[0], inv = td.primary.inv, c = td.close;
+    return { e: e ? { v: num(e.lo) + "–" + num(e.hi), d: pct(e.step.dir === "DOWN" ? e.hi : e.lo, c) } : null,
+             t: t ? { v: num(t.lo) + "–" + num(t.hi), d: pct(t.step.dir === "UP" ? t.lo : t.hi, c), l: t.step.disp } : null,
+             i: inv ? { v: (inv.d === "below" ? "unter " : "über ") + num(inv.p), s: inv.d === "below" ? "< " + num(inv.p) : "> " + num(inv.p) } : null,
+             sc: td.score || null };
+  }
+  function details(td, rows, td0, other, amb) {
+    return '<details class="bp-more"><summary>Mehr zur Zählung</summary><p class="bp-legend">' + esc(titleOf(td)) + "</p>" + story(td, rows) + '<ol class="bp-plan">' + rowsHtml(td, rows) + "</ol>" +
+      (other ? '<p class="bp-alt">' + esc(other + (amb ? " · " + amb : "")) + "</p>" : "") + '<p class="bp-legend">' + esc(LEGEND) + "</p></details>";
+  }
+  function variantHtml(v, td, rows, W2, a, td0, seg, other, amb) {
+    var f = facts(td, rows), T = WORDS[mode].tShort, E = WORDS[mode].eShort, sc = f.sc;
+    var pill = sc ? '<span class="vb-pill vb-pill-' + (sc.v >= 65 ? "up" : sc.v <= 35 ? "dn" : "mid") + '" title="Setup-Score">' + sc.v + "</span>" : "";
+    var note = '<p class="vb-note">' + esc("Elliott-Zählung auf Wochenbasis · Zonen laut Methode · keine Anlageberatung") + "</p>";
+    if (v === "a") return '<div class="vb vb-a"><div class="vb-head"><h2 class="vb-h">' + esc(headline(td, rows)) + "</h2>" + pill + "</div>" + seg +
+      '<div class="bp-chart hk">' + svgHK(td, rows, W2, a, "3j", {}) + "</div>" +
+      '<dl class="vb-lines">' + (f.t ? '<div class="vb-l vb-l-t"><dt>' + T + "</dt><dd>" + esc(f.t.v + " $") + "<span>" + esc(f.t.d) + "</span></dd></div>" : "") +
+      (f.e ? '<div class="vb-l"><dt>' + E + "</dt><dd>" + esc(f.e.v + " $") + "</dd></div>" : "") + (f.i ? '<div class="vb-l"><dt>Ungültig</dt><dd>' + esc(f.i.v + " $") + "</dd></div>" : "") + "</dl>" +
+      details(td, rows, td0, other, amb) + note + "</div>";
+    if (v === "b") return '<div class="vb vb-b"><h2 class="vb-h">' + esc(headline(td, rows)) + "</h2>" + seg +
+      '<div class="vb-card">' + svgHK(td, rows, W2 - 24, a, "3j", { light: true, short: true }) + "</div>" +
+      '<div class="vb-tiles">' + (f.e ? '<div class="vb-t vb-t-e"><span>' + E + "</span><b>" + esc(f.e.v) + "</b><small>" + esc(f.e.d) + "</small></div>" : "") +
+      (f.t ? '<div class="vb-t vb-t-t"><span>' + T + "</span><b>" + esc(f.t.v) + "</b><small>" + esc(f.t.d) + "</small></div>" : "") +
+      (f.i ? '<div class="vb-t vb-t-i"><span>Ungültig</span><b>' + esc(f.i.s) + "</b><small>Schluss</small></div>" : "") + "</div>" +
+      (sc ? '<div class="vb-score">' + pill + "<div><b>Setup-Score: " + esc(LEVEL[sc.level] || "") + "</b><span>Stärke, Trend, Momentum und Welle</span></div></div>" : "") +
+      details(td, rows, td0, other, amb) + note + "</div>";
+    if (v === "c") return '<div class="vb vb-c"><div class="vb-head"><h2 class="vb-h">Der Plan in 3 Schritten</h2>' + pill + "</div>" + seg +
+      '<div class="bp-chart hk">' + svgHK(td, rows, W2, a, "3j", { numbered: true }) + "</div>" +
+      '<ol class="vb-steps"><li><span class="vb-n vb-n1">1</span><div><b>' + esc("Jetzt " + num(td.close) + " $") + "</b><small>" + esc((td.sub ? "Welle (" + td.sub.cur + ")" : "Welle [" + td.primary.cur + "]") + " läuft") + "</small></div></li>" +
+      (f.e ? '<li><span class="vb-n vb-n2">2</span><div><b>' + esc(E + " " + f.e.v + " $") + "</b><small>dort endet laut Methode der Rücksetzer</small></div></li>" : "") +
+      (f.t ? '<li><span class="vb-n vb-n3">3</span><div><b class="vb-lime">' + esc(T + " " + f.t.v + " $ · " + f.t.d) + "</b><small>" + esc("nächste Welle " + f.t.l) + "</small></div></li>" : "") + "</ol>" +
+      (f.i ? '<p class="vb-foot">' + esc("Ungültig " + f.i.v + " $") + "</p>" : "") + details(td, rows, td0, other, amb) + note + "</div>";
+    return '<div class="vb vb-d"><div class="vb-head"><h2 class="vb-h vb-h-s">' + esc("Wochenchart · " + titleOf(td)) + "</h2>" + pill + "</div>" + seg +
+      '<div class="bp-chart hk">' + svgHK(td, rows, W2, a, "3j", { labels: true, tall: true }) + "</div>" +
+      '<p class="vb-sum">' + esc(headline(td, rows) + (f.t ? " (" + f.t.d + ")" : "")) + "</p>" + details(td, rows, td0, other, amb) + note + "</div>";
+  }
+  function switcher(v) {
+    return '<div class="vb-switch" role="group" aria-label="Ansicht wählen (Prototyp)"><span>Ansicht</span>' + Object.keys(VARIANTS).map(function (k) { return '<button type="button" data-v="' + k + '" aria-pressed="' + (k === v) + '">' + k.toUpperCase() + " · " + VARIANTS[k] + "</button>"; }).join("") + "</div>";
+  }
   function render(host, a, which) {
     var td0 = a.elliottTopDown, hasAlt = !!(td0.alternative && td0.altPath && td0.altPath.length), w = hasAlt && which === "alt" ? "alt" : "main", td = viewOf(td0, w);
     var rows = plan(td), W = Math.max(320, Math.min(1000, host.clientWidth || (global.innerWidth || 390) - 32));
     var seg = hasAlt ? '<div class="bp-seg" role="group" aria-label="Zählung wählen"><button type="button" data-w="main" aria-pressed="' + (w === "main") + '">Hauptzählung</button><button type="button" data-w="alt" aria-pressed="' + (w === "alt") + '">Alternative</button></div>' : "";
     var other = w === "main" ? (td0.alternative ? "Alternative: " + countLine(td0.alternative) : "") : "Hauptzählung: " + countLine(td0.primary);
     var C = td0.candidates, amb = C && C.total ? C.total.toLocaleString("de-DE") + " regelkonforme Zählungen des großen Grades, " + (C.near > 1 ? C.near + " davon nahe an der besten" : "die beste mit klarem Abstand") + "." : "";
-    host.innerHTML = '<p class="vu-ltag">' + esc("Großes Bild · " + WORDS[mode].tag) + '</p><h2 class="vu-mt bp-title">' + esc(titleOf(td)) + "</h2>" + seg + story(td, rows) +
-      '<div class="bp-chart">' + svgOf(td, rows, W) + "</div>" + '<p class="bp-legend">' + esc(LEGEND) + "</p>" +
+    /* Reihenfolge wie im Analysten-Video: Überschrift, großes Bild, dann die Sätze und der Plan */
+    var rg = host.dataset.r || "3j", W2 = Math.max(320, Math.min(1000, (host.parentNode && host.parentNode.clientWidth) || W));
+    var segR = '<div class="bp-seg bp-seg-r" role="group" aria-label="Zeitraum"><button type="button" data-r="3j" aria-pressed="' + (rg === "3j") + '">3 Jahre</button><button type="button" data-r="all" aria-pressed="' + (rg === "all") + '">Seit Börsengang</button></div>';
+    var vv = host.dataset.v || variantOf();
+    if (vv) {
+      host.innerHTML = switcher(vv) + variantHtml(vv, td, rows, W2, a, td0, seg, other, amb);
+      Array.prototype.forEach.call(host.querySelectorAll(".vb-switch button"), function (b) { b.addEventListener("click", function () { host.dataset.v = b.getAttribute("data-v"); render(host, a, host.dataset.w || "main"); }); });
+      Array.prototype.forEach.call(host.querySelectorAll(".bp-seg button[data-w]"), function (b) { b.addEventListener("click", function () { host.dataset.w = b.getAttribute("data-w"); render(host, a, host.dataset.w); }); });
+      return;
+    }
+    host.innerHTML = '<p class="vu-ltag">' + esc("Großes Bild · " + WORDS[mode].tag) + '</p><h2 class="vu-mt bp-title">' + esc(titleOf(td)) + "</h2>" + seg +
+      '<div class="bp-chart hk">' + svgHK(td, rows, W2, a, rg) + "</div>" + segR + '<p class="bp-legend">' + esc(LEGEND) + "</p>" + story(td, rows) +
       '<ol class="bp-plan">' + rowsHtml(td, rows) + "</ol>" +
       (other ? '<p class="bp-alt">' + esc(other + (amb ? " · " + amb : "")) + "</p>" : "") +
       '<p class="bp-note">' + esc("Zählung von oben auf Wochenschlusskursen seit " + year((td0.monthly[0] || [])[0]) + " (Frost & Prechter, Elliott Wave Principle). Zonen ohne Zeitangabe, keine Wahrscheinlichkeit. Analyse nach einer Methode, keine Anlageberatung.") + "</p>";
-    Array.prototype.forEach.call(host.querySelectorAll(".bp-seg button"), function (b) { b.addEventListener("click", function () { host.dataset.w = b.getAttribute("data-w"); render(host, a, host.dataset.w); }); });
+    Array.prototype.forEach.call(host.querySelectorAll(".bp-seg button[data-w]"), function (b) { b.addEventListener("click", function () { host.dataset.w = b.getAttribute("data-w"); render(host, a, host.dataset.w); }); });
+    Array.prototype.forEach.call(host.querySelectorAll(".bp-seg button[data-r]"), function (b) { b.addEventListener("click", function () { host.dataset.r = b.getAttribute("data-r"); render(host, a, host.dataset.w || "main"); }); });
   }
   /** Abschnitt fuer das Aktienbild; null ohne Zaehlung von oben. */
   function section(a) {
@@ -166,13 +331,25 @@
     if (!td || td.status !== "OK" || !td.primary || !(td.path && td.path.length) || !(td.monthly && td.monthly.length >= 6)) return null;
     var host = document.createElement("section");
     host.className = "bp"; host.setAttribute("aria-label", "Großes Bild");
+    /* Wellenbühne (Owner 25.11.2026) ist das Große Bild; das frühere Bild bleibt unter #/TICKER?bild=alt bzw. ?bild=a…d erreichbar */
+    var vq = variantOf(), alt = /[?&]bild=alt\b/.test(String((global.location && global.location.hash) || ""));
+    if (global.VUElliottStage && !vq && !alt) {
+      host.className = "bp bp-stage";
+      var hist = null, sym = String(a.ticker || a.symbol || "").toUpperCase();
+      var go = function () { host.replaceChildren(); global.VUElliottStage.mount(host, a, { history: hist, chrome: 150 }); };   /* chrome: App-Kopf 56 px, Dock 78 px, Luft */
+      go();
+      /* Zeitreise: Quartalsstände der Zählung, falls für diesen Wert gebaut (sonst ohne ⟲) */
+      var hp = global.fetch && sym ? fetch(HISTORY + encodeURIComponent(sym) + ".json", { credentials: "same-origin" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }) : Promise.resolve(null);
+      Promise.all([load(), hp]).then(function (x) { hist = x[1]; if (host.isConnected || !host.parentNode) go(); });
+      return host;
+    }
     var again = function () { render(host, a, host.dataset.w || "main"); };
     again();
     load().then(again);
     var t = null; global.addEventListener && global.addEventListener("resize", function () { clearTimeout(t); t = setTimeout(function () { if (host.isConnected) again(); }, 200); });
     return host;
   }
-  var api = { section: section, plan: plan, titleOf: titleOf, viewOf: viewOf, WORDS: WORDS, load: load, mode: function () { return mode; }, _setMode: function (m) { if (WORDS[m]) mode = m; } };
+  var api = { REL: REL, section: section, plan: plan, titleOf: titleOf, viewOf: viewOf, WORDS: WORDS, load: load, mode: function () { return mode; }, _setMode: function (m) { if (WORDS[m]) mode = m; } };
   if (global.document) load();   // Einstellung früh holen: Startseite (Radar) und Aktienbild nutzen dieselben Worte
   global.VUElliottBig = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;

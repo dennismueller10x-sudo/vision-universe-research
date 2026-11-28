@@ -70,7 +70,7 @@ export function readingOf(p) {
 const pctDe = (v, base) => { const p = Math.round((v / base - 1) * 100); return (p > 0 ? "+" : p < 0 ? "−" : "±") + Math.abs(p) + " %"; };
 export function readingTD(p) {
   const td = p.elliottTopDown; if (!td || td.status !== "OK" || !td.primary || !(td.path || []).length) return null;
-  const ro = rolesLib.roles(td.path), name = p.market ? p.market.name : p.symbol, c = td.close, P = td.primary;
+  const ro = rolesLib.roles(td.path, td.primary && td.primary.cur), name = p.market ? p.market.name : p.symbol, c = td.close, P = td.primary;
   const sub = td.sub && td.sub.waves.length ? "(" + td.sub.cur + ")" : "[" + P.cur + "]";
   const tz = ro.target, ez = ro.entry;
   const hook = name + ": " + (ez && tz ? "erst " + priceDe(ez.hi).replace(" $", "") + "–" + priceDe(ez.lo) + ", dann " + priceDe(tz.lo).replace(" $", "") + "–" + priceDe(tz.hi) + "?"

@@ -24,7 +24,7 @@ Maschinenlesbar mit denselben Regeln: `assets/legal-notices.json`, Feld `wording
    technischen Sinn (z. B. „sichere Verbindung“).
 
 **Ausnahme Elliott „Großes Bild“ (Owner-Entscheidung 23.11.2026):** Im Abschnitt „Großes Bild“ des Elliott-Aktienbilds
-(`elliott/bigpicture.js`) stehen „Kursziel 1/2“, „Einstiegszone laut Methode“ und „Absicherung laut Methode“ mit Prozentabstand,
+(`elliott/bigpicture.js`) stehen „Kursziel 1/2“, „Einstiegszone laut Methode“ und „Absicherung laut Methode“ mit Prozentabstand und je Kursziel die Zonen 1–3 (Stufen Basis, Erweitert, Extrem; Owner-Entscheidung 24.11.2026),
 jeweils als Zone der Elliott-Methode ohne Zeitangabe und mit „keine Anlageberatung“. Die Worte stehen nur in der Tabelle zwischen
 `KURSMARKEN-BEGIN` und `KURSMARKEN-END`; `elliott/config/kursmarken.json` schaltet mit `"modus": "zonen"` sofort auf die neutralen
 Worte dieser Seite zurück. Restrisiko (Anlageempfehlung nach Art. 3 Abs. 1 Nr. 34/35 MAR, Anzeige nach § 86 WpHG):
