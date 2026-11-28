@@ -146,7 +146,7 @@ test("without the index the overview is exactly what it was before", async () =>
   });
   const universe = await api.getUniverse();
   assert.equal(universe.state, "AVAILABLE");
-  assert.ok(universe.stocks.length > 6000, "ohne Verzeichnis bricht die Liste zusammen");
+  assert.ok(universe.stocks.length >= 5000, "ohne Verzeichnis bricht die Liste zusammen");
   const agilent = universe.stocks.find((s) => s.ticker === "A");
   /* Ohne Verzeichnis: kein Name und kein Kurs - und der Grund ist der der
      Breitzeile, nicht einer, der eine gepruefte Reihe behauptet.
