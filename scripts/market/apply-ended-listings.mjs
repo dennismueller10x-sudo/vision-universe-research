@@ -205,7 +205,9 @@ export function renameWarnings(changes, { cikByTicker, cikMap, productTickers, s
   }
   const out = [];
   for (const ch of changes || []) {
-    if (!ch || !ch.to || ch.to.reason !== "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE") continue;
+    /* Nur Regel A dieses Laufs: uebernommene Abgaenge (Regel C, ENDED_LISTING:CARRIED) tragen denselben Grund und
+       stuenden sonst jeden Tag wieder in der Warnung (Lauf 46116121182, 28.11.2026: 7 Altfaelle). */
+    if (!ch || ch.rule !== "ENDED_LISTING:MASTER_INACTIVE" || !ch.to || ch.to.reason !== "CONFIRMED_LISTING_ENDED:MASTER_INACTIVE") continue;
     if (succession && succession[ch.securityId]) continue;
     const t = String(ch.ticker || "").toUpperCase();
     const cik = cikByTicker && cikByTicker.get(t);

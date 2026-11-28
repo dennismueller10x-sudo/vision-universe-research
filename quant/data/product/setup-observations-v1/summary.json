@@ -3,7 +3,7 @@
  "engineVersion": "vu-setup-1.0.0",
  "mappingVersion": "setup-mapping-1.0.0",
  "methodologyVersion": "setup-state-v1.0.0",
- "generatedAt": "2026-11-28T00:30:30.000Z",
+ "generatedAt": "2026-11-28T08:16:31.000Z",
  "asOf": "2026-11-27",
  "approval": {
   "state": "APPROVED",
@@ -323,14 +323,14 @@
    "predicateHash": null
   }
  ],
- "universe": 5455,
- "observed": 5455,
+ "universe": 5451,
+ "observed": 5451,
  "unavailable": 0,
  "stateCounts": {
-  "NO_SETUP": 4471,
-  "WATCH": 467,
+  "NO_SETUP": 4469,
+  "WATCH": 466,
   "SETUP_FORMING": 510,
-  "CONFIRMED": 7,
+  "CONFIRMED": 6,
   "ACTIVE": 0,
   "RISK_RISING": 0,
   "INVALIDATED": 0,
@@ -338,10 +338,10 @@
  },
  "ruleCounts": {
   "setup.forming.complete-setup-awaiting-trigger": 510,
-  "setup.none.fallback": 4471,
-  "setup.watch.bullish-trend": 331,
+  "setup.none.fallback": 4469,
+  "setup.watch.bullish-trend": 330,
   "setup.watch.confirmed-structure-near-high": 136,
-  "setup.confirmed.structure-trend-volume": 7
+  "setup.confirmed.structure-trend-volume": 6
  },
  "pathTier": {
   "states": [
@@ -409,7 +409,7 @@
  "inputs": {
   "technical": {
    "artifact": "technical-product-artifact-1.0.0",
-   "instruments": 5455
+   "instruments": 5451
   }
  },
  "shards": [
@@ -1046,13 +1046,11 @@
  ],
  "observationDrift": null,
  "staleBundles": {
-  "count": 48,
+  "count": 44,
   "cutoff": "2026-11-27",
   "rule": "Bundles mit dataCutoff vor dem Stichtag gehen nicht in die Beobachtung dieses Stichtags ein.",
   "byDataCutoff": {
-   "2026-10-23": 4,
    "2026-11-24": 3,
-   "2026-10-22": 1,
    "2026-11-13": 2,
    "2026-11-20": 4,
    "2026-11-04": 1,
@@ -1060,6 +1058,7 @@
    "2026-11-25": 8,
    "2026-09-18": 1,
    "2026-10-29": 3,
+   "2026-10-23": 1,
    "2026-10-21": 1,
    "2026-11-23": 1,
    "2026-10-02": 2,
@@ -1076,16 +1075,8 @@
   },
   "sample": [
    {
-    "ticker": "ACA",
-    "dataCutoff": "2026-10-23"
-   },
-   {
     "ticker": "AMZE",
     "dataCutoff": "2026-11-24"
-   },
-   {
-    "ticker": "ATII",
-    "dataCutoff": "2026-10-22"
    },
    {
     "ticker": "BKH",
@@ -1192,10 +1183,6 @@
     "dataCutoff": "2026-11-25"
    },
    {
-    "ticker": "PERF",
-    "dataCutoff": "2026-10-23"
-   },
-   {
     "ticker": "PHGE",
     "dataCutoff": "2026-09-10"
    },
@@ -1246,10 +1233,6 @@
    {
     "ticker": "WEAV",
     "dataCutoff": "2026-10-26"
-   },
-   {
-    "ticker": "WPRT",
-    "dataCutoff": "2026-10-23"
    },
    {
     "ticker": "WRB-P-F",

@@ -329,5 +329,6 @@ html:has(.mb){scroll-snap-type:y proximity;scroll-padding-top:var(--mb-head)}
 /* Chartvergleich (www.js compareSvg): Reihe A lime, Reihe B gestrichelt */
 .mb-cmp svg polyline+polyline{color:var(--mb-lime,#c8f531)}
 .mb-leg{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;margin:10px 0 0;font-size:15px;font-weight:700;color:#0b0b0c}
+.mb-cmp .mb-leg span{white-space:nowrap}
 .mb-leg i{display:inline-block;width:26px;height:4px;border-radius:2px;margin-right:6px;vertical-align:middle}
 .mb-leg i.a{background:#c8f531;height:6px}.mb-leg i.b{background:repeating-linear-gradient(90deg,#0b0b0c 0 6px,transparent 6px 10px)}

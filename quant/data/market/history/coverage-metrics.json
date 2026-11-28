@@ -1,10 +1,10 @@
 {
- "generatedAt": "2026-11-22T06:06:09.023Z",
+ "generatedAt": "2026-11-28T08:35:06.381Z",
  "engine": "coverage-metrics-1.0.0",
  "gate": "FULL_UNIVERSE",
  "provider": "tiingo",
  "market": "US",
- "today": "2026-11-22",
+ "today": "2026-11-28",
  "phase": "POST_BACKFILL_CLEANUP_NO_PRICE_REQUESTS",
  "tiingoPriceRequests": 0,
  "storageSource": {
@@ -15,16 +15,16 @@
  },
  "eligibilitySource": {
   "file": "quant/data/market/security-master/eligibility.json",
-  "generatedAt": "2026-11-21T16:27:21.916Z",
+  "generatedAt": "2026-11-28T06:21:24.251Z",
   "version": "us-security-master-1.3.0"
  },
  "eligibilityCounts": {
   "universeMembers": 7834,
-  "ELIGIBLE": 5224,
-  "SEPARATE_CLASS": 725,
-  "EXCLUDED": 1803,
-  "REVIEW": 82,
-  "productUniverse": 6031
+  "ELIGIBLE": 5192,
+  "SEPARATE_CLASS": 718,
+  "EXCLUDED": 1838,
+  "REVIEW": 86,
+  "productUniverse": 5996
  },
  "version": "coverage-metrics-1.0.0",
  "thresholds": {
@@ -49,21 +49,18 @@
   "STORAGE_COVERAGE_PERCENT": 99.97
  },
  "CHART_AVAILABILITY": {
-  "denominator": 6031,
-  "renderable": 6027,
-  "notRenderable": 4,
+  "denominator": 5996,
+  "renderable": 5995,
+  "notRenderable": 1,
   "notRenderableSymbols": [
-   "GLMD",
-   "BNRG",
-   "JAB",
    "FFTT"
   ],
-  "CHART_AVAILABILITY_PERCENT": 99.93
+  "CHART_AVAILABILITY_PERCENT": 99.98
  },
  "TECHNICAL_HISTORY_ELIGIBILITY": {
-  "denominator": 6031,
-  "eligible": 5490,
-  "tooShort": 541,
+  "denominator": 5996,
+  "eligible": 5468,
+  "tooShort": 528,
   "tooShortSymbols": [
    "AACI",
    "AACO",
@@ -144,7 +141,6 @@
    "BLZR",
    "BMM",
    "BNCWZ",
-   "BNRG",
    "BNZI",
    "BOBS",
    "BOT",
@@ -180,7 +176,6 @@
    "CETH",
    "CGCF",
    "CHEC",
-   "CHOW",
    "CHTRP",
    "CITR",
    "CMCSV",
@@ -227,7 +222,6 @@
    "EWAV",
    "EXYN",
    "EZFL",
-   "EZRA",
    "FATAV",
    "FATBV",
    "FBDT",
@@ -276,7 +270,6 @@
    "GLBAV",
    "GLED",
    "GLIBR",
-   "GLMD",
    "GLND",
    "GLOO",
    "GLT",
@@ -300,7 +293,6 @@
    "HLXC",
    "HMH",
    "HONA",
-   "HONG",
    "HQ",
    "HSLV",
    "HVMC",
@@ -324,7 +316,6 @@
    "IRHO",
    "ISNR",
    "ITHA",
-   "JAB",
    "JAGU",
    "JAN",
    "JATT",
@@ -338,7 +329,6 @@
    "KLRA",
    "KNRX",
    "KNWND",
-   "KOYN",
    "KPET",
    "KRAQ",
    "KRSP",
@@ -413,7 +403,6 @@
    "NOVV",
    "NSAI",
    "NTBL",
-   "NTSK",
    "NWAX",
    "NXAT",
    "NXB",
@@ -447,7 +436,6 @@
    "PIK",
    "PLCI",
    "PLSM",
-   "PLTS",
    "PLUN",
    "PLYX",
    "PMA",
@@ -460,7 +448,6 @@
    "PSUS",
    "PTAC",
    "PTOR",
-   "PTRN",
    "PURR",
    "PWRL",
    "PXDT",
@@ -528,7 +515,6 @@
    "STAF",
    "STBX",
    "STDN",
-   "STUB",
    "SUJA",
    "SUMA",
    "SUNB",
@@ -573,7 +559,6 @@
    "VSNT",
    "VTIX",
    "WATR",
-   "WBI",
    "WDCVV",
    "WENC",
    "WHK",
@@ -599,7 +584,6 @@
    "XZO",
    "YCY",
    "YDDL",
-   "YDKG",
    "YICC",
    "YSS",
    "YSWY",
@@ -607,52 +591,47 @@
    "ZKPU",
    "ZTG"
   ],
-  "TECHNICAL_HISTORY_ELIGIBILITY_PERCENT": 91.03
+  "TECHNICAL_HISTORY_ELIGIBILITY_PERCENT": 91.19
  },
  "LONG_HISTORY": {
   "universeSize": 7834,
-  "ELIGIBLE_FOR_LONG_HISTORY_CHECK": 5624,
-  "PASS": 5566,
+  "ELIGIBLE_FOR_LONG_HISTORY_CHECK": 5596,
+  "PASS": 5538,
   "FAIL": 58,
-  "LONG_HISTORY_COVERAGE_PERCENT": 98.97,
+  "LONG_HISTORY_COVERAGE_PERCENT": 98.96,
   "notEligibleByReason": {
-   "NOT_IN_PRODUCT_UNIVERSE": 1803,
-   "LISTING_TOO_YOUNG": 407
+   "NOT_IN_PRODUCT_UNIVERSE": 1838,
+   "LISTING_TOO_YOUNG": 400
   },
   "failSymbols": [
    {
     "ticker": "DINE",
-    "bars": 140,
+    "bars": 144,
     "startDate": "2001-01-02"
    },
    {
     "ticker": "MINE",
-    "bars": 208,
+    "bars": 212,
     "startDate": "2010-03-03"
    },
    {
-    "ticker": "GLMD",
-    "bars": 0,
-    "startDate": "2014-03-13"
-   },
-   {
     "ticker": "LQ",
-    "bars": 140,
+    "bars": 144,
     "startDate": "2014-04-09"
    },
    {
     "ticker": "LILAV",
-    "bars": 130,
+    "bars": 134,
     "startDate": "2015-06-22"
    },
    {
     "ticker": "LILKV",
-    "bars": 129,
+    "bars": 133,
     "startDate": "2015-06-23"
    },
    {
     "ticker": "RCM",
-    "bars": 196,
+    "bars": 200,
     "startDate": "2016-01-04"
    },
    {
@@ -662,252 +641,257 @@
    },
    {
     "ticker": "CETH",
-    "bars": 124,
+    "bars": 128,
     "startDate": "2016-02-09"
    },
    {
     "ticker": "OXLCM",
-    "bars": 195,
+    "bars": 199,
     "startDate": "2017-06-08"
    },
    {
     "ticker": "DCPH",
-    "bars": 197,
+    "bars": 201,
     "startDate": "2017-09-28"
    },
    {
     "ticker": "MDA",
-    "bars": 180,
+    "bars": 184,
     "startDate": "2017-10-05"
    },
    {
     "ticker": "ATCX",
-    "bars": 219,
+    "bars": 223,
     "startDate": "2019-01-23"
    },
    {
     "ticker": "EDVA",
-    "bars": 65,
+    "bars": 69,
     "startDate": "2019-02-05"
    },
    {
     "ticker": "AUC",
-    "bars": 131,
+    "bars": 135,
     "startDate": "2019-05-03"
    },
    {
     "ticker": "FTAIP",
-    "bars": 196,
+    "bars": 200,
     "startDate": "2019-09-06"
    },
    {
     "ticker": "MDRRP",
-    "bars": 197,
+    "bars": 201,
     "startDate": "2020-02-13"
    },
    {
     "ticker": "GRCL",
-    "bars": 196,
+    "bars": 200,
     "startDate": "2021-01-08"
    },
    {
     "ticker": "GPAC",
-    "bars": 124,
+    "bars": 128,
     "startDate": "2021-03-05"
    },
    {
     "ticker": "OLK",
-    "bars": 197,
+    "bars": 201,
     "startDate": "2021-03-25"
    },
    {
     "ticker": "CVII",
-    "bars": 196,
+    "bars": 200,
     "startDate": "2021-04-05"
    },
    {
     "ticker": "RAIN",
-    "bars": 124,
+    "bars": 128,
     "startDate": "2021-04-23"
    },
    {
     "ticker": "AILE",
-    "bars": 196,
+    "bars": 200,
     "startDate": "2021-04-26"
    },
    {
     "ticker": "CNL",
-    "bars": 73,
+    "bars": 77,
     "startDate": "2021-07-15"
    },
    {
     "ticker": "NOVV",
-    "bars": 196,
+    "bars": 200,
     "startDate": "2021-10-01"
    },
    {
     "ticker": "AACI",
-    "bars": 166,
+    "bars": 170,
     "startDate": "2021-11-10"
    },
    {
     "ticker": "PIK",
-    "bars": 194,
+    "bars": 198,
     "startDate": "2021-11-11"
    },
    {
     "ticker": "BPAC",
-    "bars": 222,
+    "bars": 226,
     "startDate": "2022-01-25"
    },
    {
     "ticker": "FRBN",
-    "bars": 197,
+    "bars": 201,
     "startDate": "2022-02-01"
    },
    {
     "ticker": "SMTK",
-    "bars": 124,
+    "bars": 128,
     "startDate": "2022-02-03"
    },
    {
     "ticker": "TETE",
-    "bars": 196,
+    "bars": 200,
     "startDate": "2022-03-09"
    },
    {
     "ticker": "DUET",
-    "bars": 197,
+    "bars": 201,
     "startDate": "2022-03-17"
    },
    {
     "ticker": "GRML",
-    "bars": 132,
+    "bars": 136,
     "startDate": "2022-04-29"
    },
    {
     "ticker": "MCACU",
-    "bars": 197,
+    "bars": 201,
     "startDate": "2022-05-11"
    },
    {
     "ticker": "MCACR",
-    "bars": 196,
+    "bars": 200,
     "startDate": "2022-07-01"
    },
    {
     "ticker": "STBX",
-    "bars": 195,
+    "bars": 199,
     "startDate": "2022-08-23"
    },
    {
     "ticker": "LNC-P-D",
-    "bars": 124,
+    "bars": 128,
     "startDate": "2022-11-17"
    },
    {
     "ticker": "TOROV",
-    "bars": 197,
+    "bars": 201,
     "startDate": "2023-03-03"
    },
    {
     "ticker": "FRES",
-    "bars": 197,
+    "bars": 201,
     "startDate": "2023-05-22"
    },
    {
     "ticker": "PHXM",
-    "bars": 123,
+    "bars": 127,
     "startDate": "2023-06-29"
    },
    {
     "ticker": "PXDT",
-    "bars": 198,
+    "bars": 202,
     "startDate": "2023-08-01"
    },
    {
     "ticker": "AAPGV",
-    "bars": 197,
+    "bars": 201,
     "startDate": "2025-01-24"
    },
    {
     "ticker": "AHMA",
-    "bars": 168,
+    "bars": 172,
     "startDate": "2025-10-21"
    },
    {
     "ticker": "ANGIV",
-    "bars": 203,
+    "bars": 207,
     "startDate": "2025-03-25"
    },
    {
     "ticker": "ESEAV",
-    "bars": 203,
+    "bars": 207,
     "startDate": "2025-03-10"
    },
    {
     "ticker": "FATAV",
-    "bars": 196,
+    "bars": 200,
     "startDate": "2025-01-28"
    },
    {
     "ticker": "FATBV",
-    "bars": 196,
+    "bars": 200,
     "startDate": "2025-01-28"
    },
    {
     "ticker": "GLBAV",
-    "bars": 198,
+    "bars": 202,
     "startDate": "2025-07-11"
    },
    {
+    "ticker": "GLIBR",
+    "bars": 249,
+    "startDate": "2025-11-26"
+   },
+   {
     "ticker": "IACVV",
-    "bars": 200,
+    "bars": 204,
     "startDate": "2025-03-26"
    },
    {
     "ticker": "ILMNV",
-    "bars": 196,
+    "bars": 200,
     "startDate": "2024-06-18"
    },
    {
     "ticker": "LBDAV",
-    "bars": 197,
+    "bars": 201,
     "startDate": "2025-07-14"
    },
    {
     "ticker": "LBDKV",
-    "bars": 197,
+    "bars": 201,
     "startDate": "2025-07-11"
    },
    {
     "ticker": "MBIEL",
-    "bars": 198,
+    "bars": 202,
     "startDate": "2024-11-22"
    },
    {
     "ticker": "NTBL",
-    "bars": 196,
+    "bars": 200,
     "startDate": "2023-10-17"
    },
    {
     "ticker": "RHLDV",
-    "bars": 203,
+    "bars": 207,
     "startDate": "2025-02-20"
    },
    {
     "ticker": "SVMHW",
-    "bars": 194,
+    "bars": 198,
     "startDate": "2023-12-11"
    },
    {
     "ticker": "WDCVV",
-    "bars": 203,
+    "bars": 207,
     "startDate": "2025-02-13"
    },
    {
     "ticker": "AXNX",
-    "bars": 29,
+    "bars": 33,
     "startDate": "2018-10-31"
    }
   ],
@@ -919,8 +903,8 @@
  "legacy": {
   "metric": "historyCoverageRate ueber das gesamte Universum",
   "denominator": 7834,
-  "pass": 6602,
-  "percent": 84.27,
+  "pass": 6604,
+  "percent": 84.3,
   "note": "Diese Zahl mischt Ablagedeckung, Chartfaehigkeit und Listingalter. Sie wird nur noch zum Vergleich gefuehrt."
  },
  "redistribution": {
