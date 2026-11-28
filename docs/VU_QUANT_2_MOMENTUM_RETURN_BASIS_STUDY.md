@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| Stand der Messung | 2026-11-28T06:41:16.000Z |
+| Stand der Messung | 2026-11-28T08:05:36.000Z |
 | Bestand | `CANONICAL_HISTORY` |
 | Studienlogik | `1.0.0` · Reihen `vu-return-series-1.0.0` · Vergleich `vu-return-basis-comparison-1.0.0` |
 | Entscheidung | **PENDING_METHOD_DECISION** |
@@ -236,9 +236,9 @@ Die Momentumnote wird auf beiden Basen aus denselben sechs Komponenten und dense
 | Grundlage | `EVIDENCE_AT_OR_BEFORE_CUTOFF` |
 | veröffentlichtes Evidence vom | 2026-11-27 (0 Tage nach dem Stichtag) |
 | ausgeschlossen, weil Fundamentaldaten erst nach dem Stichtag öffentlich | 0 |
-| ρ Simulation (Gesamtrendite) zur veröffentlichten Note | 0,9380 |
-| ρ Simulation (Kursrendite) zur veröffentlichten Note | 0,9457 |
-| bewertete Titel: veröffentlicht / Kurs / gesamt | 4.842 / 5.512 / 5.512 |
+| ρ Simulation (Gesamtrendite) zur veröffentlichten Note | 0,9379 |
+| ρ Simulation (Kursrendite) zur veröffentlichten Note | 0,9456 |
+| bewertete Titel: veröffentlicht / Kurs / gesamt | 4.843 / 5.512 / 5.512 |
 
 **Die Momentumnote selbst, Kurs gegen gesamt:** ρ 0,9937 · Median 51 Ränge · P95 268,4 · Maximum 4.999 · 263 Titel bewegen sich um mindestens 5 Perzentilpunkte, 61 um mindestens 10.
 
