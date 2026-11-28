@@ -60,8 +60,11 @@
     var W = 600, H = 240, xy = pts.map(function (p, i) { return [(i / (pts.length - 1) * W).toFixed(1), (H - 12 - (p[1] - lo) / (hi - lo) * (H - 24)).toFixed(1)]; });
     var d = (digits == null ? 1 : digits), f = function (x) { return (x < 0 ? "−" : "") + num(x, d) + (unit ? " " + unit : ""); };
     var dt = function (t) { return String(t).slice(0, 10).split("-").reverse().join("."); };
-    return '<figure class="mb-line"><svg viewBox="0 0 ' + W + " " + H + '" preserveAspectRatio="none" aria-hidden="true"><polyline points="' + xy.map(function (q) { return q.join(","); }).join(" ") +
-      '" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg>' +
+    var zero = lo < 0 && hi > 0 ? '<line x1="0" x2="' + W + '" y1="' + (H - 12 - (0 - lo) / (hi - lo) * (H - 24)).toFixed(1) + '" y2="' + (H - 12 - (0 - lo) / (hi - lo) * (H - 24)).toFixed(1) + '" stroke="#5b5d57" stroke-width="2" stroke-dasharray="8 8" vector-effect="non-scaling-stroke"/>' : "";
+    var lastP = xy[xy.length - 1];
+    return '<figure class="mb-line"><svg viewBox="0 0 ' + W + " " + H + '" preserveAspectRatio="none" aria-hidden="true">' + zero + '<polyline points="' + xy.map(function (q) { return q.join(","); }).join(" ") +
+      '" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>' +
+      '<line x1="' + lastP[0] + '" x2="' + lastP[0] + '" y1="' + lastP[1] + '" y2="' + lastP[1] + '" stroke="currentColor" stroke-width="16" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg>' +
       '<figcaption><span>' + esc(dt(pts[0][0])) + " · " + esc(f(pts[0][1])) + "</span><b>" + esc(dt(pts[pts.length - 1][0])) + " · " + esc(f(pts[pts.length - 1][1])) + "</b></figcaption></figure>";
   }
   function thirdScene(f, id) {

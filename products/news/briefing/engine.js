@@ -42,7 +42,7 @@
     "Bank of America", "Goldman Sachs", "JPMorgan", "Morgan Stanley", "UBS", "FactSet", "Check Point", "Unternehmensmeldung",
     // Recherche-Lauf (Owner 25.11.2026): Banken, Researchhäuser, Institutionen, X (Beitrag mit Link, Konto im Feld source)
     "Citi", "Deutsche Bank", "Commerzbank", "Barclays", "BlackRock", "Wells Fargo", "Apollo", "Deutsche Bundesbank", "IWF", "OECD",
-    "EIA", "IEA", "OPEC", "ifo", "ZEW", "FRED", "Treasury", "Bloomberg Economics", "Barron's", "MarketWatch", "X"];
+    "EIA", "IEA", "OPEC", "ifo", "ZEW", "FRED", "Treasury", "Bloomberg Economics", "Barron's", "MarketWatch", "X", "CFTC", "Cboe", "CNN"];
   var MAX_PER_SOURCE = 2;
   // Ausblick (Owner 22.11.2026): Termine der nächsten Handelstage. Arten mit Anzeigename; jede Angabe braucht Quelle und https-Link.
   var AGENDA_KINDS = { zahlen: "Quartalszahlen", daten: "Wirtschaftsdaten", notenbank: "Notenbank", dividende: "Dividende", markt: "Börsenkalender" };
