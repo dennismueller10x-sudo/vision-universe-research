@@ -42,7 +42,7 @@
     "Bank of America", "Goldman Sachs", "JPMorgan", "Morgan Stanley", "UBS", "FactSet", "Check Point", "Unternehmensmeldung",
     // Recherche-Lauf (Owner 25.11.2026): Banken, Researchhäuser, Institutionen, X (Beitrag mit Link, Konto im Feld source)
     "Citi", "Deutsche Bank", "Commerzbank", "Barclays", "BlackRock", "Wells Fargo", "Apollo", "Deutsche Bundesbank", "IWF", "OECD",
-    "EIA", "IEA", "OPEC", "ifo", "ZEW", "FRED", "Treasury", "Bloomberg Economics", "Barron's", "MarketWatch", "X"];
+    "EIA", "IEA", "OPEC", "ifo", "ZEW", "FRED", "Treasury", "Bloomberg Economics", "Barron's", "MarketWatch", "X", "CFTC", "Cboe", "CNN"];
   var MAX_PER_SOURCE = 2;
   // Ausblick (Owner 22.11.2026): Termine der nächsten Handelstage. Arten mit Anzeigename; jede Angabe braucht Quelle und https-Link.
   var AGENDA_KINDS = { zahlen: "Quartalszahlen", daten: "Wirtschaftsdaten", notenbank: "Notenbank", dividende: "Dividende", markt: "Börsenkalender" };
@@ -398,6 +398,16 @@
 
   /* Themen Dritter aus dem Radar: Pflichtfelder, Quelle in der Liste, erschienen am Sitzungstag (oder am Morgen danach
      vor dem Lauf), höchstens zwei Karten je Quelle. Verworfenes steht mit Grund im Ergebnis. */
+  /* Chartvergleich (Owner 28.11.2026): zwei Reihen aus Originaldaten, auf Wunsch auf 100 am Start umgerechnet. */
+  function compareOf(c) {
+    if (!c || !c.series || c.series.length !== 2) return null;
+    if (c.series.some(function (r) { return !r.label || !r.points || r.points.length < 2; })) return null;
+    var series = c.series.map(function (r) {
+      var b = r.points[0][1];
+      return { label: r.label, points: c.rebase ? r.points.map(function (p) { return [p[0], Math.round(p[1] / b * 10000) / 100]; }) : r.points };
+    });
+    return { label: c.label || null, unit: c.rebase ? "" : (c.unit || ""), rebase: !!c.rebase, digits: c.digits == null ? 1 : c.digits, series: series };
+  }
   function thirdCards(radar, session, now) {
     // Bei X zählt das Konto (source), nicht die Plattform: zwei Karten je Konto.
     var kept = [], dropped = [], per = {}, key = function (it) { return it.publisher === "X" ? it.source : it.publisher; };
@@ -412,7 +422,7 @@
       per[key(it)] = (per[key(it)] || 0) + 1;
       kept.push({ id: "third-" + (kept.length + 1), type: "THIRD", kicker: it.kicker || "Thema des Tages", title: it.title, sub: it.sub || null,
         columns: it.columns || null, bars: it.bars || null, quote: it.quote || null, stats: it.stats || null,
-        line: it.line && it.line.points && it.line.points.length > 1 ? it.line : null, speaker: it.speaker || null, lead: it.lead === true,
+        line: it.line && it.line.points && it.line.points.length > 1 ? it.line : null, compare: compareOf(it.compare), speaker: it.speaker || null, lead: it.lead === true,
         source: it.source + " · " + deDateY(it.published), url: it.url, publisher: it.publisher });
     });
     return { kept: kept, dropped: dropped };

@@ -481,8 +481,14 @@ externen Inhalten und einem Aufbau, der sich nach dem Tag richtet. Der Lauf verb
 - **Formate je Angabe** in `products/news/radar/<sitzung>.json` → `items[]` (Pflicht: `title`, `publisher`, `source`,
   `published`, `url`): `quote` + `speaker` (Bank-, Researchhaus- oder X-Stimme, höchstens zwei Sätze, wörtlich, übersetzt
   gekennzeichnet), `line` (`{label, unit, digits, points:[[datum, wert]]}`, Makro-Reihe aus den Originaldaten, z. B. FRED),
-  `bars` (`{unit, rows:[{label, value}]}`), `stats` (`[{label, value, unit, sub}]`), sonst nur Text. Fremde Grafiken werden
+  `bars` (`{unit, rows:[{label, value}]}`), `compare` (`{label, rebase, series:[{label, points}, {label, points}]}`), `stats` (`[{label, value, unit, sub}]`), sonst nur Text. Fremde Grafiken werden
   nicht übernommen, sondern aus den Daten neu gezeichnet; Quelle steht im Etikett „Angabe Dritter · …“.
+- **Mehr Einblicke (Owner 28.11.2026):** je Ausgabe mindestens ein
+  **Chartvergleich** (`compare`: zwei Reihen aus Originaldaten, z. B. FRED-CSV `fredgraph.csv?id=…`, `rebase: true` = Start 100;
+  etwa Nasdaq gegen Rendite, Öl gegen Inflationserwartung, heute gegen 2000/2008), mindestens eine Angabe von **Banken,
+  Researchhäusern oder Hedgefonds** (Strategen-Ziele, Positionierung, Fondsflüsse, eigene 13F-Daten aus dem Produkt Hedgefonds)
+  und Stimmen von X mit Zahlen. Bloomberg-, Bank- oder X-Grafiken werden nicht übernommen, sondern aus den genannten Daten
+  nachgezeichnet; die Quelle steht im Etikett.
 - **Aufbau je Tag:** `lead: true` stellt eine Angabe direkt hinter den Überblick (Makro-Tag: Chart vorn; Bank-Tag: Zitat vorn;
   großer Kurstag: Auslöser vorn). `editorial` setzt Schlagzeile und Unterzeile. Ziel: 3–5 externe Angaben, mindestens
   zwei verschiedene Formate, kein Format zwei Tage hintereinander vorn.
