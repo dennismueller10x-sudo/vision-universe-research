@@ -2,35 +2,35 @@
   "note": "Drei Ebenen, drei Nenner. Sie duerfen NICHT addiert werden - die erste zaehlt aufgeloeste Werte, die zweite rohe XBRL-Fakten, die dritte Titel.",
   "values": {
     "denominator": {
-      "RESOLVED_VALUES": 1901211,
+      "RESOLVED_VALUES": 1901296,
       "ISSUERS_WITH_VALUES": 5349
     },
     "byState": {
-      "VALID": 1730641,
-      "WARNING": 170570
+      "VALID": 1730727,
+      "WARNING": 170569
     },
     "note": "Zustand je aufgeloestem Wert. VALID entspricht der internen Stufe HIGH, WARNING der Stufe MEDIUM."
   },
   "findings": {
     "denominator": {
-      "RAW_XBRL_FACTS_WITH_FINDING": 50409784
+      "RAW_XBRL_FACTS_WITH_FINDING": 50411840
     },
     "byState": {
-      "AMBIGUOUS": 1265044,
-      "RESTATED": 304294,
-      "NON_COMPARABLE": 71092,
-      "MISSING": 48751387,
-      "WARNING": 17967
+      "AMBIGUOUS": 1264743,
+      "RESTATED": 304298,
+      "NON_COMPARABLE": 71106,
+      "MISSING": 48753741,
+      "WARNING": 17952
     },
     "byCode": {
-      "UNKNOWN_CONCEPT": 48751387,
-      "CONCEPT_DISAGREEMENT": 1254433,
-      "RESTATEMENT_CONFLICT": 304294,
-      "UNEXPECTED_DURATION": 54906,
+      "UNKNOWN_CONCEPT": 48753741,
+      "CONCEPT_DISAGREEMENT": 1254130,
+      "RESTATEMENT_CONFLICT": 304298,
+      "UNEXPECTED_DURATION": 54920,
       "PERIOD_MISMATCH": 14925,
-      "FISCAL_PERIOD_CONFLICT": 12537,
+      "FISCAL_PERIOD_CONFLICT": 12522,
       "FUTURE_DATA_LEAK": 7513,
-      "UNPLACEABLE_PERIOD": 3098,
+      "UNPLACEABLE_PERIOD": 3100,
       "NEGATIVE_WHERE_IMPOSSIBLE": 2577,
       "EXTREME_VALUE": 2213,
       "UNIT_MISMATCH": 1261,
@@ -41,15 +41,15 @@
   },
   "titles": {
     "denominator": {
-      "PRODUCT_TITLES": 5996
+      "PRODUCT_TITLES": 6001
     },
     "byState": {
-      "AVAILABLE": 4918,
-      "PARTIAL": 463,
+      "AVAILABLE": 4921,
+      "PARTIAL": 464,
       "MISSING": 82,
       "NOT_APPLICABLE": 54,
       "REQUIRES_REVIEW": 0,
-      "UNAVAILABLE": 479
+      "UNAVAILABLE": 480
     },
     "note": "AVAILABLE = mindestens drei Jahre aufloesbare Historie. PARTIAL = Werte, aber kuerzer. MISSING = Einreichungen vorhanden, kein aufloesbarer Wert, und die Struktur muesste welche haben. NOT_APPLICABLE = die Kennzahlen existieren fuer diese Struktur nicht (SPAC, geschlossener Fonds). REQUIRES_REVIEW = nicht belastbar einzuordnen. UNAVAILABLE = kein Factbook."
   },
@@ -76,28 +76,28 @@
     },
     {
       "metric": "eps_diluted",
-      "MISSING_COUNT": 573,
-      "MISSING_RATE": 10.7123
+      "MISSING_COUNT": 572,
+      "MISSING_RATE": 10.6936
     },
     {
       "metric": "operating_cash_flow",
-      "MISSING_COUNT": 297,
-      "MISSING_RATE": 5.5524
+      "MISSING_COUNT": 295,
+      "MISSING_RATE": 5.515
     },
     {
       "metric": "net_income",
-      "MISSING_COUNT": 279,
-      "MISSING_RATE": 5.2159
+      "MISSING_COUNT": 277,
+      "MISSING_RATE": 5.1785
     },
     {
       "metric": "stockholders_equity",
-      "MISSING_COUNT": 77,
-      "MISSING_RATE": 1.4395
+      "MISSING_COUNT": 76,
+      "MISSING_RATE": 1.4208
     },
     {
       "metric": "total_assets",
-      "MISSING_COUNT": 39,
-      "MISSING_RATE": 0.7291
+      "MISSING_COUNT": 38,
+      "MISSING_RATE": 0.7104
     }
   ],
   "highestMissingRate": {
@@ -116,5 +116,5 @@
       "mapping_version": "1.8.0"
     }
   },
-  "generatedAtUtc": "2026-11-28T06:21:46+00:00"
+  "generatedAtUtc": "2026-11-28T06:29:30+00:00"
 }
