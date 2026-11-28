@@ -26,6 +26,16 @@ export function runtimeSLO(seconds){return Number.isFinite(seconds)?(seconds>RUN
    Alarm (WARNING, nie CRITICAL), wenn der Anteil ueber 15 % steigt. Quelle: sourceRegistryAudit.blockedByOperator (source_registry_audit.py). */
 export const BLOCKED_SHARE_WARN=0.15;
 export function blockedSLO(share){return Number.isFinite(share)?(share>BLOCKED_SHARE_WARN?'WARNING':'HEALTHY'):null;}
+/* Robots-Sperren je Lauf (Steuerung 28.11.2026, Korrektur zu #2488): Der Audit (sourceRegistryAudit) laeuft nur in Verifikationslaeufen; die Produktions-Takte
+   tragen kein blockedByOperator. Aus den vorhandenen Feldern: Anteil der in DIESEM Lauf geprueften Quellen, die an robots.txt scheiterten
+   (sourceOutcomes.ROBOTS_TEMPORARY_FAILURE im Verhaeltnis zu sourcesChecked). Das ist NICHT der Anteil der aktiven Quellen. */
+export function robotsRun(r){
+ const o=r?.sourceOutcomes,checked=r?.sourcesChecked;
+ if(!o||typeof o!=='object'||!Number.isFinite(checked)||checked<=0)return null;
+ const failed=o.ROBOTS_TEMPORARY_FAILURE??0; // fehlt der Schluessel, gab es in diesem Lauf keine
+ if(!Number.isFinite(failed))return null;
+ return {failed,checked,share:failed/checked,basis:'ROBOTS_TEMPORARY_FAILURE_OF_CHECKED_SOURCES_IN_RUN'};
+}
 export const isFullScope=r=>r?.scope==='PER_ISSUER_ELIGIBILITY'||r?.cohortIssuers>45;
 export function backlogRatio(r){
  const over=r?.scheduler?.dueOverSevenDays,total=r?.eligibleSources;
@@ -45,6 +55,7 @@ export function applyBacklog(verdict,report,now=Date.now()){
  const all=[refreshSLO,out.buildSLO,out.publicationSLO];
  const rt=runtimeSLO(report.runtimeSeconds);
  if(rt){out.pythonRuntimeSeconds=report.runtimeSeconds;out.runtimeSLO=rt;if(rt==='WARNING')all.push('WARNING');}
+ const rr=robotsRun(report);if(rr)out.robotsRun=rr;
  const bo=report.sourceRegistryAudit?.blockedByOperator,bs=blockedSLO(bo?.share);
  if(bs){out.blockedByOperator={sources:bo.sources,activeApprovedSources:bo.activeApprovedSources,share:bo.share,basis:bo.basis||null};out.blockedByOperatorSLO=bs;if(bs==='WARNING')all.push('WARNING');}
  out.status=all.includes('CRITICAL')?'CRITICAL':all.includes('WARNING')?'WARNING':out.publicationSLO==='OFF'?'OFF':'HEALTHY';

@@ -174,13 +174,15 @@
       stand.textContent = "Stand: " + r.asOf.slice(0, 16).replace("T", " ") + " UTC · Zustand " + (r.status || "–") + " · " +
         (Number.isFinite(r.dueOverSevenDays) && Number.isFinite(r.eligibleSources)
           ? r.dueOverSevenDays.toLocaleString("de-DE") + " von " + r.eligibleSources.toLocaleString("de-DE") + " Quellen mehr als 7 Tage überfällig (" + pct(r.backlogRatio) + "; gesund bis 10 %, Warnung bis 25 %)" : "Rückstand nicht gemessen") +
-        (b ? " · vom Betreiber blockiert: " + b.sources.toLocaleString("de-DE") + " (" + pct(b.share) + " der aktiven Quellen, Alarm über 15 %)" : "") +
+        (r.robotsRun ? " · Robots-Sperren im letzten Lauf: " + r.robotsRun.failed.toLocaleString("de-DE") + " von " + r.robotsRun.checked.toLocaleString("de-DE") + " geprüften Quellen (" + pct(r.robotsRun.share) + "; Anteil der geprüften Quellen dieses Laufs, nicht der aktiven Quellen)" : "") +
+        (r.robotsRolling3 ? " · gleitend über " + r.robotsRolling3.runs + " Läufe: " + pct(r.robotsRolling3.share) + (r.robotsRolling3.slo === "WARNING" ? " (Alarm über 25 %)" : r.robotsRolling3.slo ? " (unter der Alarmgrenze von 25 %)" : " (Alarm erst ab 3 Läufen)") : "") +
+        (b ? " · vom Betreiber blockiert (Tageswert aus dem Quellen-Audit): " + b.sources.toLocaleString("de-DE") + " (" + pct(b.share) + " der aktiven Quellen)" : "") +
         (Number.isFinite(r.pythonRuntimeSeconds) ? " · Laufzeit " + Math.round(r.pythonRuntimeSeconds) + " s" : "");
       var body = table.querySelector("tbody"); body.textContent = "";
       r.history.slice(-12).reverse().forEach(function (e) {
         body.appendChild(el("tr", {}, [el("td", { text: String(e.asOf || "").slice(0, 16).replace("T", " ") }), el("td", { text: e.status || "–" }),
           el("td", { text: Number.isFinite(e.dueOverSevenDays) ? e.dueOverSevenDays.toLocaleString("de-DE") + " (" + pct(e.backlogRatio) + ")" : "–" }),
-          el("td", { text: Number.isFinite(e.blockedByOperatorSources) ? e.blockedByOperatorSources.toLocaleString("de-DE") + " (" + pct(e.blockedByOperatorShare) + ")" : "–" })]));
+          el("td", { text: Number.isFinite(e.robotsFailed) && Number.isFinite(e.robotsChecked) ? e.robotsFailed.toLocaleString("de-DE") + " von " + e.robotsChecked.toLocaleString("de-DE") + " (" + pct(e.robotsShare) + ")" : "–" })]));
       });
       table.hidden = !body.children.length;
     } catch (e) {

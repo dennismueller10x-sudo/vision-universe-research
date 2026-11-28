@@ -544,7 +544,7 @@
       "timestamp": ["asOf"],
       "records": "history",
       "minRecords": 1,
-      "role": "Urteil des Refresh-SLO (Rueckstandsquote dueOverSevenDays, Anteil der vom Betreiber blockierten Quellen, Python-Laufzeit, Lane-Stempel) als Zahlen mit Verlauf (60 Berichte). Keine Quellen-, Host- oder Inhaltszeilen; Alarm bei Rueckstand ueber 25 % (CRITICAL ab 25 %, WARNING ab 10 %) und bei blockiertem Anteil ueber 15 %.",
+      "role": "Urteil des Refresh-SLO (Rueckstandsquote dueOverSevenDays, Anteil der vom Betreiber blockierten Quellen, Python-Laufzeit, Lane-Stempel) als Zahlen mit Verlauf (60 Berichte). Keine Quellen-, Host- oder Inhaltszeilen; Rueckstand: WARNING ab 10 %, CRITICAL ab 25 %. Robots-Sperren: Anteil der je Lauf geprueften Quellen (nicht der aktiven), gleitend ueber 3 Laeufe, WARNING ueber 25 %; der Anteil der aktiven Quellen (blockedByOperator) kommt nur aus dem Quellen-Audit und steht nur in Laeufen mit Audit.",
       "producer": "scripts/company_intelligence/refresh-slo-aggregate.mjs (aus backlog-slo.mjs)",
       "workflow": "company-intelligence-health.yml",
       "schedule": "alle 4 Stunden (core/registry/schedule.json, company-intelligence-health), nur im Datenzweig data/live",
