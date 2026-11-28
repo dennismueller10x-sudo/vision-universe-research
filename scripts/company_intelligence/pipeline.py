@@ -6,7 +6,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from urllib.parse import urlencode
 from .model import domain, Resolver, canonical_url, make_item, stable_id, within_domain, issuer_results_actor, issuer_earnings_announcement, financial_release_evidence
-from .transport import BudgetExhausted, SourceError
+from .transport import BLOCKED_BY_OPERATOR_AFTER, BudgetExhausted, SourceError, blocked_by_operator
 from .feeds import parse_feed, parse_gdelt, discover_ir
 from .structured_sources import news_index, gcs_events
 from .stockpr_events import parse as stockpr_events
@@ -376,7 +376,11 @@ class Pipeline:
             # Failure to retrieve robots (DNS/proxy/503) is temporary. Only an
             # actual access denial/disallowance receives the slow blocked retry.
             error_text=str(exc)
-            if 'ROBOTS_UNAVAILABLE' in error_text or ('HTTP_403' in error_text and 'ROBOTS_DISALLOWED' not in error_text):
+            if blocked_by_operator(error_text) and failure_count >= BLOCKED_BY_OPERATOR_AFTER:
+                # Der Betreiber weist robots.txt dauerhaft ab (WAF/CDN): nach drei Fehlschlaegen in Folge
+                # eine Woche Ruhe, damit die Quelle keine Pruefplaetze belegt. robots.txt wird nie umgangen.
+                delay = 7 * 24
+            elif 'ROBOTS_UNAVAILABLE' in error_text or ('HTTP_403' in error_text and 'ROBOTS_DISALLOWED' not in error_text):
                 delay = min(72, 2 ** min(failure_count, 6))
             else:
                 delay = 7 * 24 if any(code in error_text for code in ('HTTP_401', 'HTTP_404', 'HTTP_410', 'ROBOTS_DISALLOWED')) else min(72, 2 ** min(failure_count, 6))
