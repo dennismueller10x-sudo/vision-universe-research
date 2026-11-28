@@ -39,6 +39,16 @@ def robots_diag_line(origin, error, cause=None):
     return 'ROBOTS_DIAG origin=%s error=%s cause=%s' % (host, str(error).split(':')[0][:40], kind[:80])
 
 
+BLOCKED_BY_OPERATOR_AFTER = 3
+
+
+def blocked_by_operator(error):
+    """Der Betreiber weist die robots.txt-Anfrage selbst ab (HTTP 403 oder 401). Nur diese beiden
+    Faelle; 5xx, Timeout, DNS und alles andere bleiben voruebergehende Fehler."""
+    text = str(error)
+    return 'ROBOTS_UNAVAILABLE:HTTP_403' in text or 'ROBOTS_UNAVAILABLE:HTTP_401' in text
+
+
 class NoRedirect(urllib.request.HTTPRedirectHandler):
     def redirect_request(self, req, fp, code, msg, headers, newurl):
         return None
