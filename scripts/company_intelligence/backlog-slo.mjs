@@ -21,6 +21,11 @@ export function backlogSLO(ratio){
    die Voll-Laeufe enden bei Median 1140 s, Maximum 1158 s (Abstand 42 s). Ueber 1180 s: WARNING im Health-Lauf, kein Abbruch, kein CRITICAL. */
 export const RUNTIME_WARN_SECONDS=1180,PROCESS_TIMEOUT_SECONDS=1200;
 export function runtimeSLO(seconds){return Number.isFinite(seconds)?(seconds>RUNTIME_WARN_SECONDS?'WARNING':'HEALTHY'):null;}
+/* "Blockiert vom Betreiber" (Steuerung 28.11.2026): Quellen, deren robots.txt der Betreiber mit HTTP 403/401 abweist (WAF/CDN).
+   Sie bleiben im Rueckstand, werden aber nicht still herausgerechnet: eigene Zahl mit Anteil an den aktiven Quellen, und ein eigener
+   Alarm (WARNING, nie CRITICAL), wenn der Anteil ueber 15 % steigt. Quelle: sourceRegistryAudit.blockedByOperator (source_registry_audit.py). */
+export const BLOCKED_SHARE_WARN=0.15;
+export function blockedSLO(share){return Number.isFinite(share)?(share>BLOCKED_SHARE_WARN?'WARNING':'HEALTHY'):null;}
 export const isFullScope=r=>r?.scope==='PER_ISSUER_ELIGIBILITY'||r?.cohortIssuers>45;
 export function backlogRatio(r){
  const over=r?.scheduler?.dueOverSevenDays,total=r?.eligibleSources;
@@ -40,6 +45,8 @@ export function applyBacklog(verdict,report,now=Date.now()){
  const all=[refreshSLO,out.buildSLO,out.publicationSLO];
  const rt=runtimeSLO(report.runtimeSeconds);
  if(rt){out.pythonRuntimeSeconds=report.runtimeSeconds;out.runtimeSLO=rt;if(rt==='WARNING')all.push('WARNING');}
+ const bo=report.sourceRegistryAudit?.blockedByOperator,bs=blockedSLO(bo?.share);
+ if(bs){out.blockedByOperator={sources:bo.sources,activeApprovedSources:bo.activeApprovedSources,share:bo.share,basis:bo.basis||null};out.blockedByOperatorSLO=bs;if(bs==='WARNING')all.push('WARNING');}
  out.status=all.includes('CRITICAL')?'CRITICAL':all.includes('WARNING')?'WARNING':out.publicationSLO==='OFF'?'OFF':'HEALTHY';
  out.exitCode=out.status==='CRITICAL'?1:0;
  return out;
@@ -86,6 +93,7 @@ if(process.argv[1]&&import.meta.url===new URL('file://'+process.argv[1]).href){
  }catch(e){console.log('::warning::Rueckstandsquote nicht lesbar, Stempel-Urteil bleibt: '+String(e?.message||e).slice(0,120));}
  writeFileSync(file,JSON.stringify(final,null,2)+'\n');console.log(JSON.stringify(final));
  if(final.runtimeSLO==='WARNING')console.log(`::warning::Company Intelligence Python-Laufzeit ${final.pythonRuntimeSeconds} s (Warnung ab ${RUNTIME_WARN_SECONDS} s, fester Prozess-Timeout ${PROCESS_TIMEOUT_SECONDS} s in refresh-run.mjs)`);
+ if(final.blockedByOperatorSLO==='WARNING')console.log(`::warning::Company Intelligence: ${final.blockedByOperator.sources} von ${final.blockedByOperator.activeApprovedSources} aktiven Quellen (${Math.round(final.blockedByOperator.share*1000)/10} %) sind vom Betreiber blockiert (robots.txt HTTP 403/401), Alarm ab ${BLOCKED_SHARE_WARN*100} %`);
  if(final.status==='CRITICAL')console.log(`::error::Company Intelligence SLO CRITICAL (refresh ${final.refreshSLO}${final.backlogRatio!==undefined?' backlog '+final.backlogRatio:''}, build ${final.buildSLO}, publication ${final.publicationSLO}, production ${final.productionState})`);
  process.exitCode=final.exitCode;
 }
