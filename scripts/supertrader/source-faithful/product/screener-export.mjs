@@ -13,8 +13,9 @@
  */
 export const SCREENER_EXPORT_VERSION = 'sf-screener-export-1.0.0';
 export const INDEX_SCHEMA = 'supertrader-sf8-candidates-1.0.0';
-/** V1 = Top 5 (Neustart 04.11.2026, READING-DECISIONS-2026-11-04.json); die übrigen acht sind „in Forschung“. */
-export const V1_METHODS = Object.freeze(['C01', 'C02', 'C03', 'C08', 'C12']);
+/** Live im Produkt: alle 13 Methoden (Owner 28.11.2026). Bis dahin V1 = Top 5 (READING-DECISIONS-2026-11-04.json, bleibt als
+ *  Reihenfolge der historischen Tests stehen). Der Name V1_METHODS bleibt für den Screener (Spalte stV1). */
+export const V1_METHODS = Object.freeze(['C01', 'C02', 'C03', 'C04', 'C05', 'C06', 'C07', 'C08', 'C09', 'C10', 'C11', 'C12', 'C13']);
 export const STAGE_ORDER = Object.freeze(['CHART_CANDIDATE', 'CONFIRMED_RESEARCH_SETUP', 'MODELED_TRADE_PLAN']);
 export const LABEL = 'Research, keine Empfehlung';
 
@@ -51,7 +52,7 @@ export function screenerColumns(index) {
     },
     // Kriterien für die Oberfläche: Methode (je Kandidat-ID), V1 ja/nein, höchste Stufe
     criteria: {
-      methods: [...methods.values()].map((s) => ({ id: s.candidateId, name: s.name, v1: V1_METHODS.includes(s.candidateId), status: V1_METHODS.includes(s.candidateId) ? 'V1' : 'IN_FORSCHUNG' })),
+      methods: [...methods.values()].map((s) => ({ id: s.candidateId, name: s.name, v1: V1_METHODS.includes(s.candidateId), status: V1_METHODS.includes(s.candidateId) ? 'LIVE' : 'IN_FORSCHUNG' })),
       stages: STAGE_ORDER.map((id) => ({ id, name: index.stageLabels?.[id]?.name ?? id, step: index.stageLabels?.[id]?.step ?? rank(id) + 1 })),
     },
     byTicker,

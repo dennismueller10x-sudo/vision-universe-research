@@ -12,7 +12,7 @@ test('SF-SCREENER-1: echter Stand -> Spalten je Ticker; jede Kandidatenzeile wie
   assert.equal(r.meta.candidates, INDEX.candidates.length);
   assert.equal(r.meta.label, 'Research, keine Empfehlung');
   assert.equal(r.criteria.methods.length, 13);
-  assert.deepEqual(r.criteria.methods.filter((m) => m.v1).map((m) => m.id).sort(), ['C01', 'C02', 'C03', 'C08', 'C12']);
+  assert.deepEqual(r.criteria.methods.filter((m) => m.v1).map((m) => m.id).sort(), ['C01', 'C02', 'C03', 'C04', 'C05', 'C06', 'C07', 'C08', 'C09', 'C10', 'C11', 'C12', 'C13']);
   for (const c of INDEX.candidates) {
     const x = r.byTicker.get(c.t);
     assert.ok(x && x.methods.includes(c.c), `${c.t} ${c.c}`);
