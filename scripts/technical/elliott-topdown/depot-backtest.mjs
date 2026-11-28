@@ -22,6 +22,8 @@
      M  Nur Momentum (ohne Elliott): Score aus Relativer Stärke, Trend und Momentum allein, sonst wie A. Zeigt, was Elliott beiträgt.
      D  Momentum mit Elliott als Bremse: wie M, aber kein Kauf bei Elliott-Plan abwärts, Verkauf, wenn die Zählung eine Korrektur meldet.
      E  wie A, Gewinner laufen lassen: Verkauf erst unter der Ungültig-Marke, bei Score unter 50 oder nach 156 Wochen.
+     H  Zone ohne Zeitgrenze: Auftrag bleibt bis Ausführung, Ungültig oder Weglaufen über die Folgezone; halten bis Fernziel/Ungültig.
+     I  wie H, gestaffelt: halbe Position sofort, halbe in der Zone.
      G  Nur Elliott (HKCM-Art): Kauf, wenn der Plan aufwärts zeigt und das Fernziel (log) mindestens 1,5 × Kurs ist; halten bis
         Fernziel oder Ungültig-Marke, ohne Zeitgrenze und ohne Score. Kein Leerverkauf, freies Geld bleibt unverzinst.
      F  wie E, dazu Verkauf am Fernziel auf der log-Skala (Welle 3 = 1,618 × Welle 1 als Faktor, Welle 5 = 1,0 ×).
@@ -242,6 +244,58 @@ function simulate(kind) {
   }
   return { curve, trades, investiert: inv / cal.length, zonenAuftraege: zoneOrders.size };
 }
+/* H und I (Owner 28.11.2026: Elliott ist ein Zonen-, kein Zeitinstrument): Kaufauftrag in der Rücksetzer-Zone bleibt stehen, bis er
+   ausgeführt wird, die Zählung ungültig wird (Kurs unter der Ungültig-Marke) oder der Kurs ohne Rücksetzer über die Zone des
+   Folgeschritts läuft (Setup ohne uns gelaufen); an jedem Signaltag mit Zone wird der Auftrag auf die aktuelle Zählung gesetzt.
+   Halten bis zum großen Fernziel (log) oder bis unter die Ungültig-Marke, ohne Zeitgrenze.
+   H: ganze Position in der Zone. I: gestaffelt – halbe Position zum nächsten Wochenschluss, halbe Position in der Zone. */
+function simulateZone(staggered) {
+  let cash = 1, lots = [], orders = new Map(), market = [], curve = [], trades = [], inv = 0, filled = 0, created = 0, ranAway = 0, invalid = 0;
+  const isSig = new Set(sigKeys);
+  for (let w = 0; w < cal.length; w++) {
+    const k = cal[w];
+    const value = () => cash + lots.reduce((s, p) => s + p.n * (price(p.f, k) ?? p.last), 0);
+    const held = () => new Set(lots.map((p) => p.f));
+    const buy = (f, pr, share, o, why) => { const amt = Math.min(cash, (value() / MAX) * share); if (amt < 1e-6) return false; cash -= amt; lots.push({ f, n: (amt * (1 - COST)) / pr, in: pr, w0: w, last: pr, far: o.far, stop: o.stop, lot: why }); return true; };
+    /* 1. Kauf zum Wochenschluss (halbe Position, I) */
+    for (const o of market) { const pr = price(o.f, k); if (!pr) continue; const h = held(); if (h.has(o.f) || h.size >= MAX) continue; buy(o.f, pr, 0.5, o, "sofort"); }
+    market = [];
+    /* 2. Zonen-Aufträge */
+    for (const [f, o] of [...orders]) {
+      const pr = price(f, k); if (!pr) continue;
+      if (pr <= o.stop) { orders.delete(f); invalid++; continue; }
+      if (o.away && pr >= o.away) { orders.delete(f); ranAway++; continue; }
+      if (pr <= o.near) {
+        const h = held(); if (!h.has(f) && h.size >= MAX) continue;
+        if (lots.some((p) => p.f === f && p.lot === "zone")) { orders.delete(f); continue; }
+        if (buy(f, pr, staggered ? 0.5 : 1, o, "zone")) { filled++; orders.delete(f); }
+      }
+    }
+    /* 3. Ausstieg je Teilposition */
+    lots = lots.filter((p) => {
+      const T0 = px[p.f].term;
+      if (T0 && k > px[p.f].endK) { cash += p.n * p.last * T0.recovery * (1 - COST); trades.push({ f: p.f, r: (p.last * T0.recovery) / p.in - 1, w: w - p.w0, why: "delisting" }); return false; }
+      const pr = price(p.f, k); if (pr) p.last = pr; else return true;
+      const why = p.far && pr >= p.far ? "fernziel" : p.stop && pr <= p.stop ? "ungültig" : null;
+      if (!why) return true;
+      cash += p.n * pr * (1 - COST); trades.push({ f: p.f, r: pr / p.in - 1, w: w - p.w0, why, lot: p.lot }); return false;
+    });
+    /* 4. Signale: Auftrag setzen oder auf die aktuelle Zählung nachziehen */
+    if (isSig.has(k)) {
+      const cand = Object.entries(SC[k]).filter(([, x]) => x.e && x.e.v >= 65 && x.s && x.s.zone && x.s.plan === "UP")
+        .sort((a, b) => b[1].e.v - a[1].e.v || a[0].localeCompare(b[0]));
+      for (const [f, x] of cand) {
+        const z = x.s.zone, stop = x.s.inv && x.s.inv < z.near ? x.s.inv : z.stop;
+        const o = { near: z.near, stop, far: x.s.farLog || null, away: z.tgt };
+        const hasZoneLot = lots.some((p) => p.f === f && p.lot === "zone");
+        if (!hasZoneLot) { if (!orders.has(f)) created++; orders.set(f, o); }
+        if (staggered && !lots.some((p) => p.f === f) && !market.some((m) => m.f === f)) market.push(Object.assign({ f }, o));
+      }
+    }
+    { const v = value(); curve.push([k, v]); inv += v > 0 ? 1 - cash / v : 0; }
+  }
+  return { curve, trades, investiert: inv / cal.length, zonenAuftraege: created, zonenAusgefuehrt: filled, zonenOhneUns: ranAway, zonenUngueltig: invalid };
+}
 /* Gleichgewicht aller Universumsaktien, alle 4 Wochen neu gewichtet */
 function equalWeight() {
   let v = 1, curve = [], held = null;
@@ -270,6 +324,7 @@ const periods = [["gesamt", cal[0], cal[cal.length - 1]], ["bis 2014", cal[0], "
 const runs = { "A Setup stark": simulate("A"), "B Setup stark + Elliott-Ziel/Absicherung": simulate("B"), "C Zone (HKCM-Stil)": simulate("C"), "M nur Momentum (ohne Elliott)": simulate("M"),
   "D Momentum + Elliott als Bremse": simulate("D"), "E Setup stark, Gewinner laufen lassen (bis Ungültig)": simulate("E"), "F Setup stark, Fernziel log (HKCM-Art)": simulate("F"),
   "G Nur Elliott: Kauf bei Fernziel ≥ 1,5×, halten bis Fernziel oder Ungültig": simulate("G"),
+  "H Zone ohne Zeitgrenze, halten bis Fernziel oder Ungültig": simulateZone(false), "I Gestaffelt: halb sofort, halb in der Zone, bis Fernziel oder Ungültig": simulateZone(true),
   "Vergleich: Gleichgewicht Universum": equalWeight(), "Vergleich: SPY": bench(spyBy), "Vergleich: QQQ": bench(qqqBy) };
 const result = { schema: "vu-elliott-depot-backtest-1", label: "Forschung, nicht zertifiziert", engine: TD.VERSION, setupScore: SS.VERSION,
   params: { pit: PIT ? pitStats : null, from: FROM, stepWeeks: STEP, maxPositionen: MAX, kosten: COST, index: INDEX, aktien: uniFiles.length, signaltage: sigKeys.length, signalSekunden: sigSec, signale: sigN, signaleMitPlan: sigPlan },
@@ -279,6 +334,7 @@ for (const [name, r] of Object.entries(runs)) {
   const e = { zeitraeume: Object.fromEntries(periods.map(([n, a, b]) => [n, stats(r.curve, a, b)])) };
   if (r.trades) { const T = r.trades; const sr = T.map((x) => x.r).sort((a, b) => a - b);
     e.investiertAnteil = Math.round(r.investiert * 1000) / 10; if (r.zonenAuftraege) e.zonenAuftraege = r.zonenAuftraege;
+    if (r.zonenAusgefuehrt !== undefined) Object.assign(e, { zonenAusgefuehrt: r.zonenAusgefuehrt, zonenOhneUns: r.zonenOhneUns, zonenUngueltig: r.zonenUngueltig });
     e.mittlererTrade = T.length ? Math.round((T.reduce((s, x) => s + x.r, 0) / T.length) * 1000) / 10 : null; e.medianTrade = T.length ? Math.round(sr[sr.length >> 1] * 1000) / 10 : null; e.trades = T.length; e.gewinnQuote = T.length ? Math.round((T.filter((x) => x.r > 0).length / T.length) * 1000) / 10 : null; e.mittlereHaltedauerWochen = T.length ? Math.round(T.reduce((s, x) => s + x.w, 0) / T.length) : null;
     e.ausstieg = T.reduce((o, x) => ((o[x.why] = (o[x.why] || 0) + 1), o), {}); }
   result.ergebnis[name] = e;
