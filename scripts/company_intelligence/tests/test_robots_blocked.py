@@ -59,6 +59,14 @@ class RobotsBlockedByOperatorTests(unittest.TestCase):
                 self.assertTrue(all(d <= 72 for d in delays), delays)
                 self.assertEqual(delays[:3], [2, 4, 8])
 
+    def test_audit_reports_the_blocked_share_from_the_same_predicate(self):
+        # Der Audit zaehlt mit derselben Funktion wie die Pipeline und weist Zahl, Nenner und Anteil aus
+        # (kein Ende-zu-Ende-Lauf: der Audit braucht einen vollen Identitaetsstand).
+        text = (Path(__file__).resolve().parents[1] / 'source_registry_audit.py').read_text(encoding='utf-8')
+        self.assertIn('from company_intelligence.transport import blocked_by_operator', text)
+        self.assertIn("blocked_operator+=blocked_by_operator(source.get('lastError') or '')", text)
+        self.assertIn("'blockedByOperator':{'sources':blocked_operator,'activeApprovedSources':active,'share':", text)
+
     def test_robots_disallowed_keeps_its_week(self):
         self.assertEqual(fail_n_times('ROBOTS_DISALLOWED', 1), [7 * 24])
 
