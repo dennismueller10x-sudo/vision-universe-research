@@ -70,7 +70,7 @@
       esc(o.sub || hk[1]) + '</p></div><div class="swipe"><b>→</b>Wischen</div>', label: "VISION UNIVERSE · MARKTBRIEFING" });
     // Angaben Dritter: Zahlen (lime) und Zitat (schwarz)
     ext(b).forEach(function (e) {
-      var lab = "ANGABE DRITTER · " + String(e.source || e.publisher).replace(/^X · /, "").replace(/ *\(.*\)/, "").toUpperCase();
+      var lab = "QUELLE · " + String(e.source || e.publisher).replace(/^X · /, "").replace(/ *\(.*\)/, "").toUpperCase();
       if (e.stats) out.push({ bg: "l", label: lab, html: '<div style="margin-top:60px"><span class="kick">' + esc(e.kicker || "Makro") + "</span><h2>" + marked(e.title) + '</h2></div><div style="display:grid;gap:18px;margin-top:20px">' +
         e.stats.map(function (x) { var v = x.text != null ? x.text : (x.unit === "%" ? num(x.value, 1) + "\u00a0%" : num(x.value, 1)); return '<div><div style="font-size:140px;font-weight:900;letter-spacing:-.06em;line-height:1;padding-bottom:.14em">' + esc(v) + '</div><div class="say" style="font-size:34px;font-weight:800">' + esc(x.label) + (x.sub ? " · " + esc(x.sub) : "") + "</div></div>"; }).join("") + "</div>" });
       else out.push({ bg: "k", label: lab, html: '<div style="margin-top:80px"><span class="kick">' + esc(e.kicker || "Stimme") + '</span><div style="font-size:72px;font-weight:900;line-height:1.15;letter-spacing:-.03em">„' + esc(e.quote) + '“</div>' +

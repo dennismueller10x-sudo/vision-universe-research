@@ -138,7 +138,7 @@ export function pdfHtml(b, { font }) {
   const inhalt = `<section class="page">${run(3, 'Das Wichtigste in Kürze')}<div style="margin-top:6mm"><span class="ressort">Das Wichtigste in Kürze</span><h2 class="h1">${esc(C.overview.title)}</h2></div>
     <ol class="sum">${(b.summary || []).map((t) => `<li>${esc(t)}</li>`).join('')}</ol>
     <div class="toc">${b.cards.map((c, i) => `<div><b>${String(firstCardPage + i).padStart(2, '0')}</b><span>${esc(c.title)}</span></div>`).join('')}</div>
-    <div class="note"><div class="k"><small>Eigene Auswertung</small>Marktbreite, Einordnung, Bewertung und Marktbild rechnet Vision Universe selbst aus Kursen und SEC-Meldungen.</div><div class="l"><small>Angabe Dritter</small>Nachrichten, Umfragen und Wahrscheinlichkeiten geben die genannte Quelle vom Handelstag wieder.</div></div>${foot(3)}</section>`;
+    <div class="note"><div class="k"><small>Eigene Auswertung</small>Marktbreite, Einordnung, Bewertung und Marktbild rechnet Vision Universe selbst aus Kursen und SEC-Meldungen.</div><div class="l"><small>Externe Quellen</small>Nachrichten, Umfragen und Wahrscheinlichkeiten geben die genannte Quelle vom Handelstag wieder.</div></div>${foot(3)}</section>`;
 
   const cardPages = b.cards.map((c, i) => `<section class="page dark cardpage">${run(firstCardPage + i, c.kicker)}<div class="card">${Render.cardSvg(c, i, b.cards.length, b.session)}</div>${foot(firstCardPage + i)}</section>`).join('');
 
