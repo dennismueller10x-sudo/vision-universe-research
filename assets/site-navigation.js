@@ -14,9 +14,11 @@
     // Animation: zurueck schiebt in der App schon die native Randgeste, im Browser die Geste des Browsers.
     const wanted = activation => !!(activation && activation.navigationType !== 'traverse' && activation.navigationType !== 'reload');
     const flag = value => { try { if (value) sessionStorage.setItem('vu-vt-skip', '1'); else { const v = sessionStorage.getItem('vu-vt-skip'); sessionStorage.removeItem('vu-vt-skip'); return v === '1'; } } catch (_) { /* ohne Speicher */ } return false; };
-    addEventListener('pageswap', e => { if (e.viewTransition && !wanted(e.activation)) { e.viewTransition.skipTransition(); flag(true); } });
+    // Ein abgebrochener Uebergang lehnt sein ready-Versprechen mit AbortError ab; ohne Handler meldet der Browser das als Fehler der Seite.
+    const skip = t => { try { t.ready.catch(() => {}); } catch (_) { /* aeltere Browser ohne ready */ } t.skipTransition(); };
+    addEventListener('pageswap', e => { if (e.viewTransition && !wanted(e.activation)) { skip(e.viewTransition); flag(true); } });
     // Ein aus dem bfcache wiederhergestelltes Dokument startet seinen Uebergang selbst; das Merkzeichen des alten haelt es an.
-    addEventListener('pagereveal', e => { if (flag(false) && e.viewTransition) e.viewTransition.skipTransition(); });
+    addEventListener('pagereveal', e => { if (flag(false) && e.viewTransition) skip(e.viewTransition); });
     // Vorladen: Einstiege der Produkte und Leistenziele, einmal je Seite nach Ruhe, nie bei Datensparen/2G.
     const warm = () => {
       const c = navigator.connection;
