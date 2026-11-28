@@ -12,7 +12,7 @@
 
   var W = 1080, H = 1350, PAD = 72, IN = W - 2 * PAD;
   var C = { bg: "#08080a", fg: "#f4f5f1", mut: "#8b8d86", dim: "#5b5d57", lime: "#c8f531", line: "#25262a", card: "#111114", soft: "#c9cbc4" };
-  var TYPE_TAG = { MARKET: null, OWN: "Eigene Auswertung", THIRD: "Angabe Dritter", AGENDA: "Termine" };
+  var TYPE_TAG = { MARKET: null, OWN: "Eigene Auswertung", THIRD: "Quelle", AGENDA: "Termine" };
   /* Linien-Icons (24er Raster, Strich): Ausblick-Arten und Szenen der Website (www.js nutzt dieselben). */
   var ICONS = {
     zahlen: '<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 17v-3M12 17v-7M15 17v-5"/>',
@@ -75,7 +75,7 @@
     var y = 180, s = "";
     var kick = String(card.kicker || "").toUpperCase();
     s += '<text x="' + PAD + '" y="' + y + '" font-size="26" font-weight="800" letter-spacing="3" fill="' + C.lime + '">' + esc(kick) + "</text>";
-    var tag = card.type === "THIRD" && card.publisher ? "Angabe Dritter · " + card.publisher : TYPE_TAG[card.type];
+    var tag = card.type === "THIRD" && card.publisher ? "Quelle: " + (card.publisher === "X" && card.source ? String(card.source).split(",")[0] : card.publisher) : TYPE_TAG[card.type];
     if (tag) {
       var x = PAD + kick.length * 26 * 0.8 + 24, w = tag.length * 19 * 0.55 + 32;
       var own = card.type === "OWN";
@@ -297,7 +297,7 @@
       '</head>\n<body data-view="news"><vu-navigation></vu-navigation><script src="/assets/site-navigation.js"><\/script>\n<main class="mb">\n' +
       '<p style="margin:0;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#c8f531;font-weight:700">Marktbriefing</p>\n' +
       "<h1>US-Handelstag " + deDate(b.session) + "</h1>\n" +
-      "<p>" + n + " Karten: " + b.counts.MARKET + " Marktdaten, " + b.counts.OWN + " eigene Auswertungen, " + b.counts.THIRD + " Angaben Dritter. Indizes über ETF-Proxies.</p>\n" +
+      "<p>" + n + " Karten: " + b.counts.MARKET + " Marktdaten, " + b.counts.OWN + " eigene Auswertungen, " + b.counts.THIRD + " Angaben aus externen Quellen. Indizes über ETF-Proxies.</p>\n" +
       cards + "\n" +
       (arch ? '<h2 style="font-size:18px">Frühere Ausgaben</h2><nav class="mb-arch">' + arch + "</nav>\n" : "") +
       '<details class="mb-legal"><summary>Quellen und Hinweise</summary><ul>' + b.cards.map(function (c) { return "<li>" + esc(c.title) + ": " + esc(c.source) + (c.url ? ' · <a href="' + esc(c.url) + '" rel="noopener">Quelle</a>' : "") + "</li>"; }).join("") + "</ul></details>\n" +
