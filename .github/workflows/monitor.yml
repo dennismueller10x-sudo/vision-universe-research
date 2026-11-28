@@ -42,6 +42,7 @@ on:
         type: choice
         required: true
         options:
+          - ci-status
           - cloudflare
           - cloudflare-wecker
           - currency
@@ -114,6 +115,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
+      ci_status: ${{ steps.wahl.outputs.ci_status }}
       cloudflare: ${{ steps.wahl.outputs.cloudflare }}
       cloudflare_wecker: ${{ steps.wahl.outputs.cloudflare_wecker }}
       currency: ${{ steps.wahl.outputs.currency }}
@@ -168,7 +170,7 @@ jobs:
           marke() { [[ "${MSG:-}" == *"$1"* ]]; }
           claude() { [[ "$REF" == refs/heads/claude/* ]]; }
           setze() { echo "$1=$2" >> "$GITHUB_OUTPUT"; echo "$1=$2"; }
-          for k in cloudflare cloudflare_wecker currency discover discover_realtime europe_discover ladezeit marktdaten_commit realtime sec_frische sec_veroeffentlichung supertrader technical vorsorge; do
+          for k in ci_status cloudflare cloudflare_wecker currency discover discover_realtime europe_discover ladezeit marktdaten_commit realtime sec_frische sec_veroeffentlichung supertrader technical vorsorge; do
             v=false
             case "$EVENT" in
               workflow_dispatch) [ "$PRUEFUNG" = "${k//_/-}" ] && v=true ;;
@@ -1482,6 +1484,50 @@ jobs:
           retention-days: 14
 
   # --- technical: vormals technical-live-qa.yml (Technical Live-QA)
+  # --- ci-status: Company Intelligence · Refresh auf /status/ (hinter der Zugangsmaske, nur Dispatch; Steuerung 28.11.2026)
+  # Prueft, dass das Aggregat company-intelligence/data/refresh-slo.json ausgeliefert ist und der Abschnitt auf /status/ Zustand, Rueckstand und
+  # die Tabelle der letzten Berichte rendert. Nur lesen; der Zugangszustand kommt aus dem Secret und wird nie ausgegeben.
+  ci-status:
+    needs: auswahl
+    if: needs.auswahl.outputs.ci_status == 'true'
+    concurrency:
+      group: ci-status-live-qa-${{ github.ref_name }}
+      cancel-in-progress: true
+    env:
+      IN_SITE: ${{ inputs.site || 'https://research.visionuniverse.de' }}
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.63.0-noble
+      options: --ipc=host
+    defaults:
+      run:
+        shell: bash
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            scripts/company_intelligence/status-live-qa.mjs
+            scripts/access-gate
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Playwright (Chromium)
+        run: npm install --prefix /tmp/pw --no-save --no-audit --no-fund playwright@1.63.0
+      - name: Abschnitt Company Intelligence · Refresh auf /status/
+        env:
+          PLAYWRIGHT_PATH: /tmp/pw/node_modules/playwright
+          RESEARCH_ACCESS_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}
+        run: node scripts/company_intelligence/status-live-qa.mjs "$IN_SITE" ci-status-live-qa
+      - name: Bericht
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-status-live-qa
+          path: ci-status-live-qa
+          if-no-files-found: ignore
+          retention-days: 14
+
   technical:
     needs: auswahl
     if: needs.auswahl.outputs.technical == 'true'
