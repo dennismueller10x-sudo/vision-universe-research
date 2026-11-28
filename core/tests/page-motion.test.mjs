@@ -16,8 +16,20 @@ test('K2 · View Transitions nur ohne reduzierte Bewegung; Leiste und Kopf stehe
 
 test('K2 · nur vorwaerts gleiten; zurueck (auch nach nativer App-Geste) und Neuladen ohne zweite Animation', () => {
   assert.match(js, /activation\.navigationType !== 'traverse' && activation\.navigationType !== 'reload'/);
-  assert.match(js, /e\.viewTransition\.skipTransition\(\); flag\(true\)/);
-  assert.match(js, /addEventListener\('pagereveal', e => \{ if \(flag\(false\) && e\.viewTransition\) e\.viewTransition\.skipTransition\(\); \}\)/);
+  assert.match(js, /skip\(e\.viewTransition\); flag\(true\)/);
+  assert.match(js, /addEventListener\('pagereveal', e => \{ if \(flag\(false\) && e\.viewTransition\) skip\(e\.viewTransition\); \}\)/);
+});
+
+test('K2 · ein abgebrochener Uebergang meldet keinen Fehler (ready.catch vor skipTransition)', () => {
+  const line = js.split('\n').find(l => l.startsWith('    const skip = t =>'));
+  assert.ok(line, 'skip-Helfer fehlt');
+  const skip = new Function(line.replace(/^\s*const skip = /, 'return '))();
+  const calls = [];
+  skip({ready: {catch(fn) { calls.push('catch'); assert.equal(typeof fn, 'function'); fn(new Error('AbortError')); return this; }}, skipTransition() { calls.push('skip'); }});
+  assert.deepEqual(calls, ['catch', 'skip'], 'ready.catch muss VOR skipTransition haengen (sonst bleibt die Ablehnung unbehandelt)');
+  // Browser ohne ready: skipTransition laeuft trotzdem
+  const none = []; skip({skipTransition() { none.push('skip'); }});
+  assert.deepEqual(none, ['skip']);
 });
 
 test('K2 · Vorladen begrenzt: hoechstens 4 Ziele, nie Konto, nie bei Datensparen/2G, erst nach Ruhe', () => {
