@@ -43,6 +43,7 @@ import { pruneStaleShards } from "./lib/ti-shards.mjs";
 import { MARKETS, MARKETS_VERSION, marketSeries } from "./lib/ti-markets.mjs";
 import { topDownFor } from "./lib/ti-topdown.mjs";
 import { tailwind, tdRow, eventsFor } from "./lib/ti-elliott-events.mjs";
+const SetupScore = createRequire(import.meta.url)(join(ROOT, "quant/engines/technical/elliott/setup-score.js"));
 import { Freshness, loadMaster, freshnessOf, withholdPayload, shardBlock, withheldIndexRow, newStats, addStats, systemicCheck, validReference } from "./lib/ti-freshness.mjs";
 import { cpus } from "node:os";
 import { loadIdentityQuarantine } from "./lib/identity-quarantine.mjs";
@@ -425,7 +426,8 @@ export function buildMarkets(C, out = OUT, reference = null) {
     p.projection = projectFor(p, null);
     if (f.withheld) p = withholdPayload(p, f);
     p.market = { id: m.id, name: m.name, via: m.via, group: m.group, source: ms.source };
-    if (p.elliottTopDown && p.elliottTopDown.status === "OK") p.elliottTopDown.rw = tailwind(p.chart.close, null);
+    if (p.elliottTopDown && p.elliottTopDown.status === "OK") { const tw = p.elliottTopDown.rw = tailwind(p.chart.close, null);
+      p.elliottTopDown.score = tw ? SetupScore.score({ rs: null, trend: tw.trend, mom: tw.mom, elliott: SetupScore.planDir(p.elliottTopDown.path) }) : null; }
     gz(join(out, "markets", m.id + ".json.gz"), { schemaVersion: API_VERSION, shard: "markets", instruments: { [m.id]: p } });
     const row = p.withheld ? withheldIndexRow(p, f) : indexRow(p);
     if (f.state !== Freshness.STATES.FRESH) row.fr = Freshness.compact(f);
@@ -454,7 +456,9 @@ function projectAll(got) {
     g.p.projection = projectFor(g.p, rs.get(t) || null);
     if (g.pW && g.pW.elliottTopDown && !g.p.elliottTopDown) g.p.elliottTopDown = g.pW.elliottTopDown;   // Tagesanalyse: grosser Grad aus der Wochenreihe
     /* Rückenwind neben der Zaehlung: Trend, Momentum, Relative Staerke (Wochenchart, RS-Perzentil aus demselben Querschnitt) */
-    if (g.p.elliottTopDown && g.p.elliottTopDown.status === "OK") { const wk = g.pW || g.p, rr = rs.get(t); g.p.elliottTopDown.rw = wk.timeframe === "1W" ? tailwind(wk.chart.close, rr ? rr.rank : null) : null; }
+    if (g.p.elliottTopDown && g.p.elliottTopDown.status === "OK") { const wk = g.pW || g.p, rr = rs.get(t); g.p.elliottTopDown.rw = wk.timeframe === "1W" ? tailwind(wk.chart.close, rr ? rr.rank : null) : null;
+      /* Setup-Score (Owner 24.11.2026): Relative Staerke, Trend, Momentum und Richtung des Elliott-Plans, Gewichte fest (setup-score.js) */
+      const tw = g.p.elliottTopDown.rw; g.p.elliottTopDown.score = tw ? SetupScore.score({ rs: tw.rs, trend: tw.trend, mom: tw.mom, elliott: SetupScore.planDir(g.p.elliottTopDown.path) }) : null; }
     items.push({ symbol: t, tf: g.p.timeframe, proj: g.p.projection, bars: { t: g.p.chart.timestamps, c: g.p.chart.close }, asOf: g.p.asOf, freshness: freshOf(t) });
     if (g.pW) {
       g.p.projectionWeekly = projectFor(g.pW, rs.get(t) || null); stats.weeklyForDaily++;

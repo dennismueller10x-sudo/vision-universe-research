@@ -88,10 +88,10 @@ test("TD-7 · Produktform: Monatsreihe, 4 signifikante Stellen, zurückgehaltene
   assert.doesNotMatch(keep, /elliottTopDown/, "Datenstand-Richtlinie: zurückgehaltene Titel ohne laufende Zählung");
 });
 
-test("TD-8 · Großes Bild: dreht der Pfad, ist der erste Schritt Einstiegszone, danach Kursziele in der neuen Richtung", () => {
+test("TD-8 · Großes Bild: Korrektur vor dem ersten Antriebsschritt ist Einstiegszone, danach Kursziele in dessen Richtung (elliott/engine/roles.js)", () => {
   const td = { close: 146, primary: { kind: "IMPULSE", dir: "UP" },
-    path: [{ dir: "DOWN", tiers: [{ t: "BASE", lo: 119, hi: 142, done: 0 }, { t: "EXTENDED", lo: 100, hi: 119, done: 0 }] },
-           { dir: "UP", tiers: [{ t: "BASE", lo: 181, hi: 220, done: 0 }] }, { dir: "DOWN", tiers: [{ t: "BASE", lo: 94, hi: 118, done: 0 }] }, { dir: "UP", tiers: [{ t: "BASE", lo: 297, hi: 423, done: 0 }] }] };
+    path: [{ l: "4", deg: "SUB", dir: "DOWN", tiers: [{ t: "BASE", lo: 119, hi: 142, done: 0 }, { t: "EXTENDED", lo: 100, hi: 119, done: 0 }] },
+           { l: "5", deg: "SUB", dir: "UP", tiers: [{ t: "BASE", lo: 181, hi: 220, done: 0 }] }, { l: "2", deg: "BIG", dir: "DOWN", tiers: [{ t: "BASE", lo: 94, hi: 118, done: 0 }] }, { l: "3", deg: "BIG", dir: "UP", tiers: [{ t: "BASE", lo: 297, hi: 423, done: 0 }] }] };
   const rows = Big.plan(td);
   assert.deepEqual(rows.map((r) => r.role + (r.n || "")), ["entry", "target1", "step", "target2"]);
   assert.deepEqual([rows[0].lo, rows[0].hi, rows[0].ext.lo], [119, 142, 100]);
@@ -110,4 +110,53 @@ test("TD-9 · Alternative mit eigener Unterteilung und eigenem Pfad, Mehrdeutigk
   const v = Big.viewOf(Object.assign({ altPath: [{ dir: "UP", tiers: [] }] }, p), "alt");
   assert.equal(v.primary, p.alternative, "Umschalter zeigt die Alternative");
   assert.equal(Big.viewOf(p, "main"), p);
+});
+
+/* 1.2.0 (Owner 25.11.2026): Proportion, laufende Welle in eigener Korrektur, Grenze einer laufenden Welle B */
+const tslaLike = () => series(1.2, [[150, 60], [4, 28], [90, 400], [60, 110], [100, 480], [40, 346]]);
+
+test("TD-10 · Proportion: ein Rücklauf innerhalb einer Antriebswelle ist nie größer als die größte Korrekturwelle desselben Grades", () => {
+  const r = TD.analyzeTopDown(tslaLike());
+  for (const c of [r.primary, r.alternative].filter(Boolean)) {
+    const L = (w) => Math.abs(Math.log(w.toPrice / w.fromPrice));
+    const ref = Math.max(0, ...c.waves.filter((w) => /^[24B]$/.test(w.label) && w.status !== "DEVELOPING").map(L));
+    const w3 = c.waves.find((w) => w.label === "3");
+    // der Absturz 400 → 110 (−72 %) liegt nicht innerhalb einer Welle 3, wenn die Welle 2 flacher war
+    if (w3 && ref > 0) assert.ok(!(w3.fromTime < "2016-11-01" && (w3.toTime > "2017-01-01")) || ref >= Math.log(400 / 110) - 1e-9, JSON.stringify(c.waves));
+  }
+});
+
+test("TD-11 · Laufende Welle in eigener Korrektur: Welle 3 kürzer als Welle 1 läuft noch, ihr Extrem steht als peak", () => {
+  const r = TD.analyzeTopDown(tslaLike());
+  const cur = r.primary.waves[r.primary.waves.length - 1];
+  assert.equal(r.primary.current.label, "3", JSON.stringify(r.primary.waves.map((w) => w.label + " " + w.toPrice.toFixed(0))));
+  assert.ok(cur.peakPrice > 470 && cur.toPrice < cur.peakPrice, "Extrem 480, Kurs heute darunter");
+  assert.equal(r.primary.invalidation.ruleId, "W3_START");
+  const p = topDownFor({ timeframe: "1W", close: tslaLike().close, timestamps: tslaLike().times });
+  assert.ok(p.primary.waves[p.primary.waves.length - 1].pk > 470, "kompakte Form trägt pk/pt");
+  assert.ok(r.path.length >= 2 && r.path.some((s) => s.label === "5" && s.degree === "BIG"), "Pfad bis zum Ende von Welle 5");
+});
+
+test("TD-12 · Laufende Welle B ist ungültig, sobald sie mehr als 138,2 % von Welle A zurückläuft; Ungültig-Marke = diese Grenze", () => {
+  // Impuls bis 120, A bis 70, danach steigt der Kurs bis 200 (B wäre 260 % von A)
+  const s = series(10, [[60, 30], [30, 15], [60, 90], [30, 60], [40, 120], [30, 70], [40, 200]]);
+  const all = TD._readAll(s);
+  const bad = all.filter((c) => c.current === "B" && (() => { const A = c.waves.find((w) => w.label === "A"), B = c.waves.find((w) => w.label === "B");
+    return Math.abs(c.pts[B.b].p - c.pts[B.a].p) / Math.abs(c.pts[A.b].p - c.pts[A.a].p) >= 1.382; })());
+  assert.equal(bad.length, 0, "keine Lesart mit laufender Welle B jenseits 138,2 %");
+  // innerhalb der Grenze: Marke = A-Ende + 1,382 × A in Richtung von B
+  const s2 = series(10, [[60, 30], [30, 15], [60, 90], [30, 60], [40, 120], [30, 70], [20, 100]]);
+  const r = TD.analyzeTopDown(s2);
+  const withB = [r.primary, r.alternative].filter((c) => c && c.current.label === "B");
+  withB.forEach((c) => { const A = c.waves.find((w) => w.label === "A");
+    assert.equal(c.invalidation.ruleId, "B_NOT_BEYOND_138");
+    assert.ok(Math.abs(c.invalidation.price - (A.toPrice + (c.current.direction === "UP" ? 1 : -1) * 1.382 * Math.abs(A.toPrice - A.fromPrice))) < 1e-6); });
+});
+
+test("TD-13 · Kalibrierung der Lernrunde: gültige Datei, je Wellenlage Tiefe 0–1 und Ausstieg kurz/fern; im Produkt als kal je Titel", async () => {
+  const K = JSON.parse(readFileSync(join(ROOT, "quant/engines/technical/elliott/calibration.json"), "utf8"));
+  assert.equal(K.schema, "vu-elliott-calibration-1"); assert.match(K.version, /^kal-\d{4}-\d{2}-\d{2}$/); assert.equal(K.label, "Forschung, nicht zertifiziert");
+  for (const [k, r] of Object.entries(K.regeln)) { assert.match(k, /^[IC][1-5ABC]$/); assert.ok(r.einstiegsTiefe >= 0 && r.einstiegsTiefe <= 1); assert.ok(["kurz", "fern"].includes(r.ausstieg)); }
+  const p = topDownFor({ timeframe: "1W", close: tslaLike().close, timestamps: tslaLike().times });
+  assert.equal(p.kal.v, K.version); assert.equal(p.kal.lage, "I" + p.primary.cur);
 });

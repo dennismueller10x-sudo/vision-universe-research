@@ -1,0 +1,99 @@
+{
+ "schema": "vu-elliott-calibration-1",
+ "version": "kal-2026-11-28",
+ "engine": "elliott-topdown-1.2.0",
+ "quelle": "Lernrunde (scripts/technical/elliott-topdown/depot-backtest.mjs --lernrunde), walk-forward, letzte 52 Wochen gesperrt; Universum S&P 500 zum Zeitpunkt",
+ "label": "Forschung, nicht zertifiziert",
+ "bedeutung": {
+  "einstiegsTiefe": "Anteil des Wegs vom Kurs am Signal zur nahen Kante der Rücksetzer-Zone: 1 = Zone der Engine, 0 = kein Warten auf den Rücksetzer",
+  "ausstieg": "kurz = nahe Kante der nächsten Zielzone; fern = großes Fernziel (log-Skala)"
+ },
+ "pruefjahre": {
+  "engine": {
+   "signale": 6285,
+   "zoneErreicht": 40.5,
+   "zielErreicht": 79.3,
+   "renditeJeTrade": 19.3,
+   "wochenJeTrade": 123,
+   "wertJeSignalProJahr": 3
+  },
+  "gelernt": {
+   "signale": 6285,
+   "zoneErreicht": 76.9,
+   "zielErreicht": 79.5,
+   "renditeJeTrade": 24.6,
+   "wochenJeTrade": 212,
+   "wertJeSignalProJahr": 4.2
+  }
+ },
+ "gesperrterZeitraum": {
+  "engine": {
+   "signale": 623,
+   "zoneErreicht": 38.7,
+   "zielErreicht": 55.6,
+   "renditeJeTrade": -4.2,
+   "wochenJeTrade": 15,
+   "wertJeSignalProJahr": -5.8
+  },
+  "gelernt": {
+   "signale": 623,
+   "zoneErreicht": 78.8,
+   "zielErreicht": 69.2,
+   "renditeJeTrade": -2.2,
+   "wochenJeTrade": 18,
+   "wertJeSignalProJahr": -5.1
+  }
+ },
+ "regeln": {
+  "CB": {
+   "einstiegsTiefe": 0,
+   "ausstieg": "kurz",
+   "signale": 71
+  },
+  "CC": {
+   "einstiegsTiefe": 0,
+   "ausstieg": "kurz",
+   "signale": 1049
+  },
+  "I1": {
+   "einstiegsTiefe": 0,
+   "ausstieg": "kurz",
+   "signale": 1544
+  },
+  "I2": {
+   "einstiegsTiefe": 0,
+   "ausstieg": "fern",
+   "signale": 586
+  },
+  "I3": {
+   "einstiegsTiefe": 0,
+   "ausstieg": "fern",
+   "signale": 2729
+  },
+  "I4": {
+   "einstiegsTiefe": 0,
+   "ausstieg": "fern",
+   "signale": 1361
+  },
+  "I5": {
+   "einstiegsTiefe": 0,
+   "ausstieg": "kurz",
+   "signale": 420
+  },
+  "IA": {
+   "einstiegsTiefe": 0.15,
+   "ausstieg": "kurz",
+   "signale": 43
+  },
+  "IB": {
+   "einstiegsTiefe": 1,
+   "ausstieg": "kurz",
+   "signale": 62
+  },
+  "IC": {
+   "einstiegsTiefe": 0,
+   "ausstieg": "kurz",
+   "signale": 143
+  }
+ }
+}
