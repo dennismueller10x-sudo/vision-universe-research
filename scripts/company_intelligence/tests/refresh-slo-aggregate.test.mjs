@@ -50,6 +50,11 @@ test('RA-4 Health-Workflow: schreibt das Aggregat nur in den Datenzweig, nie nac
  // Der Worktree von push-data-branch.sh erbt das Sparse-Checkout: liegt der Pfad ausserhalb, verweigert git add ihn (Lauf 46147166954).
  assert.match(w,/sparse-checkout: \|[\s\S]*?\n            company-intelligence\/data\n/,'Pfad der Aggregat-Datei im Sparse-Checkout');
  assert.match(w,/if: always\(\) && github\.ref == 'refs\/heads\/main'/,'nur Laeufe auf main, auch bei SLO CRITICAL');
+ // Scheitern ist sichtbar: Fehlermeldung und roter Lauf, nie nur eine Warnung (Steuerung 28.11.2026).
+ const schritt=w.slice(w.indexOf('Aggregat in den Datenzweig schreiben'),w.indexOf('actions/upload-artifact'));
+ assert.doesNotMatch(schritt,/::warning::/,'kein stilles Scheitern');
+ for(const was of ['Datenzweig data/live nicht eingespielt','nicht gebaut','nicht in den Datenzweig data/live geschrieben'])assert.match(schritt,new RegExp('::error::Refresh-SLO-Aggregat[^"\\n]*'+was));
+ assert.match(schritt,/exit "\$rc"/,'rc wird ausgegeben');
  // Workflow-Ebene bleibt lesend; Schreibrecht nur am Job.
  assert.match(w,/^permissions:\n  contents: read\n  actions: read\n/m);
  assert.match(w,/jobs:\n  health:[\s\S]*?permissions:\n      contents: write\n/);
