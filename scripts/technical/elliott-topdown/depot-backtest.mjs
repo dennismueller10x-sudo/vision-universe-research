@@ -31,6 +31,7 @@
 
    Aufruf: node scripts/technical/elliott-topdown/depot-backtest.mjs --out DIR [--from 2005-01-01] [--step 4] [--max 20]
            [--cost 0.001] [--engine PFAD] [--workers 4] [--index SP500,NDX] [--pit CSV ticker,start_date,end_date] [--extra-dir DIR]
+           [--lernrunde [--sperre 52]]   Lernmodell für Zonen und Ziele, walk-forward, letzte Wochen gesperrt (schreibt lernrunde.json)
    ========================================================================= */
 import { readdirSync, readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
@@ -324,6 +325,81 @@ function stats(curve, from, to) {
   return { renditeProJahr: rd((tot ** (1 / yrs) - 1) * 100), gesamt: rd((tot - 1) * 100, 0), maxVerlust: rd(dd * 100), schwankungProJahr: rd(sd * Math.sqrt(52) * 100), sharpe0: rd((m / sd) * Math.sqrt(52), 2) };
 }
 const periods = [["gesamt", cal[0], cal[cal.length - 1]], ["bis 2014", cal[0], "2014-12-31"], ["2015–2019", "2015-01-01", "2019-12-31"], ["ab 2020", "2020-01-01", cal[cal.length - 1]]];
+/* ---------------------------------------------------------- Lernrunde (--lernrunde; Owner 28.11.2026)
+   Lernmodell für Zonen und Ziele, walk-forward: für jedes Prüfjahr Y wird je Wellenlage nur aus Signalen VOR Y gelernt,
+   wie tief der Kaufauftrag liegen soll (Anteil f des Wegs vom Kurs zur nahen Zonenkante; 1 = Zone der Engine) und ob am kurzen
+   Ziel oder am großen Fernziel verkauft wird. Bewertet wird nur auf dem Prüfjahr. Die letzten --sperre Wochen (Standard 52) sind
+   gesperrt: nie zum Lernen, nur als Endkontrolle. Signal = Setup-Score ≥ 65 aufwärts, Plan aufwärts, Zone im Plan.
+   Kennzahl je Signal: Zone erreicht? Ziel erreicht? Rendite des Trades (log) und Haltedauer; Wert = Anteil ausgeführt ×
+   mittlere log-Rendite je Jahr gehalten. */
+if (process.argv.includes("--lernrunde")) {
+  const SPERRE = Number(arg("sperre", 52)), F = [1, 0.75, 0.5, 0.33, 0.15, 0], lockFrom = cal[Math.max(0, cal.length - SPERRE)];
+  const S = [];
+  for (const k of sigKeys) for (const [f, x] of Object.entries(SC[k])) {
+    if (!(x.e && x.e.v >= 65 && x.s && x.s.zone && x.s.plan === "UP")) continue;
+    const P = px[f], i0 = P.wk.get(k); if (i0 === undefined) continue;
+    S.push({ f, k, yr: k.slice(0, 4), cur: x.s.cur || "?", i0, at: x.s.zone.at, near: x.s.zone.near, tgt: x.s.zone.tgt, far: x.s.farLog || null, inv: x.s.inv && x.s.inv < x.s.zone.near ? x.s.inv : x.s.zone.stop });
+  }
+  /* Ergebnis eines Signals für Einstiegstiefe fe und Ausstieg ex ("kurz" | "fern") */
+  function outcome(sg, fe, ex) {
+    const c = px[sg.f].c, e = sg.at - fe * (sg.at - sg.near);
+    let fill = -1;
+    for (let i = sg.i0 + 1; i < c.length; i++) { if (c[i] <= sg.inv) return { fill: false, why: "ungültig" }; if (c[i] <= e) { fill = i; break; } if (c[i] >= sg.tgt) return { fill: false, why: "weg" }; }
+    if (fill < 0) return { fill: false, why: "offen" };
+    const ep = Math.max(c[fill], 1e-9), T = ex === "fern" && sg.far ? sg.far : sg.tgt;
+    for (let i = fill + 1; i < c.length; i++) {
+      if (c[i] >= T) return { fill: true, hit: true, r: Math.log(c[i] / ep), w: i - fill };
+      if (c[i] <= sg.inv) return { fill: true, hit: false, r: Math.log(c[i] / ep), w: i - fill };
+    }
+    return { fill: true, hit: null, r: Math.log(c[c.length - 1] / ep), w: Math.max(1, c.length - 1 - fill) };
+  }
+  function score(list, fe, ex) {
+    let n = 0, fl = 0, hit = 0, dec = 0, r = 0, w = 0;
+    for (const sg of list) { const o = outcome(sg, fe, ex); n++; if (!o.fill) continue; fl++; r += o.r; w += o.w; if (o.hit !== null) { dec++; if (o.hit) hit++; } }
+    const wert = fl ? (fl / n) * (r / fl) / Math.max(1, w / fl) * 52 : 0;
+    return { n, ausgefuehrt: fl, zoneQuote: n ? fl / n : 0, zielQuote: dec ? hit / dec : null, mittelRendite: fl ? Math.exp(r / fl) - 1 : null, mittelWochen: fl ? w / fl : null, wert };
+  }
+  const STATES = [...new Set(S.map((x) => x.cur))];
+  function learn(train) {
+    const rule = {};
+    for (const st of STATES) {
+      const L = train.filter((x) => x.cur === st); if (L.length < 30) { rule[st] = { fe: 1, ex: "kurz", n: L.length, gelernt: false }; continue; }
+      let best = null; for (const fe of F) for (const ex of ["kurz", "fern"]) { const sc = score(L, fe, ex); if (!best || sc.wert > best.wert) best = { fe, ex, wert: sc.wert }; }
+      rule[st] = { fe: best.fe, ex: best.ex, n: L.length, gelernt: true };
+    }
+    return rule;
+  }
+  const agg = () => ({ n: 0, fl: 0, hit: 0, dec: 0, r: 0, w: 0 });
+  const add = (A, o) => { A.n++; if (!o.fill) return; A.fl++; A.r += o.r; A.w += o.w; if (o.hit !== null) { A.dec++; if (o.hit) A.hit++; } };
+  const fin = (A) => ({ signale: A.n, zoneErreicht: A.n ? Math.round((A.fl / A.n) * 1000) / 10 : null, zielErreicht: A.dec ? Math.round((A.hit / A.dec) * 1000) / 10 : null,
+    renditeJeTrade: A.fl ? Math.round((Math.exp(A.r / A.fl) - 1) * 1000) / 10 : null, wochenJeTrade: A.fl ? Math.round(A.w / A.fl) : null,
+    wertJeSignalProJahr: A.fl ? Math.round(((A.fl / A.n) * (A.r / A.fl) / Math.max(1, A.w / A.fl) * 52) * 1000) / 10 : 0 });
+  const years = [...new Set(S.filter((x) => x.k < lockFrom).map((x) => x.yr))].sort().filter((y) => y >= "2010");
+  const oos = { engine: agg(), gelernt: agg() }, jeJahr = {}, jeLage = {};
+  for (const y of years) {
+    const rule = learn(S.filter((x) => x.yr < y));
+    const test = S.filter((x) => x.yr === y && x.k < lockFrom), E = agg(), G = agg();
+    for (const sg of test) {
+      const oe = outcome(sg, 1, "kurz"), r = rule[sg.cur] || { fe: 1, ex: "kurz" }, og = outcome(sg, r.fe, r.ex);
+      add(oos.engine, oe); add(oos.gelernt, og); add(E, oe); add(G, og);
+      const L = (jeLage[sg.cur] = jeLage[sg.cur] || { engine: agg(), gelernt: agg() }); add(L.engine, oe); add(L.gelernt, og);
+    }
+    jeJahr[y] = { engine: fin(E), gelernt: fin(G) };
+  }
+  /* Gesperrter Zeitraum: Regel aus allen Signalen davor */
+  const ruleNow = learn(S.filter((x) => x.k < lockFrom)), lock = { engine: agg(), gelernt: agg() };
+  for (const sg of S.filter((x) => x.k >= lockFrom)) { add(lock.engine, outcome(sg, 1, "kurz")); const r = ruleNow[sg.cur] || { fe: 1, ex: "kurz" }; add(lock.gelernt, outcome(sg, r.fe, r.ex)); }
+  const out = { schema: "vu-elliott-lernrunde-1", label: "Forschung, nicht zertifiziert", engine: TD.VERSION, setupScore: SS.VERSION, generatedAt: new Date().toISOString(),
+    params: { index: INDEX, pit: PIT ? pitStats : null, tickers: TICK, from: FROM, sperreWochen: SPERRE, gesperrtAb: lockFrom, einstiegsTiefen: F, signale: S.length },
+    regelAktuell: ruleNow,
+    pruefjahreGesamt: { engine: fin(oos.engine), gelernt: fin(oos.gelernt) },
+    gesperrterZeitraum: { engine: fin(lock.engine), gelernt: fin(lock.gelernt), hinweis: "nie zum Lernen benutzt; viele Trades noch offen" },
+    jeJahr, jeLage: Object.fromEntries(Object.entries(jeLage).map(([k, v]) => [k, { engine: fin(v.engine), gelernt: fin(v.gelernt) }])) };
+  mkdirSync(OUT, { recursive: true });
+  writeFileSync(join(OUT, "lernrunde.json"), JSON.stringify(out, null, 1));
+  console.log(JSON.stringify({ params: out.params, regelAktuell: out.regelAktuell, pruefjahreGesamt: out.pruefjahreGesamt, gesperrterZeitraum: out.gesperrterZeitraum }, null, 1));
+  process.exit(0);
+}
 const runs = { "A Setup stark": simulate("A"), "B Setup stark + Elliott-Ziel/Absicherung": simulate("B"), "C Zone (HKCM-Stil)": simulate("C"), "M nur Momentum (ohne Elliott)": simulate("M"),
   "D Momentum + Elliott als Bremse": simulate("D"), "E Setup stark, Gewinner laufen lassen (bis Ungültig)": simulate("E"), "F Setup stark, Fernziel log (HKCM-Art)": simulate("F"),
   "G Nur Elliott: Kauf bei Fernziel ≥ 1,5×, halten bis Fernziel oder Ungültig": simulate("G"),

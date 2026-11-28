@@ -63,7 +63,7 @@ on:
         required: false
         default: portfolios
         type: choice
-        options: [portfolios, holdout-quant, ema-cluster-dev, ema-cluster-archive, ema-cluster-complete, backtest2-smoke, backtest2, backtest2-survivors, merkmale-smoke, merkmale, merkmale-wf-smoke, merkmale-wf, quant-varianten, merkmale-trader-smoke, merkmale-trader, elliott-depot]
+        options: [portfolios, holdout-quant, ema-cluster-dev, ema-cluster-archive, ema-cluster-complete, backtest2-smoke, backtest2, backtest2-survivors, merkmale-smoke, merkmale, merkmale-wf-smoke, merkmale-wf, quant-varianten, merkmale-trader-smoke, merkmale-trader, elliott-depot, elliott-lernrunde]
       ema_archive_metadata: {description: 'EMA-Archiv/Vervollstaendigung: Pruefsummen und verschluesselte Dateischluessel, keine Klartextschluessel', required: false, default: '', type: string}
       reviewer_public_key_b64: {description: 'portfolio: Nur holdout-quant: oeffentlicher RSA-Schluessel (PEM, base64 in einer Zeile) der Steuerung', required: false, default: '', type: string}
       phase: {description: 'labor: dev, test oder holdout', required: false, default: dev}
@@ -224,10 +224,10 @@ jobs:
   portfolio:
     needs: [auswahl]
     if: >-
-      needs.auswahl.outputs.portfolio == 'true' && ((github.event_name == 'workflow_dispatch' && !inputs.zeitplan) || contains(github.event.head_commit.message, '[quant-portfolio-research]') || contains(github.event.head_commit.message, '[edge-e3:') || contains(github.event.head_commit.message, '[edge2:') || contains(github.event.head_commit.message, '[elliott-depot]'))
+      needs.auswahl.outputs.portfolio == 'true' && ((github.event_name == 'workflow_dispatch' && !inputs.zeitplan) || contains(github.event.head_commit.message, '[quant-portfolio-research]') || contains(github.event.head_commit.message, '[edge-e3:') || contains(github.event.head_commit.message, '[edge2:') || contains(github.event.head_commit.message, '[elliott-depot]') || contains(github.event.head_commit.message, '[elliott-lernrunde]'))
     permissions: {contents: write}
     concurrency:
-      group: quant-portfolio-research-${{ github.ref_name }}-${{ (github.event_name == 'push' && !contains(github.event.head_commit.message, '[quant-portfolio-research]') && !contains(github.event.head_commit.message, '[edge-e3:') && !contains(github.event.head_commit.message, '[edge2:') && !contains(github.event.head_commit.message, '[elliott-depot]')) && github.run_id || 'run' }}
+      group: quant-portfolio-research-${{ github.ref_name }}-${{ (github.event_name == 'push' && !contains(github.event.head_commit.message, '[quant-portfolio-research]') && !contains(github.event.head_commit.message, '[edge-e3:') && !contains(github.event.head_commit.message, '[edge2:') && !contains(github.event.head_commit.message, '[elliott-depot]') && !contains(github.event.head_commit.message, '[elliott-lernrunde]')) && github.run_id || 'run' }}
       cancel-in-progress: false
     runs-on: ubuntu-latest
     timeout-minutes: 240
@@ -262,6 +262,7 @@ jobs:
           if printf '%s' "$MSG" | grep -qF '[edge2:dna-learn]'; then m=edge2-dna-learn; fi
           if printf '%s' "$MSG" | grep -qF '[edge2:dna-test]'; then m=edge2-dna-test; fi
           if printf '%s' "$MSG" | grep -qF '[elliott-depot]'; then m=elliott-depot; fi
+          if printf '%s' "$MSG" | grep -qF '[elliott-lernrunde]'; then m=elliott-lernrunde; fi
           if [ "${IN_MODE:-}" = "holdout-quant" ]; then
             m=holdout-quant
             [[ "$REVIEWER_B64" =~ ^[A-Za-z0-9+/=]+$ ]] || { echo "REVIEWER_KEY_REQUIRED"; exit 2; }
@@ -269,7 +270,7 @@ jobs:
             printf '%s' "$REVIEWER_B64" | base64 -d > "$RUNNER_TEMP/holdout/reviewer.pem"
             openssl pkey -pubin -in "$RUNNER_TEMP/holdout/reviewer.pem" -noout || { echo "REVIEWER_KEY_NOT_A_PUBLIC_KEY"; exit 2; }
           fi
-          case "${IN_MODE:-}" in ema-cluster-dev|ema-cluster-archive|ema-cluster-complete|backtest2-smoke|backtest2|backtest2-survivors|merkmale-smoke|merkmale|merkmale-wf-smoke|merkmale-wf|merkmale-trader-smoke|merkmale-trader|elliott-depot) m="$IN_MODE";; esac
+          case "${IN_MODE:-}" in ema-cluster-dev|ema-cluster-archive|ema-cluster-complete|backtest2-smoke|backtest2|backtest2-survivors|merkmale-smoke|merkmale|merkmale-wf-smoke|merkmale-wf|merkmale-trader-smoke|merkmale-trader|elliott-depot|elliott-lernrunde) m="$IN_MODE";; esac
           echo "mode=${m:-portfolios}" >> "$GITHUB_OUTPUT"
           echo "Modus: ${m:-portfolios}"
 
@@ -337,7 +338,7 @@ jobs:
           echo "Reihen: $(find "$(dirname "$hit")" -maxdepth 1 -name '*.json' | wc -l)"
 
       - name: SEC-Fundamentaldaten wie erstmals eingereicht (oeffentlich, companyfacts.zip)
-        if: ${{ !startsWith(steps.m.outputs.mode, 'ema-cluster-') && !startsWith(steps.m.outputs.mode, 'backtest2') && steps.m.outputs.mode != 'elliott-depot' }}
+        if: ${{ !startsWith(steps.m.outputs.mode, 'ema-cluster-') && !startsWith(steps.m.outputs.mode, 'backtest2') && !startsWith(steps.m.outputs.mode, 'elliott-') }}
         run: |
           set -euo pipefail
           python3 scripts/quant/portfolio/build_pit_fundamentals.py --out "$RUNNER_TEMP/pit-fundamentals" --bulk --workers 4
@@ -425,11 +426,23 @@ jobs:
       # zum jeweiligen Zeitpunkt (scripts/technical/elliott-topdown/data/sp500-pit.csv) und delistete Titel aus dem V13-Archiv. Ausgabe nur
       # Kennzahlen (keine Ticker, keine Kurse) im Log und als Artefakt; die Reihen bleiben im Runner und werden gelöscht.
       - name: Elliott-Depot rechnen (ohne Überlebende-Verzerrung)
-        if: steps.m.outputs.mode == 'elliott-depot'
+        if: startsWith(steps.m.outputs.mode, 'elliott-')
+        env:
+          MODE: ${{ steps.m.outputs.mode }}
         run: |
           set -euo pipefail
           X="$RUNNER_TEMP/elliott-depot"; mkdir -p "$X/upload"
           node scripts/technical/elliott-topdown/depot-delisted-export.mjs --delisted-dir "$DELISTED_DIR" --out "$X/delisted"
+          if [ "$MODE" = elliott-lernrunde ]; then
+            # Lernmodell Zonen/Ziele, walk-forward, letzte 52 Wochen gesperrt (Owner 28.11.2026); S&P 500 zum Zeitpunkt mit delisteten Titeln und Nasdaq-100
+            node --max-old-space-size=8192 scripts/technical/elliott-topdown/depot-backtest.mjs --out "$X/sp" --from 2005-01-01 --lernrunde \
+              --pit scripts/technical/elliott-topdown/data/sp500-pit.csv --extra-dir "$X/delisted" --workers "$(nproc)" > "$X/sp.log"
+            node --max-old-space-size=8192 scripts/technical/elliott-topdown/depot-backtest.mjs --out "$X/ndx" --from 2005-01-01 --lernrunde \
+              --index NDX --workers "$(nproc)" > "$X/ndx.log"
+            for u in sp ndx; do cp "$X/$u/lernrunde.json" "$X/upload/lernrunde-$u.json"
+              node -e 'const o=require(process.argv[1]);console.log(process.argv[2], JSON.stringify({params:o.params,regel:o.regelAktuell,pruefjahre:o.pruefjahreGesamt,gesperrt:o.gesperrterZeitraum}))' "$X/$u/lernrunde.json" "$u"; done
+            rm -rf "$X/delisted" "$RUNNER_TEMP/priv" "$RUNNER_TEMP/canonical-history"; exit 0
+          fi
           for v in mit-delisted ohne-delisted; do
             extra=(); if [ "$v" = mit-delisted ]; then extra=(--extra-dir "$X/delisted"); fi
             node --max-old-space-size=8192 scripts/technical/elliott-topdown/depot-backtest.mjs --out "$X/$v" --from 2005-01-01 \
@@ -483,9 +496,9 @@ jobs:
           if-no-files-found: error
 
       - uses: actions/upload-artifact@v4
-        if: steps.m.outputs.mode == 'elliott-depot'
+        if: startsWith(steps.m.outputs.mode, 'elliott-')
         with:
-          name: elliott-depot-${{ github.run_id }}
+          name: ${{ steps.m.outputs.mode }}-${{ github.run_id }}
           path: ${{ runner.temp }}/elliott-depot/upload
           retention-days: 14
           if-no-files-found: error
@@ -563,7 +576,7 @@ jobs:
           rm -rf "$RUNNER_TEMP/priv" "$RUNNER_TEMP/canonical-history"
 
       - name: E3-Phase rechnen (Protokoll eingefroren, Hash geprueft)
-        if: steps.m.outputs.mode != 'portfolios' && steps.m.outputs.mode != 'holdout-quant' && !startsWith(steps.m.outputs.mode, 'ema-cluster-') && !startsWith(steps.m.outputs.mode, 'edge2') && !startsWith(steps.m.outputs.mode, 'backtest2') && !startsWith(steps.m.outputs.mode, 'merkmale') && steps.m.outputs.mode != 'elliott-depot'
+        if: steps.m.outputs.mode != 'portfolios' && steps.m.outputs.mode != 'holdout-quant' && !startsWith(steps.m.outputs.mode, 'ema-cluster-') && !startsWith(steps.m.outputs.mode, 'edge2') && !startsWith(steps.m.outputs.mode, 'backtest2') && !startsWith(steps.m.outputs.mode, 'merkmale') && !startsWith(steps.m.outputs.mode, 'elliott-')
         env:
           PHASE: ${{ steps.m.outputs.mode }}
         run: |
@@ -589,7 +602,7 @@ jobs:
           fi
 
       - name: Ergebnis auf den aktuellen Zweig committen
-        if: steps.m.outputs.mode != 'holdout-quant' && !startsWith(steps.m.outputs.mode, 'ema-cluster-') && !startsWith(steps.m.outputs.mode, 'backtest2') && !startsWith(steps.m.outputs.mode, 'merkmale') && steps.m.outputs.mode != 'elliott-depot'
+        if: steps.m.outputs.mode != 'holdout-quant' && !startsWith(steps.m.outputs.mode, 'ema-cluster-') && !startsWith(steps.m.outputs.mode, 'backtest2') && !startsWith(steps.m.outputs.mode, 'merkmale') && !startsWith(steps.m.outputs.mode, 'elliott-')
         env:
           MODE: ${{ steps.m.outputs.mode }}
         run: |
