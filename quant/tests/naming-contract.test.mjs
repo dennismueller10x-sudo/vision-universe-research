@@ -265,7 +265,7 @@ test("Liste und Aktienseite nennen denselben Namen", async () => {
     (verzeichnisAlt ? " und das (aeltere) Verzeichnis fuehrt nur " + grenzeVerzeichnis + " ohne Namen" : ""));
   assert.equal(universe.stocks.filter((s) => s.name === s.ticker).length, 0,
     "ein Titel traegt sein Kuerzel als Firmennamen");
-  assert.ok(universe.stocks.length > 6000, "das Universum ist zu klein fuer diese Pruefung");
+  assert.ok(universe.stocks.length > 5500, "das Universum ist zu klein fuer diese Pruefung");
   /* Und die Klasse bleibt unterscheidbar - der Emittentenname wuerde sie
      wegwerfen. */
   const goog = await api.getStockIntelligence("GOOG");

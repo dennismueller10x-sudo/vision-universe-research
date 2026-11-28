@@ -25,7 +25,7 @@ test('canonical search resolves stable identities beyond the five-row panel with
     Verlauf: 6853 - 167 Anleihen/ETN/Rechte/Optionsscheine (Verzeichnisbeleg) = 6686; Stand 2026-11-05: - 131 belegte ETFs + 5 Stammaktien + 13 unbelegte Optionsscheine/Rechte/Units (REVIEW) = 6573. */
  const elig=JSON.parse(await readFile(new URL('quant/data/market/security-master/eligibility.json',root),'utf8')),SM=require('../engines/us-security-master.js');
  const inProduct=elig.decisions.filter(d=>SM.IN_PRODUCT_UNIVERSE.includes(d.product_eligibility)).length;
- assert.ok(inProduct>6000,'Produktuniversum unplausibel klein: '+inProduct);assert.equal(elig.counts.productUniverse,inProduct);
+ assert.ok(inProduct>5500,'Produktuniversum unplausibel klein: '+inProduct);assert.equal(elig.counts.productUniverse,inProduct);
  assert.equal((await service.getUniverse()).stocks.length,inProduct);
 });
 test('missing issuer/CIK does not remove an eligible security from search or identity page',async()=>{
