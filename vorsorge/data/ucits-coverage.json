@@ -1,10 +1,10 @@
 {
  "schemaVersion": "vu-vorsorge-ucits-coverage-1.0.0",
- "asOf": "2026-11-24",
+ "asOf": "2026-11-27",
  "measuredOn": "TIINGO_ETF_INGEST",
  "catalogEtfRowsOnEuropeanExchanges": 0,
  "catalogExchanges": {
-  "SHE": 435,
+  "SHE": 436,
   "SHG": 439,
   "NYSE": 2929,
   "BATS": 1825,
@@ -12,7 +12,7 @@
   "NYSE MKT": 24,
   "NYSE ARCA": 1637,
   "PINK": 548,
-  "OTCMKTS": 135,
+  "OTCMKTS": 136,
   "AMEX": 50,
   "OTCQB": 8,
   "OTCGREY": 110,
@@ -23,7 +23,7 @@
   "OTCCE": 1
  },
  "listingsOnEuropeanExchanges": 0,
- "listingsNamedUcits": 422,
+ "listingsNamedUcits": 423,
  "listingsInEurGbpChf": 0,
  "isinAvailable": 0,
  "examples": [
@@ -31,6 +31,12 @@
    "symbol": "ACWEF",
    "name": "SSGA SPDR MSCI ACWI UCITS ETF",
    "exchange": "PINK",
+   "currency": "USD"
+  },
+  {
+   "symbol": "ADFRF",
+   "name": "abrdn Future Real Estate UCITS ETF - USD",
+   "exchange": "OTCMKTS",
    "currency": "USD"
   },
   {
@@ -140,18 +146,12 @@
    "name": "BlackRock iShares MSCI Korea UCITS ETF USD (Acc)",
    "exchange": "PINK",
    "currency": "USD"
-  },
-  {
-   "symbol": "CSTNL",
-   "name": "BlackRock iShares Core S&P 500 UCITS ETF USD (Acc)",
-   "exchange": "PINK",
-   "currency": "USD"
   }
  ],
- "conclusion": "Im US-Kursdatenbestand (Tiingo) erscheinen 422 Zeilen mit „UCITS“ im Namen nur als US-Freiverkehrszeilen (OTC, in USD) – das sind keine europäischen Börsenlistings und sie werden nicht als solche gezeigt. Europäische Anteilklassen mit ISIN und Handelsplätzen kommen aus dem amtlichen ESMA-Register (Bereich Europa).",
+ "conclusion": "Im US-Kursdatenbestand (Tiingo) erscheinen 423 Zeilen mit „UCITS“ im Namen nur als US-Freiverkehrszeilen (OTC, in USD) – das sind keine europäischen Börsenlistings und sie werden nicht als solche gezeigt. Europäische Anteilklassen mit ISIN und Handelsplätzen kommen aus dem amtlichen ESMA-Register (Bereich Europa).",
  "ucitsByExchange": {
   "PINK": 331,
-  "OTCMKTS": 69,
+  "OTCMKTS": 70,
   "OTCQB": 3,
   "OTCD": 2,
   "EXPM": 3,
