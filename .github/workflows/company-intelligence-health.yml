@@ -16,11 +16,17 @@ concurrency:
 jobs:
   health:
     runs-on: ubuntu-latest
-    timeout-minutes: 6
+    timeout-minutes: 8
+    # contents: write nur fuer den Datenzweig data/live (scripts/ci/push-data-branch.sh verweigert main); kein Commit auf main, kein Release-Ausloeser.
+    permissions:
+      contents: write
+      actions: read
     steps:
       - uses: actions/checkout@v4
         with:
           sparse-checkout: |
+            scripts/ci
+            core/registry
             scripts/market/storage
             scripts/company_intelligence
             company-intelligence/config
@@ -70,6 +76,26 @@ jobs:
             *) echo "::error::health exited with unexpected code $rc"; rc=2 ;;
           esac
           exit "$rc"
+      # Veroeffentlichung des Urteils als Aggregat (nur Zahlen) im Datenzweig; /status/ liest es ueber core/registry/domains.json
+      # (companyIntelligenceRefresh, core/registry/data-branch.json). Auch bei SLO CRITICAL, solange ein Urteil vorliegt; ein Fehler hier
+      # faerbt den Lauf nicht rot (das Urteil selbst steht im Artefakt).
+      - name: Aggregat in den Datenzweig schreiben (nicht nach main; nur Laeufe auf main)
+        if: always() && github.ref == 'refs/heads/main'
+        env:
+          RUNNER_TMP: ${{ runner.temp }}
+        run: |
+          set -uo pipefail
+          out="$RUNNER_TMP/refresh-slo.json"
+          [ -s "$out" ] || { echo "::notice::kein Urteil, Aggregat nicht geschrieben"; exit 0; }
+          # Bisheriger Stand (Verlauf) aus dem Datenzweig in den Arbeitsbaum (DB-15); fehlt er, beginnt der Verlauf neu.
+          scripts/ci/seed-data-branch.sh companyIntelligenceRefresh || echo "::warning::Datenzweig nicht eingespielt, Verlauf beginnt neu"
+          prev=company-intelligence/data/refresh-slo.json
+          [ -s "$prev" ] && cp "$prev" "$RUNNER_TMP/refresh-slo-previous.json" || rm -f "$RUNNER_TMP/refresh-slo-previous.json"
+          prev="$RUNNER_TMP/refresh-slo-previous.json"
+          args=(--verdict "$out" --out company-intelligence/data/refresh-slo.json)
+          [ -s "$prev" ] && args+=(--previous "$prev")
+          node scripts/company_intelligence/refresh-slo-aggregate.mjs "${args[@]}" || { echo "::warning::Aggregat nicht gebaut"; exit 0; }
+          scripts/ci/push-data-branch.sh data/live company-intelligence/data/refresh-slo.json || echo "::warning::Aggregat nicht in den Datenzweig geschrieben"
       - uses: actions/upload-artifact@v4
         if: always()
         with:

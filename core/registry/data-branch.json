@@ -26,6 +26,14 @@
       "paths": ["status/data-quality.json"]
     },
     {
+      "id": "companyIntelligenceRefresh",
+      "phase": "BRANCH_ONLY",
+      "pendingFirstRun": true,
+      "workflow": "company-intelligence-health.yml",
+      "paths": ["company-intelligence/data/refresh-slo.json"],
+      "note": "Neu (11/2026), nur im Datenzweig: Zahlen und Verlauf des Refresh-SLO (Rueckstand, blockiert vom Betreiber, Laufzeit). Der Health-Workflow (alle 4 h) schreibt sie, nie nach main. Bis zum ersten Lauf darf die Datei fehlen."
+    },
+    {
       "id": "analystRatings",
       "phase": "BRANCH_ONLY",
       "workflow": "content.yml",
