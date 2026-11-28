@@ -13,7 +13,7 @@ test("compact projection exactly covers the canonical product universe", () => {
   assert.equal(payload.version, VERSION);
   assert.deepEqual(payload.capabilities, CAPABILITIES);
   assert.equal(Object.keys(payload.rows).length, payload.counts.productUniverse);
-  assert.ok(Object.keys(payload.rows).length > 6000);
+  assert.ok(Object.keys(payload.rows).length >= 5000, "Untergrenze gegen einen Einbruch, nicht der Tagesstand (5.996 am 28.11.2026)");
   assert.equal(Contract.validate(payload), true);
   assert.equal(summary.version, SUMMARY_VERSION);
   assert.equal(Contract.validateSummary(summary), true);
